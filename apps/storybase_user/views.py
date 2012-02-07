@@ -27,6 +27,7 @@ def google_login(request):
 
 def google_oauth2_callback(request):
     # TODO: Catch if code parameter is not provided
+    print request
     code = request.GET['code']
     redirect_uri = full_reverse(request, google_oauth2_callback)
     params = {
