@@ -157,6 +157,7 @@ INSTALLED_APPS = (
     'apps.storybase_user',
     'apps.storybase_asset',
     'apps.storybase_story',
+    'apps.cmsplugin_storybase',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
