@@ -1,7 +1,7 @@
 from django.contrib import admin
 from django.db import models
 
-from apps.storybase_asset.models import Asset
+from storybase_asset.models import Asset
 
 STORY_STATUS = (
     (u'draft', u'draft'),

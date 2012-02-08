@@ -1,7 +1,12 @@
-# Django settings for atlas project.
 import os
+import sys
+
 gettext = lambda s: s
 PROJECT_PATH = os.path.abspath(os.path.dirname(__file__))
+
+# Add apps directory to PYTHONPATH so I can refer to apps as if they were
+# reusabel
+sys.path.insert(0, os.path.join(PROJECT_PATH, "apps"))
 
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
@@ -153,10 +158,10 @@ INSTALLED_APPS = (
     'reversion',
 
     # StoryBase
-    'apps.storybase_user',
-    'apps.storybase_asset',
-    'apps.storybase_story',
-    'apps.cmsplugin_storybase',
+    'storybase_user',
+    'storybase_asset',
+    'storybase_story',
+    'cmsplugin_storybase',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (

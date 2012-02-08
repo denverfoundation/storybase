@@ -16,7 +16,7 @@ urlpatterns = patterns('',
     url(r'^admin/', include(admin.site.urls)),
 
     # StoryBase URLs
-    (r'^s/user/', include('apps.storybase_user.urls')),
+    (r'^s/user/', include('storybase_user.urls')),
 
     # django CMS URLs
     url(r'^', include('cms.urls')),
