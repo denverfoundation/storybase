@@ -7,6 +7,7 @@ class OfficialTag(TagBase):
     official = models.BooleanField(default=False)
 
 class OfficialTaggedItem(GenericTaggedItemBase):
-    tag = models.ForeignKey('OfficialTag')
+    tag = models.ForeignKey('OfficialTag', related_name="%(app_label)s_%(class)s_items")
+
 
 admin.site.register(OfficialTag)
