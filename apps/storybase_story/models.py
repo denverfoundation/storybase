@@ -21,6 +21,9 @@ class Story(models.Model):
     tags = TaggableManager(through=OfficialTaggedItem)
     author = models.ForeignKey(User, related_name="stories")
 
+    class Meta:
+        verbose_name_plural = "stories"
+
     def __unicode__(self):
         return self.title
 
