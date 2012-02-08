@@ -157,10 +157,15 @@ INSTALLED_APPS = (
     'cmsplugin_filer_video',
     'reversion',
 
+    # StoryBase dependencies
+    'haystack',
+    'taggit',
+
     # StoryBase
     'storybase_user',
     'storybase_asset',
     'storybase_story',
+    'storybase_tag',
     'cmsplugin_storybase',
 )
 
@@ -200,5 +205,9 @@ LOGGING = {
 LANGUAGES = [
     ('en', 'English'),
 ]
+
+HAYSTACK_SITECONF = 'atlas.search_sites'
+HAYSTACK_SEARCH_ENGINE = 'solr'
+HAYSTACK_SOLR_URL = 'http://127.0.0.1:8983/solr' 
 
 from local_settings import *
