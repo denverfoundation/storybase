@@ -155,6 +155,8 @@ INSTALLED_APPS = (
 
     # StoryBase
     'apps.storybase_user',
+    'apps.storybase_asset',
+    'apps.storybase_story',
 )
 
 TEMPLATE_CONTEXT_PROCESSORS = (
