@@ -120,8 +120,7 @@ TEMPLATE_DIRS = (
 )
 
 CMS_TEMPLATES = (
-    ('template_1.html', 'Template One'),
-    ('template_2.html', 'Template Two'),
+    ('front_page.html', 'Front Page'),
 )
 
 INSTALLED_APPS = (
