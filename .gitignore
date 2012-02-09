@@ -1,3 +1,4 @@
 local_settings.py
 *.swp
 *.pyc
+.ropeproject
