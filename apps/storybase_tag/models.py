@@ -11,9 +11,18 @@ class Tag(TagBase):
         verbose_name = _("Tag")
         verbose_name_plural = _("Tags")
 
+admin.site.register(Tag)
+
 class TaggedItem(GenericTaggedItemBase):
     tag = models.ForeignKey('Tag',  
                             related_name="%(app_label)s_%(class)s_items")
 
+class TagSet(models.Model):
+    name = models.CharField(verbose_name=_('Name'), max_length=100)
+    tags = models.ManyToManyField('Tag', related_name='tag_set',
+                                  verbose_name=_('Tags'), blank=True)
 
-admin.site.register(Tag)
+    def __unicode__(self):
+        return self.name
+
+admin.site.register(TagSet)
