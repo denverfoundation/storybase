@@ -5,16 +5,34 @@
 
 <form method="get" action=".">
     <table>
-        {{ form.as_table }}
-        <tr>
-            <td>&nbsp;</td>
-            <td>
-                <input type="submit" value="Search">
-            </td>
-        </tr>
+        <tbody>
+            {{ form.as_table }}
+            <tr>
+                <td>&nbsp;</td>
+                <td>
+                    <input type="submit" value="Search">
+                </td>
+            </tr>
+        </tbody>
     </table>
 
     {% if query %}
+        <!-- Begin faceting. -->
+        {# TODO: Move facet checkboxes to custom form class. #}
+        {% for name, options in facets.fields.items %}
+            {% if options|length %}
+            <fieldset>
+                <legend>{{ name|title }}</legend>
+                {% for option in options  %}
+                    {% with facet_value=name|add:":"|add:option.0 %}
+                    <input type="checkbox" name="selected_facets" value="{{ facet_value }}" {% if facet_value in form.selected_facets %}checked{% endif %} />
+                    {% endwith %}
+                    <label>{{ option.0 }} ({{ option.1 }})</label>
+
+                {% endfor %}
+            </fieldset>
+            {% endif %}
+        {% endfor %}
         <h3>Results</h3>
 
         {% for result in page.object_list %}
