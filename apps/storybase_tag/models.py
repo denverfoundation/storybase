@@ -1,17 +1,19 @@
 from django.contrib import admin
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 
 from taggit.models import TagBase, GenericTaggedItemBase
 
-class OfficialTag(TagBase):
+class Tag(TagBase):
     official = models.BooleanField(default=False)
 
     class Meta:
-        verbose_name = "tag"
-        verbose_name_plural = "tags"
+        verbose_name = _("Tag")
+        verbose_name_plural = _("Tags")
 
-class OfficialTaggedItem(GenericTaggedItemBase):
-    tag = models.ForeignKey('OfficialTag', related_name="%(app_label)s_%(class)s_items")
+class TaggedItem(GenericTaggedItemBase):
+    tag = models.ForeignKey('Tag',  
+                            related_name="%(app_label)s_%(class)s_items")
 
 
-admin.site.register(OfficialTag)
+admin.site.register(Tag)

@@ -5,7 +5,7 @@ from django.db import models
 from taggit.managers import TaggableManager
 
 from storybase_asset.models import Asset
-from storybase_tag.models import OfficialTaggedItem
+from storybase_tag.models import TaggedItem
 
 STORY_STATUS = (
     (u'draft', u'draft'),
@@ -18,7 +18,7 @@ class Story(models.Model):
     status = models.CharField(max_length=10, choices=STORY_STATUS, default='draft')
     teaser = models.TextField(blank=True)
     slug = models.SlugField()
-    tags = TaggableManager(through=OfficialTaggedItem)
+    tags = TaggableManager(through=TaggedItem)
     author = models.ForeignKey(User, related_name="stories")
 
     class Meta:
