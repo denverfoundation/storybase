@@ -11,7 +11,10 @@ class Tag(TagBase):
         verbose_name = _("Tag")
         verbose_name_plural = _("Tags")
 
-admin.site.register(Tag)
+class TagAdmin(admin.ModelAdmin):
+    prepopulated_fields = {"slug": ("name",)}
+
+admin.site.register(Tag, TagAdmin)
 
 class TaggedItem(GenericTaggedItemBase):
     tag = models.ForeignKey('Tag',  
@@ -19,10 +22,14 @@ class TaggedItem(GenericTaggedItemBase):
 
 class TagSet(models.Model):
     name = models.CharField(verbose_name=_('Name'), max_length=100)
+    official = models.BooleanField(default=False)
     tags = models.ManyToManyField('Tag', related_name='tag_set',
                                   verbose_name=_('Tags'), blank=True)
 
     def __unicode__(self):
         return self.name
 
-admin.site.register(TagSet)
+class TagSetAdmin(admin.ModelAdmin):
+    list_display = ('name', 'official')
+
+admin.site.register(TagSet, TagSetAdmin)
