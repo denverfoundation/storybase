@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 
 {% block base_content %}
-<h2>Search</h2>
+<h3>Search</h3>
 
 <form method="get" action=".">
     <table>
@@ -17,8 +17,8 @@
         </tbody>
     </table>
 
-    {% if query %}
-        <h3>Results</h3>
+    {% if page.object_list %}
+        <h3>Stories</h3>
 
         {% for result in page.object_list %}
             {# TODO: Make this point to the actual URL of the story #}

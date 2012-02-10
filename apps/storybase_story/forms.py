@@ -91,6 +91,9 @@ class StoryFacetedSearchForm(FacetedSearchForm):
 
         self.fields['selected_facets'] = GroupedMultipleChoiceField(choice_groups=choice_groups, required=False, label='Facets')
 
+    def no_query_found(self):
+        return self.searchqueryset.all()
+
     def search(self):
         sqs = super(FacetedSearchForm, self).search()
         
