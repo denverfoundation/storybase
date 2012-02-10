@@ -89,6 +89,7 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
+    'atlas.media_staticfiles_finder.AppDirectoriesFinderAsMedia',
 )
 
 # Make this unique, and don't share it with anybody.
@@ -149,6 +150,7 @@ INSTALLED_APPS = (
 
     # django CMS plugins
     'cms.plugins.text',
+    'easy_thumbnails',
     'filer',
     'cmsplugin_filer_file',
     'cmsplugin_filer_folder',
@@ -212,5 +214,7 @@ HAYSTACK_SEARCH_ENGINE = 'solr'
 HAYSTACK_SOLR_URL = 'http://127.0.0.1:8983/solr' 
 
 TAGGIT_AUTOSUGGEST_MODEL = 'storybase_tag.models.Tag'
+
+FILER_STATICMEDIA_PREFIX = os.path.join(STATIC_URL, 'filer')
 
 from local_settings import *
