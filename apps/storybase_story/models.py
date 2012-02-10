@@ -13,7 +13,7 @@ STORY_STATUS = (
 )
 
 class Story(models.Model):
-    assets = models.ManyToManyField(Asset, related_name='stories')
+    assets = models.ManyToManyField(Asset, related_name='stories', blank=True)
     title = models.CharField(max_length=200)
     status = models.CharField(max_length=10, choices=STORY_STATUS, default='draft')
     teaser = models.TextField(blank=True)
