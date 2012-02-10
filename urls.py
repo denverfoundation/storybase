@@ -15,6 +15,9 @@ urlpatterns = patterns('',
     # Uncomment the next line to enable the admin:
     url(r'^admin/', include(admin.site.urls)),
 
+    # 3rd-party apps
+    (r'^taggit_autosuggest/', include('taggit_autosuggest.urls')),
+
     # StoryBase URLs
     (r'^s/user/', include('storybase_user.urls')),
     (r'^s/', include('storybase_story.urls')),

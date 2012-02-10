@@ -2,7 +2,12 @@ from django.contrib import admin
 from django.contrib.auth.models import User
 from django.db import models
 
-from taggit.managers import TaggableManager
+# TODO: Decide on tagging suggestion admin app.
+# Right now, I'm using a hacked version of
+# https://bitbucket.org/fabian/django-taggit-autosuggest
+# which I modified to allow for specifying a Tag model
+# other than taggit.models.Tag
+from taggit_autosuggest.managers import TaggableManager
 
 from storybase_asset.models import Asset
 from storybase_tag.models import TaggedItem
