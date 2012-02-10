@@ -25,6 +25,7 @@ class Story(models.Model):
     slug = models.SlugField()
     tags = TaggableManager(through=TaggedItem)
     author = models.ForeignKey(User, related_name="stories")
+    pub_date = models.DateField(blank=True, null=True)
 
     class Meta:
         verbose_name_plural = "stories"

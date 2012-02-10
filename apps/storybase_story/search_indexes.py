@@ -1,5 +1,5 @@
 from haystack.indexes import (SearchIndex, CharField, FacetCharField, 
-    FacetMultiValueField)
+    FacetDateTimeField, FacetMultiValueField)
 from haystack import site
 
 from models import Story
@@ -7,6 +7,7 @@ from models import Story
 class StoryIndex(SearchIndex):
     text = CharField(document=True, use_template=True)
     author = FacetCharField(model_attr='author')
+    pub_date = FacetDateTimeField(model_attr='pub_date')
     # TODO: Use a meta class to dynamically populate these from "official"
     # tag sets 
     school = FacetMultiValueField()
