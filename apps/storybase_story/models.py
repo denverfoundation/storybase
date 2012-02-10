@@ -29,6 +29,8 @@ class Story(models.Model):
 
 class StoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("title",)}
+    search_fields = ['title', 'author__first_name', 'author__last_name']
+    list_filter = ('status', 'author', 'tags__name')
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         if db_field.name == "assets":

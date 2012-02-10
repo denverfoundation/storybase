@@ -13,6 +13,7 @@ class Tag(TagBase):
 
 class TagAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
+    search_fields = ['name']
 
 admin.site.register(Tag, TagAdmin)
 
@@ -31,5 +32,6 @@ class TagSet(models.Model):
 
 class TagSetAdmin(admin.ModelAdmin):
     list_display = ('name', 'official')
+    search_fields = ['name']
 
 admin.site.register(TagSet, TagSetAdmin)
