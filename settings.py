@@ -140,6 +140,7 @@ INSTALLED_APPS = (
     'django.contrib.admin',
     # Uncomment the next line to enable admin documentation:
     # 'django.contrib.admindocs',
+    'django.contrib.gis',
 
     # django CMS requirements
     'cms',
@@ -169,6 +170,7 @@ INSTALLED_APPS = (
     'storybase_asset',
     'storybase_story',
     'storybase_tag',
+    'storybase_place',
     'cmsplugin_storybase',
 )
 
