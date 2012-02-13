@@ -1,4 +1,3 @@
-from django.contrib import admin
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -15,10 +14,5 @@ class Asset(models.Model):
     def __unicode__(self):
         return self.title
 
-class AssetAdmin(admin.ModelAdmin):
-    list_display = ('title',)
-
 class ExternalAsset(Asset):
     url = models.URLField()
-
-admin.site.register(ExternalAsset, AssetAdmin)
