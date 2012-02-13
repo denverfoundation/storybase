@@ -15,8 +15,20 @@ class Asset(models.Model):
     def __unicode__(self):
         return self.title
 
+    def render(self, format='html'):
+        try:
+            return getattr(self, "render_" + format).__call__()
+        except AttributeError:
+            return self.__unicode__()
+
 class ExternalAsset(Asset):
     url = models.URLField()
 
+    def render_html(self):
+        return "<a href=\"%s\">%s</a>" % (self.url, self.title)
+
 class HtmlAsset(Asset):
     body = models.TextField(blank=True)
+
+    def render_html(self):
+        return self.body
