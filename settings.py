@@ -161,6 +161,7 @@ INSTALLED_APPS = (
     'reversion',
 
     # StoryBase dependencies
+    'ajax_select',
     'haystack',
     'taggit',
     'taggit_autosuggest',
@@ -219,5 +220,14 @@ HAYSTACK_SOLR_URL = 'http://127.0.0.1:8983/solr'
 TAGGIT_AUTOSUGGEST_MODEL = 'storybase_tag.models.Tag'
 
 FILER_STATICMEDIA_PREFIX = os.path.join(STATIC_URL, 'filer')
+
+# define the lookup channels for use with ajax_select
+AJAX_LOOKUP_CHANNELS = {
+    'asset': {'model': 'storybase_asset.asset', 'search_field': 'title'}
+}
+# magically include jqueryUI/js/css
+AJAX_SELECT_BOOTSTRAP = True
+AJAX_SELECT_INLINES = 'inline'
+
 
 from local_settings import *
