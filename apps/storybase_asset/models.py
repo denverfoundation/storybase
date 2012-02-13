@@ -16,3 +16,6 @@ class Asset(models.Model):
 
 class ExternalAsset(Asset):
     url = models.URLField()
+
+class HtmlAsset(Asset):
+    body = models.TextField(blank=True)
