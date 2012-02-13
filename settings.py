@@ -164,6 +164,7 @@ INSTALLED_APPS = (
     'haystack',
     'taggit',
     'taggit_autosuggest',
+    'tastypie',
 
     # StoryBase
     'storybase_user',

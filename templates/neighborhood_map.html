@@ -14,6 +14,7 @@
 {% addtoblock "js" %}
 <script type="text/javascript">
 $(document).ready(function() {
+    var NEIGHBORHOOD_API_URI = "{% url api_dispatch_list resource_name="neighborhood" api_name="v0.1" %}?limit=100";
     var map = new L.Map('map');
     // See http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames 
     var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -21,7 +22,31 @@ $(document).ready(function() {
         osm = new L.TileLayer(osmUrl, {maxZoom: 18, attribution: osmAttrib});
         var denver = new L.LatLng(39.74151, -104.98672);
         map.setView(denver, 10).addLayer(osm);
+        $.getJSON(NEIGHBORHOOD_API_URI, parseMapData);
         map.on('click', onMapClick);
+
+        function parseMapData(data) {
+            $.each(data.objects, function(key, val) {
+                var geojson = new L.GeoJSON();
+                geojson.on('featureparse', function(e) {
+                    e.layer.on('click', function(e) {
+                        shapeClick(this);
+                    }, e.properties);
+                });
+                geojson.addGeoJSON(val);
+                map.addLayer(geojson);
+            });
+        }
+
+        function shapeClick(shape) {
+            var content = "<h3>" + shape.name_lc + "</h3>";
+            var popup = new L.Popup();
+            var point = new L.LatLng(shape.center[1], shape.center[0]);
+            console.debug(point);
+            popup.setLatLng(point);
+            popup.setContent(content);
+            map.openPopup(popup);
+        }
 
         function onMapClick(e) {
             console.debug("You clicked the map at " + e.latlng);
@@ -32,7 +57,7 @@ $(document).ready(function() {
 {% endblock %}
 
 {% block base_content %}
-<h1>Got here map</h1>
+<h1>Denver Neighborhoods</h1>
 
 <div id="map" style="height: 600px;"></div>
 {% endblock %}
