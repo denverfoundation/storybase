@@ -16,8 +16,13 @@ STORY_STATUS = (
     (u'published', u'published'),
 )
 
+class StoryAsset(models.Model):
+    story = models.ForeignKey('Story')
+    asset = models.ForeignKey('storybase_asset.Asset')
+    weight = models.IntegerField(default=0)
+
 class Story(models.Model):
-    assets = models.ManyToManyField(Asset, related_name='stories', blank=True)
+    assets = models.ManyToManyField(Asset, related_name='stories', blank=True, through='StoryAsset')
     title = models.CharField(max_length=200)
     status = models.CharField(max_length=10, choices=STORY_STATUS, default='draft')
     teaser = models.TextField(blank=True)
