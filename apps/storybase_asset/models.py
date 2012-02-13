@@ -3,6 +3,7 @@ from django.db import models
 
 ASSET_TYPES = (
   (u'article', u'article'),
+  (u'map', u'map'),
 )
 
 class Asset(models.Model):
