@@ -1,0 +1,38 @@
+{% extends "base.html" %}
+{% load sekizai_tags %}
+
+{% block extrahead %}
+{% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/leaflet/leaflet.css">{% endaddtoblock %}
+{% addtoblock "css" %}
+<!--[if lte IE 8]><link rel="stylesheet" href="{{ STATIC_URL }}js/libs/leaflet/leaflet.ie.css" /><![endif]-->
+{% endaddtoblock %}
+{% endblock %}
+
+{% block extrajs %}
+{% addtoblock "js" %}<script defer src="{{ STATIC_URL}}js/libs/leaflet/leaflet.js"></script>{% endaddtoblock %}
+
+{% addtoblock "js" %}
+<script type="text/javascript">
+$(document).ready(function() {
+    var map = new L.Map('map');
+    // See http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames 
+    var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        osmAttrib = 'Map data &copy; 2012 OpenStreetMap contributors',
+        osm = new L.TileLayer(osmUrl, {maxZoom: 18, attribution: osmAttrib});
+        var denver = new L.LatLng(39.74151, -104.98672);
+        map.setView(denver, 10).addLayer(osm);
+        map.on('click', onMapClick);
+
+        function onMapClick(e) {
+            console.debug("You clicked the map at " + e.latlng);
+        }
+});
+</script>
+{% endaddtoblock %}
+{% endblock %}
+
+{% block base_content %}
+<h1>Got here map</h1>
+
+<div id="map" style="height: 600px;"></div>
+{% endblock %}

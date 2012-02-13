@@ -20,6 +20,7 @@ urlpatterns = patterns('',
 
     # StoryBase URLs
     (r'^s/user/', include('storybase_user.urls')),
+    (r'^s/place/', include('storybase_place.urls')),
     (r'^s/', include('storybase_story.urls')),
 
     # django CMS URLs
