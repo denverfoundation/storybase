@@ -144,21 +144,21 @@ INSTALLED_APPS = (
 
     # django CMS requirements
     'cms',
+    'easy_thumbnails',
+    'filer',
     'mptt',
     'menus',
+    'reversion',
     'south',
     'sekizai',
 
     # django CMS plugins
     'cms.plugins.text',
-    'easy_thumbnails',
-    'filer',
     'cmsplugin_filer_file',
     'cmsplugin_filer_folder',
     'cmsplugin_filer_image',
     'cmsplugin_filer_teaser',
     'cmsplugin_filer_video',
-    'reversion',
 
     # StoryBase dependencies
     'ajax_select',
