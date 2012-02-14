@@ -58,7 +58,7 @@ MEDIA_ROOT = os.path.join(PROJECT_PATH, "media")
 # URL that handles the media served from MEDIA_ROOT. Make sure to use a
 # trailing slash.
 # Examples: "http://media.lawrence.com/media/", "http://example.com/media/"
-MEDIA_URL = ''
+MEDIA_URL = '/media/'
 
 # Absolute path to the directory static files should be collected to.
 # Don't put anything in this directory yourself; store your static files
@@ -220,7 +220,7 @@ HAYSTACK_SOLR_URL = 'http://127.0.0.1:8983/solr'
 
 TAGGIT_AUTOSUGGEST_MODEL = 'storybase_tag.models.Tag'
 
-FILER_STATICMEDIA_PREFIX = os.path.join(STATIC_URL, 'filer')
+FILER_STATICMEDIA_PREFIX = os.path.join(STATIC_URL, 'filer/')
 
 # define the lookup channels for use with ajax_select
 AJAX_LOOKUP_CHANNELS = {
