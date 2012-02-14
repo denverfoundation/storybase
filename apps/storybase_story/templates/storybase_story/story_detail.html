@@ -1,0 +1,16 @@
+{% extends "base.html" %}
+
+{% block base_content %}
+<h2>{{ story.title }}</h2>
+
+{% for asset in story.inline_assets %}
+{{ asset.render }}
+{% endfor %}
+
+<h3>Articles</h3>
+<ul>
+    {% for article in story.articles %}
+    <li>{{ article.render }}</li>
+    {% endfor %}
+</ul>
+{% endblock %}
