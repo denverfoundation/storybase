@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.utils.safestring import mark_safe
+from filer.fields.image import FilerImageField
 
 ASSET_TYPES = (
   (u'article', u'article'),
@@ -68,3 +69,6 @@ class HtmlAsset(Asset):
             output.append(self.body)
             
         return mark_safe(u'\n'.join(output))
+
+class FilerImageAsset(Asset):
+    image = FilerImageField()

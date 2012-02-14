@@ -2,7 +2,7 @@ from django import forms
 from django.contrib import admin
 from django.db import models
 from tinymce.widgets import TinyMCE
-from models import ExternalAsset, HtmlAsset
+from models import ExternalAsset, FilerImageAsset, HtmlAsset
 
 class AssetAdmin(admin.ModelAdmin):
     list_display = ('title',)
@@ -27,3 +27,4 @@ class HtmlAssetAdmin(AssetAdmin):
 
 admin.site.register(ExternalAsset, AssetAdmin)
 admin.site.register(HtmlAsset, HtmlAssetAdmin)
+admin.site.register(FilerImageAsset, AssetAdmin)
