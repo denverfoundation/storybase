@@ -10,5 +10,4 @@ sqs = SearchQuerySet().date_facet('pub_date', start_date=datetime.date(2009, 1, 
 urlpatterns = patterns('',
     url(r'search/', FacetedSearchView(form_class=StoryFacetedSearchForm, searchqueryset=sqs),
         name='story_search'),
-    #url(r'search/', include('haystack.urls')),
 )
