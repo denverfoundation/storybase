@@ -32,6 +32,11 @@
 
   <!-- CSS: implied media=all -->
   <!-- CSS concatenated and minified via ant build script-->
+  <!-- 1140px Grid styles for IE -->
+  {% addtoblock "css" %}<!--[if lte IE 9]><link rel="stylesheet" href="{{ STATIC_URL }}css/ie.css" type="text/css" media="screen" /><![endif]-->{% endaddtoblock %}
+
+  <!-- The 1140px Grid - http://cssgrid.net/ -->
+  {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/1140.css">{% endaddtoblock %}
   {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/style.css">{% endaddtoblock %}
 
   {% render_block "css" %}
