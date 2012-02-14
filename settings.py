@@ -166,6 +166,7 @@ INSTALLED_APPS = (
     'taggit',
     'taggit_autosuggest',
     'tastypie',
+    'tinymce',
 
     # StoryBase
     'storybase_user',
@@ -229,5 +230,8 @@ AJAX_LOOKUP_CHANNELS = {
 AJAX_SELECT_BOOTSTRAP = True
 AJAX_SELECT_INLINES = 'inline'
 
+# tinymce settings
+TINYMCE_JS_URL = os.path.join(STATIC_URL, 'js/libs/tiny_mce/tiny_mce.js')
+TINYMCE_JS_ROOT = os.path.join(STATIC_ROOT, 'js/libs/tiny_mce')
 
 from local_settings import *

@@ -18,6 +18,7 @@ urlpatterns = patterns('',
 
     # 3rd-party apps
     (r'^taggit_autosuggest/', include('taggit_autosuggest.urls')),
+    (r'^tinymce/', include('tinymce.urls')),
 
     # StoryBase URLs
     (r'^s/user/', include('storybase_user.urls')),
