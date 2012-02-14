@@ -37,7 +37,19 @@ class ExternalAsset(Asset):
     url = models.URLField()
 
     def render_html(self):
-        return mark_safe("<a href=\"%s\">%s</a>" % (self.url, self.title))
+        output = []
+        if self.type == 'image':
+            output.append('<figure>')
+            output.append('<img src="%s" alt="%s" />' % (self.url, self.title))
+            if self.caption:
+                output.append('<figcaption>')
+                output.append(self.caption)
+                output.append('</figcaption>')
+            output.append('</figure>')
+        else:
+            output.append("<a href=\"%s\">%s</a>" % (self.url, self.title))
+
+        return mark_safe(u'\n'.join(output))
 
 class HtmlAsset(Asset):
     body = models.TextField(blank=True)
@@ -53,6 +65,6 @@ class HtmlAsset(Asset):
                 output.append('</figcaption>')
             output.append('</figure>')
         else:
-            output = [self.body]
+            output.append(self.body)
             
         return mark_safe(u'\n'.join(output))
