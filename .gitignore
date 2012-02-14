@@ -5,3 +5,4 @@ local_settings.py
 sitestatic
 data
 static/js/libs/tiny_mce/
+media/*
