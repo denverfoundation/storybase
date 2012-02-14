@@ -43,4 +43,8 @@ class Story(models.Model):
     def articles(self):
         return [asset.subclass() for asset in self.assets.filter(type='article').order_by('storyasset__weight')] 
 
+    @models.permalink
+    def get_absolute_url(self):
+        return ('story_detail', [str(self.slug)])
+
 
