@@ -20,7 +20,7 @@ class Asset(models.Model):
         return self.title
 
     def subclass(self):
-        for attr in ('externalasset', 'htmlasset'):
+        for attr in ('externalasset', 'htmlasset', 'filerimageasset'):
             try:
                 return getattr(self, attr)
             except ObjectDoesNotExist:
@@ -72,3 +72,15 @@ class HtmlAsset(Asset):
 
 class FilerImageAsset(Asset):
     image = FilerImageField()
+
+    def render_html(self):
+        output = []
+        output.append('<figure>')
+        output.append('<img src="%s" alt="%s" />' % (self.image.url, self.title))
+        if self.caption:
+            output.append('<figcaption>')
+            output.append(self.caption)
+            output.append('</figcaption>')
+        output.append('</figure>')
+            
+        return mark_safe(u'\n'.join(output))
