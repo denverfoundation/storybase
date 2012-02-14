@@ -5,6 +5,7 @@ from django.utils.safestring import mark_safe
 
 ASSET_TYPES = (
   (u'article', u'article'),
+  (u'image', u'image'),
   (u'map', u'map'),
 )
 
