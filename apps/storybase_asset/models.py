@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
+from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
+from django.utils.safestring import mark_safe
 
 ASSET_TYPES = (
   (u'article', u'article'),
@@ -15,6 +17,15 @@ class Asset(models.Model):
     def __unicode__(self):
         return self.title
 
+    def subclass(self):
+        for attr in ('externalasset', 'htmlasset'):
+            try:
+                return getattr(self, attr)
+            except ObjectDoesNotExist:
+                pass
+
+        return self 
+
     def render(self, format='html'):
         try:
             return getattr(self, "render_" + format).__call__()
@@ -25,10 +36,22 @@ class ExternalAsset(Asset):
     url = models.URLField()
 
     def render_html(self):
-        return "<a href=\"%s\">%s</a>" % (self.url, self.title)
+        return mark_safe("<a href=\"%s\">%s</a>" % (self.url, self.title))
 
 class HtmlAsset(Asset):
     body = models.TextField(blank=True)
 
     def render_html(self):
-        return self.body
+        output = []
+        if self.type == 'map':
+            output.append('<figure>')
+            output.append(self.body)
+            if self.caption:
+                output.append('<figcaption>')
+                output.append(self.caption)
+                output.append('</figcaption>')
+            output.append('</figure>')
+        else:
+            output = [self.body]
+            
+        return mark_safe(u'\n'.join(output))
