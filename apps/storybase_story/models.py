@@ -37,3 +37,10 @@ class Story(models.Model):
     def __unicode__(self):
         return self.title
 
+    def inline_assets(self):
+        return [asset.subclass() for asset in self.assets.exclude(type='article').order_by('storyasset__weight')]
+
+    def articles(self):
+        return [asset.subclass() for asset in self.assets.filter(type='article').order_by('storyasset__weight')] 
+
+
