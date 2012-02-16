@@ -5,7 +5,7 @@ argparse==1.2.1
 cmsplugin-filer==0.8.0
 distribute==0.6.14
 django-ajax-selects==1.2.4
-django-allauth==0.3.0
+-e git+git://github.com:ghing/django-allauth.git@2a259ac75443f09983955a25a5935517fd33e94e#egg=django_allauth-0.3.0-py2.7-dev
 django-classy-tags==0.3.4.1
 django-cms==2.2
 django-email-confirmation==0.2
