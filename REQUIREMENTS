@@ -5,8 +5,10 @@ argparse==1.2.1
 cmsplugin-filer==0.8.0
 distribute==0.6.14
 django-ajax-selects==1.2.4
+django-allauth==0.3.0
 django-classy-tags==0.3.4.1
 django-cms==2.2
+django-email-confirmation==0.2
 django-filer==0.8.5
 django-haystack==1.2.6
 django-mptt==0.5.2
@@ -16,6 +18,7 @@ django-taggit==0.9.3
 -e hg+https://bitbucket.org/fabian/django-taggit-autosuggest@59862ade9c9c184234aa5745820c3db50316a24e#egg=django_taggit_autosuggest-tip
 django-tastypie==0.9.11
 django-tinymce==1.5.1b2
+django-uni-form==0.9.0
 easy-thumbnails==1.0-alpha-21
 html5lib==0.90
 httplib2==0.7.2
@@ -24,5 +27,6 @@ mimeparse==0.1.3
 psycopg2==2.4.4
 pysolr==2.1.0-beta
 python-dateutil==1.5
+python-openid==2.2.5
 python-ptrace==0.6.3
 wsgiref==0.1.2
