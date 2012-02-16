@@ -2,5 +2,10 @@
 {% load cms_tags %}
 
 {% block base_content %}
-  {% placeholder featured_story %}
+  <div class="sixcol">
+    {% placeholder column_one %}
+  </div>
+  <div class="sixcol last">
+    {% placeholder featured_story %}
+  </div>
 {% endblock %}
