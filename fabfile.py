@@ -1,0 +1,60 @@
+from fabric.api import task, env
+from fabric.operations import put, run, sudo
+from fabric.context_managers import cd
+import os
+from pprint import pprint
+
+# Fabric tasks to deploy atlas
+# Tested on Ubuntu 11.10
+
+# Set up some default environment
+# Name of instance, will be used to create paths and name certain
+# config files
+env['instance'] = env.get('instance', 'atlas')
+# Directory where all the app assets will be put
+# Tasks assume that this directory already exists and that you
+# have write permissions on it. This is what I did to get started:
+# 
+# sudo addgroup atlas
+# sudo adduser ghing atlas
+# sudo mkdir /srv/www/atlas_dev
+# sudo chmod g+rwxs /srv/www/atlas_dev
+env['instance_root'] = env.get('instance_root', 
+    os.path.join('/srv/www/', env['instance']))
+
+@task
+def print_env():
+    """ Output the configuration environment for debugging purposes """
+    pprint(env)
+
+@task
+def mkvirtualenv():
+    """ Create the virtualenv for the deployment """ 
+    with cd(env['instance_root']):
+        run('virtualenv --distribute --no-site-packages venv') 
+
+@task
+def install_postgres():
+    """ Installs Postgresql package """
+    sudo('apt-get install postgresql')
+
+@task
+def install_spatial():
+    """ Install geodjango dependencies """
+    sudo('apt-get install binutils gdal-bin libproj-dev postgresql-9.1-postgis')
+
+@task
+def create_spatial_db_template():
+    """ Create the spatial database template for PostGIS """
+    # Upload the spatial template creation script
+    put('scripts/create_template_postgis-debian.sh', '/tmp')
+
+    # Run the script
+    sudo('bash /tmp/create_template_postgis-debian.sh', user='postgres')
+
+    # Delete the script
+    run('rm /tmp/create_template_postgis-debian.sh')
+
+@task
+def createdb(name=env['instance']):
+    sudo("createdb -T template_postgis %s" % (name), user='postgres')
