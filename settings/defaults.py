@@ -2,7 +2,7 @@ import os
 import sys
 
 gettext = lambda s: s
-PROJECT_PATH = os.path.abspath(os.path.dirname(__file__))
+PROJECT_PATH = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
 # Add apps directory to PYTHONPATH so I can refer to apps as if they were
 # reusabel
