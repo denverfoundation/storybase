@@ -21,6 +21,11 @@ env['instance'] = env.get('instance', 'atlas')
 # sudo chmod g+rwxs /srv/www/atlas_dev
 env['instance_root'] = env.get('instance_root', 
     os.path.join('/srv/www/', env['instance']))
+env['production'] = env.get('production', False)
+# Git repo
+# Production environments can only pull from repo
+env['repo_uri'] = env.get('repo_uri', 
+    'git://github.com/ghing/atlas.git' if env['production'] else 'git@github.com:ghing/atlas.git')
 
 @task
 def print_env():
@@ -57,4 +62,11 @@ def create_spatial_db_template():
 
 @task
 def createdb(name=env['instance']):
+    """ Create the database """
     sudo("createdb -T template_postgis %s" % (name), user='postgres')
+
+@task 
+def clone_repo():
+    with cd(env['instance_root']):
+        run("git clone %s atlas" % (env['repo_uri']))
+
