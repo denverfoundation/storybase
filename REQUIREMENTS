@@ -16,7 +16,7 @@ django-mptt==0.5.2
 django-reversion==1.4
 django-sekizai==0.5
 django-taggit==0.9.3
--e hg+https://bitbucket.org/fabian/django-taggit-autosuggest@59862ade9c9c184234aa5745820c3db50316a24e#egg=django_taggit_autosuggest
+-e hg+https://bitbucket.org/fabian/django-taggit-autosuggest#egg=django_taggit_autosuggest
 django-tastypie==0.9.11
 django-tinymce==1.5.1b2
 django-uni-form==0.9.0
