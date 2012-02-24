@@ -66,6 +66,15 @@ def createdb(name=env['instance']):
     sudo("createdb -T template_postgis %s" % (name), user='postgres')
 
 @task 
+def createuser(username=env['instance'], dbname=env['instance']):
+    """ Create a Postgresql user for this instance and grant them the permissions Django needs to the database """
+    sudo("createuser --encrypted --pwprompt %s" % (username), user='postgres')
+    print "You need to make sure you have a line like one of the following "
+    print "in your pg_hba.conf:"
+    print ""
+    print "local\t%s\t%s\t127.0.0.1/32\tmd5" % (dbname, username)
+
+@task 
 def clone_repo():
     with cd(env['instance_root']):
         run("git clone %s atlas" % (env['repo_uri']))
