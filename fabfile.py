@@ -43,12 +43,17 @@ def mkvirtualenv():
 @task
 def install_postgres():
     """ Installs Postgresql package """
-    sudo('apt-get install postgresql')
+    sudo('apt-get install postgresql postgresql-server-dev-9.1')
 
 @task
 def install_spatial():
     """ Install geodjango dependencies """
     sudo('apt-get install binutils gdal-bin libproj-dev postgresql-9.1-postgis')
+
+@task
+def install_pil_dependencies():
+    """ Install the dependencies for the PIL library """
+    sudo('apt-get install python-dev libfreetype6-dev zlib1g-dev libjpeg8-dev')
 
 @task
 def create_spatial_db_template():
