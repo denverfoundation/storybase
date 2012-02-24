@@ -26,6 +26,8 @@ env['production'] = env.get('production', False)
 # Production environments can only pull from repo
 env['repo_uri'] = env.get('repo_uri', 
     'git://github.com/ghing/atlas.git' if env['production'] else 'git@github.com:ghing/atlas.git')
+env['repo_branch'] = env.get('repo_branch', 
+    'master' if env['production'] else 'develop')
 
 @task
 def print_env():
@@ -75,7 +77,23 @@ def createuser(username=env['instance'], dbname=env['instance']):
     print "local\t%s\t%s\t127.0.0.1/32\tmd5" % (dbname, username)
 
 @task 
-def clone_repo():
+def clone():
+    """ Clone the application repository """
     with cd(env['instance_root']):
         run("git clone %s atlas" % (env['repo_uri']))
+
+@task
+def checkout(branch=env['repo_branch']):
+    """ Checkout a particular repository branch """
+    with cd(os.path.join(env['instance_root'], 'atlas')):
+        run("git checkout %s" % (branch))
+
+@task
+def pull():
+    """ Fetch updates from remote repo """
+    with cd(os.path.join(env['instance_root'], 'atlas')):
+        run('git pull')
+
+
+
 
