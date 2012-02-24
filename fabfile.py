@@ -106,3 +106,15 @@ def install_requirements():
         with prefix('source venv/bin/activate'):
             run('pip install --requirement ./atlas/REQUIREMENTS')
 
+@task
+def upload_local_config(config_dir=os.path.join(os.getcwd(), 'config', env['instance']) + '/'):
+    """ Upload a local config directory """
+    remote_dir = os.path.join(env['instance_root'], 'atlas', 'config')
+    put(config_dir, remote_dir)
+
+@task
+def install_config(instance=env['instance']):
+    """ Install files that were uploaded via upload_local_config to their final homes """
+    with cd(env['instance_root'] + '/atlas/'):
+        run("cp config/%s/settings.py settings/%s.py" % (env['instance'], env['instance']))
+        # TODO: Copy the WSGI and apache files
