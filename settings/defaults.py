@@ -260,5 +260,3 @@ EMAIL_CONFIRMATION_DAYS = 7
 # TODO: Choose a better redirect URL
 LOGIN_REDIRECT_URL = '/'
 #LOGIN_REDIRECT_URLNAME = ''
-
-from local_settings import *
