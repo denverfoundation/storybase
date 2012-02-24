@@ -1,6 +1,6 @@
 from fabric.api import task, env
 from fabric.operations import put, run, sudo
-from fabric.context_managers import cd
+from fabric.context_managers import cd, prefix
 import os
 from pprint import pprint
 
@@ -94,6 +94,10 @@ def pull():
     with cd(os.path.join(env['instance_root'], 'atlas')):
         run('git pull')
 
-
-
+@task
+def install_requirements():
+    """ Install application's Python requirements into the virtualenv """
+    with cd(env['instance_root']):
+        with prefix('source venv/bin/activate'):
+            run('pip install --requirement ./atlas/REQUIREMENTS')
 
