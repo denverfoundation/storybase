@@ -133,6 +133,13 @@ def syncdb(instance=env['instance']):
         with prefix('source venv/bin/activate'):
             run("python atlas/manage.py syncdb --settings=atlas.settings.%s" % (env['instance']))
 
+@task 
+def migrate(instance=env['instance']):
+    """ Run South migrations in the instance's Django environment """
+    with cd(env['instance_root']):
+        with prefix('source venv/bin/activate'):
+            run("python atlas/manage.py migrate --settings=atlas.settings.%s" % (env['instance']))
+
 @task
 def a2ensite(instance=env['instance']):
     """ Enable the site for the instance in Apache """
