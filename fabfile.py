@@ -107,7 +107,13 @@ def install_requirements():
             run('pip install --requirement ./atlas/REQUIREMENTS')
 
 @task
-def upload_local_config(config_dir=os.path.join(os.getcwd(), 'config', env['instance']) + '/'):
+def make_log_directory(instance=env['instance']):
+    """ Create directory for instance's logs """
+    with cd(env['instance_root']):
+        run('mkdir logs')
+
+@task
+def upload_config(config_dir=os.path.join(os.getcwd(), 'config', env['instance']) + '/'):
     """ Upload a local config directory """
     remote_dir = os.path.join(env['instance_root'], 'atlas', 'config')
     put(config_dir, remote_dir)
@@ -117,7 +123,8 @@ def install_config(instance=env['instance']):
     """ Install files that were uploaded via upload_local_config to their final homes """
     with cd(env['instance_root'] + '/atlas/'):
         run("cp config/%s/settings.py settings/%s.py" % (env['instance'], env['instance']))
-        # TODO: Copy the WSGI and apache files
+        run("cp config/%s/wsgi.py wsgi.py" % (env['instance']))
+        sudo("cp config/%s/apache/site /etc/apache2/sites-available/%s" % (env['instance'], env['instance']))
 
 @task 
 def syncdb(instance=env['instance']):
@@ -125,5 +132,6 @@ def syncdb(instance=env['instance']):
     with cd(env['instance_root']):
         with prefix('source venv/bin/activate'):
             run('python atlas/manage.py syncdb')
+
 
 # QUESTION: How do you combine tasks?
