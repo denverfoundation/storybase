@@ -174,4 +174,11 @@ def nginx_reload():
     """ Reload the Nginx configuration """
     sudo('service nginx reload')
 
+@task 
+def collectstatic(instance=env['instance']):
+    """ Collect static files in the instance's Django environment """
+    with cd(env['instance_root']):
+        with prefix('source venv/bin/activate'):
+            run("python atlas/manage.py collectstatic --settings=atlas.settings.%s" % (env['instance']))
+
 # QUESTION: How do you combine tasks?
