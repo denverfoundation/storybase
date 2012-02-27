@@ -41,6 +41,12 @@ def mkvirtualenv():
         run('virtualenv --distribute --no-site-packages venv') 
 
 @task
+def install_mod_wsgi():
+    """ Install Apache mod_wsgi """
+    sudo('apt-get install libapache2-mod-wsgi')
+    sudo('a2enmod wsgi')
+
+@task
 def install_postgres():
     """ Installs Postgresql package """
     sudo('apt-get install postgresql postgresql-server-dev-9.1')
@@ -54,6 +60,13 @@ def install_spatial():
 def install_pil_dependencies():
     """ Install the dependencies for the PIL library """
     sudo('apt-get install python-dev libfreetype6-dev zlib1g-dev libjpeg8-dev')
+
+@task
+def install_nginx():
+    """ Install the nginx webserver, used to serve static assets. """
+    sudo('apt-get install nginx')
+    # Disable the default nginx site
+    sudo('rm /etc/nginx/sites-enabled/default') 
 
 @task
 def create_spatial_db_template():
@@ -106,3 +119,66 @@ def install_requirements():
         with prefix('source venv/bin/activate'):
             run('pip install --requirement ./atlas/REQUIREMENTS')
 
+@task
+def make_log_directory(instance=env['instance']):
+    """ Create directory for instance's logs """
+    with cd(env['instance_root']):
+        run('mkdir logs')
+
+@task
+def upload_config(config_dir=os.path.join(os.getcwd(), 'config', env['instance']) + '/'):
+    """ Upload a local config directory """
+    remote_dir = os.path.join(env['instance_root'], 'atlas', 'config')
+    put(config_dir, remote_dir)
+
+@task
+def install_config(instance=env['instance']):
+    """ Install files that were uploaded via upload_local_config to their final homes """
+    with cd(env['instance_root'] + '/atlas/'):
+        run("cp config/%s/settings.py settings/%s.py" % (env['instance'], env['instance']))
+        run("cp config/%s/wsgi.py wsgi.py" % (env['instance']))
+        sudo("cp config/%s/apache/site /etc/apache2/sites-available/%s" % (env['instance'], env['instance']))
+        sudo("cp config/%s/nginx/site /etc/nginx/sites-available/%s" % (env['instance'], env['instance']))
+
+@task 
+def syncdb(instance=env['instance']):
+    """ Run syncdb management command in the instance's Django environment """
+    with cd(env['instance_root']):
+        with prefix('source venv/bin/activate'):
+            run("python atlas/manage.py syncdb --settings=atlas.settings.%s" % (env['instance']))
+
+@task 
+def migrate(instance=env['instance']):
+    """ Run South migrations in the instance's Django environment """
+    with cd(env['instance_root']):
+        with prefix('source venv/bin/activate'):
+            run("python atlas/manage.py migrate --settings=atlas.settings.%s" % (env['instance']))
+
+@task
+def a2ensite(instance=env['instance']):
+    """ Enable the site for the instance in Apache """
+    sudo("a2ensite %s" % (instance))
+
+@task
+def nginxensite(instance=env['instance']):
+    """ Enable the site for the instance's static files in Nginx """
+    sudo("ln -s /etc/nginx/sites-available/%s /etc/nginx/sites-enabled/%s" % (instance, instance))
+
+@task
+def apache2_reload():
+    """ Reload the Apache configuration """
+    sudo('service apache2 reload')
+
+@task
+def nginx_reload():
+    """ Reload the Nginx configuration """
+    sudo('service nginx reload')
+
+@task 
+def collectstatic(instance=env['instance']):
+    """ Collect static files in the instance's Django environment """
+    with cd(env['instance_root']):
+        with prefix('source venv/bin/activate'):
+            run("python atlas/manage.py collectstatic --settings=atlas.settings.%s" % (env['instance']))
+
+# QUESTION: How do you combine tasks?
