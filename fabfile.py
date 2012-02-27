@@ -62,6 +62,13 @@ def install_pil_dependencies():
     sudo('apt-get install python-dev libfreetype6-dev zlib1g-dev libjpeg8-dev')
 
 @task
+def install_nginx():
+    """ Install the nginx webserver, used to serve static assets. """
+    sudo('apt-get install nginx')
+    # Disable the default nginx site
+    sudo('rm /etc/nginx/sites-enabled/default') 
+
+@task
 def create_spatial_db_template():
     """ Create the spatial database template for PostGIS """
     # Upload the spatial template creation script
@@ -131,6 +138,7 @@ def install_config(instance=env['instance']):
         run("cp config/%s/settings.py settings/%s.py" % (env['instance'], env['instance']))
         run("cp config/%s/wsgi.py wsgi.py" % (env['instance']))
         sudo("cp config/%s/apache/site /etc/apache2/sites-available/%s" % (env['instance'], env['instance']))
+        sudo("cp config/%s/nginx/site /etc/nginx/sites-available/%s" % (env['instance'], env['instance']))
 
 @task 
 def syncdb(instance=env['instance']):
@@ -152,8 +160,18 @@ def a2ensite(instance=env['instance']):
     sudo("a2ensite %s" % (instance))
 
 @task
+def nginxensite(instance=env['instance']):
+    """ Enable the site for the instance's static files in Nginx """
+    sudo("ln -s /etc/nginx/sites-available/%s /etc/nginx/sites-enabled/%s" % (instance, instance))
+
+@task
 def apache2_reload():
     """ Reload the Apache configuration """
     sudo('service apache2 reload')
+
+@task
+def nginx_reload():
+    """ Reload the Nginx configuration """
+    sudo('service nginx reload')
 
 # QUESTION: How do you combine tasks?
