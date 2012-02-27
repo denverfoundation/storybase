@@ -131,7 +131,11 @@ def syncdb(instance=env['instance']):
     """ Run syncdb management command in the instance's Django environment """
     with cd(env['instance_root']):
         with prefix('source venv/bin/activate'):
-            run('python atlas/manage.py syncdb')
+            run("python atlas/manage.py syncdb --settings=atlas.settings.%s" % (env['instance']))
 
+@task
+def a2ensite(instance=env['instance']):
+    """ Enable the site for the instance in Apache """
+    raise NotImplemented
 
 # QUESTION: How do you combine tasks?
