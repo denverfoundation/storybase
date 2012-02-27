@@ -41,6 +41,12 @@ def mkvirtualenv():
         run('virtualenv --distribute --no-site-packages venv') 
 
 @task
+def install_mod_wsgi():
+    """ Install Apache mod_wsgi """
+    sudo('apt-get install libapache2-mod-wsgi')
+    sudo('a2enmod wsgi')
+
+@task
 def install_postgres():
     """ Installs Postgresql package """
     sudo('apt-get install postgresql postgresql-server-dev-9.1')
@@ -143,6 +149,11 @@ def migrate(instance=env['instance']):
 @task
 def a2ensite(instance=env['instance']):
     """ Enable the site for the instance in Apache """
-    raise NotImplemented
+    sudo("a2ensite %s" % (instance))
+
+@task
+def apache2_reload():
+    """ Reload the Apache configuration """
+    sudo('service apache2 reload')
 
 # QUESTION: How do you combine tasks?
