@@ -118,3 +118,12 @@ def install_config(instance=env['instance']):
     with cd(env['instance_root'] + '/atlas/'):
         run("cp config/%s/settings.py settings/%s.py" % (env['instance'], env['instance']))
         # TODO: Copy the WSGI and apache files
+
+@task 
+def syncdb(instance=env['instance']):
+    """ Run syncdb management command in the instance's Django environment """
+    with cd(env['instance_root']):
+        with prefix('source venv/bin/activate'):
+            run('python atlas/manage.py syncdb')
+
+# QUESTION: How do you combine tasks?
