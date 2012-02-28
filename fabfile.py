@@ -35,11 +35,23 @@ def print_env():
     pprint(env)
 
 @task
+def install_python_tools():
+    """ Install python tools to make deployment easier """
+    sudo('apt-get install python-setuptools')
+    sudo('easy_install pip')
+    sudo('pip install virtualenv')
+
+@task
 def mkvirtualenv():
     """ Create the virtualenv for the deployment """ 
     with cd(env['instance_root']):
         run('virtualenv --distribute --no-site-packages venv') 
 
+@task
+def install_apache():
+    """ Install the Apache 2 webserver """
+    sudo('apt-get install apache2')
+        
 @task
 def install_mod_wsgi():
     """ Install Apache mod_wsgi """
@@ -67,6 +79,14 @@ def install_nginx():
     sudo('apt-get install nginx')
     # Disable the default nginx site
     sudo('rm /etc/nginx/sites-enabled/default') 
+
+@task install_solr():
+    """ Install the Solr search server """
+    # Solr doesn't work with openjdk-7-jdk, we need to install oepnjdk-6-jdk
+    # as a workaround. See https://bugs.launchpad.net/ubuntu/+source/solr/+bug/901165
+    sudo('apt-get install openjdk-6-jdk')
+    sudo('apt-get install solr-jetty')
+    print "You'll probably need to edit /etc/default/jetty"
 
 @task
 def create_spatial_db_template():
