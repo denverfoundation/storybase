@@ -139,6 +139,7 @@ def install_config(instance=env['instance']):
         run("cp config/%s/wsgi.py wsgi.py" % (env['instance']))
         sudo("cp config/%s/apache/site /etc/apache2/sites-available/%s" % (env['instance'], env['instance']))
         sudo("cp config/%s/nginx/site /etc/nginx/sites-available/%s" % (env['instance'], env['instance']))
+        sudo("cp config/%s/solr/solrconfig.xml /usr/share/solr/%s/conf/" % (instance, instance))
 
 @task 
 def syncdb(instance=env['instance']):
@@ -188,6 +189,17 @@ def write_solr_xml(instance=env['instance']):
     # It should look something like this:
     #<core name="atlas_dev" instanceDir="atlas_dev" dataDir="/var/lib/solr/atlas_dev/data" /> 
     raise NotImplemented
+
+@task
+def make_solr_data_dir(instance=env['instance']):
+    """ Make the directory for the instance's Solr core data """
+    sudo("mkdir -p /var/lib/solr/%s/data" % (instance))
+    sudo("chown -R jetty /var/lib/solr/%s/" % (instance))
+
+@task
+def make_solr_config_dir(instance=env['instance']):
+    """ Make the directory for the instance's Solr core configuration """
+    sudo("mkdir -p /usr/share/solr/%s/conf" % (instance))
 
 
 # QUESTION: How do you combine tasks?
