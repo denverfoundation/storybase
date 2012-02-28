@@ -201,5 +201,10 @@ def make_solr_config_dir(instance=env['instance']):
     """ Make the directory for the instance's Solr core configuration """
     sudo("mkdir -p /usr/share/solr/%s/conf" % (instance))
 
+@task
+def restart_jetty():
+    """ Restart the Jetty application server (effictively restarting Solr) """
+    sudo("service jetty restart")
+
 
 # QUESTION: How do you combine tasks?
