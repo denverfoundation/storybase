@@ -181,4 +181,13 @@ def collectstatic(instance=env['instance']):
         with prefix('source venv/bin/activate'):
             run("python atlas/manage.py collectstatic --settings=atlas.settings.%s" % (env['instance']))
 
+@task
+def write_solr_xml(instance=env['instance']):
+    """ Make an entry in the global solr.xml for our instance """
+    # TODO: Make a core entry in /usr/share/solr/solr.xml
+    # It should look something like this:
+    #<core name="atlas_dev" instanceDir="atlas_dev" dataDir="/var/lib/solr/atlas_dev/data" /> 
+    raise NotImplemented
+
+
 # QUESTION: How do you combine tasks?
