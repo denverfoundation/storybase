@@ -7,3 +7,4 @@ data
 static/js/libs/tiny_mce/
 media/*
 settings/dev.py
+wsgi.py
