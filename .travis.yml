@@ -9,6 +9,7 @@ postgres:
   database: atlas_test
   username: postgres
 before_install:
+  - "cat ./scripts/create_template_postgis-debian.sh"
   - "sudo apt-get install binutils gdal-bin libproj-dev postgis"
   - "sudo apt-get install libfreetype6-dev zlib1g-dev libjpeg8-dev"
   - "sudo cat ./scripts/create_template_postgis-debian.sh"
