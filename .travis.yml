@@ -11,8 +11,6 @@ postgres:
 before_install:
   - "sudo apt-get install gdal-bin libproj-dev postgis postgresql-8.4-postgis"
   - "sudo bash ./scripts/create_template_postgis-debian.sh"
-before_script:
-  - "createdb -T template_postgis atlas_test -U postgres"
 branches:
   only:
     - master
