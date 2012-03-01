@@ -2,8 +2,7 @@
 language: python
 python: 
   - "2.7"
-#install: pip install -r REQUIREMENTS --use-mirrors
-install: echo 'got here'
+install: pip install -r REQUIREMENTS --use-mirrors
 script: python manage.py test --settings=settings.travis
 postgres:
   adapter: postgresql
