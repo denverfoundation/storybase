@@ -161,6 +161,9 @@ def install_config(instance=env['instance']):
         sudo("cp config/%s/apache/site /etc/apache2/sites-available/%s" % (env['instance'], env['instance']))
         sudo("cp config/%s/nginx/site /etc/nginx/sites-available/%s" % (env['instance'], env['instance']))
         sudo("cp config/%s/solr/solrconfig.xml /usr/share/solr/%s/conf/" % (instance, instance))
+        sudo("cp config/%s/solr/protwords.txt /usr/share/solr/%s/conf/" % (instance, instance))
+        sudo("cp config/%s/solr/stopwords.txt /usr/share/solr/%s/conf/" % (instance, instance))
+        sudo("cp config/%s/solr/synonyms.txt /usr/share/solr/%s/conf/" % (instance, instance))
 
 @task 
 def syncdb(instance=env['instance']):
