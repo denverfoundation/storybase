@@ -44,6 +44,10 @@ then
     createlang -U postgres -d template_postgis plpgsql
 fi
 
+# BEGIN DEBUG
+echo "$postgis_sql_path/$postgis_sql"
+ls $postgis_sql_path/$postgis_sql
+# END DEBUG
 psql -d postgres -U postgres -c "UPDATE pg_database SET datistemplate='true' WHERE datname='template_postgis';" && \
 psql -d template_postgis -U postgres -f $POSTGIS_SQL_PATH/$POSTGIS_SQL && \
 psql -d template_postgis -U postgres -f $POSTGIS_SQL_PATH/spatial_ref_sys.sql && \

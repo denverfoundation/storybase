@@ -2,14 +2,15 @@
 language: python
 python: 
   - "2.7"
-install: pip install -r REQUIREMENTS --use-mirrors
+#install: pip install -r REQUIREMENTS --use-mirrors
+install: echo 'got here'
 script: python manage.py test --settings=settings.travis
 postgres:
   adapter: postgresql
   database: atlas_test
   username: postgres
 before_install:
-  - "sudo apt-get install binutils gdal-bin libproj-dev postgis libfreetype6-dev zlib1g-dev libjpeg8-dev"
+  - "sudo apt-get install gdal-bin libproj-dev postgis"
   - "sudo bash ./scripts/create_template_postgis-debian.sh"
 before_script:
   - "createdb -T template_postgis atlas_test -U postgres"
