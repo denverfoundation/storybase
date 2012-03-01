@@ -16,4 +16,5 @@ before_script:
   - "createdb -T template_postgis atlas_test -U postgres"
 branches:
   only:
+    - master
     - develop
