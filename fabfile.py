@@ -80,7 +80,8 @@ def install_nginx():
     # Disable the default nginx site
     sudo('rm /etc/nginx/sites-enabled/default') 
 
-@task install_solr():
+@task
+def install_solr():
     """ Install the Solr search server """
     # Solr doesn't work with openjdk-7-jdk, we need to install oepnjdk-6-jdk
     # as a workaround. See https://bugs.launchpad.net/ubuntu/+source/solr/+bug/901165
