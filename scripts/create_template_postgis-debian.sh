@@ -41,7 +41,7 @@ createdb -E UTF8 -U postgres template_postgis
 
 if ((CREATE_LANG))
 then
-    createlang -d template_postgis plpgsql
+    createlang -U postgres -d template_postgis plpgsql
 fi
 
 psql -d postgres -U postgres -c "UPDATE pg_database SET datistemplate='true' WHERE datname='template_postgis';" && \
