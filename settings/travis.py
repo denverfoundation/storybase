@@ -12,8 +12,3 @@ DATABASES = {
     }
 }
 
-# These settings are required the create a spatial database when 
-# testing GeoDjango apps.
-# See http://geodjango.org/docs/testing.html?highlight=testing#testing-geodjango-apps
-TEST_RUNNER='django.contrib.gis.tests.run_tests'
-POSTGIS_TEMPLATE='template_postgis'

@@ -260,3 +260,9 @@ EMAIL_CONFIRMATION_DAYS = 7
 # TODO: Choose a better redirect URL
 LOGIN_REDIRECT_URL = '/'
 #LOGIN_REDIRECT_URLNAME = ''
+
+# These settings are required to create a spatial database when 
+# testing GeoDjango apps.
+# See http://geodjango.org/docs/testing.html?highlight=testing#testing-geodjango-apps
+TEST_RUNNER='django.contrib.gis.tests.run_tests'
+POSTGIS_TEMPLATE='template_postgis'
