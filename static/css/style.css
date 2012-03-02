@@ -211,7 +211,22 @@ td { vertical-align: top; }
    Author: 
    ========================================================================== */
 
+body > header { background-color: #D7D7D7; padding-top: 1em; padding-bottom: 2em; }
 
+#container { 
+  padding-bottom: 100px; /* same as footer height */
+}
+
+body > footer {
+  height: 200px;
+  background-color: #80878F;
+}
+  
+
+nav.footer {
+  height: 100px;
+  background-color: #5D6778;
+}
 
 
 

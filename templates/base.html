@@ -53,18 +53,19 @@
 
 <body>
   {% cms_toolbar %}
+  <header class="container">
+    <h1>The Citizen's Atlas</h1>
+  </header>
   <div id="container" class="container">
-    <header>
-
-    </header>
     <div id="main" role="main" class="row">
       {% placeholder base_content %}
       {% block base_content%}{% endblock %}
     </div>
-    <footer>
-
-    </footer>
   </div> <!--! end of #container -->
+  <footer class="container">
+  </footer>
+  <nav class="footer">
+  </nav>
 
   <!-- JavaScript at the bottom for fast page loading -->
 
