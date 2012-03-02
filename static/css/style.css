@@ -252,6 +252,7 @@ header.pagetop nav li.selected a {
 
 footer.social {
   background-color: #80878F;
+  min-height: 200px;
 }
 
 footer.nav {
