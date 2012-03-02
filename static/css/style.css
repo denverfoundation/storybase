@@ -223,6 +223,8 @@ small {
   padding-bottom: 1.5%;
 }
 
+/* Header */
+
 header.pagetop {
   background-color: #CCCCCC;
 }
@@ -250,10 +252,14 @@ header.pagetop nav li.selected a {
   color: #000;
 }
 
+/* Footer 1 */
+
 footer.social {
   background-color: #666666;
   min-height: 200px;
 }
+
+/* Footer 2 */
 
 footer.nav {
   background-color: #333333;
