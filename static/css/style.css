@@ -252,6 +252,12 @@ header.pagetop nav li.selected a {
   color: #000;
 }
 
+/* Main content container */
+
+#container {
+  padding-top: 2%;
+  padding-bottom: 2%;
+}
 
 /* Front page featured stories */
 
