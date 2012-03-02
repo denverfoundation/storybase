@@ -1,4 +1,4 @@
-{% load cms_tags sekizai_tags %}
+{% load cms_tags sekizai_tags menu_tags %}
 <!doctype html>
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
 <!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
@@ -53,8 +53,11 @@
 
 <body>
   {% cms_toolbar %}
-  <header class="container">
+  <header class="container pagetop">
     <h1>The Citizen's Atlas</h1>
+    <nav>
+        {% show_menu %}
+    </nav>
   </header>
   <div id="container" class="container">
     <div id="main" role="main" class="row">
