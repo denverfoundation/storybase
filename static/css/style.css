@@ -224,7 +224,7 @@ small {
 }
 
 header.pagetop {
-  background-color: #D7D7D7;
+  background-color: #CCCCCC;
 }
 
 header.pagetop nav li {
@@ -233,7 +233,7 @@ header.pagetop nav li {
   margin: 0 2px;
   padding: 4px 8px;
   border-radius: 4px 4px 0 0;
-  background-color: #5D6778;
+  background-color: #666666;
 }
 
 header.pagetop nav li.selected {
@@ -251,12 +251,12 @@ header.pagetop nav li.selected a {
 }
 
 footer.social {
-  background-color: #80878F;
+  background-color: #666666;
   min-height: 200px;
 }
 
 footer.nav {
-  background-color: #5D6778;
+  background-color: #333333;
 }
 
 footer nav {
