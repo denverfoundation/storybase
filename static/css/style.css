@@ -219,6 +219,10 @@ p {
   padding-bottom: 1.5%;
 }
 
+small {
+  padding-bottom: 1.5%;
+}
+
 header.pagetop {
   background-color: #D7D7D7;
 }
@@ -246,19 +250,41 @@ header.pagetop nav li.selected a {
   color: #000;
 }
 
-body > footer {
-  height: 200px;
+footer.social {
   background-color: #80878F;
 }
 
-nav.footer {
-  height: 100px;
+footer.nav {
   background-color: #5D6778;
 }
 
+footer nav {
+  display: block;
+  padding: 1% 0 1% 0;
+  border-bottom: 1px;
+}
 
+footer nav li {
+  display: inline-block;
+  list-style-type: none;
+  margin: 0 2px;
+  padding: 4px 8px 4px 0;
+}
 
+footer nav li a {
+  color: #fff;
+  font-weight: bold;
+}
 
+footer nav li a:visited {
+  color: #fff;
+}
+
+footer .copyright {
+  display: block;
+  width: 66%;
+  color: #fff;
+}
 
 
 
