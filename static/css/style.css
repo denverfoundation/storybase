@@ -252,6 +252,24 @@ header.pagetop nav li.selected a {
   color: #000;
 }
 
+
+/* Front page featured stories */
+
+#featured-stories {
+  padding: 1%;
+  border: 2px solid #dddddd; 
+  margin-top: 1.5%;
+  background-color: #EEEEEE;
+}
+
+#featured-stories h2 {
+  width: 50%;
+} 
+
+#featured-stories .summary {
+  width: 50%;
+}
+
 /* Footer 1 */
 
 footer.social {

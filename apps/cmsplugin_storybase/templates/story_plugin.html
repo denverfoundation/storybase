@@ -1,1 +1,6 @@
-<h2>{{ instance.story.title }}</h2>
+<article>
+  <h2>{{ instance.story.title }}</h2>
+  <section class="summary">
+    {{ instance.story.summary|linebreaks }}
+  </section>
+</article>
