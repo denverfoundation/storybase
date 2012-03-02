@@ -1,7 +1,9 @@
 import os
 import sys
 
+# Dummy Gettext
 gettext = lambda s: s
+
 PROJECT_PATH = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
 # Add apps directory to PYTHONPATH so I can refer to apps as if they were
@@ -224,8 +226,12 @@ LOGGING = {
 }
 
 LANGUAGES = [
-    ('en', 'English'),
+    ('en', gettext('English')),
+    ('es', gettext('Spanish')),
 ]
+
+# Don't hide menu items that are untranslated
+CMS_HIDE_UNTRANSLATED = False
 
 HAYSTACK_SITECONF = 'atlas.search_sites'
 HAYSTACK_SEARCH_ENGINE = 'solr'
