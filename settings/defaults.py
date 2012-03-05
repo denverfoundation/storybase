@@ -172,6 +172,8 @@ INSTALLED_APPS = (
     'allauth.openid',
     #'allauth.facebook',
 
+    # Development dependencies
+    'lettuce.django',
 
     # StoryBase dependencies
     'ajax_select',
