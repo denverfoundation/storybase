@@ -56,7 +56,7 @@ def initialize_database(server):
 def setup_browser(server):
     world.browser = Browser('webdriver.firefox')
 
-@before.each_scenario
+@before.each_feature
 def reset_data(scenario):
     """ Clean up Django """
     call_command('flush', interactive=False, verbosity=0)
