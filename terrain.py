@@ -62,6 +62,11 @@ def reset_data(scenario):
     call_command('flush', interactive=False, verbosity=0)
 
 @after.all
+def debug(total):
+    if hasattr(world, 'html'):
+        print world.html
+
+@after.all
 def teardown(total):
     """ Tear down the test database and tear down the test environment """
     #connection.creation.destroy_test_db(world.old_db_name)

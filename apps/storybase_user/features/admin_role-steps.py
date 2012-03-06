@@ -1,6 +1,7 @@
 from django.contrib.auth.models import Group, User
 from lettuce import step, world
 from lettuce.django import django_url
+from splinter.exceptions import ElementDoesNotExist
 
 @step(u'Given an admin user assigns "([^"]*)" user to the "([^"]*)" group')
 def assign_user(step, username, group_name):
@@ -15,7 +16,12 @@ def assign_user(step, username, group_name):
     button = world.browser.find_by_css('.submit-row input').first
     button.click()
     world.browser.click_link_by_text("Users")
-    world.browser.click_link_by_text(username)
+    try:
+        world.browser.click_link_by_text(username + "aa")
+    except ElementDoesNotExist:
+        world.html = world.browser.html
+        raise
+
     world.browser.check('is_staff')
     world.browser.select('groups', '1')
     world.browser.find_by_name('_save').first.click()
