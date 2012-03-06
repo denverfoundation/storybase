@@ -4,7 +4,7 @@ from lettuce.django import django_url
 from splinter.exceptions import ElementDoesNotExist
 
 @step(u'Given an admin user assigns "([^"]*)" user to the "([^"]*)" group')
-def assign_user(step, username, group_name):
+def assign_user_to_group(step, username, group_name):
     world.create_admin_user()
     group = Group.objects.create(name=group_name) 
     group.save()
@@ -30,3 +30,17 @@ def assign_user(step, username, group_name):
 def see_user_in_group(step, username, group_name):
     world.browser.click_link_by_text(group_name)
     assert world.browser.is_text_present(username)
+
+
+@step(r'an admin user unassigns the user "([^"]*)" from the "([^"]*)" group')
+def unassign_user_from_group(step, username, group_name):
+    world.browser.visit(django_url('/admin'))
+    world.browser.click_link_by_text("Users")
+    world.browser.click_link_by_text(username)
+    world.browser.select('groups', '1')
+    world.browser.find_by_name('_save').first.click()
+
+@step(r'"([^"]*)" doesn\'t show up in a listing of "([^"]*)" users')
+def dont_see_user_in_group(step, username, group_name):
+    world.browser.click_link_by_text(group_name)
+    assert world.browser.is_text_not_present(username)
