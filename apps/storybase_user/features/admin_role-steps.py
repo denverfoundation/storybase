@@ -17,7 +17,7 @@ def assign_user(step, username, group_name):
     button.click()
     world.browser.click_link_by_text("Users")
     try:
-        world.browser.click_link_by_text(username + "aa")
+        world.browser.click_link_by_text(username)
     except ElementDoesNotExist:
         world.html = world.browser.html
         raise
