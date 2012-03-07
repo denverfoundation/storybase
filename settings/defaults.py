@@ -245,7 +245,8 @@ FILER_STATICMEDIA_PREFIX = os.path.join(STATIC_URL, 'filer/')
 
 # define the lookup channels for use with ajax_select
 AJAX_LOOKUP_CHANNELS = {
-    'asset': {'model': 'storybase_asset.asset', 'search_field': 'title'}
+    'asset': {'model': 'storybase_asset.asset', 'search_field': 'title'},
+    'user': {'model': 'auth.user', 'search_field': 'username'}
 }
 # magically include jqueryUI/js/css
 AJAX_SELECT_BOOTSTRAP = True
