@@ -7,6 +7,9 @@ class Organization(models.Model):
     slug = models.SlugField()
     members = models.ManyToManyField(User, related_name='organizations', blank=True)
 
+    def __unicode__(self):
+        return self.name
+
 class Project(models.Model):
     """ 
     A project that collects related stories.  
@@ -16,3 +19,6 @@ class Project(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField()
     members = models.ManyToManyField(User, related_name='projects', blank=True) 
+
+    def __unicode__(self):
+        return self.name
