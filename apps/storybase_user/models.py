@@ -5,7 +5,7 @@ class Organization(models.Model):
     """ An organization or a community group that users and stories can be associated with. """
     name = models.CharField(max_length=200)
     slug = models.SlugField()
-    members = models.ManyToManyField(User, related_name='organizations')
+    members = models.ManyToManyField(User, related_name='organizations', blank=True)
 
 class Project(models.Model):
     """ 
@@ -15,4 +15,4 @@ class Project(models.Model):
     """
     name = models.CharField(max_length=200)
     slug = models.SlugField()
-    members = models.ManyToManyField(User, related_name='projects')
+    members = models.ManyToManyField(User, related_name='projects', blank=True) 
