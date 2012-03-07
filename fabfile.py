@@ -74,6 +74,12 @@ def install_pil_dependencies():
     sudo('apt-get install python-dev libfreetype6-dev zlib1g-dev libjpeg8-dev')
 
 @task
+def install_python_package_depencies():
+    """ Install libraries needed by Python packages that will be installed later """
+    # Splinter needs lxml, which needs libxml2-dev and libxslt-dev
+    sudo('apt-get install libxml2-dev libxslt-dev')
+
+@task
 def install_nginx():
     """ Install the nginx webserver, used to serve static assets. """
     sudo('apt-get install nginx')
