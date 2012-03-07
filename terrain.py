@@ -5,7 +5,7 @@ from django.db import connection
 from django.db.utils import DatabaseError
 from django.test.utils import setup_test_environment, teardown_test_environment
 from lettuce import before, after, world
-from south.management.commands import patch_for_test_db_setup
+#from south.management.commands import patch_for_test_db_setup
 from splinter.browser import Browser
 
 @world.absorb
@@ -23,18 +23,18 @@ def create_admin_user():
 # TODO: Figure out why database create with create_test_db doesn't 
 # allow writing.
 #@before.runserver
-def setup_database(server):
-    """ Create a test database and initialize the test environment """
-    world.old_db_name = settings.DATABASES['default']['NAME']
-    # Force running migrations after syncdb.
-    # syncdb gets run automatically by create_test_db(), and
-    # South's syncdb (that runs migrations after the default
-    # syncdb) normally gets called in a test environment, but
-    # apparently not when calling create_test_db(). 
-    # So, we have to use this monkey patched version.
-    patch_for_test_db_setup()
-    connection.creation.create_test_db(verbosity=5)
-    setup_test_environment()
+#def setup_database(server):
+#    """ Create a test database and initialize the test environment """
+#    world.old_db_name = settings.DATABASES['default']['NAME']
+#    # Force running migrations after syncdb.
+#    # syncdb gets run automatically by create_test_db(), and
+#    # South's syncdb (that runs migrations after the default
+#    # syncdb) normally gets called in a test environment, but
+#    # apparently not when calling create_test_db(). 
+#    # So, we have to use this monkey patched version.
+#    patch_for_test_db_setup()
+#    connection.creation.create_test_db(verbosity=5)
+#    setup_test_environment()
 
 @before.harvest
 def initialize_database(server):
