@@ -1,7 +1,6 @@
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.models import User
-from ajax_select import make_ajax_form
 from models import Organization, Project
 
 class StoryUserAdmin(UserAdmin):
@@ -13,14 +12,14 @@ admin.site.register(User, StoryUserAdmin)
 class OrganizationAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
     search_fields = ['name']
-    form = make_ajax_form(Organization, dict(members='user'))
+    filter_horizontal = ['members']
 
 admin.site.register(Organization, OrganizationAdmin)
 
 class ProjectAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
     search_fields = ['name']
-    form = make_ajax_form(Project, dict(members='user'))
+    filter_horizontal = ['members']
 
 admin.site.register(Project, ProjectAdmin)
 
