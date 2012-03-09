@@ -2,12 +2,13 @@ from django import forms
 from django.contrib import admin
 from django.db import models
 from tinymce.widgets import TinyMCE
-from models import ExternalAsset, FilerImageAsset, HtmlAsset
+from models import ExternalAsset, ExternalAssetTranslation, HtmlAsset, HtmlAssetTranslation, FilerImageAsset, FilerImageAssetTranslation
 
 class AssetAdmin(admin.ModelAdmin):
-    list_display = ('title',)
+    #list_display = ('title',)
+    pass
 
-class HtmlAssetAdminForm(forms.ModelForm):
+class HtmlAssetTranslationAdminForm(forms.ModelForm):
     class Meta:
         model = HtmlAsset
         widgets = {
@@ -17,13 +18,28 @@ class HtmlAssetAdminForm(forms.ModelForm):
                 )
         }
 
+class HtmlAssetTranslationInline(admin.StackedInline):
+    model = HtmlAssetTranslation
+    form = HtmlAssetTranslationAdminForm
+    extra = 1
+
+class ExternalAssetTranslationInline(admin.StackedInline):
+    model = ExternalAssetTranslation
+    extra = 1
+
+class FilerImageAssetTranslationInline(admin.StackedInline):
+    model = FilerImageAssetTranslation
+    extra = 1
+
 class HtmlAssetAdmin(AssetAdmin):
-    form = HtmlAssetAdminForm
-    """
-    formfield_overrides = {
-        models.TextField: {'widget': TinyMCE},
-    }
-    """
+    inlines = [HtmlAssetTranslationInline,]
+
+class ExternalAssetAdmin(AssetAdmin):
+    inlines = [ExternalAssetTranslationInline,]
+
+class FilerImageAssetAdmin(AssetAdmin):
+    inlines = [FilerImageAssetTranslationInline,]
+
 
 admin.site.register(ExternalAsset, AssetAdmin)
 admin.site.register(HtmlAsset, HtmlAssetAdmin)
