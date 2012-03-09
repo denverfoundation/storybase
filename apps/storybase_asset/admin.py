@@ -41,6 +41,6 @@ class FilerImageAssetAdmin(AssetAdmin):
     inlines = [FilerImageAssetTranslationInline,]
 
 
-admin.site.register(ExternalAsset, AssetAdmin)
+admin.site.register(ExternalAsset, ExternalAssetAdmin)
 admin.site.register(HtmlAsset, HtmlAssetAdmin)
-admin.site.register(FilerImageAsset, AssetAdmin)
+admin.site.register(FilerImageAsset, FilerImageAssetAdmin)
