@@ -56,7 +56,11 @@ class Asset(models.Model):
                 if translated_object:
                     return getattr(translated_object, name)
             except (ObjectDoesNotExist, AttributeError):
-                pass
+                # If title attribute doesn't exist on the Asset model, 
+                # try the subclass.
+                if name == 'title':
+                    return getattr(self.subclass(), name)
+
         return get(name)
 
     def subclass(self):
