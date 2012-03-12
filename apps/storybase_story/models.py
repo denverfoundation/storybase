@@ -23,7 +23,7 @@ class Story(models.Model):
     status = models.CharField(max_length=10, choices=STORY_STATUS, default='draft')
     summary = models.TextField(blank=True)
     slug = models.SlugField()
-    tags = TaggableManager(through=TaggedItem)
+    tags = TaggableManager(through=TaggedItem, blank=True)
     author = models.ForeignKey(User, related_name="stories")
     pub_date = models.DateField(blank=True, null=True)
     assets = models.ManyToManyField(Asset, related_name='stories', blank=True)
