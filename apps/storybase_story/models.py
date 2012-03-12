@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User
 from django.db import models
 
+from django_dag.models import edge_factory, node_factory
+
 # TODO: Decide on tagging suggestion admin app.
 # Right now, I'm using a hacked version of
 # https://bitbucket.org/fabian/django-taggit-autosuggest
@@ -16,13 +18,7 @@ STORY_STATUS = (
     (u'published', u'published'),
 )
 
-class StoryAsset(models.Model):
-    story = models.ForeignKey('Story')
-    asset = models.ForeignKey('storybase_asset.Asset')
-    weight = models.IntegerField(default=0)
-
 class Story(models.Model):
-    assets = models.ManyToManyField(Asset, related_name='stories', blank=True, through='StoryAsset')
     title = models.CharField(max_length=200)
     status = models.CharField(max_length=10, choices=STORY_STATUS, default='draft')
     summary = models.TextField(blank=True)
@@ -30,6 +26,7 @@ class Story(models.Model):
     tags = TaggableManager(through=TaggedItem)
     author = models.ForeignKey(User, related_name="stories")
     pub_date = models.DateField(blank=True, null=True)
+    assets = models.ManyToManyField(Asset, related_name='stories', blank=True)
 
     class Meta:
         verbose_name_plural = "stories"
@@ -37,14 +34,32 @@ class Story(models.Model):
     def __unicode__(self):
         return self.title
 
-    def inline_assets(self):
-        return [asset.subclass() for asset in self.assets.exclude(type='article').order_by('storyasset__weight')]
-
-    def articles(self):
-        return [asset.subclass() for asset in self.assets.filter(type='article').order_by('storyasset__weight')] 
-
     @models.permalink
     def get_absolute_url(self):
         return ('story_detail', [str(self.slug)])
 
+class Section(node_factory('SectionRelation')):
+    """ Section of a story """
+    title = models.TextField()
+    story = models.ForeignKey('Story', related_name='sections')
+    # True if this section the root section of the story, either
+    # the first section in a linear story, or the central node
+    # in a drill-down/"spider" structure.  Otherwise, False
+    root = models.BooleanField(default=False)
+    assets = models.ManyToManyField(Asset, related_name='sections', blank=True, through='SectionAsset')
 
+    def inline_assets(self):
+        return [asset.subclass() for asset in self.assets.exclude(type='article').order_by('sectionasset__weight')]
+
+    def articles(self):
+        return [asset.subclass() for asset in self.assets.filter(type='article').order_by('sectionasset__weight')] 
+
+class SectionRelation(edge_factory(Section, concrete=False)):
+    """ "Through" class for parent/child relationships between sections """
+    weight = models.IntegerField(default=0)
+
+class SectionAsset(models.Model):
+    """ "Through" class for Asset to Section relations """
+    section = models.ForeignKey('Section')
+    asset = models.ForeignKey('storybase_asset.Asset')
+    weight = models.IntegerField(default=0)
