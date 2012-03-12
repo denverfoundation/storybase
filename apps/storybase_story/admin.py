@@ -1,3 +1,4 @@
+from django import forms
 from django.contrib import admin
 from ajax_select import make_ajax_form
 from ajax_select.admin import AjaxSelectAdmin
@@ -32,7 +33,33 @@ class SectionAssetInline(admin.TabularInline):
     #form = make_ajax_form(SectionAsset, dict(asset='asset'))
     extra = 0
 
+class SectionAdminForm(forms.ModelForm):
+    children = forms.ModelMultipleChoiceField(
+        queryset=Section.objects.all(),
+        required=False)
+
+    class Meta:
+        model = Section
+
+    def __init__(self, *args, **kwargs):
+        super(SectionAdminForm, self).__init__(*args, **kwargs)
+
+        if kwargs.has_key('instance'):
+            instance = kwargs['instance']
+            self.fields['children'].queryset = Section.objects.filter(story=instance.story)
+
+    def save(self, commit=True):
+        model = super(SectionAdminForm, self).save(commit=False)
+
+        # TODO: Handle Children field
+
+        if commit:
+            model.save()
+
+        return model
+
 class SectionAdmin(AjaxSelectAdmin):
+    form = SectionAdminForm
     inlines = [SectionAssetInline,]
 
 admin.site.register(Story, StoryAdmin)
