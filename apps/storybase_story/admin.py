@@ -61,6 +61,8 @@ class SectionAdminForm(forms.ModelForm):
 class SectionAdmin(AjaxSelectAdmin):
     form = SectionAdminForm
     inlines = [SectionAssetInline,]
+    list_filter = ('story__title',)
+    search_fields = ['title']
 
 admin.site.register(Story, StoryAdmin)
 admin.site.register(Section, SectionAdmin)
