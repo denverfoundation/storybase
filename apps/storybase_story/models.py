@@ -51,6 +51,9 @@ class Section(node_factory('SectionRelation')):
     root = models.BooleanField(default=False)
     assets = models.ManyToManyField(Asset, related_name='sections', blank=True, through='SectionAsset')
 
+    def __unicode__(self):
+        return self.title
+
     def inline_assets(self):
         return [asset.subclass() for asset in self.assets.exclude(type='article').order_by('sectionasset__weight')]
 
