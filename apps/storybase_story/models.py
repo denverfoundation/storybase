@@ -1,3 +1,5 @@
+from datetime import datetime
+
 from django.contrib.auth.models import User
 from django.db import models
 
@@ -26,6 +28,7 @@ class Story(models.Model):
     tags = TaggableManager(through=TaggedItem, blank=True)
     author = models.ForeignKey(User, related_name="stories")
     pub_date = models.DateField(blank=True, null=True)
+    last_edited = models.DateTimeField(default=datetime.now())
     assets = models.ManyToManyField(Asset, related_name='stories', blank=True)
 
     class Meta:
