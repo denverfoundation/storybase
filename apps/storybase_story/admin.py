@@ -8,7 +8,7 @@ from models import Story
 #    model = StoryAsset
 #    form = make_ajax_form(StoryAsset, {'asset': 'asset'})
 
-class StoryAdmin(AjaxSelectAdmin):
+class StoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("title",)}
     search_fields = ['title', 'author__first_name', 'author__last_name']
     list_filter = ('status', 'author', 'tags__name')
