@@ -3,7 +3,7 @@ from django.contrib import admin
 from ajax_select import make_ajax_form
 from ajax_select.admin import AjaxSelectAdmin
 from storybase_asset.models import Asset
-from models import Story, Section, SectionAsset
+from models import Story, Section, SectionAsset, SectionRelation
 
 class StoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("title",)}
@@ -33,36 +33,11 @@ class SectionAssetInline(admin.TabularInline):
     #form = make_ajax_form(SectionAsset, dict(asset='asset'))
     extra = 0
 
-class SectionAdminForm(forms.ModelForm):
-    children = forms.ModelMultipleChoiceField(
-        queryset=Section.objects.all(),
-        required=False)
-
-    class Meta:
-        model = Section
-
-    def __init__(self, *args, **kwargs):
-        super(SectionAdminForm, self).__init__(*args, **kwargs)
-
-        if kwargs.has_key('instance'):
-            instance = kwargs['instance']
-            self.fields['children'].queryset = Section.objects.filter(story=instance.story)
-
-    def save(self, commit=True):
-        model = super(SectionAdminForm, self).save(commit=False)
-
-        # TODO: Handle Children field
-
-        if commit:
-            model.save()
-
-        return model
-
 class SectionAdmin(AjaxSelectAdmin):
-    form = SectionAdminForm
-    inlines = [SectionAssetInline,]
+    inlines = [SectionAssetInline]
     list_filter = ('story__title',)
     search_fields = ['title']
 
 admin.site.register(Story, StoryAdmin)
 admin.site.register(Section, SectionAdmin)
+admin.site.register(SectionRelation, admin.ModelAdmin)
