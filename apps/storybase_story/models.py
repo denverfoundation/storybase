@@ -12,6 +12,8 @@ from django_dag.models import edge_factory, node_factory
 # other than taggit.models.Tag
 from taggit_autosuggest.managers import TaggableManager
 
+from uuidfield.fields import UUIDField
+
 from storybase_asset.models import Asset
 from storybase_tag.models import TaggedItem
 
@@ -21,6 +23,7 @@ STORY_STATUS = (
 )
 
 class Story(models.Model):
+    story_id = UUIDField(auto=True)
     title = models.CharField(max_length=200)
     status = models.CharField(max_length=10, choices=STORY_STATUS, default='draft')
     summary = models.TextField(blank=True)
@@ -43,6 +46,7 @@ class Story(models.Model):
 
 class Section(node_factory('SectionRelation')):
     """ Section of a story """
+    section_id = UUIDField(auto=True)
     title = models.TextField()
     story = models.ForeignKey('Story', related_name='sections')
     # True if this section the root section of the story, either

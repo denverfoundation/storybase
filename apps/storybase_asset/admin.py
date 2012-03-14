@@ -6,7 +6,7 @@ from models import ExternalAsset, ExternalAssetTranslation, HtmlAsset, HtmlAsset
 
 class AssetAdmin(admin.ModelAdmin):
     #list_display = ('title',)
-    pass
+    readonly_fields = ['asset_id']
 
 class HtmlAssetTranslationAdminForm(forms.ModelForm):
     class Meta:

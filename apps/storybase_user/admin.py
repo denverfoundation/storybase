@@ -66,6 +66,7 @@ class OrganizationAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
     search_fields = ['name']
     filter_horizontal = ['members']
+    readonly_fields = ['organization_id']
 
 admin.site.register(Organization, OrganizationAdmin)
 
@@ -73,6 +74,7 @@ class ProjectAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
     search_fields = ['name']
     filter_horizontal = ['members']
+    readonly_fields = ['project_id']
 
 admin.site.register(Project, ProjectAdmin)
 

@@ -6,6 +6,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import get_language, ugettext, ugettext_lazy as _
 from django.utils import translation
 from filer.fields.image import FilerImageField
+from uuidfield.fields import UUIDField
 
 ASSET_TYPES = (
   (u'article', u'article'),
@@ -14,6 +15,7 @@ ASSET_TYPES = (
 )
 
 class Asset(models.Model):
+    asset_id = UUIDField(auto=True)
     type = models.CharField(max_length=10, choices=ASSET_TYPES)
     owner = models.ForeignKey(User, related_name="assets")
 
@@ -80,6 +82,7 @@ class Asset(models.Model):
 
 
 class AssetTranslation(models.Model):
+    translation_id = UUIDField(auto=True)
     asset = models.ForeignKey('Asset', related_name="%(app_label)s_%(class)s_related") 
     language = models.CharField(max_length=15, choices=settings.LANGUAGES)
     title = models.CharField(max_length=200)

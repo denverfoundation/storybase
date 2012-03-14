@@ -7,6 +7,7 @@ from models import Story, Section, SectionAsset, SectionRelation
 
 class StoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("title",)}
+    readonly_fields = ['story_id']
     search_fields = ['title', 'author__first_name', 'author__last_name']
     list_filter = ('status', 'author', 'tags__name')
     filter_horizontal = ['assets']
@@ -37,6 +38,7 @@ class SectionAdmin(AjaxSelectAdmin):
     inlines = [SectionAssetInline]
     list_filter = ('story__title',)
     search_fields = ['title']
+    readonly_fields = ['section_id']
 
 admin.site.register(Story, StoryAdmin)
 admin.site.register(Section, SectionAdmin)
