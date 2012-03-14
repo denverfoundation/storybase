@@ -35,4 +35,4 @@ ssh==1.7.13
 wsgiref==0.1.2
 lettuce==0.1.34
 splinter==0.4.4
-django-dag==1.1
+git+git://github.com/elpaso/django-dag.git#egg=django_dag
