@@ -5,19 +5,19 @@ South==0.7.3
 argparse==1.2.1
 cmsplugin-filer==0.8.0
 distribute==0.6.14
-django-ajax-selects==1.2.4
--e git://github.com/ghing/django-allauth.git@2a259ac75443f09983955a25a5935517fd33e94e#egg=django_allauth-0.3.0-py2.7-dev
+#django-ajax-selects==1.2.4
+#-e git://github.com/ghing/django-allauth.git@2a259ac75443f09983955a25a5935517fd33e94e#egg=django_allauth-0.3.0-py2.7-dev
 django-classy-tags==0.3.4.1
 django-cms==2.2
 django-email-confirmation==0.2
 django-filer==0.8.5
-django-haystack==1.2.6
+#django-haystack==1.2.6
 django-mptt==0.5.2
 django-reversion==1.4
 django-sekizai==0.5
-django-taggit==0.9.3
--e hg+https://bitbucket.org/fabian/django-taggit-autosuggest#egg=django_taggit_autosuggest
-django-tastypie==0.9.11
+#django-taggit==0.9.3
+#-e hg+https://bitbucket.org/fabian/django-taggit-autosuggest#egg=django_taggit_autosuggest
+#django-tastypie==0.9.11
 django-tinymce==1.5.1b2
 django-uni-form==0.9.0
 easy-thumbnails==1.0-alpha-21

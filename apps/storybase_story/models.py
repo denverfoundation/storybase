@@ -10,12 +10,12 @@ from django_dag.models import edge_factory, node_factory
 # https://bitbucket.org/fabian/django-taggit-autosuggest
 # which I modified to allow for specifying a Tag model
 # other than taggit.models.Tag
-from taggit_autosuggest.managers import TaggableManager
+#from taggit_autosuggest.managers import TaggableManager
 
 from uuidfield.fields import UUIDField
 
 from storybase_asset.models import Asset
-from storybase_tag.models import TaggedItem
+#from storybase_tag.models import TaggedItem
 
 STORY_STATUS = (
     (u'draft', u'draft'),
@@ -28,7 +28,7 @@ class Story(models.Model):
     status = models.CharField(max_length=10, choices=STORY_STATUS, default='draft')
     summary = models.TextField(blank=True)
     slug = models.SlugField()
-    tags = TaggableManager(through=TaggedItem, blank=True)
+    #tags = TaggableManager(through=TaggedItem, blank=True)
     author = models.ForeignKey(User, related_name="stories")
     pub_date = models.DateField(blank=True, null=True)
     last_edited = models.DateTimeField(default=datetime.now())

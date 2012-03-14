@@ -1,7 +1,6 @@
-from django import forms
 from django.contrib import admin
-from ajax_select import make_ajax_form
-from ajax_select.admin import AjaxSelectAdmin
+#from ajax_select import make_ajax_form
+#from ajax_select.admin import AjaxSelectAdmin
 from storybase_asset.models import Asset
 from models import Story, Section, SectionAsset, SectionRelation
 
@@ -9,9 +8,8 @@ class StoryAdmin(admin.ModelAdmin):
     prepopulated_fields = {"slug": ("title",)}
     readonly_fields = ['story_id']
     search_fields = ['title', 'author__first_name', 'author__last_name']
-    list_filter = ('status', 'author', 'tags__name')
+    list_filter = ('status', 'author')
     filter_horizontal = ['assets']
-    #form = make_ajax_form(Story, {'assets': 'asset'})
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         if db_field.name == "assets":
@@ -34,7 +32,8 @@ class SectionAssetInline(admin.TabularInline):
     #form = make_ajax_form(SectionAsset, dict(asset='asset'))
     extra = 0
 
-class SectionAdmin(AjaxSelectAdmin):
+#class SectionAdmin(AjaxSelectAdmin):
+class SectionAdmin(admin.ModelAdmin):
     inlines = [SectionAssetInline]
     list_filter = ('story__title',)
     search_fields = ['title']

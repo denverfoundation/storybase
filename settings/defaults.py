@@ -163,32 +163,32 @@ INSTALLED_APPS = (
     'cmsplugin_filer_video',
 
     # allauth
-    'emailconfirmation',
-    'uni_form',
-    'allauth',
-    'allauth.account',
-    'allauth.socialaccount',
-    'allauth.twitter',
-    'allauth.openid',
+    #'emailconfirmation',
+    #'uni_form',
+    #'allauth',
+    #'allauth.account',
+    #'allauth.socialaccount',
+    #'allauth.twitter',
+    #'allauth.openid',
     #'allauth.facebook',
 
     # Development dependencies
     'lettuce.django',
 
     # StoryBase dependencies
-    'ajax_select',
-    'haystack',
-    'taggit',
-    'taggit_autosuggest',
-    'tastypie',
+    #'ajax_select',
+    #'haystack',
+    #'taggit',
+    #'taggit_autosuggest',
+    #'tastypie',
     'tinymce',
 
     # StoryBase
     'storybase_user',
     'storybase_asset',
     'storybase_story',
-    'storybase_tag',
-    'storybase_place',
+    #'storybase_tag',
+    #'storybase_place',
     'cmsplugin_storybase',
 )
 

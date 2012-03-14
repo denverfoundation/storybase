@@ -1,7 +1,7 @@
 from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
 from django.conf import settings
-from ajax_select import urls as ajax_select_urls
+#from ajax_select import urls as ajax_select_urls
 
 admin.autodiscover()
 
@@ -13,13 +13,13 @@ urlpatterns = patterns('',
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
-    url(r'^admin/lookups/', include(ajax_select_urls)),
+    #url(r'^admin/lookups/', include(ajax_select_urls)),
     url(r'^admin/', include(admin.site.urls)),
 
     # 3rd-party apps
-    (r'^taggit_autosuggest/', include('taggit_autosuggest.urls')),
+    #(r'^taggit_autosuggest/', include('taggit_autosuggest.urls')),
     (r'^tinymce/', include('tinymce.urls')),
-    (r'^accounts/', include('allauth.urls')),
+    #(r'^accounts/', include('allauth.urls')),
 
     # StoryBase URLs
     (r'^s/user/', include('storybase_user.urls')),
