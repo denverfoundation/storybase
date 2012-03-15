@@ -16,8 +16,7 @@ class Organization(models.Model):
 
     @models.permalink
     def get_absolute_url(self):
-        # TODO: Implement this view and URL pattern
-        return ('organization_bootstrap', [self.organization_id])
+        return ('organization_detail', [self.organization_id])
 
 class Project(models.Model):
     """ 
