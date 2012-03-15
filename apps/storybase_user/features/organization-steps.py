@@ -14,8 +14,8 @@ def create(step, name, website_url):
 
 @step(u'Then the Organization should have a canonical URL')
 def access_url(step):
-    organization_id = world.browser.find_by_css(',form_row.organization_id p').value
-    world.assert_is_uuid(organization_id)
+    organization_id = world.browser.find_by_css('.form_row.organization_id p').value
+    world.assert_is_uuid4(organization_id)
     world.browser.visit(django_url('/organizations/%s' % organization_id))
 
 @step(u'Then the Organization\'s website should be listed as "([^"]*)"')
