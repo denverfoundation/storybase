@@ -37,3 +37,4 @@ lettuce==0.1.34
 splinter==0.4.4
 git+git://github.com/elpaso/django-dag.git#egg=django_dag
 django-uuidfield==0.2
+nose==1.1.2
