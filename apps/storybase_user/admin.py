@@ -4,6 +4,7 @@ from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext, ugettext_lazy as _
+from storybase.admin import StorybaseModelAdmin
 from models import Organization, Project
 
 class StoryUserAdminForm(UserChangeForm):
@@ -62,7 +63,7 @@ class StoryUserAdmin(UserAdmin):
 admin.site.unregister(User)
 admin.site.register(User, StoryUserAdmin)
 
-class OrganizationAdmin(admin.ModelAdmin):
+class OrganizationAdmin(StorybaseModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
     search_fields = ['name']
     filter_horizontal = ['members']
@@ -70,7 +71,7 @@ class OrganizationAdmin(admin.ModelAdmin):
 
 admin.site.register(Organization, OrganizationAdmin)
 
-class ProjectAdmin(admin.ModelAdmin):
+class ProjectAdmin(StorybaseModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
     search_fields = ['name']
     filter_horizontal = ['members']

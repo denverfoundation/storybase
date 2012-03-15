@@ -1,11 +1,12 @@
 from django.contrib.auth.models import User
 from django.db import models
 from uuidfield.fields import UUIDField
+from storybase.fields import ShortTextField
 
 class Organization(models.Model):
     """ An organization or a community group that users and stories can be associated with. """
     organization_id = UUIDField(auto=True)
-    name = models.CharField(max_length=200)
+    name = ShortTextField()
     slug = models.SlugField()
     members = models.ManyToManyField(User, related_name='organizations', blank=True)
 
