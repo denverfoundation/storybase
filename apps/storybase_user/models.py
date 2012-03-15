@@ -14,6 +14,11 @@ class Organization(models.Model):
     def __unicode__(self):
         return self.name
 
+    @models.permalink
+    def get_absolute_url(self):
+        # TODO: Implement this view and URL pattern
+        return ('organization_bootstrap', [self.organization_id])
+
 class Project(models.Model):
     """ 
     A project that collects related stories.  

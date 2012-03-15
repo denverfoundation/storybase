@@ -2,10 +2,18 @@ from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
 from django.conf import settings
 #from ajax_select import urls as ajax_select_urls
+from storybase_user.urls import urlpatterns as user_urlpatterns
 
 admin.autodiscover()
 
-urlpatterns = patterns('',
+urlpatterns = patterns('')
+
+# Include storybase_user URL patterns
+# Use this pattern instead of include since we want to put the URLs
+# at the top-level
+urlpatterns += user_urlpatterns
+
+urlpatterns += patterns('',
     # Examples:
     # url(r'^$', 'atlas.views.home', name='home'),
     # url(r'^atlas/', include('atlas.foo.urls')),
@@ -21,14 +29,8 @@ urlpatterns = patterns('',
     (r'^tinymce/', include('tinymce.urls')),
     #(r'^accounts/', include('allauth.urls')),
 
-    # StoryBase URLs
-    (r'^s/user/', include('storybase_user.urls')),
-    (r'^s/place/', include('storybase_place.urls')),
-    (r'^s/', include('storybase_story.urls')),
-
     # django CMS URLs
     url(r'^', include('cms.urls')),
-
 )
 
 if settings.DEBUG:

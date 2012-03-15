@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% block base_content %}
+<h2>{{ organization.name }}</h2>
+
+{% if organization.website_url %}
+<h3>Website URL</h3>
+<p><a href="{{ organization.website_url }}">{{ organization.website_url }}</a></p>
+{% endif %}
+
+{% if organization.description %}
+<h3>Description</h3>
+{{ website.description }}
+
+{% endif %}
+
+{% endblock %}
