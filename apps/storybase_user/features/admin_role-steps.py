@@ -9,12 +9,7 @@ def assign_user_to_group(step, username, group_name):
     group = Group.objects.create(name=group_name) 
     group.save()
     new_user = User.objects.create_user(username, username + '@fakedomain.com', 'password')
-
-    world.browser.visit(django_url('/admin'))
-    world.browser.fill('username', world.admin_username)
-    world.browser.fill('password', world.admin_password)
-    button = world.browser.find_by_css('.submit-row input').first
-    button.click()
+    world.admin_login()
     world.browser.click_link_by_text("Users")
     try:
         world.browser.click_link_by_text(username)

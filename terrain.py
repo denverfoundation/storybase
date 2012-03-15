@@ -5,6 +5,7 @@ from django.db import connection
 from django.db.utils import DatabaseError
 from django.test.utils import setup_test_environment, teardown_test_environment
 from lettuce import before, after, world
+from lettuce.django import django_url
 #from south.management.commands import patch_for_test_db_setup
 from splinter.browser import Browser
 
@@ -19,6 +20,15 @@ def create_admin_user():
     user.is_staff = True
     user.is_superuser = True
     user.save()
+
+@world.absorb
+def admin_login():
+    """ Log in to the Django admin """
+    world.browser.visit(django_url('/admin'))
+    world.browser.fill('username', world.admin_username)
+    world.browser.fill('password', world.admin_password)
+    button = world.browser.find_by_css('.submit-row input').first
+    button.click()
 
 # TODO: Figure out why database create with create_test_db doesn't 
 # allow writing.
