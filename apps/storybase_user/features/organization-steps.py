@@ -35,7 +35,7 @@ def created_today(step):
 
 @step(u'Then the Organization\'s last edited field should be set to within 1 minute of the current date and time')
 def last_edited_now(step):
-    last_edited = datetime.strptime(world.browser.find_by_css('time.last_edited').value,
+    last_edited = datetime.strptime(world.browser.find_by_css('time.last-edited').value,
         '%B %d, %Y %I:%M %p')
     world.assert_now(last_edited, 60)
 
