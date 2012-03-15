@@ -36,6 +36,10 @@ def assert_is_uuid4(s):
     """ Check whether a string is a UUID4 """
     assert re.match(r'^[0-9a-f]{32,32}$', s) is not None
 
+@world.absorb
+def assert_text_present(s):
+    assert world.browser.is_text_present(s)
+
 # TODO: Figure out why database create with create_test_db doesn't 
 # allow writing.
 #@before.runserver
