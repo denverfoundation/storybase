@@ -8,6 +8,7 @@ class Organization(models.Model):
     organization_id = UUIDField(auto=True)
     name = ShortTextField()
     slug = models.SlugField()
+    website_url = models.URLField()
     members = models.ManyToManyField(User, related_name='organizations', blank=True)
 
     def __unicode__(self):
