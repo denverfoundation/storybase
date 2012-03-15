@@ -13,5 +13,18 @@
 {{ organization.description|linebreaks }}
 {% endif %}
 
+{% if organization.members.count %}
+<h3>Members</h3>
+<ul class="members">
+{% for member in organization.members.all %}
+  <li>member.username</li>
+{% endfor %}
+</ul>
+{% endif %}
 
+<h3>Created</h3>
+<p><time class="created">{{ organization.created|date:"F j, Y" }}</time></p>
+
+<h3>Last Edited</h3>
+<p><time class="last-edited">{{ organization.last_edited|date:"F j, Y g:i A" }} </time></p>
 {% endblock %}
