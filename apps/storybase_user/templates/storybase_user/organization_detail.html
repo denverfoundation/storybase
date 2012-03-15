@@ -10,8 +10,8 @@
 
 {% if organization.description %}
 <h3>Description</h3>
-{{ website.description }}
-
+{{ organization.description|linebreaks }}
 {% endif %}
+
 
 {% endblock %}
