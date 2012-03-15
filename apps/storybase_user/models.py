@@ -10,6 +10,8 @@ class Organization(models.Model):
     slug = models.SlugField()
     website_url = models.URLField(blank=True)
     members = models.ManyToManyField(User, related_name='organizations', blank=True)
+    created = models.DateTimeField(auto_now_add=True)
+    last_edited = models.DateTimeField(auto_now=True)
 
     def __unicode__(self):
         return self.name

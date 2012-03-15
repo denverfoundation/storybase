@@ -67,7 +67,7 @@ class OrganizationAdmin(StorybaseModelAdmin):
     prepopulated_fields = {"slug": ("name",)}
     search_fields = ['name']
     filter_horizontal = ['members']
-    readonly_fields = ['organization_id']
+    readonly_fields = ['created', 'last_edited', 'organization_id']
 
 admin.site.register(Organization, OrganizationAdmin)
 
