@@ -19,5 +19,4 @@ class ShortTextField(models.TextField):
     def formfield(self, **kwargs):
         defaults = {'widget': forms.CharField}
         defaults.update(kwargs)
-        print kwargs['widget']
         return super(ShortTextField, self).formfield(**defaults)
