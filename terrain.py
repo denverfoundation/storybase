@@ -1,4 +1,5 @@
 import re
+from datetime import datetime, timedelta
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.management import call_command
@@ -39,6 +40,29 @@ def assert_is_uuid4(s):
 @world.absorb
 def assert_text_present(s):
     assert world.browser.is_text_present(s)
+
+@world.absorb
+def assert_text_not_present(s):
+    assert world.browser.is_text_not_present(s)
+
+@world.absorb
+def assert_today(dt):
+    today = datetime.today()
+    assert dt.year == today.year
+    assert dt.month == today.month
+    assert dt.day == today.day
+
+def assert_now(dt, allowance=0):
+    """ Test whether a datetime object is equivalent to the current date/time 
+    
+    Arguments:
+    dt -- datetime object
+    allowance -- seconds of difference allowed while still considering times equal
+
+    """
+    now = datetime.now()
+    delta = now - dt
+    assert delta <= allowance 
 
 # TODO: Figure out why database create with create_test_db doesn't 
 # allow writing.
