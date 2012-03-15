@@ -1,3 +1,4 @@
+import re
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.management import call_command
@@ -29,6 +30,11 @@ def admin_login():
     world.browser.fill('password', world.admin_password)
     button = world.browser.find_by_css('.submit-row input').first
     button.click()
+
+@world.absorb
+def assert_is_uuid4(s):
+    """ Check whether a string is a UUID4 """
+    assert re.match(r'^[0-9a-f]{32,32}$', s) is not None
 
 # TODO: Figure out why database create with create_test_db doesn't 
 # allow writing.
