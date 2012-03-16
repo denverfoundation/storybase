@@ -98,13 +98,23 @@ def see_description(step, description):
 def description_changed_others_unchanged(step):
     assert_organization_unchanged(['description'])
 
+#@step(u'Given an admin assigns "([^"]*)" to the Organization "([^"]*)"')
+#def assign_user_to_org(step, username, name):
+#    """ Assign user to organization via the Organization admin """
+#    user = User.objects.get(username=username)
+#    world.browser.visit(django_url('/admin/storybase_user/organization/'))
+#    world.browser.click_link_by_text(name)
+#    world.browser.select('members_old', user.id)
+#    world.browser.find_by_css('.members .selector-add').first.click()
+#    world.browser.find_by_name('_save').first.click()
+
 @step(u'Given an admin assigns "([^"]*)" to the Organization "([^"]*)"')
-def assign_user_to_org(step, username, name):
-    user = User.objects.get(username=username)
-    world.browser.visit(django_url('/admin/storybase_user/organization/'))
-    world.browser.click_link_by_text(name)
-    world.browser.select('members_old', user.id)
-    world.browser.find_by_css('.members .selector-add').first.click()
+def assign_org_to_user(step, username, name):
+    """ Assign user to organization via the User admin """
+    organization = Organization.objects.get(name=name)
+    world.browser.visit(django_url('/admin/auth/user/'))
+    world.browser.click_link_by_text(username)
+    world.browser.select('organizations', organization.pk)
     world.browser.find_by_name('_save').first.click()
 
 @step(r'"([^"]*)" is listed in the members list for Organization "([^"]*)"')
@@ -133,12 +143,23 @@ def listed_in_user_admin(step, name, username):
 
 @step(u'Given an admin removes "([^"]*)" from the Organization "([^"]*)"')
 def remove_user_from_org(step, username, name):
+    """ Remove user from organization via the Organization admin """
     user = User.objects.get(username=username)
     world.browser.visit(django_url('/admin/storybase_user/organization/'))
     world.browser.click_link_by_text(name)
     world.browser.select('members', user.id)
     world.browser.find_by_css('.members .selector-remove').first.click()
     world.browser.find_by_name('_save').first.click()
+
+#@step(u'Given an admin removes "([^"]*)" from the Organization "([^"]*)"')
+#def remove_org_from_user(step, username, name):
+#    """ Remove user from organization via the User admin """
+#    world.browser.visit(django_url('/admin/auth/user/'))
+#    world.browser.click_link_by_text(username)
+#    for member_elem in world.browser.find_by_css('#id_organizations option'):
+#        if member_elem.text == name:
+#            member_elem.click()
+#    world.browser.find_by_name('_save').first.click()
 
 @step(u'Then "([^"]*)" is not listed in the members list for Organization "([^"]*)"')
 def not_member(step, username, name):
