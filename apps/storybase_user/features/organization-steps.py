@@ -107,7 +107,7 @@ def assign_user_to_org(step, username, name):
     world.browser.find_by_css('.members .selector-add').first.click()
     world.browser.find_by_name('_save').first.click()
 
-@step(u'Then "([^"]*)" is listed in the members list for Organization "([^"]*)"')
+@step(r'"([^"]*)" is listed in the members list for Organization "([^"]*)"')
 def has_member(step, username, name):
     world.browser.visit(django_url('/organizations/%s' % world.organization.organization_id))
     for member_elem in world.browser.find_by_css('ul.members li'):
@@ -124,8 +124,42 @@ def listed_in_user_admin(step, name, username):
     world.browser.click_link_by_text(username)
     for member_elem in world.browser.find_by_css('#id_organizations option'):
         if member_elem.text == name:
-            break
+            if member_elem.checked:
+                break
     else:
         assert False, "%s not found in member list" % username
 
     assert True
+
+@step(u'Given an admin removes "([^"]*)" from the Organization "([^"]*)"')
+def remove_user_from_org(step, username, name):
+    user = User.objects.get(username=username)
+    world.browser.visit(django_url('/admin/storybase_user/organization/'))
+    world.browser.click_link_by_text(name)
+    world.browser.select('members', user.id)
+    world.browser.find_by_css('.members .selector-remove').first.click()
+    world.browser.find_by_name('_save').first.click()
+
+@step(u'Then "([^"]*)" is not listed in the members list for Organization "([^"]*)"')
+def not_member(step, username, name):
+    world.browser.visit(django_url('/organizations/%s' % world.organization.organization_id))
+    for member_elem in world.browser.find_by_css('ul.members li'):
+        if member_elem.text == username:
+            break
+    else:
+        return True
+
+    assert False, "%s found in member list" % username
+
+@step(u'Then "([^"]*)" is not selected on the "([^"]*)" User admin page')
+def not_listed_in_user_admin(step, name, username):
+    world.browser.visit(django_url('/admin/auth/user/'))
+    world.browser.click_link_by_text(username)
+    for member_elem in world.browser.find_by_css('#id_organizations option'):
+        if member_elem.text == name:
+            if member_elem.checked:
+                break
+    else:
+        return True
+
+    assert False, "%s found in member list" % username

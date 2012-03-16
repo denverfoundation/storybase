@@ -28,10 +28,10 @@ Feature: Organizations
         Then "Mile High Connects" is selected on the "newuser" User admin page
 
     # Acceptance Test T0008
-    #Scenario: Admin can remove a User from an Organization
-    #    Given an admin creates the Organization "Mile High Connects" exists
-    #    Given an admin creates the User "newuser"
-    #    Given an admin assigns "newuser" to the Organization "Mile High Connects"
-    #    Given an admin removes "newuser" from the Organization "Mile High Connects"
-    #    Then "newuser" is not listed in the members list on the Organization page for "Mile High Connects"
-    #    Then "Mile High Connects" is not selected on the "newuser" User admin page
+    Scenario: Admin can remove a User from an Organization
+        Given the Organization "Mile High Connects" exists
+        Given the User "newuser" exists
+        Given "newuser" is listed in the members list for Organization "Mile High Connects"
+        Given an admin removes "newuser" from the Organization "Mile High Connects"
+        Then "newuser" is not listed in the members list for Organization "Mile High Connects"
+        Then "Mile High Connects" is not selected on the "newuser" User admin page
