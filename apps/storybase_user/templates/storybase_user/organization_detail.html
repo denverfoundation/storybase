@@ -17,7 +17,7 @@
 <h3>Members</h3>
 <ul class="members">
 {% for member in organization.members.all %}
-  <li>member.username</li>
+  <li>{{ member.username }}</li>
 {% endfor %}
 </ul>
 {% endif %}
