@@ -119,8 +119,7 @@ def has_member(step, username, name):
     assert True
 
 @step(u'Then "([^"]*)" is selected on the "([^"]*)" User admin page')
-def has_member_in_admin(step, username, name):
-    assert False, 'This step must be implemented'
+def has_member_admin(step, username, name):
     world.browser.visit(django_url('/admin/storybase_user/organization/'))
     world.browser.click_link_by_text(name)
     for member_elem in world.browser.find_by_css('#id_members_to option'):
