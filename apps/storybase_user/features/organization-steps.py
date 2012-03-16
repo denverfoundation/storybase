@@ -78,12 +78,14 @@ def visit_admin_edit_page(step, name):
 @step(u'Given the admin user edits the description of the Organization to be "([^"]*)"')
 def edit_description(step, description):
     world.browser.fill('description', description)
-    world.browser.find_by_name('_save').first.click()
     world.organization_changed.append('description')
+
+@step(u'Given the admin clicks the save button')
+def click_save(step):
+    world.browser.find_by_name('_save').first.click()
 
 @step(u'Then the Organization\'s description is listed as "([^"]*)"')
 def see_description(step, description):
-    world.browser.visit(django_url('/organizations/%s' % world.organization.organization_id))
     world.assert_text_present(description)
 
 @step(u'Then all other fields of the Organization are unchanged')
@@ -179,3 +181,17 @@ def not_listed_in_user_admin(step, name, username):
         return True
 
     assert False, "%s found in member list" % username
+
+@step(u'Given the user navigates to the Organization\'s detail page')
+def visit_detail_page(step):
+    world.browser.visit(django_url('/organizations/%s' % world.organization.organization_id))
+
+@step(u'Given an admin sets the name of the Organization to "([^"]*)"')
+def edit_name(step, new_name):
+    world.browser.fill('name', new_name)
+    world.organization_changed.append('name')
+
+@step(u'Then the Organization\'s name is listed as "([^"]*)"')
+def see_name(step, name):
+    world.assert_text_present(name)
+        
