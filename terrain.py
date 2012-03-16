@@ -52,6 +52,7 @@ def assert_today(dt):
     assert dt.month == today.month
     assert dt.day == today.day
 
+@world.absorb
 def assert_now(dt, allowance=0):
     """ Test whether a datetime object is equivalent to the current date/time 
     
@@ -62,7 +63,7 @@ def assert_now(dt, allowance=0):
     """
     now = datetime.now()
     delta = now - dt
-    assert delta <= allowance 
+    assert delta.seconds <= allowance 
 
 # TODO: Figure out why database create with create_test_db doesn't 
 # allow writing.
