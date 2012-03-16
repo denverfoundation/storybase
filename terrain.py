@@ -117,6 +117,6 @@ def teardown(total):
     #connection.creation.destroy_test_db(world.old_db_name)
     teardown_test_environment()
 
-@after.all
-def teardown_browser(total):
-    world.browser.quit()
+#@after.all
+#def teardown_browser(total):
+#    world.browser.quit()

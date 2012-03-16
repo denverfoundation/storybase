@@ -11,12 +11,12 @@ Feature: Organizations
         Then the Organization's description should be blank
 
     # Acceptance Test T0009
-    #Scenario: Admin can edit the description for an Organization
-    #    Given an admin user creates the Organization "Mile High Connects" with website URL "http://www.urbanlandc.org/collaboratives/mile-high-connects/"
-    #    Given the admin user edits the description for the Organization "Mile High Connects" to be "Mile High Connects (formerly know as the Mile High Transit Opportunity Collaborative) is an emerging collaborative of nonprofit and philanthropic organizations working together to ensure the creation of the region’s $6.7 billion FasTracks transit system benefits all communities in the region, including low-income populations."
-    #    Then the Organization's description is listed as "Mile High Connects (formerly know as the Mile High Transit Opportunity Collaborative) is an emerging collaborative of nonprofit and philanthropic organizations working together to ensure the creation of the region’s $6.7 billion FasTracks transit system benefits all communities in the region, including low-income populations."
-    #    Then the Organization's last edited field should be set to within 1 minute of the current date and time
-    #    Then all other fields of the Organization are unchanged
+    Scenario: Admin can edit the description for an Organization
+        Given the Organization "Mile High Connects" with website URL "http://www.urbanlandc.org/collaboratives/mile-high-connects/" exists
+        Given the admin user edits the description for the Organization "Mile High Connects" to be "Mile High Connects (formerly know as the Mile High Transit Opportunity Collaborative) is an emerging collaborative of nonprofit and philanthropic organizations working together to ensure the creation of the region’s $6.7 billion FasTracks transit system benefits all communities in the region, including low-income populations."
+        Then the Organization's description is listed as "Mile High Connects (formerly know as the Mile High Transit Opportunity Collaborative) is an emerging collaborative of nonprofit and philanthropic organizations working together to ensure the creation of the region’s $6.7 billion FasTracks transit system benefits all communities in the region, including low-income populations."
+        Then the Organization's last edited field should be set to within 1 minute of the current date and time
+        Then all other fields of the Organization are unchanged
 
     # Acceptance Test T0012
     #Scenario: Admin can assign a User to an Organization
