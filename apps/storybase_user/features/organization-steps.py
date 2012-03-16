@@ -65,15 +65,21 @@ def last_edited_now(step):
 def blank_description(step):
     world.assert_text_not_present('Description')
 
-@step(u'Given the Organization "([^"]*)" with website URL "([^"]*)" exists')
-def exists_in_admin(step, name, website_url):
+@step(u'Given the Organization "([^"]*)" exists')
+def exists_in_admin(step, name):
+    # Visit the Organization's admin panel
+    world.browser.visit(django_url('/admin/storybase_user/organization/'))
+    world.browser.click_link_by_text(name)
+    organization_id = world.browser.find_by_css('.organization_id p').first.value
+    save_info(organization_id)
+
+@step(u'Given the Organization "([^"]*)" has website URL "([^"]*)"')
+def has_website_url_in_admin(step, name, website_url):
     # Visit the Organization's admin panel
     world.browser.visit(django_url('/admin/storybase_user/organization/'))
     world.browser.click_link_by_text(name)
     org_website_url = world.browser.find_by_css('#id_website_url').first.value
     assert_equal(org_website_url, website_url)
-    organization_id = world.browser.find_by_css('.organization_id p').first.value
-    save_info(organization_id)
 
 @step(u'Given the admin user edits the description for the Organization "([^"]*)" to be "([^"]*)"')
 def edit_description(step, name, description):
