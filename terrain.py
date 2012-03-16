@@ -6,7 +6,7 @@ from django.core.management import call_command
 from django.db import connection
 from django.db.utils import DatabaseError
 from django.test.utils import setup_test_environment, teardown_test_environment
-from lettuce import before, after, world
+from lettuce import before, after, step, world
 from lettuce.django import django_url
 #from south.management.commands import patch_for_test_db_setup
 from splinter.browser import Browser
@@ -120,3 +120,8 @@ def teardown(total):
 #@after.all
 #def teardown_browser(total):
 #    world.browser.quit()
+
+# Global steps used throughout tests
+@step(u'Given an admin creates the User "([^"]*)"')
+def create_user(step, username):
+    new_user = User.objects.create_user(username, username + '@fakedomain.com', 'password')
