@@ -10,6 +10,7 @@ from lettuce import before, after, step, world
 from lettuce.django import django_url
 #from south.management.commands import patch_for_test_db_setup
 from splinter.browser import Browser
+from storybase_user.models import Organization
 
 @world.absorb
 def create_admin_user():
@@ -22,6 +23,11 @@ def create_admin_user():
     user.is_staff = True
     user.is_superuser = True
     user.save()
+
+@world.absorb
+def create_organization(name):
+    """ Create an Organization """
+    Organization.objects.create(name=name)
 
 @world.absorb
 def admin_login():
