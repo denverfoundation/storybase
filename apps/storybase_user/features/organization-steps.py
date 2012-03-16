@@ -2,6 +2,7 @@ from datetime import datetime
 from lettuce import step, world
 from lettuce.django import django_url
 from nose.tools import assert_equal
+from django.contrib.auth.models import User
 from storybase_user.models import Organization
 
 def save_info(organization_id):
@@ -96,3 +97,36 @@ def see_description(step, description):
 @step(u'Then all other fields of the Organization are unchanged')
 def description_changed_others_unchanged(step):
     assert_organization_unchanged(['description'])
+
+@step(u'Given an admin assigns "([^"]*)" to the Organization "([^"]*)"')
+def assign_user_to_org(step, username, name):
+    user = User.objects.get(username=username)
+    world.browser.visit(django_url('/admin/storybase_user/organization/'))
+    world.browser.click_link_by_text(name)
+    world.browser.select('members_old', user.id)
+    world.browser.find_by_css('.members .selector-add').first.click()
+    world.browser.find_by_name('_save').first.click()
+
+@step(u'Then "([^"]*)" is listed in the members list for Organization "([^"]*)"')
+def has_member(step, username, name):
+    world.browser.visit(django_url('/organizations/%s' % world.organization.organization_id))
+    for member_elem in world.browser.find_by_css('ul.members li'):
+        if member_elem.text == username:
+            break
+    else:
+        assert False, "%s not found in member list" % username
+
+    assert True
+
+@step(u'Then "([^"]*)" is selected on the "([^"]*)" User admin page')
+def has_member_in_admin(step, username, name):
+    assert False, 'This step must be implemented'
+    world.browser.visit(django_url('/admin/storybase_user/organization/'))
+    world.browser.click_link_by_text(name)
+    for member_elem in world.browser.find_by_css('#id_members_to option'):
+        if member_elem.text == username:
+            break
+    else:
+        assert False, "%s not found in member list" % username
+
+    assert True

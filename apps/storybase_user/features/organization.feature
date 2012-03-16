@@ -20,12 +20,12 @@ Feature: Organizations
         Then all other fields of the Organization are unchanged
 
     # Acceptance Test T0012
-    #Scenario: Admin can assign a User to an Organization
-    #    Given an admin creates the Organization "Mile High Connects" exists
-    #    Given an admin creates the User "newuser"
-    #    Given an admin assigns "newuser" to the Organization "Mile High Connects"
-    #    Then "newuser" is listed in the members list on the Organization page for "Mile High Connects"
-    #    Then "Mile High Connects" is selected on the "newuser" User admin page
+    Scenario: Admin can assign a User to an Organization
+        Given an admin creates the User "newuser"
+        Given the Organization "Mile High Connects" exists
+        Given an admin assigns "newuser" to the Organization "Mile High Connects"
+        Then "newuser" is listed in the members list for Organization "Mile High Connects"
+        Then "Mile High Connects" is selected on the "newuser" User admin page
 
     # Acceptance Test T0008
     #Scenario: Admin can remove a User from an Organization
