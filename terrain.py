@@ -117,9 +117,14 @@ def teardown(total):
     #connection.creation.destroy_test_db(world.old_db_name)
     teardown_test_environment()
 
-#@after.all
-#def teardown_browser(total):
-#    world.browser.quit()
+@after.all
+def teardown_browser(total):
+    """ Close the test browser 
+
+    Leaves the browser open if tests failed as it may be helpful in debugging
+    """
+    if total.scenarios_passed == total.scenarios_ran:
+        world.browser.quit()
 
 # Global steps used throughout tests
 @step(u'Given an admin creates the User "([^"]*)"')
