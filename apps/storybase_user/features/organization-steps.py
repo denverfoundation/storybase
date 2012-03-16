@@ -119,11 +119,11 @@ def has_member(step, username, name):
     assert True
 
 @step(u'Then "([^"]*)" is selected on the "([^"]*)" User admin page')
-def has_member_admin(step, username, name):
-    world.browser.visit(django_url('/admin/storybase_user/organization/'))
-    world.browser.click_link_by_text(name)
-    for member_elem in world.browser.find_by_css('#id_members_to option'):
-        if member_elem.text == username:
+def listed_in_user_admin(step, name, username):
+    world.browser.visit(django_url('/admin/auth/user/'))
+    world.browser.click_link_by_text(username)
+    for member_elem in world.browser.find_by_css('#id_organizations option'):
+        if member_elem.text == name:
             break
     else:
         assert False, "%s not found in member list" % username
