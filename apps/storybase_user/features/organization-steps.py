@@ -12,19 +12,7 @@ def save_info(organization_id):
     
     """
     world.organization = Organization.objects.get(organization_id=organization_id) 
-
-def assert_organization_unchanged(changed=[]):
-    """ Check that the an organization's fields are unchanged 
-
-    Arguments:
-    changed -- Array of fields that we know have changed. These will be ignored
-
-    """
-    organization = Organization.objects.get(organization_id=world.organization.organization_id)
-    for field in ('organization_id', 'website_url', 'description'):
-        if field not in changed:
-            assert_equal(getattr(world.organization, field),
-                getattr(organization, field))
+    world.organization_changed = []
 
 @step(u'Given an admin user creates the Organization "([^"]*)" with website URL "([^"]*)"')
 def create(step, name, website_url):
@@ -87,10 +75,11 @@ def visit_admin_edit_page(step, name):
     world.browser.visit(django_url('/admin/storybase_user/organization/'))
     world.browser.click_link_by_text(name)
 
-@step(u'Given the admin user edits the description for the Organization "([^"]*)" to be "([^"]*)"')
-def edit_description(step, name, description):
+@step(u'Given the admin user edits the description of the Organization to be "([^"]*)"')
+def edit_description(step, description):
     world.browser.fill('description', description)
     world.browser.find_by_name('_save').first.click()
+    world.organization_changed.append('description')
 
 @step(u'Then the Organization\'s description is listed as "([^"]*)"')
 def see_description(step, description):
@@ -98,8 +87,13 @@ def see_description(step, description):
     world.assert_text_present(description)
 
 @step(u'Then all other fields of the Organization are unchanged')
-def description_changed_others_unchanged(step):
-    assert_organization_unchanged(['description'])
+def other_fields_unchanged(step):
+    """ Check that the an organization's fields are unchanged """
+    organization = Organization.objects.get(organization_id=world.organization.organization_id)
+    for field in ('organization_id', 'website_url', 'description'):
+        if field not in world.organization_changed:
+            assert_equal(getattr(world.organization, field),
+                getattr(organization, field))
 
 #@step(u'Given an admin assigns "([^"]*)" to the Organization "([^"]*)"')
 #def assign_user_to_org(step, username, name):
