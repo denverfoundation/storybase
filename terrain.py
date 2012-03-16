@@ -125,3 +125,7 @@ def teardown(total):
 @step(u'Given an admin creates the User "([^"]*)"')
 def create_user(step, username):
     new_user = User.objects.create_user(username, username + '@fakedomain.com', 'password')
+
+@step(u'Given the User "([^"]*)" exists')
+def user_exists(step, username):
+    User.objects.get(username=username)
