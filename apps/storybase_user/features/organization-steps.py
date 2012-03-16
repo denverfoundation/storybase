@@ -82,10 +82,13 @@ def has_website_url_in_admin(step, name, website_url):
     org_website_url = world.browser.find_by_css('#id_website_url').first.value
     assert_equal(org_website_url, website_url)
 
-@step(u'Given the admin user edits the description for the Organization "([^"]*)" to be "([^"]*)"')
-def edit_description(step, name, description):
+@step(u'Given the admin visits the admin edit page for Organization "([^"]*)"')
+def visit_admin_edit_page(step, name):
     world.browser.visit(django_url('/admin/storybase_user/organization/'))
     world.browser.click_link_by_text(name)
+
+@step(u'Given the admin user edits the description for the Organization "([^"]*)" to be "([^"]*)"')
+def edit_description(step, name, description):
     world.browser.fill('description', description)
     world.browser.find_by_name('_save').first.click()
 
@@ -145,8 +148,6 @@ def listed_in_user_admin(step, name, username):
 def remove_user_from_org(step, username, name):
     """ Remove user from organization via the Organization admin """
     user = User.objects.get(username=username)
-    world.browser.visit(django_url('/admin/storybase_user/organization/'))
-    world.browser.click_link_by_text(name)
     world.browser.select('members', user.id)
     world.browser.find_by_css('.members .selector-remove').first.click()
     world.browser.find_by_name('_save').first.click()
