@@ -210,3 +210,8 @@ def visit_model_add_admin(step, model_name):
 def edit_name(step, model, name):
     world.browser.fill('name', name)
     world.set_changed(model, 'name')
+
+@step(u'Given the user edits the description of the "([^"]*)" to be "([^"]*)"')
+def edit_description(step, model, description):
+    world.browser.fill('description', description)
+    world.set_changed(model, 'description')

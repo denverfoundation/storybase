@@ -73,10 +73,6 @@ def visit_admin_edit_page(step, name):
     world.browser.visit(django_url('/admin/storybase_user/organization/'))
     world.browser.click_link_by_text(name)
 
-@step(u'Given the admin user edits the description of the Organization to be "([^"]*)"')
-def edit_description(step, description):
-    world.browser.fill('description', description)
-    world.set_changed('Organization', 'description')
 
 @step(u'Given the admin clicks the save button')
 def click_save(step):

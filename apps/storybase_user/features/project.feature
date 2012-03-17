@@ -28,6 +28,7 @@ Feature: Projects
 #        Given the user navigates to the "Projects" admin
 #        Given the user navigates to the "The Metro Denver Regional Equity Atlas" Project edit admin
 #       Given an admin sets the name of the "Project" to "Reqional Equity Atlas"
+#       Given the user edits the description of the "Project" to be "([^"]*)"
 #      
 #6. Enter in the Description field:
 #Th e Denver Regional Equity Atlas is a product of Mile High Connects (MHC), which came together in 2011 to ensure that
