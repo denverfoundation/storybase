@@ -34,7 +34,7 @@ def see_project_name(step, name):
 
 @step(u'Then "([^"]*)" should be listed in the Project\'s Organizations list')
 def org_in_list(step, org_name):
-    world.assert_text_in_list('ul.members li', org_name)
+    world.assert_text_in_list('ul.organizations li', org_name)
 
 @step(u'Then the Organization\'s stories list should be blank')
 def no_stories_list(step):
