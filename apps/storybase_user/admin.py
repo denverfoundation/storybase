@@ -3,6 +3,7 @@ from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import User
+from django.utils.translation import ugettext_lazy as _
 from storybase.admin import StorybaseModelAdmin
 from models import Organization, Project
 
