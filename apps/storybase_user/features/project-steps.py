@@ -8,12 +8,6 @@ def setup_organization(scenario):
     if scenario.name in matching_scenarios: 
         world.create_organization("Mile High Connects") 
 
-@step(u'Given the admin sets the Project name to  "([^"]*)"')
-def set_name(step, name):
-    world.browser.fill('name', name)
-    if hasattr(world, 'project_changed'):
-        world.project_changed.append('name')
-
 @step(u'Given the admin selects "([^"]*)" from the list of available organizations')
 def select_org(step, org_name):
     user = Organization.objects.get(name=org_name)

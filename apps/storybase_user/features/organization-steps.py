@@ -172,10 +172,6 @@ def not_listed_in_user_admin(step, name, username):
 def visit_detail_page(step):
     world.browser.visit(django_url('/organizations/%s' % world.organization.organization_id))
 
-@step(u'Given an admin sets the name of the Organization to "([^"]*)"')
-def edit_name(step, new_name):
-    world.browser.fill('name', new_name)
-    world.organization_changed.append('name')
 
 @step(u'Then the Organization\'s name is listed as "([^"]*)"')
 def see_name(step, name):

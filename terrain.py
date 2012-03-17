@@ -184,3 +184,12 @@ def visit_model_admin(step, model_name):
 def visit_model_add_admin(step, model_name):
     step.given("Given the user navigates to the \"%s\" admin" % model_name)
     world.browser.click_link_by_href("add/")
+
+@step(u'Given the user sets the name of the "([^"]*)" to "([^"]*)"')
+def edit_name(step, model, name):
+    world.browser.fill('name', name)
+    try:
+        changed = getattr(world, "%s_changed" % model.lower())
+        changed.append('name')
+    except AttributeError:
+        pass

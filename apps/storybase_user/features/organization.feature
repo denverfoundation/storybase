@@ -49,7 +49,7 @@ Feature: Organizations
         Given the admin user is logged in
         Given the Organization "Mile High Connects" exists
         Given the admin visits the admin edit page for Organization "Mile High Connects"
-        Given an admin sets the name of the Organization to "Mile High Transit Opportunities Collaborative"
+        Given the user sets the name of the "Organization" to "Mile High Transit Opportunities Collaborative"
         Given the admin user edits the description of the Organization to be "Our primary goal is to ensure that the creation of FasTracks improves accessibility to affordable housing, good-paying jobs, essential services, educational opportunities, improved health, and other elements of a high quality of life for all of Metro Denver’s residents, especially those with lower-incomes."
         Given the admin clicks the save button
         Given the user navigates to the Organization's detail page
