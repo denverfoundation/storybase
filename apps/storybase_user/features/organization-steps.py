@@ -117,13 +117,7 @@ def assign_org_to_user(step, username, name):
 @step(r'"([^"]*)" is listed in the members list for Organization "([^"]*)"')
 def has_member(step, username, name):
     world.browser.visit(django_url('/organizations/%s' % world.organization.organization_id))
-    for member_elem in world.browser.find_by_css('ul.members li'):
-        if member_elem.text == username:
-            break
-    else:
-        assert False, "%s not found in member list" % username
-
-    assert True
+    world.assert_text_in_list('ul.members li', username)
 
 @step(u'Then "([^"]*)" is selected on the "([^"]*)" User admin page')
 def listed_in_user_admin(step, name, username):
@@ -159,13 +153,7 @@ def remove_user_from_org(step, username, name):
 @step(u'Then "([^"]*)" is not listed in the members list for Organization "([^"]*)"')
 def not_member(step, username, name):
     world.browser.visit(django_url('/organizations/%s' % world.organization.organization_id))
-    for member_elem in world.browser.find_by_css('ul.members li'):
-        if member_elem.text == username:
-            break
-    else:
-        return True
-
-    assert False, "%s found in member list" % username
+    world.assert_text_not_in_list('ul.members li', username)
 
 @step(u'Then "([^"]*)" is not selected on the "([^"]*)" User admin page')
 def not_listed_in_user_admin(step, name, username):
