@@ -6,7 +6,7 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from filer.fields.image import FilerImageField
 from uuidfield.fields import UUIDField
-from storybase.models import TranslatedModel
+from storybase.models import TranslatedModel, TranslationModel
 
 ASSET_TYPES = (
   (u'article', u'article'),
@@ -24,10 +24,6 @@ class Asset(TranslatedModel):
     def __unicode__(self):
         return self.title
 
-    def __init__(self, *args, **kwargs):
-        super(Asset, self).__init__(*args, **kwargs)
-
-
     def subclass(self):
         for attr in ('externalasset', 'htmlasset', 'filerimageasset'):
             try:
@@ -44,10 +40,8 @@ class Asset(TranslatedModel):
             return self.__unicode__()
 
 
-class AssetTranslation(models.Model):
-    translation_id = UUIDField(auto=True)
+class AssetTranslation(TranslationModel):
     asset = models.ForeignKey('Asset', related_name="%(app_label)s_%(class)s_related") 
-    language = models.CharField(max_length=15, choices=settings.LANGUAGES)
     title = models.CharField(max_length=200)
     caption = models.TextField(blank=True)
 
