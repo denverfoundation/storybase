@@ -142,3 +142,13 @@ def create_user(step, username):
 @step(u'Given the User "([^"]*)" exists')
 def user_exists(step, username):
     User.objects.get(username=username)
+
+@step(u'Given the user navigates to the "([^"]*)" admin')
+def visit_model_admin(step, model_name):
+    world.browser.visit(django_url('/admin'))
+    world.browser.click_link_by_text(model_name)
+
+@step(u'Given the user navigates to the "([^"]*)" addition page')
+def visit_model_add_admin(step, model_name):
+    step.given("Given the user navigates to the \"%s\" admin" % model_name)
+    world.browser.click_link_by_href("add/")
