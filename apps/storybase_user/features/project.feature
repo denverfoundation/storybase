@@ -2,6 +2,8 @@ Feature: Projects
 
     # Acceptance test T0020
     Scenario: Admin can create a new Project 
+        # Setup:
+        # Create an Organization named Mile High Connects 
         Given the admin user is logged in
         Given the user navigates to the "Projects" admin
         Given the user navigates to the "Projects" addition page
