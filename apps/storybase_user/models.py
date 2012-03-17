@@ -1,7 +1,9 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.utils.translation import ugettext_lazy as _
 from uuidfield.fields import UUIDField
 from storybase.fields import ShortTextField
+from storybase.models import TranslatedModel, TranslationModel
 
 class Organization(models.Model):
     """ An organization or a community group that users and stories can be associated with. """
@@ -21,22 +23,36 @@ class Organization(models.Model):
     def get_absolute_url(self):
         return ('organization_detail', [self.organization_id])
 
-class Project(models.Model):
+class Project(TranslatedModel):
     """ 
     A project that collects related stories.  
     
     Users can also be related to projects.
     """
     project_id = UUIDField(auto=True)
-    name = ShortTextField()
-    slug = models.SlugField()
     website_url = models.URLField(blank=True)
-    description = models.TextField(blank=True)
     created = models.DateTimeField(auto_now_add=True)
     last_edited = models.DateTimeField(auto_now=True)
     organizations = models.ManyToManyField(Organization, related_name='projects', blank=True)
     members = models.ManyToManyField(User, related_name='projects', blank=True) 
     # TODO: Add Stories field to Project 
 
+    translated_fields = ['name', 'description', 'slug']
+    #translations = models.ManyToManyField('ProjectTranslation', blank=True, verbose_name=_('translations'))
+
+    translation_set = 'projecttranslation_set'
+
     def __unicode__(self):
         return self.name
+
+class ProjectTranslation(TranslationModel):
+    project = models.ForeignKey('Project')
+    name = ShortTextField()
+    slug = models.SlugField()
+    description = models.TextField(blank=True)
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        unique_together = (('project', 'language'))
