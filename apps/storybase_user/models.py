@@ -28,15 +28,9 @@ class Project(models.Model):
     Users can also be related to projects.
     """
     project_id = UUIDField(auto=True)
-    name = ShortTextField()
+    name = models.CharField(max_length=200)
     slug = models.SlugField()
-    website_url = models.URLField(blank=True)
-    description = models.TextField(blank=True)
-    created = models.DateTimeField(auto_now_add=True)
-    last_edited = models.DateTimeField(auto_now=True)
-    organizations = models.ManyToManyField(Organization, related_name='projects', blank=True)
     members = models.ManyToManyField(User, related_name='projects', blank=True) 
-    # TODO: Add Stories field to Project 
 
     def __unicode__(self):
         return self.name
