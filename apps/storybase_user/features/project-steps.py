@@ -1,6 +1,7 @@
 from datetime import datetime
 from lettuce import before, step, world
 from lettuce.django import django_url
+from nose.tools import assert_equal
 from storybase_user.models import Organization, Project
 
 @before.each_scenario
@@ -58,18 +59,24 @@ def exists_in_admin(step, name):
     project_id = world.browser.find_by_css('.project_id p').first.value
     world.save_info('Project', project_id)
 
-@step(u'Given the user navigates to the "([^"]*)" Project edit admin')
-def given_the_user_navigates_to_the_group1_project_edit_admin(step, group1):
-    assert False, 'This step must be implemented'
+@step(u'Given the user visits the admin edit page for Project "([^"]*)"')
+def visit_admin_edit_page(step, name):
+    world.browser.visit(django_url('/admin/storybase_user/project/'))
+    world.browser.click_link_by_text(name)
 
 @step(u'Given the user navigates to the Project\'s detail page')
-def given_the_user_navigates_to_the_project_s_detail_page(step):
-    assert False, 'This step must be implemented'
+def visit_detail_page(step):
+    world.browser.visit(django_url('/projects/%s' % world.project.project_id))
 
 @step(u'Then the Project\'s description is listed as the following:')
-def then_the_project_s_description_is_listed_as_the_following(step):
-    assert False, 'This step must be implemented'
+def see_description(step):
+    world.assert_text_present(step.multiline)
 
 @step(u'Then all other fields of the Project are unchanged')
-def then_all_other_fields_of_the_project_are_unchanged(step):
-    assert False, 'This step must be implemented'
+def other_fields_unchanged(step):
+    """ Check that the an organization's fields are unchanged """
+    project = Project.objects.get(project_id=world.project.project_id)
+    for field in ('project_id', 'website_url', 'description', 'created'):
+        if field not in world.project_changed:
+            assert_equal(getattr(world.project, field),
+                getattr(project, field))

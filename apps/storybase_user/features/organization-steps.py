@@ -59,11 +59,10 @@ def has_website_url_in_admin(step, name, website_url):
     org_website_url = world.browser.find_by_css('#id_website_url').first.value
     assert_equal(org_website_url, website_url)
 
-@step(u'Given the admin visits the admin edit page for Organization "([^"]*)"')
+@step(u'Given the user visits the admin edit page for Organization "([^"]*)"')
 def visit_admin_edit_page(step, name):
     world.browser.visit(django_url('/admin/storybase_user/organization/'))
     world.browser.click_link_by_text(name)
-
 
 @step(u'Given the admin clicks the save button')
 def click_save(step):
@@ -77,7 +76,7 @@ def see_description(step, description):
 def other_fields_unchanged(step):
     """ Check that the an organization's fields are unchanged """
     organization = Organization.objects.get(organization_id=world.organization.organization_id)
-    for field in ('organization_id', 'website_url', 'description'):
+    for field in ('organization_id', 'website_url', 'description', 'created'):
         if field not in world.organization_changed:
             assert_equal(getattr(world.organization, field),
                 getattr(organization, field))

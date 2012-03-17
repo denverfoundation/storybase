@@ -25,7 +25,7 @@ Feature: Projects
         Given the admin user is logged in
         Given the Project "The Metro Denver Regional Equity Atlas" exists
         Given the user navigates to the "Projects" admin
-        Given the user navigates to the "The Metro Denver Regional Equity Atlas" Project edit admin
+        Given the user visits the admin edit page for Project "The Metro Denver Regional Equity Atlas"
        Given the user sets the name of the "Project" to "Reqional Equity Atlas"
         Given the user edits the description of the "Project" to be the following: 
             """
