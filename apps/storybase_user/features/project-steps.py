@@ -18,7 +18,6 @@ def set_name(step, name):
 def select_org(step, org_name):
     user = Organization.objects.get(name=org_name)
     world.browser.select('organizations_old', user.pk)
-    world.browser.find_by_name('_save').first.click()
 
 @step(u'Given the admin clicks the Add icon')
 def clicks_org_add_icon(step):
@@ -30,7 +29,7 @@ def project_canonical_url(step, name):
     world.browser.visit(django_url('/projects/%s' % project.project_id))
 
 @step(u'Then the Project\'s name should be "([^"]*)"')
-def then_the_project_s_name_should_be_group1(step, name):
+def see_project_name(step, name):
     world.assert_text_present(name)
 
 @step(u'Then "([^"]*)" should be listed in the Project\'s Organizations list')
