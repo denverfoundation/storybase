@@ -24,3 +24,8 @@ class StorybaseModelAdmin(admin.ModelAdmin):
     formfield_overrides = {
         ShortTextField: {'widget': AdminLongTextInputWidget},
     }
+
+class StorybaseStackedInline(admin.StackedInline):
+    formfield_overrides = {
+        ShortTextField: {'widget': AdminLongTextInputWidget},
+    }

@@ -1,6 +1,8 @@
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.utils import translation
+from uuidfield.fields import UUIDField
 
 class TranslatedModel(models.Model):
     translated_fields = []
@@ -45,6 +47,13 @@ class TranslatedModel(models.Model):
                     return getattr(self.subclass(), name)
 
         return get(name)
+
+    class Meta:
+        abstract = True
+
+class TranslationModel(models.Model):
+    translation_id = UUIDField(auto=True)
+    language = models.CharField(max_length=15, choices=settings.LANGUAGES, default=settings.LANGUAGE_CODE)
 
     class Meta:
         abstract = True
