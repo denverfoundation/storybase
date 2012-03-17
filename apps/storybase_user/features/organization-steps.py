@@ -16,7 +16,6 @@ def save_info(organization_id):
 
 @step(u'Given an admin user creates the Organization "([^"]*)" with website URL "([^"]*)"')
 def create(step, name, website_url):
-    world.admin_login()
     world.browser.click_link_by_href("storybase_user/organization/add/")
     world.browser.fill('name', name)
     world.browser.fill('website_url', website_url)

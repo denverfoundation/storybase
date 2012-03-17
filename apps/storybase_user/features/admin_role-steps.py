@@ -8,7 +8,6 @@ def assign_user_to_group(step, username, group_name):
     group = Group.objects.create(name=group_name) 
     group.save()
     new_user = User.objects.create_user(username, username + '@fakedomain.com', 'password')
-    world.admin_login()
     world.browser.click_link_by_text("Users")
     try:
         world.browser.click_link_by_text(username)

@@ -19,15 +19,6 @@ def create_organization(name):
     Organization.objects.create(name=name)
 
 @world.absorb
-def admin_login():
-    """ Log in to the Django admin """
-    world.browser.visit(django_url('/admin'))
-    world.browser.fill('username', world.admin_username)
-    world.browser.fill('password', world.admin_password)
-    button = world.browser.find_by_css('.submit-row input').first
-    button.click()
-
-@world.absorb
 def assert_is_uuid4(s):
     """ Check whether a string is a UUID4 """
     assert re.match(r'^[0-9a-f]{32,32}$', s) is not None
@@ -134,6 +125,16 @@ def teardown_browser(total):
         world.browser.quit()
 
 # Global steps used throughout tests
+@step(u'Given the admin user is logged in')
+def admin_login(step):
+    """ Log in to the Django admin """
+    world.browser.visit(django_url('/admin'))
+    if world.browser.is_text_present('Username:') and world.browser.is_text_present('Password:'):
+        world.browser.fill('username', world.admin_username)
+        world.browser.fill('password', world.admin_password)
+        button = world.browser.find_by_css('.submit-row input').first
+        button.click()
+
 @step(u'Given an admin creates the User "([^"]*)"')
 def create_user(step, username):
     new_user = User.objects.create_user(username, username + '@fakedomain.com', 'password')

@@ -2,6 +2,7 @@ Feature: Organizations
 
     # Acceptance Test T0007
     Scenario: Admin can create a new Organization
+        Given the admin user is logged in
         Given an admin user creates the Organization "Mile High Connects" with website URL "http://www.urbanlandc.org/collaboratives/mile-high-connects/"
         Then the Organization should have a canonical URL 
         Then the Organization's website should be listed as "http://www.urbanlandc.org/collaboratives/mile-high-connects/"
@@ -12,6 +13,7 @@ Feature: Organizations
 
     # Acceptance Test T0009
     Scenario: Admin can edit the description for an Organization
+        Given the admin user is logged in
         Given the Organization "Mile High Connects" exists
         Given the Organization "Mile High Connects" has website URL "http://www.urbanlandc.org/collaboratives/mile-high-connects/"
         Given the admin visits the admin edit page for Organization "Mile High Connects"
@@ -24,6 +26,7 @@ Feature: Organizations
 
     # Acceptance Test T0012
     Scenario: Admin can assign a User to an Organization
+        Given the admin user is logged in
         Given an admin creates the User "newuser"
         Given the Organization "Mile High Connects" exists
         Given an admin assigns "newuser" to the Organization "Mile High Connects"
@@ -32,6 +35,7 @@ Feature: Organizations
 
     # Acceptance Test T0008
     Scenario: Admin can remove a User from an Organization
+        Given the admin user is logged in
         Given the Organization "Mile High Connects" exists
         Given the User "newuser" exists
         Given "newuser" is listed in the members list for Organization "Mile High Connects"
@@ -42,6 +46,7 @@ Feature: Organizations
 
     # Acceptance Test T0022
     Scenario: Admin can edit Organization information
+        Given the admin user is logged in
         Given the Organization "Mile High Connects" exists
         Given the admin visits the admin edit page for Organization "Mile High Connects"
         Given an admin sets the name of the Organization to "Mile High Transit Opportunities Collaborative"
