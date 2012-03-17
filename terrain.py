@@ -51,6 +51,38 @@ def assert_now(dt, allowance=0):
     delta = now - dt
     assert delta.seconds <= allowance 
 
+@world.absorb
+def assert_text_in_list(selector, text):
+    """ Check whether the text appears in a list's items
+    
+    Arguments:
+    selector -- CSS selector for list item elements
+    text -- Text to search for in selected list items
+    """
+    for member_elem in world.browser.find_by_css(selector):
+        if member_elem.text == text:
+            break
+    else:
+        assert False, "%s not found in list" % text
+
+    assert True
+
+@world.absorb
+def assert_text_not_in_list(selector, text):
+    """ Check whether the text doesn't appears in a list's items
+    
+    Arguments:
+    selector -- CSS selector for list item elements
+    text -- Text to search for in selected list items
+    """
+    for member_elem in world.browser.find_by_css(selector):
+        if member_elem.text == text:
+            break
+    else:
+        return True
+
+    assert False, "%s found in list" % text
+
 # TODO: Figure out why database create with create_test_db doesn't 
 # allow writing.
 #@before.runserver
