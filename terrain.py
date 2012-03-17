@@ -10,6 +10,7 @@ from lettuce import before, after, step, world
 from lettuce.django import django_url
 #from south.management.commands import patch_for_test_db_setup
 from splinter.browser import Browser
+import storybase_user
 from storybase_user.models import Organization
 
 # Utility methods
@@ -36,6 +37,36 @@ def set_changed(model, field):
         changed.append(field)
     except AttributeError:
         pass
+
+def _class_lookup(model):
+    """ Get a "fully qualified" class object for a model
+
+    Arguments
+    model -- Model class name as a string, e.g. "Project"
+
+    """
+    classes = {
+        'Organization': storybase_user.models.Organization,
+        'Project': storybase_user.models.Project
+    }
+    return classes[model]
+
+@world.absorb
+def save_info(model, instance_id):
+    """ Save a model instance's info for later comparison
+    
+    Assumes that world.browser is on a Model instance's admin  edit page
+    
+    Arguments:
+    model -- Class name of the model instance, e.g. "Project"
+    instance_id -- UUID ID attribute of the model instance
+    
+    """
+    klass = _class_lookup(model) 
+    model_lower = model.lower()
+    setattr(world, model_lower, 
+            klass.objects.get(**{"%s_id" % model_lower: instance_id}))
+    setattr(world, "%s_changed" % model_lower, [])
 
 # Custom Assertions
 
@@ -215,3 +246,9 @@ def edit_name(step, model, name):
 def edit_description(step, model, description):
     world.browser.fill('description', description)
     world.set_changed(model, 'description')
+
+@step(u'Given the user edits the description of the "([^"]*)" to be the following:')
+def edit_description_long(step, model):
+    world.browser.fill('description', step.multiline)
+    world.set_changed(model, 'description')
+

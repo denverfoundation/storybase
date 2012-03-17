@@ -5,15 +5,6 @@ from nose.tools import assert_equal
 from django.contrib.auth.models import User
 from storybase_user.models import Organization
 
-def save_info(organization_id):
-    """ Save an organization's info for later comparison
-    
-    Assumes that world.browser is in an organization's admin page
-    
-    """
-    world.organization = Organization.objects.get(organization_id=organization_id) 
-    world.organization_changed = []
-
 @step(u'Given an admin user creates the Organization "([^"]*)" with website URL "([^"]*)"')
 def create(step, name, website_url):
     world.browser.click_link_by_href("storybase_user/organization/add/")
@@ -58,7 +49,7 @@ def exists_in_admin(step, name):
     world.browser.visit(django_url('/admin/storybase_user/organization/'))
     world.browser.click_link_by_text(name)
     organization_id = world.browser.find_by_css('.organization_id p').first.value
-    save_info(organization_id)
+    world.save_info('Organization', organization_id)
 
 @step(u'Given the Organization "([^"]*)" has website URL "([^"]*)"')
 def has_website_url_in_admin(step, name, website_url):
