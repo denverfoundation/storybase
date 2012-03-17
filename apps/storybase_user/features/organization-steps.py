@@ -76,7 +76,7 @@ def visit_admin_edit_page(step, name):
 @step(u'Given the admin user edits the description of the Organization to be "([^"]*)"')
 def edit_description(step, description):
     world.browser.fill('description', description)
-    world.organization_changed.append('description')
+    world.set_changed('Organization', 'description')
 
 @step(u'Given the admin clicks the save button')
 def click_save(step):

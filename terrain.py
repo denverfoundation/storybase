@@ -12,11 +12,32 @@ from lettuce.django import django_url
 from splinter.browser import Browser
 from storybase_user.models import Organization
 
+# Utility methods
 
 @world.absorb
 def create_organization(name):
     """ Create an Organization """
     Organization.objects.create(name=name)
+
+@world.absorb
+def set_changed(model, field):
+    """ Mark a field of a Model instance as changed
+    
+    The changed fields are ignored when checking that the model instance
+    fields are the same pre/post editing the instance.
+
+    Arguments:
+    model -- Model class name, e.g. "Project"
+    field -- Field name, e.g. "name"
+
+    """
+    try:
+        changed = getattr(world, "%s_changed" % model.lower())
+        changed.append(field)
+    except AttributeError:
+        pass
+
+# Custom Assertions
 
 @world.absorb
 def assert_is_uuid4(s):
@@ -188,8 +209,4 @@ def visit_model_add_admin(step, model_name):
 @step(u'Given the user sets the name of the "([^"]*)" to "([^"]*)"')
 def edit_name(step, model, name):
     world.browser.fill('name', name)
-    try:
-        changed = getattr(world, "%s_changed" % model.lower())
-        changed.append('name')
-    except AttributeError:
-        pass
+    world.set_changed(model, 'name')
