@@ -1,0 +1,39 @@
+{% extends "base.html" %}
+
+{% block base_content %}
+<h2>{{ project.name }}</h2>
+
+{% if project.website_url %}
+<h3>Website URL</h3>
+<p><a href="{{ project.website_url }}">{{ project.website_url }}</a></p>
+{% endif %}
+
+{% if project.description %}
+<h3>Description</h3>
+{{ project.description|linebreaks }}
+{% endif %}
+
+{% if project.members.count %}
+<h3>Members</h3>
+<ul class="members">
+{% for member in project.members.all %}
+  <li>{{ member.username }}</li>
+{% endfor %}
+</ul>
+{% endif %}
+
+{% if project.organizations.count %}
+<h3>Organizations</h3>
+<ul class="organizations">
+{% for organization in project.organizations.all %}
+  <li>{{ organization.name }}</li>
+{% endfor %}
+</ul>
+{% endif %}
+
+<h3>Created</h3>
+<p><time class="created">{{ project.created|date:"F j, Y" }}</time></p>
+
+<h3>Last Edited</h3>
+<p><time class="last-edited">{{ project.last_edited|date:"F j, Y g:i A" }} </time></p>
+{% endblock %}
