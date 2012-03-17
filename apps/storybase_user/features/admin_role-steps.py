@@ -5,7 +5,6 @@ from splinter.exceptions import ElementDoesNotExist
 
 @step(u'Given an admin user assigns "([^"]*)" user to the "([^"]*)" group')
 def assign_user_to_group(step, username, group_name):
-    world.create_admin_user()
     group = Group.objects.create(name=group_name) 
     group.save()
     new_user = User.objects.create_user(username, username + '@fakedomain.com', 'password')

@@ -12,17 +12,6 @@ from lettuce.django import django_url
 from splinter.browser import Browser
 from storybase_user.models import Organization
 
-@world.absorb
-def create_admin_user():
-    """ Create an admin user """
-    world.admin_username = 'admin'
-    world.admin_email = 'admin@localhost.localdomain'
-    world.admin_password = 'admin'
-    user = User.objects.create_user(world.admin_username, world.admin_email,
-        world.admin_password)
-    user.is_staff = True
-    user.is_superuser = True
-    user.save()
 
 @world.absorb
 def create_organization(name):
@@ -111,6 +100,18 @@ def setup_browser(server):
 def reset_data(feature):
     """ Clean up Django """
     call_command('flush', interactive=False, verbosity=0)
+
+@before.each_feature
+def create_admin_user(feature):
+    """ Create an admin user """
+    world.admin_username = 'admin'
+    world.admin_email = 'admin@localhost.localdomain'
+    world.admin_password = 'admin'
+    world.admin_user = User.objects.create_user(world.admin_username, world.admin_email,
+        world.admin_password)
+    world.admin_user.is_staff = True
+    world.admin_user.is_superuser = True
+    world.admin_user.save()
 
 @after.all
 def debug(total):
