@@ -10,7 +10,7 @@ Feature: Projects
         Given the admin clicks the Add icon
         # Leave the URL and Description fields blank
         Given the admin clicks the save button
-        Then the Project should have a canonical URL 
+        Then the Project named "The Metro Denver Regional Equity Atlas" should have a canonical URL 
         Then the Project's name should be "The Metro Denver Regional Equity Atlas"
         Then "Mile High Connects" should be listed in the Project's Organizations list
         Then the Organization's created on field should be set to the current date
