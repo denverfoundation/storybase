@@ -108,7 +108,7 @@ def setup_browser(server):
     world.browser = Browser('webdriver.firefox')
 
 @before.each_feature
-def reset_data(scenario):
+def reset_data(feature):
     """ Clean up Django """
     call_command('flush', interactive=False, verbosity=0)
 
