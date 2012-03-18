@@ -26,7 +26,7 @@ Feature: Projects
         Given the Project "The Metro Denver Regional Equity Atlas" exists
         Given the user navigates to the "Projects" admin
         Given the user visits the admin edit page for Project "The Metro Denver Regional Equity Atlas"
-       Given the user sets the name of the "Project" to "Reqional Equity Atlas"
+       Given the user sets the name of the "Project" to "Regional Equity Atlas"
         Given the user edits the description of the "Project" to be the following: 
             """
             The Denver Regional Equity Atlas is a product of Mile High
@@ -70,7 +70,6 @@ Feature: Projects
     # Acceptance test T0044
     Scenario: An admin can create a Spanish translation to fields of a Project
         Given the admin user is logged in
-        Given the Project "Regional Equity Atlas" exists
         Given the user navigates to the "Projects" admin
         Given the user visits the admin edit page for Project "Regional Equity Atlas"
         Given the user adds a new "Spanish" "Project" translation
@@ -111,7 +110,7 @@ Feature: Projects
             oportunidad, así como desafíos a la creación y preservación de
             las comunidades de calidad cerca de tránsito.
             """
-        Then the Project's last edited field should be set to within 1 minute of the current date and time
+        Then the Project's "Spanish" last edited field should be set to within 1 minute of the current date and time
         Given the user navigates to the Project's "English" detail page
         Then the Project's name should be "Regional Equity Atlas"
         Then the Project's description is listed as the following:

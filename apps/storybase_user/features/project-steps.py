@@ -48,6 +48,13 @@ def last_edited_now(step):
         '%B %d, %Y %I:%M %p')
     world.assert_now(last_edited, 60)
 
+@step(u'Then the Project\'s "([^"]*)" last edited field should be set to within 1 minute of the current date and time')
+def i18n_last_edited_now(step, language):
+    last_edited = datetime.strptime(
+        world.translate_date(world.browser.find_by_css('time.last-edited').value, language),
+        '%B %d, %Y %I:%M %p')
+    world.assert_now(last_edited, 60)
+
 @step(u'Then the Project\'s description should be blank')
 def blank_description(step):
     world.assert_text_not_present('Description')
@@ -83,4 +90,4 @@ def other_fields_unchanged(step):
 
 @step(u'Given the user navigates to the Project\'s "([^"]*)" detail page')
 def visit_translated_detail_page(step, language):
-    assert False, 'This step must be implemented'
+    world.browser.visit(django_url('/%s/projects/%s' % (world.language_lookup(language), world.project.project_id)))
