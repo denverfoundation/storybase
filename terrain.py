@@ -12,14 +12,17 @@ from lettuce.django import django_url
 from splinter.browser import Browser
 from splinter.exceptions import ElementDoesNotExist
 import storybase_user
-from storybase_user.models import Organization
+from storybase_user.models import Organization, OrganizationTranslation
 
 # Utility methods
 
 @world.absorb
 def create_organization(name):
     """ Create an Organization """
-    Organization.objects.create(name=name)
+    org = Organization()
+    org.save()
+    org_translation = OrganizationTranslation(name=name, organization=org)
+    org_translation.save()
 
 @world.absorb
 def set_changed(model, field):
