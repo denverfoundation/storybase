@@ -7,14 +7,15 @@ from storybase_user.models import Organization
 
 @step(u'Given an admin user creates the Organization "([^"]*)" with website URL "([^"]*)"')
 def create(step, name, website_url):
-    world.browser.click_link_by_href("storybase_user/organization/add/")
-    world.browser.fill('name', name)
-    world.browser.fill('website_url', website_url)
-    world.browser.find_by_name('_save').first.click()
-    world.browser.click_link_by_text(name)
+    step.given('Given the user navigates to the "Organizations" addition page')
+    step.given('Given the user sets the name of the "Organization" to "%s"' % name)
+    step.given('Given the user sets the website URL of the "Organization" to "%s"' % website_url)
+    step.given('Given the admin clicks the save button')
 
-@step(u'Then the Organization should have a canonical URL')
-def access_url(step):
+@step(u'Then the Organization "([^"]*)" should have a canonical URL')
+def access_url(step, name):
+    step.given('Given the user navigates to the "Organizations" admin page')
+    world.browser.click_link_by_text(name)
     organization_id = world.browser.find_by_css('.organization_id p').first.value
     world.assert_is_uuid4(organization_id)
     world.browser.visit(django_url('/organizations/%s' % organization_id))
@@ -94,7 +95,7 @@ def other_fields_unchanged(step):
 @step(u'Given an admin assigns "([^"]*)" to the Organization "([^"]*)"')
 def assign_org_to_user(step, username, name):
     """ Assign user to organization via the User admin """
-    organization = Organization.objects.get(name=name)
+    organization = Organization.objects.get(organizationtranslation__name=name)
     world.browser.visit(django_url('/admin/auth/user/'))
     world.browser.click_link_by_text(username)
     world.browser.select('organizations', organization.pk)

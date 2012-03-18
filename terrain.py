@@ -265,3 +265,12 @@ def edit_description_long(step, model):
         world.browser.fill(translated_field_name, step.multiline) 
 
     world.set_changed(model, 'description')
+
+@step(u'Given the user sets the website URL of the "([^"]*)" to "([^"]*)"')
+def edit_website_url(step, model, website_url):
+    try:
+        world.browser.fill('website_url', website_url)
+    except ElementDoesNotExist:
+        translated_field_name = "%stranslation_set-0-website_url" % model.lower()
+        world.browser.fill(translated_field_name, website_url) 
+    world.set_changed(model, 'website_url')

@@ -5,16 +5,17 @@ from uuidfield.fields import UUIDField
 from storybase.fields import ShortTextField
 from storybase.models import TranslatedModel, TranslationModel
 
-class Organization(models.Model):
+class Organization(TranslatedModel):
     """ An organization or a community group that users and stories can be associated with. """
     organization_id = UUIDField(auto=True)
-    name = ShortTextField()
-    slug = models.SlugField()
     website_url = models.URLField(blank=True)
-    description = models.TextField(blank=True)
     members = models.ManyToManyField(User, related_name='organizations', blank=True)
     created = models.DateTimeField(auto_now_add=True)
     last_edited = models.DateTimeField(auto_now=True)
+
+    translated_fields = ['name', 'description', 'slug']
+
+    translation_set = 'organizationtranslation_set'
 
     def __unicode__(self):
         return self.name
@@ -22,6 +23,18 @@ class Organization(models.Model):
     @models.permalink
     def get_absolute_url(self):
         return ('organization_detail', [self.organization_id])
+
+class OrganizationTranslation(TranslationModel):
+    organization = models.ForeignKey('Organization')
+    name = ShortTextField()
+    slug = models.SlugField()
+    description = models.TextField(blank=True)
+
+    def __unicode__(self):
+        return self.name
+
+    class Meta:
+        unique_together = (('organization', 'language'))
 
 class Project(TranslatedModel):
     """ 

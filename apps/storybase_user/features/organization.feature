@@ -4,7 +4,7 @@ Feature: Organizations
     Scenario: Admin can create a new Organization
         Given the admin user is logged in
         Given an admin user creates the Organization "Mile High Connects" with website URL "http://www.urbanlandc.org/collaboratives/mile-high-connects/"
-        Then the Organization should have a canonical URL 
+        Then the Organization "Mile High Connects" should have a canonical URL 
         Then the Organization's website should be listed as "http://www.urbanlandc.org/collaboratives/mile-high-connects/"
         Then the Organization's members list should be blank
         Then the Organization's created on field should be set to the current date

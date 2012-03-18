@@ -12,8 +12,8 @@ def setup_organization(scenario):
 
 @step(u'Given the admin selects "([^"]*)" from the list of available organizations')
 def select_org(step, org_name):
-    user = Organization.objects.get(name=org_name)
-    world.browser.select('organizations_old', user.pk)
+    org = Organization.objects.get(organizationtranslation__name=org_name)
+    world.browser.select('organizations_old', org.pk)
 
 @step(u'Given the admin clicks the Add icon')
 def clicks_org_add_icon(step):

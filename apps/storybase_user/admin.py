@@ -5,7 +5,7 @@ from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from storybase.admin import StorybaseModelAdmin, StorybaseStackedInline
-from models import Organization, Project, ProjectTranslation
+from models import Organization, OrganizationTranslation, Project, ProjectTranslation
 
 class StoryUserAdminForm(UserChangeForm):
     """ 
@@ -63,11 +63,16 @@ class StoryUserAdmin(UserAdmin):
 admin.site.unregister(User)
 admin.site.register(User, StoryUserAdmin)
 
-class OrganizationAdmin(StorybaseModelAdmin):
+class OrganizationTranslationInline(StorybaseStackedInline):
+    model = OrganizationTranslation 
+    extra = 1
     prepopulated_fields = {"slug": ("name",)}
+
+class OrganizationAdmin(StorybaseModelAdmin):
     search_fields = ['name']
     filter_horizontal = ['members']
     readonly_fields = ['created', 'last_edited', 'organization_id']
+    inlines = [OrganizationTranslationInline,]
 
 admin.site.register(Organization, OrganizationAdmin)
 
@@ -79,8 +84,7 @@ class ProjectTranslationInline(StorybaseStackedInline):
 class ProjectAdmin(StorybaseModelAdmin):
     search_fields = ['name']
     filter_horizontal = ['members', 'organizations']
-    readonly_fields = ['project_id']
+    readonly_fields = ['created', 'last_edited', 'project_id']
     inlines = [ProjectTranslationInline,]
 
 admin.site.register(Project, ProjectAdmin)
-
