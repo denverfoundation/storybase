@@ -1,4 +1,3 @@
-import re
 from datetime import datetime, timedelta
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -56,6 +55,20 @@ def _class_lookup(model):
     return classes[model]
 
 @world.absorb
+def language_lookup(language):
+    """ Convert a Python language code as a string
+
+    There's probably a way to do this in the Python standard lib
+    or through the Django API, but I was too lazy to search for it.
+
+    """
+    languages = {
+        'Spanish': 'es',
+        'English': 'en',
+    }
+    return languages[language]
+
+@world.absorb
 def save_info(model, instance_id):
     """ Save a model instance's info for later comparison
     
@@ -71,6 +84,51 @@ def save_info(model, instance_id):
     setattr(world, model_lower, 
             klass.objects.get(**{"%s_id" % model_lower: instance_id}))
     setattr(world, "%s_changed" % model_lower, [])
+
+@world.absorb
+def find_translation_form(language, model):
+    for translation_form in world.browser.find_by_css(".inline-related.dynamic-%stranslation_set" % model.lower()):
+        language_select = translation_form.find_by_name("%s-language" % translation_form['id']).first
+        if language_select.value == language_lookup(language):
+            return translation_form
+
+    raise ElementDoesNotExist 
+
+@world.absorb
+def translate_date(date_str, language):
+    """ Cheap way of translating the internationalized version of the date
+
+    This is Needed because the way we output Spanish dates doesn't 
+    exactly match what a localized strptime expects.  For example,
+    we still output times as HH:MM AM|PM as opposed to a 24-hour hour
+    field.
+
+    If we decide to use time formats that play nicer with a localized
+    strptime, we could use setlocale and then parse with strptime.
+    See http://stackoverflow.com/a/1299387/386210
+
+    """
+    if language == "Spanish":
+        # Translate months from Spanish to English
+        months_es = {
+            'enero': 'January',
+            'febrero': 'February',
+            'marzo': 'March',
+            'abril': 'April',
+            'mayo': 'May',
+            'junio': 'June',
+            'julio': 'July',
+            'agosto': 'August',
+            'septiembre': 'September',
+            'octubre': 'October',
+            'noviembre': 'November',
+            'diciembre': 'December'
+        }
+        for month_es in months_es.keys():
+            if date_str.find(month_es) != -1:
+                return date_str.replace(month_es, months_es[month_es])
+
+    raise Exception 
 
 # Custom Assertions
 
@@ -280,12 +338,17 @@ def edit_website_url(step, model, website_url):
 
 @step(u'Given the user adds a new "([^"]*)" "([^"]*)" translation')
 def add_translation(step, language, model):
-    assert False, 'This step must be implemented'
+    link_text = "Add another %s Translation" % model 
+    world.browser.click_link_by_text(link_text)
+    translation_form = world.browser.find_by_css(".inline-related.dynamic-%stranslation_set" % model.lower()).last
+    world.browser.select("%s-language" % translation_form['id'], language_lookup(language))
 
 @step(u'Given the user sets the "([^"]*)" name of the "([^"]*)" to "([^"]*)"')
 def edit_translation_name(step, language, model, name):
-    assert False, 'This step must be implemented'
+    translation_form = world.find_translation_form(language, model)
+    world.browser.fill("%s-name" % translation_form['id'], name)
 
 @step(u'Given the user edits the "([^"]*)" description of the "([^"]*)" to be the following:')
-def edit_translation_description(step, language, model):
-    assert False, 'This step must be implemented'
+def edit_translation_description_long(step, language, model):
+    translation_form = world.find_translation_form(language, model)
+    world.browser.fill("%s-description" % translation_form['id'], step.multiline)
