@@ -277,3 +277,15 @@ def edit_website_url(step, model, website_url):
         translated_field_name = "%stranslation_set-0-website_url" % model.lower()
         world.browser.fill(translated_field_name, website_url) 
     world.set_changed(model, 'website_url')
+
+@step(u'Given the user adds a new "([^"]*)" "([^"]*)" translation')
+def add_translation(step, language, model):
+    assert False, 'This step must be implemented'
+
+@step(u'Given the user sets the "([^"]*)" name of the "([^"]*)" to "([^"]*)"')
+def edit_translation_name(step, language, model, name):
+    assert False, 'This step must be implemented'
+
+@step(u'Given the user edits the "([^"]*)" description of the "([^"]*)" to be the following:')
+def edit_translation_description(step, language, model):
+    assert False, 'This step must be implemented'

@@ -80,3 +80,7 @@ def other_fields_unchanged(step):
         if field not in world.project_changed:
             assert_equal(getattr(world.project, field),
                 getattr(project, field))
+
+@step(u'Given the user navigates to the Project\'s "([^"]*)" detail page')
+def visit_translated_detail_page(step, language):
+    assert False, 'This step must be implemented'
