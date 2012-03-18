@@ -17,7 +17,7 @@ Feature: Organizations
         Given the Organization "Mile High Connects" exists
         Given the Organization "Mile High Connects" has website URL "http://www.urbanlandc.org/collaboratives/mile-high-connects/"
         Given the user visits the admin edit page for Organization "Mile High Connects"
-        Given the user edits the description of the "Organization" to be "Mile High Connects (formerly know as the Mile High Transit Opportunity Collaborative) is an emerging collaborative of nonprofit and philanthropic organizations working together to ensure the creation of the region’s $6.7 billion FasTracks transit system benefits all communities in the region, including low-income populations."
+        Given the user sets the "description" of the "Organization" to "Mile High Connects (formerly know as the Mile High Transit Opportunity Collaborative) is an emerging collaborative of nonprofit and philanthropic organizations working together to ensure the creation of the region’s $6.7 billion FasTracks transit system benefits all communities in the region, including low-income populations."
         Given the admin clicks the save button
         Given the user navigates to the Organization's detail page
         Then the Organization's description is listed as "Mile High Connects (formerly know as the Mile High Transit Opportunity Collaborative) is an emerging collaborative of nonprofit and philanthropic organizations working together to ensure the creation of the region’s $6.7 billion FasTracks transit system benefits all communities in the region, including low-income populations."
@@ -49,8 +49,8 @@ Feature: Organizations
         Given the admin user is logged in
         Given the Organization "Mile High Connects" exists
         Given the user visits the admin edit page for Organization "Mile High Connects"
-        Given the user sets the name of the "Organization" to "Mile High Transit Opportunities Collaborative"
-        Given the user edits the description of the "Organization" to be "Our primary goal is to ensure that the creation of FasTracks improves accessibility to affordable housing, good-paying jobs, essential services, educational opportunities, improved health, and other elements of a high quality of life for all of Metro Denver’s residents, especially those with lower-incomes."
+        Given the user sets the "name" of the "Organization" to "Mile High Transit Opportunities Collaborative"
+        Given the user sets the "description" of the "Organization" to "Our primary goal is to ensure that the creation of FasTracks improves accessibility to affordable housing, good-paying jobs, essential services, educational opportunities, improved health, and other elements of a high quality of life for all of Metro Denver’s residents, especially those with lower-incomes."
         Given the admin clicks the save button
         Given the user navigates to the Organization's detail page
         Then the Organization's name is listed as "Mile High Transit Opportunities Collaborative"

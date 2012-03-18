@@ -8,8 +8,8 @@ from storybase_user.models import Organization
 @step(u'Given an admin user creates the Organization "([^"]*)" with website URL "([^"]*)"')
 def create(step, name, website_url):
     step.given('Given the user navigates to the "Organizations" addition page')
-    step.given('Given the user sets the name of the "Organization" to "%s"' % name)
-    step.given('Given the user sets the website URL of the "Organization" to "%s"' % website_url)
+    step.given('Given the user sets the "name" of the "Organization" to "%s"' % name)
+    step.given('Given the user sets the "website URL" of the "Organization" to "%s"' % website_url)
     step.given('Given the admin clicks the save button')
 
 @step(u'Then the Organization "([^"]*)" should have a canonical URL')

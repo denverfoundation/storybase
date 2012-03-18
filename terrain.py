@@ -131,6 +131,17 @@ def translate_date(date_str, language):
 
     raise Exception 
 
+@world.absorb
+def format_field_name(field_name):
+    """ Convert human-readable field name to machine field name
+
+    E.g. website URL -> website_url
+
+    """
+    formatted_field_name = field_name.lower()
+    formatted_field_name = re.sub(r'\s', '_', formatted_field_name)
+    return formatted_field_name
+
 # Custom Assertions
 
 @world.absorb
@@ -300,56 +311,43 @@ def visit_model_add_admin(step, model_name):
     step.given("Given the user navigates to the \"%s\" admin" % model_name)
     world.browser.click_link_by_href("add/")
 
-@step(u'Given the user sets the name of the "([^"]*)" to "([^"]*)"')
-def edit_name(step, model, name):
+@step(u'Given the user sets the "([^"]*)" of the "([^"]*)" to "([^"]*)"')
+def edit_field(step, field_name, model, field_value):
+    formatted_field_name = world.format_field_name(field_name)
     try:
-        world.browser.fill('name', name)
+        world.browser.fill(formatted_field_name, field_value)
     except ElementDoesNotExist:
-        translated_field_name = "%stranslation_set-0-name" % model.lower()
-        world.browser.fill(translated_field_name, name) 
-    world.set_changed(model, 'name')
+        translated_field_name = "%stranslation_set-0-%s" % (model.lower(), formatted_field_name)
+        world.browser.fill(translated_field_name, field_value) 
+    world.set_changed(model, field_name)
 
-@step(u'Given the user edits the description of the "([^"]*)" to be "([^"]*)"')
-def edit_description(step, model, description):
+@step(u'Given the user sets the "([^"]*)" of the "([^"]*)" to be the following:')
+def edit_field_long(step, field_name, model):
+    formatted_field_name = world.format_field_name(field_name)
     try:
-        world.browser.fill('description', description)
+        world.browser.fill(formatted_field_name, step.multiline)
     except ElementDoesNotExist:
-        translated_field_name = "%stranslation_set-0-description" % model.lower()
-        world.browser.fill(translated_field_name, description) 
-    world.set_changed(model, 'description')
-
-@step(u'Given the user edits the description of the "([^"]*)" to be the following:')
-def edit_description_long(step, model):
-    try:
-        world.browser.fill('description', step.multiline)
-    except ElementDoesNotExist:
-        translated_field_name = "%stranslation_set-0-description" % model.lower()
+        translated_field_name = "%stranslation_set-0-%s" % (model.lower(), formatted_field_name)
         world.browser.fill(translated_field_name, step.multiline) 
 
-    world.set_changed(model, 'description')
-
-@step(u'Given the user sets the website URL of the "([^"]*)" to "([^"]*)"')
-def edit_website_url(step, model, website_url):
-    try:
-        world.browser.fill('website_url', website_url)
-    except ElementDoesNotExist:
-        translated_field_name = "%stranslation_set-0-website_url" % model.lower()
-        world.browser.fill(translated_field_name, website_url) 
-    world.set_changed(model, 'website_url')
+    world.set_changed(model, formatted_field_name)
 
 @step(u'Given the user adds a new "([^"]*)" "([^"]*)" translation')
 def add_translation(step, language, model):
+    # TODO: Remove the next 2 lines
     link_text = "Add another %s Translation" % model 
     world.browser.click_link_by_text(link_text)
     translation_form = world.browser.find_by_css(".inline-related.dynamic-%stranslation_set" % model.lower()).last
     world.browser.select("%s-language" % translation_form['id'], language_lookup(language))
 
-@step(u'Given the user sets the "([^"]*)" name of the "([^"]*)" to "([^"]*)"')
-def edit_translation_name(step, language, model, name):
+@step(u'Given the user sets the "([^"]*)" "([^"]*)" of the "([^"]*)" to "([^"]*)"')
+def edit_translation_field(step, language, field_name, model, field_value):
     translation_form = world.find_translation_form(language, model)
-    world.browser.fill("%s-name" % translation_form['id'], name)
+    formatted_field_name = world.format_field_name(field_name)
+    world.browser.fill("%s-%s" % (translation_form['id'], formatted_field_name), field_value)
 
-@step(u'Given the user edits the "([^"]*)" description of the "([^"]*)" to be the following:')
-def edit_translation_description_long(step, language, model):
+@step(u'Given the user sets the "([^"]*)" "([^"]*)" of the "([^"]*)" to the following:')
+def edit_translation_field_long(step, language, field_name, model):
     translation_form = world.find_translation_form(language, model)
-    world.browser.fill("%s-description" % translation_form['id'], step.multiline)
+    formatted_field_name = world.format_field_name(field_name)
+    world.browser.fill("%s-%s" % (translation_form['id'], formatted_field_name), step.multiline)

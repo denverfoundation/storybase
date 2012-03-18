@@ -7,7 +7,7 @@ Feature: Projects
         Given the admin user is logged in
         Given the user navigates to the "Projects" admin
         Given the user navigates to the "Projects" addition page
-        Given the user sets the name of the "Project" to "The Metro Denver Regional Equity Atlas"
+        Given the user sets the "name" of the "Project" to "The Metro Denver Regional Equity Atlas"
         Given the admin selects "Mile High Connects" from the list of available organizations 
         Given the admin clicks the Add icon
         # Leave the URL and Description fields blank
@@ -26,8 +26,8 @@ Feature: Projects
         Given the Project "The Metro Denver Regional Equity Atlas" exists
         Given the user navigates to the "Projects" admin
         Given the user visits the admin edit page for Project "The Metro Denver Regional Equity Atlas"
-       Given the user sets the name of the "Project" to "Regional Equity Atlas"
-        Given the user edits the description of the "Project" to be the following: 
+       Given the user sets the "name" of the "Project" to "Regional Equity Atlas"
+        Given the user sets the "description" of the "Project" to the following: 
             """
             The Denver Regional Equity Atlas is a product of Mile High
             Connects (MHC), which came together in 2011 to ensure that 
@@ -73,8 +73,8 @@ Feature: Projects
         Given the user navigates to the "Projects" admin
         Given the user visits the admin edit page for Project "Regional Equity Atlas"
         Given the user adds a new "Spanish" "Project" translation
-        Given the user sets the "Spanish" name of the "Project" to "Atlas Regional de Equidad"
-        Given the user edits the "Spanish" description of the "Project" to be the following: 
+        Given the user sets the "Spanish" "name" of the "Project" to "Atlas Regional de Equidad"
+        Given the user sets the "Spanish" "description" of the "Project" to the following: 
             """
             El Denver Regional de Equidad Atlas es un producto de Mile High
             Conecta (MHC), que se reunieron en 2011 para asegurarse de que
