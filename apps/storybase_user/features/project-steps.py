@@ -21,7 +21,7 @@ def clicks_org_add_icon(step):
 
 @step(u'Then the Project named "([^"]*)" should have a canonical URL')
 def project_canonical_url(step, name):
-    project = Project.objects.get(name=name)
+    project = Project.objects.get(projecttranslation__name=name)
     world.browser.visit(django_url('/projects/%s' % project.project_id))
 
 @step(u'Then the Project\'s name should be "([^"]*)"')

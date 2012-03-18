@@ -10,6 +10,7 @@ from lettuce import before, after, step, world
 from lettuce.django import django_url
 #from south.management.commands import patch_for_test_db_setup
 from splinter.browser import Browser
+from splinter.exceptions import ElementDoesNotExist
 import storybase_user
 from storybase_user.models import Organization
 
@@ -239,16 +240,28 @@ def visit_model_add_admin(step, model_name):
 
 @step(u'Given the user sets the name of the "([^"]*)" to "([^"]*)"')
 def edit_name(step, model, name):
-    world.browser.fill('name', name)
+    try:
+        world.browser.fill('name', name)
+    except ElementDoesNotExist:
+        translated_field_name = "%stranslation_set-0-name" % model.lower()
+        world.browser.fill(translated_field_name, name) 
     world.set_changed(model, 'name')
 
 @step(u'Given the user edits the description of the "([^"]*)" to be "([^"]*)"')
 def edit_description(step, model, description):
-    world.browser.fill('description', description)
+    try:
+        world.browser.fill('description', description)
+    except ElementDoesNotExist:
+        translated_field_name = "%stranslation_set-0-description" % model.lower()
+        world.browser.fill(translated_field_name, description) 
     world.set_changed(model, 'description')
 
 @step(u'Given the user edits the description of the "([^"]*)" to be the following:')
 def edit_description_long(step, model):
-    world.browser.fill('description', step.multiline)
-    world.set_changed(model, 'description')
+    try:
+        world.browser.fill('description', step.multiline)
+    except ElementDoesNotExist:
+        translated_field_name = "%stranslation_set-0-description" % model.lower()
+        world.browser.fill(translated_field_name, step.multiline) 
 
+    world.set_changed(model, 'description')
