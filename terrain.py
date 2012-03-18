@@ -321,7 +321,7 @@ def edit_field(step, field_name, model, field_value):
         world.browser.fill(translated_field_name, field_value) 
     world.set_changed(model, field_name)
 
-@step(u'Given the user sets the "([^"]*)" of the "([^"]*)" to be the following:')
+@step(u'Given the user sets the "([^"]*)" of the "([^"]*)" to the following:')
 def edit_field_long(step, field_name, model):
     formatted_field_name = world.format_field_name(field_name)
     try:
