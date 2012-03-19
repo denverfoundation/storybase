@@ -12,6 +12,7 @@ from nose.tools import assert_equal
 #from south.management.commands import patch_for_test_db_setup
 from splinter.browser import Browser
 from splinter.exceptions import ElementDoesNotExist
+import storybase_story
 import storybase_user
 from storybase_user.models import (Organization, OrganizationTranslation,
     Project, ProjectTranslation)
@@ -61,7 +62,8 @@ def _class_lookup(model):
     """
     classes = {
         'Organization': storybase_user.models.Organization,
-        'Project': storybase_user.models.Project
+        'Project': storybase_user.models.Project,
+        'Story': storybase_story.models.Story
     }
     return classes[model]
 
