@@ -35,7 +35,18 @@ class TranslatedModel(models.Model):
                         # If 'en-us' doesn't have a translation,
                         # try 'en'
                         new_code = code.split('-')[0]
-                        translated_object = translated_manager.get(language=new_code)
+                        try:
+                            translated_object = translated_manager.get(language=new_code)
+                        except ObjectDoesNotExist:
+                            # If a translation doesn't exist in the 
+                            # current language, try the default language
+                            try:
+                                translated_object = translated_manager.get(language=settings.LANGUAGE_CODE)
+                            except ObjectDoesNotExist:
+                                # If all else fails, get the first
+                                # translation we know about
+                                translated_object = translated_manager.all()[0]
+
                 finally:
                     self._translation_cache[code] = translated_object
                 if translated_object:
