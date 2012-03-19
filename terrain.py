@@ -12,7 +12,8 @@ from lettuce.django import django_url
 from splinter.browser import Browser
 from splinter.exceptions import ElementDoesNotExist
 import storybase_user
-from storybase_user.models import Organization, OrganizationTranslation
+from storybase_user.models import (Organization, OrganizationTranslation,
+    Project, ProjectTranslation)
 
 # Utility methods
 
@@ -23,6 +24,14 @@ def create_organization(name):
     org.save()
     org_translation = OrganizationTranslation(name=name, organization=org)
     org_translation.save()
+
+@world.absorb
+def create_project(name):
+    """ Create a Project """
+    project = Project()
+    project.save()
+    project_translation = ProjectTranslation(name=name, project=project)
+    project_translation.save()
 
 @world.absorb
 def set_changed(model, field):
@@ -334,9 +343,6 @@ def edit_field_long(step, field_name, model):
 
 @step(u'Given the user adds a new "([^"]*)" "([^"]*)" translation')
 def add_translation(step, language, model):
-    # TODO: Remove the next 2 lines
-    link_text = "Add another %s Translation" % model 
-    world.browser.click_link_by_text(link_text)
     translation_form = world.browser.find_by_css(".inline-related.dynamic-%stranslation_set" % model.lower()).last
     world.browser.select("%s-language" % translation_form['id'], language_lookup(language))
 
