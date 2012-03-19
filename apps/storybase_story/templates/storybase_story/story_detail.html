@@ -2,15 +2,43 @@
 
 {% block base_content %}
 <h2>{{ story.title }}</h2>
+<p class="byline">{{ story.byline }}</p>
 
-{% for asset in story.inline_assets %}
-{{ asset.render }}
+<h2>Status</h2>
+<p class="status">{{ story.status }}</p>
+
+{% if story.published %}
+<h2>Published Date</h2>
+<p><time class="published">{{ project.created|date:"F j, Y" }}</time></p>
+{% endif %}
+
+{% if story.summary %}
+<h2>Summary</h2>
+{{ story.summary|linebreaks }}
+{% endif %}
+
+{% if story.organizations.count %}
+<h3>Organizations</h3>
+<ul class="organizations">
+{% for organization in story.organizations.all %}
+  <li>{{ organization.name }}</li>
 {% endfor %}
-
-<h3>Articles</h3>
-<ul>
-    {% for article in story.articles %}
-    <li>{{ article.render }}</li>
-    {% endfor %}
 </ul>
+{% endif %}
+
+{% if story.projects.count %}
+<h3>Projects</h3>
+<ul class="projects">
+{% for project in story.projects.all %}
+  <li>{{ project.name }}</li>
+{% endfor %}
+</ul>
+{% endif %}
+
+<h3>Created</h3>
+<p><time class="created">{{ story.created|date:"F j, Y" }}</time></p>
+
+<h3>Last Edited</h3>
+<p><time class="last-edited">{{ story.last_edited|date:"F j, Y g:i A" }} </time></p>
+
 {% endblock %}
