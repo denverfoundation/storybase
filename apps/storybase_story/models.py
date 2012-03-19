@@ -33,6 +33,7 @@ class StoryTranslation(TranslationModel):
 
 class Story(TranslatedModel):
     story_id = UUIDField(auto=True)
+    byline = models.TextField()
     author = models.ForeignKey(User, related_name="stories")
     status = models.CharField(max_length=10, choices=STORY_STATUS, default='draft')
     created = models.DateTimeField(auto_now_add=True)
