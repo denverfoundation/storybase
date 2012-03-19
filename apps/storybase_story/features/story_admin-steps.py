@@ -66,7 +66,7 @@ def visit_detail_page(step):
 
 @step(u'Given the user navigates to the Story\'s "([^"]*)" detail page')
 def visit_translated_detail_page(step, language):
-    world.browser.visit(django_url('/%s/stories/%s' % (world.language_lookup(language), world.stories.story_id)))
+    world.browser.visit(django_url('/%s/stories/%s' % (world.language_lookup(language), world.story.story_id)))
 
 @step(u'Then the user is redirected to the Story\'s "([^"]*)" detail page')
 def detail_redirected_page(step, language):
