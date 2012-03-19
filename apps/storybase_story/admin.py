@@ -19,6 +19,12 @@ class StoryAdmin(StorybaseModelAdmin):
     inlines = [StoryTranslationInline]
     prefix_inline_classes = ['StoryTranslationInline']
 
+    def save_model(self, request, obj, form, change):
+        """ Sets the author field to the current user if it wasn't already set """
+        if obj.author is None:
+            obj.author = request.user
+        obj.save()
+
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         if db_field.name == "assets":
             kwargs["queryset"] = Asset.objects.filter(owner=request.user)

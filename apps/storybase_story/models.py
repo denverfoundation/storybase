@@ -34,7 +34,12 @@ class StoryTranslation(TranslationModel):
 class Story(TranslatedModel):
     story_id = UUIDField(auto=True)
     byline = models.TextField()
-    author = models.ForeignKey(User, related_name="stories")
+    # blank=True, null=True to bypass validation so the user doesn't
+    # have to always remember to set this in the Django admin.
+    # Though this is set to blank=True, null=True, we should always set
+    # this value.  In fact, the StoryModelAdmin class sets this to
+    # request.user
+    author = models.ForeignKey(User, related_name="stories", blank=True, null=True)
     status = models.CharField(max_length=10, choices=STORY_STATUS, default='draft')
     created = models.DateTimeField(auto_now_add=True)
     last_edited = models.DateTimeField(auto_now=True)
