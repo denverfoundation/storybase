@@ -3,7 +3,11 @@ from models import Story
 
 class StoryDetailView(DetailView):
     context_object_name = "story"
-    model = Story
+    queryset = Story.objects.all()
+
+    def get_object(self):
+        object = self.queryset.get(story_id=self.kwargs['story_id'])
+        return object
 
     """
     def get_context_data(self, **kwargs):
