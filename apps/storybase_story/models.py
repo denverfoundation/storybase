@@ -29,7 +29,7 @@ class StoryTranslation(TranslationModel):
         unique_together = (('story', 'language'))
 
     def __unicode__(self):
-        return self.name
+        return self.title
 
 class Story(TranslatedModel):
     story_id = UUIDField(auto=True)
