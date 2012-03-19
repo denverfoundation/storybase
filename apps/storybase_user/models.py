@@ -1,6 +1,5 @@
 from django.contrib.auth.models import User
 from django.db import models
-from django.utils.translation import ugettext_lazy as _
 from uuidfield.fields import UUIDField
 from storybase.fields import ShortTextField
 from storybase.models import TranslatedModel, TranslationModel
