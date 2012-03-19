@@ -8,10 +8,10 @@ Feature: Projects
         Given the user navigates to the "Projects" admin
         Given the user navigates to the "Projects" addition page
         Given the user sets the "name" of the "Project" to "The Metro Denver Regional Equity Atlas"
-        Given the admin selects "Mile High Connects" from the list of available organizations 
-        Given the admin clicks the Add icon
+        Given the user selects "Mile High Connects" from the list of available organizations 
+        Given the user clicks the Add Organization icon
         # Leave the URL and Description fields blank
-        Given the admin clicks the save button
+        Given the user clicks the save button
         Then the Project named "The Metro Denver Regional Equity Atlas" should have a canonical URL 
         Then the Project's name should be "The Metro Denver Regional Equity Atlas"
         Then "Mile High Connects" should be listed in the Project's Organizations list
@@ -43,7 +43,7 @@ Feature: Projects
             identifying areas of opportunity as well as challenges to
             creating and preserving quality communities near transit.
             """
-        Given the admin clicks the save button
+        Given the user clicks the save button
         Given the user navigates to the Project's detail page
         Then the Project's name should be "Regional Equity Atlas"
         Then "Mile High Connects" should be listed in the Project's Organizations list
@@ -90,7 +90,7 @@ Feature: Projects
             oportunidad, así como desafíos a la creación y preservación de
             las comunidades de calidad cerca de tránsito.
             """
-        Given the admin clicks the save button
+        Given the user clicks the save button
         Given the user navigates to the Project's "Spanish" detail page
         Then the Project's name should be "Atlas Regional de Equidad"
         #Then "Mile High Connects" should be listed in the Project's Organizations list

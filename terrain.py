@@ -357,3 +357,16 @@ def edit_translation_field_long(step, language, field_name, model):
     translation_form = world.find_translation_form(language, model)
     formatted_field_name = world.format_field_name(field_name)
     world.browser.fill("%s-%s" % (translation_form['id'], formatted_field_name), step.multiline)
+
+@step(u'Given the user selects "([^"]*)" from the list of available organizations')
+def select_org(step, org_name):
+    org = Organization.objects.get(organizationtranslation__name=org_name)
+    world.browser.select('organizations_old', org.pk)
+
+@step(u'Given the user clicks the Add Organization icon')
+def clicks_org_add_icon(step):
+    world.browser.find_by_css('.organizations .selector-add').first.click()
+
+@step(u'Given the user clicks the save button')
+def click_save(step):
+    world.browser.find_by_name('_save').first.click()

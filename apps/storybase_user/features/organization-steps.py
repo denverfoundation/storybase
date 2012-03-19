@@ -10,7 +10,7 @@ def create(step, name, website_url):
     step.given('Given the user navigates to the "Organizations" addition page')
     step.given('Given the user sets the "name" of the "Organization" to "%s"' % name)
     step.given('Given the user sets the "website URL" of the "Organization" to "%s"' % website_url)
-    step.given('Given the admin clicks the save button')
+    step.given('Given the user clicks the save button')
 
 @step(u'Then the Organization "([^"]*)" should have a canonical URL')
 def access_url(step, name):
@@ -64,10 +64,6 @@ def has_website_url_in_admin(step, name, website_url):
 def visit_admin_edit_page(step, name):
     world.browser.visit(django_url('/admin/storybase_user/organization/'))
     world.browser.click_link_by_text(name)
-
-@step(u'Given the admin clicks the save button')
-def click_save(step):
-    world.browser.find_by_name('_save').first.click()
 
 @step(u'Then the Organization\'s description is listed as "([^"]*)"')
 def see_description(step, description):

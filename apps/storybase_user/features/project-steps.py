@@ -10,14 +10,6 @@ def setup_organization(scenario):
     if scenario.name in matching_scenarios: 
         world.create_organization("Mile High Connects") 
 
-@step(u'Given the admin selects "([^"]*)" from the list of available organizations')
-def select_org(step, org_name):
-    org = Organization.objects.get(organizationtranslation__name=org_name)
-    world.browser.select('organizations_old', org.pk)
-
-@step(u'Given the admin clicks the Add icon')
-def clicks_org_add_icon(step):
-    world.browser.find_by_css('.organizations .selector-add').first.click()
 
 @step(u'Then the Project named "([^"]*)" should have a canonical URL')
 def project_canonical_url(step, name):
