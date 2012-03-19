@@ -10,10 +10,10 @@ Feature: Editing stories in Django Admin
             """
             Many families in the Denver metro area use public
             transportation instead of a school bus because for them, a
-            quality education is worth hours of daily commuting. Colorado’s
+            quality education is worth hours of daily commuting. Colorado's
             school choice program is meant to foster educational equity,
             but the families who benefit most are those who have time and
-            money to travel.  Low-income families are often left in a lurch.
+            money to travel. Low-income families are often left in a lurch.
             """
         Given the user sets the "byline" of the "Story" to "Mile High Connects"
         Given the user selects "The Metro Denver Regional Equity Atlas" from the list of available Projects
@@ -29,10 +29,10 @@ Feature: Editing stories in Django Admin
             """
             Many families in the Denver metro area use public
             transportation instead of a school bus because for them, a
-            quality education is worth hours of daily commuting. Colorado’s
+            quality education is worth hours of daily commuting. Colorado's
             school choice program is meant to foster educational equity,
             but the families who benefit most are those who have time and
-            money to travel.  Low-income families are often left in a lurch.
+            money to travel. Low-income families are often left in a lurch.
             """
         Then the Story's byline should be "Mile High Connects"
         Then "Mile High Connects" should be listed in the Story's Organizations list
