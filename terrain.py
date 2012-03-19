@@ -8,6 +8,7 @@ from django.db.utils import DatabaseError
 from django.test.utils import setup_test_environment, teardown_test_environment
 from lettuce import before, after, step, world
 from lettuce.django import django_url
+from nose.tools import assert_equal
 #from south.management.commands import patch_for_test_db_setup
 from splinter.browser import Browser
 from splinter.exceptions import ElementDoesNotExist
@@ -218,6 +219,11 @@ def assert_text_not_in_list(selector, text):
 
     assert False, "%s found in list" % text
 
+@world.absorb
+def assert_element_text_equal(selector, text):
+    elem = world.browser.find_by_css(selector).first
+    assert_equal(elem.text, text)
+
 # TODO: Figure out why database create with create_test_db doesn't 
 # allow writing.
 #@before.runserver
@@ -366,6 +372,15 @@ def select_org(step, org_name):
 @step(u'Given the user clicks the Add Organization icon')
 def clicks_org_add_icon(step):
     world.browser.find_by_css('.organizations .selector-add').first.click()
+
+@step(u'Given the user selects "([^"]*)" from the list of available Projects')
+def select_project(step, project_name):
+    project = Project.objects.get(projecttranslation__name=project_name)
+    world.browser.select('projects_old', project.pk)
+
+@step(u'Given the user clicks the Add Project icon')
+def given_the_user_clicks_the_add_project_icon(step):
+    world.browser.find_by_css('.projects .selector-add').first.click()
 
 @step(u'Given the user clicks the save button')
 def click_save(step):
