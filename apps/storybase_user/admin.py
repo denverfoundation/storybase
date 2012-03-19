@@ -73,6 +73,7 @@ class OrganizationAdmin(StorybaseModelAdmin):
     filter_horizontal = ['members']
     readonly_fields = ['created', 'last_edited', 'organization_id']
     inlines = [OrganizationTranslationInline,]
+    prefix_inline_classes = ['OrganizationTranslationInline']
 
 admin.site.register(Organization, OrganizationAdmin)
 
@@ -86,5 +87,6 @@ class ProjectAdmin(StorybaseModelAdmin):
     filter_horizontal = ['members', 'organizations']
     readonly_fields = ['created', 'last_edited', 'project_id']
     inlines = [ProjectTranslationInline,]
+    prefix_inline_classes = ['ProjectTranslationInline']
 
 admin.site.register(Project, ProjectAdmin)
