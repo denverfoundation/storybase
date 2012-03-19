@@ -5,7 +5,7 @@ from lettuce.django import django_url
 from nose.tools import assert_equal
 
 @before.each_scenario
-def setup_organization(scenario):
+def setup_organization_and_project(scenario):
     matching_scenarios = ('An admin can create a story and it\'s core metadata in English')
     if scenario.name in matching_scenarios: 
         world.create_organization("Mile High Connects") 
