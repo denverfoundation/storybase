@@ -31,6 +31,15 @@
 </ul>
 {% endif %}
 
+{% if project.curated_stories.count %}
+<h3>Stories</h3>
+<ul class="stories">
+{% for story in project.curated_stories.all %}
+  <li>{{ story.title }}</li>
+{% endfor %}
+</ul>
+{% endif %}
+
 <h3>Created</h3>
 <p><time class="created">{{ project.created|date:"F j, Y" }}</time></p>
 

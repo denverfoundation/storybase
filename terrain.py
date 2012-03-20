@@ -13,6 +13,7 @@ from nose.tools import assert_equal
 from splinter.browser import Browser
 from splinter.exceptions import ElementDoesNotExist
 import storybase_story
+from storybase_story.models import Story, StoryTranslation
 import storybase_user
 from storybase_user.models import (Organization, OrganizationTranslation,
     Project, ProjectTranslation)
@@ -34,6 +35,13 @@ def create_project(name):
     project.save()
     project_translation = ProjectTranslation(name=name, project=project)
     project_translation.save()
+
+@world.absorb
+def create_story(title, summary=""):
+    story = Story()
+    story.save()
+    story_translation = StoryTranslation(title=title, summary=summary, story=story)
+    story_translation.save()
 
 @world.absorb
 def set_changed(model, field):
@@ -154,6 +162,16 @@ def format_field_name(field_name):
     formatted_field_name = re.sub(r'\s', '_', formatted_field_name)
     return formatted_field_name
 
+@world.absorb
+def select_option_by_text(name, text):
+    """ Select an option from a select control based on the option's label """
+    select = world.browser.find_by_name(name).first
+    for option in select.find_by_tag('option'):
+        if option.text == text:
+            world.browser.select(name, option.value)
+            return
+    raise ElementDoesNotExist
+
 # Custom Assertions
 
 @world.absorb
@@ -225,6 +243,16 @@ def assert_text_not_in_list(selector, text):
 def assert_element_text_equal(selector, text):
     elem = world.browser.find_by_css(selector).first
     assert_equal(elem.text, text)
+
+@world.absorb
+def assert_list_equals(selector, list_items):
+    """ Verify the text and order of items in a list """
+    items = world.browser.find_by_css(selector)
+    assert_equal(len(items), len(list_items))
+    i = 0
+    for item in items:
+        assert_equal(item.text, list_items[i])
+        i = i+1
 
 # TODO: Figure out why database create with create_test_db doesn't 
 # allow writing.
@@ -387,3 +415,7 @@ def given_the_user_clicks_the_add_project_icon(step):
 @step(u'Given the user clicks the save button')
 def click_save(step):
     world.browser.find_by_name('_save').first.click()
+
+@step(u'Given the user clicks the "([^"]*)" link')
+def click_link(step, text):
+    world.browser.click_link_by_text(text)
