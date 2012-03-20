@@ -61,7 +61,7 @@ class Story(TranslatedModel):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('story_detail', [str(self.slug)])
+        return ('story_detail', [str(self.story_id)])
 
 class Section(node_factory('SectionRelation')):
     """ Section of a story """
