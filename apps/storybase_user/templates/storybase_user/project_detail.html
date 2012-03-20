@@ -34,7 +34,7 @@
 {% if project.curated_stories.count %}
 <h3>Stories</h3>
 <ul class="stories">
-{% for story in project.curated_stories.all %}
+{% for story in project.ordered_stories %}
   <li>{{ story.title }}</li>
 {% endfor %}
 </ul>

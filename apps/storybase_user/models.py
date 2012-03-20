@@ -67,6 +67,18 @@ class Project(TranslatedModel):
     def __unicode__(self):
         return self.name
 
+    def ordered_stories(self):
+        """ Return sorted curated stories
+
+        This is a helper method to make it easy to access a sorted 
+        list of stories associated with the project in a template.
+
+        Sorts first by weight, then by when a story was associated with
+        the project.
+
+        """
+        return self.curated_stories.order_by('projectstory__weight', 'projectstory__added')
+
 class ProjectTranslation(TranslationModel):
     project = models.ForeignKey('Project')
     name = ShortTextField()
@@ -90,6 +102,7 @@ class ProjectStory(models.Model):
     project = models.ForeignKey('Project')
     story = models.ForeignKey('storybase_story.Story')
     weight = models.IntegerField(default=0)
+    added = models.DateTimeField(auto_now_add=True)
 
     class Meta:
         verbose_name = "story"
