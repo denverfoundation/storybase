@@ -1,16 +1,13 @@
-"""
-This file demonstrates writing tests using the unittest module. These will pass
-when you run "manage.py test".
-
-Replace this with more appropriate tests for your application.
-"""
-
 from django.test import TestCase
+from storybase.utils import slugify
+from models import Story, StoryTranslation
 
-
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
-        """
-        Tests that 1 + 1 always equals 2.
-        """
-        self.assertEqual(1 + 1, 2)
+class StoryModelTest(TestCase):
+    def test_auto_slug(self):
+        title = 'Transportation Challenges Limit Education Choices for Denver Parents'
+        story = Story()
+        story.save()
+        story_translation = StoryTranslation(title=title, story=story)
+        self.assertEqual(story_translation.slug, '')
+        story_translation.save()
+        self.assertEqual(story_translation.slug, slugify(title))

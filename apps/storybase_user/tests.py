@@ -1,6 +1,8 @@
 from django.test import TestCase
 from django.utils import translation
-from models import Organization, OrganizationTranslation
+from storybase.utils import slugify
+from models import (Organization, OrganizationTranslation, Project,
+    ProjectTranslation)
 
 class OrganizationModelTest(TestCase):
     def _create_organization(self, name, language):
@@ -39,3 +41,22 @@ class OrganizationModelTest(TestCase):
         org = self._create_organization(org_name_es, 'es')
         translation.activate('en')
         self.assertEqual(org.name, org_name_es)
+
+    def test_auto_slug(self):
+        name = 'Mile High Connects'
+        organization = Organization()
+        organization.save()
+        organization_translation = OrganizationTranslation(name=name, organization=organization)
+        self.assertEqual(organization_translation.slug, '')
+        organization_translation.save()
+        self.assertEqual(organization_translation.slug, slugify(name))
+
+class ProjectModelTest(TestCase):
+    def test_auto_slug(self):
+        name = 'The Metro Denver Regional Equity Atlas'
+        project = Project()
+        project.save()
+        project_translation = ProjectTranslation(name=name, project=project)
+        self.assertEqual(project_translation.slug, '')
+        project_translation.save()
+        self.assertEqual(project_translation.slug, slugify(name))

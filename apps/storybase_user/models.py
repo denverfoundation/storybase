@@ -3,6 +3,7 @@ from django.db import models
 from uuidfield.fields import UUIDField
 from storybase.fields import ShortTextField
 from storybase.models import TranslatedModel, TranslationModel
+from storybase.utils import slugify
 
 class Organization(TranslatedModel):
     """ An organization or a community group that users and stories can be associated with. """
@@ -29,11 +30,18 @@ class OrganizationTranslation(TranslationModel):
     slug = models.SlugField()
     description = models.TextField(blank=True)
 
-    def __unicode__(self):
-        return self.name
 
     class Meta:
         unique_together = (('organization', 'language'))
+
+    def __unicode__(self):
+        return self.name
+
+    def save(self, *args, **kwargs):
+        """ Overriding save to automatically set slug """
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super(OrganizationTranslation, self).save(*args, **kwargs)
 
 class Project(TranslatedModel):
     """ 
@@ -63,11 +71,17 @@ class ProjectTranslation(TranslationModel):
     slug = models.SlugField()
     description = models.TextField(blank=True)
 
+    class Meta:
+        unique_together = (('project', 'language'))
+
     def __unicode__(self):
         return self.name
 
-    class Meta:
-        unique_together = (('project', 'language'))
+    def save(self, *args, **kwargs):
+        """ Overriding save to automatically set slug """
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super(ProjectTranslation, self).save(*args, **kwargs)
 
 class ProjectStory(models.Model):
     """ "Through" class for Project to Story relations """

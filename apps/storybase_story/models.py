@@ -13,6 +13,7 @@ from django_dag.models import edge_factory, node_factory
 from uuidfield.fields import UUIDField
 from storybase.fields import ShortTextField
 from storybase.models import TranslatedModel, TranslationModel
+from storybase.utils import slugify
 from storybase_asset.models import Asset
 from storybase_user.models import Organization, Project
 #from storybase_tag.models import TaggedItem
@@ -33,6 +34,12 @@ class StoryTranslation(TranslationModel):
 
     def __unicode__(self):
         return self.title
+
+    def save(self, *args, **kwargs):
+        """ Overriding save to automatically set slug """
+        if not self.slug:
+            self.slug = slugify(self.title)
+        super(StoryTranslation, self).save(*args, **kwargs)
 
 class Story(TranslatedModel):
     story_id = UUIDField(auto=True)
