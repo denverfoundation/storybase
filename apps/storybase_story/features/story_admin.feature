@@ -62,7 +62,7 @@ Feature: Editing stories in Django Admin
         Then the Story's published date should be blank
 
     # Accepance test #T0003
-#    Scenario: Acess the Spanish canonical URL for a Story with only an English translation 
-#        Given the Story "Transportation Challenges Limit Education Choices for Denver Parents" exists
-#        Given the user navigates to the Story's "Spanish" detail page
-#        Then the user is redirected to the Story's "English" detail page
+    Scenario: Acess the Spanish canonical URL for a Story with only an English translation 
+        Given the Story "Transportation Challenges Limit Education Choices for Denver Parents" exists
+        Given the user navigates to the Story's "Spanish" detail page
+        Then the user is redirected to the Story's "English" detail page

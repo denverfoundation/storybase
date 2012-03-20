@@ -73,4 +73,4 @@ def detail_redirected_page(step, language):
     language_code = world.language_lookup(language)
     parsed_url = urlparse(world.browser.url)
     assert_equal(parsed_url.path, 
-        "/%s/stories/%s" % (language_code, world.story.story_id))
+        "/%s/stories/%s/" % (language_code, world.story.story_id))
