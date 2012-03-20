@@ -1,5 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
+from django.db.models.signals import post_save
+from django.dispatch import receiver
 from uuidfield.fields import UUIDField
 from storybase.fields import ShortTextField
 from storybase.models import TranslatedModel, TranslationModel
@@ -91,3 +93,11 @@ class ProjectStory(models.Model):
 
     class Meta:
         verbose_name = "story"
+
+@receiver(post_save, sender=Project)
+def add_story(sender, instance, **kwargs):
+    """ Add stories in curated stories list to stories list if they're not already there """ 
+    for story in instance.curated_stories.all():
+        if instance not in story.projects.all():
+            story.projects.add(instance)
+            story.save()
