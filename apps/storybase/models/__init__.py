@@ -59,6 +59,11 @@ class TranslatedModel(models.Model):
 
         return get(name)
 
+    def get_languages(self):
+        translation_set = getattr(self, 'translation_set')
+        translated_manager = getattr(self, translation_set)
+        return [translation.language for translation in translated_manager.all()]
+
     class Meta:
         abstract = True
 
