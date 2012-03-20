@@ -1,4 +1,5 @@
 from datetime import datetime
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import pre_save
@@ -114,3 +115,19 @@ class SectionAsset(models.Model):
     section = models.ForeignKey('Section')
     asset = models.ForeignKey('storybase_asset.Asset')
     weight = models.IntegerField(default=0)
+
+def create_story(title, summary='', byline='', author=None, status=None, language=settings.LANGUAGE_CODE, *args, **kwargs):
+    """ Convenience function for creating a Story
+
+    Allows for the creation of stories without having to explicitly
+    deal with the translations.
+
+    """
+    obj = Story(
+        byline=byline,
+        author=author,
+        status=status)
+    obj.save()
+    translation = StoryTranslation(story=obj, title=title, summary=summary, language=language)
+    translation.save()
+    return obj
