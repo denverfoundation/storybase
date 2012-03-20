@@ -47,7 +47,7 @@ class Project(TranslatedModel):
     last_edited = models.DateTimeField(auto_now=True)
     organizations = models.ManyToManyField(Organization, related_name='projects', blank=True)
     members = models.ManyToManyField(User, related_name='projects', blank=True) 
-    # TODO: Add Stories field to Project 
+    curated_stories = models.ManyToManyField('storybase_story.Story', related_name='curated_in_projects', blank=True, through='ProjectStory')
 
     translated_fields = ['name', 'description', 'slug']
     #translations = models.ManyToManyField('ProjectTranslation', blank=True, verbose_name=_('translations'))
@@ -68,3 +68,12 @@ class ProjectTranslation(TranslationModel):
 
     class Meta:
         unique_together = (('project', 'language'))
+
+class ProjectStory(models.Model):
+    """ "Through" class for Project to Story relations """
+    project = models.ForeignKey('Project')
+    story = models.ForeignKey('storybase_story.Story')
+    weight = models.IntegerField(default=0)
+
+    class Meta:
+        verbose_name = "story"
