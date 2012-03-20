@@ -66,3 +66,18 @@ Feature: Editing stories in Django Admin
         Given the Story "Transportation Challenges Limit Education Choices for Denver Parents" exists
         Given the user navigates to the Story's "Spanish" detail page
         Then the user is redirected to the Story's "English" detail page
+
+    # Acceptance test #T0004
+    Scenario: Publish a story
+        Given the Story "Transportation Challenges Limit Education Choices for Denver Parents" exists 
+        Given the user visits the admin edit page for Story "Transportation Challenges Limit Education Choices for Denver Parents"
+        Given the user sets Status to "published"
+        Given the user clicks the save button
+        Given the user navigates to the Story's detail page
+        Then the Story's status is "published"
+        Then the Story's published field should be set to within 1 minute of the current date and time
+
+    # Acceptance test #T0005
+#    Scenario: Change story metadata
+#        Given the Story "Transportation Challenges Limit Education Choices for Denver Parents" exists 
+#        Given the user visits the admin edit page for Story "Transportation Challenges Limit Education Choices for Denver Parents"

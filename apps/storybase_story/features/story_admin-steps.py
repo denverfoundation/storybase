@@ -74,3 +74,23 @@ def detail_redirected_page(step, language):
     parsed_url = urlparse(world.browser.url)
     assert_equal(parsed_url.path, 
         "/%s/stories/%s/" % (language_code, world.story.story_id))
+
+@step(u'Given the user sets Status to "([^"]*)"')
+def edit_status(step, status):
+    world.browser.select('status', status)
+
+@step(u'Then the Story\'s status is "([^"]*)"')
+def see_status(step, status):
+    seen_status = world.browser.find_by_css('p.status').first.text
+    assert_equal(seen_status, status)
+
+@step(u'Then the Story\'s published field should be set to within 1 minute of the current date and time')
+def published_now(step):
+    published = datetime.strptime(world.browser.find_by_css('time.published').value,
+        '%B %d, %Y %I:%M %p')
+    world.assert_now(published, 60)
+
+@step(u'Given the user visits the admin edit page for Story "([^"]*)"')
+def visit_admin_edit_page(step, title):
+    world.browser.visit(django_url('/admin/storybase_story/story/'))
+    world.browser.click_link_by_text(title)

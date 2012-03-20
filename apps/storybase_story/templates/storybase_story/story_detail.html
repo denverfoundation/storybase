@@ -9,7 +9,7 @@
 
 {% if story.published %}
 <h2>Published Date</h2>
-<p><time class="published">{{ project.created|date:"F j, Y" }}</time></p>
+<p><time class="published">{{ story.published|date:"F j, Y g:i A" }}</time></p>
 {% endif %}
 
 {% if story.summary %}
