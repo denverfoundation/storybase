@@ -223,6 +223,10 @@ small {
   padding-bottom: 1.5%;
 }
 
+figure img {
+  width: auto;
+}
+
 /* Header */
 
 header.pagetop {

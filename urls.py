@@ -2,6 +2,7 @@ from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
 from django.conf import settings
 #from ajax_select import urls as ajax_select_urls
+from storybase_asset.urls import urlpatterns as asset_urlpatterns
 from storybase_user.urls import urlpatterns as user_urlpatterns
 from storybase_story.urls import urlpatterns as story_urlpatterns
 
@@ -12,7 +13,7 @@ urlpatterns = patterns('')
 # Include storybase_user URL patterns
 # Use this pattern instead of include since we want to put the URLs
 # at the top-level
-urlpatterns += user_urlpatterns + story_urlpatterns 
+urlpatterns += user_urlpatterns + story_urlpatterns + asset_urlpatterns 
 
 urlpatterns += patterns('',
     # Examples:

@@ -16,6 +16,10 @@ LICENSES = (
 
 DEFAULT_LICENSE = 'CC BY-NC-SA'
 
+def get_license_name(license_code):
+    licenses = dict(LICENSES)
+    return licenses[license_code]
+
 class TranslatedModel(models.Model):
     translated_fields = []
     _translation_cache = None
@@ -33,41 +37,35 @@ class TranslatedModel(models.Model):
         get = lambda p:super(TranslatedModel, self).__getattribute__(p)
         translated_fields = get('translated_fields') 
         if name in translated_fields:
+            translation_set = get('translation_set')
+            code = translation.get_language()
+            translated_manager = get(translation_set)
             try:
-                translation_set = get('translation_set')
-                code = translation.get_language()
-                translated_manager = get(translation_set)
+                translated_object = None
+                translated_object = self._translation_cache[code]
+            except KeyError:
                 try:
-                    translated_object = None
-                    translated_object = self._translation_cache[code]
-                except KeyError:
+                    translated_object = translated_manager.get(language=code)
+                except ObjectDoesNotExist:
+                    # If 'en-us' doesn't have a translation,
+                    # try 'en'
+                    new_code = code.split('-')[0]
                     try:
-                        translated_object = translated_manager.get(language=code)
+                        translated_object = translated_manager.get(language=new_code)
                     except ObjectDoesNotExist:
-                        # If 'en-us' doesn't have a translation,
-                        # try 'en'
-                        new_code = code.split('-')[0]
+                        # If a translation doesn't exist in the 
+                        # current language, try the default language
                         try:
-                            translated_object = translated_manager.get(language=new_code)
+                            translated_object = translated_manager.get(language=settings.LANGUAGE_CODE)
                         except ObjectDoesNotExist:
-                            # If a translation doesn't exist in the 
-                            # current language, try the default language
-                            try:
-                                translated_object = translated_manager.get(language=settings.LANGUAGE_CODE)
-                            except ObjectDoesNotExist:
-                                # If all else fails, get the first
-                                # translation we know about
-                                translated_object = translated_manager.all()[0]
+                            # If all else fails, get the first
+                            # translation we know about
+                            translated_object = translated_manager.all()[0]
 
-                finally:
-                    self._translation_cache[code] = translated_object
-                if translated_object:
-                    return getattr(translated_object, name)
-            except (ObjectDoesNotExist, AttributeError):
-                # If title attribute doesn't exist on the Asset model, 
-                # try the subclass.
-                if name == 'title':
-                    return getattr(self.subclass(), name)
+            finally:
+                self._translation_cache[code] = translated_object
+            if translated_object:
+                return getattr(translated_object, name)
 
         return get(name)
 

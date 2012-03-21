@@ -1,11 +1,15 @@
+from datetime import datetime
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
+from django.db.models.signals import pre_save
+from django.dispatch import receiver
 from django.utils.safestring import mark_safe
 from filer.fields.image import FilerImageField
 from uuidfield.fields import UUIDField
 from storybase.fields import ShortTextField
 from storybase.models import (LICENSES, DEFAULT_LICENSE,
+    get_license_name,
     TranslatedModel, TranslationModel)
 
 ASSET_TYPES = (
@@ -23,7 +27,7 @@ ASSET_STATUS = (
     (u'published', u'published'),
 )
 
-DEFAULT_STATUS = u'draft'
+DEFAULT_STATUS = u'published'
 
 class Asset(TranslatedModel):
     asset_id = UUIDField(auto=True)
@@ -57,12 +61,32 @@ class Asset(TranslatedModel):
 
         return self 
 
+    @models.permalink
+    def get_absolute_url(self):
+        return ('asset_detail', [str(self.asset_id)])
+
+    def license_name(self):
+        """ Convert the license code to a more human-readable version """
+        return get_license_name(self.license)
+
     def render(self, format='html'):
         try:
             return getattr(self, "render_" + format).__call__()
         except AttributeError:
             return self.__unicode__()
 
+@receiver(pre_save, sender=Asset)
+def set_date_on_published(sender, instance, **kwargs):
+    """ Set the published date of a story when it's status is changed to 'published' """
+    try:
+        asset = Asset.objects.get(pk=instance.pk)
+    except Asset.DoesNotExist:
+        # Object is new
+        if instance.status == 'published':
+            instance.published = datetime.now()
+    else:
+        if instance.status == 'published' and asset.status != 'published':
+            instance.published = datetime.now()
 
 class AssetTranslation(TranslationModel):
     asset = models.ForeignKey('Asset', related_name="%(app_label)s_%(class)s_related") 
@@ -141,3 +165,7 @@ class LocalImageAsset(Asset):
 
 class LocalImageAssetTranslation(AssetTranslation):
     image = FilerImageField()
+
+def get_asset(asset_id):
+    asset = Asset.objects.get(asset_id=asset_id)
+    return asset.subclass()
