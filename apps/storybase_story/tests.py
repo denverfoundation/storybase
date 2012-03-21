@@ -12,6 +12,43 @@ class StoryModelTest(TestCase):
         story_translation.save()
         self.assertEqual(story_translation.slug, slugify(title))
 
+    def test_get_languages(self):
+        from django.conf import settings
+        from storybase_story.models import create_story
+
+        title = "Transportation Challenges Limit Education Choices for Denver Parents"
+        summary = """
+            Many families in the Denver metro area use public
+            transportation instead of a school bus because for them, a
+            quality education is worth hours of daily commuting. Colorado's
+            school choice program is meant to foster educational equity,
+            but the families who benefit most are those who have time and
+            money to travel. Low-income families are often left in a lurch.
+            """
+        byline = "Mile High Connects"
+        story = create_story(title=title, summary=summary, byline=byline)
+        self.assertEqual([settings.LANGUAGE_CODE], story.get_languages())
+
+    def test_get_languages_multiple(self):
+        from django.conf import settings
+        from storybase_story.models import create_story, StoryTranslation
+
+        title = "Transportation Challenges Limit Education Choices for Denver Parents"
+        summary = """
+            Many families in the Denver metro area use public
+            transportation instead of a school bus because for them, a
+            quality education is worth hours of daily commuting. Colorado's
+            school choice program is meant to foster educational equity,
+            but the families who benefit most are those who have time and
+            money to travel. Low-income families are often left in a lurch.
+            """
+        byline = "Mile High Connects"
+        story = create_story(title=title, summary=summary, byline=byline)
+        translation = StoryTranslation(story=story, title="Spanish Title",
+            summary="Spanish Summary", language="es")
+        translation.save()
+        self.assertEqual([settings.LANGUAGE_CODE, 'es'], story.get_languages())
+
 class StoryApiTest(TestCase):
     """ Test case for the internal Story API """
 
