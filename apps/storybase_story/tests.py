@@ -28,7 +28,8 @@ class StoryApiTest(TestCase):
             money to travel. Low-income families are often left in a lurch.
             """
         byline = "Mile High Connects"
-        self.assertRaises(Story.DoesNotExist, Story.objects.get(title=title))
+        with self.assertRaises(Story.DoesNotExist):
+            Story.objects.get(storytranslation__title=title)
         story = create_story(title=title, summary=summary, byline=byline)
         self.assertEqual(story.title, title)
         self.assertEqual(story.summary, summary)
