@@ -1,9 +1,9 @@
-from datetime import datetime, timedelta
+from datetime import datetime
 import re
-from django.conf import settings
+#from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.management import call_command
-from django.db import connection
+#from django.db import connection
 from django.db.utils import DatabaseError
 from django.test.utils import setup_test_environment, teardown_test_environment
 from lettuce import before, after, step, world
@@ -13,28 +13,10 @@ from nose.tools import assert_equal
 from splinter.browser import Browser
 from splinter.exceptions import ElementDoesNotExist
 import storybase_story
-from storybase_story.models import Story, StoryTranslation
 import storybase_user
-from storybase_user.models import (Organization, OrganizationTranslation,
-    Project, ProjectTranslation)
+from storybase_user import Project
 
 # Utility methods
-
-@world.absorb
-def create_organization(name):
-    """ Create an Organization """
-    org = Organization()
-    org.save()
-    org_translation = OrganizationTranslation(name=name, organization=org)
-    org_translation.save()
-
-@world.absorb
-def create_project(name):
-    """ Create a Project """
-    project = Project()
-    project.save()
-    project_translation = ProjectTranslation(name=name, project=project)
-    project_translation.save()
 
 @world.absorb
 def set_changed(model, field):

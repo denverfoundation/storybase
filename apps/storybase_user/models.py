@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
@@ -114,3 +115,35 @@ def add_story(sender, instance, **kwargs):
         if instance not in story.projects.all():
             story.projects.add(instance)
             story.save()
+
+def create_project(name, description='', website_url='', language=settings.LANGUAGE_CODE):
+    """ Convenience function for creating a Project 
+    
+    Allows for the creation of stories without having to explicitely
+    deal with the translations.
+
+    """
+    project = Project(website_url=website_url)
+    project.save()
+    project_translation = ProjectTranslation(
+        name=name,
+        description=description, 
+        project=project)
+    project_translation.save()
+    return project
+
+def create_organization(name, description='', website_url='', language=settings.LANGUAGE_CODE):
+    """ Convenience function for creating an Organization
+    
+    Allows for the creation of organizations without having to explicitely
+    deal with the translations.
+
+    """
+    org = Organization(website_url=website_url)
+    org.save()
+    org_translation = OrganizationTranslation(
+        name=name,
+        description=description,
+        organization=org)
+    org_translation.save()
+    return org

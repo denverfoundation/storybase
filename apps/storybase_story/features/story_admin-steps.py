@@ -3,13 +3,14 @@ from urlparse import urlparse
 from lettuce import before, step, world
 from lettuce.django import django_url
 from nose.tools import assert_equal
+from storybase_user.models import create_organization, create_project
 
 @before.each_scenario
 def setup_organization_and_project(scenario):
     matching_scenarios = ('An admin can create a story and it\'s core metadata in English')
     if scenario.name in matching_scenarios: 
-        world.create_organization("Mile High Connects") 
-        world.create_project('The Metro Denver Regional Equity Atlas')
+        create_organization(name="Mile High Connects") 
+        create_project(name='The Metro Denver Regional Equity Atlas')
 
 @step(u'Then the Story "([^"]*)" should have a canonical URL')
 def access_url(step, title):
