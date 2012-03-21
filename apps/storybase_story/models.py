@@ -24,6 +24,8 @@ STORY_STATUS = (
     (u'published', u'published'),
 )
 
+DEFAULT_STATUS = u'draft'
+
 class StoryTranslation(TranslationModel):
     story = models.ForeignKey('Story')
     title = ShortTextField() 
@@ -51,7 +53,7 @@ class Story(TranslatedModel):
     # this value.  In fact, the StoryModelAdmin class sets this to
     # request.user
     author = models.ForeignKey(User, related_name="stories", blank=True, null=True)
-    status = models.CharField(max_length=10, choices=STORY_STATUS, default='draft')
+    status = models.CharField(max_length=10, choices=STORY_STATUS, default=DEFAULT_STATUS)
     created = models.DateTimeField(auto_now_add=True)
     last_edited = models.DateTimeField(auto_now=True)
     published = models.DateTimeField(blank=True, null=True)
@@ -116,7 +118,7 @@ class SectionAsset(models.Model):
     asset = models.ForeignKey('storybase_asset.Asset')
     weight = models.IntegerField(default=0)
 
-def create_story(title, summary='', byline='', author=None, status=None, language=settings.LANGUAGE_CODE, *args, **kwargs):
+def create_story(title, summary='', byline='', author=None, status=DEFAULT_STATUS, language=settings.LANGUAGE_CODE, *args, **kwargs):
     """ Convenience function for creating a Story
 
     Allows for the creation of stories without having to explicitly
