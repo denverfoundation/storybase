@@ -142,8 +142,8 @@ class ProjectModelTest(TestCase):
         project.add_story(story2, 0)
         stories = project.ordered_stories()
         self.assertEqual(stories.count(), 2)
-        self.assertEqual(stories[0], story1)
-        self.assertEqual(stories[1], story2)
+        self.assertEqual(stories[0], story2)
+        self.assertEqual(stories[1], story1)
 
     def test_ordered_stories_by_weight(self):
         """ Tests that ordered_stories will order first by weight """
@@ -166,13 +166,13 @@ class ProjectModelTest(TestCase):
         project = create_project(name=name, description=description)
         story1 = create_story(title='Story 1', summary='', byline='')
         story2 = create_story(title='Story 2', summary='', byline='')
-        project.add_story(story1, 25)
+        project.add_story(story1, 5)
         sleep(2)
-        project.add_story(story2, 5)
+        project.add_story(story2, 25)
         stories = project.ordered_stories()
         self.assertEqual(stories.count(), 2)
-        self.assertEqual(stories[0], story2)
-        self.assertEqual(stories[1], story1)
+        self.assertEqual(stories[0], story1)
+        self.assertEqual(stories[1], story2)
 
 class ProjectApiTest(TestCase):
     def test_create_project(self):

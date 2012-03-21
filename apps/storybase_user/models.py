@@ -86,10 +86,10 @@ class Project(TranslatedModel):
         list of stories associated with the project in a template.
 
         Sorts first by weight, then by when a story was associated with
-        the project.
+        the project in reverse chronological order.
 
         """
-        return self.curated_stories.order_by('projectstory__weight', 'projectstory__added')
+        return self.curated_stories.order_by('projectstory__weight', '-projectstory__added')
 
 class ProjectTranslation(TranslationModel):
     project = models.ForeignKey('Project')
