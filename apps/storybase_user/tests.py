@@ -3,8 +3,10 @@ from django.test import TestCase
 from django.utils import translation
 from storybase.utils import slugify
 from storybase_story.models import create_story
-from models import (create_project, Organization,
-    OrganizationTranslation, Project, ProjectStory, ProjectTranslation)
+from models import (create_organization, create_project,
+    Organization, OrganizationStory, OrganizationTranslation,
+    Project, ProjectStory, ProjectTranslation)
+    
 
 class OrganizationModelTest(TestCase):
     def _create_organization(self, name, language):
@@ -53,9 +55,53 @@ class OrganizationModelTest(TestCase):
         organization_translation.save()
         self.assertEqual(organization_translation.slug, slugify(name))
 
+    def test_add_story(self):
+        organization = create_organization(name='Mile High Connects')
+        title = "Transportation Challenges Limit Education Choices for Denver Parents"
+        summary = """
+            Many families in the Denver metro area use public
+            transportation instead of a school bus because for them, a
+            quality education is worth hours of daily commuting. Colorado's
+            school choice program is meant to foster educational equity,
+            but the families who benefit most are those who have time and
+            money to travel. Low-income families are often left in a lurch.
+            """
+        byline = "Mile High Connects"
+        story = create_story(title=title, summary=summary, byline=byline)
+        weight = 15
+        organization.add_story(story, weight) 
+        self.assertTrue(story in organization.curated_stories.all())
+        OrganizationStory.objects.get(organization=organization, story=story,
+                                 weight=weight)
+
+    def test_ordered_stories_by_time(self):
+        """ Tests that ordered_stories will order by date if weights are equal """
+        organization = create_organization(name='Mile High Connects')
+        story1 = create_story(title='Story 1', summary='', byline='')
+        story2 = create_story(title='Story 2', summary='', byline='')
+        organization.add_story(story1, 0)
+        sleep(2)
+        organization.add_story(story2, 0)
+        stories = organization.ordered_stories()
+        self.assertEqual(stories.count(), 2)
+        self.assertEqual(stories[0], story2)
+        self.assertEqual(stories[1], story1)
+
+    def test_ordered_stories_by_weight(self):
+        """ Tests that ordered_stories will order first by weight """
+        organization = create_organization(name='Mile High Connects')
+        story1 = create_story(title='Story 1', summary='', byline='')
+        story2 = create_story(title='Story 2', summary='', byline='')
+        organization.add_story(story1, 5)
+        sleep(2)
+        organization.add_story(story2, 25)
+        stories = organization.ordered_stories()
+        self.assertEqual(stories.count(), 2)
+        self.assertEqual(stories[0], story1)
+        self.assertEqual(stories[1], story2)
+
 class OrganizationApiTest(TestCase):
     def test_create_organization(self):
-        from storybase_user.models import create_organization, Organization
 
         name = "Mile High Connects"
         website_url = "http://www.urbanlandc.org/collaboratives/mile-high-connects/"

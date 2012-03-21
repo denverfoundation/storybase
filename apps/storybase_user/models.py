@@ -8,6 +8,16 @@ from storybase.fields import ShortTextField
 from storybase.models import TranslatedModel, TranslationModel
 from storybase.utils import slugify
 
+class CuratedStory(models.Model):
+    """ Abstract base class for "through" model for associating Stories with Projects and Organizations """
+    story = models.ForeignKey('storybase_story.Story')
+    weight = models.IntegerField(default=0)
+    added = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        abstract = True
+        verbose_name = "story"
+
 class Organization(TranslatedModel):
     """ An organization or a community group that users and stories can be associated with. """
     organization_id = UUIDField(auto=True)
@@ -15,9 +25,9 @@ class Organization(TranslatedModel):
     members = models.ManyToManyField(User, related_name='organizations', blank=True)
     created = models.DateTimeField(auto_now_add=True)
     last_edited = models.DateTimeField(auto_now=True)
+    curated_stories = models.ManyToManyField('storybase_story.Story', related_name='curated_in_organizations', blank=True, through='OrganizationStory')
 
     translated_fields = ['name', 'description', 'slug']
-
     translation_set = 'organizationtranslation_set'
 
     def __unicode__(self):
@@ -27,12 +37,34 @@ class Organization(TranslatedModel):
     def get_absolute_url(self):
         return ('organization_detail', [self.organization_id])
 
+    def add_story(self, story, weight=0):
+        """ Associate a story with the Organization 
+        
+        Arguments:
+        story -- The Story model instance object to be associated
+        weight -- The ordering of the story relative to other stories
+
+        """
+        OrganizationStory.objects.create(organization=self, story=story,
+                                         weight=weight)
+
+    def ordered_stories(self):
+        """ Return sorted curated stories
+
+        This is a helper method to make it easy to access a sorted 
+        list of stories associated with the project in a template.
+
+        Sorts first by weight, then by when a story was associated with
+        the project in reverse chronological order.
+
+        """
+        return self.curated_stories.order_by('organizationstory__weight', '-organizationstory__added')
+
 class OrganizationTranslation(TranslationModel):
     organization = models.ForeignKey('Organization')
     name = ShortTextField()
     slug = models.SlugField()
     description = models.TextField(blank=True)
-
 
     class Meta:
         unique_together = (('organization', 'language'))
@@ -45,6 +77,18 @@ class OrganizationTranslation(TranslationModel):
         if not self.slug:
             self.slug = slugify(self.name)
         super(OrganizationTranslation, self).save(*args, **kwargs)
+
+class OrganizationStory(CuratedStory):
+    """ "Through" class for Organization to Story relations """
+    organization = models.ForeignKey('Organization')
+
+@receiver(post_save, sender=Organization)
+def add_story_to_organization(sender, instance, **kwargs):
+    """ Add stories in curated stories list to stories list if they're not already there """ 
+    for story in instance.curated_stories.all():
+        if instance not in story.organizations.all():
+            story.organizations.add(instance)
+            story.save()
 
 class Project(TranslatedModel):
     """ 
@@ -61,9 +105,8 @@ class Project(TranslatedModel):
     curated_stories = models.ManyToManyField('storybase_story.Story', related_name='curated_in_projects', blank=True, through='ProjectStory')
 
     translated_fields = ['name', 'description', 'slug']
-    #translations = models.ManyToManyField('ProjectTranslation', blank=True, verbose_name=_('translations'))
-
     translation_set = 'projecttranslation_set'
+    #translations = models.ManyToManyField('ProjectTranslation', blank=True, verbose_name=_('translations'))
 
     def __unicode__(self):
         return self.name
@@ -109,18 +152,12 @@ class ProjectTranslation(TranslationModel):
             self.slug = slugify(self.name)
         super(ProjectTranslation, self).save(*args, **kwargs)
 
-class ProjectStory(models.Model):
+class ProjectStory(CuratedStory):
     """ "Through" class for Project to Story relations """
     project = models.ForeignKey('Project')
-    story = models.ForeignKey('storybase_story.Story')
-    weight = models.IntegerField(default=0)
-    added = models.DateTimeField(auto_now_add=True)
-
-    class Meta:
-        verbose_name = "story"
 
 @receiver(post_save, sender=Project)
-def add_story(sender, instance, **kwargs):
+def add_story_to_project(sender, instance, **kwargs):
     """ Add stories in curated stories list to stories list if they're not already there """ 
     for story in instance.curated_stories.all():
         if instance not in story.projects.all():
