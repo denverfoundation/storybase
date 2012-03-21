@@ -41,3 +41,13 @@ def change_story_weight(step, title, weight):
             return True
 
     raise ElementDoesNotExist, "Could not find associated story with title %s" % title
+
+@step(u'Given the user removes the Story "([^"]*)" from the Project')
+def remove_story(step, title):
+    for projectstory_form in world.browser.find_by_css('.dynamic-projectstory_set'):
+        projectstory_id = projectstory_form['id']
+        if world.option_selected_by_text("%s-story" % projectstory_id, title):
+            world.browser.check("%s-DELETE" % projectstory_id)
+            return True
+
+    raise ElementDoesNotExist, "Could not find associated story with title %s" % title

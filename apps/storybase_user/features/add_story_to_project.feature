@@ -32,3 +32,15 @@ Feature: Associating stories to projects
             | Connecting the Dots Between Transit And Other Regional Priorities |
         Then the Project's last edited field should be set to within 1 minute of the current date and time
         Then all other fields of the Project are unchanged
+
+    # Acceptance test T0025
+        Given the Project "The Metro Denver Regional Equity Atlas" exists
+        Given the user visits the admin edit page for Project "The Metro Denver Regional Equity Atlas"
+        Given the user removes the Story "Connecting the Dots Between Transit And Other Regional Priorities" from the Project
+        Given the user clicks the save button
+        Given the user navigates to the Project's detail page
+        Then the Project's stories list should list these stories
+            | title |
+            | Transportation Challenges Limit Education Choices for Denver Parents |
+        Then the Project's last edited field should be set to within 1 minute of the current date and time
+        Then all other fields of the Project are unchanged
