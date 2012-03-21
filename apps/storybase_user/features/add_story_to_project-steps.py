@@ -1,4 +1,5 @@
 from lettuce import before, step, world
+from storybase_story.models import create_story
 
 @before.each_scenario
 def setup(scenario):
@@ -13,8 +14,8 @@ def setup(scenario):
             but the families who benefit most are those who have time and
             money to travel. Low-income families are often left in a lurch.
             """
-        world.create_story(title='Transportation Challenges Limit Education Choices for Denver Parents', summary=story_summary)
-        world.create_story(title='Connecting the Dots Between Transit And Other Regional Priorities')
+        create_story(title='Transportation Challenges Limit Education Choices for Denver Parents', summary=story_summary)
+        create_story(title='Connecting the Dots Between Transit And Other Regional Priorities')
 
 def find_last_projectstory_form():
     return world.browser.find_by_css('.dynamic-projectstory_set').last

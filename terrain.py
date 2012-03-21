@@ -37,13 +37,6 @@ def create_project(name):
     project_translation.save()
 
 @world.absorb
-def create_story(title, summary=""):
-    story = Story()
-    story.save()
-    story_translation = StoryTranslation(title=title, summary=summary, story=story)
-    story_translation.save()
-
-@world.absorb
 def set_changed(model, field):
     """ Mark a field of a Model instance as changed
     
