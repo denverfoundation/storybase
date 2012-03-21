@@ -2,11 +2,20 @@ from django import forms
 from django.contrib import admin
 from django.db import models
 from tinymce.widgets import TinyMCE
-from models import ExternalAsset, ExternalAssetTranslation, HtmlAsset, HtmlAssetTranslation, FilerImageAsset, FilerImageAssetTranslation
+from storybase.admin import StorybaseModelAdmin, StorybaseStackedInline
+from models import (ExternalAsset, ExternalAssetTranslation,
+    HtmlAsset, HtmlAssetTranslation, 
+    LocalImageAsset, LocalImageAssetTranslation)
 
-class AssetAdmin(admin.ModelAdmin):
+class AssetAdmin(StorybaseModelAdmin):
     #list_display = ('title',)
     readonly_fields = ['asset_id']
+
+    def save_model(self, request, obj, form, change):
+        """ Sets the owner field to the current user if it wasn't already set """
+        if obj.owner is None:
+            obj.owner = request.user
+        obj.save()
 
 class HtmlAssetTranslationAdminForm(forms.ModelForm):
     class Meta:
@@ -18,17 +27,17 @@ class HtmlAssetTranslationAdminForm(forms.ModelForm):
                 )
         }
 
-class HtmlAssetTranslationInline(admin.StackedInline):
+class HtmlAssetTranslationInline(StorybaseStackedInline):
     model = HtmlAssetTranslation
     form = HtmlAssetTranslationAdminForm
     extra = 1
 
-class ExternalAssetTranslationInline(admin.StackedInline):
+class ExternalAssetTranslationInline(StorybaseStackedInline):
     model = ExternalAssetTranslation
     extra = 1
 
-class FilerImageAssetTranslationInline(admin.StackedInline):
-    model = FilerImageAssetTranslation
+class LocalImageAssetTranslationInline(StorybaseStackedInline):
+    model = LocalImageAssetTranslation
     extra = 1
 
 class HtmlAssetAdmin(AssetAdmin):
@@ -37,10 +46,9 @@ class HtmlAssetAdmin(AssetAdmin):
 class ExternalAssetAdmin(AssetAdmin):
     inlines = [ExternalAssetTranslationInline,]
 
-class FilerImageAssetAdmin(AssetAdmin):
-    inlines = [FilerImageAssetTranslationInline,]
-
+class LocalImageAssetAdmin(AssetAdmin):
+    inlines = [LocalImageAssetTranslationInline,]
 
 admin.site.register(ExternalAsset, ExternalAssetAdmin)
 admin.site.register(HtmlAsset, HtmlAssetAdmin)
-admin.site.register(FilerImageAsset, FilerImageAssetAdmin)
+admin.site.register(LocalImageAsset, LocalImageAssetAdmin)

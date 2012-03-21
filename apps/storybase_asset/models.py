@@ -1,23 +1,47 @@
-from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _
 from filer.fields.image import FilerImageField
 from uuidfield.fields import UUIDField
-from storybase.models import TranslatedModel, TranslationModel
+from storybase.fields import ShortTextField
+from storybase.models import (LICENSES, DEFAULT_LICENSE,
+    TranslatedModel, TranslationModel)
 
 ASSET_TYPES = (
-  (u'article', u'article'),
   (u'image', u'image'),
+  (u'audio', u'audio'),
+  (u'video', u'video'),
   (u'map', u'map'),
+  (u'table', u'table'),
+  (u'quotation', u'quotation'),
+  (u'text', u'text'),
 )
+
+ASSET_STATUS = (
+    (u'draft', u'draft'),
+    (u'published', u'published'),
+)
+
+DEFAULT_STATUS = u'draft'
 
 class Asset(TranslatedModel):
     asset_id = UUIDField(auto=True)
     type = models.CharField(max_length=10, choices=ASSET_TYPES)
-    owner = models.ForeignKey(User, related_name="assets")
+    attribution = models.TextField(blank=True)
+    license = models.CharField(max_length=25, choices=LICENSES,
+                               default=DEFAULT_LICENSE)
+    status = models.CharField(max_length=10, choices=ASSET_STATUS, default=DEFAULT_STATUS)
+    owner = models.ForeignKey(User, related_name="assets", blank=True,
+                              null=True)
+    section_specific = models.BooleanField(default=False)
+    # asset_created is when the asset itself was created
+    # e.g. date a photo was taken
+    asset_created = models.DateTimeField(blank=True, null=True)
+    # created is when the object was created in the system
+    created = models.DateTimeField(auto_now_add=True)
+    last_edited = models.DateTimeField(auto_now=True)
+    published = models.DateTimeField(blank=True, null=True)
 
     translated_fields = ['title', 'caption']
 
@@ -25,7 +49,7 @@ class Asset(TranslatedModel):
         return self.title
 
     def subclass(self):
-        for attr in ('externalasset', 'htmlasset', 'filerimageasset'):
+        for attr in ('externalasset', 'htmlasset', 'localimageasset'):
             try:
                 return getattr(self, attr)
             except ObjectDoesNotExist:
@@ -42,7 +66,7 @@ class Asset(TranslatedModel):
 
 class AssetTranslation(TranslationModel):
     asset = models.ForeignKey('Asset', related_name="%(app_label)s_%(class)s_related") 
-    title = models.CharField(max_length=200)
+    title = ShortTextField() 
     caption = models.TextField(blank=True)
 
     class Meta:
@@ -50,7 +74,7 @@ class AssetTranslation(TranslationModel):
         unique_together = (('asset', 'language')) 
 
 class ExternalAsset(Asset):
-    translations = models.ManyToManyField('ExternalAssetTranslation', blank=True, verbose_name=_('translations'))
+#    translations = models.ManyToManyField('ExternalAssetTranslation', blank=True, verbose_name=_('translations'))
 
     translation_set = 'storybase_asset_externalassettranslation_related'
     translated_fields = Asset.translated_fields + ['url']
@@ -74,7 +98,7 @@ class ExternalAssetTranslation(AssetTranslation):
     url = models.URLField()
 
 class HtmlAsset(Asset):
-    translations = models.ManyToManyField('HtmlAssetTranslation', blank=True, verbose_name=_('translations'))
+#    translations = models.ManyToManyField('HtmlAssetTranslation', blank=True, verbose_name=_('translations'))
 
     translation_set = 'storybase_asset_htmlassettranslation_related'
     translated_fields = Asset.translated_fields + ['body']
@@ -97,10 +121,10 @@ class HtmlAsset(Asset):
 class HtmlAssetTranslation(AssetTranslation):
     body = models.TextField(blank=True)
 
-class FilerImageAsset(Asset):
-    translations = models.ManyToManyField('FilerImageAssetTranslation', blank=True, verbose_name=_('translations'))
+class LocalImageAsset(Asset):
+#    translations = models.ManyToManyField('LocalImageAssetTranslation', blank=True, verbose_name=_('translations'))
 
-    translation_set = 'storybase_asset_filerimageassettranslation_related'
+    translation_set = 'storybase_asset_localimageassettranslation_related'
     translated_fields = Asset.translated_fields + ['image']
 
     def render_html(self):
@@ -115,5 +139,5 @@ class FilerImageAsset(Asset):
             
         return mark_safe(u'\n'.join(output))
 
-class FilerImageAssetTranslation(AssetTranslation):
+class LocalImageAssetTranslation(AssetTranslation):
     image = FilerImageField()

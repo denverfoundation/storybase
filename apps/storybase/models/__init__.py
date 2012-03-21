@@ -4,6 +4,18 @@ from django.db import models
 from django.utils import translation
 from uuidfield.fields import UUIDField
 
+LICENSES = (
+   ('CC BY-NC-SA', u'Attribution-NonCommercial-ShareAlike Creative Commons'),
+   ('CC BY-NC', u'Attribution-NonCommercial Creative Commons'),
+   ('CC BY-NC-ND', u'Attribution-NonCommercial-NoDerivs Creative Commons'),
+   ('CC BY', u'Attribution Creative Commons'),
+   ('CC BY-SA', u'Attribution-ShareAlike Creative Commons'),
+   ('CC BY-ND', u'Attribution-NoDerivs Creative Commons'),
+   ('none', u'None (All rights reserved)')
+)
+
+DEFAULT_LICENSE = 'CC BY-NC-SA'
+
 class TranslatedModel(models.Model):
     translated_fields = []
     _translation_cache = None

@@ -101,13 +101,6 @@ class Section(node_factory('SectionRelation')):
     def __unicode__(self):
         return self.title
 
-    def inline_assets(self):
-        return [asset.subclass() for asset in self.assets.exclude(type='article').order_by('sectionasset__weight')]
-
-    def articles(self):
-        return [asset.subclass() for asset in self.assets.filter(type='article').order_by('sectionasset__weight')] 
-
-
 class SectionRelation(edge_factory(Section, concrete=False)):
     """ "Through" class for parent/child relationships between sections """
     weight = models.IntegerField(default=0)
