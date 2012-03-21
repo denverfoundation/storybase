@@ -147,6 +147,16 @@ def select_option_by_text(name, text):
             return
     raise ElementDoesNotExist
 
+@world.absorb
+def option_selected_by_text(name, text):
+    """ Is an option with text selected in a given select control? """
+    select = world.browser.find_by_name(name).first
+    for option in select.find_by_tag('option'):
+        if option.text == text:
+            if option['selected']:
+                return True
+    return False
+
 # Custom Assertions
 
 @world.absorb
