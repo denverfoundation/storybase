@@ -1,8 +1,10 @@
+from time import sleep
 from django.test import TestCase
 from django.utils import translation
 from storybase.utils import slugify
-from models import (Organization, OrganizationTranslation, Project,
-    ProjectTranslation)
+from storybase_story.models import create_story
+from models import (create_project, Organization,
+    OrganizationTranslation, Project, ProjectStory, ProjectTranslation)
 
 class OrganizationModelTest(TestCase):
     def _create_organization(self, name, language):
@@ -79,10 +81,101 @@ class ProjectModelTest(TestCase):
         project_translation.save()
         self.assertEqual(project_translation.slug, slugify(name))
 
+    def test_add_story(self):
+        name = "The Metro Denver Regional Equity Atlas"
+        description = """
+            The Denver Regional Equity Atlas is a product of Mile High
+            Connects (MHC), which came together in 2011 to ensure that 
+            the region\'s significant investment in new rail and bus
+            service will provide greater access to opportunity and a
+            higher quality of life for all of the region\'s residents, but
+            especially for economically disadvantaged populations who
+            would benefit the most from safe, convenient transit service.
+
+            The Atlas visually documents the Metro Denver region\'s
+            demographic, educational, employment, health and housing
+            characteristics in relation to transit, with the goal of
+            identifying areas of opportunity as well as challenges to
+            creating and preserving quality communities near transit.
+            """
+        project = create_project(name=name, description=description)
+        title = "Transportation Challenges Limit Education Choices for Denver Parents"
+        summary = """
+            Many families in the Denver metro area use public
+            transportation instead of a school bus because for them, a
+            quality education is worth hours of daily commuting. Colorado's
+            school choice program is meant to foster educational equity,
+            but the families who benefit most are those who have time and
+            money to travel. Low-income families are often left in a lurch.
+            """
+        byline = "Mile High Connects"
+        story = create_story(title=title, summary=summary, byline=byline)
+        weight = 15
+        project.add_story(story, weight) 
+        self.assertTrue(story in project.curated_stories.all())
+        ProjectStory.objects.get(project=project, story=story,
+                                 weight=weight)
+
+    def test_ordered_stories_by_time(self):
+        """ Tests that ordered_stories will order by date if weights are equal """
+        name = "The Metro Denver Regional Equity Atlas"
+        description = """
+            The Denver Regional Equity Atlas is a product of Mile High
+            Connects (MHC), which came together in 2011 to ensure that 
+            the region\'s significant investment in new rail and bus
+            service will provide greater access to opportunity and a
+            higher quality of life for all of the region\'s residents, but
+            especially for economically disadvantaged populations who
+            would benefit the most from safe, convenient transit service.
+
+            The Atlas visually documents the Metro Denver region\'s
+            demographic, educational, employment, health and housing
+            characteristics in relation to transit, with the goal of
+            identifying areas of opportunity as well as challenges to
+            creating and preserving quality communities near transit.
+            """
+        project = create_project(name=name, description=description)
+        story1 = create_story(title='Story 1', summary='', byline='')
+        story2 = create_story(title='Story 2', summary='', byline='')
+        project.add_story(story1, 0)
+        sleep(2)
+        project.add_story(story2, 0)
+        stories = project.ordered_stories()
+        self.assertEqual(stories.count(), 2)
+        self.assertEqual(stories[0], story1)
+        self.assertEqual(stories[1], story2)
+
+    def test_ordered_stories_by_weight(self):
+        """ Tests that ordered_stories will order first by weight """
+        name = "The Metro Denver Regional Equity Atlas"
+        description = """
+            The Denver Regional Equity Atlas is a product of Mile High
+            Connects (MHC), which came together in 2011 to ensure that 
+            the region\'s significant investment in new rail and bus
+            service will provide greater access to opportunity and a
+            higher quality of life for all of the region\'s residents, but
+            especially for economically disadvantaged populations who
+            would benefit the most from safe, convenient transit service.
+
+            The Atlas visually documents the Metro Denver region\'s
+            demographic, educational, employment, health and housing
+            characteristics in relation to transit, with the goal of
+            identifying areas of opportunity as well as challenges to
+            creating and preserving quality communities near transit.
+            """
+        project = create_project(name=name, description=description)
+        story1 = create_story(title='Story 1', summary='', byline='')
+        story2 = create_story(title='Story 2', summary='', byline='')
+        project.add_story(story1, 25)
+        sleep(2)
+        project.add_story(story2, 5)
+        stories = project.ordered_stories()
+        self.assertEqual(stories.count(), 2)
+        self.assertEqual(stories[0], story2)
+        self.assertEqual(stories[1], story1)
+
 class ProjectApiTest(TestCase):
     def test_create_project(self):
-        from storybase_user.models import create_project, Project 
-
         name = "The Metro Denver Regional Equity Atlas"
         description = """
             The Denver Regional Equity Atlas is a product of Mile High

@@ -68,6 +68,17 @@ class Project(TranslatedModel):
     def __unicode__(self):
         return self.name
 
+    def add_story(self, story, weight=0):
+        """ Associate a story with the Project 
+        
+        Arguments:
+        story -- The Story model instance object to be associated
+        weight -- The ordering of the story relative to other stories
+
+        """
+        ProjectStory.objects.create(project=self, story=story,
+                                    weight=weight)
+
     def ordered_stories(self):
         """ Return sorted curated stories
 
