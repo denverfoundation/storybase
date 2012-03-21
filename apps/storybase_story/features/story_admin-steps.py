@@ -42,7 +42,7 @@ def proj_in_list(step, proj_name):
 
 @step(u'Then the Story\'s last edited field should be set to within 1 minute of the current date and time')
 def last_edited_now(step):
-    last_edited = datetime.strptime(world.browser.find_by_css('time.last-edited').value,
+    last_edited = datetime.strptime(world.browser.find_by_css('time.last-edited').first.value,
         '%B %d, %Y %I:%M %p')
     world.assert_now(last_edited, 60)
 
