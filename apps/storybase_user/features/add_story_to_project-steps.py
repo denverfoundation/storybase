@@ -1,11 +1,12 @@
 from lettuce import before, step, world
 from storybase_story.models import create_story
+from storybase_user.models import create_project
 
 @before.each_scenario
 def setup(scenario):
     matching_scenarios = ('Associate multiple stories to a project',)
     if scenario.name in matching_scenarios: 
-        world.create_project('The Metro Denver Regional Equity Atlas')
+        create_project('The Metro Denver Regional Equity Atlas')
         story_summary = """
             Many families in the Denver metro area use public
             transportation instead of a school bus because for them, a

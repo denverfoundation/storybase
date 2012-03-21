@@ -14,7 +14,7 @@ from splinter.browser import Browser
 from splinter.exceptions import ElementDoesNotExist
 import storybase_story
 import storybase_user
-from storybase_user.models import Project
+from storybase_user.models import Organization, Project
 
 # Utility methods
 

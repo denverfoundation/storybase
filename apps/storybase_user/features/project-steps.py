@@ -2,14 +2,13 @@ from datetime import datetime
 from lettuce import before, step, world
 from lettuce.django import django_url
 from nose.tools import assert_equal
-from storybase_user.models import Organization, Project
+from storybase_user.models import create_organization, Project
 
 @before.each_scenario
 def setup_organization(scenario):
     matching_scenarios = ('Admin can create a new Project',)
     if scenario.name in matching_scenarios: 
-        world.create_organization("Mile High Connects") 
-
+        create_organization("Mile High Connects") 
 
 @step(u'Then the Project named "([^"]*)" should have a canonical URL')
 def project_canonical_url(step, name):
