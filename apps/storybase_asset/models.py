@@ -6,6 +6,7 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.utils.safestring import mark_safe
 from filer.fields.image import FilerImageField
+from model_utils.managers import InheritanceManager
 import oembed
 from oembed.exceptions import OEmbedMissingEndpoint
 from uuidfield.fields import UUIDField
@@ -53,17 +54,12 @@ class Asset(TranslatedModel):
 
     translated_fields = ['title', 'caption']
 
+    # Use InheritanceManager from django-model-utils to make
+    # fetching of subclassed objects easier
+    objects = InheritanceManager()
+
     def __unicode__(self):
         return self.title
-
-    def subclass(self):
-        for attr in ('externalasset', 'htmlasset', 'localimageasset'):
-            try:
-                return getattr(self, attr)
-            except ObjectDoesNotExist:
-                pass
-
-        return self 
 
     @models.permalink
     def get_absolute_url(self):
@@ -176,7 +172,3 @@ class LocalImageAsset(Asset):
 
 class LocalImageAssetTranslation(AssetTranslation):
     image = FilerImageField()
-
-def get_asset(asset_id):
-    asset = Asset.objects.get(asset_id=asset_id)
-    return asset.subclass()
