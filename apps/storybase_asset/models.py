@@ -6,11 +6,15 @@ from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.utils.safestring import mark_safe
 from filer.fields.image import FilerImageField
+import oembed
+from oembed.exceptions import OEmbedMissingEndpoint
 from uuidfield.fields import UUIDField
 from storybase.fields import ShortTextField
 from storybase.models import (LICENSES, DEFAULT_LICENSE,
     get_license_name,
     TranslatedModel, TranslationModel)
+
+oembed.autodiscover()
 
 ASSET_TYPES = (
   (u'image', u'image'),
@@ -105,16 +109,23 @@ class ExternalAsset(Asset):
 
     def render_html(self):
         output = []
-        if self.type == 'image':
-            output.append('<figure>')
-            output.append('<img src="%s" alt="%s" />' % (self.url, self.title))
-            if self.caption:
-                output.append('<figcaption>')
-                output.append(self.caption)
-                output.append('</figcaption>')
-            output.append('</figure>')
-        else:
-            output.append("<a href=\"%s\">%s</a>" % (self.url, self.title))
+        output.append('<figure>')
+        try:
+            resource = oembed.site.embed(self.url, format='json')
+            resource_data = resource.get_data()
+            output.append(resource_data['html'])
+        except OEmbedMissingEndpoint, e:
+            print e
+            if self.type == 'image':
+                output.append('<img src="%s" alt="%s" />' % (self.url, self.title))
+            else:
+                output.append("<a href=\"%s\">%s</a>" % (self.url, self.title))
+
+        if self.caption:
+            output.append('<figcaption>')
+            output.append(self.caption)
+            output.append('</figcaption>')
+        output.append('</figure>')
 
         return mark_safe(u'\n'.join(output))
 

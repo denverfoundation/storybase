@@ -181,6 +181,7 @@ INSTALLED_APPS = (
     #'taggit',
     #'taggit_autosuggest',
     #'tastypie',
+    'oembed',
     'tinymce',
 
     # StoryBase
