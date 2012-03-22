@@ -1,36 +1,38 @@
 {% extends "base.html" %}
 
+{% block head_title %}{{ asset.title }}{% endblock %}
+
 {% block base_content %}
 <div class="twelvecol">
   <h2>{{ asset.title }}</h2>
 
   {{ asset.render_html }}
 
-  <h2>Type</h2>
+  <h3>Type</h3>
   <p class="type">{{ asset.type }}</p>
 
   {% if asset.attribution %}
-  <h2>Attribution</h2>
+  <h3>Attribution</h3>
   <p class="attribution">{{ asset.attribution }}</p>
   {% endif %}
 
-  <h2>License</h2>
+  <h3>License</h3>
   <p class="license">{{ asset.license_name }}</p>
 
-  <h2>Status</h2>
+  <h3>Status</h3>
   <p class="status">{{ asset.status }}</p>
 
   {% if asset.published %}
-  <h2>Publication Date</h2>
+  <h3>Publication Date</h3>
   <p><time class="published">{{ asset.published|date:"F j, Y g:i A" }}</time></p>
   {% endif %}
 
   {% if asset.asset_created %}
-  <h2>Asset Created</h2>
+  <h3>Asset Created</h3>
   <p><time class="asset-created">{{ asset.asset_created|date:"F j, Y" }}</time></p>
   {% endif %}
 
-  <h2>Owner</h2>
+  <h3>Owner</h3>
   <p class="owner">{{ asset.owner }}</p>
 
   <h3>Created</h3>
