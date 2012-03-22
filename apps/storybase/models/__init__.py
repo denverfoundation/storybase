@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
+from django.db.models.fields.related import ForeignKey, OneToOneField
 from django.utils import translation
 from uuidfield.fields import UUIDField
 
@@ -37,7 +38,21 @@ class TranslatedModel(models.Model):
         get = lambda p:super(TranslatedModel, self).__getattribute__(p)
         translated_fields = get('translated_fields') 
         if name in translated_fields:
-            translation_set = get('translation_set')
+            try:
+                translation_set = get('translation_set')
+            except AttributeError:
+                # Try the subclass
+                subclass_attrs = [rel.var_name for rel in self._meta.get_all_related_objects()
+                                  if isinstance(rel.field, OneToOneField)
+                                  and issubclass(rel.field.model, self.__class__)]
+                for attr in subclass_attrs:
+                    if hasattr(self, attr):
+                        subclass = get(attr)
+                        translation_set = subclass.translation_set
+                        break
+                else:
+                    raise
+
             code = translation.get_language()
             translated_manager = get(translation_set)
             try:

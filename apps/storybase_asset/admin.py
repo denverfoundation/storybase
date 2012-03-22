@@ -1,14 +1,12 @@
 from django import forms
 from django.contrib import admin
-from django.db import models
 from tinymce.widgets import TinyMCE
 from storybase.admin import StorybaseModelAdmin, StorybaseStackedInline
-from models import (ExternalAsset, ExternalAssetTranslation,
+from models import (Asset, ExternalAsset, ExternalAssetTranslation,
     HtmlAsset, HtmlAssetTranslation, 
     LocalImageAsset, LocalImageAssetTranslation)
 
 class AssetAdmin(StorybaseModelAdmin):
-    #list_display = ('title',)
     readonly_fields = ['asset_id']
 
     def save_model(self, request, obj, form, change):
@@ -49,6 +47,7 @@ class ExternalAssetAdmin(AssetAdmin):
 class LocalImageAssetAdmin(AssetAdmin):
     inlines = [LocalImageAssetTranslationInline,]
 
+admin.site.register(Asset, AssetAdmin)
 admin.site.register(ExternalAsset, ExternalAssetAdmin)
 admin.site.register(HtmlAsset, HtmlAssetAdmin)
 admin.site.register(LocalImageAsset, LocalImageAssetAdmin)
