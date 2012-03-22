@@ -19,17 +19,31 @@
   <h3>License</h3>
   <p class="license">{{ asset.license_name }}</p>
 
+  {% if asset.asset_created %}
+  <h3>Asset Created</h3>
+  <p><time class="asset-created">{{ asset.asset_created|date:"F j, Y" }}</time></p>
+  {% endif %}
+
+  {% if asset.datasets.count %}
+  <h3>Data Sets</h3>
+  <ul class="datasets">
+      {% for dataset in asset.datasets.select_subclasses %}
+      <li>
+          <p>{{ dataset.title }}</p>
+          <p>{{ dataset.description }}</p>
+          <p>{{ dataset.attribution }}</p>
+          <p><a href="{{ dataset.download_url }}">Download</a></p>
+      </li>
+      {% endfor %}
+  </ul>
+  {% endif %}
+
   <h3>Status</h3>
   <p class="status">{{ asset.status }}</p>
 
   {% if asset.published %}
   <h3>Publication Date</h3>
   <p><time class="published">{{ asset.published|date:"F j, Y g:i A" }}</time></p>
-  {% endif %}
-
-  {% if asset.asset_created %}
-  <h3>Asset Created</h3>
-  <p><time class="asset-created">{{ asset.asset_created|date:"F j, Y" }}</time></p>
   {% endif %}
 
   <h3>Owner</h3>

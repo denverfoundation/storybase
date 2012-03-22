@@ -13,6 +13,14 @@
   <p class="attribution">{{ dataset.attribution }}</p>
   {% endif %}
 
+  {% if dataset.description %}
+  <h3>Description</h3>
+  <p class="description">{{ dataset.description }}</p>
+  {% endif %}
+
+  <h3>Status</h3>
+  <p class="status">{{ dataset.status }}</p>
+
   {% if dataset.published %}
   <h3>Publication Date</h3>
   <p><time class="published">{{ dataset.published|date:"F j, Y g:i A" }}</time></p>

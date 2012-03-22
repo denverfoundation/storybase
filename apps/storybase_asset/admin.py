@@ -10,6 +10,7 @@ from models import (Asset,
 
 class AssetAdmin(StorybaseModelAdmin):
     readonly_fields = ['asset_id']
+    filter_horizontal = ['datasets']
 
     def save_model(self, request, obj, form, change):
         """ Sets the owner field to the current user if it wasn't already set """
@@ -42,12 +43,15 @@ class LocalImageAssetTranslationInline(StorybaseStackedInline):
 
 class HtmlAssetAdmin(AssetAdmin):
     inlines = [HtmlAssetTranslationInline,]
+    prefix_inline_classes = ['HtmlAssetTranslationInline']
 
 class ExternalAssetAdmin(AssetAdmin):
     inlines = [ExternalAssetTranslationInline,]
+    prefix_inline_classes = ['ExternalAssetTranslationInline']
 
 class LocalImageAssetAdmin(AssetAdmin):
     inlines = [LocalImageAssetTranslationInline,]
+    prefix_inline_classes = ['LocalImageAssetTranslationInline']
 
 class DataSetTranslationInline(StorybaseStackedInline):
     model = DataSetTranslation

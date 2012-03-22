@@ -1,6 +1,5 @@
 from datetime import datetime
 from django.contrib.auth.models import User
-from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
@@ -31,8 +30,10 @@ ASSET_STATUS = (
     (u'draft', u'draft'),
     (u'published', u'published'),
 )
+DEFAULT_ASSET_STATUS = u'published'
 
-DEFAULT_STATUS = u'published'
+DATASET_STATUS = ASSET_STATUS
+DEFAULT_DATASET_STATUS = DEFAULT_ASSET_STATUS
 
 class Asset(TranslatedModel):
     asset_id = UUIDField(auto=True)
@@ -40,10 +41,11 @@ class Asset(TranslatedModel):
     attribution = models.TextField(blank=True)
     license = models.CharField(max_length=25, choices=LICENSES,
                                default=DEFAULT_LICENSE)
-    status = models.CharField(max_length=10, choices=ASSET_STATUS, default=DEFAULT_STATUS)
+    status = models.CharField(max_length=10, choices=ASSET_STATUS, default=DEFAULT_ASSET_STATUS)
     owner = models.ForeignKey(User, related_name="assets", blank=True,
                               null=True)
     section_specific = models.BooleanField(default=False)
+    datasets = models.ManyToManyField('DataSet', related_name='assets', blank=True)
     # asset_created is when the asset itself was created
     # e.g. date a photo was taken
     asset_created = models.DateTimeField(blank=True, null=True)
@@ -178,6 +180,7 @@ class DataSet(TranslatedModel):
     attribution = models.TextField(blank=True)
     owner = models.ForeignKey(User, related_name="datasets", blank=True,
                               null=True)
+    status = models.CharField(max_length=10, choices=DATASET_STATUS, default=DEFAULT_DATASET_STATUS)
     # dataset_created is when the data set itself was created
     dataset_created = models.DateTimeField(blank=True, null=True)
     # created is when the object was created in the system
@@ -186,7 +189,7 @@ class DataSet(TranslatedModel):
     published = models.DateTimeField(blank=True, null=True)
 
     translation_set = 'storybase_asset_datasettranslation_related'
-    translated_fields = ['title']
+    translated_fields = ['title', 'description']
 
     # Use InheritanceManager from django-model-utils to make
     # fetching of subclassed objects easier
@@ -205,6 +208,7 @@ class DataSet(TranslatedModel):
 class DataSetTranslation(TranslationModel):
     dataset = models.ForeignKey('DataSet', related_name="%(app_label)s_%(class)s_related") 
     title = ShortTextField() 
+    description = models.TextField(blank=True)
 
     class Meta:
         unique_together = (('dataset', 'language')) 
