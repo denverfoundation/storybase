@@ -2,7 +2,9 @@ from django import forms
 from django.contrib import admin
 from tinymce.widgets import TinyMCE
 from storybase.admin import StorybaseModelAdmin, StorybaseStackedInline
-from models import (Asset, ExternalAsset, ExternalAssetTranslation,
+from models import (Asset, 
+    DataSet, DataSetTranslation, ExternalDataSet, LocalDataSet,
+    ExternalAsset, ExternalAssetTranslation,
     HtmlAsset, HtmlAssetTranslation, 
     LocalImageAsset, LocalImageAssetTranslation)
 
@@ -47,7 +49,25 @@ class ExternalAssetAdmin(AssetAdmin):
 class LocalImageAssetAdmin(AssetAdmin):
     inlines = [LocalImageAssetTranslationInline,]
 
+class DataSetTranslationInline(StorybaseStackedInline):
+    model = DataSetTranslation
+    extra = 1
+
+class DataSetAdmin(StorybaseModelAdmin):
+    readonly_fields = ['dataset_id']
+    inlines = [DataSetTranslationInline]
+    prefix_inline_classes = ['DataSetTranslationInline']
+
+    def save_model(self, request, obj, form, change):
+        """ Sets the owner field to the current user if it wasn't already set """
+        if obj.owner is None:
+            obj.owner = request.user
+        obj.save()
+
 admin.site.register(Asset, AssetAdmin)
 admin.site.register(ExternalAsset, ExternalAssetAdmin)
 admin.site.register(HtmlAsset, HtmlAssetAdmin)
 admin.site.register(LocalImageAsset, LocalImageAssetAdmin)
+admin.site.register(DataSet, DataSetAdmin)
+admin.site.register(ExternalDataSet, DataSetAdmin)
+admin.site.register(LocalDataSet, DataSetAdmin)

@@ -5,7 +5,7 @@ from django.db import models
 from django.db.models.signals import pre_save
 from django.dispatch import receiver
 from django.utils.safestring import mark_safe
-from filer.fields.image import FilerImageField
+from filer.fields.image import FilerFileField, FilerImageField
 from model_utils.managers import InheritanceManager
 import oembed
 from oembed.exceptions import OEmbedMissingEndpoint
@@ -172,3 +172,51 @@ class LocalImageAsset(Asset):
 
 class LocalImageAssetTranslation(AssetTranslation):
     image = FilerImageField()
+
+class DataSet(TranslatedModel):
+    dataset_id = UUIDField(auto=True)
+    attribution = models.TextField(blank=True)
+    owner = models.ForeignKey(User, related_name="datasets", blank=True,
+                              null=True)
+    # dataset_created is when the data set itself was created
+    dataset_created = models.DateTimeField(blank=True, null=True)
+    # created is when the object was created in the system
+    created = models.DateTimeField(auto_now_add=True)
+    last_edited = models.DateTimeField(auto_now=True)
+    published = models.DateTimeField(blank=True, null=True)
+
+    translation_set = 'storybase_asset_datasettranslation_related'
+    translated_fields = ['title']
+
+    # Use InheritanceManager from django-model-utils to make
+    # fetching of subclassed objects easier
+    objects = InheritanceManager()
+
+    def __unicode__(self):
+        return self.title
+
+    @models.permalink
+    def get_absolute_url(self):
+        return ('dataset_detail', [str(self.asset_id)])
+
+    def download_url(self):
+        raise NotImplemented
+
+class DataSetTranslation(TranslationModel):
+    dataset = models.ForeignKey('DataSet', related_name="%(app_label)s_%(class)s_related") 
+    title = ShortTextField() 
+
+    class Meta:
+        unique_together = (('dataset', 'language')) 
+
+class ExternalDataSet(DataSet):
+    url = models.URLField()
+
+    def download_url(self):
+        return self.url 
+
+class LocalDataSet(DataSet):
+    file = FilerFileField()
+
+    def download_url(self):
+        return self.file.url 

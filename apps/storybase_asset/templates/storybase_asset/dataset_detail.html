@@ -1,0 +1,35 @@
+{% extends "base.html" %}
+
+{% block head_title %}{{ dataset.title }}{% endblock %}
+
+{% block base_content %}
+<div class="twelvecol">
+  <h2>{{ dataset.title }}</h2>
+
+  <p><a href="{{ dataset.download_url }}">Download data</a></p>
+
+  {% if dataset.attribution %}
+  <h3>Attribution</h3>
+  <p class="attribution">{{ dataset.attribution }}</p>
+  {% endif %}
+
+  {% if dataset.published %}
+  <h3>Publication Date</h3>
+  <p><time class="published">{{ dataset.published|date:"F j, Y g:i A" }}</time></p>
+  {% endif %}
+
+  {% if dataset.dataset_created %}
+  <h3>Data Set Created</h3>
+  <p><time class="dataset-created">{{ dataset.dataset_created|date:"F j, Y" }}</time></p>
+  {% endif %}
+
+  <h3>Owner</h3>
+  <p class="owner">{{ dataset.owner }}</p>
+
+  <h3>Created</h3>
+  <p><time class="created">{{ dataset.created|date:"F j, Y" }}</time></p>
+
+  <h3>Last Edited</h3>
+  <p><time class="last-edited">{{ dataset.last_edited|date:"F j, Y g:i A" }} </time></p>
+</div>
+{% endblock %}
