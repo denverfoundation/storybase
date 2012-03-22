@@ -13,7 +13,9 @@ from django_dag.models import edge_factory, node_factory
 #from taggit_autosuggest.managers import TaggableManager
 from uuidfield.fields import UUIDField
 from storybase.fields import ShortTextField
-from storybase.models import TranslatedModel, TranslationModel
+from storybase.models import (LICENSES, DEFAULT_LICENSE, 
+    get_license_name,
+    TranslatedModel, TranslationModel)
 from storybase.utils import slugify
 from storybase_asset.models import Asset
 from storybase_user.models import Organization, Project
@@ -54,6 +56,8 @@ class Story(TranslatedModel):
     # request.user
     author = models.ForeignKey(User, related_name="stories", blank=True, null=True)
     status = models.CharField(max_length=10, choices=STORY_STATUS, default=DEFAULT_STATUS)
+    license = models.CharField(max_length=25, choices=LICENSES,
+                               default=DEFAULT_LICENSE)
     created = models.DateTimeField(auto_now_add=True)
     last_edited = models.DateTimeField(auto_now=True)
     published = models.DateTimeField(blank=True, null=True)
@@ -75,6 +79,10 @@ class Story(TranslatedModel):
     @models.permalink
     def get_absolute_url(self):
         return ('story_detail', [str(self.story_id)])
+
+    def license_name(self):
+        """ Convert the license code to a more human-readable version """
+        return get_license_name(self.license)
 
 @receiver(pre_save, sender=Story)
 def set_date_on_published(sender, instance, **kwargs):
@@ -111,7 +119,7 @@ class SectionAsset(models.Model):
     asset = models.ForeignKey('storybase_asset.Asset')
     weight = models.IntegerField(default=0)
 
-def create_story(title, summary='', byline='', author=None, status=DEFAULT_STATUS, language=settings.LANGUAGE_CODE, *args, **kwargs):
+def create_story(title, summary='', byline='', author=None, status=DEFAULT_STATUS, license=DEFAULT_LICENSE, language=settings.LANGUAGE_CODE, *args, **kwargs):
     """ Convenience function for creating a Story
 
     Allows for the creation of stories without having to explicitly
