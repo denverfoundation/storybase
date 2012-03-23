@@ -12,7 +12,9 @@ from storybase.fields import ShortTextField
 from storybase.models import (LicensedModel, PublishedModel,
     TimestampedModel, TranslatedModel, TranslationModel,
     set_date_on_published)
-    
+from embedable_resource import EmbedableResource
+from embedable_resource.exceptions import UrlNotMatched
+   
 oembed.autodiscover()
 
 ASSET_TYPES = (
@@ -77,14 +79,21 @@ class ExternalAsset(Asset):
         output = []
         output.append('<figure>')
         try:
+            # First try to embed the resource via oEmbed
             resource = oembed.site.embed(self.url, format='json')
             resource_data = resource.get_data()
             output.append(resource_data['html'])
         except OEmbedMissingEndpoint:
-            if self.type == 'image':
-                output.append('<img src="%s" alt="%s" />' % (self.url, self.title))
-            else:
-                output.append("<a href=\"%s\">%s</a>" % (self.url, self.title))
+            try:
+                # Next try to embed things ourselves
+                html = EmbedableResource.get_html(self.url)
+                output.append(html)
+            except UrlNotMatched:
+                # If all else fails, just show an image or a link
+                if self.type == 'image':
+                    output.append('<img src="%s" alt="%s" />' % (self.url, self.title))
+                else:
+                    output.append("<a href=\"%s\">%s</a>" % (self.url, self.title))
 
         if self.caption:
             output.append('<figcaption>')
