@@ -8,6 +8,20 @@ from models import (Asset,
     HtmlAsset, HtmlAssetTranslation, 
     LocalImageAsset, LocalImageAssetTranslation)
 
+class DefaultPublishedModelForm(forms.ModelForm):
+    """ Model Form that sets the default status to published
+    
+    The default status for a model inheriting from PublishedModel is
+    'draft', just to be safe and because, in code, we'll probably want to
+    explicitly define the status.  However, in the Django admin, the
+    default status for Assets should be 'published'.  This ModelForm
+    is the workaround for setting the initial status to published.
+    """
+    def __init__(self, *args, **kwargs):
+        super(DefaultPublishedModelForm, self).__init__(*args, **kwargs)
+        self.fields['status'].initial = 'published'
+        print self.fields['status'].__dict__
+
 class AssetAdmin(StorybaseModelAdmin):
     readonly_fields = ['asset_id']
     filter_horizontal = ['datasets']
@@ -41,15 +55,30 @@ class LocalImageAssetTranslationInline(StorybaseStackedInline):
     model = LocalImageAssetTranslation
     extra = 1
 
+class HtmlAssetAdminForm(DefaultPublishedModelForm):
+    class Meta:
+        model = HtmlAsset
+
 class HtmlAssetAdmin(AssetAdmin):
+    form = HtmlAssetAdminForm
     inlines = [HtmlAssetTranslationInline,]
     prefix_inline_classes = ['HtmlAssetTranslationInline']
 
+class ExternalAssetAdminForm(DefaultPublishedModelForm):
+    class Meta:
+        model = ExternalAsset
+
 class ExternalAssetAdmin(AssetAdmin):
+    form = ExternalAssetAdminForm
     inlines = [ExternalAssetTranslationInline,]
     prefix_inline_classes = ['ExternalAssetTranslationInline']
 
+class LocalImageAssetAdminForm(DefaultPublishedModelForm):
+    class Meta:
+        model = LocalImageAsset
+
 class LocalImageAssetAdmin(AssetAdmin):
+    form = LocalImageAssetAdminForm
     inlines = [LocalImageAssetTranslationInline,]
     prefix_inline_classes = ['LocalImageAssetTranslationInline']
 
@@ -57,7 +86,12 @@ class DataSetTranslationInline(StorybaseStackedInline):
     model = DataSetTranslation
     extra = 1
 
+class DataSetAdminForm(DefaultPublishedModelForm):
+    class Meta:
+        model = DataSet
+
 class DataSetAdmin(StorybaseModelAdmin):
+    form = DataSetAdminForm
     readonly_fields = ['dataset_id']
     inlines = [DataSetTranslationInline]
     prefix_inline_classes = ['DataSetTranslationInline']
