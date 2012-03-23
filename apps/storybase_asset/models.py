@@ -80,8 +80,7 @@ class ExternalAsset(Asset):
             resource = oembed.site.embed(self.url, format='json')
             resource_data = resource.get_data()
             output.append(resource_data['html'])
-        except OEmbedMissingEndpoint, e:
-            print e
+        except OEmbedMissingEndpoint:
             if self.type == 'image':
                 output.append('<img src="%s" alt="%s" />' % (self.url, self.title))
             else:
