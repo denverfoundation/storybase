@@ -1,3 +1,4 @@
+from datetime import datetime
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
@@ -133,3 +134,23 @@ class LicensedModel(models.Model):
     def license_name(self):
         """ Convert the license code to a more human-readable version """
         return get_license_name(self.license)
+
+# Signal handlers
+
+def set_date_on_published(sender, instance, **kwargs):
+    """  Set the published date of a story when it's status is changed to 'published' 
+    
+    For models inheriting from PublishedModel
+
+    """
+   
+    try:
+        old_instance = sender.objects.get(pk=instance.pk)
+    except sender.DoesNotExist:
+        # Object is new, so field won't have changed.
+        # Just check status.
+        if instance.status == 'published':
+            instance.published = datetime.now()
+    else:
+        if instance.status == 'published' and old_instance.status != 'published':
+            instance.published = datetime.now()

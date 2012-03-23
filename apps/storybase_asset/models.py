@@ -2,7 +2,6 @@ from datetime import datetime
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import pre_save
-from django.dispatch import receiver
 from django.utils.safestring import mark_safe
 from filer.fields.image import FilerFileField, FilerImageField
 from model_utils.managers import InheritanceManager
@@ -11,7 +10,8 @@ from oembed.exceptions import OEmbedMissingEndpoint
 from uuidfield.fields import UUIDField
 from storybase.fields import ShortTextField
 from storybase.models import (LicensedModel, PublishedModel,
-    TimestampedModel, TranslatedModel, TranslationModel)
+    TimestampedModel, TranslatedModel, TranslationModel,
+    set_date_on_published)
     
 oembed.autodiscover()
 
@@ -57,18 +57,6 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
         except AttributeError:
             return self.__unicode__()
 
-@receiver(pre_save, sender=Asset)
-def set_date_on_published(sender, instance, **kwargs):
-    """ Set the published date of a story when it's status is changed to 'published' """
-    try:
-        asset = Asset.objects.get(pk=instance.pk)
-    except Asset.DoesNotExist:
-        # Object is new
-        if instance.status == 'published':
-            instance.published = datetime.now()
-    else:
-        if instance.status == 'published' and asset.status != 'published':
-            instance.published = datetime.now()
 
 class AssetTranslation(TranslationModel):
     asset = models.ForeignKey('Asset', related_name="%(app_label)s_%(class)s_related") 
@@ -154,6 +142,12 @@ class LocalImageAsset(Asset):
 
 class LocalImageAssetTranslation(AssetTranslation):
     image = FilerImageField()
+
+# Hook up some signals so the publication date gets changed
+# on status changes
+pre_save.connect(set_date_on_published, sender=ExternalAsset)
+pre_save.connect(set_date_on_published, sender=HtmlAsset)
+pre_save.connect(set_date_on_published, sender=LocalImageAsset)
 
 class DataSet(TranslatedModel, PublishedModel, TimestampedModel):
     dataset_id = UUIDField(auto=True)

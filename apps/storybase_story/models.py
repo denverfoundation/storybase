@@ -1,9 +1,7 @@
-from datetime import datetime
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import pre_save
-from django.dispatch import receiver
 from django_dag.models import edge_factory, node_factory
 # TODO: Decide on tagging suggestion admin app.
 # Right now, I'm using a hacked version of
@@ -15,7 +13,8 @@ from uuidfield.fields import UUIDField
 from storybase.fields import ShortTextField
 from storybase.models import (LicensedModel, PublishedModel,
     TimestampedModel, TranslatedModel, TranslationModel,
-    DEFAULT_LICENSE, DEFAULT_STATUS)
+    DEFAULT_LICENSE, DEFAULT_STATUS,
+    set_date_on_published)
 from storybase.utils import slugify
 from storybase_asset.models import Asset
 from storybase_user.models import Organization, Project
@@ -68,16 +67,8 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
     def get_absolute_url(self):
         return ('story_detail', [str(self.story_id)])
 
-@receiver(pre_save, sender=Story)
-def set_date_on_published(sender, instance, **kwargs):
-    """ Set the published date of a story when it's status is changed to 'published' """
-    try:
-        story = Story.objects.get(pk=instance.pk)
-    except Story.DoesNotExist:
-        pass # Object is new, so field won't have changed
-    else:
-        if instance.status == 'published' and story.status != 'published':
-            instance.published = datetime.now()
+# Hook up some signal handlers
+pre_save.connect(set_date_on_published, sender=Story)
 
 class Section(node_factory('SectionRelation')):
     """ Section of a story """

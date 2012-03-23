@@ -1,8 +1,21 @@
+from datetime import datetime
+from django.conf import settings
 from django.test import TestCase
 from storybase.utils import slugify
-from models import Story, StoryTranslation
+from models import create_story, Story, StoryTranslation
 
 class StoryModelTest(TestCase):
+    def assertNowish(self, timestamp, tolerance=1):
+        """ Confirm that a datetime instance is within a few seconds of the current time
+
+        Arguments:
+        timestamp -- a datetime.datetime instance
+        tolerance -- number of seconds that the times can differ
+
+        """
+        delta = datetime.now() - timestamp 
+        self.assertTrue(delta.seconds <= tolerance)
+
     def test_auto_slug(self):
         title = 'Transportation Challenges Limit Education Choices for Denver Parents'
         story = Story()
@@ -13,9 +26,6 @@ class StoryModelTest(TestCase):
         self.assertEqual(story_translation.slug, slugify(title))
 
     def test_get_languages(self):
-        from django.conf import settings
-        from storybase_story.models import create_story
-
         title = "Transportation Challenges Limit Education Choices for Denver Parents"
         summary = """
             Many families in the Denver metro area use public
@@ -30,9 +40,6 @@ class StoryModelTest(TestCase):
         self.assertEqual([settings.LANGUAGE_CODE], story.get_languages())
 
     def test_get_languages_multiple(self):
-        from django.conf import settings
-        from storybase_story.models import create_story, StoryTranslation
-
         title = "Transportation Challenges Limit Education Choices for Denver Parents"
         summary = """
             Many families in the Denver metro area use public
@@ -49,11 +56,48 @@ class StoryModelTest(TestCase):
         translation.save()
         self.assertEqual([settings.LANGUAGE_CODE, 'es'], story.get_languages())
 
+    def test_auto_set_published_on_create(self):
+        """ Test that the published date gets set on object creation when the status is set to published """
+        title = "Transportation Challenges Limit Education Choices for Denver Parents"
+        summary = """
+            Many families in the Denver metro area use public
+            transportation instead of a school bus because for them, a
+            quality education is worth hours of daily commuting. Colorado's
+            school choice program is meant to foster educational equity,
+            but the families who benefit most are those who have time and
+            money to travel. Low-income families are often left in a lurch.
+            """
+        byline = "Mile High Connects"
+        story = create_story(title=title, summary=summary, byline=byline,
+                             status='published')
+        self.assertNowish(story.published)
+
+    def test_auto_set_published_on_status_change(self):
+        """ Test that the published date gets set when the status is set to published """ 
+        title = "Transportation Challenges Limit Education Choices for Denver Parents"
+        summary = """
+            Many families in the Denver metro area use public
+            transportation instead of a school bus because for them, a
+            quality education is worth hours of daily commuting. Colorado's
+            school choice program is meant to foster educational equity,
+            but the families who benefit most are those who have time and
+            money to travel. Low-income families are often left in a lurch.
+            """
+        byline = "Mile High Connects"
+        story = create_story(title=title, summary=summary, byline=byline)
+        # Default status should be draft 
+        self.assertEqual(story.status, 'draft')
+        # and there should be no published date
+        self.assertEqual(story.published, None)
+        story.status = 'published'
+        story.save()
+        self.assertNowish(story.published)
+
+
 class StoryApiTest(TestCase):
     """ Test case for the internal Story API """
 
     def test_create_story(self):
-        from storybase_story.models import create_story, Story
 
         title = "Transportation Challenges Limit Education Choices for Denver Parents"
         summary = """
