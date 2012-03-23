@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
-from django.db.models.fields.related import ForeignKey, OneToOneField
+from django.db.models.fields.related import OneToOneField
 from django.utils import translation
 from uuidfield.fields import UUIDField
 
