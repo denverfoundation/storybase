@@ -5,7 +5,8 @@ from django.db.models.signals import post_save
 from django.dispatch import receiver
 from uuidfield.fields import UUIDField
 from storybase.fields import ShortTextField
-from storybase.models import TranslatedModel, TranslationModel
+from storybase.models import (TimestampedModel,
+    TranslatedModel, TranslationModel)
 from storybase.utils import slugify
 
 class CuratedStory(models.Model):
@@ -18,13 +19,11 @@ class CuratedStory(models.Model):
         abstract = True
         verbose_name = "story"
 
-class Organization(TranslatedModel):
+class Organization(TranslatedModel, TimestampedModel):
     """ An organization or a community group that users and stories can be associated with. """
     organization_id = UUIDField(auto=True)
     website_url = models.URLField(blank=True)
     members = models.ManyToManyField(User, related_name='organizations', blank=True)
-    created = models.DateTimeField(auto_now_add=True)
-    last_edited = models.DateTimeField(auto_now=True)
     curated_stories = models.ManyToManyField('storybase_story.Story', related_name='curated_in_organizations', blank=True, through='OrganizationStory')
 
     translated_fields = ['name', 'description', 'slug']
@@ -60,7 +59,7 @@ class Organization(TranslatedModel):
         """
         return self.curated_stories.order_by('organizationstory__weight', '-organizationstory__added')
 
-class OrganizationTranslation(TranslationModel):
+class OrganizationTranslation(TranslationModel, TimestampedModel):
     organization = models.ForeignKey('Organization')
     name = ShortTextField()
     slug = models.SlugField()
@@ -90,7 +89,7 @@ def add_story_to_organization(sender, instance, **kwargs):
             story.organizations.add(instance)
             story.save()
 
-class Project(TranslatedModel):
+class Project(TranslatedModel, TimestampedModel):
     """ 
     A project that collects related stories.  
     
@@ -98,15 +97,12 @@ class Project(TranslatedModel):
     """
     project_id = UUIDField(auto=True)
     website_url = models.URLField(blank=True)
-    created = models.DateTimeField(auto_now_add=True)
-    last_edited = models.DateTimeField(auto_now=True)
     organizations = models.ManyToManyField(Organization, related_name='projects', blank=True)
     members = models.ManyToManyField(User, related_name='projects', blank=True) 
     curated_stories = models.ManyToManyField('storybase_story.Story', related_name='curated_in_projects', blank=True, through='ProjectStory')
 
     translated_fields = ['name', 'description', 'slug']
     translation_set = 'projecttranslation_set'
-    #translations = models.ManyToManyField('ProjectTranslation', blank=True, verbose_name=_('translations'))
 
     def __unicode__(self):
         return self.name

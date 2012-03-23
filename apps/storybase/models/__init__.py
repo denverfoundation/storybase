@@ -17,6 +17,13 @@ LICENSES = (
 
 DEFAULT_LICENSE = 'CC BY-NC-SA'
 
+STATUS = (
+    (u'draft', u'draft'),
+    (u'published', u'published'),
+)
+
+DEFAULT_STATUS = u'draft'
+
 def get_license_name(license_code):
     licenses = dict(LICENSES)
     return licenses[license_code]
@@ -98,3 +105,31 @@ class TranslationModel(models.Model):
 
     class Meta:
         abstract = True
+
+class TimestampedModel(models.Model):
+    """ Abstract base class that provides created and last edited fields """
+    created = models.DateTimeField(auto_now_add=True)
+    last_edited = models.DateTimeField(auto_now=True)
+
+    class Meta:
+        abstract = True
+
+class PublishedModel(models.Model):
+    """ Abstract base class that provides a status field and a publication date """
+    status = models.CharField(max_length=10, choices=STATUS, default=DEFAULT_STATUS)
+    published = models.DateTimeField(blank=True, null=True)
+
+    class Meta:
+        abstract = True
+
+class LicensedModel(models.Model):
+    """ Abstract base class that provides a field representing the instance's licensing status """
+    license = models.CharField(max_length=25, choices=LICENSES,
+                               default=DEFAULT_LICENSE)
+
+    class Meta:
+        abstract = True
+
+    def license_name(self):
+        """ Convert the license code to a more human-readable version """
+        return get_license_name(self.license)

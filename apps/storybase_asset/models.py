@@ -10,10 +10,9 @@ import oembed
 from oembed.exceptions import OEmbedMissingEndpoint
 from uuidfield.fields import UUIDField
 from storybase.fields import ShortTextField
-from storybase.models import (LICENSES, DEFAULT_LICENSE,
-    get_license_name,
-    TranslatedModel, TranslationModel)
-
+from storybase.models import (LicensedModel, PublishedModel,
+    TimestampedModel, TranslatedModel, TranslationModel)
+    
 oembed.autodiscover()
 
 ASSET_TYPES = (
@@ -26,22 +25,11 @@ ASSET_TYPES = (
   (u'text', u'text'),
 )
 
-ASSET_STATUS = (
-    (u'draft', u'draft'),
-    (u'published', u'published'),
-)
-DEFAULT_ASSET_STATUS = u'published'
-
-DATASET_STATUS = ASSET_STATUS
-DEFAULT_DATASET_STATUS = DEFAULT_ASSET_STATUS
-
-class Asset(TranslatedModel):
+class Asset(TranslatedModel, LicensedModel, PublishedModel,
+    TimestampedModel):
     asset_id = UUIDField(auto=True)
     type = models.CharField(max_length=10, choices=ASSET_TYPES)
     attribution = models.TextField(blank=True)
-    license = models.CharField(max_length=25, choices=LICENSES,
-                               default=DEFAULT_LICENSE)
-    status = models.CharField(max_length=10, choices=ASSET_STATUS, default=DEFAULT_ASSET_STATUS)
     owner = models.ForeignKey(User, related_name="assets", blank=True,
                               null=True)
     section_specific = models.BooleanField(default=False)
@@ -49,10 +37,6 @@ class Asset(TranslatedModel):
     # asset_created is when the asset itself was created
     # e.g. date a photo was taken
     asset_created = models.DateTimeField(blank=True, null=True)
-    # created is when the object was created in the system
-    created = models.DateTimeField(auto_now_add=True)
-    last_edited = models.DateTimeField(auto_now=True)
-    published = models.DateTimeField(blank=True, null=True)
 
     translated_fields = ['title', 'caption']
 
@@ -66,10 +50,6 @@ class Asset(TranslatedModel):
     @models.permalink
     def get_absolute_url(self):
         return ('asset_detail', [str(self.asset_id)])
-
-    def license_name(self):
-        """ Convert the license code to a more human-readable version """
-        return get_license_name(self.license)
 
     def render(self, format='html'):
         try:
@@ -175,18 +155,13 @@ class LocalImageAsset(Asset):
 class LocalImageAssetTranslation(AssetTranslation):
     image = FilerImageField()
 
-class DataSet(TranslatedModel):
+class DataSet(TranslatedModel, PublishedModel, TimestampedModel):
     dataset_id = UUIDField(auto=True)
     attribution = models.TextField(blank=True)
     owner = models.ForeignKey(User, related_name="datasets", blank=True,
                               null=True)
-    status = models.CharField(max_length=10, choices=DATASET_STATUS, default=DEFAULT_DATASET_STATUS)
     # dataset_created is when the data set itself was created
     dataset_created = models.DateTimeField(blank=True, null=True)
-    # created is when the object was created in the system
-    created = models.DateTimeField(auto_now_add=True)
-    last_edited = models.DateTimeField(auto_now=True)
-    published = models.DateTimeField(blank=True, null=True)
 
     translation_set = 'storybase_asset_datasettranslation_related'
     translated_fields = ['title', 'description']

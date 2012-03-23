@@ -13,20 +13,13 @@ from django_dag.models import edge_factory, node_factory
 #from taggit_autosuggest.managers import TaggableManager
 from uuidfield.fields import UUIDField
 from storybase.fields import ShortTextField
-from storybase.models import (LICENSES, DEFAULT_LICENSE, 
-    get_license_name,
-    TranslatedModel, TranslationModel)
+from storybase.models import (LicensedModel, PublishedModel,
+    TimestampedModel, TranslatedModel, TranslationModel,
+    DEFAULT_LICENSE, DEFAULT_STATUS)
 from storybase.utils import slugify
 from storybase_asset.models import Asset
 from storybase_user.models import Organization, Project
 #from storybase_tag.models import TaggedItem
-
-STORY_STATUS = (
-    (u'draft', u'draft'),
-    (u'published', u'published'),
-)
-
-DEFAULT_STATUS = u'draft'
 
 class StoryTranslation(TranslationModel):
     story = models.ForeignKey('Story')
@@ -46,7 +39,8 @@ class StoryTranslation(TranslationModel):
             self.slug = slugify(self.title)
         super(StoryTranslation, self).save(*args, **kwargs)
 
-class Story(TranslatedModel):
+class Story(TranslatedModel, LicensedModel, PublishedModel, 
+            TimestampedModel):
     story_id = UUIDField(auto=True)
     byline = models.TextField()
     # blank=True, null=True to bypass validation so the user doesn't
@@ -55,12 +49,6 @@ class Story(TranslatedModel):
     # this value.  In fact, the StoryModelAdmin class sets this to
     # request.user
     author = models.ForeignKey(User, related_name="stories", blank=True, null=True)
-    status = models.CharField(max_length=10, choices=STORY_STATUS, default=DEFAULT_STATUS)
-    license = models.CharField(max_length=25, choices=LICENSES,
-                               default=DEFAULT_LICENSE)
-    created = models.DateTimeField(auto_now_add=True)
-    last_edited = models.DateTimeField(auto_now=True)
-    published = models.DateTimeField(blank=True, null=True)
     assets = models.ManyToManyField(Asset, related_name='stories', blank=True)
     organizations = models.ManyToManyField(Organization, related_name='stories', blank=True)
     projects = models.ManyToManyField(Project, related_name='stories',
@@ -79,10 +67,6 @@ class Story(TranslatedModel):
     @models.permalink
     def get_absolute_url(self):
         return ('story_detail', [str(self.story_id)])
-
-    def license_name(self):
-        """ Convert the license code to a more human-readable version """
-        return get_license_name(self.license)
 
 @receiver(pre_save, sender=Story)
 def set_date_on_published(sender, instance, **kwargs):
