@@ -20,7 +20,6 @@ class DefaultPublishedModelForm(forms.ModelForm):
     def __init__(self, *args, **kwargs):
         super(DefaultPublishedModelForm, self).__init__(*args, **kwargs)
         self.fields['status'].initial = 'published'
-        print self.fields['status'].__dict__
 
 class AssetAdmin(StorybaseModelAdmin):
     readonly_fields = ['asset_id']

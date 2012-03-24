@@ -17,7 +17,6 @@ from models import Story
 def story_detail(request, **kwargs):
     try:
         language_code = translation.get_language()
-        print language_code
         story = Story.objects.get(story_id = kwargs['story_id'])
         available_languages = story.get_languages()
         if language_code not in available_languages:
