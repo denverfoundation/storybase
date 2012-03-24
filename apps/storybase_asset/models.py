@@ -158,6 +158,7 @@ pre_save.connect(set_date_on_published, sender=LocalImageAsset)
 
 class DataSet(TranslatedModel, PublishedModel, TimestampedModel):
     dataset_id = UUIDField(auto=True)
+    source = models.TextField(blank=True)
     attribution = models.TextField(blank=True)
     owner = models.ForeignKey(User, related_name="datasets", blank=True,
                               null=True)
