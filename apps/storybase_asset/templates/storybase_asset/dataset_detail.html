@@ -8,6 +8,11 @@
 
   <p><a href="{{ dataset.download_url }}">Download data</a></p>
 
+  {% if dataset.source %}
+  <h3>Source</h3>
+  <p class="source">{{ dataset.source }}</p>
+  {% endif %}
+
   {% if dataset.attribution %}
   <h3>Attribution</h3>
   <p class="attribution">{{ dataset.attribution }}</p>
