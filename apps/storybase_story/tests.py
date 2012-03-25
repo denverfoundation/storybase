@@ -2,7 +2,8 @@ from datetime import datetime
 from django.conf import settings
 from django.test import TestCase
 from storybase.utils import slugify
-from models import create_story, Story, StoryTranslation
+from models import (create_story, Story, StoryTranslation, 
+    create_section, Section)
 
 class StoryModelTest(TestCase):
     def assertNowish(self, timestamp, tolerance=1):
@@ -98,7 +99,6 @@ class StoryApiTest(TestCase):
     """ Test case for the internal Story API """
 
     def test_create_story(self):
-
         title = "Transportation Challenges Limit Education Choices for Denver Parents"
         summary = """
             Many families in the Denver metro area use public
@@ -119,3 +119,42 @@ class StoryApiTest(TestCase):
         self.assertEqual(retrieved_story.title, title)
         self.assertEqual(retrieved_story.summary, summary)
         self.assertEqual(retrieved_story.byline, byline)
+
+class SectionModelTest(TestCase):
+    def test_update_story_timestamp(self):
+        """ Test that a section's story's last edited timestamp is updated when the section is saved """
+        title = "Transportation Challenges Limit Education Choices for Denver Parents"
+        summary = """
+            Many families in the Denver metro area use public
+            transportation instead of a school bus because for them, a
+            quality education is worth hours of daily commuting. Colorado's
+            school choice program is meant to foster educational equity,
+            but the families who benefit most are those who have time and
+            money to travel. Low-income families are often left in a lurch.
+            """
+        byline = "Mile High Connects"
+        story = create_story(title=title, summary=summary, byline=byline)
+        raise NotImplemented
+
+class SectionApiTest(TestCase):
+    def test_create_section(self):
+        title = "Transportation Challenges Limit Education Choices for Denver Parents"
+        summary = """
+            Many families in the Denver metro area use public
+            transportation instead of a school bus because for them, a
+            quality education is worth hours of daily commuting. Colorado's
+            school choice program is meant to foster educational equity,
+            but the families who benefit most are those who have time and
+            money to travel. Low-income families are often left in a lurch.
+            """
+        byline = "Mile High Connects"
+        story = create_story(title=title, summary=summary, byline=byline)
+        section_title = "Test Section 1"
+        with self.assertRaises(Section.DoesNotExist):
+            Section.objects.get(sectiontranslation__title=section_title)
+        section = create_section(title=section_title, story=story)
+        self.assertEqual(section.title, section_title)
+        self.assertEqual(section.story, story)
+        retrieved_section = Section.objects.get(pk=section.pk)
+        self.assertEqual(retrieved_section.title, section_title)
+        self.assertEqual(retrieved_section.story, story)

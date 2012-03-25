@@ -155,3 +155,10 @@ def create_story(title, summary='', byline='', author=None, status=DEFAULT_STATU
     translation = StoryTranslation(story=obj, title=title, summary=summary, language=language)
     translation.save()
     return obj
+
+def create_section(title, story, language=settings.LANGUAGE_CODE, *args, **kwargs):
+    obj = Section(story=story)
+    obj.save()
+    translation = SectionTranslation(section=obj, title=title)
+    translation.save()
+    return obj
