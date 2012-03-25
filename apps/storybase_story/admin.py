@@ -3,8 +3,8 @@ from django.contrib import admin
 #from ajax_select.admin import AjaxSelectAdmin
 from storybase.admin import StorybaseModelAdmin, StorybaseStackedInline
 from storybase_asset.models import Asset
-from models import (Story, StoryTranslation, Section, SectionAsset,         
-    SectionRelation)
+from models import (Story, StoryTranslation,
+    Section, SectionTranslation, SectionAsset, SectionRelation)        
 
 class StoryTranslationInline(StorybaseStackedInline):
     model = StoryTranslation
@@ -46,11 +46,16 @@ class SectionAssetInline(admin.TabularInline):
     #form = make_ajax_form(SectionAsset, dict(asset='asset'))
     extra = 0
 
+class SectionTranslationInline(StorybaseStackedInline):
+    model = SectionTranslation
+    extra = 1
+
 #class SectionAdmin(AjaxSelectAdmin):
-class SectionAdmin(admin.ModelAdmin):
-    inlines = [SectionAssetInline]
+class SectionAdmin(StorybaseModelAdmin):
+    inlines = [SectionTranslationInline, SectionAssetInline]
+    prefix_inline_classes = ['SectionTranslationInline']
     list_filter = ('story__storytranslation__title',)
-    search_fields = ['title']
+    search_fields = ['sectiontranslation__title']
     readonly_fields = ['section_id']
 
 admin.site.register(Story, StoryAdmin)

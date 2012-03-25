@@ -70,16 +70,28 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
 # Hook up some signal handlers
 pre_save.connect(set_date_on_published, sender=Story)
 
-class Section(node_factory('SectionRelation')):
+class Section(node_factory('SectionRelation'), TranslatedModel):
     """ Section of a story """
     section_id = UUIDField(auto=True)
-    title = models.TextField()
     story = models.ForeignKey('Story', related_name='sections')
     # True if this section the root section of the story, either
     # the first section in a linear story, or the central node
     # in a drill-down/"spider" structure.  Otherwise, False
     root = models.BooleanField(default=False)
     assets = models.ManyToManyField(Asset, related_name='sections', blank=True, through='SectionAsset')
+
+    translated_fields = ['title']
+    translation_set = 'sectiontranslation_set'
+
+    def __unicode__(self):
+        return self.title
+
+class SectionTranslation(TranslationModel):
+    section = models.ForeignKey('Section')
+    title = ShortTextField() 
+
+    class Meta:
+        unique_together = (('section', 'language'))
 
     def __unicode__(self):
         return self.title
