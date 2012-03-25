@@ -84,7 +84,7 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
 # Hook up some signal handlers
 pre_save.connect(set_date_on_published, sender=Story)
 
-class Section(node_factory('SectionRelation'), TranslatedModel):
+class Section(node_factory('SectionRelation'), TranslatedModel, TimestampedModel):
     """ Section of a story """
     section_id = UUIDField(auto=True)
     story = models.ForeignKey('Story', related_name='sections')
