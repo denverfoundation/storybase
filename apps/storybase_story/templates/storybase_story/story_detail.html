@@ -37,6 +37,15 @@
 </ul>
 {% endif %}
 
+{% if story.sections.count %}
+<h3>Sections</h3>
+<ul class="sections">
+{% for section in story.sections.all %}
+  <li>{{ section.title }}</li>
+{% endfor %}
+</ul>
+{% endif %}
+
 <h3>Created</h3>
 <p><time class="created">{{ story.created|date:"F j, Y" }}</time></p>
 
