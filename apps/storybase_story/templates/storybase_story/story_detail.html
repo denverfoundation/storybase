@@ -50,7 +50,17 @@
 <h3>Sections</h3>
 <ul class="sections">
 {% for section in story.sections.all %}
-  <li>{{ section.title }}</li>
+  <li>
+    {{ section.title }}<br />
+    {% if section.assets.count %}
+    Assets:
+    <ul>
+        {% for asset in section.assets.select_subclasses %}
+        <li>{{ asset|safe }}</li>
+        {% endfor %}
+    </ul>
+    {% endif %}
+  </li>
 {% endfor %}
 </ul>
 {% endif %}

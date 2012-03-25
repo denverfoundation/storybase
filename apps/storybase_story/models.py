@@ -113,7 +113,10 @@ class Section(node_factory('SectionRelation'), TranslatedModel):
             output.append("<h5>Assets</h5>")
             output.append("<ul>")
             for asset in self.assets.order_by('sectionasset__weight'):
-                output.append("<li>%s</li>" % asset.title)
+                asset_title = asset.title
+                if not asset_title:
+                    asset_title = unicode(asset)
+                output.append("<li>%s</li>" % asset_title)
             output.append("</ul>")
 
         # TODO: Render connected assets
