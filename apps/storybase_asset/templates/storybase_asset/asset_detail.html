@@ -41,6 +41,15 @@
   <h3>Status</h3>
   <p class="status">{{ asset.status }}</p>
 
+  {% if asset.stories.count %}
+  <h3>Stories this asset is used in</h3>
+  <ul class="stories">
+      {% for story in asset.stories.all %}
+      <li>{{ story.title }}</li>
+      {% endfor %}
+  </ul>
+  {% endif %}
+
   {% if asset.published %}
   <h3>Publication Date</h3>
   <p><time class="published">{{ asset.published|date:"F j, Y g:i A" }}</time></p>

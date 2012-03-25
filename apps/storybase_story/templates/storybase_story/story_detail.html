@@ -37,6 +37,15 @@
 </ul>
 {% endif %}
 
+{% if story.assets.count %}
+<h3>Assets</h3>
+<ul class="assets">
+{% for asset in story.assets.select_subclasses %}
+  <li>{{ asset.title }}</li>
+{% endfor %}
+</ul>
+{% endif %}
+
 {% if story.sections.count %}
 <h3>Sections</h3>
 <ul class="sections">
