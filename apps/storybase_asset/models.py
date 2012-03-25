@@ -31,6 +31,10 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
     asset_id = UUIDField(auto=True)
     type = models.CharField(max_length=10, choices=ASSET_TYPES)
     attribution = models.TextField(blank=True)
+    # source_url is the URL where an asset originated.  It could be used
+    # to store the canonical URL for a resource that is not yet oEmbedable
+    # or the canonical URL of an article or tweet where text is quoted from.
+    source_url = models.URLField(blank=True)
     owner = models.ForeignKey(User, related_name="assets", blank=True,
                               null=True)
     section_specific = models.BooleanField(default=False)
