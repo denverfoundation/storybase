@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import pre_save
+from django.template.defaultfilters import striptags, truncatewords
 from django.utils.safestring import mark_safe
 from filer.fields.image import FilerFileField, FilerImageField
 from model_utils.managers import InheritanceManager
@@ -50,7 +51,10 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
     objects = InheritanceManager()
 
     def __unicode__(self):
-        return self.title
+        if self.title:
+            return self.title
+        else:
+            return "Asset %s" % self.asset_id
 
     @models.permalink
     def get_absolute_url(self):
@@ -62,10 +66,9 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
         except AttributeError:
             return self.__unicode__()
 
-
 class AssetTranslation(TranslationModel):
     asset = models.ForeignKey('Asset', related_name="%(app_label)s_%(class)s_related") 
-    title = ShortTextField() 
+    title = ShortTextField(blank=True) 
     caption = models.TextField(blank=True)
 
     class Meta:
@@ -114,6 +117,15 @@ class HtmlAsset(Asset):
 
     translation_set = 'storybase_asset_htmlassettranslation_related'
     translated_fields = Asset.translated_fields + ['body']
+
+    def __unicode__(self):
+        """ String representation of asset """
+        if self.title:
+            return self.title
+        elif self.body:
+            return truncatewords(striptags(self.body), 4)
+        else:
+            return 'Asset %s' % self.asset_id
 
     def render_html(self):
         output = []
