@@ -51,10 +51,8 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
     objects = InheritanceManager()
 
     def __unicode__(self):
-        if self.title:
-            return self.title
-        else:
-            return "Asset %s" % self.asset_id
+        subclass_obj = Asset.objects.get_subclass(pk=self.pk)
+        return subclass_obj.__unicode__()
 
     @models.permalink
     def get_absolute_url(self):
@@ -80,6 +78,14 @@ class ExternalAsset(Asset):
 
     translation_set = 'storybase_asset_externalassettranslation_related'
     translated_fields = Asset.translated_fields + ['url']
+
+    def __unicode__(self):
+        if self.title:
+            return self.title
+        elif self.url:
+            return self.url
+        else:
+            return "Asset %s" % self.asset_id
 
     def render_html(self):
         output = []
@@ -150,6 +156,12 @@ class LocalImageAsset(Asset):
 
     translation_set = 'storybase_asset_localimageassettranslation_related'
     translated_fields = Asset.translated_fields + ['image']
+
+    def __unicode__(self):
+        if self.title:
+            return self.title
+        else:
+            return "Asset %s" % self.asset_id
 
     def render_html(self):
         output = []
