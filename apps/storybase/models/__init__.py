@@ -56,8 +56,9 @@ class TranslatedModel(models.Model):
                 for attr in subclass_attrs:
                     if hasattr(self, attr):
                         subclass = get(attr)
-                        translation_set = subclass.translation_set
-                        break
+                        if subclass:
+                            translation_set = subclass.translation_set
+                            break
                 else:
                     raise
 
