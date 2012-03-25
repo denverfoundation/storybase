@@ -2,6 +2,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import pre_save
+from django.utils.safestring import mark_safe
 from django_dag.models import edge_factory, node_factory
 # TODO: Decide on tagging suggestion admin app.
 # Right now, I'm using a hacked version of
@@ -67,6 +68,19 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
     def get_absolute_url(self):
         return ('story_detail', [str(self.story_id)])
 
+    def get_root_section(self):
+        """ Return the root section """
+        return self.sections.get(root=True)
+
+    def render_story_structure(self, format='html'):
+        """ Render a representation of the Story structure based on its sections """
+        try:
+            root = self.get_root_section()
+        except Section.DoesNotExist:
+            return ''
+
+        return root.render(format)
+
 # Hook up some signal handlers
 pre_save.connect(set_date_on_published, sender=Story)
 
@@ -85,6 +99,26 @@ class Section(node_factory('SectionRelation'), TranslatedModel):
 
     def __unicode__(self):
         return self.title
+
+    def render(self, format='html'):
+        try:
+            return getattr(self, "render_" + format).__call__()
+        except AttributeError:
+            return self.__unicode__()
+
+    def render_html(self):
+        output = []
+        output.append("<h4>%s</h4>" % self.title)
+        if self.assets.count() > 0:
+            output.append("<h5>Assets</h5>")
+            output.append("<ul>")
+            for asset in self.assets.order_by('sectionasset__weight'):
+                output.append("<li>%s</li>" % asset.title)
+            output.append("</ul>")
+
+        # TODO: Render connected assets
+
+        return mark_safe(u'\n'.join(output))
 
 class SectionTranslation(TranslationModel):
     section = models.ForeignKey('Section')

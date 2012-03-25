@@ -55,6 +55,13 @@
 </ul>
 {% endif %}
 
+{% with story_structure=story.render_story_structure %}
+{% if story_structure %}
+<h3>Story Structure</h3>
+{{ story_structure }}
+{% endif %}
+{% endwith %}
+
 <h3>Created</h3>
 <p><time class="created">{{ story.created|date:"F j, Y" }}</time></p>
 
