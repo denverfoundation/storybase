@@ -35,4 +35,4 @@ git+git://github.com/elpaso/django-dag.git#egg=django_dag
 django-uuidfield==0.2
 # Use my branch of djangoembed until #34 is fixed
 git+git://github.com/ghing/djangoembed.git#egg=djangoembed-0.1.1-py2.7-dev
-django-model-utils==tip
+django-model-utils==1.0.0
