@@ -1,7 +1,8 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import pre_save
-from django.template.defaultfilters import striptags, truncatewords
+from django.utils.html import strip_tags
+from django.utils.text import truncate_words
 from django.utils.safestring import mark_safe
 from filer.fields.image import FilerFileField, FilerImageField
 from model_utils.managers import InheritanceManager
@@ -129,7 +130,7 @@ class HtmlAsset(Asset):
         if self.title:
             return self.title
         elif self.body:
-            return truncatewords(striptags(self.body), 4)
+            return truncate_words(strip_tags(mark_safe(self.body)), 4)
         else:
             return 'Asset %s' % self.asset_id
 
