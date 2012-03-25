@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
-from django.db.models.signals import pre_save
+from django.db.models.signals import post_save, pre_save
 from django.utils.safestring import mark_safe
 from django_dag.models import edge_factory, node_factory
 # TODO: Decide on tagging suggestion admin app.
@@ -84,7 +84,7 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
 # Hook up some signal handlers
 pre_save.connect(set_date_on_published, sender=Story)
 
-class Section(node_factory('SectionRelation'), TranslatedModel, TimestampedModel):
+class Section(node_factory('SectionRelation'), TranslatedModel):
     """ Section of a story """
     section_id = UUIDField(auto=True)
     story = models.ForeignKey('Story', related_name='sections')
@@ -139,6 +139,14 @@ class SectionAsset(models.Model):
     section = models.ForeignKey('Section')
     asset = models.ForeignKey('storybase_asset.Asset')
     weight = models.IntegerField(default=0)
+
+def update_story_last_edited(sender, instance, **kwargs):
+    """ Update the a section's story's last edited field """
+    # Last edited is automatically set on save
+    instance.story.save()
+
+# Update a section's story's last edited field when the section is saved
+post_save.connect(update_story_last_edited, sender=Section)
 
 def create_story(title, summary='', byline='', author=None, status=DEFAULT_STATUS, license=DEFAULT_LICENSE, language=settings.LANGUAGE_CODE, *args, **kwargs):
     """ Convenience function for creating a Story

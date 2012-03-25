@@ -1,22 +1,12 @@
-from datetime import datetime
+from time import sleep
 from django.conf import settings
 from django.test import TestCase
+from storybase.tests import SloppyTimeTestCase
 from storybase.utils import slugify
 from models import (create_story, Story, StoryTranslation, 
     create_section, Section)
 
-class StoryModelTest(TestCase):
-    def assertNowish(self, timestamp, tolerance=1):
-        """ Confirm that a datetime instance is within a few seconds of the current time
-
-        Arguments:
-        timestamp -- a datetime.datetime instance
-        tolerance -- number of seconds that the times can differ
-
-        """
-        delta = datetime.now() - timestamp 
-        self.assertTrue(delta.seconds <= tolerance)
-
+class StoryModelTest(SloppyTimeTestCase):
     def test_auto_slug(self):
         title = 'Transportation Challenges Limit Education Choices for Denver Parents'
         story = Story()
@@ -120,7 +110,7 @@ class StoryApiTest(TestCase):
         self.assertEqual(retrieved_story.summary, summary)
         self.assertEqual(retrieved_story.byline, byline)
 
-class SectionModelTest(TestCase):
+class SectionModelTest(SloppyTimeTestCase):
     def test_update_story_timestamp(self):
         """ Test that a section's story's last edited timestamp is updated when the section is saved """
         title = "Transportation Challenges Limit Education Choices for Denver Parents"
@@ -134,7 +124,10 @@ class SectionModelTest(TestCase):
             """
         byline = "Mile High Connects"
         story = create_story(title=title, summary=summary, byline=byline)
-        raise NotImplemented
+        section = create_section(title="Test Section 1", story=story)
+        sleep(2)
+        section.save()
+        self.assertTimesEqualish(section.last_edited, story.last_edited)
 
 class SectionApiTest(TestCase):
     def test_create_section(self):
