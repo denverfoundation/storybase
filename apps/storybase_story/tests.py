@@ -127,7 +127,7 @@ class SectionModelTest(SloppyTimeTestCase):
         section = create_section(title="Test Section 1", story=story)
         sleep(2)
         section.save()
-        self.assertTimesEqualish(section.last_edited, story.last_edited)
+        self.assertNowish(story.last_edited)
 
 class SectionApiTest(TestCase):
     def test_create_section(self):
