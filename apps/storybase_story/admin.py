@@ -1,4 +1,6 @@
 from django.contrib import admin
+#from django.contrib.admin import SimpleListFilter
+from django.utils.translation import ugettext_lazy as _
 #from ajax_select import make_ajax_form
 #from ajax_select.admin import AjaxSelectAdmin
 from storybase.admin import StorybaseModelAdmin, StorybaseStackedInline
@@ -50,11 +52,42 @@ class SectionTranslationInline(StorybaseStackedInline):
     model = SectionTranslation
     extra = 1
 
+def obj_title(obj):
+    """ Callable to display an object title in the Django admin
+
+    This is needed because title isn't an attribute of the Story or 
+    Section models, it's an attribute of the translation class.
+
+    """
+    return obj.title
+obj_title.short_description = 'Title'
+
+def section_story_title(obj):
+    """ Callable to return a Section's Story's title in the Django admin """
+    return obj.story.title
+section_story_title = 'Story Title'
+
+# TODO: Enable this on switch to Django 1.4
+#class SectionStoryTitleListFilter(SimpleListFilter):
+#    title = _('story title') 
+#    parameter_name = 'title'
+#
+#    def lookups(self, request, model_admin):
+#        qs = model_admin.queryset(request)
+#        values = qs.values('pk', 'story__storytranslation__title').distinct()
+#        return [(value['pk'], value['story_storytranslation__title']) for value in values]
+#
+#    def queryset(self, request, queryset):
+#        return queryset.filter(pk=self.value())
+
 #class SectionAdmin(AjaxSelectAdmin):
 class SectionAdmin(StorybaseModelAdmin):
     inlines = [SectionTranslationInline, SectionAssetInline]
     prefix_inline_classes = ['SectionTranslationInline']
-    list_filter = ('story__storytranslation__title',)
+    list_display = (obj_title, 'root')
+# TODO: Enable this on switch to Django 1.4
+#    list_filter = (SectionStoryTitleListFilter, 'root')
+    list_filter = ('story__storytranslation__title', 'root')
     search_fields = ['sectiontranslation__title']
     readonly_fields = ['section_id']
 
