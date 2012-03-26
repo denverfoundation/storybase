@@ -25,7 +25,7 @@ env['production'] = env.get('production', False)
 # Git repo
 # Production environments can only pull from repo
 env['repo_uri'] = env.get('repo_uri', 
-    'git://github.com/ghing/atlas.git' if env['production'] else 'git@github.com:ghing/atlas.git')
+    'git://github.com/PitonFoundation/atlas.git' if env['production'] else 'git@github.com:PitonFoundation/atlas.git')
 env['repo_branch'] = env.get('repo_branch', 
     'master' if env['production'] else 'develop')
 
