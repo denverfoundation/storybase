@@ -74,12 +74,16 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
 
     def render_story_structure(self, format='html'):
         """ Render a representation of the Story structure based on its sections """
+        output = []
         try:
             root = self.get_root_section()
         except Section.DoesNotExist:
             return ''
 
-        return root.render(format)
+        output.append('<ul>')
+        output.append(root.render(format))
+        output.append('</ul>')
+        return mark_safe(u'\n'.join(output))
 
 # Hook up some signal handlers
 pre_save.connect(set_date_on_published, sender=Story)
@@ -108,6 +112,7 @@ class Section(node_factory('SectionRelation'), TranslatedModel):
 
     def render_html(self):
         output = []
+        output.append('<li class="section">')
         output.append("<h4>%s</h4>" % self.title)
         if self.assets.count() > 0:
             output.append("<h5>Assets</h5>")
@@ -119,7 +124,15 @@ class Section(node_factory('SectionRelation'), TranslatedModel):
                 output.append("<li>%s</li>" % asset_title)
             output.append("</ul>")
 
-        # TODO: Render connected assets
+        if self.children.count():
+            output.append("<ul>")
+            # TODO: Maybe wrap this query into a convenience method because
+            # it's pretty ugly and not clear what's going on
+            for child_relation in self.children.through.objects.filter(parent=self).order_by('weight', 'child__sectiontranslation__title'):
+                output.append(child_relation.child.render_html())
+            output.append("</ul>")
+
+        output.append("</li>")
 
         return mark_safe(u'\n'.join(output))
 

@@ -321,7 +321,10 @@ footer .copyright {
   color: #fff;
 }
 
-
+/* Story detail */
+li.section {
+   list-style-type: none;
+}
 
 
 
