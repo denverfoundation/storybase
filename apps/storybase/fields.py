@@ -20,3 +20,9 @@ class ShortTextField(models.TextField):
         defaults = {'widget': forms.CharField}
         defaults.update(kwargs)
         return super(ShortTextField, self).formfield(**defaults)
+
+try:
+    from south.modelsinspector import add_introspection_rules
+    add_introspection_rules([], ["^storybase\.fields\.ShortTextField"])
+except ImportError:
+    pass
