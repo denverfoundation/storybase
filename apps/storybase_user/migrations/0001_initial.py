@@ -43,16 +43,6 @@ class Migration(SchemaMigration):
         # Adding unique constraint on 'OrganizationTranslation', fields ['organization', 'language']
         db.create_unique('storybase_user_organizationtranslation', ['organization_id', 'language'])
 
-        # Adding model 'OrganizationStory'
-        db.create_table('storybase_user_organizationstory', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('story', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['storybase_story.Story'])),
-            ('weight', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('added', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-            ('organization', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['storybase_user.Organization'])),
-        ))
-        db.send_create_signal('storybase_user', ['OrganizationStory'])
-
         # Adding model 'Project'
         db.create_table('storybase_user_project', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
@@ -94,16 +84,6 @@ class Migration(SchemaMigration):
         # Adding unique constraint on 'ProjectTranslation', fields ['project', 'language']
         db.create_unique('storybase_user_projecttranslation', ['project_id', 'language'])
 
-        # Adding model 'ProjectStory'
-        db.create_table('storybase_user_projectstory', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('story', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['storybase_story.Story'])),
-            ('weight', self.gf('django.db.models.fields.IntegerField')(default=0)),
-            ('added', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-            ('project', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['storybase_user.Project'])),
-        ))
-        db.send_create_signal('storybase_user', ['ProjectStory'])
-
 
     def backwards(self, orm):
         
@@ -122,9 +102,6 @@ class Migration(SchemaMigration):
         # Deleting model 'OrganizationTranslation'
         db.delete_table('storybase_user_organizationtranslation')
 
-        # Deleting model 'OrganizationStory'
-        db.delete_table('storybase_user_organizationstory')
-
         # Deleting model 'Project'
         db.delete_table('storybase_user_project')
 
@@ -136,9 +113,6 @@ class Migration(SchemaMigration):
 
         # Deleting model 'ProjectTranslation'
         db.delete_table('storybase_user_projecttranslation')
-
-        # Deleting model 'ProjectStory'
-        db.delete_table('storybase_user_projectstory')
 
 
     models = {

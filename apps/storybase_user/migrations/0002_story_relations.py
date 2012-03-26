@@ -7,139 +7,38 @@ from django.db import models
 class Migration(SchemaMigration):
 
     depends_on = (
-        ("storybase_asset", "0001_initial.py"),
+        ("storybase_story", "0001_initial"),
     )
 
     def forwards(self, orm):
-        
-        # Adding model 'StoryTranslation'
-        db.create_table('storybase_story_storytranslation', (
+
+        # Adding model 'OrganizationStory'
+        db.create_table('storybase_user_organizationstory', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('translation_id', self.gf('uuidfield.fields.UUIDField')(unique=True, max_length=32, blank=True)),
-            ('language', self.gf('django.db.models.fields.CharField')(default='en', max_length=15)),
             ('story', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['storybase_story.Story'])),
-            ('title', self.gf('storybase.fields.ShortTextField')()),
-            ('summary', self.gf('django.db.models.fields.TextField')(blank=True)),
-            ('slug', self.gf('django.db.models.fields.SlugField')(max_length=50, db_index=True)),
-        ))
-        db.send_create_signal('storybase_story', ['StoryTranslation'])
-
-        # Adding unique constraint on 'StoryTranslation', fields ['story', 'language']
-        db.create_unique('storybase_story_storytranslation', ['story_id', 'language'])
-
-        # Adding model 'Story'
-        db.create_table('storybase_story_story', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-            ('last_edited', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
-            ('status', self.gf('django.db.models.fields.CharField')(default=u'draft', max_length=10)),
-            ('published', self.gf('django.db.models.fields.DateTimeField')(null=True, blank=True)),
-            ('license', self.gf('django.db.models.fields.CharField')(default='CC BY-NC-SA', max_length=25)),
-            ('story_id', self.gf('uuidfield.fields.UUIDField')(unique=True, max_length=32, blank=True)),
-            ('byline', self.gf('django.db.models.fields.TextField')()),
-            ('author', self.gf('django.db.models.fields.related.ForeignKey')(blank=True, related_name='stories', null=True, to=orm['auth.User'])),
-        ))
-        db.send_create_signal('storybase_story', ['Story'])
-
-        # Adding M2M table for field assets on 'Story'
-        db.create_table('storybase_story_story_assets', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('story', models.ForeignKey(orm['storybase_story.story'], null=False)),
-            ('asset', models.ForeignKey(orm['storybase_asset.asset'], null=False))
-        ))
-        db.create_unique('storybase_story_story_assets', ['story_id', 'asset_id'])
-
-        # Adding M2M table for field organizations on 'Story'
-        db.create_table('storybase_story_story_organizations', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('story', models.ForeignKey(orm['storybase_story.story'], null=False)),
-            ('organization', models.ForeignKey(orm['storybase_user.organization'], null=False))
-        ))
-        db.create_unique('storybase_story_story_organizations', ['story_id', 'organization_id'])
-
-        # Adding M2M table for field projects on 'Story'
-        db.create_table('storybase_story_story_projects', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('story', models.ForeignKey(orm['storybase_story.story'], null=False)),
-            ('project', models.ForeignKey(orm['storybase_user.project'], null=False))
-        ))
-        db.create_unique('storybase_story_story_projects', ['story_id', 'project_id'])
-
-        # Adding model 'Section'
-        db.create_table('storybase_story_section', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('section_id', self.gf('uuidfield.fields.UUIDField')(unique=True, max_length=32, blank=True)),
-            ('story', self.gf('django.db.models.fields.related.ForeignKey')(related_name='sections', to=orm['storybase_story.Story'])),
-            ('root', self.gf('django.db.models.fields.BooleanField')(default=False)),
-        ))
-        db.send_create_signal('storybase_story', ['Section'])
-
-        # Adding model 'SectionTranslation'
-        db.create_table('storybase_story_sectiontranslation', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('translation_id', self.gf('uuidfield.fields.UUIDField')(unique=True, max_length=32, blank=True)),
-            ('language', self.gf('django.db.models.fields.CharField')(default='en', max_length=15)),
-            ('section', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['storybase_story.Section'])),
-            ('title', self.gf('storybase.fields.ShortTextField')()),
-        ))
-        db.send_create_signal('storybase_story', ['SectionTranslation'])
-
-        # Adding unique constraint on 'SectionTranslation', fields ['section', 'language']
-        db.create_unique('storybase_story_sectiontranslation', ['section_id', 'language'])
-
-        # Adding model 'SectionRelation'
-        db.create_table('storybase_story_sectionrelation', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('parent', self.gf('django.db.models.fields.related.ForeignKey')(related_name='section_child', to=orm['storybase_story.Section'])),
-            ('child', self.gf('django.db.models.fields.related.ForeignKey')(related_name='section_parent', to=orm['storybase_story.Section'])),
             ('weight', self.gf('django.db.models.fields.IntegerField')(default=0)),
+            ('added', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
+            ('organization', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['storybase_user.Organization'])),
         ))
-        db.send_create_signal('storybase_story', ['SectionRelation'])
+        db.send_create_signal('storybase_user', ['OrganizationStory'])
 
-        # Adding model 'SectionAsset'
-        db.create_table('storybase_story_sectionasset', (
+        # Adding model 'ProjectStory'
+        db.create_table('storybase_user_projectstory', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('section', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['storybase_story.Section'])),
-            ('asset', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['storybase_asset.Asset'])),
+            ('story', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['storybase_story.Story'])),
             ('weight', self.gf('django.db.models.fields.IntegerField')(default=0)),
+            ('added', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
+            ('project', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['storybase_user.Project'])),
         ))
-        db.send_create_signal('storybase_story', ['SectionAsset'])
-
+        db.send_create_signal('storybase_user', ['ProjectStory'])
 
     def backwards(self, orm):
-        
-        # Removing unique constraint on 'SectionTranslation', fields ['section', 'language']
-        db.delete_unique('storybase_story_sectiontranslation', ['section_id', 'language'])
 
-        # Removing unique constraint on 'StoryTranslation', fields ['story', 'language']
-        db.delete_unique('storybase_story_storytranslation', ['story_id', 'language'])
+        # Deleting model 'OrganizationStory'
+        db.delete_table('storybase_user_organizationstory')
 
-        # Deleting model 'StoryTranslation'
-        db.delete_table('storybase_story_storytranslation')
-
-        # Deleting model 'Story'
-        db.delete_table('storybase_story_story')
-
-        # Removing M2M table for field assets on 'Story'
-        db.delete_table('storybase_story_story_assets')
-
-        # Removing M2M table for field organizations on 'Story'
-        db.delete_table('storybase_story_story_organizations')
-
-        # Removing M2M table for field projects on 'Story'
-        db.delete_table('storybase_story_story_projects')
-
-        # Deleting model 'Section'
-        db.delete_table('storybase_story_section')
-
-        # Deleting model 'SectionTranslation'
-        db.delete_table('storybase_story_sectiontranslation')
-
-        # Deleting model 'SectionRelation'
-        db.delete_table('storybase_story_sectionrelation')
-
-        # Deleting model 'SectionAsset'
-        db.delete_table('storybase_story_sectionasset')
+        # Deleting model 'ProjectStory'
+        db.delete_table('storybase_user_projectstory')
 
 
     models = {
@@ -209,37 +108,6 @@ class Migration(SchemaMigration):
             'source': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
             'status': ('django.db.models.fields.CharField', [], {'default': "u'draft'", 'max_length': '10'})
         },
-        'storybase_story.section': {
-            'Meta': {'object_name': 'Section'},
-            'assets': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'sections'", 'blank': 'True', 'through': "orm['storybase_story.SectionAsset']", 'to': "orm['storybase_asset.Asset']"}),
-            'children': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': "orm['storybase_story.Section']", 'null': 'True', 'through': "orm['storybase_story.SectionRelation']", 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'root': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'section_id': ('uuidfield.fields.UUIDField', [], {'unique': 'True', 'max_length': '32', 'blank': 'True'}),
-            'story': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'sections'", 'to': "orm['storybase_story.Story']"})
-        },
-        'storybase_story.sectionasset': {
-            'Meta': {'object_name': 'SectionAsset'},
-            'asset': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['storybase_asset.Asset']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'section': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['storybase_story.Section']"}),
-            'weight': ('django.db.models.fields.IntegerField', [], {'default': '0'})
-        },
-        'storybase_story.sectionrelation': {
-            'Meta': {'object_name': 'SectionRelation'},
-            'child': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'section_parent'", 'to': "orm['storybase_story.Section']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'parent': ('django.db.models.fields.related.ForeignKey', [], {'related_name': "'section_child'", 'to': "orm['storybase_story.Section']"}),
-            'weight': ('django.db.models.fields.IntegerField', [], {'default': '0'})
-        },
-        'storybase_story.sectiontranslation': {
-            'Meta': {'unique_together': "(('section', 'language'),)", 'object_name': 'SectionTranslation'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'language': ('django.db.models.fields.CharField', [], {'default': "'en'", 'max_length': '15'}),
-            'section': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['storybase_story.Section']"}),
-            'title': ('storybase.fields.ShortTextField', [], {}),
-            'translation_id': ('uuidfield.fields.UUIDField', [], {'unique': 'True', 'max_length': '32', 'blank': 'True'})
-        },
         'storybase_story.story': {
             'Meta': {'object_name': 'Story'},
             'assets': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'stories'", 'blank': 'True', 'to': "orm['storybase_asset.Asset']"}),
@@ -254,16 +122,6 @@ class Migration(SchemaMigration):
             'published': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
             'status': ('django.db.models.fields.CharField', [], {'default': "u'draft'", 'max_length': '10'}),
             'story_id': ('uuidfield.fields.UUIDField', [], {'unique': 'True', 'max_length': '32', 'blank': 'True'})
-        },
-        'storybase_story.storytranslation': {
-            'Meta': {'unique_together': "(('story', 'language'),)", 'object_name': 'StoryTranslation'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'language': ('django.db.models.fields.CharField', [], {'default': "'en'", 'max_length': '15'}),
-            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'db_index': 'True'}),
-            'story': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['storybase_story.Story']"}),
-            'summary': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'title': ('storybase.fields.ShortTextField', [], {}),
-            'translation_id': ('uuidfield.fields.UUIDField', [], {'unique': 'True', 'max_length': '32', 'blank': 'True'})
         },
         'storybase_user.organization': {
             'Meta': {'object_name': 'Organization'},
@@ -283,6 +141,18 @@ class Migration(SchemaMigration):
             'story': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['storybase_story.Story']"}),
             'weight': ('django.db.models.fields.IntegerField', [], {'default': '0'})
         },
+        'storybase_user.organizationtranslation': {
+            'Meta': {'unique_together': "(('organization', 'language'),)", 'object_name': 'OrganizationTranslation'},
+            'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
+            'description': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'language': ('django.db.models.fields.CharField', [], {'default': "'en'", 'max_length': '15'}),
+            'last_edited': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
+            'name': ('storybase.fields.ShortTextField', [], {}),
+            'organization': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['storybase_user.Organization']"}),
+            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'db_index': 'True'}),
+            'translation_id': ('uuidfield.fields.UUIDField', [], {'unique': 'True', 'max_length': '32', 'blank': 'True'})
+        },
         'storybase_user.project': {
             'Meta': {'object_name': 'Project'},
             'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
@@ -301,7 +171,17 @@ class Migration(SchemaMigration):
             'project': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['storybase_user.Project']"}),
             'story': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['storybase_story.Story']"}),
             'weight': ('django.db.models.fields.IntegerField', [], {'default': '0'})
+        },
+        'storybase_user.projecttranslation': {
+            'Meta': {'unique_together': "(('project', 'language'),)", 'object_name': 'ProjectTranslation'},
+            'description': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
+            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'language': ('django.db.models.fields.CharField', [], {'default': "'en'", 'max_length': '15'}),
+            'name': ('storybase.fields.ShortTextField', [], {}),
+            'project': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['storybase_user.Project']"}),
+            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'db_index': 'True'}),
+            'translation_id': ('uuidfield.fields.UUIDField', [], {'unique': 'True', 'max_length': '32', 'blank': 'True'})
         }
     }
 
-    complete_apps = ['storybase_story']
+    complete_apps = ['storybase_user']
