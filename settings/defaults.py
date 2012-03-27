@@ -199,7 +199,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'cms.context_processors.media',
     'sekizai.context_processors.sekizai',
 #    "allauth.context_processors.allauth",
-    "allauth.account.context_processors.account",
+#    "allauth.account.context_processors.account",
 )
 
 # A sample logging configuration. The only tangible logging
