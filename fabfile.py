@@ -74,6 +74,17 @@ def install_pil_dependencies():
     sudo('apt-get install python-dev libfreetype6-dev zlib1g-dev libjpeg8-dev')
 
 @task
+def make_pil_dependency_symlinks():
+    """ Make symlinks so PIL finds correct libraries 
+    
+    See http://www.jayzawrotny.com/blog/django-pil-and-libjpeg-on-ubuntu-1110
+    """
+    sudo('ln -s /usr/lib/i386-linux-gnu/libjpeg.so /usr/lib')
+    sudo('ln -s /usr/lib/i386-linux-gnu/libfreetype.so /usr/lib')
+    sudo('ln -s /usr/lib/i386-linux-gnu/libz.so /usr/lib')
+    sudo('ln -s /lib/i386-linux-gnu/libpng12.so.0 /usr/lib')
+
+@task
 def install_python_package_depencies():
     """ Install libraries needed by Python packages that will be installed later """
     # Splinter needs lxml, which needs libxml2-dev and libxslt-dev
@@ -151,6 +162,13 @@ def make_log_directory(instance=env['instance']):
     """ Create directory for instance's logs """
     with cd(env['instance_root']):
         run('mkdir logs')
+
+@task
+def make_media_directory(instance=env['instance']):
+    """ Create the Django media directory """
+    with cd(env['instance_root'] + '/atlas'):
+        run('mkdir media')
+        sudo('chown www-data media')
 
 @task
 def upload_config(config_dir=os.path.join(os.getcwd(), 'config', env['instance']) + '/'):
