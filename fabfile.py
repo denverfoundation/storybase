@@ -18,6 +18,7 @@ env['instance'] = env.get('instance', 'atlas')
 # sudo addgroup atlas
 # sudo adduser ghing atlas
 # sudo mkdir /srv/www/atlas_dev
+# sudo chgrp atlas /srv/www/atlas_dev
 # sudo chmod g+rwxs /srv/www/atlas_dev
 env['instance_root'] = env.get('instance_root', 
     os.path.join('/srv/www/', env['instance']))
