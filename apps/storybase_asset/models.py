@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import pre_save
@@ -12,7 +13,7 @@ from uuidfield.fields import UUIDField
 from storybase.fields import ShortTextField
 from storybase.models import (LicensedModel, PublishedModel,
     TimestampedModel, TranslatedModel, TranslationModel,
-    set_date_on_published)
+    set_date_on_published, DEFAULT_LICENSE)
 from embedable_resource import EmbedableResource
 from embedable_resource.exceptions import UrlNotMatched
    
@@ -236,3 +237,43 @@ class LocalDataSet(DataSet):
 
     def download_url(self):
         return self.file.url 
+
+def create_html_asset(type, title='', caption='', body='', language=settings.LANGUAGE_CODE, *args, **kwargs):
+    """ Convenience function for creating a HtmlAsset
+
+    Allows for creation of Assets without having to explicitly deal with
+    the translations.
+
+    """
+    obj = HtmlAsset(
+        type=type, 
+        *args, **kwargs)
+    obj.save()
+    translation = HtmlAssetTranslation(
+        asset=obj, 
+        title=title, 
+        caption=caption,
+        body=body,
+        language=language)
+    translation.save()
+    return obj
+
+def create_external_asset(type, title='', caption='', url='', language=settings.LANGUAGE_CODE, *args, **kwargs):
+    """ Convenience function for creating a HtmlAsset
+
+    Allows for creation of Assets without having to explicitly deal with
+    the translations.
+
+    """
+    obj = ExternalAsset(
+        type=type, 
+        *args, **kwargs)
+    obj.save()
+    translation = ExternalAssetTranslation(
+        asset=obj, 
+        title=title, 
+        caption=caption,
+        url=url,
+        language=language)
+    translation.save()
+    return obj

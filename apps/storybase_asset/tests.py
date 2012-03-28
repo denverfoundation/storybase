@@ -1,6 +1,8 @@
+from datetime import datetime
 from django.template.defaultfilters import striptags, truncatewords
 from django.test import TestCase
-from models import HtmlAsset, HtmlAssetTranslation
+from models import (ExternalAsset, HtmlAsset, HtmlAssetTranslation,
+    create_html_asset, create_external_asset)
 from embedable_resource import EmbedableResource
 
 class AssetModelTest(TestCase):
@@ -56,3 +58,79 @@ class EmbedableResourceTest(TestCase):
         url = 'https://docs.google.com/spreadsheet/pub?key=0As2exFJJWyJqdDhBejVfN1RhdDg2b0QtYWR4X2FTZ3c&output=html' 
         expected = "<iframe width='500' height='300' frameborder='0' src='%s&widget=true'></iframe>" % url
         self.assertEqual(EmbedableResource.get_html(url), expected)
+
+class AssetApiTest(TestCase):
+    """ Test the public API for creating Assets """
+
+    def test_create_html_asset(self):
+        """ Test create_html_asset() """
+
+        title = "Success Express"
+        type = "quotation"
+        attribution = "Ed Brennan, EdNews Colorado"
+        source_url = "http://www.ednewsparent.org/teaching-learning/5534-denvers-success-express-rolls-out-of-the-station"
+        asset_created = datetime.strptime('2011-06-03 00:00',
+                                          '%Y-%m-%d %H:%M')
+        status='published'
+        body = """
+        In both the Far Northeast and the Near Northeast, school buses 
+        will no longer make a traditional series of stops in neighborhoods
+        - once in the morning and once in the afternoon. Instead, a fleet
+        of DPS buses will circulate between area schools, offering students
+        up to three chances to catch the one that will get them to their
+        school of choice on time.
+
+        Martha Carranza, who has a child at Bruce Randolph, said that for
+        students who have depended on RTD, "I was very worried because it
+        is very dangerous for the children coming from Globeville and also
+        from Swansea ... the kids were arriving late and sometimes missing
+        classes altogether."
+
+        And, said Carranza, "... we are very happy that with the new
+        transportation system, no child will have any excuse to miss 
+        school."
+        """
+        asset = create_html_asset(type, title, caption='', body=body,
+            attribution=attribution, source_url=source_url, status=status,
+            asset_created=asset_created)
+        self.assertEqual(asset.title, title)
+        self.assertEqual(asset.type, type)
+        self.assertEqual(asset.attribution, attribution)
+        self.assertEqual(asset.source_url, source_url)
+        self.assertEqual(asset.asset_created, asset_created)
+        self.assertEqual(asset.status, status)
+        retrieved_asset = HtmlAsset.objects.get(pk=asset.pk)
+        self.assertEqual(retrieved_asset.title, title)
+        self.assertEqual(retrieved_asset.type, type)
+        self.assertEqual(retrieved_asset.attribution, attribution)
+        self.assertEqual(retrieved_asset.source_url, source_url)
+        self.assertEqual(retrieved_asset.asset_created, asset_created)
+        self.assertEqual(retrieved_asset.status, status)
+
+    def test_create_external_asset(self):
+        """ Test create_external_asset() """
+        title = 'Large Flock of birds in pomona, CA'
+        type = 'video'
+        caption = 'An intense flock of birds outside a theater in Pomona, CA'
+        asset_created = datetime.strptime('2007-04-11 00:00',
+                                          '%Y-%m-%d %H:%M')
+        url = 'http://www.youtube.com/watch?v=BJQycHkddhA'
+        attribution = 'Geoffrey Hing'
+        asset = create_external_asset(
+            type,
+            title,
+            caption,
+            url,
+            asset_created=asset_created,
+            attribution=attribution)
+        self.assertEqual(asset.title, title)
+        self.assertEqual(asset.type, type)
+        self.assertEqual(asset.caption, caption)
+        self.assertEqual(asset.asset_created, asset_created)
+        self.assertEqual(asset.attribution, attribution)
+        retrieved_asset = ExternalAsset.objects.get(pk=asset.pk)
+        self.assertEqual(retrieved_asset.title, title)
+        self.assertEqual(retrieved_asset.type, type)
+        self.assertEqual(retrieved_asset.caption, caption)
+        self.assertEqual(retrieved_asset.asset_created, asset_created)
+        self.assertEqual(retrieved_asset.attribution, attribution)
