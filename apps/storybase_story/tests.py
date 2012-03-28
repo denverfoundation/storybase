@@ -3,8 +3,9 @@ from django.conf import settings
 from django.test import TestCase
 from storybase.tests import SloppyTimeTestCase
 from storybase.utils import slugify
+from storybase_asset.models import HtmlAsset, HtmlAssetTranslation
 from models import (create_story, Story, StoryTranslation, 
-    create_section, Section)
+    create_section, Section, SectionAsset)
 
 class StoryModelTest(SloppyTimeTestCase):
     def test_auto_slug(self):
@@ -151,3 +152,111 @@ class SectionApiTest(TestCase):
         retrieved_section = Section.objects.get(pk=section.pk)
         self.assertEqual(retrieved_section.title, section_title)
         self.assertEqual(retrieved_section.story, story)
+
+class SectionAssetModelTest(TestCase):
+    def test_auto_add_assets_to_story(self):
+        """ Test that when an asset is added to a section it is also added
+        to the Story """
+        # Create a story
+        title = "Transportation Challenges Limit Education Choices for Denver Parents"
+        summary = """
+            Many families in the Denver metro area use public
+            transportation instead of a school bus because for them, a
+            quality education is worth hours of daily commuting. Colorado's
+            school choice program is meant to foster educational equity,
+            but the families who benefit most are those who have time and
+            money to travel. Low-income families are often left in a lurch.
+            """
+        byline = "Mile High Connects"
+        story = create_story(title=title, summary=summary, byline=byline)
+        # Confirm that the story has no assets
+        self.assertEqual(story.assets.count(), 0)
+        # create a Section
+        section = create_section(title="Test Section 1", story=story)
+        # create a HtmlAsset
+        asset = HtmlAsset()
+        asset.save()
+        translation = HtmlAssetTranslation(title='Test Asset', asset=asset)
+        translation.save()
+        # Assign the asset to the section
+        section_asset = SectionAsset(section=section, asset=asset, weight=0)
+        section_asset.save()
+        # Confirm the asset is in the section's list
+        self.assertTrue(asset in section.assets.select_subclasses())
+        # Confirm that the asset is in the story's list
+        self.assertTrue(asset in story.assets.select_subclasses())
+
+    def test_already_added_asset(self):
+        """ Test that when an asset that is related to a story is also
+        related to a section, nothing breaks """
+        # Create a story
+        title = "Transportation Challenges Limit Education Choices for Denver Parents"
+        summary = """
+            Many families in the Denver metro area use public
+            transportation instead of a school bus because for them, a
+            quality education is worth hours of daily commuting. Colorado's
+            school choice program is meant to foster educational equity,
+            but the families who benefit most are those who have time and
+            money to travel. Low-income families are often left in a lurch.
+            """
+        byline = "Mile High Connects"
+        story = create_story(title=title, summary=summary, byline=byline)
+        # create a HtmlAsset
+        asset = HtmlAsset()
+        asset.save()
+        translation = HtmlAssetTranslation(title='Test Asset', asset=asset)
+        translation.save()
+        # assign the asset to the story
+        story.assets.add(asset)
+        story.save()
+        # confirm the asset is added to the story
+        self.assertTrue(asset in story.assets.select_subclasses())
+        # create a Section
+        section = create_section(title="Test Section 1", story=story)
+        # Assign the asset to the section
+        section_asset = SectionAsset(section=section, asset=asset, weight=0)
+        section_asset.save()
+        # Confirm the asset is in the section's list
+        self.assertTrue(asset in section.assets.select_subclasses())
+        # Confirm that the asset is in the story's list
+        self.assertTrue(asset in story.assets.select_subclasses())
+
+    def test_remove_asset(self):
+        """ Test that when an asset is removed from a section, it is not 
+        removed from the story
+
+        """
+        # Create a story
+        title = "Transportation Challenges Limit Education Choices for Denver Parents"
+        summary = """
+            Many families in the Denver metro area use public
+            transportation instead of a school bus because for them, a
+            quality education is worth hours of daily commuting. Colorado's
+            school choice program is meant to foster educational equity,
+            but the families who benefit most are those who have time and
+            money to travel. Low-income families are often left in a lurch.
+            """
+        byline = "Mile High Connects"
+        story = create_story(title=title, summary=summary, byline=byline)
+        # Confirm that the story has no assets
+        self.assertEqual(story.assets.count(), 0)
+        # create a Section
+        section = create_section(title="Test Section 1", story=story)
+        # create a HtmlAsset
+        asset = HtmlAsset()
+        asset.save()
+        translation = HtmlAssetTranslation(title='Test Asset', asset=asset)
+        translation.save()
+        # Assign the asset to the section
+        section_asset = SectionAsset(section=section, asset=asset, weight=0)
+        section_asset.save()
+        # Confirm the asset is in the section's list
+        self.assertTrue(asset in section.assets.select_subclasses())
+        # Confirm that the asset is in the story's list
+        self.assertTrue(asset in story.assets.select_subclasses())
+        # Delete the asset from the section.
+        section_asset.delete()
+        # Confirm that the asset is NOT in the section's list
+        self.assertFalse(asset in section.assets.select_subclasses())
+        # Confirm that the asset is in the story's list
+        self.assertTrue(asset in story.assets.select_subclasses())

@@ -76,7 +76,7 @@ section_story_title = 'Story Title'
 class SectionAdmin(StorybaseModelAdmin):
     inlines = [SectionTranslationInline, SectionAssetInline]
     prefix_inline_classes = ['SectionTranslationInline']
-    list_display = (obj_title, 'root')
+    list_display = (obj_title, 'story', 'root')
 # TODO: Enable this on switch to Django 1.4
 #    list_filter = (SectionStoryTitleListFilter, 'root')
     list_filter = ('story__storytranslation__title', 'root')

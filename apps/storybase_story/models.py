@@ -156,6 +156,18 @@ class SectionAsset(models.Model):
     asset = models.ForeignKey('storybase_asset.Asset')
     weight = models.IntegerField(default=0)
 
+def add_section_asset_to_story(sender, instance, **kwargs):
+    """ When an asset is added to a Section, also add it to the Story """
+    if instance.asset not in instance.section.story.assets.all():
+        # An asset was added to a section but it is not related to
+        # the section's story.
+        # Add it to the Story's list of assets.
+        instance.section.story.assets.add(instance.asset)
+        instance.section.story.save()
+
+# Add assets to stories when they're added to sections
+post_save.connect(add_section_asset_to_story, sender=SectionAsset)
+
 def update_story_last_edited(sender, instance, **kwargs):
     """ Update the a section's story's last edited field """
     # Last edited is automatically set on save
