@@ -3,7 +3,8 @@ from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 #from ajax_select import make_ajax_form
 #from ajax_select.admin import AjaxSelectAdmin
-from storybase.admin import StorybaseModelAdmin, StorybaseStackedInline
+from storybase.admin import (StorybaseModelAdmin, StorybaseStackedInline,
+    obj_title)
 from storybase_asset.models import Asset
 from models import (Story, StoryTranslation,
     Section, SectionTranslation, SectionAsset, SectionRelation)        
@@ -16,6 +17,7 @@ class StoryTranslationInline(StorybaseStackedInline):
 class StoryAdmin(StorybaseModelAdmin):
     readonly_fields = ['story_id', 'created', 'last_edited']
     search_fields = ['storytranslation__title', 'author__first_name', 'author__last_name']
+    list_display = (obj_title, 'author', 'last_edited', 'status')
     list_filter = ('status', 'author')
     filter_horizontal = ['assets', 'projects', 'organizations']
     inlines = [StoryTranslationInline]
@@ -51,16 +53,6 @@ class SectionAssetInline(admin.TabularInline):
 class SectionTranslationInline(StorybaseStackedInline):
     model = SectionTranslation
     extra = 1
-
-def obj_title(obj):
-    """ Callable to display an object title in the Django admin
-
-    This is needed because title isn't an attribute of the Story or 
-    Section models, it's an attribute of the translation class.
-
-    """
-    return obj.title
-obj_title.short_description = 'Title'
 
 def section_story_title(obj):
     """ Callable to return a Section's Story's title in the Django admin """

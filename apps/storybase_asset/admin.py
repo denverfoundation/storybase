@@ -1,7 +1,8 @@
 from django import forms
 from django.contrib import admin
 from tinymce.widgets import TinyMCE
-from storybase.admin import StorybaseModelAdmin, StorybaseStackedInline
+from storybase.admin import (StorybaseModelAdmin, StorybaseStackedInline,
+    obj_title)
 from models import (Asset, 
     DataSet, DataSetTranslation, ExternalDataSet, LocalDataSet,
     ExternalAsset, ExternalAssetTranslation,
@@ -24,6 +25,9 @@ class DefaultPublishedModelForm(forms.ModelForm):
 class AssetAdmin(StorybaseModelAdmin):
     readonly_fields = ['asset_id']
     filter_horizontal = ['datasets']
+    list_display = (obj_title, 'type', 'owner', 'last_edited')
+    list_filter = ('type', 'owner')
+    search_fields = ['asset__assettranslation__title']
 
     def save_model(self, request, obj, form, change):
         """ Sets the owner field to the current user if it wasn't already set """

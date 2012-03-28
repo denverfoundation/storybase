@@ -60,3 +60,13 @@ class StorybaseStackedInline(admin.StackedInline):
 
         """
         return self.__class__.__name__
+
+def obj_title(obj):
+    """ Callable to display an object title in the Django admin
+
+    This is needed because title isn't an attribute of the Story or 
+    Section models, it's an attribute of the translation class.
+
+    """
+    return obj.title
+obj_title.short_description = 'Title'
