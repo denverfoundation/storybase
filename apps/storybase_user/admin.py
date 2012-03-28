@@ -47,12 +47,15 @@ class StoryUserAdmin(UserAdmin):
     list_filter = UserAdmin.list_filter + ('groups__name',)
 
     def save_model(self, request, obj, form, change):  
-        obj.organizations.clear()
-        obj.projects.clear()
-        for organization in form.cleaned_data['organizations']:
-            obj.organizations.add(organization)
-        for project in form.cleaned_data['projects']:
-            obj.projects.add(project)
+        if getattr(obj, 'pk', None) is not None:
+            # Object is not new
+            obj.organizations.clear()
+            obj.projects.clear()
+            for organization in form.cleaned_data['organizations']:
+                obj.organizations.add(organization)
+            for project in form.cleaned_data['projects']:
+                obj.projects.add(project)
+
         obj.save()
 
     def get_form(self, request, obj=None, **kwargs):
