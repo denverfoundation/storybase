@@ -59,6 +59,12 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
     def get_absolute_url(self):
         return ('asset_detail', [str(self.asset_id)])
 
+    def display_title(self):
+        """ Wrapper to handle displaying some kind of title when the
+        the title field is blank """
+        # For now just call the __unicode__() method
+        return unicode(self)
+
     def render(self, format='html'):
         try:
             return getattr(self, "render_" + format).__call__()

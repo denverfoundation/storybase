@@ -1,8 +1,7 @@
 from django import forms
 from django.contrib import admin
 from tinymce.widgets import TinyMCE
-from storybase.admin import (StorybaseModelAdmin, StorybaseStackedInline,
-    obj_title)
+from storybase.admin import (StorybaseModelAdmin, StorybaseStackedInline)
 from models import (Asset, 
     DataSet, DataSetTranslation, ExternalDataSet, LocalDataSet,
     ExternalAsset, ExternalAssetTranslation,
@@ -22,10 +21,22 @@ class DefaultPublishedModelForm(forms.ModelForm):
         super(DefaultPublishedModelForm, self).__init__(*args, **kwargs)
         self.fields['status'].initial = 'published'
 
+def asset_title(obj):
+    """ Callable to display the string representation of the Asset in
+    the Django admin 
+    
+    We call str(obj) instead of getting asset.title because we need to
+    auto-generate the title from the content in cases when the asset
+    doesn't have an explicitely-set title.
+
+    """
+    return str(obj)
+asset_title.short_description = 'Title'
+
 class AssetAdmin(StorybaseModelAdmin):
     readonly_fields = ['asset_id']
     filter_horizontal = ['datasets']
-    list_display = (obj_title, 'type', 'owner', 'last_edited')
+    list_display = (asset_title, 'type', 'owner', 'last_edited')
     list_filter = ('type', 'owner')
     search_fields = ['asset__assettranslation__title']
 
