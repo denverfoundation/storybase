@@ -404,6 +404,10 @@ def given_the_user_clicks_the_add_project_icon(step):
 def click_save(step):
     world.browser.find_by_name('_save').first.click()
 
+@step(u'Given the user clicks the Save and add another button')
+def click_add_another(step):
+    world.browser.find_by_name('_addanother').first.click()
+
 @step(u'Given the user clicks the "([^"]*)" link')
 def click_link(step, text):
     world.browser.click_link_by_text(text)
