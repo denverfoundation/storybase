@@ -12,6 +12,7 @@ from nose.tools import assert_equal
 #from south.management.commands import patch_for_test_db_setup
 from splinter.browser import Browser
 from splinter.exceptions import ElementDoesNotExist
+import storybase_asset
 import storybase_story
 import storybase_user
 from storybase_user.models import Organization, Project
@@ -46,7 +47,8 @@ def _class_lookup(model):
     classes = {
         'Organization': storybase_user.models.Organization,
         'Project': storybase_user.models.Project,
-        'Story': storybase_story.models.Story
+        'Story': storybase_story.models.Story,
+        'Html asset': storybase_asset.models.HtmlAsset
     }
     return classes[model]
 
@@ -83,7 +85,8 @@ def save_info(model, instance_id):
 
 @world.absorb
 def find_translation_form(language, model):
-    for translation_form in world.browser.find_by_css(".inline-related.dynamic-%stranslation_set" % model.lower()):
+    klass = _class_lookup(model)
+    for translation_form in world.browser.find_by_css(".inline-related.dynamic-%s" % klass.translation_set):
         language_select = translation_form.find_by_name("%s-language" % translation_form['id']).first
         if language_select.value == language_lookup(language):
             return translation_form
