@@ -407,3 +407,46 @@ def click_save(step):
 @step(u'Given the user clicks the "([^"]*)" link')
 def click_link(step, text):
     world.browser.click_link_by_text(text)
+
+@step(u'Given the user selects "([^"]*)" for the "([^"]*)" of the "([^"]*)"')
+def select_field_option(step, option_text, field_name, model):
+    formatted_field_name = world.format_field_name(field_name)
+    world.select_option_by_text(formatted_field_name, option_text)
+    world.set_changed(model, formatted_field_name)
+
+@step(u'Given the user sets the "([^"]*)" "([^"]*)" date to "([^"]*)" and time to "([^"]*)"')
+def edit_datetime_field(step, model, field_name, date, time):
+    formatted_field_name = world.format_field_name(field_name)
+    world.browser.fill("%s_0" % formatted_field_name, date)
+    world.browser.fill("%s_1" % formatted_field_name, time)
+    world.set_changed(model, formatted_field_name)
+
+@step(u'Given the user uses the TinyMCE editor to set the "([^"]*)" "([^"]*)" of the "([^"]*)" to the following:')
+def edit_tinymce_field(step, language, field_name, model):
+    translation_form = world.find_translation_form(language, model)
+    formatted_field_name = world.format_field_name(field_name)
+    field_id = "id_%s-%s" % (translation_form['id'],
+                             formatted_field_name)
+    # HACK: Disable TinyMCE because splinter can't yet deal with it
+    world.browser.execute_script("tinyMCE.getInstanceById('%s').remove()" % field_id)
+    world.browser.fill("%s-%s" % (translation_form['id'], formatted_field_name), step.multiline)
+    world.set_changed(model, formatted_field_name)
+
+@step(r'Then the [^"]+ created on field should be set to the current date')
+def created_today(step):
+    created = datetime.strptime(world.browser.find_by_css('time.created').value,
+        '%B %d, %Y')
+    world.assert_today(created)
+
+@step(r'Then the [^"]+ last edited field should be set to within 1 minute of the current date and time')
+def last_edited_now(step):
+    last_edited = datetime.strptime(world.browser.find_by_css('time.last-edited').value,
+        '%B %d, %Y %I:%M %p')
+    world.assert_now(last_edited, 60)
+
+@step(r'Then the [^"]+ "([^"]*)" last edited field should be set to within 1 minute of the current date and time')
+def i18n_last_edited_now(step, language):
+    last_edited = datetime.strptime(
+        world.translate_date(world.browser.find_by_css('time.last-edited').value, language),
+        '%B %d, %Y %I:%M %p')
+    world.assert_now(last_edited, 60)

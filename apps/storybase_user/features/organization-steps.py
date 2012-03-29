@@ -28,18 +28,6 @@ def see_website_url(step, website_url):
 def no_members(step):
     world.assert_text_not_present('Members')
 
-@step(u'Then the Organization\'s created on field should be set to the current date')
-def created_today(step):
-    created = datetime.strptime(world.browser.find_by_css('time.created').value,
-        '%B %d, %Y')
-    world.assert_today(created)
-
-@step(u'Then the Organization\'s last edited field should be set to within 1 minute of the current date and time')
-def last_edited_now(step):
-    last_edited = datetime.strptime(world.browser.find_by_css('time.last-edited').value,
-        '%B %d, %Y %I:%M %p')
-    world.assert_now(last_edited, 60)
-
 @step(u'Then the Organization\'s description should be blank')
 def blank_description(step):
     world.assert_text_not_present('Description')
