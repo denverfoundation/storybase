@@ -107,6 +107,10 @@ class Project(TranslatedModel, TimestampedModel):
     def __unicode__(self):
         return self.name
 
+    @models.permalink
+    def get_absolute_url(self):
+        return ('project_detail', [self.project_id])
+
     def add_story(self, story, weight=0):
         """ Associate a story with the Project 
         
