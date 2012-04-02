@@ -44,6 +44,21 @@ env['repo_branch'] = env.get('repo_branch',
                              'master' if env['production'] else 'develop')
 """The branch of the Git repository to pull from"""
 
+def _get_config_dir():
+    """Get the path for an instance's local configuration"""
+    return os.path.join(os.getcwd(), 'config', env['instance']) + '/'
+
+@task
+def check_local_config(config_dir=None):
+    """Check that the required configuration files exist for an instance
+
+    This does not check the syntax of the files, just that they exist
+
+    """
+    if config_dir is None:
+        config_dir = _get_config_dir(env['instance'])
+    raise NotImplemented
+
 @task
 def check_instance_root():
     """Check that the root directory for an instance exists"""
@@ -53,8 +68,8 @@ def check_instance_root():
         if output.failed:
             err_msg = ( 
                 "The instance root directory %s doesn't exist.  You must "
-                "create it before running further tasks."
-                % env['instance_root'])
+                "create it before running further tasks." %
+                env['instance_root'])
             abort(err_msg)
 
         output = run("[ -w %s ]" % env['instance_root'])
@@ -63,8 +78,8 @@ def check_instance_root():
             err_msg = (
                 "You don't have write access to the instance root "
                 "directory %s.  You must grant write permissions on the "
-                "directory before running further tasks."
-                % env['instance_root'])
+                "directory before running further tasks." %
+                env['instance_root'])
             abort(err_msg)
 
 @task
@@ -209,8 +224,10 @@ def make_media_directory(instance=env['instance']):
         sudo('chown www-data media')
 
 @task
-def upload_config(config_dir=os.path.join(os.getcwd(), 'config', env['instance']) + '/'):
+def upload_config(config_dir=None):
     """ Upload a local config directory """
+    if config_dir is None:
+        config_dir = _get_config_dir(env['instance'])
     remote_dir = os.path.join(env['instance_root'], 'atlas', 'config')
     put(config_dir, remote_dir)
 
@@ -295,6 +312,7 @@ def restart_jetty():
 @task
 def create_instance():
     """Run all tasks to make a new, deployed instance of the software"""
+    execute(check_local_config)
     execute(check_instance_root)
     execute(make_log_directory)
     execute(make_solr_data_dir)
