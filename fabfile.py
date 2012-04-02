@@ -1,34 +1,48 @@
+"""Fabric tasks to deploy atlas
+
+Tested on Ubuntu 11.10
+
+"""
 from fabric.api import task, env
 from fabric.operations import put, run, sudo
 from fabric.context_managers import cd, prefix
 import os
 from pprint import pprint
 
-# Fabric tasks to deploy atlas
-# Tested on Ubuntu 11.10
-
 # Set up some default environment
-# Name of instance, will be used to create paths and name certain
-# config files
+
 env['instance'] = env.get('instance', 'atlas')
-# Directory where all the app assets will be put
-# Tasks assume that this directory already exists and that you
-# have write permissions on it. This is what I did to get started:
-# 
-# sudo addgroup atlas
-# sudo adduser ghing atlas
-# sudo mkdir /srv/www/atlas_dev
-# sudo chgrp atlas /srv/www/atlas_dev
-# sudo chmod g+rwxs /srv/www/atlas_dev
+"""Name of instance, used to create paths and name certain config files"""
+
 env['instance_root'] = env.get('instance_root', 
-    os.path.join('/srv/www/', env['instance']))
+                               os.path.join('/srv/www/', env['instance']))
+"""Directory where all the app assets will be put
+
+Tasks assume that this directory already exists and that you
+have write permissions on it. This is what I did to get started:
+ 
+    $ sudo addgroup atlas
+    $ sudo adduser ghing atlas
+    $ sudo mkdir /srv/www/atlas_dev
+    $ sudo chgrp atlas /srv/www/atlas_dev
+    $ sudo chmod g+rwxs /srv/www/atlas_dev
+
+"""
+
 env['production'] = env.get('production', False)
-# Git repo
-# Production environments can only pull from repo
+"""Flag to indicate whether an instance is production"""
+
 env['repo_uri'] = env.get('repo_uri', 
     'git://github.com/PitonFoundation/atlas.git' if env['production'] else 'git@github.com:PitonFoundation/atlas.git')
+"""URI of Git repository for this project
+
+If the production flag is set, a read-only URI is chosen.
+"""
+
 env['repo_branch'] = env.get('repo_branch', 
-    'master' if env['production'] else 'develop')
+                             'master' if env['production'] else 'develop')
+"""The branch of the Git repository to pull from"""
+
 
 @task
 def print_env():
