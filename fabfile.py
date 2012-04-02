@@ -4,7 +4,7 @@ Tested on Ubuntu 11.10
 
 """
 import os
-from fabric.api import env, settings, task
+from fabric.api import env, execute, settings, task
 from fabric.context_managers import cd, prefix
 from fabric.operations import put, run, sudo
 from fabric.utils import abort
@@ -81,7 +81,7 @@ def install_python_tools():
 
 @task
 def mkvirtualenv():
-    """ Create the virtualenv for the deployment """ 
+    """Create the virtualenv for the deployment""" 
     with cd(env['instance_root']):
         run('virtualenv --distribute --no-site-packages venv') 
 
@@ -292,5 +292,26 @@ def restart_jetty():
     """ Restart the Jetty application server (effictively restarting Solr) """
     sudo("service jetty restart")
 
-
-# QUESTION: How do you combine tasks?
+@task
+def create_instance():
+    """Run all tasks to make a new, deployed instance of the software"""
+    execute(check_instance_root)
+    execute(make_log_directory)
+    execute(make_solr_data_dir)
+    execute(make_solr_config_dir)
+    execute(mkvirtualenv)
+    execute(createdb)
+    execute(clone)
+    execute(checkout)
+    execute(make_media_directory)
+    execute(install_requirements)
+    execute(upload_config)
+    execute(install_config)
+    execute(syncdb)
+    execute(migrate)
+    execute(collectstatic)
+    execute(a2ensite)
+    execute(nginxensite)
+    execute(apache2_reload)
+    execute(nginx_reload)
+    execute(restart_jetty)
