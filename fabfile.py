@@ -7,7 +7,7 @@ import os
 from fabric.api import env, execute, local, settings, task
 from fabric.context_managers import cd, prefix
 from fabric.operations import put, run, sudo
-from fabric.utils import abort
+from fabric.utils import abort, puts
 from pprint import pprint
 
 # Set up some default environment
@@ -124,7 +124,7 @@ def check_db_auth_config(username=env['instance'], dbname=env['instance']):
         if output.failed:
             example_entry = "local\t%s\t%s\t\tmd5" % (username, dbname) 
             err_msg = ("Entry for database user %s doesn't exit in "
-                       "%s. You should make one that looks like: "
+                       "%s. You should make one that looks like:\n\n"
                        "%s\n\n"
                        "Also be sure to restart the postgres service "
                        "after editing the config " % 
@@ -358,6 +358,18 @@ def make_solr_config_dir(instance=env['instance']):
 def restart_jetty():
     """ Restart the Jetty application server (effictively restarting Solr) """
     sudo("service jetty restart")
+
+@task
+def manual_configuration_msg():
+    """Print a message telling the user about needed manual configuration"""
+    msg = ("\n"
+           "You may need to make the following manual configuration "
+           "changes:\n\n"
+           "    * Set up a Site in the Django admin for your domain\n"
+           "    * Enable/configure oEmbed providers\n"
+           "    * Configure TinyMCE to allow cross-domain use\n")
+    puts(msg)
+
 
 @task
 def create_instance():
