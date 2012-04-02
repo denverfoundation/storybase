@@ -1,3 +1,5 @@
+"""Abstract base classes for common Model functionality"""
+
 from datetime import datetime
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -25,12 +27,22 @@ STATUS = (
 
 DEFAULT_STATUS = u'draft'
 
-def get_license_name(license_code):
+def get_license_name(code):
+    """Convert a license's code to its full name
+    
+    Arguments:
+    code -- String representing the first element of a tuple in LICENSES.
+            This is what is stored in the database for a LicensedModel.
+
+    """
     licenses = dict(LICENSES)
-    return licenses[license_code]
+    return licenses[code]
 
 class TranslatedModel(models.Model):
+    """Store access translated fields on a related model"""
+
     translated_fields = []
+    """List of field names to be translated"""
     _translation_cache = None
 
     def __init__(self, *args, **kwargs):
@@ -38,7 +50,7 @@ class TranslatedModel(models.Model):
         self._translation_cache = {}
 
     def __getattribute__(self, name):
-        """ Attribute getter that searches for fields on the translation model class
+        """ Getter that searches for fields on the translation model class
 
         This implementation is based on the one in django-mothertongue by 
         Rob Charlwood https://github.com/robcharlwood/django-mothertongue
@@ -50,9 +62,12 @@ class TranslatedModel(models.Model):
                 translation_set = get('translation_set')
             except AttributeError:
                 # Try the subclass
-                subclass_attrs = [rel.var_name for rel in self._meta.get_all_related_objects()
+                subclass_attrs = [rel.var_name 
+                                  for rel 
+                                  in self._meta.get_all_related_objects()
                                   if isinstance(rel.field, OneToOneField)
-                                  and issubclass(rel.field.model, self.__class__)]
+                                  and issubclass(rel.field.model,
+                                                 self.__class__)]
                 for attr in subclass_attrs:
                     if hasattr(self, attr):
                         subclass = get(attr)
@@ -94,18 +109,24 @@ class TranslatedModel(models.Model):
         return get(name)
 
     def get_languages(self):
+        """Get a list of translated languages for the model instance"""
         translation_set = getattr(self, 'translation_set')
         translated_manager = getattr(self, translation_set)
-        return [translation.language for translation in translated_manager.all()]
+        return [trans.language 
+                for trans in translated_manager.all()]
 
     class Meta:
+        """Model metadata options"""
         abstract = True
 
 class TranslationModel(models.Model):
+    """Base class for model that encapsulates translated fields"""
     translation_id = UUIDField(auto=True)
-    language = models.CharField(max_length=15, choices=settings.LANGUAGES, default=settings.LANGUAGE_CODE)
+    language = models.CharField(max_length=15, choices=settings.LANGUAGES,
+                                default=settings.LANGUAGE_CODE)
 
     class Meta:
+        """Model metadata options"""
         abstract = True
 
 class TimestampedModel(models.Model):
@@ -114,22 +135,26 @@ class TimestampedModel(models.Model):
     last_edited = models.DateTimeField(auto_now=True)
 
     class Meta:
+        """Model metadata options"""
         abstract = True
 
 class PublishedModel(models.Model):
-    """ Abstract base class that provides a status field and a publication date """
-    status = models.CharField(max_length=10, choices=STATUS, default=DEFAULT_STATUS)
+    """Abstract base class for models with publication information"""
+    status = models.CharField(max_length=10, choices=STATUS,
+                              default=DEFAULT_STATUS)
     published = models.DateTimeField(blank=True, null=True)
 
     class Meta:
+        """Model metadata options"""
         abstract = True
 
 class LicensedModel(models.Model):
-    """ Abstract base class that provides a field representing the instance's licensing status """
+    """Abstract base class for models with a license"""
     license = models.CharField(max_length=25, choices=LICENSES,
                                default=DEFAULT_LICENSE)
 
     class Meta:
+        """Model metadata options"""
         abstract = True
 
     def license_name(self):
@@ -139,9 +164,10 @@ class LicensedModel(models.Model):
 # Signal handlers
 
 def set_date_on_published(sender, instance, **kwargs):
-    """  Set the published date of a story when it's status is changed to 'published' 
+    """Set the published date of a story on status change
     
-    For models inheriting from PublishedModel
+    For models inheriting from PublishedModel. Should be connected
+    to the pre_save signal.
 
     """
    
@@ -153,5 +179,6 @@ def set_date_on_published(sender, instance, **kwargs):
         if instance.status == 'published':
             instance.published = datetime.now()
     else:
-        if instance.status == 'published' and old_instance.status != 'published':
+        if (instance.status == 'published' and 
+            old_instance.status != 'published'):
             instance.published = datetime.now()

@@ -1,3 +1,5 @@
+"""Customized base ModelAdmin classes"""
+
 from django.contrib import admin
 from django.contrib.admin import widgets
 from fields import ShortTextField
@@ -46,6 +48,13 @@ class StorybaseModelAdmin(admin.ModelAdmin):
            extra_context=extra_context) 
 
 class StorybaseStackedInline(admin.StackedInline):
+    """Custom version of StackedInline
+
+    This sets the widget for ShortTextField fields to the customized
+    wider version.  It also provides a method to let us display some
+    inlines before non-inline model fields and some after.
+
+    """
     formfield_overrides = {
         ShortTextField: {'widget': AdminLongTextInputWidget},
     }
