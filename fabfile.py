@@ -4,7 +4,7 @@ Tested on Ubuntu 11.10
 
 """
 import os
-from fabric.api import env, execute, settings, task
+from fabric.api import env, execute, local, settings, task
 from fabric.context_managers import cd, prefix
 from fabric.operations import put, run, sudo
 from fabric.utils import abort
@@ -44,6 +44,10 @@ env['repo_branch'] = env.get('repo_branch',
                              'master' if env['production'] else 'develop')
 """The branch of the Git repository to pull from"""
 
+env['db_auth_config'] = env.get('db_auth_config',
+                                '/etc/postgresql/9.1/main/pg_hba.conf')
+"""Path to PostgreSQL's client authentication configuration file"""
+
 def _get_config_dir():
     """Get the path for an instance's local configuration"""
     return os.path.join(os.getcwd(), 'config', env['instance']) + '/'
@@ -56,8 +60,30 @@ def check_local_config(config_dir=None):
 
     """
     if config_dir is None:
-        config_dir = _get_config_dir(env['instance'])
-    raise NotImplemented
+        config_dir = _get_config_dir()
+    config_files = [('apache', 'site'),
+                    ('nginx', 'site'),
+                    ('settings.py',),
+                    ('solr', 'protwords.txt'),
+                    ('solr', 'solrconfig.xml'),
+                    ('solr', 'stopwords.txt'),
+                    ('solr', 'synonyms.txt')]
+
+    with settings(warn_only=True):
+        output = local("[ -d %s ]" % config_dir)
+        if output.failed:
+            err_msg = ("Local configuration directory %s doesn't exit" %
+                       config_dir)
+            abort(err_msg)
+
+        for path in config_files:
+            filename = os.path.join(config_dir,
+                                    os.path.join(*path))
+            output = local("[ -f %s ]" % filename)
+            if output.failed:
+                err_msg = ("Local configuration file %s doesn't exit" %
+                           filename)
+                abort(err_msg)
 
 @task
 def check_instance_root():
@@ -80,6 +106,30 @@ def check_instance_root():
                 "directory %s.  You must grant write permissions on the "
                 "directory before running further tasks." %
                 env['instance_root'])
+            abort(err_msg)
+
+@task
+def check_db_auth_config(username=env['instance'], dbname=env['instance']):
+    """Check that an entry for the instance's database user exists
+    
+    I think it's dangerous to programatically write config files, 
+    especially ones that might already have human configuration tweaks.
+    So, we should just check that an entry for the instance exists
+    in pg_hba.conf.
+
+    """
+    with settings(warn_only=True):
+        output = sudo("grep %s %s" % 
+                      (username, env['db_auth_config']))
+        if output.failed:
+            example_entry = "local\t%s\t%s\t\tmd5" % (username, dbname) 
+            err_msg = ("Entry for database user %s doesn't exit in "
+                       "%s. You should make one that looks like: "
+                       "%s\n\n"
+                       "Also be sure to restart the postgres service "
+                       "after editing the config " % 
+                       (username, env['db_auth_config'],
+                        example_entry))
             abort(err_msg)
 
 @task
@@ -183,7 +233,7 @@ def createuser(username=env['instance'], dbname=env['instance']):
     print "You need to make sure you have a line like one of the following "
     print "in your pg_hba.conf:"
     print ""
-    print "local\t%s\t%s\t127.0.0.1/32\tmd5" % (dbname, username)
+    print "local\t%s\t%s\t\tmd5" % (dbname, username)
 
 @task 
 def clone():
@@ -227,7 +277,7 @@ def make_media_directory(instance=env['instance']):
 def upload_config(config_dir=None):
     """ Upload a local config directory """
     if config_dir is None:
-        config_dir = _get_config_dir(env['instance'])
+        config_dir = _get_config_dir()
     remote_dir = os.path.join(env['instance_root'], 'atlas', 'config')
     put(config_dir, remote_dir)
 
@@ -314,11 +364,13 @@ def create_instance():
     """Run all tasks to make a new, deployed instance of the software"""
     execute(check_local_config)
     execute(check_instance_root)
+    execute(check_db_auth_config)
     execute(make_log_directory)
     execute(make_solr_data_dir)
     execute(make_solr_config_dir)
     execute(mkvirtualenv)
     execute(createdb)
+    execute(createuser)
     execute(clone)
     execute(checkout)
     execute(make_media_directory)
