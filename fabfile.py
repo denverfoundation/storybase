@@ -3,10 +3,11 @@
 Tested on Ubuntu 11.10
 
 """
-from fabric.api import task, env
-from fabric.operations import put, run, sudo
-from fabric.context_managers import cd, prefix
 import os
+from fabric.api import env, settings, task
+from fabric.context_managers import cd, prefix
+from fabric.operations import put, run, sudo
+from fabric.utils import abort
 from pprint import pprint
 
 # Set up some default environment
@@ -43,6 +44,28 @@ env['repo_branch'] = env.get('repo_branch',
                              'master' if env['production'] else 'develop')
 """The branch of the Git repository to pull from"""
 
+@task
+def check_instance_root():
+    """Check that the root directory for an instance exists"""
+    with settings(warn_only=True):
+        output = run("[ -d %s ]" % env['instance_root'])
+
+        if output.failed:
+            err_msg = ( 
+                "The instance root directory %s doesn't exist.  You must "
+                "create it before running further tasks."
+                % env['instance_root'])
+            abort(err_msg)
+
+        output = run("[ -w %s ]" % env['instance_root'])
+
+        if output.failed:
+            err_msg = (
+                "You don't have write access to the instance root "
+                "directory %s.  You must grant write permissions on the "
+                "directory before running further tasks."
+                % env['instance_root'])
+            abort(err_msg)
 
 @task
 def print_env():
