@@ -1,13 +1,13 @@
 """Custom forms and form fields"""
 
-import calendar
-from datetime import datetime, date
+#import calendar
+#from datetime import datetime, date
 from django import forms
 from django.utils import translation
 from django.utils.encoding import force_unicode
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
-from haystack.forms import FacetedSearchForm
+#from haystack.forms import FacetedSearchForm
 from itertools import chain
 from storybase.widgets import AdminLongTextInputWidget
 from storybase_story.models import Section, SectionTranslation
@@ -69,61 +69,61 @@ class GroupedMultipleChoiceField(forms.MultipleChoiceField):
 
     choice_groups = property(_get_choice_groups, _set_choice_groups)
 
-class StoryFacetedSearchForm(FacetedSearchForm):
-    @classmethod
-    def parse_date(cls, datestr):
-        return datetime.strptime(datestr, '%Y-%m-%dT%H:%M:%SZ').date()
-
-    @classmethod
-    def format_mo_yr(cls, datestr):
-        return cls.parse_date(datestr).strftime('%B, %Y')
-        
-    def __init__(self, *args, **kwargs):
-        super(StoryFacetedSearchForm, self).__init__(*args, **kwargs)
-        facet_fields = kwargs['searchqueryset'].facet_counts()['fields']
-        choice_groups = []
-        for name, tags in facet_fields.items():
-            if len(tags):
-                choice_group = dict(label=name.capitalize(), choices=[])
-                for tag in tags:
-                    choice_group['choices'].append(("%s:%s" % (name, tag[0]), "%s (%d)" % (tag[0], tag[1])))
-                choice_groups.append(choice_group)
-
-        pub_date_field = kwargs['searchqueryset'].facet_counts()['dates']['pub_date']
-        choice_group = dict(label='Publication Date', choices=[])
-        for facet_date, count in pub_date_field.items():
-            if count > 0 and facet_date not in ('start', 'end', 'gap'):
-                choice_group['choices'].append(("pub_date:%s" % (facet_date), "%s (%d)" % (self.__class__.format_mo_yr(facet_date), count)))
-        choice_groups.append(choice_group)
-
-        self.fields['selected_facets'] = GroupedMultipleChoiceField(choice_groups=choice_groups, required=False, label='Facets')
-
-    def no_query_found(self):
-        return self.searchqueryset.all()
-
-    def search(self):
-        sqs = super(FacetedSearchForm, self).search()
-        
-        # We need to process each facet to ensure that the field name and the
-        # value are quoted correctly and separately:
-        for facet in self.selected_facets:
-            if ":" not in facet:
-                continue
-            
-            field, value = facet.split(":", 1)
-           
-            if field == 'pub_date' and value:
-                # If the facet is for a date, filter instead of narrowing
-                date_value = self.__class__.parse_date(value)
-                first_date_of_month = date_value
-                last_day_of_month = calendar.monthrange(first_date_of_month.year, first_date_of_month.month)[1]
-                last_date_of_month = date(first_date_of_month.year, first_date_of_month.month, last_day_of_month)
-                sqs = sqs.filter(pub_date__gte=first_date_of_month, pub_date__lte=last_date_of_month)
-
-            elif value:
-                sqs = sqs.narrow(u'%s:"%s"' % (field, sqs.query.clean(value)))
-        
-        return sqs
+#class StoryFacetedSearchForm(FacetedSearchForm):
+#    @classmethod
+#    def parse_date(cls, datestr):
+#        return datetime.strptime(datestr, '%Y-%m-%dT%H:%M:%SZ').date()
+#
+#    @classmethod
+#    def format_mo_yr(cls, datestr):
+#        return cls.parse_date(datestr).strftime('%B, %Y')
+#        
+#    def __init__(self, *args, **kwargs):
+#        super(StoryFacetedSearchForm, self).__init__(*args, **kwargs)
+#        facet_fields = kwargs['searchqueryset'].facet_counts()['fields']
+#        choice_groups = []
+#        for name, tags in facet_fields.items():
+#            if len(tags):
+#                choice_group = dict(label=name.capitalize(), choices=[])
+#                for tag in tags:
+#                    choice_group['choices'].append(("%s:%s" % (name, tag[0]), "%s (%d)" % (tag[0], tag[1])))
+#                choice_groups.append(choice_group)
+#
+#        pub_date_field = kwargs['searchqueryset'].facet_counts()['dates']['pub_date']
+#        choice_group = dict(label='Publication Date', choices=[])
+#        for facet_date, count in pub_date_field.items():
+#            if count > 0 and facet_date not in ('start', 'end', 'gap'):
+#                choice_group['choices'].append(("pub_date:%s" % (facet_date), "%s (%d)" % (self.__class__.format_mo_yr(facet_date), count)))
+#        choice_groups.append(choice_group)
+#
+#        self.fields['selected_facets'] = GroupedMultipleChoiceField(choice_groups=choice_groups, required=False, label='Facets')
+#
+#    def no_query_found(self):
+#        return self.searchqueryset.all()
+#
+#    def search(self):
+#        sqs = super(FacetedSearchForm, self).search()
+#        
+#        # We need to process each facet to ensure that the field name and the
+#        # value are quoted correctly and separately:
+#        for facet in self.selected_facets:
+#            if ":" not in facet:
+#                continue
+#            
+#            field, value = facet.split(":", 1)
+#           
+#            if field == 'pub_date' and value:
+#                # If the facet is for a date, filter instead of narrowing
+#                date_value = self.__class__.parse_date(value)
+#                first_date_of_month = date_value
+#                last_day_of_month = calendar.monthrange(first_date_of_month.year, first_date_of_month.month)[1]
+#                last_date_of_month = date(first_date_of_month.year, first_date_of_month.month, last_day_of_month)
+#                sqs = sqs.filter(pub_date__gte=first_date_of_month, pub_date__lte=last_date_of_month)
+#
+#            elif value:
+#                sqs = sqs.narrow(u'%s:"%s"' % (field, sqs.query.clean(value)))
+#        
+#        return sqs
 
 
 class InlineSectionAdminForm(forms.ModelForm):

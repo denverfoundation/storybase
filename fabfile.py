@@ -254,6 +254,12 @@ def pull():
         run('git pull')
 
 @task
+def fetch():
+    """ Fetch updates from remote repo """
+    with cd(os.path.join(env['instance_root'], 'atlas')):
+        run('git fetch')
+
+@task
 def install_requirements():
     """ Install application's Python requirements into the virtualenv """
     with cd(env['instance_root']):
