@@ -36,23 +36,26 @@ class AssetAdmin(StorybaseModelAdmin):
         This is meant to be included in the class' list_display option.
        
         """
-        # Get the subclass object so we can generate a link to the
-        # subclass' change page and not the generic Asset one.
-        # The generic Asset admin works, but doesn't show any of the
-        # subclass-specific fields, which are most likely what we want
-        # to edit.
-        # TODO: See if the extra database query from get_subclass causes
-        # problems with performance.
-        subclass_obj = self.model.objects.get_subclass(pk=obj.pk)
-        app_label = subclass_obj._meta.app_label
-        module_name = subclass_obj._meta.module_name
+        the_obj = obj
+        if obj.__class__ == Asset:
+            # Get the subclass object so we can generate a link to the
+            # subclass' change page and not the generic Asset one.
+            # The generic Asset admin works, but doesn't show any of the
+            # subclass-specific fields, which are most likely what we want
+            # to edit.
+            # TODO: See if the extra database query from get_subclass causes
+            # problems with performance.
+            the_obj = self.model.objects.get_subclass(pk=obj.pk)
+
+        app_label = the_obj._meta.app_label
+        module_name = the_obj._meta.module_name
         change_url = urlresolvers.reverse(
             "admin:%s_%s_change" % (app_label, module_name),
-            args=(subclass_obj.pk,))
+            args=(the_obj.pk,))
         # We call str(obj) instead of getting asset.title because we need
         # to auto-generate the title from the content in cases when the
         # asset doesn't have an explicitely-set title.
-        return "<a href='%s'>%s</a>" % (change_url, str(subclass_obj))
+        return "<a href='%s'>%s</a>" % (change_url, str(the_obj))
     change_link.short_description = 'Title'
     change_link.allow_tags = True
 
