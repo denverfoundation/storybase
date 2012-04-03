@@ -174,8 +174,12 @@ class Section(node_factory('SectionRelation'), TranslatedModel):
         list_display options
         
         """
-        change_url = urlresolvers.reverse('admin:storybase_story_section_change', args=(self.pk,))
-        return "<a href='%s'>Change Section</a>" % change_url
+        if self.pk:
+            change_url = urlresolvers.reverse(
+                'admin:storybase_story_section_change', args=(self.pk,))
+            return "<a href='%s'>Change Section</a>" % change_url
+        else:
+            return ''
     change_link.short_description = 'Change' 
     change_link.allow_tags = True
 
