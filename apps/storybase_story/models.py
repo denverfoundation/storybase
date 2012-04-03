@@ -112,6 +112,8 @@ class Section(node_factory('SectionRelation'), TranslatedModel):
     # the first section in a linear story, or the central node
     # in a drill-down/"spider" structure.  Otherwise, False
     root = models.BooleanField(default=False)
+    weight = models.IntegerField(default=0)
+    """The ordering of top-level sections relative to each other"""
     assets = models.ManyToManyField(Asset, related_name='sections',
                                     blank=True, through='SectionAsset')
 

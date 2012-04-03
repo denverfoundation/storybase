@@ -125,6 +125,7 @@ class StoryFacetedSearchForm(FacetedSearchForm):
         
         return sqs
 
+
 class InlineSectionAdminForm(forms.ModelForm):
     """Add an extra field for translation"""
     title = forms.CharField(widget=AdminLongTextInputWidget)
@@ -133,8 +134,7 @@ class InlineSectionAdminForm(forms.ModelForm):
 
     class Meta:
         model = Section
-        fields = ('title', 'root')
-
+        fields = ('title', 'root', 'weight')
 
     def __init__(self, *args, **kwargs):
         super(InlineSectionAdminForm, self).__init__(*args, **kwargs)
