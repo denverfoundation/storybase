@@ -1,22 +1,26 @@
+"""Models for Stories and Sections"""
+
 from django.contrib import admin
 #from django.contrib.admin import SimpleListFilter
-from django.utils.translation import ugettext_lazy as _
 #from ajax_select import make_ajax_form
 #from ajax_select.admin import AjaxSelectAdmin
 from storybase.admin import (StorybaseModelAdmin, StorybaseStackedInline,
     obj_title)
 from storybase_asset.models import Asset
-from models import (Story, StoryTranslation,
+from storybase_story.models import (Story, StoryTranslation,
     Section, SectionTranslation, SectionAsset, SectionRelation)        
 
 class StoryTranslationInline(StorybaseStackedInline):
+    """Inline for translated fields of a Story"""
     model = StoryTranslation
     extra = 1
     prepopulated_fields = {"slug": ("title",)}
 
 class StoryAdmin(StorybaseModelAdmin):
+    """Representation of Story model in the admin interface"""
     readonly_fields = ['story_id', 'created', 'last_edited']
-    search_fields = ['storytranslation__title', 'author__first_name', 'author__last_name']
+    search_fields = ['storytranslation__title', 'author__first_name',
+                     'author__last_name']
     list_display = (obj_title, 'author', 'last_edited', 'status')
     list_filter = ('status', 'author')
     filter_horizontal = ['assets', 'projects', 'organizations']
@@ -24,17 +28,28 @@ class StoryAdmin(StorybaseModelAdmin):
     prefix_inline_classes = ['StoryTranslationInline']
 
     def save_model(self, request, obj, form, change):
-        """ Sets the author field to the current user if it wasn't already set """
+        """Perform pre-save operations and save the Story
+
+        Sets the author field to the current user if it wasn't already set
+
+        """
         if obj.author is None:
             obj.author = request.user
         obj.save()
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
+        """Set default formfield for assets field"""
         if db_field.name == "assets":
             kwargs["queryset"] = Asset.objects.filter(owner=request.user)
-        return super(StoryAdmin, self).formfield_for_manytomany(db_field, request, **kwargs)
+        return super(StoryAdmin, self).formfield_for_manytomany(
+            db_field, request, **kwargs)
 
 class SectionAssetInline(admin.TabularInline):
+    """Inline for Asset to Section relations
+
+    Allows specifying the position of an Asset within a Section
+    
+    """
     model = SectionAsset
     # TODO: Fix this autocomplete
     # It fails because the default autocomplete tries to to filter
@@ -51,13 +66,9 @@ class SectionAssetInline(admin.TabularInline):
     extra = 0
 
 class SectionTranslationInline(StorybaseStackedInline):
+    """Inline for translated section fields"""
     model = SectionTranslation
     extra = 1
-
-def section_story_title(obj):
-    """ Callable to return a Section's Story's title in the Django admin """
-    return obj.story.title
-section_story_title = 'Story Title'
 
 # TODO: Enable this on switch to Django 1.4
 #class SectionStoryTitleListFilter(SimpleListFilter):
@@ -67,13 +78,15 @@ section_story_title = 'Story Title'
 #    def lookups(self, request, model_admin):
 #        qs = model_admin.queryset(request)
 #        values = qs.values('pk', 'story__storytranslation__title').distinct()
-#        return [(value['pk'], value['story_storytranslation__title']) for value in values]
+#        return [(value['pk'], value['story_storytranslation__title']) 
+#                for value in values]
 #
 #    def queryset(self, request, queryset):
 #        return queryset.filter(pk=self.value())
 
 #class SectionAdmin(AjaxSelectAdmin):
 class SectionAdmin(StorybaseModelAdmin):
+    """Representation of Section model in the admin interface"""
     inlines = [SectionTranslationInline, SectionAssetInline]
     prefix_inline_classes = ['SectionTranslationInline']
     list_display = (obj_title, 'story', 'root')

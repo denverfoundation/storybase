@@ -1,3 +1,5 @@
+"""Unit tests for storybase_story app"""
+
 from time import sleep
 from django.conf import settings
 from django.test import TestCase
@@ -8,8 +10,12 @@ from models import (create_story, Story, StoryTranslation,
     create_section, Section, SectionAsset)
 
 class StoryModelTest(SloppyTimeTestCase):
+    """Unit tests for Story Model"""
+
     def test_auto_slug(self):
-        title = 'Transportation Challenges Limit Education Choices for Denver Parents'
+        """Test slug field is set automatically"""
+        title = ('Transportation Challenges Limit Education Choices for '
+                 'Denver Parents')
         story = Story()
         story.save()
         story_translation = StoryTranslation(title=title, story=story)
@@ -18,7 +24,9 @@ class StoryModelTest(SloppyTimeTestCase):
         self.assertEqual(story_translation.slug, slugify(title))
 
     def test_get_languages(self):
-        title = "Transportation Challenges Limit Education Choices for Denver Parents"
+        """Test Story.get_languages() method for a single translation"""
+        title = ('Transportation Challenges Limit Education Choices for '
+                 'Denver Parents')
         summary = """
             Many families in the Denver metro area use public
             transportation instead of a school bus because for them, a
@@ -32,7 +40,9 @@ class StoryModelTest(SloppyTimeTestCase):
         self.assertEqual([settings.LANGUAGE_CODE], story.get_languages())
 
     def test_get_languages_multiple(self):
-        title = "Transportation Challenges Limit Education Choices for Denver Parents"
+        """Test Story.get_languages() for multiple translations"""
+        title = ('Transportation Challenges Limit Education Choices for '
+                 'Denver Parents')
         summary = """
             Many families in the Denver metro area use public
             transportation instead of a school bus because for them, a
@@ -49,8 +59,12 @@ class StoryModelTest(SloppyTimeTestCase):
         self.assertEqual([settings.LANGUAGE_CODE, 'es'], story.get_languages())
 
     def test_auto_set_published_on_create(self):
-        """ Test that the published date gets set on object creation when the status is set to published """
-        title = "Transportation Challenges Limit Education Choices for Denver Parents"
+        """
+        Test that the published date gets set on object creation when the
+        status is set to published
+        """
+        title = ('Transportation Challenges Limit Education Choices for '
+                 'Denver Parents')
         summary = """
             Many families in the Denver metro area use public
             transportation instead of a school bus because for them, a
@@ -65,8 +79,12 @@ class StoryModelTest(SloppyTimeTestCase):
         self.assertNowish(story.published)
 
     def test_auto_set_published_on_status_change(self):
-        """ Test that the published date gets set when the status is set to published """ 
-        title = "Transportation Challenges Limit Education Choices for Denver Parents"
+        """
+        Test that the published date gets set when the status is changed
+        to published
+        """ 
+        title = ('Transportation Challenges Limit Education Choices for '
+                 'Denver Parents')
         summary = """
             Many families in the Denver metro area use public
             transportation instead of a school bus because for them, a
@@ -87,10 +105,12 @@ class StoryModelTest(SloppyTimeTestCase):
 
 
 class StoryApiTest(TestCase):
-    """ Test case for the internal Story API """
+    """Test case for the internal Story API"""
 
     def test_create_story(self):
-        title = "Transportation Challenges Limit Education Choices for Denver Parents"
+        """Test create_story() creates a Story instance"""
+        title = ('Transportation Challenges Limit Education Choices for '
+                 'Denver Parents')
         summary = """
             Many families in the Denver metro area use public
             transportation instead of a school bus because for them, a
@@ -112,9 +132,15 @@ class StoryApiTest(TestCase):
         self.assertEqual(retrieved_story.byline, byline)
 
 class SectionModelTest(SloppyTimeTestCase):
+    """Test Case for Section model"""
+
     def test_update_story_timestamp(self):
-        """ Test that a section's story's last edited timestamp is updated when the section is saved """
-        title = "Transportation Challenges Limit Education Choices for Denver Parents"
+        """
+        Test that a section's story's last edited timestamp is updated when
+        the section is saved
+        """
+        title = ('Transportation Challenges Limit Education Choices for '
+                 'Denver Parents')
         summary = """
             Many families in the Denver metro area use public
             transportation instead of a school bus because for them, a
@@ -131,8 +157,12 @@ class SectionModelTest(SloppyTimeTestCase):
         self.assertNowish(story.last_edited)
 
 class SectionApiTest(TestCase):
+    """Test case for public Section creation API"""
+
     def test_create_section(self):
-        title = "Transportation Challenges Limit Education Choices for Denver Parents"
+        """Test that create_section() function creates a new Section"""
+        title = ('Transportation Challenges Limit Education Choices for '
+                 'Denver Parents')
         summary = """
             Many families in the Denver metro area use public
             transportation instead of a school bus because for them, a
@@ -154,11 +184,16 @@ class SectionApiTest(TestCase):
         self.assertEqual(retrieved_section.story, story)
 
 class SectionAssetModelTest(TestCase):
+    """Test Case for Asset to Section relation through model"""
+
     def test_auto_add_assets_to_story(self):
-        """ Test that when an asset is added to a section it is also added
-        to the Story """
+        """
+        Test that when an asset is added to a section it is also added
+        to the Story
+        """
         # Create a story
-        title = "Transportation Challenges Limit Education Choices for Denver Parents"
+        title = ('Transportation Challenges Limit Education Choices for '
+                 'Denver Parents')
         summary = """
             Many families in the Denver metro area use public
             transportation instead of a school bus because for them, a
@@ -187,10 +222,13 @@ class SectionAssetModelTest(TestCase):
         self.assertTrue(asset in story.assets.select_subclasses())
 
     def test_already_added_asset(self):
-        """ Test that when an asset that is related to a story is also
-        related to a section, nothing breaks """
+        """
+        Test that when an asset that is related to a story is also
+        related to a section, nothing breaks
+        """
         # Create a story
-        title = "Transportation Challenges Limit Education Choices for Denver Parents"
+        title = ('Transportation Challenges Limit Education Choices for '
+                 'Denver Parents')
         summary = """
             Many families in the Denver metro area use public
             transportation instead of a school bus because for them, a
@@ -222,12 +260,13 @@ class SectionAssetModelTest(TestCase):
         self.assertTrue(asset in story.assets.select_subclasses())
 
     def test_remove_asset(self):
-        """ Test that when an asset is removed from a section, it is not 
+        """
+        Test that when an asset is removed from a section, it is not 
         removed from the story
-
         """
         # Create a story
-        title = "Transportation Challenges Limit Education Choices for Denver Parents"
+        title = ('Transportation Challenges Limit Education Choices for '
+                 'Denver Parents')
         summary = """
             Many families in the Denver metro area use public
             transportation instead of a school bus because for them, a

@@ -1,9 +1,11 @@
+"""Views for storybase_story app"""
+
 from django.conf import settings
 from django.http import Http404
 from django.shortcuts import redirect, render
 from django.utils import translation
 #from django.views.generic import DetailView
-from models import Story
+from storybase_story.models import Story
 
 # TODO: Use this if we decide not to use the redirect-based language system
 #class StoryDetailView(DetailView):
@@ -15,6 +17,7 @@ from models import Story
 #        return object
 
 def story_detail(request, **kwargs):
+    """Display metadata, assets and structure of a Story"""
     try:
         language_code = translation.get_language()
         story = Story.objects.get(story_id = kwargs['story_id'])

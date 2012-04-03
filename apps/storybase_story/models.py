@@ -1,3 +1,5 @@
+"""Models for stories and story sections"""
+
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
@@ -14,7 +16,6 @@ from uuidfield.fields import UUIDField
 from storybase.fields import ShortTextField
 from storybase.models import (LicensedModel, PublishedModel,
     TimestampedModel, TranslatedModel, TranslationModel,
-    DEFAULT_LICENSE, DEFAULT_STATUS,
     set_date_on_published)
 from storybase.utils import slugify
 from storybase_asset.models import Asset
@@ -22,12 +23,14 @@ from storybase_user.models import Organization, Project
 #from storybase_tag.models import TaggedItem
 
 class StoryTranslation(TranslationModel):
+    """Encapsulates translated fields of a Story"""
     story = models.ForeignKey('Story')
     title = ShortTextField() 
     summary = models.TextField(blank=True)
     slug = models.SlugField()
 
     class Meta:
+        """Model metadata options"""
         unique_together = (('story', 'language'))
 
     def __unicode__(self):
@@ -41,6 +44,12 @@ class StoryTranslation(TranslationModel):
 
 class Story(TranslatedModel, LicensedModel, PublishedModel, 
             TimestampedModel):
+    """Metadata for a story
+
+    The Story model stores a story's metadata and aggregates a story's
+    media assets
+
+    """
     story_id = UUIDField(auto=True)
     byline = models.TextField()
     # blank=True, null=True to bypass validation so the user doesn't
@@ -48,17 +57,22 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
     # Though this is set to blank=True, null=True, we should always set
     # this value.  In fact, the StoryModelAdmin class sets this to
     # request.user
-    author = models.ForeignKey(User, related_name="stories", blank=True, null=True)
-    assets = models.ManyToManyField(Asset, related_name='stories', blank=True)
-    organizations = models.ManyToManyField(Organization, related_name='stories', blank=True)
+    author = models.ForeignKey(User, related_name="stories", blank=True,
+                               null=True)
+    assets = models.ManyToManyField(Asset, related_name='stories',
+                                    blank=True)
+    organizations = models.ManyToManyField(Organization,
+                                           related_name='stories',
+                                           blank=True)
     projects = models.ManyToManyField(Project, related_name='stories',
-        blank=True)
+                                      blank=True)
     #tags = TaggableManager(through=TaggedItem, blank=True)
 
     translated_fields = ['title', 'summary', 'slug']
     translation_set = 'storytranslation_set'
 
     class Meta:
+        """Model metadata options"""
         verbose_name_plural = "stories"
 
     def __unicode__(self):
@@ -66,6 +80,7 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
 
     @models.permalink
     def get_absolute_url(self):
+        """Calculate the canonical URL for a Story"""
         return ('story_detail', [str(self.story_id)])
 
     def get_root_section(self):
@@ -73,7 +88,7 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
         return self.sections.get(root=True)
 
     def render_story_structure(self, format='html'):
-        """ Render a representation of the Story structure based on its sections """
+        """Render a representation of the Story structure"""
         output = []
         try:
             root = self.get_root_section()
@@ -96,7 +111,8 @@ class Section(node_factory('SectionRelation'), TranslatedModel):
     # the first section in a linear story, or the central node
     # in a drill-down/"spider" structure.  Otherwise, False
     root = models.BooleanField(default=False)
-    assets = models.ManyToManyField(Asset, related_name='sections', blank=True, through='SectionAsset')
+    assets = models.ManyToManyField(Asset, related_name='sections',
+                                    blank=True, through='SectionAsset')
 
     translated_fields = ['title']
     translation_set = 'sectiontranslation_set'
@@ -105,12 +121,19 @@ class Section(node_factory('SectionRelation'), TranslatedModel):
         return self.title
 
     def render(self, format='html'):
+        """Render a representation of the section structure"""
         try:
             return getattr(self, "render_" + format).__call__()
         except AttributeError:
             return self.__unicode__()
 
+    def _child_relations(self):
+        """Get a query set of through model instances for child sections"""
+        return self.children.through.objects.filter(parent=self).order_by(
+            'weight', 'child__sectiontranslation__title')
+
     def render_html(self):
+        """Render a HTML representation of the section structure"""
         output = []
         output.append('<li class="section">')
         output.append("<h4>%s</h4>" % self.title)
@@ -126,9 +149,7 @@ class Section(node_factory('SectionRelation'), TranslatedModel):
 
         if self.children.count():
             output.append("<ul>")
-            # TODO: Maybe wrap this query into a convenience method because
-            # it's pretty ugly and not clear what's going on
-            for child_relation in self.children.through.objects.filter(parent=self).order_by('weight', 'child__sectiontranslation__title'):
+            for child_relation in self._child_relations():
                 output.append(child_relation.child.render_html())
             output.append("</ul>")
 
@@ -137,27 +158,32 @@ class Section(node_factory('SectionRelation'), TranslatedModel):
         return mark_safe(u'\n'.join(output))
 
 class SectionTranslation(TranslationModel):
+    """Translated fields of a Section"""
     section = models.ForeignKey('Section')
     title = ShortTextField() 
 
     class Meta:
+        """Model metadata options"""
         unique_together = (('section', 'language'))
 
     def __unicode__(self):
         return self.title
 
 class SectionRelation(edge_factory(Section, concrete=False)):
-    """ "Through" class for parent/child relationships between sections """
+    """Through class for parent/child relationships between sections"""
     weight = models.IntegerField(default=0)
 
 class SectionAsset(models.Model):
-    """ "Through" class for Asset to Section relations """
+    """Through class for Asset to Section relations"""
     section = models.ForeignKey('Section')
     asset = models.ForeignKey('storybase_asset.Asset')
     weight = models.IntegerField(default=0)
 
 def add_section_asset_to_story(sender, instance, **kwargs):
-    """ When an asset is added to a Section, also add it to the Story """
+    """When an asset is added to a Section, also add it to the Story
+    
+    Should be connected to SectionAsset's post_save signal.
+    """
     if instance.asset not in instance.section.story.assets.all():
         # An asset was added to a section but it is not related to
         # the section's story.
@@ -169,32 +195,42 @@ def add_section_asset_to_story(sender, instance, **kwargs):
 post_save.connect(add_section_asset_to_story, sender=SectionAsset)
 
 def update_story_last_edited(sender, instance, **kwargs):
-    """ Update the a section's story's last edited field """
+    """Update the a section's story's last edited field
+    
+    Should be connected to Section's post_save signal.
+    """
     # Last edited is automatically set on save
     instance.story.save()
 
 # Update a section's story's last edited field when the section is saved
 post_save.connect(update_story_last_edited, sender=Section)
 
-def create_story(title, summary='', byline='', author=None, status=DEFAULT_STATUS, license=DEFAULT_LICENSE, language=settings.LANGUAGE_CODE, *args, **kwargs):
-    """ Convenience function for creating a Story
+def create_story(title, summary='', language=settings.LANGUAGE_CODE, 
+                 *args, **kwargs):
+    """Convenience function for creating a Story
 
     Allows for the creation of stories without having to explicitly
     deal with the translations.
 
     """
-    obj = Story(
-        byline=byline,
-        author=author,
-        status=status)
+    obj = Story(*args, **kwargs)
     obj.save()
-    translation = StoryTranslation(story=obj, title=title, summary=summary, language=language)
+    translation = StoryTranslation(story=obj, title=title, summary=summary,
+                                   language=language)
     translation.save()
     return obj
 
-def create_section(title, story, language=settings.LANGUAGE_CODE, *args, **kwargs):
+def create_section(title, story, language=settings.LANGUAGE_CODE,
+                   *args, **kwargs):
+    """Convenience function for creating a Section
+
+    Allows for the creation of a section without having to explicitly
+    deal with the tranlsations.
+
+    """
     obj = Section(story=story)
     obj.save()
-    translation = SectionTranslation(section=obj, title=title)
+    translation = SectionTranslation(section=obj, title=title, 
+                                     language=language)
     translation.save()
     return obj

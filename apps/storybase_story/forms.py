@@ -1,3 +1,5 @@
+"""Custom forms and form fields"""
+
 import calendar
 from datetime import datetime, date
 from django import forms
@@ -49,9 +51,11 @@ class GroupedMultipleChoiceField(forms.MultipleChoiceField):
 
     def __init__(self, choice_groups=(), *args, **kwargs):
         def _flatten_choices(choice_groups):
-            return [choice for group in choice_groups for choice in group['choices']]
+            return [choice for group in choice_groups 
+                    for choice in group['choices']]
                     
-        super(GroupedMultipleChoiceField, self).__init__(choices=_flatten_choices(choice_groups), *args, **kwargs)
+        super(GroupedMultipleChoiceField, self).__init__(
+            choices=_flatten_choices(choice_groups), *args, **kwargs)
         self.choice_groups = choice_groups
 
     def _get_choice_groups(self):
