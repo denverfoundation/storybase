@@ -3,11 +3,14 @@
 import calendar
 from datetime import datetime, date
 from django import forms
+from django.utils import translation
 from django.utils.encoding import force_unicode
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
 from haystack.forms import FacetedSearchForm
 from itertools import chain
+from storybase.widgets import AdminLongTextInputWidget
+from storybase_story.models import Section, SectionTranslation
 
 class GroupedCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
     def __init__(self, attrs=None, choices=(), choice_groups=()):
@@ -121,3 +124,52 @@ class StoryFacetedSearchForm(FacetedSearchForm):
                 sqs = sqs.narrow(u'%s:"%s"' % (field, sqs.query.clean(value)))
         
         return sqs
+
+class InlineSectionAdminForm(forms.ModelForm):
+    """Add an extra field for translation"""
+    title = forms.CharField(widget=AdminLongTextInputWidget)
+
+    readonly_fields = ['edit_link',]
+
+    class Meta:
+        model = Section
+        fields = ('title', 'root')
+
+
+    def __init__(self, *args, **kwargs):
+        super(InlineSectionAdminForm, self).__init__(*args, **kwargs)
+
+        if kwargs.has_key('instance'):
+            instance = kwargs['instance']
+            language_code = translation.get_language()
+            try:
+                instance_trans = instance.sectiontranslation_set.get(
+                    language=language_code)
+
+                self.initial['title'] = instance_trans.title
+            except SectionTranslation.DoesNotExist:
+                pass
+
+    def save(self, commit=True):
+        model = super(InlineSectionAdminForm, self).save(commit=False)
+
+        try:
+            language_code = translation.get_language()
+            trans = model.sectiontranslation_set.get(
+                language=language_code)
+            if trans.title != self.cleaned_data['title']:
+                trans.title = self.cleaned_data['title']
+        except SectionTranslation.DoesNotExist:
+            # This violates the commit argument, but you can't
+            # create the translation without first saving the model.
+            model.save()
+            trans = SectionTranslation(section=model,
+                                       title=self.cleaned_data['title'],
+                                       language=language_code)
+        finally:
+            trans.save()
+
+        if commit:
+            model.save()
+
+        return model

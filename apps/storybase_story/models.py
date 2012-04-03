@@ -2,6 +2,7 @@
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core import urlresolvers
 from django.db import models
 from django.db.models.signals import post_save, pre_save
 from django.utils.safestring import mark_safe
@@ -118,7 +119,16 @@ class Section(node_factory('SectionRelation'), TranslatedModel):
     translation_set = 'sectiontranslation_set'
 
     def __unicode__(self):
-        return self.title
+        try:
+            return self.title
+        except IndexError:
+            # HACK: Need this to support deleting Sections through
+            # an inline on the Story Change page
+            #
+            # When deleting an object in the Django admin, a Section
+            # object gets instantiated with no translation set.
+            # So, the call to __getattr__() raises an IndexError
+            return super(Section, self).__unicode__() 
 
     def render(self, format='html'):
         """Render a representation of the section structure"""
@@ -156,6 +166,18 @@ class Section(node_factory('SectionRelation'), TranslatedModel):
         output.append("</li>")
 
         return mark_safe(u'\n'.join(output))
+
+    def change_link(self):
+        """Generate a link to the Django admin change page
+
+        You can specify this in the Model Admin's readonly_fields or
+        list_display options
+        
+        """
+        change_url = urlresolvers.reverse('admin:storybase_story_section_change', args=(self.pk,))
+        return "<a href='%s'>Change Section</a>" % change_url
+    change_link.short_description = 'Change' 
+    change_link.allow_tags = True
 
 class SectionTranslation(TranslationModel):
     """Translated fields of a Section"""
