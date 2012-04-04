@@ -208,7 +208,11 @@ class ViewsTest(TestCase):
         html = homepage_story_list()
 	fragment = lxml.html.fromstring(html)
 	# TODO: Finish implementing this
-        self.fail("Test not fully implemented")	
+	elements = fragment.cssselect('li')
+	self.assertEqual(len(elements), homepage_stories.count())
+	sorted_titles = tuple(reversed(homepage_titles))
+	for i in range(sorted_titles):
+	   self.assertTrue(sorted_titles[i] in elements[i].text_content())
 
 
 class SectionModelTest(SloppyTimeTestCase):
