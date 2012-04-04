@@ -50,7 +50,7 @@ body, button, input, select, textarea { font-family: sans-serif; color: #222; }
    Links
    ========================================================================== */
 
-a { color: #00e; }
+a { color: #000; }
 a:visited { color: #551a8b; }
 a:hover { color: #06e; }
 a:focus { outline: thin dotted; }
@@ -265,19 +265,13 @@ header.pagetop nav li.selected a {
 
 /* Front page featured stories */
 
-#featured-stories {
-  padding: 1%;
-  border: 2px solid #dddddd; 
-  margin-top: 1.5%;
-  background-color: #EEEEEE;
+.featured-stories ul.stories {
+  list-style: none;
+  padding: 0;
 }
 
-#featured-stories h2 {
-  width: 50%;
-} 
-
-#featured-stories .summary {
-  width: 50%;
+.featured-stories ul.stories li {
+  padding: 1% 0;
 }
 
 /* Footer 1 */
