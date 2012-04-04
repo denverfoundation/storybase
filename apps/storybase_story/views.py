@@ -3,6 +3,8 @@
 from django.conf import settings
 from django.http import Http404
 from django.shortcuts import redirect, render
+from django.template import Context
+from django.template.loader import get_template
 from django.utils import translation
 #from django.views.generic import DetailView
 from storybase_story.models import Story
@@ -15,6 +17,23 @@ from storybase_story.models import Story
 #    def get_object(self):
 #        object = self.queryset.get(story_id=self.kwargs['story_id'])
 #        return object
+
+def simple_story_list(stories):
+    """Render a simple listing of stories
+    
+    Arguments:
+    stories -- A queryset of Story model instances
+
+    """
+    template = get_template('storybase_story/simple_story_list.html')
+    # TODO: Implement this template
+    context =  Context({"stories": stories})
+    return template.render(context)
+
+def homepage_story_list():
+    """Render a listing of stories for the homepage"""
+    stories = Story.objects.on_homepage().order_by('-last_edited')
+    return simple_story_list(stories)
 
 def story_detail(request, **kwargs):
     """Display metadata, assets and structure of a Story"""

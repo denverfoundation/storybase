@@ -131,6 +131,86 @@ class StoryApiTest(TestCase):
         self.assertEqual(retrieved_story.summary, summary)
         self.assertEqual(retrieved_story.byline, byline)
 
+class StoryManagerTest(TestCase):
+    """Test case for custom manager for Story model"""
+
+    def has_story_title(self, title, stories):
+	"""
+	Utility method to check that a given title is in a queryset of stories
+	"""
+	for story in stories:
+	       break
+	else:
+	    self.fail("Story with title '%s' not found" % title)
+
+    def test_on_homepage(self):
+        """
+	Test that StoryManager.on_homepage() returns filtered queryset
+	"""
+	homepage_titles = (
+	    "The Power of Play: Playground Locations in the Children's Corridor",
+	    "Birth Trends in the Children's Corridor: Focus on Foreign-born Mothers",
+	    "Shattered Dreams: Revitalizing Hope in Original Aurora",
+	    "A School Fight Rallies Hinkley High School Mothers to Organize",
+	    "Transportation Challenges Limit Education Choices for Denver Parents")
+	other_titles = ("Story 1", "Story 2")
+	for title in homepage_titles + other_titles:
+	    on_homepage = title in homepage_titles
+	    create_story(title=title, on_homepage=on_homepage,
+			 status='published')
+	homepage_stories = Story.objects.on_homepage()
+	self.assertEqual(homepage_stories.count(), len(homepage_titles))
+	for title in homepage_titles:
+	    self.has_story_title(title, homepage_stories)
+
+    def test_on_homepage_published_only(self):
+	"""
+	Test that StoryManager.on_homepage() returns only published stories
+	"""
+	published_titles = (
+	    "The Power of Play: Playground Locations in the Children's Corridor",
+	    "Birth Trends in the Children's Corridor: Focus on Foreign-born Mothers")
+	unpublished_titles = (
+	    "Shattered Dreams: Revitalizing Hope in Original Aurora",
+	    "A School Fight Rallies Hinkley High School Mothers to Organize",
+	    "Transportation Challenges Limit Education Choices for Denver Parents")
+	for title in published_titles + unpublished_titles:
+	    status = 'draft'
+	    if title in published_titles:
+		status = 'published'
+	    create_story(title=title, on_homepage=True, status=status)
+			 
+	homepage_stories = Story.objects.on_homepage()
+	self.assertEqual(homepage_stories.count(), len(published_titles))
+	for title in published_titles:
+	    self.has_story_title(title, homepage_stories)
+
+class ViewsTest(TestCase):
+    """Tests for story-related views"""
+
+    def test_homepage_story_list(self):
+	"""Test homepage_story_list()"""
+	import lxml.html
+	from storybase_story.views import homepage_story_list
+
+	homepage_titles = (
+	    "The Power of Play: Playground Locations in the Children's Corridor",
+	    "Birth Trends in the Children's Corridor: Focus on Foreign-born Mothers",
+	    "Shattered Dreams: Revitalizing Hope in Original Aurora",
+	    "A School Fight Rallies Hinkley High School Mothers to Organize",
+	    "Transportation Challenges Limit Education Choices for Denver Parents")
+	for title in homepage_titles:
+	    create_story(title=title, on_homepage=True,
+			 status='published')
+	    # Force different timestamps for stories
+	    sleep(1)
+	homepage_stories = Story.objects.on_homepage()
+        html = homepage_story_list()
+	fragment = lxml.html.fromstring(html)
+	# TODO: Finish implementing this
+        self.fail("Test not fully implemented")	
+
+
 class SectionModelTest(SloppyTimeTestCase):
     """Test Case for Section model"""
 

@@ -22,6 +22,7 @@ from storybase.models import (LicensedModel, PublishedModel,
 from storybase.utils import slugify
 from storybase_asset.models import Asset
 from storybase_user.models import Organization, Project
+from storybase_story.managers import StoryManager
 #from storybase_tag.models import TaggedItem
 
 class StoryTranslation(TranslationModel):
@@ -71,6 +72,8 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
     on_homepage = models.BooleanField(_("Featured on homepage"),
 		                      default=False)
     #tags = TaggableManager(through=TaggedItem, blank=True)
+
+    objects = StoryManager()
 
     translated_fields = ['title', 'summary', 'slug']
     translation_set = 'storytranslation_set'
