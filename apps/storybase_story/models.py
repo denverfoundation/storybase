@@ -6,6 +6,7 @@ from django.core import urlresolvers
 from django.db import models
 from django.db.models.signals import post_save, pre_save
 from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext as _
 from django_dag.models import edge_factory, node_factory
 # TODO: Decide on tagging suggestion admin app.
 # Right now, I'm using a hacked version of
@@ -67,6 +68,8 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
                                            blank=True)
     projects = models.ManyToManyField(Project, related_name='stories',
                                       blank=True)
+    on_homepage = models.BooleanField(_("Featured on homepage"),
+		                      default=False)
     #tags = TaggableManager(through=TaggedItem, blank=True)
 
     translated_fields = ['title', 'summary', 'slug']
