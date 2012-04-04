@@ -211,7 +211,7 @@ class ViewsTest(TestCase):
 	elements = fragment.cssselect('li')
 	self.assertEqual(len(elements), homepage_stories.count())
 	sorted_titles = tuple(reversed(homepage_titles))
-	for i in range(sorted_titles):
+	for i in range(len(sorted_titles)):
 	   self.assertTrue(sorted_titles[i] in elements[i].text_content())
 
 
