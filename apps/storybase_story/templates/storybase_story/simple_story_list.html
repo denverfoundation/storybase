@@ -1,0 +1,5 @@
+<ul>
+   {% for story in stories %}
+   <li><a href="{{ story.get_absolute_url }}">{{ story.title }}</a></li> 
+   {% endfor %}
+</ul>
