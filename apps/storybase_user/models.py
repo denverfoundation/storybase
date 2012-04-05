@@ -35,7 +35,7 @@ class Organization(TranslatedModel, TimestampedModel):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('organization_detail', [self.organization_id])
+        return ('organization_detail', [self.slug])
 
     def add_story(self, story, weight=0):
         """ Associate a story with the Organization 
@@ -79,7 +79,7 @@ def set_organization_slug(sender, instance, **kwargs):
     Should be connected to OrganizationTranslation's post_save signal.
     """
     if not instance.organization.slug:
-        instance.organization.slug = slugify(instance.title)
+        instance.organization.slug = slugify(instance.name)
 	instance.organization.save()
 
 # Hook up some signal handlers
@@ -118,7 +118,7 @@ class Project(TranslatedModel, TimestampedModel):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('project_detail', [self.project_id])
+        return ('project_detail', [self.slug])
 
     def add_story(self, story, weight=0):
         """ Associate a story with the Project 
@@ -162,7 +162,7 @@ def set_project_slug(sender, instance, **kwargs):
     Should be connected to ProjectTranslation's post_save signal.
     """
     if not instance.project.slug:
-        instance.project.slug = slugify(instance.title)
+        instance.project.slug = slugify(instance.name)
 	instance.project.save()
 
 # Hook up some signal handlers
