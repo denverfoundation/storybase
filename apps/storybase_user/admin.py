@@ -67,10 +67,11 @@ class StoryUserAdmin(UserAdmin):
 admin.site.unregister(User)
 admin.site.register(User, StoryUserAdmin)
 
+
 class OrganizationTranslationInline(StorybaseStackedInline):
     model = OrganizationTranslation 
     extra = 1
-    prepopulated_fields = {"slug": ("name",)}
+
 
 class OrganizationAdmin(StorybaseModelAdmin):
     search_fields = ['name']
@@ -81,14 +82,16 @@ class OrganizationAdmin(StorybaseModelAdmin):
 
 admin.site.register(Organization, OrganizationAdmin)
 
+
 class ProjectTranslationInline(StorybaseStackedInline):
     model = ProjectTranslation 
     extra = 1
-    prepopulated_fields = {"slug": ("name",)}
+
 
 class ProjectStoryInline(admin.TabularInline):
     model = ProjectStory 
     extra = 0
+
 
 class ProjectAdmin(StorybaseModelAdmin):
     search_fields = ['name']

@@ -22,11 +22,12 @@ class CuratedStory(models.Model):
 class Organization(TranslatedModel, TimestampedModel):
     """ An organization or a community group that users and stories can be associated with. """
     organization_id = UUIDField(auto=True)
+    slug = models.SlugField(blank=True)
     website_url = models.URLField(blank=True)
     members = models.ManyToManyField(User, related_name='organizations', blank=True)
     curated_stories = models.ManyToManyField('storybase_story.Story', related_name='curated_in_organizations', blank=True, through='OrganizationStory')
 
-    translated_fields = ['name', 'description', 'slug']
+    translated_fields = ['name', 'description']
     translation_set = 'organizationtranslation_set'
 
     def __unicode__(self):
@@ -62,7 +63,6 @@ class Organization(TranslatedModel, TimestampedModel):
 class OrganizationTranslation(TranslationModel, TimestampedModel):
     organization = models.ForeignKey('Organization')
     name = ShortTextField()
-    slug = models.SlugField()
     description = models.TextField(blank=True)
 
     class Meta:
@@ -71,11 +71,19 @@ class OrganizationTranslation(TranslationModel, TimestampedModel):
     def __unicode__(self):
         return self.name
 
-    def save(self, *args, **kwargs):
-        """ Overriding save to automatically set slug """
-        if not self.slug:
-            self.slug = slugify(self.name)
-        super(OrganizationTranslation, self).save(*args, **kwargs)
+def set_organization_slug(sender, instance, **kwargs):
+    """
+    When an OrganizationTranslation is saved, set its Organization's slug if it
+    doesn't have one
+    
+    Should be connected to OrganizationTranslation's post_save signal.
+    """
+    if not instance.organization.slug:
+        instance.organization.slug = slugify(instance.title)
+	instance.organization.save()
+
+# Hook up some signal handlers
+post_save.connect(set_organization_slug, sender=OrganizationTranslation)
 
 class OrganizationStory(CuratedStory):
     """ "Through" class for Organization to Story relations """
@@ -96,12 +104,13 @@ class Project(TranslatedModel, TimestampedModel):
     Users can also be related to projects.
     """
     project_id = UUIDField(auto=True)
+    slug = models.SlugField(blank=True)
     website_url = models.URLField(blank=True)
     organizations = models.ManyToManyField(Organization, related_name='projects', blank=True)
     members = models.ManyToManyField(User, related_name='projects', blank=True) 
     curated_stories = models.ManyToManyField('storybase_story.Story', related_name='curated_in_projects', blank=True, through='ProjectStory')
 
-    translated_fields = ['name', 'description', 'slug']
+    translated_fields = ['name', 'description']
     translation_set = 'projecttranslation_set'
 
     def __unicode__(self):
@@ -137,7 +146,6 @@ class Project(TranslatedModel, TimestampedModel):
 class ProjectTranslation(TranslationModel):
     project = models.ForeignKey('Project')
     name = ShortTextField()
-    slug = models.SlugField()
     description = models.TextField(blank=True)
 
     class Meta:
@@ -146,11 +154,20 @@ class ProjectTranslation(TranslationModel):
     def __unicode__(self):
         return self.name
 
-    def save(self, *args, **kwargs):
-        """ Overriding save to automatically set slug """
-        if not self.slug:
-            self.slug = slugify(self.name)
-        super(ProjectTranslation, self).save(*args, **kwargs)
+def set_project_slug(sender, instance, **kwargs):
+    """
+    When an ProjectTranslation is saved, set its Project's slug if it
+    doesn't have one
+    
+    Should be connected to ProjectTranslation's post_save signal.
+    """
+    if not instance.project.slug:
+        instance.project.slug = slugify(instance.title)
+	instance.project.save()
+
+# Hook up some signal handlers
+post_save.connect(set_project_slug, sender=ProjectTranslation)
+
 
 class ProjectStory(CuratedStory):
     """ "Through" class for Project to Story relations """
