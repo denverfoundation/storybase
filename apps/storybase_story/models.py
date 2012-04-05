@@ -30,7 +30,6 @@ class StoryTranslation(TranslationModel):
     story = models.ForeignKey('Story')
     title = ShortTextField() 
     summary = models.TextField(blank=True)
-    slug = models.SlugField()
 
     class Meta:
         """Model metadata options"""
@@ -39,11 +38,6 @@ class StoryTranslation(TranslationModel):
     def __unicode__(self):
         return self.title
 
-    def save(self, *args, **kwargs):
-        """ Overriding save to automatically set slug """
-        if not self.slug:
-            self.slug = slugify(self.title)
-        super(StoryTranslation, self).save(*args, **kwargs)
 
 class Story(TranslatedModel, LicensedModel, PublishedModel, 
             TimestampedModel):
@@ -54,6 +48,7 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
 
     """
     story_id = UUIDField(auto=True)
+    slug = models.SlugField(blank=True)
     byline = models.TextField()
     # blank=True, null=True to bypass validation so the user doesn't
     # have to always remember to set this in the Django admin.
@@ -75,7 +70,7 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
 
     objects = StoryManager()
 
-    translated_fields = ['title', 'summary', 'slug']
+    translated_fields = ['title', 'summary']
     translation_set = 'storytranslation_set'
 
     class Meta:
@@ -107,8 +102,20 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
         output.append('</ul>')
         return mark_safe(u'\n'.join(output))
 
+def set_story_slug(sender, instance, **kwargs):
+    """
+    When a StoryTranslation is saved, set its Story's slug if it doesn't have 
+    one
+    
+    Should be connected to StoryTranslation's post_save signal.
+    """
+    if not instance.story.slug:
+        instance.story.slug = slugify(instance.title)
+	instance.story.save()
+
 # Hook up some signal handlers
 pre_save.connect(set_date_on_published, sender=Story)
+post_save.connect(set_story_slug, sender=StoryTranslation)
 
 class Section(node_factory('SectionRelation'), TranslatedModel):
     """ Section of a story """

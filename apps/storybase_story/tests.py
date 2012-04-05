@@ -19,9 +19,8 @@ class StoryModelTest(SloppyTimeTestCase):
         story = Story()
         story.save()
         story_translation = StoryTranslation(title=title, story=story)
-        self.assertEqual(story_translation.slug, '')
         story_translation.save()
-        self.assertEqual(story_translation.slug, slugify(title))
+        self.assertEqual(story.slug, slugify(title))
 
     def test_get_languages(self):
         """Test Story.get_languages() method for a single translation"""

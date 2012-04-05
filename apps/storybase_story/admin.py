@@ -15,7 +15,6 @@ class StoryTranslationInline(StorybaseStackedInline):
     """Inline for translated fields of a Story"""
     model = StoryTranslation
     extra = 1
-    prepopulated_fields = {"slug": ("title",)}
 
 
 class SectionInline(StorybaseStackedInline):
