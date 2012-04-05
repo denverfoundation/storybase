@@ -51,9 +51,8 @@ class OrganizationModelTest(TestCase):
         organization = Organization()
         organization.save()
         organization_translation = OrganizationTranslation(name=name, organization=organization)
-        self.assertEqual(organization_translation.slug, '')
         organization_translation.save()
-        self.assertEqual(organization_translation.slug, slugify(name))
+        self.assertEqual(organization.slug, slugify(name))
 
     def test_add_story(self):
         organization = create_organization(name='Mile High Connects')
@@ -123,9 +122,8 @@ class ProjectModelTest(TestCase):
         project = Project()
         project.save()
         project_translation = ProjectTranslation(name=name, project=project)
-        self.assertEqual(project_translation.slug, '')
         project_translation.save()
-        self.assertEqual(project_translation.slug, slugify(name))
+        self.assertEqual(project.slug, slugify(name))
 
     def test_add_story(self):
         name = "The Metro Denver Regional Equity Atlas"
