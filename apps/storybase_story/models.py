@@ -83,7 +83,7 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
     @models.permalink
     def get_absolute_url(self):
         """Calculate the canonical URL for a Story"""
-        return ('story_detail', [str(self.story_id)])
+        return ('story_detail', [self.slug])
 
     def get_root_section(self):
         """ Return the root section """

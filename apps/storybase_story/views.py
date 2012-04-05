@@ -39,7 +39,16 @@ def story_detail(request, **kwargs):
     """Display metadata, assets and structure of a Story"""
     try:
         language_code = translation.get_language()
-        story = Story.objects.get(story_id = kwargs['story_id'])
+	story_id = kwargs.get('story_id', None)
+	slug = kwargs.get('slug', None)
+	if slug is not None:
+	    story = Story.objects.get(slug=kwargs['slug'])
+	elif story_id is not None:
+	    story = Story.objects.get(story_id=kwargs['story_id'])
+	else:
+	    raise AssertionError("story_detail view must be called with either "
+			         "a object story_id or slug")
+	    
         available_languages = story.get_languages()
         if language_code not in available_languages:
             alt_lang = settings.LANGUAGE_CODE
