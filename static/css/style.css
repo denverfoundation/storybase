@@ -34,7 +34,7 @@ html { font-size: 100%; overflow-y: scroll; -webkit-text-size-adjust: 100%; -ms-
 
 body { margin: 0; font-size: 13px; line-height: 1.231; }
 
-body, button, input, select, textarea { font-family: sans-serif; color: #222; }
+body, button, input, select, textarea { font-family: sans-serif; color: #444; }
 
 /* 
  * Remove text-shadow in selection highlight: h5bp.com/i
@@ -50,7 +50,7 @@ body, button, input, select, textarea { font-family: sans-serif; color: #222; }
    Links
    ========================================================================== */
 
-a { color: #000; }
+a { color: #0066CC; }
 a:visited { color: #551a8b; }
 a:hover { color: #06e; }
 a:focus { outline: thin dotted; }
@@ -316,6 +316,60 @@ footer .copyright {
 }
 
 /* Story detail */
+
+section.story, section.actions {
+  overflow: hidden; /* Clear containing elements */
+  padding: 2% 0 4% 0;
+}
+
+section.story {
+  border-bottom: 1px solid #999;
+}
+
+section.story h1 {
+  padding: 0 0 1% 0;
+}
+
+.featured-image {
+  background: none repeat scroll 0 0 #EEEEEE;
+  border: 1px solid #CCCCCC; 
+}
+
+.addthis_toolbox {
+  padding-top: 4%;
+}
+
+dl.story-metadata {
+  width: 100%; 
+  margin: 4% 0;
+}
+
+dl.story-metadata dt {
+  clear: left;
+  float: left;
+  width: 40%;
+  padding: 2% 0;
+  font-weight: bold;
+}
+
+dl.story-metadata dt:after {
+  content: ":";
+}
+
+dl.story-metadata dd {
+  width: 60%;
+  margin: 0;
+  padding: 2% 0;
+  float: left;
+}
+
+dl.story-metadata dd ul {
+  display: inline;
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
 li.section {
    list-style-type: none;
 }

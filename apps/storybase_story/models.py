@@ -89,6 +89,10 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
         """ Return the root section """
         return self.sections.get(root=True)
 
+    def render_featured_asset(self, format='html'):
+        """Render a representation of the story's featured asset"""
+	return mark_safe('<div class="featured-image fourcol" style="height:100px;">image</div>')
+
     def render_story_structure(self, format='html'):
         """Render a representation of the Story structure"""
         output = []

@@ -1,95 +1,84 @@
 {% extends "base.html" %}
+{% load i18n %}
 
 {% block head_title %}{{ story.title }}{% endblock %}
 
 {% block base_content %}
-<h2>{{ story.title }}</h2>
+<div class="eightcol">
+  <section class="story">
+    <header>
+      <h1>{{ story.title }}</h1>
+      <p>{% trans "By" noop %} <span class="byline">{{ story.byline }}</span></p>
+    </header>
+    {{ story.render_featured_asset }}
+    <section class="summary">
+      {{ story.summary|linebreaks }}
+    </section>
+  </section>
 
-<!-- AddThis Button BEGIN -->
-<div class="addthis_toolbox addthis_default_style addthis_32x32_style">
-	<a class="addthis_button_preferred_1"></a>
-	<a class="addthis_button_preferred_2"></a>
-	<a class="addthis_button_preferred_3"></a>
-	<a class="addthis_button_preferred_4"></a>
-	<a class="addthis_button_compact"></a>
-	<a class="addthis_counter addthis_bubble_style"></a>
+  <section class="actions">
+    <header>
+      <h2>{% trans "How Can You Help?" %}</h2>
+    </header>
+    <p class="fourcol">{% blocktrans %}Wondering what you can do to help? The contributor has listed the following actions that you can take to help.{% endblocktrans %}</p> 
+    <p>TODO: Output actions</p>
+  </section>
 </div>
-<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js"></script>
-<!-- AddThis Button END -->
 
-<h3>Byline</h3>
-<p class="byline">{{ story.byline }}</p>
+<div class="fourcol last">
+  <!-- AddThis Button BEGIN -->
+  <div class="addthis_toolbox addthis_default_style addthis_32x32_style">
+	  <a class="addthis_button_preferred_1"></a>
+	  <a class="addthis_button_preferred_2"></a>
+	  <a class="addthis_button_preferred_3"></a>
+	  <a class="addthis_button_preferred_4"></a>
+	  <a class="addthis_button_compact"></a>
+	  <a class="addthis_counter addthis_bubble_style"></a>
+  </div>
+  <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js"></script>
+  <!-- AddThis Button END -->
 
-<h3>Status</h3>
-<p class="status">{{ story.status }}</p>
+  <aside>
+    <dl class="story-metadata">
+      {% if story.published %}
+      <dt>{% trans "Published" %}</dt>
+      <dd><time class="published">{{ story.published|date:"F j, Y" }}</time></dd>
+      {% endif %}
 
-{% if story.published %}
-<h3>Publication Date</h3>
-<p><time class="published">{{ story.published|date:"F j, Y g:i A" }}</time></p>
-{% endif %}
+      <dt>{% trans "Updated" %}</dt>
+      <dd><time class="last-edited">{{ story.last_edited|date:"F j, Y" }} </time></dd>
 
-{% if story.summary %}
-<h3>Summary</h3>
-{{ story.summary|linebreaks }}
-{% endif %}
+      {% if story.organizations.count %}
+      <dt>{% trans "Organizations" %}</dt>
+      <dd>
+	<ul class="organizations">
+	{% for organization in story.organizations.all %}
+	  <li><a href="{{ organization.get_absolute_url }}">{{ organization.name }}</a></li>
+	{% endfor %}
+	</ul>
+      </dd>
+      {% endif %}
 
-{% if story.organizations.count %}
-<h3>Organizations</h3>
-<ul class="organizations">
-{% for organization in story.organizations.all %}
-  <li>{{ organization.name }}</li>
-{% endfor %}
-</ul>
-{% endif %}
+      {% if story.projects.count %}
+      <dt>{% trans "Projects" %}</dt>
+      <dd>
+	<ul class="projects">
+	{% for project in story.projects.all %}
+	  <li><a href="{{ project.get_absolute_url }}">{{ project.name }}</a></li>
+	{% endfor %}
+	</ul>
+      </dd>
+      {% endif %}
 
-{% if story.projects.count %}
-<h3>Projects</h3>
-<ul class="projects">
-{% for project in story.projects.all %}
-  <li>{{ project.name }}</li>
-{% endfor %}
-</ul>
-{% endif %}
+      <dt>{% trans "Contact Info" %}</dt>
+      <dd>
+      TODO: Add Conact Info<br />
+      Denver, CO 80202<br />
+      (303) 825-6246
+      </dd>
+    </dl>
+  </aside>
 
-{% if story.assets.count %}
-<h3>Assets</h3>
-<ul class="assets">
-{% for asset in story.assets.select_subclasses %}
-  <li>{{ asset.display_title }}</li>
-{% endfor %}
-</ul>
-{% endif %}
-
-{% if story.sections.count %}
-<h3>Sections</h3>
-<ul class="sections">
-{% for section in story.sections.all %}
-  <li>
-    {{ section.title }}<br />
-    {% if section.assets.count %}
-    Assets:
-    <ul>
-        {% for asset in section.assets.select_subclasses %}
-        <li>{{ asset|safe }}</li>
-        {% endfor %}
-    </ul>
-    {% endif %}
-  </li>
-{% endfor %}
-</ul>
-{% endif %}
-
-{% with story_structure=story.render_story_structure %}
-{% if story_structure %}
-<h3>Story Structure</h3>
-{{ story_structure }}
-{% endif %}
-{% endwith %}
-
-<h3>Created</h3>
-<p><time class="created">{{ story.created|date:"F j, Y" }}</time></p>
-
-<h3>Last Edited</h3>
-<p><time class="last-edited">{{ story.last_edited|date:"F j, Y g:i A" }} </time></p>
+</div>
 
 {% endblock %}
