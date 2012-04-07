@@ -25,3 +25,8 @@ def homepage_story_list():
 class StoryDetailView(ModelIdDetailView):
     context_object_name = "story"
     queryset = Story.objects.all()
+
+class StoryViewerView(ModelIdDetailView):
+    context_object_name = "story"
+    queryset = Story.objects.all()
+    template_name = 'storybase_story/story_viewer.html'

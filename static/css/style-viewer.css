@@ -1,0 +1,36 @@
+.story-viewer header {
+  background-color: #CCC;
+  padding: 1%;
+}
+
+.story-viewer header h1 {
+  margin: 0;
+  padding: 0.25% 0;
+  font-size: 1.2em;
+}
+
+.story-viewer header p {
+  margin: 0;
+  padding: 0 0 0.25% 0;
+}
+
+.story-viewer footer {
+  width: 100%;
+  position: fixed;
+  bottom: 0;
+  padding: 1%;
+  background-color: #000;
+}
+
+.story-viewer footer > a {
+  float: left;
+  display: block;
+}
+
+.story-viewer footer .addthis_toolbox {
+  position: absolute;
+  /*width: 400px;*/
+  right: 0;
+  top: 0;
+  padding: 1% 3% 0 0;
+}

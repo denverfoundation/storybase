@@ -227,6 +227,13 @@ figure img {
   width: auto;
 }
 
+a.button {
+  padding: 5px;
+  background-color: #dcdcdc;
+  border: 1px solid #666;
+  text-decoration: none;
+}
+
 /* Header */
 
 header.pagetop {
@@ -323,6 +330,7 @@ section.story, section.actions {
 }
 
 section.story {
+  position: relative;
   border-bottom: 1px solid #999;
 }
 
@@ -332,7 +340,12 @@ section.story h1 {
 
 .featured-image {
   background: none repeat scroll 0 0 #EEEEEE;
-  border: 1px solid #CCCCCC; 
+  border: 1px solid #CCCCCC;
+}
+
+a#launch-story-viewer {
+  position: absolute;
+  right: 0;
 }
 
 .addthis_toolbox {
@@ -340,7 +353,7 @@ section.story h1 {
 }
 
 dl.story-metadata {
-  width: 100%; 
+  width: 100%;
   margin: 4% 0;
 }
 
