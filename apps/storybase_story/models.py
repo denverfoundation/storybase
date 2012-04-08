@@ -99,8 +99,12 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
             # selecting multiple featured assets.  Perhaps in the future
             # allow for specifying a particular feature asset or randomly
             # displaying one.
-            featured_asset = self.featured_assets.all()[0]
-            return featured_asset.render_thumbnail(format=format)
+            featured_asset = self.featured_assets.select_subclasses()[0]
+            thumbnail_options = {}
+            if format == 'html':
+                thumbnail_options.update({'html_class': 'featured-asset'})
+            return featured_asset.render_thumbnail(format=format, 
+                                                   **thumbnail_options)
         except IndexError:
             # No featured assets
             return None

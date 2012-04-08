@@ -109,7 +109,8 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
         except AttributeError:
             return self.__unicode__()
 
-    def render_thumbnail(self, width=None, height=None, format='html'):
+    def render_thumbnail(self, width=None, height=None, format='html',
+                         **kwargs):
         """Render a thumbnail-sized viewable representation of an asset 
 
         Arguments:
@@ -120,9 +121,9 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
 
         """
         return getattr(self, "render_thumbnail_" + format).__call__(
-            width, height)
+            width, height, **kwargs)
 
-    def render_thumbnail_html(self, width=None, height=None):
+    def render_thumbnail_html(self, width=None, height=None, **kwargs):
         """
         Render HTML for a thumbnail-sized viewable representation of an 
         asset 
@@ -139,9 +140,10 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
             width = 150
         if height is None:
             height = 100
-        return mark_safe("<div class='featured-asset' "
+        html_class = kwargs.get('html_class', None)
+        return mark_safe("<div class='asset-thumbnail %s' "
                 "style='height: %dpx; width: %dpx'>Asset Thumbnail</div>" %
-                (height, width))
+                (html_class, height, width))
         
 class AssetTranslation(TranslationModel):
     """
@@ -281,6 +283,32 @@ class LocalImageAsset(Asset):
         output.append('</figure>')
             
         return mark_safe(u'\n'.join(output))
+
+    def render_thumbnail_html(self, width=None, height=None, **kwargs):
+        """
+        Render HTML for a thumbnail-sized viewable representation of an 
+        asset 
+
+        This just provides a dummy placeholder and should be implemented
+        classes that inherit from Asset.
+
+        Arguments:
+        height -- Height of the thumbnail in pixels
+        width  -- Width of the thumbnail in pixels
+
+        """
+        if width is None:
+            width = 150
+        if height is None:
+            height = 100
+        html_class = kwargs.get('html_class', None)
+        thumbnailer = self.image.easy_thumbnails_thumbnailer
+        thumbnail_options = {}
+        thumbnail_options.update({'size': (width, height)})
+        thumbnail = thumbnailer.get_thumbnail(thumbnail_options)
+        return mark_safe("<img class='asset-thumbnail %s' "
+            "src='%s' alt='%s' />" %
+            (html_class, thumbnail.url, self.title))
 
 class LocalImageAssetTranslation(AssetTranslation):
     """Translatable fields for a LocalImageAsset model instance"""
