@@ -32,9 +32,18 @@ class StoryAdmin(StorybaseModelAdmin):
                      'author__last_name']
     list_display = (obj_title, 'author', 'last_edited', 'status')
     list_filter = ('status', 'author')
-    filter_horizontal = ['assets', 'projects', 'organizations']
+    filter_horizontal = ['assets', 'featured_assets', 'projects',
+                         'organizations']
     inlines = [SectionInline, StoryTranslationInline]
     prefix_inline_classes = ['StoryTranslationInline']
+
+    def get_object(self, request, object_id):
+        """
+        Overridden get_object to make object accessible to other
+        ModelAdmin methods via an attribute
+        """
+        self.obj = super(StoryAdmin, self).get_object(request, object_id)
+        return self.obj
 
     def save_model(self, request, obj, form, change):
         """Perform pre-save operations and save the Story
@@ -48,9 +57,15 @@ class StoryAdmin(StorybaseModelAdmin):
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         """Set default formfield for assets field"""
+        from pprint import pprint
+        pprint(self.obj.__dict__)
         if db_field.name == "assets":
             # Limit to only assets owned by the owner
             kwargs["queryset"] = Asset.objects.filter(owner=request.user)
+        elif (db_field.name == "featured_assets" and 
+              getattr(self, 'obj', None)):
+            kwargs["queryset"] = self.obj.assets
+
         return super(StoryAdmin, self).formfield_for_manytomany(
             db_field, request, **kwargs)
 

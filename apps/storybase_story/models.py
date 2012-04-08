@@ -59,6 +59,9 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
                                null=True)
     assets = models.ManyToManyField(Asset, related_name='stories',
                                     blank=True)
+    featured_assets = models.ManyToManyField(Asset,
+       related_name='featured_in_stories', blank=True,
+       help_text=_("Assets to be displayed in teaser version of Story"))
     organizations = models.ManyToManyField(Organization,
                                            related_name='stories',
                                            blank=True)
