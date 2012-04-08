@@ -2,6 +2,7 @@
 
 from time import sleep
 from django.conf import settings
+from django.contrib.auth.models import User
 from django.test import TestCase
 from storybase.tests import SloppyTimeTestCase
 from storybase.utils import slugify
@@ -101,6 +102,72 @@ class StoryModelTest(SloppyTimeTestCase):
         story.status = 'published'
         story.save()
         self.assertNowish(story.published)
+
+    def test_contributor_name(self):
+        """
+        Test that the Story.contributor_name returns the first name
+        and last initial of the Story's author user
+        """
+        user = User.objects.create(username='admin', first_name='Jordan',
+                                   last_name='Wirfs-Brock')
+        title = ('Transportation Challenges Limit Education Choices for '
+                 'Denver Parents')
+        summary = """
+            Many families in the Denver metro area use public
+            transportation instead of a school bus because for them, a
+            quality education is worth hours of daily commuting. Colorado's
+            school choice program is meant to foster educational equity,
+            but the families who benefit most are those who have time and
+            money to travel. Low-income families are often left in a lurch.
+            """
+        byline = "Mile High Connects"
+        story = create_story(title=title, summary=summary, byline=byline,
+                             author=user)
+        self.assertEqual(story.contributor_name, 'Jordan W.')
+
+
+    def test_contributor_name_no_last_name(self):
+        """
+        Test that the Story.contributor_name returns the first name
+        of the Story's author user when no last name is set
+        """
+        user = User.objects.create(username='admin', first_name='Jordan')
+                                   
+        title = ('Transportation Challenges Limit Education Choices for '
+                 'Denver Parents')
+        summary = """
+            Many families in the Denver metro area use public
+            transportation instead of a school bus because for them, a
+            quality education is worth hours of daily commuting. Colorado's
+            school choice program is meant to foster educational equity,
+            but the families who benefit most are those who have time and
+            money to travel. Low-income families are often left in a lurch.
+            """
+        byline = "Mile High Connects"
+        story = create_story(title=title, summary=summary, byline=byline,
+                             author=user)
+        self.assertEqual(story.contributor_name, 'Jordan')
+
+    def test_contributor_name_no_names(self):
+        """
+        Test that the Story.contributor_name returns the username 
+        the Story's author user when there is no first or last name
+        """
+        user = User.objects.create(username='admin')
+        title = ('Transportation Challenges Limit Education Choices for '
+                 'Denver Parents')
+        summary = """
+            Many families in the Denver metro area use public
+            transportation instead of a school bus because for them, a
+            quality education is worth hours of daily commuting. Colorado's
+            school choice program is meant to foster educational equity,
+            but the families who benefit most are those who have time and
+            money to travel. Low-income families are often left in a lurch.
+            """
+        byline = "Mile High Connects"
+        story = create_story(title=title, summary=summary, byline=byline,
+                             author=user)
+        self.assertEqual(story.contributor_name, 'admin')
 
 
 class StoryApiTest(TestCase):

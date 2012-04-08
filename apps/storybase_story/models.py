@@ -92,6 +92,24 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
         """ Return the root section """
         return self.sections.get(root=True)
 
+    @property
+    def contributor_name(self):
+        """
+        Return the contributor's first name and last initial or username
+        """ 
+        contributor = self.author
+        contributor_name = contributor.username
+        if contributor.first_name:
+            contributor_name = contributor.first_name 
+                                
+            if contributor.last_name:
+                contributor_name = "%s %s." % (contributor.first_name,
+                                               contributor.last_name[0])
+            else:
+                contributor_name = contributor.first_name
+
+        return contributor_name
+
     def render_featured_asset(self, format='html'):
         """Render a representation of the story's featured asset"""
         try:
