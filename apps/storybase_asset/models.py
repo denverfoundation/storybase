@@ -13,7 +13,7 @@ from uuidfield.fields import UUIDField
 from storybase.fields import ShortTextField
 from storybase.models import (LicensedModel, PublishedModel,
     TimestampedModel, TranslatedModel, TranslationModel,
-    set_date_on_published, DEFAULT_LICENSE)
+    set_date_on_published)
 from embedable_resource import EmbedableResource
 from embedable_resource.exceptions import UrlNotMatched
    
