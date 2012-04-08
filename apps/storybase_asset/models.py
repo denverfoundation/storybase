@@ -139,8 +139,8 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
             width = 150
         if height is None:
             height = 100
-        return ("<div class='featured-image' "
-                "style='height: %dpx; width: %dpx'>asset</div>" %
+        return mark_safe("<div class='featured-asset' "
+                "style='height: %dpx; width: %dpx'>Asset Thumbnail</div>" %
                 (height, width))
         
 class AssetTranslation(TranslationModel):

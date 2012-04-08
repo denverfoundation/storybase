@@ -344,7 +344,9 @@ section.story h1 {
   padding: 0 0 1% 0;
 }
 
-.featured-image {
+.featured-asset {
+  float: left;
+  margin-right: 3.8%;
   background: none repeat scroll 0 0 #EEEEEE;
   border: 1px solid #CCCCCC;
 }

@@ -94,7 +94,16 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
 
     def render_featured_asset(self, format='html'):
         """Render a representation of the story's featured asset"""
-	return mark_safe('<div class="featured-image fourcol" style="height:100px;">image</div>')
+        try:
+            # Return the first featured asset.  We have the ability of 
+            # selecting multiple featured assets.  Perhaps in the future
+            # allow for specifying a particular feature asset or randomly
+            # displaying one.
+            featured_asset = self.featured_assets.all()[0]
+            return featured_asset.render_thumbnail(format=format)
+        except IndexError:
+            # No featured assets
+            return None
 
     def render_story_structure(self, format='html'):
         """Render a representation of the Story structure"""
