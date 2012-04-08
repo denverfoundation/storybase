@@ -234,6 +234,12 @@ a.button {
   text-decoration: none;
 }
 
+/* Modal dialogs */
+.modal {
+  display: none;
+}
+
+
 /* Header */
 
 header.pagetop {
@@ -387,12 +393,17 @@ li.section {
    list-style-type: none;
 }
 
+/* Story viewer modal */
 
+#simplemodal-container {
+  border: 4px solid rgb(119, 119, 119);
+}
 
-
-
-
-
+#simplemodal-container #modal-controls {
+  position: absolute;
+  right: 0;
+  padding: 0 2%;
+}
 
 /* ==|== non-semantic helper classes ========================================
    Please define your styles before this section.

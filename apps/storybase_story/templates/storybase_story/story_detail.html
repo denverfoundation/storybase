@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n %}
+{% load i18n sekizai_tags %}
 
 {% block head_title %}{{ story.title }}{% endblock %}
 
@@ -71,8 +71,46 @@
   </aside>
 
 </div>
-
 {% endblock %}
 
+{% block bodyend %}
+<div id="story-viewer" class="modal">
+  <div id="modal-controls">
+    <a id="launch-viewer-window" href="#">View in new window</a>
+    <a class="simplemodal-close" href="#">Close</a>
+  </div>
+  <iframe src="./viewer"></iframe>
+</div>
+{% endblock bodyend %}
+
 {% block extrajs %}
+<script defer src="{{ STATIC_URL }}js/libs/jquery.simplemodal.1.4.2.min.js"></script>
+<script type="text/javascript">
+$(document).ready(function () {
+    // Display the story viewer in a modal dialog
+    $("#launch-story-viewer").click(function (event) {
+        event.preventDefault();
+        var width = $(window).width() * 0.9;
+        var height = $(window).height() * 0.9;
+        console.debug(height);
+        $("#story-viewer").modal({
+            opacity: 70,
+            minHeight: height,
+            minWidth: width,
+        });
+        $("#story-viewer iframe").css("width", width); 
+        $("#story-viewer iframe").css("height", height); 
+    });
+
+    // Launch the viewer in a new window
+    $("#story-viewer #modal-controls #launch-viewer-window").click(
+        function (event) {
+            event.preventDefault();
+            var viewerUrl = document.location + "viewer";
+            window.open(viewerUrl, 'Story Viewer', '');
+            $.modal.close();
+        }
+    );
+});
+</script>
 {% endblock %}
