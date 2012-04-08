@@ -1,3 +1,5 @@
+"""Models for story content assets"""
+
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
@@ -28,9 +30,28 @@ ASSET_TYPES = (
   (u'quotation', u'quotation'),
   (u'text', u'text'),
 )
+"""The available types of assets
+
+These represent what an asset is and not neccessarily how it is stored.
+For example, a map might actually be stored as an image, or it could be
+an HTML snippet.
+"""
 
 class Asset(TranslatedModel, LicensedModel, PublishedModel,
     TimestampedModel):
+    """A piece of content included in a story
+
+    An asset could be an image, a block of text, an embedded resource
+    represented by an HTML snippet or a media file.
+    
+    This is a base class that provides common metadata for the asset.
+    However, it does not provide the fields that specify the content
+    itself.  Also, to reduce the number of database tables and queries
+    this model class does not provide translated metadata fields.  When
+    creating an asset, one shouldn't instantiate this class, but instead
+    use one of the model classes that inherits form Asset.
+
+    """
     asset_id = UUIDField(auto=True)
     type = models.CharField(max_length=10, choices=ASSET_TYPES)
     attribution = models.TextField(blank=True)
@@ -45,7 +66,8 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
     owner = models.ForeignKey(User, related_name="assets", blank=True,
                               null=True)
     section_specific = models.BooleanField(default=False)
-    datasets = models.ManyToManyField('DataSet', related_name='assets', blank=True)
+    datasets = models.ManyToManyField('DataSet', related_name='assets', 
+                                      blank=True)
     asset_created = models.DateTimeField(blank=True, null=True)
     """Date/time the non-digital version of an asset was created
 
@@ -67,19 +89,33 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
         return ('asset_detail', [str(self.asset_id)])
 
     def display_title(self):
-        """ Wrapper to handle displaying some kind of title when the
-        the title field is blank """
+        """
+        Wrapper to handle displaying some kind of title when the
+        the title field is blank 
+        """
         # For now just call the __unicode__() method
         return unicode(self)
 
     def render(self, format='html'):
+        """Render a viewable representation of an asset
+
+        Arguments:
+        format -- The format to render the asset. Defaults to 'html' which
+                  is presently the only available option.
+
+        """
         try:
             return getattr(self, "render_" + format).__call__()
         except AttributeError:
             return self.__unicode__()
 
 class AssetTranslation(TranslationModel):
-    asset = models.ForeignKey('Asset', related_name="%(app_label)s_%(class)s_related") 
+    """
+    Abstract base class for common translated metadata fields for Asset
+    instances
+    """
+    asset = models.ForeignKey('Asset',  
+        related_name="%(app_label)s_%(class)s_related") 
     title = ShortTextField(blank=True) 
     caption = models.TextField(blank=True)
 
@@ -88,8 +124,12 @@ class AssetTranslation(TranslationModel):
         unique_together = (('asset', 'language')) 
 
 class ExternalAsset(Asset):
-#    translations = models.ManyToManyField('ExternalAssetTranslation', blank=True, verbose_name=_('translations'))
+    """Asset not stored on the same system as the application
 
+    An ExternalAsset's resource can either be retrieved via an oEmbed API
+    endpoint or in the case of an image or other media file, the file's
+    URL.
+    """
     translation_set = 'storybase_asset_externalassettranslation_related'
     translated_fields = Asset.translated_fields + ['url']
 
@@ -102,6 +142,7 @@ class ExternalAsset(Asset):
             return "Asset %s" % self.asset_id
 
     def render_html(self):
+        """Render the asset as HTML"""
         output = []
         output.append('<figure>')
         try:
@@ -130,11 +171,18 @@ class ExternalAsset(Asset):
         return mark_safe(u'\n'.join(output))
 
 class ExternalAssetTranslation(AssetTranslation):
+    """Translatable fields for an Asset model instance"""
     url = models.URLField()
 
 class HtmlAsset(Asset):
-#    translations = models.ManyToManyField('HtmlAssetTranslation', blank=True, verbose_name=_('translations'))
+    """An Asset that can be stored as a block of HTML.
 
+    This can store formatted text or an HTML snippet for an embedable
+    resource.
+
+    The text stored in an HtmlAsset doesn't have to contain HTML markup.
+
+    """
     translation_set = 'storybase_asset_htmlassettranslation_related'
     translated_fields = Asset.translated_fields + ['body']
 
@@ -148,6 +196,7 @@ class HtmlAsset(Asset):
             return 'Asset %s' % self.asset_id
 
     def render_html(self):
+        """Render the asset as HTML"""
         output = []
         if self.type == 'map':
             output.append('<figure>')
@@ -163,11 +212,19 @@ class HtmlAsset(Asset):
         return mark_safe(u'\n'.join(output))
 
 class HtmlAssetTranslation(AssetTranslation):
+    """Translatable fields for an HtmlAsset model instance"""
     body = models.TextField(blank=True)
 
 class LocalImageAsset(Asset):
-#    translations = models.ManyToManyField('LocalImageAssetTranslation', blank=True, verbose_name=_('translations'))
-
+    """
+    An asset that can be stored as an image file accessible by the
+    application through a Django API
+    
+    This currently uses the `django-filer <https://github.com/stefanfoulis/django-filer>`_ 
+    application for storing images as this app adds a lot of convenience
+    for working with images in the Django admin.  This is subject to change.
+    
+    """
     translation_set = 'storybase_asset_localimageassettranslation_related'
     translated_fields = Asset.translated_fields + ['image']
 
@@ -178,9 +235,11 @@ class LocalImageAsset(Asset):
             return "Asset %s" % self.asset_id
 
     def render_html(self):
+        """Render the asset as HTML"""
         output = []
         output.append('<figure>')
-        output.append('<img src="%s" alt="%s" />' % (self.image.url, self.title))
+        output.append('<img src="%s" alt="%s" />' % (self.image.url, 
+                                                     self.title))
         if self.caption:
             output.append('<figcaption>')
             output.append(self.caption)
@@ -190,6 +249,7 @@ class LocalImageAsset(Asset):
         return mark_safe(u'\n'.join(output))
 
 class LocalImageAssetTranslation(AssetTranslation):
+    """Translatable fields for a LocalImageAsset model instance"""
     image = FilerImageField()
 
 # Hook up some signals so the publication date gets changed
@@ -199,6 +259,16 @@ pre_save.connect(set_date_on_published, sender=HtmlAsset)
 pre_save.connect(set_date_on_published, sender=LocalImageAsset)
 
 class DataSet(TranslatedModel, PublishedModel, TimestampedModel):
+    """
+    A set of data related to a story or used to produce a visualization
+    included in a story
+
+    This is a base class that provides common metadata for the data set.
+    However, it does not provide the fields that specify the content itself.
+    When creating a data set, one shouldn't instatniate this class, but
+    instead use one of the model classes that inherits from DataSet.
+
+    """
     dataset_id = UUIDField(auto=True)
     source = models.TextField(blank=True)
     attribution = models.TextField(blank=True)
@@ -206,6 +276,9 @@ class DataSet(TranslatedModel, PublishedModel, TimestampedModel):
                               null=True)
     # dataset_created is when the data set itself was created
     dataset_created = models.DateTimeField(blank=True, null=True)
+    """
+    When the data set itself was created (possibly in non-digital form)
+    """
 
     translation_set = 'storybase_asset_datasettranslation_related'
     translated_fields = ['title', 'description']
@@ -222,10 +295,13 @@ class DataSet(TranslatedModel, PublishedModel, TimestampedModel):
         return ('dataset_detail', [str(self.asset_id)])
 
     def download_url(self):
+        """Returns the URL to the downloadable version of the data set"""
         raise NotImplemented
 
 class DataSetTranslation(TranslationModel):
-    dataset = models.ForeignKey('DataSet', related_name="%(app_label)s_%(class)s_related") 
+    """Translatable fields for a DataSet model instance"""
+    dataset = models.ForeignKey('DataSet', 
+        related_name="%(app_label)s_%(class)s_related") 
     title = ShortTextField() 
     description = models.TextField(blank=True)
 
@@ -233,15 +309,27 @@ class DataSetTranslation(TranslationModel):
         unique_together = (('dataset', 'language')) 
 
 class ExternalDataSet(DataSet):
+    """A data set stored on a different system from the application"""
     url = models.URLField()
 
     def download_url(self):
+        """Returns the URL to the downloadable version of the data set"""
         return self.url 
 
 class LocalDataSet(DataSet):
+    """
+    A data set stored as a file accessible by the application through
+    a Django API
+
+    This currently uses the `django-filer <https://github.com/stefanfoulis/django-filer>`_ 
+    application for storing files as this app adds a lot of convenience
+    for working with files in the Django admin.  This is subject to change.
+    
+    """
     file = FilerFileField()
 
     def download_url(self):
+        """Returns the URL to the downloadable version of the data set"""
         return self.file.url 
 
 def create_html_asset(type, title='', caption='', body='', language=settings.LANGUAGE_CODE, *args, **kwargs):
