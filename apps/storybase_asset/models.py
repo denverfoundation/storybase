@@ -100,7 +100,7 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
         """Render a viewable representation of an asset
 
         Arguments:
-        format -- The format to render the asset. Defaults to 'html' which
+        format -- the format to render the asset. defaults to 'html' which
                   is presently the only available option.
 
         """
@@ -109,6 +109,40 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
         except AttributeError:
             return self.__unicode__()
 
+    def render_thumbnail(self, width=None, height=None, format='html'):
+        """Render a thumbnail-sized viewable representation of an asset 
+
+        Arguments:
+        height -- Height of the thumbnail in pixels
+        width  -- Width of the thumbnail in pixels
+        format -- the format to render the asset. defaults to 'html' which
+                  is presently the only available option.
+
+        """
+        return getattr(self, "render_thumbnail_" + format).__call__(
+            width, height)
+
+    def render_thumbnail_html(self, width=None, height=None):
+        """
+        Render HTML for a thumbnail-sized viewable representation of an 
+        asset 
+
+        This just provides a dummy placeholder and should be implemented
+        classes that inherit from Asset.
+
+        Arguments:
+        height -- Height of the thumbnail in pixels
+        width  -- Width of the thumbnail in pixels
+
+        """
+        if width is None:
+            width = 150
+        if height is None:
+            height = 100
+        return ("<div class='featured-image' "
+                "style='height: %dpx; width: %dpx'>asset</div>" %
+                (height, width))
+        
 class AssetTranslation(TranslationModel):
     """
     Abstract base class for common translated metadata fields for Asset
