@@ -24,6 +24,7 @@ from storybase.utils import slugify
 from storybase_asset.models import Asset
 from storybase_user.models import Organization, Project
 from storybase_story.managers import StoryManager
+from storybase_story import structure
 #from storybase_tag.models import TaggedItem
 
 class StoryTranslation(TranslationModel):
@@ -51,6 +52,8 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
     story_id = UUIDField(auto=True)
     slug = models.SlugField(blank=True)
     byline = models.TextField()
+    structure = models.CharField(max_length=20,
+        choices=structure.manager.get_structure_options())
     # blank=True, null=True to bypass validation so the user doesn't
     # have to always remember to set this in the Django admin.
     # Though this is set to blank=True, null=True, we should always set
