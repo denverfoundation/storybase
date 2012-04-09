@@ -1,4 +1,4 @@
-{% load i18n sekizai_tags %}
+{% load i18n sekizai_tags verbatim %}
 <!doctype html>
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
 <!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
@@ -31,20 +31,33 @@
          For optimal performance, use a custom Modernizr build: www.modernizr.com/download/ -->
     <script src="{{ STATIC_URL }}js/libs/modernizr-2.0.6.min.js"></script>
 
+    {% verbatim %}
+    <script type="text/html" id="navigationTemplate">
+        {{#previous_section}}
+        <a class="previous" href="#">previous</a>
+        {{/previous_section}}
+        {{#next_section}}
+        <a class="next" href="#" title="{{next_section.title}}">next</a>
+        {{/next_section}}
+    </script>
+    {% endverbatim %}
+
   </head>
 
   <body class="story-viewer">
-    <header>
-      <h1>{{ story.title }}</h1>
-      <p>{% trans "By" %} <span class="byline">{{ story.byline }}</span></p>
-    </header>
+    <div id="app">
+        <header>
+          <h1>{{ story.title }}</h1>
+          <p>{% trans "By" %} <span class="byline">{{ story.byline }}</span></p>
+        </header>
 
-    <nav id="toc">{{ story.render_toc }}</nav>
+        <nav id="toc">{{ story.render_toc }}</nav>
 
-    <footer>
-      <a id="toggle-toc" href="#">Toggle Table of Contents</a>
-      {% include "addthis_widget_small.html" %}
-    </footer>
+        <footer>
+          <a id="toggle-toc" href="#">Toggle Table of Contents</a>
+          {% include "addthis_widget_small.html" %}
+        </footer>
+    </div>
 
     <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline -->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
@@ -54,6 +67,7 @@
     <script src="{{ STATIC_URL }}js/libs/underscore-min.js"></script>
     <script src="{{ STATIC_URL }}js/libs/json2.js"></script>
     <script src="{{ STATIC_URL }}js/libs/backbone-min.js"></script>
+    <script src="{{ STATIC_URL }}js/libs/ICanHaz.min.js"></script>
 
     <script src="{{ STATIC_URL }}js/viewer/application.js"></script>
     <script src="{{ STATIC_URL }}js/viewer/models.js"></script>
@@ -71,8 +85,12 @@
         var story = new storybase.viewer.models.Story({{ story.to_json }});
         var sections = new storybase.viewer.collections.Sections;
         sections.reset({{ story.sections_json }});
-        console.debug(story.get('summary'));
-        console.debug(sections);
+        storybase.viewer.app = new storybase.viewer.views.ViewerApp({
+          el: $('#app'),
+          story: story,
+          sections: sections
+        });
+        storybase.viewer.app.render();
     });
     </script>
   </body>

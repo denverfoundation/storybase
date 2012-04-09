@@ -8,7 +8,11 @@ storybase.viewer.models.Story = Backbone.Model.extend({
 });
 
 storybase.viewer.models.Section = Backbone.Model.extend({
-  idAttribute: "section_id"
+  idAttribute: "section_id",
+
+  title: function() {
+    return this.get("title");
+  }
 });
 
 storybase.viewer.collections.Sections = Backbone.Collection.extend({

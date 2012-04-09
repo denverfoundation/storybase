@@ -38,6 +38,12 @@
   padding: 3% 1%;
 }
 
+.story-viewer .story-nav {
+  position: absolute;
+  left: 50%;
+  padding: 0;
+}
+
 .story-viewer footer {
   height: 2%;
   width: 100%;
