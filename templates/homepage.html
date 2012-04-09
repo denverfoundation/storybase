@@ -1,5 +1,15 @@
 {% extends "base.html" %}
-{% load cms_tags %}
+{% load cms_tags i18n %}
+
+{% block extrameta %}
+<meta name="author" content="The Piton Foundation">
+<meta name="title" content="{% trans "The Citizen Atlas" %}"/>
+<meta name="description" content="{% trans "The Citizen Atlas is a powerful story-building website that enables community change makers to inspire action and advance their issues through more substantive, engaging and persuasive data-driven storytelling." %}">
+
+<!-- Open Graph Protocol tags -->
+<meta property="og:title" content="{% trans "The Citizen Atlas" %}" />
+<meta property="og:description" content="{% trans "The Citizen Atlas is a powerful story-building website that enables community change makers to inspire action and advance their issues through more substantive, engaging and persuasive data-driven storytelling." %}" />
+{% endblock %}
 
 {% block base_content %}
   <div class="sixcol">
