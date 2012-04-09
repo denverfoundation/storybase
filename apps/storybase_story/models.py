@@ -352,7 +352,7 @@ def create_section(title, story, language=settings.LANGUAGE_CODE,
     deal with the tranlsations.
 
     """
-    obj = Section(story=story)
+    obj = Section(story=story, *args, **kwargs)
     obj.save()
     translation = SectionTranslation(section=obj, title=title, 
                                      language=language)
