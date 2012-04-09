@@ -8,7 +8,7 @@ class StructureManager(object):
         """Register a story structure with the manager"""
         self._registry[structure_class.id] = structure_class
 
-    def get_structure(self, id):
+    def get_structure_class(self, id):
         """Get a structure class with the given id"""
         return self._registry[id]
 
