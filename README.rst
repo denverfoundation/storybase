@@ -19,6 +19,7 @@ This project includes a number of excellent open-source libraries:
 * `The 1140px Grid V2 <http://cssgrid.net/>`_ by Andy Taylor
 * `Backbone <http://documentcloud.github.com/backbone/>`_ by Jeremy Ashkenas, DocumentCloud
 * `HTML5 Boilerplate <http://html5boilerplate.com/>`_
+* `ICanHaz.js <http://icanhazjs.com/>`_ by  Henrik Joreteg
 * `jQuery <http://jquery.org/>`_ by John Resig
 * `json2.js <https://github.com/douglascrockford/JSON-js/>`_ by Douglas Crockford
 * `Modernizr <http://modernizr.com/>`_
