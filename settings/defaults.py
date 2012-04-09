@@ -198,6 +198,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.static',
     'cms.context_processors.media',
     'sekizai.context_processors.sekizai',
+    'storybase.context_processors.conf',
 #    "allauth.context_processors.allauth",
 #    "allauth.account.context_processors.account",
 )
