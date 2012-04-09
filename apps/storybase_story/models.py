@@ -142,15 +142,15 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
     def featured_asset_thumbnail_url(self):
         """Return the URL of the featured asset's thumbnail
 
-	Returns None if the asset cannot be converted to a thumbnail image.
+        Returns None if the asset cannot be converted to a thumbnail image.
 
-	"""
-	try:
+        """
+        try:
             featured_asset = self.featured_assets.select_subclasses()[0]
-	    return featured_asset.get_thumbnail_url()
+            return featured_asset.get_thumbnail_url()
         except IndexError:
-	    # No featured assets
-	    return None
+            # No featured assets
+            return None
 
     def render_story_structure(self, format='html'):
         """Render a representation of the Story structure"""
