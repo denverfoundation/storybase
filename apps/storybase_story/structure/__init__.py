@@ -27,8 +27,13 @@ class BaseStructure(object):
     """The human-readable name of the story structure"""
     id = ''
     """A machine name for the story structure"""
+    story = None
+    """A Story model instance"""
 
-    def toc(self, story):
+    def __init__(self, story):
+        self.story = story
+
+    def toc(self):
         """Return the table of contents for a story with this structure"""
         raise NotImplemented
 
