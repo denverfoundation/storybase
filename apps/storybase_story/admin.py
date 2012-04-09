@@ -30,7 +30,7 @@ class StoryAdmin(StorybaseModelAdmin):
     readonly_fields = ['story_id', 'created', 'last_edited']
     search_fields = ['storytranslation__title', 'author__first_name',
                      'author__last_name']
-    list_display = (obj_title, 'author', 'last_edited', 'status')
+    list_display = (obj_title, 'author', 'last_edited', 'status', 'view_link')
     list_filter = ('status', 'author')
     filter_horizontal = ['assets', 'featured_assets', 'projects',
                          'organizations']
@@ -68,6 +68,13 @@ class StoryAdmin(StorybaseModelAdmin):
 
         return super(StoryAdmin, self).formfield_for_manytomany(
             db_field, request, **kwargs)
+
+    def view_link(self, obj):
+        """Return a link to see the Story on the site"""
+        return "<a href='%s'>View</a>" % obj.get_absolute_url()
+    view_link.short_description = 'View'
+    view_link.allow_tags = True
+        
 
 class SectionAssetInline(admin.TabularInline):
     """Inline for Asset to Section relations
