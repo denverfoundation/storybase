@@ -134,7 +134,7 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
                                                    **thumbnail_options)
         except IndexError:
             # No featured assets
-            return None
+            return '' 
 
     def render_story_structure(self, format='html'):
         """Render a representation of the Story structure"""
