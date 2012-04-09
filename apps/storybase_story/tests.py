@@ -449,3 +449,50 @@ class SectionAssetModelTest(TestCase):
         self.assertFalse(asset in section.assets.select_subclasses())
         # Confirm that the asset is in the story's list
         self.assertTrue(asset in story.assets.select_subclasses())
+
+
+class StructureTest(TestCase):
+    """Test rendering of different story structures"""
+
+    def test_linear_toc_simple(self):
+        """
+        Test that a table of contents can be rendered for a
+        simple story structure
+        """
+        import lxml.html
+
+        title = ('Transportation Challenges Limit Education Choices for '
+                 'Denver Parents')
+        summary = """
+            Many families in the Denver metro area use public
+            transportation instead of a school bus because for them, a
+            quality education is worth hours of daily commuting. Colorado's
+            school choice program is meant to foster educational equity,
+            but the families who benefit most are those who have time and
+            money to travel. Low-income families are often left in a lurch.
+            """
+        byline = "Mile High Connects"
+        section_data = [
+            {'title': 'Children and Affordable Housing', 'weight': 0},
+            {'title': 'School Quality', 'weight': 1},
+            {'title': 'Early Childhood Education', 'weight': 2},
+            {'title': 'Low-Income Families and FRL', 'weight': 3},
+            {'title': 'Transportation Spending', 'weight': 4},
+            {'title': 'The Choice System', 'weight': 5}
+        ]
+        story = create_story(title=title, structure='linear',
+                             summary=summary, byline=byline)
+        for section_dict in section_data:
+            create_section(title=section_dict['title'],
+                           story=story,
+                           weight=section_dict['weight'],
+                           root=True)
+        rendered_toc = story.render_toc(format='html')
+        #print rendered_toc
+        fragment = lxml.html.fromstring(rendered_toc)
+        elements = fragment.cssselect('li')
+        self.assertEqual(len(elements), len(section_data))
+        for i in range(len(section_data)):
+            self.assertEqual(section_data[i]['title'],
+                             elements[i].text_content().strip())
+        

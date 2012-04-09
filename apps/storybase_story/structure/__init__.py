@@ -1,4 +1,5 @@
 """Interpret a story and render its structure"""
+from django.utils.safestring import mark_safe
 
 class StructureManager(object):
     def __init__(self):
@@ -33,10 +34,6 @@ class BaseStructure(object):
     def __init__(self, story):
         self.story = story
 
-    def get_toc(self):
-        """Return an object representing the table of contents"""
-        raise NotImplemented
-
     def render_toc(self, format='html'):
         """Return a rendered table of contents for a story"""
         raise NotImplemented
@@ -52,6 +49,34 @@ class LinearStructure(BaseStructure):
     """A story structure intended to be read top-to-bottom"""
     name = 'Linear'
     id = 'linear'
+
+    def render_toc(self, format='html', **kwargs):
+        """Return a rendered table of contents for a story"""
+        # TODO: Perhaps its better to implement this with templates/
+        # template tags
+        def render_toc_section(section):
+            output = []
+            output.append("<li>")
+            output.append("<a href='#'>%s</a>" % section.title)
+            if section.is_root():
+                output.append("<ul>")
+                for child in self.children.order_by('weight'):
+                    output.append(render_toc_section(child))
+                output.append("</ul>")
+            output.append("</li>")
+            return u'\n'.join(output)
+
+        html_class = kwargs.get('html_class', None)
+        output = []
+        html_class_str = ''
+        if html_class is not None:
+            html_class_str = " class='%s'" % html_class
+        output.append("<ul%s>" % html_class_str)
+        for root_section in self.story.sections.filter(root=True) \
+                                               .order_by('weight'):
+            output.append(render_toc_section(root_section))
+        output.append("</ul>")
+        return mark_safe(u'\n'.join(output))
 
 manager = StructureManager()
 manager.register(SpiderStructure)

@@ -102,10 +102,6 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
         return "http://%s%s" % (Site.objects.get_current().domain,
                                 self.get_absolute_url())
 
-    def get_root_section(self):
-        """ Return the root section """
-        return self.sections.get(root=True)
-
     @property
     def contributor_name(self):
         """
@@ -181,7 +177,7 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
     def render_toc(self, format='html'):
         """Render a representation of the Story's table of contents"""
         structure = self.get_structure_obj()
-        # BOOKMARK
+        return structure.render_toc(format)
 
 
 def set_story_slug(sender, instance, **kwargs):

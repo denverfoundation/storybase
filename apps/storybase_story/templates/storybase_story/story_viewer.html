@@ -39,9 +39,24 @@
       <p>{% trans "By" %} <span class="byline">{{ story.byline }}</span></p>
     </header>
 
+    <nav id="toc">{{ story.render_toc }}</nav>
+
     <footer>
-      <a href="#">Toggle Table of Contents</a>
+      <a id="toggle-toc" href="#">Toggle Table of Contents</a>
       {% include "addthis_widget_small.html" %}
     </footer>
+
+    <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline -->
+    <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
+    <script>window.jQuery || document.write('<script src="js/libs/jquery-1.6.2.min.js"><\/script>')</script>
+
+    <script type="text/javascript">
+    $(document).ready(function() {
+        $('#toggle-toc').click(function(event) {
+            event.preventDefault();
+            $('#toc').slideToggle();
+        });
+    });
+    </script>
   </body>
 </html>
