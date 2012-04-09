@@ -3,6 +3,19 @@
 
 {% block head_title %}{{ story.title }}{% endblock %}
 
+{% block extrameta %}
+<meta name="author" content="{{ story.byline }}">
+<meta name="title" content="{{ story.title }}" />
+<meta name="description" content="{{ story.summary }}">
+
+<!-- Open Graph Protocol tags -->
+<meta property="og:title" content="{{ story.title }}" />
+<meta property="og:description" content="{{ story.summary }}" />
+<!--
+<meta property="og:image" content="thumbnail_image" />
+-->
+{% endblock %}
+
 {% block base_content %}
 <div class="eightcol">
   <section class="story">
