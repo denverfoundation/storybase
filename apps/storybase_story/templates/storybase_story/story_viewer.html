@@ -55,12 +55,23 @@
     <script src="{{ STATIC_URL }}js/libs/json2.js"></script>
     <script src="{{ STATIC_URL }}js/libs/backbone-min.js"></script>
 
+    <script src="{{ STATIC_URL }}js/viewer/application.js"></script>
+    <script src="{{ STATIC_URL }}js/viewer/models.js"></script>
+    <script src="{{ STATIC_URL }}js/viewer/views.js"></script>
+
     <script type="text/javascript">
     $(document).ready(function() {
         $('#toggle-toc').click(function(event) {
             event.preventDefault();
             $('#toc').slideToggle();
         });
+
+        Namespace('storybase.viewer');
+        var story = new storybase.viewer.models.Story({{ story.to_json }});
+        var sections = new storybase.viewer.collections.Sections;
+        sections.reset({{ story.sections_json }});
+        console.debug(story.get('summary'));
+        console.debug(sections);
     });
     </script>
   </body>

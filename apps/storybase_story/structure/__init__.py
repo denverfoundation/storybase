@@ -50,6 +50,7 @@ class LinearStructure(BaseStructure):
     name = 'Linear'
     id = 'linear'
 
+
     def render_toc(self, format='html', **kwargs):
         """Return a rendered table of contents for a story"""
         # TODO: Perhaps its better to implement this with templates/

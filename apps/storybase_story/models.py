@@ -6,6 +6,7 @@ from django.contrib.sites.models import Site
 from django.core import urlresolvers
 from django.db import models
 from django.db.models.signals import post_save, pre_save
+from django.utils import simplejson
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 from django_dag.models import edge_factory, node_factory
@@ -131,6 +132,41 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
 
         return self._structure_obj
 
+    def sections_flat(self):
+        """
+        Return a list of sections ordered with each branch coming before
+        the next
+        """
+        flattened = []
+        for section in self.sections.filter(root=True).order_by('weight'):
+            flattened.append(section)
+            flattened = flattened + section.children_flat()
+
+        return flattened
+
+    def sections_json(self):
+        """Return a JSON representation of the story sections"""
+        sections = [] 
+        for section in self.sections_flat():
+            sections.append(section.to_simple())
+
+        return mark_safe(simplejson.dumps(sections))
+
+    def to_simple(self):
+        """
+        Return a simplified version of the story object that can be
+        passed to json.dumps()
+        """
+        return {
+            'story_id': self.story_id,
+            'title': self.title,
+            'summary': self.summary
+        }
+
+    def to_json(self):
+        """Return JSON representation of this object"""
+        return mark_safe(simplejson.dumps(self.to_simple())) 
+
     def render_featured_asset(self, format='html'):
         """Render a representation of the story's featured asset"""
         try:
@@ -223,6 +259,46 @@ class Section(node_factory('SectionRelation'), TranslatedModel):
             # So, the call to __getattr__() raises an IndexError
             return super(Section, self).__unicode__() 
 
+    @property
+    def sections_in_same_story(self):
+        """Return other sections in the same story"""
+        return self.__class__.objects.filter(story=self.story)
+
+    def _next_child_section(self):
+        """Return the first child section of this section"""
+        # We get it through the "through" class so we can order
+        # the children by weight
+        relation = self._child_relations()[0]
+        return relation.section
+
+    def _next_root_section(self):
+        if self.is_root() or self.is_island():
+            root = self
+        else:
+            root = self.get_roots()[0]
+
+        found = False
+        for section in self.sections_in_same_story.order_by('weight'):
+            if found:
+                if section.is_root() or section.is_island():
+                    return section
+            else:
+                if section == root:
+                    found = True
+
+
+        return None
+
+    def get_next_section(self):
+        if self.children.count():
+            # The section has children, return the first child
+            section = self._next_child_section()
+        else:
+            # The section is a leaf or island
+            section = self._next_root_section()
+           
+        return section
+
     def render(self, format='html'):
         """Render a representation of the section structure"""
         try:
@@ -234,6 +310,31 @@ class Section(node_factory('SectionRelation'), TranslatedModel):
         """Get a query set of through model instances for child sections"""
         return self.children.through.objects.filter(parent=self).order_by(
             'weight', 'child__sectiontranslation__title')
+
+    def children_flat(self):
+        """
+        Return a list of child sections ordered with each branch
+        coming before the next
+        """
+        flattened = []
+        for relation in self._child_relations():
+            flattened.append(relation.section)
+            flattened = flattened + relation.section.children_flat()
+        return flattened
+
+    def to_simple(self):
+        """
+        Return a simplified representation of this object for serialization
+        """
+        simple = {
+            'section_id': self.section_id,
+            'title': self.title
+        }
+        next_section = self.get_next_section()
+        if next_section:
+            simple.update({'next_section_id': next_section.section_id})
+        
+        return simple
 
     def render_html(self):
         """Render a HTML representation of the section structure"""
