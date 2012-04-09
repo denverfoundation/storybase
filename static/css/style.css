@@ -246,6 +246,11 @@ header.pagetop {
   background-color: #CCCCCC;
 }
 
+header.pagetop h1 a {
+  color: #000;
+  text-decoration: none;
+}
+
 header.pagetop nav li {
   display: inline-block;
   list-style-type: none;
