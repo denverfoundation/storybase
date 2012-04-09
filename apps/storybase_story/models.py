@@ -80,6 +80,8 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
     translated_fields = ['title', 'summary']
     translation_set = 'storytranslation_set'
 
+    _structure_obj = None
+
     class Meta:
         """Model metadata options"""
         verbose_name_plural = "stories"
@@ -121,6 +123,17 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
                 contributor_name = contributor.first_name
 
         return contributor_name
+
+    def get_structure_obj(self):
+        """Return a structure object for the story"""
+        if self._structure_obj is None:
+            # A structure object hasn't been instantiated yet.
+            # Create one.
+            structure_class = structure.manager.get_structure_class(
+            self.structure)
+            self._structure_obj = structure_class.__call__(story=self)
+
+        return self._structure_obj
 
     def render_featured_asset(self, format='html'):
         """Render a representation of the story's featured asset"""
@@ -164,6 +177,12 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
         output.append(root.render(format))
         output.append('</ul>')
         return mark_safe(u'\n'.join(output))
+
+    def render_toc(self, format='html'):
+        """Render a representation of the Story's table of contents"""
+        structure = self.get_structure_obj()
+        # BOOKMARK
+
 
 def set_story_slug(sender, instance, **kwargs):
     """
@@ -309,7 +328,8 @@ def update_story_last_edited(sender, instance, **kwargs):
 # Update a section's story's last edited field when the section is saved
 post_save.connect(update_story_last_edited, sender=Section)
 
-def create_story(title, summary='', language=settings.LANGUAGE_CODE, 
+def create_story(title, structure=structure.DEFAULT_STRUCTURE, summary='', 
+                 language=settings.LANGUAGE_CODE, 
                  *args, **kwargs):
     """Convenience function for creating a Story
 
@@ -317,7 +337,7 @@ def create_story(title, summary='', language=settings.LANGUAGE_CODE,
     deal with the translations.
 
     """
-    obj = Story(*args, **kwargs)
+    obj = Story(structure=structure, *args, **kwargs)
     obj.save()
     translation = StoryTranslation(story=obj, title=title, summary=summary,
                                    language=language)

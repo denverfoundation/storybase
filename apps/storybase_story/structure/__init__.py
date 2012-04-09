@@ -33,8 +33,12 @@ class BaseStructure(object):
     def __init__(self, story):
         self.story = story
 
-    def toc(self):
-        """Return the table of contents for a story with this structure"""
+    def get_toc(self):
+        """Return an object representing the table of contents"""
+        raise NotImplemented
+
+    def render_toc(self, format='html'):
+        """Return a rendered table of contents for a story"""
         raise NotImplemented
 
 
@@ -49,7 +53,8 @@ class LinearStructure(BaseStructure):
     name = 'Linear'
     id = 'linear'
 
-
 manager = StructureManager()
 manager.register(SpiderStructure)
 manager.register(LinearStructure)
+
+DEFAULT_STRUCTURE = LinearStructure.id
