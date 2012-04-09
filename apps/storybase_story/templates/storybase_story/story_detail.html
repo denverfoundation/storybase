@@ -12,9 +12,7 @@
 <meta property="og:url" content="{{ story.get_full_url }}" />
 <meta property="og:title" content="{{ story.title }}" />
 <meta property="og:description" content="{{ story.summary }}" />
-<!--
-<meta property="og:image" content="thumbnail_image" />
--->
+<meta property="og:image" content="{{ story.featured_asset_thumbnail_url }}" />
 {% endblock %}
 
 {% block base_content %}

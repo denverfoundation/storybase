@@ -2,6 +2,7 @@
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
 from django.db import models
 from django.db.models.signals import pre_save
 from django.utils.html import strip_tags
@@ -123,7 +124,7 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
         return getattr(self, "render_thumbnail_" + format).__call__(
             width, height, **kwargs)
 
-    def render_thumbnail_html(self, width=None, height=None, **kwargs):
+    def render_thumbnail_html(self, width=150, height=100, **kwargs):
         """
         Render HTML for a thumbnail-sized viewable representation of an 
         asset 
@@ -136,14 +137,14 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
         width  -- Width of the thumbnail in pixels
 
         """
-        if width is None:
-            width = 150
-        if height is None:
-            height = 100
         html_class = kwargs.get('html_class', None)
         return mark_safe("<div class='asset-thumbnail %s' "
                 "style='height: %dpx; width: %dpx'>Asset Thumbnail</div>" %
                 (html_class, height, width))
+
+	def get_thumbnail_url(self, width=150, height=100):
+	    """Return the URL of the Asset's thumbnail"""
+	    return None
         
 class AssetTranslation(TranslationModel):
     """
@@ -284,7 +285,7 @@ class LocalImageAsset(Asset):
             
         return mark_safe(u'\n'.join(output))
 
-    def render_thumbnail_html(self, width=None, height=None, **kwargs):
+    def render_thumbnail_html(self, width=150, height=100, **kwargs):
         """
         Render HTML for a thumbnail-sized viewable representation of an 
         asset 
@@ -297,10 +298,6 @@ class LocalImageAsset(Asset):
         width  -- Width of the thumbnail in pixels
 
         """
-        if width is None:
-            width = 150
-        if height is None:
-            height = 100
         html_class = kwargs.get('html_class', None)
         thumbnailer = self.image.easy_thumbnails_thumbnailer
         thumbnail_options = {}
@@ -309,6 +306,16 @@ class LocalImageAsset(Asset):
         return mark_safe("<img class='asset-thumbnail %s' "
             "src='%s' alt='%s' />" %
             (html_class, thumbnail.url, self.title))
+
+    def get_thumbnail_url(self, width=150, height=100):
+        """Return the URL of the Asset's thumbnail"""
+        thumbnailer = self.image.easy_thumbnails_thumbnailer
+        thumbnail_options = {}
+        thumbnail_options.update({'size': (width, height)})
+        thumbnail = thumbnailer.get_thumbnail(thumbnail_options)
+        return "http://%s%s" % (Site.objects.get_current().domain,
+                               thumbnail.url)
+
 
 class LocalImageAssetTranslation(AssetTranslation):
     """Translatable fields for a LocalImageAsset model instance"""
