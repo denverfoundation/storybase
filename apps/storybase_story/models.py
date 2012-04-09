@@ -2,6 +2,7 @@
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
 from django.core import urlresolvers
 from django.db import models
 from django.db.models.signals import post_save, pre_save
@@ -87,6 +88,14 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
     def get_absolute_url(self):
         """Calculate the canonical URL for a Story"""
         return ('story_detail', [self.slug])
+
+    def get_full_url(self):
+        """
+        Calculate the canonical URL for a Story, including its
+        domain name.
+        """
+        return "http://%s%s" % (Site.objects.get_current().domain,
+                                self.get_absolute_url())
 
     def get_root_section(self):
         """ Return the root section """
