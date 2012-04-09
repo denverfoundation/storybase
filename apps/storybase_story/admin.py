@@ -57,8 +57,6 @@ class StoryAdmin(StorybaseModelAdmin):
 
     def formfield_for_manytomany(self, db_field, request, **kwargs):
         """Set default formfield for assets field"""
-        from pprint import pprint
-        pprint(self.obj.__dict__)
         if db_field.name == "assets":
             # Limit to only assets owned by the owner
             kwargs["queryset"] = Asset.objects.filter(owner=request.user)
