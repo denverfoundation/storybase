@@ -31,6 +31,11 @@
          For optimal performance, use a custom Modernizr build: www.modernizr.com/download/ -->
     <script src="{{ STATIC_URL }}js/libs/modernizr-2.0.6.min.js"></script>
 
+    {% comment %}
+    Mustache templates for rendering Backbone views.  Loaded using
+    ICanHaz.js
+    {% endcomment %}
+
     {% verbatim %}
     <script type="text/html" id="navigationTemplate">
         {{#previous_section}}
@@ -47,7 +52,7 @@
   <body class="story-viewer">
     <div id="app">
         <header>
-          <h1>{{ story.title }}</h1>
+          <h1 class="title">{{ story.title }}</h1>
           <p>{% trans "By" %} <span class="byline">{{ story.byline }}</span></p>
         </header>
 
