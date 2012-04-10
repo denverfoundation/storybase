@@ -39,10 +39,10 @@
     {% verbatim %}
     <script type="text/html" id="navigationTemplate">
         {{#previous_section}}
-        <a class="previous" href="#" title="{{previous_section.title}}">previous</a>
+        <a class="previous" href="#sections/{{previous_section.id}}" title="{{previous_section.title}}">previous</a>
         {{/previous_section}}
         {{#next_section}}
-        <a class="next" href="#" title="{{next_section.title}}">next</a>
+        <a class="next" href="#sections/{{next_section.id}}" title="{{next_section.title}}">next</a>
         {{/next_section}}
     </script>
     {% endverbatim %}
@@ -95,6 +95,10 @@
           story: story,
           sections: sections
         });
+        storybase.viewer.router = new storybase.viewer.routers.Router({
+            view: storybase.viewer.app
+        });
+        Backbone.history.start();
         storybase.viewer.app.render();
     });
     </script>
