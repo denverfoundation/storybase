@@ -264,14 +264,39 @@ class Section(node_factory('SectionRelation'), TranslatedModel):
         """Return other sections in the same story"""
         return self.__class__.objects.filter(story=self.story)
 
+    def _child_relations(self):
+        """
+        Get a query set of through model instances for children
+        of this section
+        """
+        return self.children.through.objects.filter(parent=self).order_by(
+            'weight', 'child__sectiontranslation__title')
+
+    def _parent_relations(self):
+        """
+        Get a list of through model instances for parents of this 
+        section
+        """
+        # This is a little confusing because we want parents, not
+        # children.  self.children.through just gets us the "through" class
+        # for the relation.
+        return self.children.through.objects.filter(child=self).order_by(
+            'weight', 'child__sectiontranslation__title')
+
+    # TODO: Think about the best strategy for building a sense of
+    # previous and next sections. I'm not sure if this is the best
+    # place for the functionality and there's likely a way to avoid
+    # having to traverse the tree so many times.
+
     def _next_child_section(self):
-        """Return the first child section of this section"""
+        """Return the first section that is a child of this section"""
         # We get it through the "through" class so we can order
         # the children by weight
         relation = self._child_relations()[0]
-        return relation.section
+        return relation.child
 
     def _next_root_section(self):
+        """Return the next top-level section"""
         if self.is_root() or self.is_island():
             root = self
         else:
@@ -286,10 +311,11 @@ class Section(node_factory('SectionRelation'), TranslatedModel):
                 if section == root:
                     found = True
 
-
         return None
 
     def get_next_section(self):
+        """Get the next section"""
+        # TODO: Unit test for this
         if self.children.count():
             # The section has children, return the first child
             section = self._next_child_section()
@@ -299,6 +325,41 @@ class Section(node_factory('SectionRelation'), TranslatedModel):
            
         return section
 
+    def _previous_parent_section(self):
+        # We get it through the "through" class so we can order
+        # the parents by weight
+        relation = self._parent_relations()[0]
+        return relation.parent
+
+    def _previous_root_section(self):
+        if self.is_root() or self.is_island():
+            root = self
+        else:
+            root = self.get_roots()[0]
+
+        found = False
+        for section in self.sections_in_same_story.order_by('-weight'):
+            if found:
+                if section.is_root() or section.is_island():
+                    return section
+            else:
+                if section == root:
+                    found = True
+
+        return None
+
+    def get_previous_section(self):
+        """Get the previous section"""
+        # TODO: Unit test for this
+        if self.ancestors_set():
+            # The section has ancestors.  Return the first one.
+            section = self._previous_parent_section()
+        else:
+            # The section is a root or an island
+            section = self._previous_root_section()
+
+        return section
+
     def render(self, format='html'):
         """Render a representation of the section structure"""
         try:
@@ -306,10 +367,6 @@ class Section(node_factory('SectionRelation'), TranslatedModel):
         except AttributeError:
             return self.__unicode__()
 
-    def _child_relations(self):
-        """Get a query set of through model instances for child sections"""
-        return self.children.through.objects.filter(parent=self).order_by(
-            'weight', 'child__sectiontranslation__title')
 
     def children_flat(self):
         """
@@ -331,8 +388,12 @@ class Section(node_factory('SectionRelation'), TranslatedModel):
             'title': self.title
         }
         next_section = self.get_next_section()
+        previous_section = self.get_previous_section()
         if next_section:
             simple.update({'next_section_id': next_section.section_id})
+        if previous_section:
+            simple.update(
+                {'previous_section_id': previous_section.section_id})
         
         return simple
 
