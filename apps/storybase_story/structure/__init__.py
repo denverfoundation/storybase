@@ -62,7 +62,7 @@ class LinearStructure(BaseStructure):
                           (section.section_id, section.title))
             if section.is_root():
                 output.append("<ul>")
-                for child in self.children.order_by('weight'):
+                for child in section.children.order_by('weight'):
                     output.append(render_toc_section(child))
                 output.append("</ul>")
             output.append("</li>")
