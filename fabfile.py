@@ -335,11 +335,28 @@ def nginx_reload():
     sudo('service nginx reload')
 
 @task 
-def collectstatic(instance=env['instance']):
+def collectstatic():
     """ Collect static files in the instance's Django environment """
     with cd(env['instance_root']):
         with prefix('source venv/bin/activate'):
-            run("python atlas/manage.py collectstatic --settings=atlas.settings.%s" % (env['instance']))
+            run("python atlas/manage.py collectstatic "
+                "--settings=atlas.settings.%s" % (env['instance']))
+
+
+@task
+def collectstatic_no_tinymce():
+    """Collect static files excluding TinyMCE
+
+    This is just a convenience for me because I need to not clobber
+    the TinyMCE scripts modified to accomodate serving TinyMCE and
+    other static assets from a different subdomain than the app.
+
+    """
+    with cd(env['instance_root']):
+        with prefix('source venv/bin/activate'):
+            run("python atlas/manage.py collectstatic "
+                "--ignore='*tinymce*' --settings=atlas.settings.%s" %
+                (env['instance']))
 
 @task
 def write_solr_xml(instance=env['instance']):
