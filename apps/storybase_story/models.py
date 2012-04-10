@@ -300,7 +300,8 @@ class Section(node_factory('SectionRelation'), TranslatedModel):
         if self.is_root() or self.is_island():
             root = self
         else:
-            root = self.get_roots()[0]
+	    # Get the first item in the roots set
+            root = iter(self.get_roots()).next()
 
         found = False
         for section in self.sections_in_same_story.order_by('weight'):
@@ -335,7 +336,7 @@ class Section(node_factory('SectionRelation'), TranslatedModel):
         if self.is_root() or self.is_island():
             root = self
         else:
-            root = self.get_roots()[0]
+            root = iter(self.get_roots()).next()
 
         found = False
         for section in self.sections_in_same_story.order_by('-weight'):
