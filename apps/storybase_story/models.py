@@ -375,8 +375,8 @@ class Section(node_factory('SectionRelation'), TranslatedModel):
         """
         flattened = []
         for relation in self._child_relations():
-            flattened.append(relation.section)
-            flattened = flattened + relation.section.children_flat()
+            flattened.append(relation.child)
+            flattened = flattened + relation.child.children_flat()
         return flattened
 
     def to_simple(self):
