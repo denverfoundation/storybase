@@ -54,11 +54,12 @@ class LinearStructure(BaseStructure):
     def render_toc(self, format='html', **kwargs):
         """Return a rendered table of contents for a story"""
         # TODO: Perhaps its better to implement this with templates/
-        # template tags
+        # template tags, or put this functionality in the Backbone app
         def render_toc_section(section):
             output = []
             output.append("<li>")
-            output.append("<a href='#'>%s</a>" % section.title)
+            output.append("<a href='#sections/%s'>%s</a>" %
+                          (section.section_id, section.title))
             if section.is_root():
                 output.append("<ul>")
                 for child in self.children.order_by('weight'):
