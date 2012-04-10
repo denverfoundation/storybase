@@ -24,11 +24,25 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
   },
 
   nextSection: function() {
-    console.debug('Next section');
+    //console.debug('Clicked next');
+    //console.debug('Current section is ' + this.currentSection.id);
+    var nextId = this.currentSection.get('next_section_id');
+    if (nextId) {
+      this.currentSection = this.sections.get(nextId);
+      this.navigationView.setSection(this.currentSection);
+      //console.debug('New section is ' + this.currentSection.id);
+    }
   },
 
   prevSection: function() {
-    console.debug('Previous section');
+    //console.debug('Clicked previous');
+    //console.debug('Previous section is ' + this.currentSection.id);
+    var prevId = this.currentSection.get('previous_section_id');
+    if (prevId) {
+      this.currentSection = this.sections.get(prevId);
+      this.navigationView.setSection(this.currentSection);
+      //console.debug('New section is ' + this.currentSection.id);
+    }
   }
 });
 
@@ -57,5 +71,6 @@ storybase.viewer.views.StoryNavigation = Backbone.View.extend({
 
   setSection: function(section) {
     this.section = section;
+    this.render();
   }
 });
