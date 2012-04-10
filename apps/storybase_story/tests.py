@@ -7,8 +7,8 @@ from django.test import TestCase
 from storybase.tests import SloppyTimeTestCase
 from storybase.utils import slugify
 from storybase_asset.models import HtmlAsset, HtmlAssetTranslation
-from models import (create_story, Story, StoryTranslation, 
-    create_section, Section, SectionAsset)
+from storybase_story.models import (create_story, Story, StoryTranslation, 
+    create_section, Section, SectionAsset, SectionRelation)
 
 class StoryModelTest(SloppyTimeTestCase):
     """Unit tests for Story Model"""
@@ -305,6 +305,38 @@ class SectionModelTest(SloppyTimeTestCase):
         sleep(2)
         section.save()
         self.assertNowish(story.last_edited)
+
+    def test_get_next_section_linear_nested(self):
+        """
+        Test get_next_section() when sections are arranged in a linear
+        fashion with one root and each subsequent section nested below
+        the previous
+        """
+        title = ("Neighborhood Outreach for I-70 Alignment Impacting "
+                 "Elyria, Globeville and Swansea")
+        summary = """
+            The City of Denver and Colorado Department of Transportation 
+            (CDOT) are working together to do neighborhood outreach
+            regarding the I-70 alignment between Brighton Boulevard and
+            Colorado. For detailed information on the neighborhood outreach
+            efforts please visit www.DenverGov.org/ccdI70.
+            """
+        byline = "Denver Public Works and CDOT"
+        story = create_story(title=title, summary=summary, byline=byline)
+        section1 = create_section(title="Background and context",
+                                  story=story,
+                                  root=True)
+        section2 = create_section(title="Decisions to be made", story=story)
+        section3 = create_section(title="Who has been involved", 
+                                  story=story)
+        section4 = create_section(title="Next steps", story=story)
+        SectionRelation.objects.create(parent=section1, child=section2)
+        SectionRelation.objects.create(parent=section2, child=section3)
+        SectionRelation.objects.create(parent=section3, child=section4)
+        self.assertEqual(section1.get_next_section(), section2)
+        self.assertEqual(section2.get_next_section(), section3)
+        self.assertEqual(section3.get_next_section(), section4)
+        self.assertEqual(section4.get_next_section(), None)
 
 class SectionApiTest(TestCase):
     """Test case for public Section creation API"""

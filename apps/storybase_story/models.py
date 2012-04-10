@@ -264,6 +264,16 @@ class Section(node_factory('SectionRelation'), TranslatedModel):
         """Return other sections in the same story"""
         return self.__class__.objects.filter(story=self.story)
 
+    def is_island(self):
+        """
+        Check if has no ancestors nor children
+
+        This is a patch for a broken implementation in django_dag.  
+        """
+        # TODO: Remove this when django_dag is fixed.
+        # See https://github.com/elpaso/django-dag/pull/4
+        return bool(not self.children.count() and not self.ancestors_set())
+
     def _child_relations(self):
         """
         Get a query set of through model instances for children
