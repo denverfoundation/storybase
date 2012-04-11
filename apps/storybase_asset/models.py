@@ -137,7 +137,7 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
         width  -- Width of the thumbnail in pixels
 
         """
-        html_class = kwargs.get('html_class', None)
+        html_class = kwargs.get('html_class', "")
         return mark_safe("<div class='asset-thumbnail %s' "
                 "style='height: %dpx; width: %dpx'>Asset Thumbnail</div>" %
                 (html_class, height, width))
@@ -227,6 +227,46 @@ class ExternalAsset(Asset):
 
         return mark_safe(u'\n'.join(output))
 
+    def render_thumbnail_html(self, width=150, height=100, **kwargs):
+        """
+        Render HTML for a thumbnail-sized viewable representation of an 
+        asset 
+
+        Arguments:
+        height -- Height of the thumbnail in pixels
+        width  -- Width of the thumbnail in pixels
+
+        """
+        html_class = kwargs.get('html_class', '')
+        url = self.get_thumbnail_url(width, height)
+        output = ("<div class='asset-thumbnail %s' "
+                  "style='height: %dpx; width: %dpx'>"
+                  "Asset Thumbnail</div>" % (html_class, height, width))
+        if url is not None: 
+            output = "<img class='asset-thumbnail %s' src='%s' alt='%s' />" % (html_class, url, self.title)
+            
+        return mark_safe(output)
+
+    def get_thumbnail_url(self, width=150, height=100):
+        """Return the URL of the Asset's thumbnail"""
+        url = None
+        try:
+            # See if we cached the thumbnail url
+            url = getattr(self, '_thumbnail_url')
+        except AttributeError:
+            try:
+                # First try to embed the resource via oEmbed
+                resource = oembed.site.embed(self.url, format='json')
+                resource_data = resource.get_data()
+                self._thumbnail_url = resource_data.get('thumbnail_url',
+                                                        None)
+            except (OEmbedMissingEndpoint):
+                self._thumbnail_url = None
+            finally:
+                url = self._thumbnail_url
+
+        return url
+
 class ExternalAssetTranslation(AssetTranslation):
     """Translatable fields for an Asset model instance"""
     url = models.URLField()
@@ -310,15 +350,12 @@ class LocalImageAsset(Asset):
         Render HTML for a thumbnail-sized viewable representation of an 
         asset 
 
-        This just provides a dummy placeholder and should be implemented
-        classes that inherit from Asset.
-
         Arguments:
         height -- Height of the thumbnail in pixels
         width  -- Width of the thumbnail in pixels
 
         """
-        html_class = kwargs.get('html_class', None)
+        html_class = kwargs.get('html_class', "")
         thumbnailer = self.image.easy_thumbnails_thumbnailer
         thumbnail_options = {}
         thumbnail_options.update({'size': (width, height)})
