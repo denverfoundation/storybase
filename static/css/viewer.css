@@ -3,6 +3,9 @@
 }
 
 .story-viewer header {
+  position: fixed;
+  height: 12%;
+  width: 100%;
   background-color: #CCC;
   padding: 1%;
 }
@@ -24,12 +27,17 @@
   padding: 0.25% 0;
 }
 
+.story-viewer #body {
+  padding-top: 8%;
+  padding-bottom: 4%;
+}
+
 .story-viewer section {
   padding: 1%;
 }
 
 .story-viewer #toc {
-  position: absolute;
+  position: fixed;
   bottom: 6%;
   padding: 1%;
 
