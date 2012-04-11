@@ -20,9 +20,8 @@
   padding: 0.25% 0;
 }
 
-.story-viewer #body {
-  position: relative;
-  min-height: 20%;
+.story-viewer section {
+  padding: 1%;
 }
 
 .story-viewer #toc {

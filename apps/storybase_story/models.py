@@ -412,25 +412,11 @@ class Section(node_factory('SectionRelation'), TranslatedModel):
     def render_html(self):
         """Render a HTML representation of the section structure"""
         output = []
-        output.append('<li class="section">')
-        output.append("<h4>%s</h4>" % self.title)
-        if self.assets.count() > 0:
-            output.append("<h5>Assets</h5>")
-            output.append("<ul>")
-            for asset in self.assets.order_by('sectionasset__weight'):
-                asset_title = asset.title
-                if not asset_title:
-                    asset_title = unicode(asset)
-                output.append("<li>%s</li>" % asset_title)
-            output.append("</ul>")
-
-        if self.children.count():
-            output.append("<ul>")
-            for child_relation in self._child_relations():
-                output.append(child_relation.child.render_html())
-            output.append("</ul>")
-
-        output.append("</li>")
+        output.append("<section id='%s'>" % self.section_id)
+        for asset in self.assets.select_subclasses() \
+                                .order_by('sectionasset__weight'):
+            output.append(asset.render_html())
+        output.append("</section>")
 
         return mark_safe(u'\n'.join(output))
 

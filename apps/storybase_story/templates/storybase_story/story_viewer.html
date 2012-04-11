@@ -56,6 +56,10 @@
           <p>{% trans "By" %} <span class="byline">{{ story.byline }}</span></p>
         </header>
 
+        {% for section in story.sections_flat %}
+        {{ section.render }}
+        {% endfor %}
+
         <nav id="toc">{{ story.structure.render_toc }}</nav>
 
         <footer>
