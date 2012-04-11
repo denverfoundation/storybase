@@ -380,7 +380,6 @@ class Section(node_factory('SectionRelation'), TranslatedModel):
         except AttributeError:
             return self.__unicode__()
 
-
     def children_flat(self):
         """
         Return a list of child sections ordered with each branch
@@ -450,6 +449,7 @@ class Section(node_factory('SectionRelation'), TranslatedModel):
             return ''
     change_link.short_description = 'Change' 
     change_link.allow_tags = True
+
 
 class SectionTranslation(TranslationModel):
     """Translated fields of a Section"""
