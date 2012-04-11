@@ -44,6 +44,14 @@
   padding: 3% 1%;
 }
 
+.story-viewer #toc li ul {
+  padding-top: 1%;
+}
+
+.story-viewer #toc li li {
+  padding: 1%;
+}
+
 .story-viewer .story-nav {
   position: absolute;
   left: 50%;
