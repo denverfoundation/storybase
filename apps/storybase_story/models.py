@@ -223,9 +223,14 @@ def set_story_slug(sender, instance, **kwargs):
     
     Should be connected to StoryTranslation's post_save signal.
     """
-    if not instance.story.slug:
-        instance.story.slug = slugify(instance.title)
-	instance.story.save()
+    try:
+        if not instance.story.slug:
+            instance.story.slug = slugify(instance.title)
+        instance.story.save()
+    except Story.DoesNotExist:
+        # Instance doesn't have a related story.
+        # Encountered this when loading fixture
+        pass
 
 # Hook up some signal handlers
 pre_save.connect(set_date_on_published, sender=Story)
