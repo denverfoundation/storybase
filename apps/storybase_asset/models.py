@@ -178,6 +178,17 @@ class ExternalAsset(Asset):
         else:
             return "Asset %s" % self.asset_id
 
+    def render_img_html(self, url=None):
+        """Render an image tag for this asset"""
+        assert self.type == 'image'
+        if url is None:
+            url = self.url
+        return "<img src='%s' alt='%s' />" % (url, self.title)
+
+    def render_link_html(self):
+        """Render a link for this asset"""
+        return "<a href=\"%s\">%s</a>" % (self.url, self.title)
+
     def render_html(self):
         """Render the asset as HTML"""
         output = []
@@ -186,7 +197,16 @@ class ExternalAsset(Asset):
             # First try to embed the resource via oEmbed
             resource = oembed.site.embed(self.url, format='json')
             resource_data = resource.get_data()
-            output.append(resource_data['html'])
+            if resource_data['type'] in ('rich', 'video'):
+                output.append(resource_data['html'])
+            elif resource_data['type'] == 'photo':
+                output.append(self.render_img_html(resource_data['url']))
+            elif resource_data['type'] == 'link':
+                output.append(self.render_link_html())
+            else:
+                raise AssertionError(
+                    "oEmbed provider returned invalid type")
+                
         except OEmbedMissingEndpoint:
             try:
                 # Next try to embed things ourselves
@@ -195,9 +215,9 @@ class ExternalAsset(Asset):
             except UrlNotMatched:
                 # If all else fails, just show an image or a link
                 if self.type == 'image':
-                    output.append('<img src="%s" alt="%s" />' % (self.url, self.title))
+                    output.append(self.render_img_html())
                 else:
-                    output.append("<a href=\"%s\">%s</a>" % (self.url, self.title))
+                    output.append(self.render_link_html())
 
         if self.caption:
             output.append('<figcaption>')
