@@ -56,7 +56,7 @@
           <p>{% trans "By" %} <span class="byline">{{ story.byline }}</span></p>
         </header>
 
-        <nav id="toc">{{ story.render_toc }}</nav>
+        <nav id="toc">{{ story.structure.render_toc }}</nav>
 
         <footer>
           <a id="toggle-toc" href="#">Toggle Table of Contents</a>

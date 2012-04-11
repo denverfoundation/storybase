@@ -53,7 +53,7 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
     story_id = UUIDField(auto=True)
     slug = models.SlugField(blank=True)
     byline = models.TextField()
-    structure = models.CharField(max_length=20,
+    structure_type = models.CharField(_("structure"), max_length=20,
         choices=structure.manager.get_structure_options())
     # blank=True, null=True to bypass validation so the user doesn't
     # have to always remember to set this in the Django admin.
@@ -86,6 +86,18 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
     class Meta:
         """Model metadata options"""
         verbose_name_plural = "stories"
+
+    def get_structure_obj(self):
+        """Return a structure object for the story"""
+        if self._structure_obj is None:
+            # A structure object hasn't been instantiated yet.
+            # Create one.
+            structure_class = structure.manager.get_structure_class(
+                self.structure_type)
+            self._structure_obj = structure_class.__call__(story=self)
+
+        return self._structure_obj
+    structure = property(get_structure_obj)
 
     def __unicode__(self):
         return self.title
@@ -121,16 +133,6 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
 
         return contributor_name
 
-    def get_structure_obj(self):
-        """Return a structure object for the story"""
-        if self._structure_obj is None:
-            # A structure object hasn't been instantiated yet.
-            # Create one.
-            structure_class = structure.manager.get_structure_class(
-            self.structure)
-            self._structure_obj = structure_class.__call__(story=self)
-
-        return self._structure_obj
 
     def sections_flat(self):
         """
@@ -209,11 +211,6 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
         output.append(root.render(format))
         output.append('</ul>')
         return mark_safe(u'\n'.join(output))
-
-    def render_toc(self, format='html'):
-        """Render a representation of the Story's table of contents"""
-        structure = self.get_structure_obj()
-        return structure.render_toc(format)
 
 
 def set_story_slug(sender, instance, **kwargs):
@@ -502,8 +499,8 @@ def update_story_last_edited(sender, instance, **kwargs):
 # Update a section's story's last edited field when the section is saved
 post_save.connect(update_story_last_edited, sender=Section)
 
-def create_story(title, structure=structure.DEFAULT_STRUCTURE, summary='', 
-                 language=settings.LANGUAGE_CODE, 
+def create_story(title, structure=structure.DEFAULT_STRUCTURE,
+                 summary='', language=settings.LANGUAGE_CODE, 
                  *args, **kwargs):
     """Convenience function for creating a Story
 
