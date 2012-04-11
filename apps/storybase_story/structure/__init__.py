@@ -44,13 +44,6 @@ class SpiderStructure(BaseStructure):
     name = 'Spider'
     id = 'spider'
 
-
-class LinearStructure(BaseStructure):
-    """A story structure intended to be read top-to-bottom"""
-    name = 'Linear'
-    id = 'linear'
-
-
     def render_toc(self, format='html', **kwargs):
         """Return a rendered table of contents for a story"""
         # TODO: Perhaps its better to implement this with templates/
@@ -66,6 +59,36 @@ class LinearStructure(BaseStructure):
                     output.append(render_toc_section(child))
                 output.append("</ul>")
             output.append("</li>")
+            return u'\n'.join(output)
+
+        html_class = kwargs.get('html_class', None)
+        output = []
+        html_class_str = ''
+        if html_class is not None:
+            html_class_str = " class='%s'" % html_class
+        output.append("<ul%s>" % html_class_str)
+        for root_section in self.story.sections.filter(root=True) \
+                                               .order_by('weight'):
+            output.append(render_toc_section(root_section))
+        output.append("</ul>")
+        return mark_safe(u'\n'.join(output))
+
+
+class LinearStructure(BaseStructure):
+    """A story structure intended to be read top-to-bottom"""
+    name = 'Linear'
+    id = 'linear'
+
+    def render_toc(self, format='html', **kwargs):
+        """Return a rendered table of contents for a story"""
+        # TODO: Perhaps its better to implement this with templates/
+        # template tags, or put this functionality in the Backbone app
+        def render_toc_section(section):
+            output = []
+            output.append("<li><a href='#sections/%s'>%s</a></li>" %
+                          (section.section_id, section.title))
+            for child in section.children.order_by('weight'):
+                output.append(render_toc_section(child))
             return u'\n'.join(output)
 
         html_class = kwargs.get('html_class', None)
