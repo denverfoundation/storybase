@@ -464,12 +464,17 @@ def add_section_asset_to_story(sender, instance, **kwargs):
     
     Should be connected to SectionAsset's post_save signal.
     """
-    if instance.asset not in instance.section.story.assets.all():
-        # An asset was added to a section but it is not related to
-        # the section's story.
-        # Add it to the Story's list of assets.
-        instance.section.story.assets.add(instance.asset)
-        instance.section.story.save()
+    try:
+        if instance.asset not in instance.section.story.assets.all():
+            # An asset was added to a section but it is not related to
+            # the section's story.
+            # Add it to the Story's list of assets.
+            instance.section.story.assets.add(instance.asset)
+            instance.section.story.save()
+    except Asset.DoesNotExist:
+        # Instance doesn't have a related asset.
+        # Encountered when loading fixture
+        pass
 
 # Add assets to stories when they're added to sections
 post_save.connect(add_section_asset_to_story, sender=SectionAsset)
