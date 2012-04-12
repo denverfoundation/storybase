@@ -251,6 +251,7 @@ class StoryManagerTest(TestCase):
 	for title in published_titles:
 	    self.has_story_title(title, homepage_stories)
 
+
 class ViewsTest(TestCase):
     """Tests for story-related views"""
 
@@ -306,37 +307,6 @@ class SectionModelTest(SloppyTimeTestCase):
         section.save()
         self.assertNowish(story.last_edited)
 
-    def test_get_next_section_linear_nested(self):
-        """
-        Test get_next_section() when sections are arranged in a linear
-        fashion with one root and each subsequent section nested below
-        the previous
-        """
-        title = ("Neighborhood Outreach for I-70 Alignment Impacting "
-                 "Elyria, Globeville and Swansea")
-        summary = """
-            The City of Denver and Colorado Department of Transportation 
-            (CDOT) are working together to do neighborhood outreach
-            regarding the I-70 alignment between Brighton Boulevard and
-            Colorado. For detailed information on the neighborhood outreach
-            efforts please visit www.DenverGov.org/ccdI70.
-            """
-        byline = "Denver Public Works and CDOT"
-        story = create_story(title=title, summary=summary, byline=byline)
-        section1 = create_section(title="Background and context",
-                                  story=story,
-                                  root=True)
-        section2 = create_section(title="Decisions to be made", story=story)
-        section3 = create_section(title="Who has been involved", 
-                                  story=story)
-        section4 = create_section(title="Next steps", story=story)
-        SectionRelation.objects.create(parent=section1, child=section2)
-        SectionRelation.objects.create(parent=section2, child=section3)
-        SectionRelation.objects.create(parent=section3, child=section4)
-        self.assertEqual(section1.get_next_section(), section2)
-        self.assertEqual(section2.get_next_section(), section3)
-        self.assertEqual(section3.get_next_section(), section4)
-        self.assertEqual(section4.get_next_section(), None)
 
 class SectionApiTest(TestCase):
     """Test case for public Section creation API"""
@@ -528,3 +498,391 @@ class StructureTest(TestCase):
             self.assertEqual(section_data[i]['title'],
                              elements[i].text_content().strip())
         
+    def test_sections_flat_linear_nested(self):
+        """
+        Test sections_flat() when sections are arranged in a linear
+        fashion with one root and each subsequent section nested below
+        the previous
+        """
+        title = ("Neighborhood Outreach for I-70 Alignment Impacting "
+                 "Elyria, Globeville and Swansea")
+        summary = """
+            The City of Denver and Colorado Department of Transportation 
+            (CDOT) are working together to do neighborhood outreach
+            regarding the I-70 alignment between Brighton Boulevard and
+            Colorado. For detailed information on the neighborhood outreach
+            efforts please visit www.DenverGov.org/ccdI70.
+            """
+        byline = "Denver Public Works and CDOT"
+        story = create_story(title=title, summary=summary, byline=byline)
+        section1 = create_section(title="Background and context",
+                                  story=story,
+                                  root=True)
+        section2 = create_section(title="Decisions to be made", story=story)
+        section3 = create_section(title="Who has been involved", 
+                                  story=story)
+        section4 = create_section(title="Next steps", story=story)
+        SectionRelation.objects.create(parent=section1, child=section2)
+        SectionRelation.objects.create(parent=section2, child=section3)
+        SectionRelation.objects.create(parent=section3, child=section4)
+        self.assertEqual(story.structure.sections_flat, [section1, section2, 
+                                                section3, section4])
+
+    def test_sections_flat_spider(self):
+        """
+        Test sections_flat() when sections are arranged as children of a
+        single root section.
+        """
+        title = ("Neighborhood Outreach for I-70 Alignment Impacting "
+                 "Elyria, Globeville and Swansea")
+        summary = """
+            The City of Denver and Colorado Department of Transportation 
+            (CDOT) are working together to do neighborhood outreach
+            regarding the I-70 alignment between Brighton Boulevard and
+            Colorado. For detailed information on the neighborhood outreach
+            efforts please visit www.DenverGov.org/ccdI70.
+            """
+        byline = "Denver Public Works and CDOT"
+        story = create_story(title=title, summary=summary, byline=byline)
+        section1 = create_section(title="Background and context",
+                                  story=story,
+                                  root=True)
+        section2 = create_section(title="Decisions to be made", story=story)
+        section3 = create_section(title="Who has been involved", 
+                                  story=story)
+        section4 = create_section(title="Next steps", story=story)
+        SectionRelation.objects.create(parent=section1, child=section2,
+                                       weight=0)
+        SectionRelation.objects.create(parent=section1, child=section3,
+                                       weight=1)
+        SectionRelation.objects.create(parent=section1, child=section4,
+                                       weight=2)
+        self.assertEqual(story.structure.sections_flat, [section1, section2,
+                                                 section3, section4])
+
+    def test_sections_flat_tree(self):
+        """
+        Test sections_flat() when sections are arranged in a tree-like
+        structure
+        """
+        title = ("Neighborhood Outreach for I-70 Alignment Impacting "
+                 "Elyria, Globeville and Swansea")
+        summary = """
+            The City of Denver and Colorado Department of Transportation 
+            (CDOT) are working together to do neighborhood outreach
+            regarding the I-70 alignment between Brighton Boulevard and
+            Colorado. For detailed information on the neighborhood outreach
+            efforts please visit www.DenverGov.org/ccdI70.
+            """
+        byline = "Denver Public Works and CDOT"
+        story = create_story(title=title, summary=summary, byline=byline)
+        section1 = create_section(title="Background and context",
+                                  story=story,
+                                  root=True)
+        section2 = create_section(title="Decisions to be made", story=story)
+        section3 = create_section(title="Who has been involved", 
+                                  story=story)
+        section4 = create_section(title="Next steps", story=story)
+        section5 = create_section(title="Last section", story=story)
+        SectionRelation.objects.create(parent=section1, child=section2,
+                                       weight=0)
+        SectionRelation.objects.create(parent=section2, child=section3,
+                                       weight=0)
+        SectionRelation.objects.create(parent=section2, child=section4,
+                                       weight=1)
+        SectionRelation.objects.create(parent=section1, child=section5,
+                                       weight=1)
+        self.assertEqual(story.structure.sections_flat, [section1, section2,
+                                                 section3, section4,
+                                                 section5])
+
+    def test_sections_flat_no_sections(self):
+        """
+        Test sections_flat() when there are no child sections
+        """
+        title = ("Neighborhood Outreach for I-70 Alignment Impacting "
+                 "Elyria, Globeville and Swansea")
+        summary = """
+            The City of Denver and Colorado Department of Transportation 
+            (CDOT) are working together to do neighborhood outreach
+            regarding the I-70 alignment between Brighton Boulevard and
+            Colorado. For detailed information on the neighborhood outreach
+            efforts please visit www.DenverGov.org/ccdI70.
+            """
+        byline = "Denver Public Works and CDOT"
+        story = create_story(title=title, summary=summary, byline=byline)
+        self.assertEqual(story.structure.sections_flat, [])
+
+    def test_sections_flat_one_section(self):
+        """
+        Test sections_flat() when there is only a single root section
+        """
+        title = ("Neighborhood Outreach for I-70 Alignment Impacting "
+                 "Elyria, Globeville and Swansea")
+        summary = """
+            The City of Denver and Colorado Department of Transportation 
+            (CDOT) are working together to do neighborhood outreach
+            regarding the I-70 alignment between Brighton Boulevard and
+            Colorado. For detailed information on the neighborhood outreach
+            efforts please visit www.DenverGov.org/ccdI70.
+            """
+        byline = "Denver Public Works and CDOT"
+        story = create_story(title=title, summary=summary, byline=byline)
+        section1 = create_section(title="Background and context",
+                                  story=story,
+                                  root=True)
+        self.assertEqual(story.structure.sections_flat, [section1])
+
+    def test_sections_flat_no_root_section(self):
+        """
+        Test sections_flat() when there is only a single root section
+        """
+        title = ("Neighborhood Outreach for I-70 Alignment Impacting "
+                 "Elyria, Globeville and Swansea")
+        summary = """
+            The City of Denver and Colorado Department of Transportation 
+            (CDOT) are working together to do neighborhood outreach
+            regarding the I-70 alignment between Brighton Boulevard and
+            Colorado. For detailed information on the neighborhood outreach
+            efforts please visit www.DenverGov.org/ccdI70.
+            """
+        byline = "Denver Public Works and CDOT"
+        story = create_story(title=title, summary=summary, byline=byline)
+        section1 = create_section(title="Background and context",
+                                  story=story,
+                                  root=False)
+        self.assertEqual(story.structure.sections_flat, [])
+
+    def test_get_next_section_linear_nested(self):
+        """
+        Test get_next_section() when sections are arranged in a linear
+        fashion with one root and each subsequent section nested below
+        the previous
+        """
+        title = ("Neighborhood Outreach for I-70 Alignment Impacting "
+                 "Elyria, Globeville and Swansea")
+        summary = """
+            The City of Denver and Colorado Department of Transportation 
+            (CDOT) are working together to do neighborhood outreach
+            regarding the I-70 alignment between Brighton Boulevard and
+            Colorado. For detailed information on the neighborhood outreach
+            efforts please visit www.DenverGov.org/ccdI70.
+            """
+        byline = "Denver Public Works and CDOT"
+        story = create_story(title=title, summary=summary, byline=byline)
+        section1 = create_section(title="Background and context",
+                                  story=story,
+                                  root=True)
+        section2 = create_section(title="Decisions to be made", story=story)
+        section3 = create_section(title="Who has been involved", 
+                                  story=story)
+        section4 = create_section(title="Next steps", story=story)
+        SectionRelation.objects.create(parent=section1, child=section2)
+        SectionRelation.objects.create(parent=section2, child=section3)
+        SectionRelation.objects.create(parent=section3, child=section4)
+        self.assertEqual(story.structure.get_next_section(section1),   
+                         section2)
+        self.assertEqual(story.structure.get_next_section(section2),
+                         section3)
+        self.assertEqual(story.structure.get_next_section(section3),
+                         section4)
+        self.assertEqual(story.structure.get_next_section(section4),
+                         None)
+
+    def test_get_previous_section_linear_nested(self):
+        """
+        Test get_previous_section() when sections are arranged in a linear
+        fashion with one root and each subsequent section nested below
+        the previous
+        """
+        title = ("Neighborhood Outreach for I-70 Alignment Impacting "
+                 "Elyria, Globeville and Swansea")
+        summary = """
+            The City of Denver and Colorado Department of Transportation 
+            (CDOT) are working together to do neighborhood outreach
+            regarding the I-70 alignment between Brighton Boulevard and
+            Colorado. For detailed information on the neighborhood outreach
+            efforts please visit www.DenverGov.org/ccdI70.
+            """
+        byline = "Denver Public Works and CDOT"
+        story = create_story(title=title, summary=summary, byline=byline)
+        section1 = create_section(title="Background and context",
+                                  story=story,
+                                  root=True)
+        section2 = create_section(title="Decisions to be made", story=story)
+        section3 = create_section(title="Who has been involved", 
+                                  story=story)
+        section4 = create_section(title="Next steps", story=story)
+        SectionRelation.objects.create(parent=section1, child=section2)
+        SectionRelation.objects.create(parent=section2, child=section3)
+        SectionRelation.objects.create(parent=section3, child=section4)
+        self.assertEqual(story.structure.get_previous_section(section1),   
+                         None)
+        self.assertEqual(story.structure.get_previous_section(section2),
+                         section1)
+        self.assertEqual(story.structure.get_previous_section(section3),
+                         section2)
+        self.assertEqual(story.structure.get_previous_section(section4),
+                         section3)
+
+    def test_get_next_section_spider(self):
+        """
+        Test test_get_next_section() when sections are arranged as children
+        of a single root section.
+        """
+        title = ("Neighborhood Outreach for I-70 Alignment Impacting "
+                 "Elyria, Globeville and Swansea")
+        summary = """
+            The City of Denver and Colorado Department of Transportation 
+            (CDOT) are working together to do neighborhood outreach
+            regarding the I-70 alignment between Brighton Boulevard and
+            Colorado. For detailed information on the neighborhood outreach
+            efforts please visit www.DenverGov.org/ccdI70.
+            """
+        byline = "Denver Public Works and CDOT"
+        story = create_story(title=title, summary=summary, byline=byline)
+        section1 = create_section(title="Background and context",
+                                  story=story,
+                                  root=True)
+        section2 = create_section(title="Decisions to be made", story=story)
+        section3 = create_section(title="Who has been involved", 
+                                  story=story)
+        section4 = create_section(title="Next steps", story=story)
+        SectionRelation.objects.create(parent=section1, child=section2,
+                                       weight=0)
+        SectionRelation.objects.create(parent=section1, child=section3,
+                                       weight=1)
+        SectionRelation.objects.create(parent=section1, child=section4,
+                                       weight=2)
+        self.assertEqual(story.structure.get_next_section(section1),   
+                         section2)
+        self.assertEqual(story.structure.get_next_section(section2),
+                         section3)
+        self.assertEqual(story.structure.get_next_section(section3),
+                         section4)
+        self.assertEqual(story.structure.get_next_section(section4),
+                         None)
+
+    def test_get_previous_section_spider(self):
+        """
+        Test test_get_previous_section() when sections are arranged as 
+        children of a single root section.
+        """
+        title = ("Neighborhood Outreach for I-70 Alignment Impacting "
+                 "Elyria, Globeville and Swansea")
+        summary = """
+            The City of Denver and Colorado Department of Transportation 
+            (CDOT) are working together to do neighborhood outreach
+            regarding the I-70 alignment between Brighton Boulevard and
+            Colorado. For detailed information on the neighborhood outreach
+            efforts please visit www.DenverGov.org/ccdI70.
+            """
+        byline = "Denver Public Works and CDOT"
+        story = create_story(title=title, summary=summary, byline=byline)
+        section1 = create_section(title="Background and context",
+                                  story=story,
+                                  root=True)
+        section2 = create_section(title="Decisions to be made", story=story)
+        section3 = create_section(title="Who has been involved", 
+                                  story=story)
+        section4 = create_section(title="Next steps", story=story)
+        SectionRelation.objects.create(parent=section1, child=section2,
+                                       weight=0)
+        SectionRelation.objects.create(parent=section1, child=section3,
+                                       weight=1)
+        SectionRelation.objects.create(parent=section1, child=section4,
+                                       weight=2)
+        self.assertEqual(story.structure.get_previous_section(section1),   
+                         None)
+        self.assertEqual(story.structure.get_previous_section(section2),
+                         section1)
+        self.assertEqual(story.structure.get_previous_section(section3),
+                         section2)
+        self.assertEqual(story.structure.get_previous_section(section4),
+                         section3)
+
+    def test_get_next_section_tree(self):
+        """
+        Test get_next_section() when sections are arranged in a tree-like
+        structure
+        """
+        title = ("Neighborhood Outreach for I-70 Alignment Impacting "
+                 "Elyria, Globeville and Swansea")
+        summary = """
+            The City of Denver and Colorado Department of Transportation 
+            (CDOT) are working together to do neighborhood outreach
+            regarding the I-70 alignment between Brighton Boulevard and
+            Colorado. For detailed information on the neighborhood outreach
+            efforts please visit www.DenverGov.org/ccdI70.
+            """
+        byline = "Denver Public Works and CDOT"
+        story = create_story(title=title, summary=summary, byline=byline)
+        section1 = create_section(title="Background and context",
+                                  story=story,
+                                  root=True)
+        section2 = create_section(title="Decisions to be made", story=story)
+        section3 = create_section(title="Who has been involved", 
+                                  story=story)
+        section4 = create_section(title="Next steps", story=story)
+        section5 = create_section(title="Last section", story=story)
+        SectionRelation.objects.create(parent=section1, child=section2,
+                                       weight=0)
+        SectionRelation.objects.create(parent=section2, child=section3,
+                                       weight=0)
+        SectionRelation.objects.create(parent=section2, child=section4,
+                                       weight=1)
+        SectionRelation.objects.create(parent=section1, child=section5,
+                                       weight=1)
+        self.assertEqual(story.structure.get_next_section(section1),   
+                         section2)
+        self.assertEqual(story.structure.get_next_section(section2),   
+                         section3)
+        self.assertEqual(story.structure.get_next_section(section3),   
+                         section4)
+        self.assertEqual(story.structure.get_next_section(section4),   
+                         section5)
+        self.assertEqual(story.structure.get_next_section(section5),   
+                         None)
+
+    def test_get_previous_section_tree(self):
+        """
+        Test get_previous_section() when sections are arranged in a tree-like
+        structure
+        """
+        title = ("Neighborhood Outreach for I-70 Alignment Impacting "
+                 "Elyria, Globeville and Swansea")
+        summary = """
+            The City of Denver and Colorado Department of Transportation 
+            (CDOT) are working together to do neighborhood outreach
+            regarding the I-70 alignment between Brighton Boulevard and
+            Colorado. For detailed information on the neighborhood outreach
+            efforts please visit www.DenverGov.org/ccdI70.
+            """
+        byline = "Denver Public Works and CDOT"
+        story = create_story(title=title, summary=summary, byline=byline)
+        section1 = create_section(title="Background and context",
+                                  story=story,
+                                  root=True)
+        section2 = create_section(title="Decisions to be made", story=story)
+        section3 = create_section(title="Who has been involved", 
+                                  story=story)
+        section4 = create_section(title="Next steps", story=story)
+        section5 = create_section(title="Last section", story=story)
+        SectionRelation.objects.create(parent=section1, child=section2,
+                                       weight=0)
+        SectionRelation.objects.create(parent=section2, child=section3,
+                                       weight=0)
+        SectionRelation.objects.create(parent=section2, child=section4,
+                                       weight=1)
+        SectionRelation.objects.create(parent=section1, child=section5,
+                                       weight=1)
+        self.assertEqual(story.structure.get_previous_section(section1),   
+                         None)
+        self.assertEqual(story.structure.get_previous_section(section2),   
+                         section1)
+        self.assertEqual(story.structure.get_previous_section(section3),   
+                         section2)
+        self.assertEqual(story.structure.get_previous_section(section4),   
+                         section3)
+        self.assertEqual(story.structure.get_previous_section(section5),   
+                         section4)

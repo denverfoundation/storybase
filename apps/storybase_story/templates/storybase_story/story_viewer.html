@@ -57,7 +57,7 @@
         </header>
 
         <div id="body">
-          {% for section in story.sections_flat %}
+          {% for section in story.structure.sections_flat %}
           {{ section.render }}
           {% endfor %}
         </div>
@@ -94,9 +94,9 @@
         });
 
         Namespace('storybase.viewer');
-        var story = new storybase.viewer.models.Story({{ story.to_json }});
+        var story = new storybase.viewer.models.Story({{ story.structure.to_json }});
         var sections = new storybase.viewer.collections.Sections;
-        sections.reset({{ story.sections_json }});
+        sections.reset({{ story.structure.sections_json }});
         storybase.viewer.app = new storybase.viewer.views.ViewerApp({
           el: $('#app'),
           story: story,
