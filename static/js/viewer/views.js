@@ -10,12 +10,10 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
   initialize: function() {
     this.navigationView = new storybase.viewer.views.StoryNavigation(); 
     this.headerView = new storybase.viewer.views.StoryHeader();
-    /*
     this.initialView = new storybase.viewer.views.Spider({
       el: this.$('#body'),
       sections: this.options.sections
     });
-    */
     this.sections = this.options.sections;
     this.story = this.options.story;
     this.setSection(this.sections.at(0));
@@ -24,7 +22,7 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
   render: function() {
     this.$('footer').append(this.navigationView.el);
     this.navigationView.render();
-    //this.initialView.render();
+    this.initialView.render();
     return this;
   },
 
@@ -94,30 +92,46 @@ storybase.viewer.views.Spider = Backbone.View.extend({
     var elId = this.$el.attr('id');
     var width = 500;
     var height = 500;
-    var centerX = width / 2;
-    var centerY = height / 2;
-    var circleR = 10;
-    var circlePadding = 5;
-    var svg = d3.select("#" + elId).insert("svg", "section").attr("width", width).attr("height", height);
+    var vis = d3.select("#" + elId).insert("svg", "section")
+        .attr("width", width)
+        .attr("height", height)
+      .append("g")
+      .attr("transform", "translate(40, 100)");
+    var rootSection = this.sections.at(0).populateChildren();
+    var tree = d3.layout.tree().size([300, 150]);
+    var diagonal = d3.svg.diagonal();
+    var nodes = tree.nodes(rootSection);
+    var links = tree.links(nodes);
 
-    var numSections = this.sections.length;
-    for (var i = 0; i < numSections; i++) {
-      section = this.sections.at(i);
-      var cx;
-      var offset = ((numSections - i) * circleR) + (2 * circlePadding);
-      if (i < (numSections / 2)) {
-        cx = centerX - offset;
-      }
-      else {
-        cx = centerX + offset;
-      }
-      svg.append("circle")
-         .attr("id", "circle-" + section.id)
-         .attr("cx", cx)
-         .attr("cy", centerY)
-         .attr("r", circleR);
+    console.debug(tree.separation());
 
-    }
-    
+    _.each(links, function(link) {
+      console.debug(link.source.get("title"));
+      console.debug(link.target.get("title"));
+    });
+    console.debug(nodes);
+    console.debug(links);
+
+    var link = vis.selectAll("path.link")
+        .data(links)
+      .enter().append("path")
+        .attr("class", "link")
+        .attr("d", diagonal);
+
+    var node = vis.selectAll("g.node")
+      .data(nodes)
+      .enter().append("g")
+      .attr("class", "node")
+      .attr("transform",function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+
+    node.append("circle")
+        .attr("r", 10);
+
+    node.append("text")
+      .attr("dx", function(d) { return d.children ? -20 : 20; })
+      .attr("dy", 3)
+      .attr("text-anchor", function(d) { return d.children ? "end" : "start"; }) 
+      .text(function(d) { return d.get('title'); })
+
   }
 });
