@@ -397,7 +397,8 @@ class Section(node_factory('SectionRelation'), TranslatedModel):
         """
         simple = {
             'section_id': self.section_id,
-            'title': self.title
+            'title': self.title,
+            'children': []
         }
         next_section = self.get_next_section()
         previous_section = self.get_previous_section()
@@ -406,6 +407,8 @@ class Section(node_factory('SectionRelation'), TranslatedModel):
         if previous_section:
             simple.update(
                 {'previous_section_id': previous_section.section_id})
+        for child in self.children_flat():
+            simple['children'].append(child.section_id)
         
         return simple
 
@@ -490,7 +493,7 @@ def update_story_last_edited(sender, instance, **kwargs):
 # Update a section's story's last edited field when the section is saved
 post_save.connect(update_story_last_edited, sender=Section)
 
-def create_story(title, structure=structure.DEFAULT_STRUCTURE,
+def create_story(title, structure_type=structure.DEFAULT_STRUCTURE,
                  summary='', language=settings.LANGUAGE_CODE, 
                  *args, **kwargs):
     """Convenience function for creating a Story
@@ -499,7 +502,7 @@ def create_story(title, structure=structure.DEFAULT_STRUCTURE,
     deal with the translations.
 
     """
-    obj = Story(structure=structure, *args, **kwargs)
+    obj = Story(structure_type=structure_type, *args, **kwargs)
     obj.save()
     translation = StoryTranslation(story=obj, title=title, summary=summary,
                                    language=language)

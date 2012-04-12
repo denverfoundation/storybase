@@ -519,7 +519,7 @@ class StructureTest(TestCase):
                            story=story,
                            weight=section_dict['weight'],
                            root=True)
-        rendered_toc = story.render_toc(format='html')
+        rendered_toc = story.structure.render_toc(format='html')
         #print rendered_toc
         fragment = lxml.html.fromstring(rendered_toc)
         elements = fragment.cssselect('li')
