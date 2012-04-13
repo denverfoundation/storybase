@@ -97,11 +97,14 @@
         var story = new storybase.viewer.models.Story({{ story.structure.to_json }});
         var sections = new storybase.viewer.collections.Sections;
         sections.reset({{ story.structure.sections_json }});
-        storybase.viewer.app = new storybase.viewer.views.ViewerApp({
-          el: $('#app'),
-          story: story,
-          sections: sections
-        });
+        storybase.viewer.app = storybase.viewer.views.getViewerApp(
+            '{{ story.structure_type }}',
+            {
+                el: $('#app'),
+                story: story,
+                sections: sections
+            }
+        );
         storybase.viewer.router = new storybase.viewer.routers.Router({
             view: storybase.viewer.app
         });

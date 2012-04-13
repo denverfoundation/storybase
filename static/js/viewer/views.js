@@ -10,10 +10,6 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
   initialize: function() {
     this.navigationView = new storybase.viewer.views.StoryNavigation(); 
     this.headerView = new storybase.viewer.views.StoryHeader();
-    this.initialView = new storybase.viewer.views.Spider({
-      el: this.$('#body'),
-      sections: this.options.sections
-    });
     this.sections = this.options.sections;
     this.story = this.options.story;
     this.setSection(this.sections.at(0));
@@ -22,7 +18,6 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
   render: function() {
     this.$('footer').append(this.navigationView.el);
     this.navigationView.render();
-    this.initialView.render();
     return this;
   },
 
@@ -40,6 +35,8 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
     this.setSection(this.sections.get(id));
   },
 });
+
+storybase.viewer.views.SpiderViewerApp = storybase.viewer.views
 
 storybase.viewer.views.StoryHeader = Backbone.View.extend({
   el: 'header',
@@ -135,3 +132,37 @@ storybase.viewer.views.Spider = Backbone.View.extend({
 
   }
 });
+
+storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend({
+  initialize: function() {
+    this.navigationView = new storybase.viewer.views.StoryNavigation(); 
+    this.headerView = new storybase.viewer.views.StoryHeader();
+    this.initialView = new storybase.viewer.views.Spider({
+      el: this.$('#body'),
+      sections: this.options.sections
+    });
+    this.sections = this.options.sections;
+    this.story = this.options.story;
+    this.setSection(this.sections.at(0));
+  },
+
+  render: function() {
+    this.$('footer').append(this.navigationView.el);
+    this.navigationView.render();
+    this.initialView.render();
+    return this;
+  }
+
+});
+
+storybase.viewer.views.getViewerApp = function(structureType, options) {
+  if (structureType == 'linear') {
+    return new storybase.viewer.views.ViewerApp(options);
+  }
+  else if (structureType == 'spider') {
+    return new storybase.viewer.views.SpiderViewerApp(options);
+  }
+  else {
+    throw "Unknown story structure type '" + structureType + "'";
+  }
+};
