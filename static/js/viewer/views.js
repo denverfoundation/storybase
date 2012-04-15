@@ -75,6 +75,7 @@ storybase.viewer.views.StoryNavigation = Backbone.View.extend({
   className: 'story-nav',
 
   initialize: function() {
+    this.section = null;
     if (this.options.hasOwnProperty('addlLinks')) {
       this.addlLinks = this.options.addlLinks.map(function(link) {
         return {
@@ -91,10 +92,12 @@ storybase.viewer.views.StoryNavigation = Backbone.View.extend({
 
   render: function() {
     var context = {};
-    context.next_section = this.section.collection.get(
-      this.section.get('next_section_id'));
-    context.previous_section = this.section.collection.get(
-      this.section.get('previous_section_id'));
+    if (this.section) {
+      context.next_section = this.section.collection.get(
+        this.section.get('next_section_id'));
+      context.previous_section = this.section.collection.get(
+        this.section.get('previous_section_id'));
+    }
     context.addl_links = this.addlLinks;
 
     this.$el.html(ich.navigationTemplate(context));
@@ -189,7 +192,6 @@ storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend
     });
     this.sections = this.options.sections;
     this.story = this.options.story;
-    this.setSection(this.sections.at(0));
   },
 
   render: function() {
