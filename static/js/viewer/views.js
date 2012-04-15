@@ -25,13 +25,13 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
 
   // Update the active story section in the sub-views
   updateSubviewSections: function() {
-    this.navigationView.setSection(this.currentSection);
-    this.headerView.setSection(this.currentSection);
+    this.navigationView.setSection(this.activeSection);
+    this.headerView.setSection(this.activeSection);
   },
 
   // Set the active story section
   setSection: function(section) {
-    this.currentSection = section;
+    this.activeSection = section;
     this.updateSubviewSections();
   },
 
@@ -43,7 +43,7 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
 
   // Convenience method to get the element for the active
   activeSectionEl: function() {
-    return this.$('#' + this.currentSection.id);
+    return this.$('#' + this.activeSection.id);
   }
 });
 
