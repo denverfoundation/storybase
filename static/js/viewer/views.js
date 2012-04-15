@@ -87,8 +87,8 @@ storybase.viewer.views.Spider = Backbone.View.extend({
 
   render: function() {
     var elId = this.$el.attr('id');
-    var width = 500;
-    var height = 500;
+    var width = this.$el.width(); 
+    var height = this.$el.height(); 
     var vis = d3.select("#" + elId).insert("svg", "section")
         .attr("width", width)
         .attr("height", height)
@@ -99,15 +99,6 @@ storybase.viewer.views.Spider = Backbone.View.extend({
     var diagonal = d3.svg.diagonal();
     var nodes = tree.nodes(rootSection);
     var links = tree.links(nodes);
-
-    console.debug(tree.separation());
-
-    _.each(links, function(link) {
-      console.debug(link.source.get("title"));
-      console.debug(link.target.get("title"));
-    });
-    console.debug(nodes);
-    console.debug(links);
 
     var link = vis.selectAll("path.link")
         .data(links)
