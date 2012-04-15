@@ -3,10 +3,11 @@
  */
 Namespace('storybase.viewer');
 
+// Container view for the viewer application.
+// It delegates rendering and events for the entire app to views
+// rendering more specific "widgets"
 storybase.viewer.views.ViewerApp = Backbone.View.extend({
-  events: {
-  },
-
+  // Initialize the view
   initialize: function() {
     this.navigationView = new storybase.viewer.views.StoryNavigation(); 
     this.headerView = new storybase.viewer.views.StoryHeader();
@@ -15,29 +16,34 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
     this.setSection(this.sections.at(0));
   },
 
+  // Add the view's container element to the DOM and render the sub-views
   render: function() {
     this.$('footer').append(this.navigationView.el);
     this.navigationView.render();
     return this;
   },
 
+  // Update the active story section in the sub-views
   updateSubviewSections: function() {
     this.navigationView.setSection(this.currentSection);
     this.headerView.setSection(this.currentSection);
   },
 
+  // Set the active story section
   setSection: function(section) {
     this.currentSection = section;
     this.updateSubviewSections();
   },
 
+  // Like setSection(), but takes a section ID as an argument instead of
+  // a Section model instance object
   setSectionById: function(id) {
     this.setSection(this.sections.get(id));
   },
 });
 
-storybase.viewer.views.SpiderViewerApp = storybase.viewer.views
-
+// View for the story viewer header.
+// Updates the section heading title when the active section changes
 storybase.viewer.views.StoryHeader = Backbone.View.extend({
   el: 'header',
 
@@ -57,6 +63,7 @@ storybase.viewer.views.StoryHeader = Backbone.View.extend({
   }
 });
 
+// View to provide previous/next buttons to navigate between sections
 storybase.viewer.views.StoryNavigation = Backbone.View.extend({
   tagName: 'nav',
 
@@ -80,9 +87,17 @@ storybase.viewer.views.StoryNavigation = Backbone.View.extend({
   }
 });
 
+// Interative visualization of a spider story structure
 storybase.viewer.views.Spider = Backbone.View.extend({
   initialize: function() {
     this.sections = this.options.sections;
+    // The id for the visualization's wrapper element
+    this.visId = 'spider-vis';
+  },
+
+  // Return the visualization wrapper element
+  visEl: function() {
+    return this.$('#' + this.visId).first();
   },
 
   render: function() {
@@ -90,6 +105,7 @@ storybase.viewer.views.Spider = Backbone.View.extend({
     var width = this.$el.width(); 
     var height = this.$el.height(); 
     var vis = d3.select("#" + elId).insert("svg", "section")
+        .attr("id", this.visId)
         .attr("width", width)
         .attr("height", height)
       .append("g")
@@ -124,7 +140,13 @@ storybase.viewer.views.Spider = Backbone.View.extend({
   }
 });
 
+// Master view that shows the story structure visualization initially
 storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend({
+  events: {
+    "click g.node": "clickSectionNode",
+    "hover g.node": "hoverSectionNode"
+  },
+
   initialize: function() {
     this.navigationView = new storybase.viewer.views.StoryNavigation(); 
     this.headerView = new storybase.viewer.views.StoryHeader();
@@ -142,10 +164,31 @@ storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend
     this.navigationView.render();
     this.initialView.render();
     return this;
-  }
+  },
+
+  // Event handler for clicks on a section node
+  clickSectionNode: function(e) {
+    var node = d3.select(e.currentTarget);
+    var sectionId = node.data()[0].id;
+    this.initialView.visEl().hide();
+    // TODO: I'm not sure if this is the best way to access the router
+    // I don't like global variables, but passing it as an argument
+    // makes for a weird circular dependency between the master view/
+    // router.
+    storybase.viewer.router.navigate("sections/" + sectionId,
+                                     {trigger: true});
+  },
+
+  // Event handler for hovering over a section node
+  // Changes the cursor to a "pointer" style icon to indicate that
+  // the nodes are clickable.
+  hoverSectionNode: function(e) {
+    e.currentTarget.style.cursor = 'pointer';
+  },
 
 });
 
+// Get the appropriate master view based on the story structure type
 storybase.viewer.views.getViewerApp = function(structureType, options) {
   if (structureType == 'linear') {
     return new storybase.viewer.views.ViewerApp(options);
