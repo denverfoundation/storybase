@@ -38,6 +38,9 @@
 
     {% verbatim %}
     <script type="text/html" id="navigationTemplate">
+        {{#addl_links}}
+        <a id="{{id}}" href="{{href}}">{{text}}</a>
+        {{/addl_links}}
         {{#previous_section}}
         <a class="previous" href="#sections/{{previous_section.id}}" title="{{previous_section.title}}">previous</a>
         {{/previous_section}}

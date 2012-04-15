@@ -69,12 +69,29 @@ storybase.viewer.views.StoryNavigation = Backbone.View.extend({
 
   className: 'story-nav',
 
+  initialize: function() {
+    if (this.options.hasOwnProperty('addlLinks')) {
+      this.addlLinks = this.options.addlLinks.map(function(link) {
+        return {
+         text: link.text,
+         id: link.id,
+         href: link.hasOwnProperty('href') ? link.href: '#'
+       }
+      });
+    }
+    else {
+      this.addlLinks = [];
+    }
+  },
+
   render: function() {
     var context = {};
     context.next_section = this.section.collection.get(
       this.section.get('next_section_id'));
     context.previous_section = this.section.collection.get(
       this.section.get('previous_section_id'));
+    context.addl_links = this.addlLinks;
+
     this.$el.html(ich.navigationTemplate(context));
     return this;
   },
@@ -156,7 +173,9 @@ storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend
   },
 
   initialize: function() {
-    this.navigationView = new storybase.viewer.views.StoryNavigation(); 
+    this.navigationView = new storybase.viewer.views.StoryNavigation({
+      addlLinks: [{text: "Topic Map", id: 'topic-map'}]
+    });
     this.headerView = new storybase.viewer.views.StoryHeader();
     this.initialView = new storybase.viewer.views.Spider({
       el: this.$('#body'),
