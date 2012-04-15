@@ -89,6 +89,10 @@ storybase.viewer.views.StoryNavigation = Backbone.View.extend({
 
 // Interative visualization of a spider story structure
 storybase.viewer.views.Spider = Backbone.View.extend({
+  events: {
+    "hover g.node": "hoverSectionNode"
+  },
+
   initialize: function() {
     this.sections = this.options.sections;
     // The id for the visualization's wrapper element
@@ -137,14 +141,20 @@ storybase.viewer.views.Spider = Backbone.View.extend({
       .attr("text-anchor", function(d) { return d.children ? "end" : "start"; }) 
       .text(function(d) { return d.get('title'); })
 
-  }
+  },
+
+  // Event handler for hovering over a section node
+  // Changes the cursor to a "pointer" style icon to indicate that
+  // the nodes are clickable.
+  hoverSectionNode: function(e) {
+    e.currentTarget.style.cursor = 'pointer';
+  },
 });
 
 // Master view that shows the story structure visualization initially
 storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend({
   events: {
-    "click g.node": "clickSectionNode",
-    "hover g.node": "hoverSectionNode"
+    "click g.node": "clickSectionNode"
   },
 
   initialize: function() {
@@ -177,14 +187,7 @@ storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend
     // router.
     storybase.viewer.router.navigate("sections/" + sectionId,
                                      {trigger: true});
-  },
-
-  // Event handler for hovering over a section node
-  // Changes the cursor to a "pointer" style icon to indicate that
-  // the nodes are clickable.
-  hoverSectionNode: function(e) {
-    e.currentTarget.style.cursor = 'pointer';
-  },
+  }
 
 });
 
