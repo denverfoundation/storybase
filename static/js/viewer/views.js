@@ -70,14 +70,12 @@ storybase.viewer.views.StoryNavigation = Backbone.View.extend({
   className: 'story-nav',
 
   render: function() {
-    var nextSection = this.section.collection.get(
+    var context = {};
+    context.next_section = this.section.collection.get(
       this.section.get('next_section_id'));
-    var prevSection = this.section.collection.get(
+    context.previous_section = this.section.collection.get(
       this.section.get('previous_section_id'));
-    this.$el.html(ich.navigationTemplate({
-      next_section: nextSection,
-      previous_section: prevSection
-    }));
+    this.$el.html(ich.navigationTemplate(context));
     return this;
   },
 
