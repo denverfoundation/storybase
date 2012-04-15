@@ -40,6 +40,11 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
   setSectionById: function(id) {
     this.setSection(this.sections.get(id));
   },
+
+  // Convenience method to get the element for the active
+  activeSectionEl: function() {
+    return this.$('#' + this.currentSection.id);
+  }
 });
 
 // View for the story viewer header.
@@ -169,6 +174,7 @@ storybase.viewer.views.Spider = Backbone.View.extend({
 // Master view that shows the story structure visualization initially
 storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend({
   events: {
+    "click #topic-map": "clickTopicMapLink",
     "click g.node": "clickSectionNode"
   },
 
@@ -204,6 +210,12 @@ storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend
     // router.
     storybase.viewer.router.navigate("sections/" + sectionId,
                                      {trigger: true});
+  },
+
+  // Event handler for clicking the "Topic Map" link
+  clickTopicMapLink: function(e) {
+    this.activeSectionEl().toggle();
+    this.initialView.visEl().show();
   }
 
 });
