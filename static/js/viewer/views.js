@@ -258,6 +258,8 @@ storybase.viewer.views.LinearViewerApp = storybase.viewer.views.ViewerApp.extend
 	}
       }
       this.setSection(newSection, {showActiveSection: false});
+      storybase.viewer.router.navigate("sections/" + newSection.id,
+                                     {trigger: false});
     }
     this._preventScrollEvent = false;
   }
