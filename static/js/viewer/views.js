@@ -219,6 +219,7 @@ storybase.viewer.views.LinearViewerApp = storybase.viewer.views.ViewerApp.extend
   // Show the active section
   showActiveSection: function() {
     var sectionTop = this.$('#' + this.activeSection.id).offset().top;
+    this._preventScrollEvent = true;
     $(window).scrollTop(sectionTop - this.headerBottom());
   },
 
@@ -240,13 +241,25 @@ storybase.viewer.views.LinearViewerApp = storybase.viewer.views.ViewerApp.extend
 
   // Event handler for scroll event
   handleScroll: function(e) {
-    var $lastVisibleSectionEl = this.getLastVisibleSectionEl();
-    if ($lastVisibleSectionEl) {
-      var lastVisibleSection = this.sections.get($lastVisibleSectionEl.attr('id'));
-      if (lastVisibleSection != this.activeSection) {
-        this.setSection(lastVisibleSection, {showActiveSection: false});
+    var newSection = this.activeSection;
+    if (this._preventScrollEvent !== true) {
+      if ($(window).scrollTop() == 0) {
+	// At the top of the window.  Set the active section to the 
+	// first section
+	newSection = this.sections.first();
       }
+      else {
+	var $lastVisibleSectionEl = this.getLastVisibleSectionEl();
+	  if ($lastVisibleSectionEl) {
+	  var lastVisibleSection = this.sections.get($lastVisibleSectionEl.attr('id'));
+	  if (lastVisibleSection != this.activeSection) {
+	    newSection = lastVisibleSection; 
+	  }
+	}
+      }
+      this.setSection(newSection, {showActiveSection: false});
     }
+    this._preventScrollEvent = false;
   }
 });
 
