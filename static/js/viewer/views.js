@@ -218,7 +218,8 @@ storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend
 
   // Update the active story section in the sub-views
   updateSubviewSections: function() {
-    storybase.viewer.views.ViewerApp.prototype.updateSubviewSections.call(this);
+    this.navigationView.setSection(this.activeSection);
+    this.headerView.setSection(this.activeSection);
     this.initialView.setSection(this.activeSection);
     // Hide all sections other than the active one
     this.$('section').hide();
