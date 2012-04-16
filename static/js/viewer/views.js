@@ -31,8 +31,7 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
 
   // Show the active section
   showActiveSection: function() {
-    // BOOKMARK
-    // TODO: Implement this
+    throw "showActiveSection() is not implemented";
   },
 
   // Set the active story section
@@ -194,6 +193,16 @@ storybase.viewer.views.Spider = Backbone.View.extend({
   },
 });
 
+// Master view that shows a story in a linear fashion
+storybase.viewer.views.LinearViewerApp = storybase.viewer.views.ViewerApp.extend({
+  // Show the active section
+  showActiveSection: function() {
+    var headerBottom = this.$('header').offset().top + this.$('header').height(); 
+    var sectionTop = this.$('#' + this.activeSection.id).offset().top;
+    $(window).scrollTop(sectionTop - headerBottom);
+  },
+});
+
 // Master view that shows the story structure visualization initially
 storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend({
   events: {
@@ -263,7 +272,7 @@ storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend
 // Get the appropriate master view based on the story structure type
 storybase.viewer.views.getViewerApp = function(structureType, options) {
   if (structureType == 'linear') {
-    return new storybase.viewer.views.ViewerApp(options);
+    return new storybase.viewer.views.LinearViewerApp(options);
   }
   else if (structureType == 'spider') {
     return new storybase.viewer.views.SpiderViewerApp(options);
