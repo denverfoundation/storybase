@@ -29,9 +29,16 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
     this.headerView.setSection(this.activeSection);
   },
 
+  // Show the active section
+  showActiveSection: function() {
+    // BOOKMARK
+    // TODO: Implement this
+  },
+
   // Set the active story section
   setSection: function(section) {
     this.activeSection = section;
+    this.showActiveSection();
     this.updateSubviewSections();
   },
 
@@ -216,15 +223,20 @@ storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend
     return this;
   },
 
+  // Show the active section
+  showActiveSection: function() {
+    // Hide all sections other than the active one
+    this.$('section').hide();
+    this.$('#' + this.activeSection.id).show();
+    // Hide the visualization 
+    this.initialView.$('svg').hide();
+  },
+
   // Update the active story section in the sub-views
   updateSubviewSections: function() {
     this.navigationView.setSection(this.activeSection);
     this.headerView.setSection(this.activeSection);
     this.initialView.setSection(this.activeSection);
-    // Hide all sections other than the active one
-    this.$('section').hide();
-    this.$('#' + this.activeSection.id).show();
-    this.initialView.$('svg').hide();
   },
 
   // Event handler for clicks on a section node
