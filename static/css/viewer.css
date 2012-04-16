@@ -98,3 +98,7 @@
   stroke-width: 2;
   stroke: black;
 }
+
+.story-viewer .node.active {
+  fill: red;
+}

@@ -118,6 +118,7 @@ storybase.viewer.views.Spider = Backbone.View.extend({
 
   initialize: function() {
     this.sections = this.options.sections;
+    this.activeSection = null;
     // The id for the visualization's wrapper element
     this.visId = 'spider-vis';
   },
@@ -125,6 +126,16 @@ storybase.viewer.views.Spider = Backbone.View.extend({
   // Return the visualization wrapper element
   visEl: function() {
     return this.$('#' + this.visId).first();
+  },
+
+  setSection: function(section) {
+    this.activeSection = section;
+    this.highlightSectionNode(this.activeSection.id);
+  },
+
+  highlightSectionNode: function(sectionId) {
+    d3.selectAll('g.node').classed('active', false);
+    d3.select('g.node.section-' + sectionId).classed('active', true);
   },
 
   render: function() {
@@ -152,7 +163,9 @@ storybase.viewer.views.Spider = Backbone.View.extend({
     var node = vis.selectAll("g.node")
       .data(nodes)
       .enter().append("g")
-      .attr("class", "node")
+      .attr('class', function(d) {
+        return "node section-" + d.id;
+      })
       .attr("transform",function(d) { return "translate(" + d.x + "," + d.y + ")"; });
 
     node.append("circle")
@@ -199,6 +212,13 @@ storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend
     this.navigationView.render();
     this.initialView.render();
     return this;
+  },
+
+  // Update the active story section in the sub-views
+  updateSubviewSections: function() {
+    storybase.viewer.views.ViewerApp.prototype.updateSubviewSections.call(this);
+    this.initialView.setSection(this.activeSection);
+    this.initialView.$('svg').hide();
   },
 
   // Event handler for clicks on a section node
