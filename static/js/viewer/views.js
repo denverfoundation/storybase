@@ -211,6 +211,8 @@ storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend
     this.$('footer').append(this.navigationView.el);
     this.navigationView.render();
     this.initialView.render();
+    // Hide all the section content initially
+    this.$('section').hide();
     return this;
   },
 
@@ -218,6 +220,9 @@ storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend
   updateSubviewSections: function() {
     storybase.viewer.views.ViewerApp.prototype.updateSubviewSections.call(this);
     this.initialView.setSection(this.activeSection);
+    // Hide all sections other than the active one
+    this.$('section').hide();
+    this.$('#' + this.activeSection.id).show();
     this.initialView.$('svg').hide();
   },
 
