@@ -8,6 +8,7 @@
   width: 100%;
   background-color: #CCC;
   padding: 1%;
+  z-index: 9999;
 }
 
 .story-viewer header h1 {
@@ -28,9 +29,9 @@
 }
 
 .story-viewer #body {
-  position: fixed;
+  position: absolute;
+  top: 0;
   width: 100%;
-  height: 100%;
   padding-top: 8%;
   padding-bottom: 4%;
 }
@@ -79,6 +80,7 @@
   bottom: 0;
   padding: 1%;
   background-color: #000;
+  z-index: 9999;
 }
 
 .story-viewer footer > a {
