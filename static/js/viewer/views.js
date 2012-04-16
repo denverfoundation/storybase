@@ -13,7 +13,9 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
     this.headerView = new storybase.viewer.views.StoryHeader();
     this.sections = this.options.sections;
     this.story = this.options.story;
-    this.setSection(this.sections.at(0));
+    this.setSection(this.sections.at(0), {showActiveSection: false});
+    _.bindAll(this, 'handleScroll');
+    $(window).scroll(this.handleScroll);
   },
 
   // Add the view's container element to the DOM and render the sub-views
@@ -35,9 +37,13 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
   },
 
   // Set the active story section
-  setSection: function(section) {
+  setSection: function(section, options) {
+    options = typeof options !== 'undefined' ? options : {};
+    var showActiveSection = options.hasOwnProperty('showActiveSection') ? options.showActiveSection : true;
     this.activeSection = section;
-    this.showActiveSection();
+    if (showActiveSection) {
+      this.showActiveSection();
+    }
     this.updateSubviewSections();
   },
 
@@ -50,6 +56,11 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
   // Convenience method to get the element for the active
   activeSectionEl: function() {
     return this.$('#' + this.activeSection.id);
+  },
+
+  // Event handler for scroll event
+  handleScroll: function(e) {
+    // Do nothing. Subclasses might want to implement this to do some work
   }
 });
 
@@ -195,12 +206,48 @@ storybase.viewer.views.Spider = Backbone.View.extend({
 
 // Master view that shows a story in a linear fashion
 storybase.viewer.views.LinearViewerApp = storybase.viewer.views.ViewerApp.extend({
+  // Get the position, from the top of the winder, of the lower edge of the
+  // header
+  headerBottom: function() {
+    return this.$('header').offset().top + this.$('header').outerHeight(); 
+  },
+
+  footerTop: function() {
+    return this.$('footer').offset().top;
+  },
+	
   // Show the active section
   showActiveSection: function() {
-    var headerBottom = this.$('header').offset().top + this.$('header').height(); 
     var sectionTop = this.$('#' + this.activeSection.id).offset().top;
-    $(window).scrollTop(sectionTop - headerBottom);
+    $(window).scrollTop(sectionTop - this.headerBottom());
   },
+
+  // Return the element of the last visible story section
+  getLastVisibleSectionEl: function() {
+    var visibleSections = [];
+    var numSections = this.$('section').length;
+    for (var i = 0; i < numSections; i++) {
+      var $section = this.$('section').eq(i);
+      var sectionTop = $section.offset().top;
+      var sectionBottom = sectionTop + $section.outerHeight(); 
+      if (sectionTop >= this.headerBottom() && 
+          sectionBottom <= this.footerTop()) { 
+        visibleSections.push($section);
+      }
+    }
+    return _.last(visibleSections);
+  },
+
+  // Event handler for scroll event
+  handleScroll: function(e) {
+    var $lastVisibleSectionEl = this.getLastVisibleSectionEl();
+    if ($lastVisibleSectionEl) {
+      var lastVisibleSection = this.sections.get($lastVisibleSectionEl.attr('id'));
+      if (lastVisibleSection != this.activeSection) {
+        this.setSection(lastVisibleSection, {showActiveSection: false});
+      }
+    }
+  }
 });
 
 // Master view that shows the story structure visualization initially
