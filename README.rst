@@ -23,6 +23,7 @@ This project includes a number of excellent open-source libraries:
 * `ICanHaz.js <http://icanhazjs.com/>`_ by  Henrik Joreteg
 * `jQuery <http://jquery.org/>`_ by John Resig
 * `json2.js <https://github.com/douglascrockford/JSON-js/>`_ by Douglas Crockford
+* `Formalize <http://formalize.me/>` by Nathan Smith
 * `Modernizr <http://modernizr.com/>`_
 * `Namespace.js <https://github.com/maximebf/Namespace.js>`_ by Maxime Bouroumeau-Fuseau
 * `Normalize.css <http://github.com/necolas/normalize.css>`_ by Nicolas Gallagher and Jonathan Neal
