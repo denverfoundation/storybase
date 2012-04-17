@@ -19,7 +19,7 @@ class ShortTextField(models.TextField):
 
     """
     def formfield(self, **kwargs):
-        defaults = {'widget': forms.CharField}
+        defaults = {'widget': forms.TextInput}
         defaults.update(kwargs)
         return super(ShortTextField, self).formfield(**defaults)
 
