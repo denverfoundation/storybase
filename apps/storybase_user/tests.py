@@ -1,12 +1,18 @@
+"""Unit tests for users app"""
+
 from time import sleep
+
+from django.contrib.auth.models import Group, User
 from django.test import TestCase
 from django.utils import translation
+
 from storybase.utils import slugify
 from storybase_story.models import create_story
-from models import (create_organization, create_project,
+from storybase_user.models import (create_organization, create_project,
     Organization, OrganizationStory, OrganizationTranslation,
-    Project, ProjectStory, ProjectTranslation)
-    
+    Project, ProjectStory, ProjectTranslation,
+    ADMIN_GROUP_NAME)
+from storybase_user.utils import get_admin_emails
 
 class OrganizationModelTest(TestCase):
     def _create_organization(self, name, language):
@@ -244,3 +250,44 @@ class ProjectApiTest(TestCase):
         retrieved_project = Project.objects.get(pk=project.pk)
         self.assertEqual(retrieved_project.name, name)
         self.assertEqual(retrieved_project.description, description)
+
+
+class UtilityTest(TestCase):
+    """Test for utility functions"""
+    def test_get_admin_emails(self):
+        """Test get_admin_emails() returns a list of administrator emails"""
+        admin_group = Group.objects.create(name=ADMIN_GROUP_NAME)
+        admin1 = User.objects.create(username='admin1', password='password',
+                                     email='foo@bar.com')
+        admin1.groups.add(admin_group)
+        admin1.save()
+        admin2 = User.objects.create(username='admin2', password='password',
+                                     email='foo2@bar.com')
+        admin2.groups.add(admin_group)
+        admin2.save()
+        nonadmin = User.objects.create(username='test1', 
+                                       password='password',
+                                       email='foo3@bar.com')
+        admin_emails = get_admin_emails()
+        self.assertEqual(len(admin_emails), 2)
+        self.assertIn(admin1.email, admin_emails)
+        self.assertIn(admin2.email, admin_emails)
+
+    def test_get_admin_emails_fallback(self):
+        """
+        Tests that superuser emails are defined if there are no users in
+        the admin group
+        """
+        admin1 = User.objects.create(username='admin1', password='password',
+                                     email='foo@bar.com',
+                                     is_superuser=True)
+        admin2 = User.objects.create(username='admin2', password='password',
+                                     email='foo2@bar.com',
+                                     is_superuser=True)
+        nonadmin = User.objects.create(username='test1', 
+                                       password='password',
+                                       email='foo3@bar.com')
+        admin_emails = get_admin_emails()
+        self.assertEqual(len(admin_emails), 2)
+        self.assertIn(admin1.email, admin_emails)
+        self.assertIn(admin2.email, admin_emails)

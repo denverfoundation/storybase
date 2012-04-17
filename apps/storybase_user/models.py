@@ -9,6 +9,9 @@ from storybase.models import (TimestampedModel,
     TranslatedModel, TranslationModel)
 from storybase.utils import slugify
 
+ADMIN_GROUP_NAME = getattr(settings, 'ADMIN_GROUP_NAME', 'CA Admin')
+"""Default name of the administrator group"""
+
 class CuratedStory(models.Model):
     """ Abstract base class for "through" model for associating Stories with Projects and Organizations """
     story = models.ForeignKey('storybase_story.Story')
