@@ -1,0 +1,11 @@
+{% load i18n %}
+
+{% trans "Name" %}: {{ message.name }}
+{% trans "Email" %}: {{ message.email }}
+{% if message.phone %}
+{% trans "Phone" %}: {{ message.phone }}
+{% endif %}
+{% trans "Message" %}:
+
+{{ message.message }}
+

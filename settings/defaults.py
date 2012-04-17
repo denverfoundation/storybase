@@ -182,6 +182,7 @@ INSTALLED_APPS = (
     'tinymce',
 
     # StoryBase
+    'storybase_action',
     'storybase_user',
     'storybase_asset',
     'storybase_story',
@@ -253,6 +254,13 @@ AJAX_SELECT_INLINES = 'inline'
 # tinymce settings
 TINYMCE_JS_URL = os.path.join(STATIC_URL, 'js/libs/tiny_mce/tiny_mce.js')
 TINYMCE_JS_ROOT = os.path.join(STATIC_ROOT, 'js/libs/tiny_mce')
+
+# storybase settings
+# The name of the group used for site administrators
+ADMIN_GROUP_NAME = 'CA Admin'
+# The "from" address of emails sent from the system
+# Set this in per-instance settings
+#DEFAULT_FROM_EMAIL = ''
 
 # allauth settings
 ACCOUNT_EMAIL_REQUIRED = True

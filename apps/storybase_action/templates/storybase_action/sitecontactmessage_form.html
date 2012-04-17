@@ -1,0 +1,11 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block head_title %}{%trans "Contact Us" %}{% endblock %}
+
+{% block base_content %}
+<form method="post">{% csrf_token %}
+{{ form.as_p }}
+<input type="submit" value="{% trans "Submit" %}" />
+</form>
+{% endblock %}
