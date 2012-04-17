@@ -5,6 +5,11 @@
 
 {% block base_content %}
 <form method="post">{% csrf_token %}
+<p class="instructions">
+{% blocktrans %}
+Fields marked with a * are required.
+{% endblocktrans %}
+</p>
 {{ form.as_p }}
 <input type="submit" value="{% trans "Submit" %}" />
 </form>
