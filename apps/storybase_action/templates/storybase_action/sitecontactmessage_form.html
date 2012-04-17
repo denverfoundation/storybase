@@ -5,12 +5,13 @@
 
 {% block base_content %}
 <form method="post">{% csrf_token %}
-<p class="instructions">
-{% blocktrans %}
-Fields marked with a * are required.
-{% endblocktrans %}
-</p>
-{{ form.as_p }}
-<input type="submit" value="{% trans "Submit" %}" />
+  <p class="instructions">{% trans "Fields marked with a * are required" %}</p>
+  
+  {% if form.errors %}
+  <p class="message error">{% trans "There were errors in your submission" %}</p>
+  {% endif %}
+  
+  {{ form.as_p }}
+  <input type="submit" value="{% trans "Submit" %}" />
 </form>
 {% endblock %}
