@@ -78,6 +78,8 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
 		                      default=False)
     contact_info = models.TextField(_("Contact Information"),
                                     blank=True)
+    call_to_action = models.TextField(_("Call to Action"),
+                                      blank=True)
     #tags = TaggableManager(through=TaggedItem, blank=True)
 
     objects = StoryManager()
