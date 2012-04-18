@@ -1,12 +1,18 @@
+"""Models representing people or groups of people"""
+
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
+from django.utils.translation import ugettext as _
+
 from uuidfield.fields import UUIDField
+
 from storybase.fields import ShortTextField
-from storybase.models import (TimestampedModel,
-    TranslatedModel, TranslationModel)
+from storybase.models import (TimestampedModel, TranslatedModel,
+                              TranslationModel)
+    
 from storybase.utils import slugify
 
 ADMIN_GROUP_NAME = getattr(settings, 'ADMIN_GROUP_NAME', 'CA Admin')
@@ -183,6 +189,36 @@ def add_story_to_project(sender, instance, **kwargs):
         if instance not in story.projects.all():
             story.projects.add(instance)
             story.save()
+
+class Contact(models.Model):
+    """Contact information for a person or organization"""
+    name = ShortTextField(_("Name"), blank=True)
+    info = models.TextField(_("Contact Information"), blank=True)
+    """Free text representation of contact information
+
+    This could include a street address, phone number or email address.
+    In the future, it might make sense to parse this out into separate
+    fields
+    """
+    # TODO: Decide if we want to store all this additional information
+    # as separate fields
+    #org_name = ShortTextField(_("Organization"), blank=True)
+    #street = models.TextField(_("Street"), blank=True)
+    #po_box = ShortTextField(_("PO Box"), blank=True)
+    #neighborhood = ShortTextField(_("Neighborhood"), blank=True)
+    #city = ShortTextField(_("City"), blank=True)
+    #state = ShortTextField(_("State/Province"), blank=True)
+    #postal_code = ShortTextField(_("Zip/Postal Code"), blank=True)
+    #country = ShortTextField(_("Country/Region"), blank=True)
+    #phone = models.CharField(_("Phone"), max_length=20,
+    #                         blank=True)
+
+    def __unicode__(self):
+        if self.name:
+            return unicode(self.name)
+        else:
+            return u"Contact %d" % self.pk
+
 
 def create_project(name, description='', website_url='', language=settings.LANGUAGE_CODE):
     """ Convenience function for creating a Project 

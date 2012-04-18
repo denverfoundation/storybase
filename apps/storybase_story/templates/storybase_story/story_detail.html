@@ -77,12 +77,13 @@
       </dd>
       {% endif %}
 
+      {% if story.contact %}
       <dt>{% trans "Contact Info" %}</dt>
       <dd>
-      TODO: Add Conact Info<br />
-      Denver, CO 80202<br />
-      (303) 825-6246
+      {{ story.contact.name }}
+      {{ story.contact.info|linebreaks }}
       </dd>
+      {% endif %}
     </dl>
   </aside>
 
