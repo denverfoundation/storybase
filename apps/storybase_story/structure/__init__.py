@@ -135,7 +135,7 @@ class SpiderStructure(BaseStructure):
             output.append("<li>")
             output.append("<a href='#sections/%s'>%s</a>" %
                           (section.section_id, section.title))
-            if section.is_root():
+            if section.children.count():
                 output.append("<ul>")
                 for child in section.children.order_by('weight'):
                     output.append(render_toc_section(child))
