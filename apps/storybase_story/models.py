@@ -25,7 +25,7 @@ from storybase.models import (LicensedModel, PublishedModel,
     set_date_on_published)
 from storybase.utils import slugify
 from storybase_asset.models import Asset
-from storybase_user.models import Contact, Organization, Project
+from storybase_user.models import Organization, Project
 from storybase_story.managers import StoryManager
 from storybase_story import structure
 #from storybase_tag.models import TaggedItem
@@ -76,9 +76,8 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
                                       blank=True)
     on_homepage = models.BooleanField(_("Featured on homepage"),
 		                      default=False)
-    contact = models.ForeignKey(Contact,
-                                verbose_name=_("Contact Information"),
-                                blank=True, null=True)
+    contact_info = models.TextField(_("Contact Information"),
+                                    blank=True)
     #tags = TaggableManager(through=TaggedItem, blank=True)
 
     objects = StoryManager()

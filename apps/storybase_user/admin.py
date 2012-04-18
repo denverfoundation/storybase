@@ -5,11 +5,10 @@ from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from storybase.admin import StorybaseModelAdmin, StorybaseStackedInline
-from storybase_user.models import (Contact,
-                                   Organization, OrganizationTranslation, 
+from storybase_user.models import (Organization, OrganizationTranslation, 
                                    Project, ProjectStory, 
                                    ProjectTranslation)
-   
+
 
 class StoryUserAdminForm(UserChangeForm):
     """ 
@@ -104,8 +103,3 @@ class ProjectAdmin(StorybaseModelAdmin):
     prefix_inline_classes = ['ProjectTranslationInline']
 
 admin.site.register(Project, ProjectAdmin)
-
-class ContactAdmin(StorybaseModelAdmin):
-    pass
-
-admin.site.register(Contact, ContactAdmin) 

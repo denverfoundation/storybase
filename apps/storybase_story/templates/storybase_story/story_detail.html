@@ -77,11 +77,10 @@
       </dd>
       {% endif %}
 
-      {% if story.contact %}
+      {% if story.contact_info %}
       <dt>{% trans "Contact Info" %}</dt>
       <dd>
-      {{ story.contact.name }}
-      {{ story.contact.info|linebreaks }}
+      {{ story.contact_info|linebreaks }}
       </dd>
       {% endif %}
     </dl>
