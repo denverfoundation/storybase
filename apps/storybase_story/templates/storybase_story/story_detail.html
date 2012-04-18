@@ -33,8 +33,12 @@
     <header>
       <h2>{% trans "How Can You Help?" %}</h2>
     </header>
-    <p class="fourcol">{% blocktrans %}Wondering what you can do to help? The contributor has listed the following actions that you can take to help.{% endblocktrans %}</p> 
-    <p>TODO: Output actions</p>
+    <div class="row">
+        <p class="fourcol">{% blocktrans %}Wondering what you can do to help? The contributor has listed the following actions that you can take to help.{% endblocktrans %}</p> 
+        <div class="eightcol last">
+        {{ story.call_to_action|safe }}
+        </div>
+    </div>
   </section>
 </div>
 

@@ -371,6 +371,10 @@ a#launch-story-viewer {
   right: 0;
 }
 
+section.actions .row {
+  min-width: 400px;
+}
+
 .addthis_toolbox {
   padding-top: 4%;
 }
