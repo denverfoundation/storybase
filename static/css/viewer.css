@@ -102,7 +102,7 @@
 .story-viewer path.link {
   fill: none;
   stroke-width: 2;
-  stroke: black;
+  stroke: #dddddd;
 }
 
 .story-viewer .node.active {

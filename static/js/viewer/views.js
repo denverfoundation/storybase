@@ -16,6 +16,7 @@ Globalize.addCultureInfo('es', {
   }
 });
 
+
 // Container view for the viewer application.
 // It delegates rendering and events for the entire app to views
 // rendering more specific "widgets"
@@ -184,10 +185,9 @@ storybase.viewer.views.Spider = Backbone.View.extend({
     var elId = this.$el.attr('id');
     var width = this.getVisDimensions().width; 
     var height = this.getVisDimensions().height; 
-    var treeWidth = width * .66;
-    var treeHeight = height * .66;
-    var translateX = (width - treeWidth) / 2;
-    var translateY = (height - treeHeight) / 2; 
+    var treeRadius = storybase.viewer.utils.min([width, height]) * .66;
+    var translateX = width / 2;
+    var translateY = height / 2; 
     var vis = d3.select("#" + elId).insert("svg", "section")
         .attr("id", this.visId)
         .attr("width", width)
@@ -195,8 +195,11 @@ storybase.viewer.views.Spider = Backbone.View.extend({
       .append("g")
       .attr("transform", "translate(" + translateX + ", " + translateY + ")");
     var rootSection = this.sections.at(0).populateChildren();
-    var tree = d3.layout.tree().size([treeWidth, treeHeight]);
-    var diagonal = d3.svg.diagonal();
+    var tree = d3.layout.tree()
+      .size([360, treeRadius - 220])
+      .separation(function(a, b) { return (a.parent == b.parent ? 1 : 2) / a.depth; });
+    var diagonal = d3.svg.diagonal.radial()
+      .projection(function(d) { return [d.y, d.x / 180 * Math.PI]; });
     var nodes = tree.nodes(rootSection);
     var links = tree.links(nodes);
 
@@ -212,16 +215,30 @@ storybase.viewer.views.Spider = Backbone.View.extend({
       .attr('class', function(d) {
         return "node section-" + d.id;
       })
-      .attr("transform",function(d) { return "translate(" + d.x + "," + d.y + ")"; });
+      .attr("transform", function(d) { 
+	var transform = "";
+	if (d.depth > 0) {
+	  transform += "rotate(" + (d.x - 90) + ")";
+	}
+        transform += "translate(" + d.y + ")";
+	return transform;
+      });
 
     node.append("circle")
         .attr("r", 10);
 
     node.append("text")
-      .attr("dx", function(d) { return d.children ? -20 : 20; })
-      .attr("dy", 3)
-      .attr("text-anchor", function(d) { return d.children ? "end" : "start"; }) 
-      .text(function(d) { return d.get('title'); })
+      .attr("dx", function(d) { return d.x < 180 ? 15 : -15; })
+      .attr("dy", ".31em")
+      .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
+      .attr("transform", function(d) {
+	var transform = null;
+	if (d.depth > 0) {
+          transform = d.x < 180 ? null : "rotate(180)"; 
+	}
+	return transform;
+      })
+      .text(function(d) { return d.get('title'); });
 
   },
 
