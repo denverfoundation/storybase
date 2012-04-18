@@ -2,15 +2,20 @@
 
 #import calendar
 #from datetime import datetime, date
+from itertools import chain
+
 from django import forms
 from django.utils import translation
 from django.utils.encoding import force_unicode
 from django.utils.html import conditional_escape
 from django.utils.safestring import mark_safe
+
 #from haystack.forms import FacetedSearchForm
-from itertools import chain
+from tinymce.widgets import TinyMCE
+
 from storybase.widgets import AdminLongTextInputWidget
-from storybase_story.models import Section, SectionTranslation
+from storybase_story.models import Section, SectionTranslation, Story
+
 
 class GroupedCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
     def __init__(self, attrs=None, choices=(), choice_groups=()):
@@ -173,3 +178,20 @@ class InlineSectionAdminForm(forms.ModelForm):
             model.save()
 
         return model
+
+
+class StoryAdminForm(forms.ModelForm):
+    class Meta:
+        model = Story 
+        widgets = {
+            'call_to_action': TinyMCE(
+                attrs={'cols': 80, 'rows': 30},
+                mce_attrs={
+                    'theme': 'advanced',
+                    'force_p_newlines': False,
+                    'forced_root_block': '',
+                    'theme_advanced_toolbar_location': 'top',
+                    'plugins': 'table',
+                    'theme_advanced_buttons3_add': 'tablecontrols'},
+                )
+        }

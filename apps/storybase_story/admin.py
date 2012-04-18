@@ -2,14 +2,16 @@
 
 from django.contrib import admin
 #from django.contrib.admin import SimpleListFilter
+
 #from ajax_select import make_ajax_form
 #from ajax_select.admin import AjaxSelectAdmin
+
 from storybase.admin import (StorybaseModelAdmin, StorybaseStackedInline,
     obj_title)
 from storybase_asset.models import Asset
 from storybase_story.models import (Story, StoryTranslation,
     Section, SectionTranslation, SectionAsset, SectionRelation)        
-from storybase_story.forms import InlineSectionAdminForm
+from storybase_story.forms import StoryAdminForm, InlineSectionAdminForm
 
 class StoryTranslationInline(StorybaseStackedInline):
     """Inline for translated fields of a Story"""
@@ -27,6 +29,7 @@ class SectionInline(StorybaseStackedInline):
 
 class StoryAdmin(StorybaseModelAdmin):
     """Representation of Story model in the admin interface"""
+    form = StoryAdminForm
     readonly_fields = ['story_id', 'created', 'last_edited']
     search_fields = ['storytranslation__title', 'author__first_name',
                      'author__last_name']
