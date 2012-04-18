@@ -168,18 +168,34 @@ storybase.viewer.views.Spider = Backbone.View.extend({
     d3.select('g.node.section-' + sectionId).classed('active', true);
   },
 
+  // Get the dimensions of the visualization's wrapper element
+  getVisDimensions: function() {
+    // We have to calculate the dimensions relative to the window rather than
+    // the parent element because the parent element is really tall as it
+    // also contains the (hidden) section content.  It seems there should be
+    // a better way to do this, but I don't know it.
+    return {
+      width: $(window).width(),
+      height: $(window).height() - $('header').first().outerHeight() - $('footer').first().outerHeight() 
+    };
+  },
+
   render: function() {
     var elId = this.$el.attr('id');
-    var width = this.$el.width(); 
-    var height = this.$el.height(); 
+    var width = this.getVisDimensions().width; 
+    var height = this.getVisDimensions().height; 
+    var treeWidth = width * .66;
+    var treeHeight = height * .66;
+    var translateX = (width - treeWidth) / 2;
+    var translateY = (height - treeHeight) / 2; 
     var vis = d3.select("#" + elId).insert("svg", "section")
         .attr("id", this.visId)
         .attr("width", width)
         .attr("height", height)
       .append("g")
-      .attr("transform", "translate(40, 100)");
+      .attr("transform", "translate(" + translateX + ", " + translateY + ")");
     var rootSection = this.sections.at(0).populateChildren();
-    var tree = d3.layout.tree().size([300, 150]);
+    var tree = d3.layout.tree().size([treeWidth, treeHeight]);
     var diagonal = d3.svg.diagonal();
     var nodes = tree.nodes(rootSection);
     var links = tree.links(nodes);
