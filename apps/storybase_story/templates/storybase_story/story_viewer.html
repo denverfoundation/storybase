@@ -83,6 +83,7 @@
     <script src="{{ STATIC_URL }}js/libs/backbone-min.js"></script>
     <script src="{{ STATIC_URL }}js/libs/ICanHaz.min.js"></script>
     <script src="{{ STATIC_URL }}js/libs/d3.v2.min.js"></script>
+    <script src="{{  STATIC_URL }}js/libs/globalize.js"></script>
 
     <script src="{{ STATIC_URL }}js/viewer/application.js"></script>
     <script src="{{ STATIC_URL }}js/viewer/models.js"></script>
@@ -91,6 +92,7 @@
 
     <script type="text/javascript">
     $(document).ready(function() {
+        Globalize.culture("{{ LANGUAGE_CODE }}");
         $('#toggle-toc').click(function(event) {
             event.preventDefault();
             $('#toc').slideToggle();

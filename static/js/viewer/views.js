@@ -3,6 +3,19 @@
  */
 Namespace('storybase.viewer');
 
+// Translations for interface text
+Globalize.addCultureInfo('en', {
+  messages: {
+    "Topic Map": "Topic Map"
+  }
+});
+
+Globalize.addCultureInfo('es', {
+  messages: {
+    "Topic Map": "Mapa Temático"
+  }
+});
+
 // Container view for the viewer application.
 // It delegates rendering and events for the entire app to views
 // rendering more specific "widgets"
@@ -274,7 +287,7 @@ storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend
 
   initialize: function() {
     this.navigationView = new storybase.viewer.views.StoryNavigation({
-      addlLinks: [{text: "Topic Map", id: 'topic-map'}]
+      addlLinks: [{text: Globalize.localize("Topic Map"), id: 'topic-map'}]
     });
     this.headerView = new storybase.viewer.views.StoryHeader();
     this.initialView = new storybase.viewer.views.Spider({
