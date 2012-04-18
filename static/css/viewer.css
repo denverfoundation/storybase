@@ -40,6 +40,10 @@
   padding: 1%;
 }
 
+.story-viewer section .title {
+  padding: 0;
+}
+
 .story-viewer #toc {
   position: fixed;
   bottom: 6%;

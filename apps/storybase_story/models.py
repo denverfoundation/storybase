@@ -309,6 +309,7 @@ class Section(node_factory('SectionRelation'), TranslatedModel):
         """Render a HTML representation of the section structure"""
         output = []
         output.append("<section id='%s'>" % self.section_id)
+	output.append("<h2 class='title'>%s</h2>" % self.title)
         for asset in self.assets.select_subclasses() \
                                 .order_by('sectionasset__weight'):
             output.append(asset.render_html())
