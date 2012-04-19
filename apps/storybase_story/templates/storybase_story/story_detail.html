@@ -24,7 +24,7 @@
     </header>
     {{ story.render_featured_asset }}
     <section class="summary">
-      {{ story.summary|linebreaks }}
+      {{ story.summary|safe|linebreaks }}
     </section>
     <a id="launch-story-viewer" class="button" href="./viewer">{% trans "View Story" %}</a>
   </section>
