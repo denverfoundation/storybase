@@ -228,11 +228,11 @@ storybase.viewer.views.Spider = Backbone.View.extend({
         .attr("r", 15);
 
     node.append("text")
-      .attr("dx", function(d) { 
+      .attr("x", function(d) { 
 	if (d.depth == 0) { return 20; }
         return d.x < 180 ? 20 : -20; 
       })
-      .attr("dy", ".31em")
+      .attr("y", ".31em")
       .attr("text-anchor", function(d) { 
 	if (d.depth == 0) { return "start"; }
         return d.x < 180 ? "start" : "end"; })
