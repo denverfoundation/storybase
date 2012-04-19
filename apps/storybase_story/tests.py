@@ -4,6 +4,7 @@ from time import sleep
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.test import TestCase
+from django.utils import simplejson
 from storybase.tests import SloppyTimeTestCase
 from storybase.utils import slugify
 from storybase_asset.models import HtmlAsset, HtmlAssetTranslation
@@ -886,3 +887,76 @@ class StructureTest(TestCase):
                          section3)
         self.assertEqual(story.structure.get_previous_section(section5),   
                          section4)
+
+    def test_sections_json_spider_three_levels(self):
+	def _get_section(sections, section_id):
+            for section in sections:
+	        if section['section_id'] == section_id:
+		    return section
+
+        title = ("Taking Action for the Social and Emotional Health of "
+	         "Young Children: A Report to the Community from the Denver "
+		 "Early Childhood Council")
+	summary = ("Now, Denver has a plan of action to make it easier for "
+	           "families to access early childhood mental health "
+		   "information, intervention and services.")
+	byline = "Denver Early Childhood Council"
+        story = create_story(title=title, summary=summary, byline=byline)
+        section1 = create_section("We're ready to take action. Are you?",
+			          story=story, weight=7)
+	section2 = create_section("Ricardo's Story",
+			          story=story, weight=2)
+	section3 = create_section("Meeting the need for better child mental health services",
+			           story=story, root=True, weight=1)
+	section4 = create_section("Healthy Minds Support Strong Futures",
+			          story=story, weight=5) 
+	section5 = create_section("Community Voices",
+			          story=story, weight=3)
+	section6 = create_section("Our Vision: That All Children in Denver are Valued, Healthy and Thriving",
+			          story=story, weight=4)
+	section7 = create_section("Defining a \"Framework for Change\" with Actionable Goals and Strategies",
+			          story=story, weight=5) 
+        section8 = create_section("How Can the Plan Make a Difference?",
+			          story=story, weight=5)
+	section9 = create_section("Impact", story=story, weight=6)
+        SectionRelation.objects.create(parent=section6, child=section8,
+                                       weight=0)
+        SectionRelation.objects.create(parent=section7, child=section9,
+                                       weight=0)
+        SectionRelation.objects.create(parent=section6, child=section7,
+                                       weight=0)
+        SectionRelation.objects.create(parent=section3, child=section1,
+                                       weight=0)
+        SectionRelation.objects.create(parent=section3, child=section6,
+                                       weight=0)
+        SectionRelation.objects.create(parent=section3, child=section4,
+                                       weight=0)
+        SectionRelation.objects.create(parent=section3, child=section5,
+                                       weight=0)
+        SectionRelation.objects.create(parent=section3, child=section2,
+                                       weight=0)
+	json_sections = simplejson.loads(story.structure.sections_json)
+	self.assertIn(
+	  section8.section_id,
+	  _get_section(json_sections, section6.section_id)['children'])
+	self.assertIn(
+	  section9.section_id,
+	  _get_section(json_sections, section7.section_id)['children'])
+	self.assertIn(
+	  section7.section_id,
+	  _get_section(json_sections, section6.section_id)['children'])
+	self.assertIn(
+	  section1.section_id,
+	  _get_section(json_sections, section3.section_id)['children'])
+	self.assertIn(
+	  section6.section_id,
+	  _get_section(json_sections, section3.section_id)['children'])
+	self.assertIn(
+	  section4.section_id,
+	  _get_section(json_sections, section3.section_id)['children'])
+	self.assertIn(
+	  section5.section_id,
+	  _get_section(json_sections, section3.section_id)['children'])
+	self.assertIn(
+	  section2.section_id,
+	  _get_section(json_sections, section3.section_id)['children'])
