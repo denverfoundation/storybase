@@ -228,9 +228,14 @@ storybase.viewer.views.Spider = Backbone.View.extend({
         .attr("r", 10);
 
     node.append("text")
-      .attr("dx", function(d) { return d.x < 180 ? 15 : -15; })
+      .attr("dx", function(d) { 
+	if (d.depth == 0) { return 15; }
+        return d.x < 180 ? 15 : -15; 
+      })
       .attr("dy", ".31em")
-      .attr("text-anchor", function(d) { return d.x < 180 ? "start" : "end"; })
+      .attr("text-anchor", function(d) { 
+	if (d.depth == 0) { return "start"; }
+        return d.x < 180 ? "start" : "end"; })
       .attr("transform", function(d) {
 	var transform = null;
 	if (d.depth > 0) {
