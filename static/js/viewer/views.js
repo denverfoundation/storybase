@@ -187,7 +187,7 @@ storybase.viewer.views.Spider = Backbone.View.extend({
     var height = this.getVisDimensions().height; 
     var treeRadius = _.min([width, height]) * .66;
     var translateX = width / 2;
-    var translateY = height / 2; 
+    var translateY = height / 3; 
     var vis = d3.select("#" + elId).insert("svg", "section")
         .attr("id", this.visId)
         .attr("width", width)
@@ -196,7 +196,7 @@ storybase.viewer.views.Spider = Backbone.View.extend({
       .attr("transform", "translate(" + translateX + ", " + translateY + ")");
     var rootSection = this.sections.at(0).populateChildren();
     var tree = d3.layout.tree()
-      .size([360, treeRadius - 220])
+      .size([360, treeRadius - 120])
       .separation(function(a, b) { return (a.parent == b.parent ? 1 : 2) / a.depth; });
     var diagonal = d3.svg.diagonal.radial()
       .projection(function(d) { return [d.y, d.x / 180 * Math.PI]; });
@@ -225,12 +225,12 @@ storybase.viewer.views.Spider = Backbone.View.extend({
       });
 
     node.append("circle")
-        .attr("r", 10);
+        .attr("r", 15);
 
     node.append("text")
       .attr("dx", function(d) { 
-	if (d.depth == 0) { return 15; }
-        return d.x < 180 ? 15 : -15; 
+	if (d.depth == 0) { return 20; }
+        return d.x < 180 ? 20 : -20; 
       })
       .attr("dy", ".31em")
       .attr("text-anchor", function(d) { 
@@ -239,7 +239,8 @@ storybase.viewer.views.Spider = Backbone.View.extend({
       .attr("transform", function(d) {
 	var transform = null;
 	if (d.depth > 0) {
-          transform = d.x < 180 ? null : "rotate(180)"; 
+          var rotation = 90 - d.x;
+          transform = "rotate(" + rotation + ")"; 
 	}
 	return transform;
       })
