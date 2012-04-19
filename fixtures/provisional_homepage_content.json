@@ -1,0 +1,151 @@
+[
+    {
+        "fields": {
+            "default_width": null, 
+            "slot": "column_one"
+        }, 
+        "model": "cms.placeholder", 
+        "pk": 1
+    }, 
+    {
+        "fields": {
+            "default_width": null, 
+            "slot": "column_two"
+        }, 
+        "model": "cms.placeholder", 
+        "pk": 2
+    }, 
+    {
+        "fields": {
+            "default_width": null, 
+            "slot": "base_content"
+        }, 
+        "model": "cms.placeholder", 
+        "pk": 3
+    }, 
+    {
+        "fields": {
+            "default_width": null, 
+            "slot": "below_content"
+        }, 
+        "model": "cms.placeholder", 
+        "pk": 4
+    }, 
+    {
+        "fields": {
+            "creation_date": "2012-04-19 13:49:25", 
+            "language": "en", 
+            "level": 0, 
+            "lft": 1, 
+            "parent": null, 
+            "placeholder": 1, 
+            "plugin_type": "HomepageStoriesPlugin", 
+            "position": 0, 
+            "rght": 2, 
+            "tree_id": 1
+        }, 
+        "model": "cms.cmsplugin", 
+        "pk": 1
+    }, 
+    {
+        "fields": {
+            "creation_date": "2012-04-19 13:49:34", 
+            "language": "en", 
+            "level": 0, 
+            "lft": 1, 
+            "parent": null, 
+            "placeholder": 2, 
+            "plugin_type": "TextPlugin", 
+            "position": 0, 
+            "rght": 2, 
+            "tree_id": 2
+        }, 
+        "model": "cms.cmsplugin", 
+        "pk": 2
+    }, 
+    {
+        "fields": {
+            "creation_date": "2012-04-19 14:03:51", 
+            "language": "en", 
+            "level": 0, 
+            "lft": 1, 
+            "parent": null, 
+            "placeholder": 4, 
+            "plugin_type": "TextPlugin", 
+            "position": 0, 
+            "rght": 2, 
+            "tree_id": 3
+        }, 
+        "model": "cms.cmsplugin", 
+        "pk": 3
+    }, 
+    {
+        "fields": {
+            "changed_by": "admin", 
+            "changed_date": "2012-04-19 14:07:53", 
+            "created_by": "admin", 
+            "creation_date": "2012-04-19 13:49:05", 
+            "in_navigation": true, 
+            "level": 0, 
+            "lft": 1, 
+            "limit_visibility_in_menu": null, 
+            "login_required": false, 
+            "moderator_state": 0, 
+            "navigation_extenders": "", 
+            "parent": null, 
+            "placeholders": [
+                1, 
+                2, 
+                3, 
+                4
+            ], 
+            "publication_date": "2012-04-19 14:07:53", 
+            "publication_end_date": null, 
+            "published": true, 
+            "publisher_is_draft": true, 
+            "publisher_public": null, 
+            "publisher_state": 1, 
+            "reverse_id": "home", 
+            "rght": 2, 
+            "site": 1, 
+            "soft_root": false, 
+            "template": "homepage.html", 
+            "tree_id": 1
+        }, 
+        "model": "cms.page", 
+        "pk": 1
+    }, 
+    {
+        "fields": {
+            "application_urls": "", 
+            "creation_date": "2012-04-19 13:49:05", 
+            "has_url_overwrite": false, 
+            "language": "en", 
+            "menu_title": "", 
+            "meta_description": "", 
+            "meta_keywords": "", 
+            "page": 1, 
+            "page_title": "", 
+            "path": "home", 
+            "redirect": "", 
+            "slug": "home", 
+            "title": "Home"
+        }, 
+        "model": "cms.title", 
+        "pk": 1
+    }, 
+    {
+        "fields": {
+            "body": "<h2>About</h2>\n<p style=\"font-weight: bold;\">The Citizen Atlas is a powerful story-building website that enables community change makers to inspire action and advance their issues through more substantive, engaging and persuasive data-driven storytelling.</p>\n<p>For years, journalists have used a technique known as visual narration to illustrate key facts and bring topics to life. By strategically incorporating a wide range of data visualization elements, including videos, photos, multi-media images, maps, graphs and more into their stories about people, communities, issues and challenges, community stakeholders can make their points in a more substantive, succinct and compelling manner.<br/><br/>The Citizen Atlas provides users with tools, guidance and techniques to develop, build and distribute powerful data-rich stories that blend first-hand knowledge with accessible public data to create visually compelling story-enhancing elements -- such as videos, photos, animation, maps, charts and more \u2013 that amplify the impact of their story and inspire others to action.</p>"
+        }, 
+        "model": "text.text", 
+        "pk": 2
+    }, 
+    {
+        "fields": {
+            "body": "<h2>Project Status</h2>\n<p>community open newsroom Tumblr Gannett we will make them pay engagement The Weekender Walter Lippmann privacy TweetDeck Dayton for under $900 a day, crowdfunding Dan Fleckner MinnPost Wikipedia dying Buttry just across the wire Zite commons-based peer production audience atomization overcome Alberto Ibarguen, This Week in Review backpack journalist cognitive surplus Bill Keller analytics NPR Lucius Nieman backpack journalist discuss. dingbat Dayton for under $900 a day The Printing Press as an Agent of Change hyperhyperhyperlocal writing Fuego trolls Neil Postman, #twittermakesyoustupid inverted pyramid 5 praise erasers &amp; how to avoid them natural-born blogger attracting young readers mathewi Fuego lede, trolls analytics CPM synergize Romenesko afternoon paper.</p>"
+        }, 
+        "model": "text.text", 
+        "pk": 3
+    }
+]
