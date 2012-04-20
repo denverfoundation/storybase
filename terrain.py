@@ -454,3 +454,7 @@ def i18n_last_edited_now(step, language):
         world.translate_date(world.browser.find_by_css('time.last-edited').value, language),
         '%B %d, %Y %I:%M %p')
     world.assert_now(last_edited, 60)
+
+@step(u'Given the user navigates to "([^"]*)"')
+def user_navigates_to_path(step, path):
+    world.browser.visit(django_url(path))
