@@ -69,7 +69,9 @@
 
         <footer>
           <a id="toggle-toc" href="#">Toggle Table of Contents</a>
+	  {% with addthis_url=story.get_full_url %}
           {% include "addthis_widget_small.html" %}
+	  {% endwith %}
         </footer>
     </div>
 
