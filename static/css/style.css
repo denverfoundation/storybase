@@ -256,12 +256,17 @@ header.pagetop {
   background-color: #CCCCCC;
 }
 
+header.pagetop nav.help {
+  text-align: right;
+  padding-top: 1%;
+}
+
 header.pagetop h1 a {
   color: #000;
   text-decoration: none;
 }
 
-header.pagetop nav li {
+header.pagetop nav.main li {
   display: inline-block;
   list-style-type: none;
   margin: 0 2px;
@@ -270,17 +275,17 @@ header.pagetop nav li {
   background-color: #666666;
 }
 
-header.pagetop nav li.selected {
+header.pagetop nav.main li.selected {
   background-color: #fff;
 }
 
-header.pagetop nav li a {
+header.pagetop nav.main li a {
   color: #fff;
   font-weight: bold;
   text-decoration: none;
 }
 
-header.pagetop nav li.selected a {
+header.pagetop nav.main li.selected a {
   color: #000;
 }
 
