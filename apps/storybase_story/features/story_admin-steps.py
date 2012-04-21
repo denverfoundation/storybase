@@ -20,26 +20,6 @@ def access_url(step, title):
     world.assert_is_uuid4(organization_id)
     world.browser.visit(django_url('/stories/%s' % organization_id))
 
-@step(u'Then the Story\'s title should be "([^"]*)"')
-def see_title(step, title):
-    world.assert_text_present(title)
-
-@step(u'Then the Story\'s summary is listed as the following:')
-def see_summary(step):
-    world.assert_text_present(step.multiline)
-
-@step(u'Then the Story\'s byline should be "([^"]*)"')
-def see_byline(step, byline):
-    world.assert_text_present(byline)
-
-@step(u'Then "([^"]*)" should be listed in the Story\'s Organizations list')
-def org_in_list(step, org_name):
-    world.assert_text_in_list('ul.organizations li', org_name)
-
-@step(u'Then "([^"]*)" should be listed in the Story\'s Projects list')
-def proj_in_list(step, proj_name):
-    world.assert_text_in_list('ul.projects li', proj_name)
-
 @step(u'Then the Story\'s last edited field should be set to within 1 minute of the current date and time')
 def last_edited_now(step):
     last_edited = datetime.strptime(world.browser.find_by_css('time.last-edited').first.value,
