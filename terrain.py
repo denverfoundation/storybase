@@ -513,3 +513,10 @@ def add_organization_to_project(step, name, title):
     story = Story.objects.get(storytranslation__title=title)
     story.organizations.add(org)
     story.save()
+
+@step(u'Given the Story "([^"]*)" has author "([^"]*)"')
+def set_story_author(step, title, author_username):
+    story = Story.objects.get(storytranslation__title=title)
+    user = User.objects.get(username=author_username)
+    story.author = user 
+    story.save()
