@@ -14,8 +14,10 @@ from splinter.browser import Browser
 from splinter.exceptions import ElementDoesNotExist
 import storybase_asset
 import storybase_story
+from storybase_story.models import create_story, Story, StoryTranslation
 import storybase_user
-from storybase_user.models import Organization, Project
+from storybase_user.models import (create_organization, create_project,
+                                   Organization, Project)
 
 # Utility methods
 
@@ -458,3 +460,56 @@ def i18n_last_edited_now(step, language):
 @step(u'Given the user navigates to "([^"]*)"')
 def user_navigates_to_path(step, path):
     world.browser.visit(django_url(path))
+
+@step(u'Given the user "([^"]*)" has first name "([^"]*)" and last name "([^"]*)"')
+def user_first_and_last_name_group3(step, username, first_name,
+                                    last_name):
+    user = User.objects.get(username=username)
+    user.first_name = first_name
+    user.last_name = last_name
+    user.save()
+
+@step(u'Given the Story "([^"]*)" has been created')
+def story_created(step, title):
+    create_story(title)
+
+@step(u'Given the Story "([^"]*)" is published')
+def story_published(step, title):
+    story = Story.objects.get(storytranslation__title=title)
+    story.status = 'published'
+    story.save()
+
+@step(u'Given the Organization "([^"]*)" has been created')
+def organization_created(step, name):
+    create_organization(name)
+
+@step(u'Given the Project "([^"]*)" has been created')
+def project_created(step, name):
+    create_project(name)
+
+@step(u'Given the Story "([^"]*)" has the following summary:')
+def set_story_summary(step, title):
+    story = Story.objects.get(storytranslation__title=title)
+    translation = StoryTranslation.objects.get(story=story, language='en') 
+    translation.summary = step.multiline
+    translation.save()
+    
+@step(u'Given the Story "([^"]*)" has the byline "([^"]*)"')
+def set_story_byline(step, title, byline):
+    story = Story.objects.get(storytranslation__title=title)
+    story.byline = byline
+    story.save()
+
+@step(u'Given the Project "([^"]*)" is associated with the Story "([^"]*)"')
+def add_project_to_story(step, name, title):
+    project = Project.objects.get(projecttranslation__name=name)
+    story = Story.objects.get(storytranslation__title=title)
+    story.projects.add(project)
+    story.save()
+
+@step(u'Given the Organization "([^"]*)" is associated with the Story "([^"]*)"')
+def add_organization_to_project(step, name, title):
+    org = Organization.objects.get(organizationtranslation__name=name)
+    story = Story.objects.get(storytranslation__title=title)
+    story.organizations.add(org)
+    story.save()
