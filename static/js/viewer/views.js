@@ -152,6 +152,34 @@ storybase.viewer.views.Spider = Backbone.View.extend({
     this.activeSection = null;
     // The id for the visualization's wrapper element
     this.visId = 'spider-vis';
+    this.maxDepth = null;
+    this.sectionsAtDepth = [];
+    this.maxSectionsAtDepth = 0;
+    this.walkSectionHierarchy(0, this.sections.at(0));
+  },
+
+  // Walk the section hierarchy to build a sense of its "shape"
+  walkSectionHierarchy: function(depth, section) {
+    if (this.maxDepth == null || 
+        depth > this.maxDepth) {
+      this.maxDepth = depth; 
+    } 
+
+    if (this.sectionsAtDepth[depth] === undefined) {
+      this.sectionsAtDepth[depth] = 1;
+    }
+    else {
+      this.sectionsAtDepth[depth]++;
+    }
+
+    if (this.sectionsAtDepth[depth] > this.maxSectionsAtDepth) {
+      this.maxSectionsAtDepth = this.sectionsAtDepth[depth];
+    }
+    
+    var $this = this;
+    _.each(section.get('children'), function(childId) {
+      $this.walkSectionHierarchy(depth + 1, $this.sections.get(childId));
+    });
   },
 
   // Return the visualization wrapper element
@@ -191,11 +219,17 @@ storybase.viewer.views.Spider = Backbone.View.extend({
     };
   },
 
+  // Get the radius of the tree
+  getTreeRadius: function(width, height) {
+    return (this.maxSectionsAtDepth == 1 ? _.max([width, height]) : _.min([width, height])) * .66;
+  },
+
   render: function() {
+    var $this = this;
     var elId = this.$el.attr('id');
     var width = this.getVisDimensions().width; 
     var height = this.getVisDimensions().height; 
-    var treeRadius = _.min([width, height]) * .66;
+    var treeRadius = this.getTreeRadius(width, height); 
     var vis = d3.select("#" + elId).insert("svg", "section")
         .attr("id", this.visId)
         .attr("width", width)
@@ -211,7 +245,7 @@ storybase.viewer.views.Spider = Backbone.View.extend({
     // Fix x coordinate (angle) when each level has only one child
     // In this case d.x = NaN which breakins things
     nodes = _.map(nodes, function(node) {
-      node.x = isNaN(node.x) ? 180 : node.x;
+      node.x = $this.maxSectionsAtDepth == 1 ? 90 : node.x;
       return node;
     });
     var links = tree.links(nodes);
@@ -250,18 +284,22 @@ storybase.viewer.views.Spider = Backbone.View.extend({
 	if (d.depth == 0) { return "start"; }
         return d.x < 180 ? "start" : "end"; })
       .attr("transform", function(d) {
-	var transform = null;
-	if (d.depth > 0) {
-          var rotation = 90 - d.x;
-          transform = "rotate(" + rotation + ")"; 
+	var rotation = 0;
+	if ($this.maxSectionsAtDepth == 1) {
+	  rotation = 315;
 	}
-	return transform;
+	else if (d.depth > 0) {
+          rotation = 90 - d.x;
+	}
+	return "rotate(" + rotation + ")"; 
       })
       .text(function(d) { return d.get('title'); });
 
-    
-    var translateX = width / 2;
-    var translateY = (vis[0][0].getBBox().height / 2) + (this.getHeaderHeight() / 2); 
+
+    // Center the tree within the viewport
+    var treeBBox = vis[0][0].getBBox(); 
+    var translateX = (0 - treeBBox.x) + ((width - treeBBox.width) / 2);
+    var translateY = (0 - treeBBox.y) + ((height - treeBBox.height) / 2); 
     vis.attr("transform", "translate(" + translateX + ", " + translateY + ")");
   },
 
