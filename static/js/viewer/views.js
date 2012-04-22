@@ -196,14 +196,11 @@ storybase.viewer.views.Spider = Backbone.View.extend({
     var width = this.getVisDimensions().width; 
     var height = this.getVisDimensions().height; 
     var treeRadius = _.min([width, height]) * .66;
-    var translateX = width / 2;
-    var translateY = _.max([height / 3, this.getHeaderHeight()]) + 15; 
     var vis = d3.select("#" + elId).insert("svg", "section")
         .attr("id", this.visId)
         .attr("width", width)
         .attr("height", height)
-      .append("g")
-      .attr("transform", "translate(" + translateX + ", " + translateY + ")");
+      .append("g");
     var rootSection = this.sections.at(0).populateChildren();
     var tree = d3.layout.tree()
       .size([360, treeRadius - 120])
@@ -256,6 +253,10 @@ storybase.viewer.views.Spider = Backbone.View.extend({
       })
       .text(function(d) { return d.get('title'); });
 
+    
+    var translateX = width / 2;
+    var translateY = (vis[0][0].getBBox().height / 2) + (this.getHeaderHeight() / 2); 
+    vis.attr("transform", "translate(" + translateX + ", " + translateY + ")");
   },
 
   // Event handler for hovering over a section node
