@@ -169,6 +169,16 @@ storybase.viewer.views.Spider = Backbone.View.extend({
     d3.select('g.node.section-' + sectionId).classed('active', true);
   },
 
+  // Get the height of the viewer header
+  getHeaderHeight: function() {
+    return $('header').first().outerHeight();
+  },
+
+  // Get the height of the viewer footer
+  getFooterHeight: function() {
+    return $('footer').first().outerHeight();
+  },
+
   // Get the dimensions of the visualization's wrapper element
   getVisDimensions: function() {
     // We have to calculate the dimensions relative to the window rather than
@@ -177,7 +187,7 @@ storybase.viewer.views.Spider = Backbone.View.extend({
     // a better way to do this, but I don't know it.
     return {
       width: $(window).width(),
-      height: $(window).height() - $('header').first().outerHeight() - $('footer').first().outerHeight() 
+      height: $(window).height() - this.getHeaderHeight() - this.getFooterHeight()
     };
   },
 
@@ -187,7 +197,7 @@ storybase.viewer.views.Spider = Backbone.View.extend({
     var height = this.getVisDimensions().height; 
     var treeRadius = _.min([width, height]) * .66;
     var translateX = width / 2;
-    var translateY = height / 3; 
+    var translateY = _.max([height / 3, this.getHeaderHeight()]) + 15; 
     var vis = d3.select("#" + elId).insert("svg", "section")
         .attr("id", this.visId)
         .attr("width", width)
