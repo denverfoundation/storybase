@@ -208,6 +208,12 @@ storybase.viewer.views.Spider = Backbone.View.extend({
     var diagonal = d3.svg.diagonal.radial()
       .projection(function(d) { return [d.y, d.x / 180 * Math.PI]; });
     var nodes = tree.nodes(rootSection);
+    // Fix x coordinate (angle) when each level has only one child
+    // In this case d.x = NaN which breakins things
+    nodes = _.map(nodes, function(node) {
+      node.x = isNaN(node.x) ? 180 : node.x;
+      return node;
+    });
     var links = tree.links(nodes);
 
     var link = vis.selectAll("path.link")
