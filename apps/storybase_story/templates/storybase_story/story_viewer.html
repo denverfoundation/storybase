@@ -61,6 +61,7 @@
 
         <div id="body">
 	  <section class="summary">
+	    <h2>{%trans "Summary" %}</h2>
             {{ story.summary|safe|linebreaks }}
 	  </section>
           {% for section in story.structure.sections_flat %}
