@@ -37,6 +37,8 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
     this.$el.addClass(this.elClass);
     this.$('footer').append(this.navigationView.el);
     this.navigationView.render();
+    this.$('.summary').show();
+    this.$('.section').show();
     return this;
   },
 
@@ -407,6 +409,7 @@ storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend
     this.$('footer').append(this.navigationView.el);
     this.navigationView.render();
     this.initialView.render();
+    this.$('.summary').show();
     // Hide all the section content initially
     this.$('.section').hide();
     return this;

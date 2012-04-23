@@ -60,12 +60,14 @@
         </header>
 
         <div id="body">
-	  <section class="summary">
+		<section class="summary" style="display: none;">
 	    <h2>{%trans "Summary" %}</h2>
             {{ story.summary|safe|linebreaks }}
 	  </section>
           {% for section in story.structure.sections_flat %}
+	  <section id="{{ section.section_id }}" class="section" style="display:none;">
           {{ section.render }}
+	  </section>
           {% endfor %}
         </div>
 
