@@ -209,10 +209,6 @@ form.errors .required textarea {
   border-color: red;
 }
 
-form .message.error {
-  color: red;
-}
-
 form ul.errorlist {
   margin: 0;
   padding: 0;
@@ -220,6 +216,18 @@ form ul.errorlist {
 }
 
 form ul.errorlist li { color: red; }
+
+/* ============================================================================
+   Messages
+   ========================================================================= */
+
+ul.messages {
+  padding: 0;
+}
+
+.messages .error {
+  color: red;
+}
 
 /* =============================================================================
    Tables

@@ -4,12 +4,16 @@
 {% block head_title %}{%trans "Contact Us" %}{% endblock %}
 
 {% block base_content %}
+{% if messages %}
+<ul class="messages">
+  {% for message in messages %}
+  <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+  {% endfor %}
+</ul>
+{% endif %}
+
 <form method="post" {%if form.errors %}class="errors"{% endif %}>{% csrf_token %}
   <p class="instructions">{% trans "Fields marked with a * are required" %}</p>
-  
-  {% if form.errors %}
-  <p class="message error">{% trans "Please fill out all required information" %}</p>
-  {% endif %}
   
   {{ form.as_p }}
   <input type="submit" value="{% trans "Submit" %}" />

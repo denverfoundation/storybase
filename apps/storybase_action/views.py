@@ -1,11 +1,14 @@
 """Views for the actions app"""
 
+from django.contrib import messages
+from django.utils.translation import ugettext as _
 from django.views.generic import CreateView
 
 from storybase_action.forms import SiteContactMessageForm
 from storybase_action.models import SiteContactMessage 
 
 class SiteContactMessageCreateView(CreateView):
+    """View for site-wide contact form"""
     model = SiteContactMessage
 
     def get_form_class(self):
@@ -18,4 +21,22 @@ class SiteContactMessageCreateView(CreateView):
         """
         # Just redirect to the front page for now
         return "/" 
-    
+   
+    def form_valid(self, form):
+	"""
+	Save the form instance, set the current object for the view and 
+	redirect to get_success_url()
+
+	Flashes a success message to the user
+	"""
+        messages.add_message(self.request, messages.SUCCESS, 
+	                     _("Thanks! Your message has been submitted to the "
+			       "site administrators"),
+			     fail_silently=False)
+	return super(SiteContactMessageCreateView, self).form_valid(form)
+
+    def form_invalid(self, form):
+	messages.add_message(self.request, messages.ERROR,
+			     _("Please fill out all required information"),
+			     fail_silently=False)
+	return super(SiteContactMessageCreateView, self).form_invalid(form)
