@@ -7,6 +7,7 @@ from django.db import models
 from django.db.models.signals import pre_save
 from django.utils.html import strip_tags
 from django.utils.text import truncate_words
+from django.utils.translation import ugettext as _
 from django.utils.safestring import mark_safe
 from filer.fields.image import FilerFileField, FilerImageField
 from model_utils.managers import InheritanceManager
@@ -145,7 +146,21 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
 	def get_thumbnail_url(self, width=150, height=100):
 	    """Return the URL of the Asset's thumbnail"""
 	    return None
-        
+
+    def full_caption_html(self, wrapper='figcaption'):
+        """Return the caption and attribution text together"""
+        output = self.caption
+        if self.attribution:
+	     if output:
+                 output += " "
+	     output += "<div class='attribution'>%s: %s</div>" % (
+			_("Attribution"), self.attribution)
+
+        if output:
+            output = "<%s>%s</%s>" % (wrapper, output, wrapper)
+
+        return output
+
 class AssetTranslation(TranslationModel):
     """
     Abstract base class for common translated metadata fields for Asset
@@ -219,10 +234,9 @@ class ExternalAsset(Asset):
                 else:
                     output.append(self.render_link_html())
 
-        if self.caption:
-            output.append('<figcaption>')
-            output.append(self.caption)
-            output.append('</figcaption>')
+        full_caption_html = self.full_caption_html()
+        if full_caption_html:
+	    output.append(full_caption_html)
         output.append('</figure>')
 
         return mark_safe(u'\n'.join(output))
@@ -298,10 +312,9 @@ class HtmlAsset(Asset):
         if self.type == 'map':
             output.append('<figure>')
             output.append(self.body)
-            if self.caption:
-                output.append('<figcaption>')
-                output.append(self.caption)
-                output.append('</figcaption>')
+	    full_caption_html = self.full_caption_html()
+	    if full_caption_html:
+	        output.append(full_caption_html)
             output.append('</figure>')
         else:
             output.append(self.body)
@@ -337,10 +350,9 @@ class LocalImageAsset(Asset):
         output.append('<figure>')
         output.append('<img src="%s" alt="%s" />' % (self.image.url, 
                                                      self.title))
-        if self.caption:
-            output.append('<figcaption>')
-            output.append(self.caption)
-            output.append('</figcaption>')
+        full_caption_html = self.full_caption_html()
+        if full_caption_html:
+	    output.append(full_caption_html)
         output.append('</figure>')
             
         return mark_safe(u'\n'.join(output))
