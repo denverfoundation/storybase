@@ -60,6 +60,9 @@
         </header>
 
         <div id="body">
+	  <section class="summary">
+            {{ story.summary|safe|linebreaks }}
+	  </section>
           {% for section in story.structure.sections_flat %}
           {{ section.render }}
           {% endfor %}

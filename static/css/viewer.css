@@ -36,11 +36,20 @@
   padding-bottom: 4%;
 }
 
-.story-viewer section {
+.story-viewer .summary {
   padding: 1%;
 }
 
-.story-viewer section .title {
+.story-viewer .section {
+  padding: 1%;
+}
+
+.story-viewer .spider .summary {
+  float: left;
+  width: 18%;
+}
+
+.story-viewer .section .title {
   padding: 0;
 }
 

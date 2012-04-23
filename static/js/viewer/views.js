@@ -34,6 +34,7 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
 
   // Add the view's container element to the DOM and render the sub-views
   render: function() {
+    this.$el.addClass(this.elClass);
     this.$('footer').append(this.navigationView.el);
     this.navigationView.render();
     return this;
@@ -149,6 +150,9 @@ storybase.viewer.views.Spider = Backbone.View.extend({
 
   initialize: function() {
     this.sections = this.options.sections;
+    this.insertBefore = this.options.insertBefore;
+    this.subtractHeight = this.options.subtractHeight;
+    this.subtractWidth = this.options.subtractWidth;
     this.activeSection = null;
     // The id for the visualization's wrapper element
     this.visId = 'spider-vis';
@@ -197,15 +201,6 @@ storybase.viewer.views.Spider = Backbone.View.extend({
     d3.select('g.node.section-' + sectionId).classed('active', true);
   },
 
-  // Get the height of the viewer header
-  getHeaderHeight: function() {
-    return $('header').first().outerHeight();
-  },
-
-  // Get the height of the viewer footer
-  getFooterHeight: function() {
-    return $('footer').first().outerHeight();
-  },
 
   // Get the dimensions of the visualization's wrapper element
   getVisDimensions: function() {
@@ -213,9 +208,17 @@ storybase.viewer.views.Spider = Backbone.View.extend({
     // the parent element because the parent element is really tall as it
     // also contains the (hidden) section content.  It seems there should be
     // a better way to do this, but I don't know it.
+    width = $(window).width();
+    height = $(window).height();
+    _.each(this.subtractWidth, function(selector) {
+      width -= $(selector).outerWidth();
+    });
+    _.each(this.subtractHeight, function(selector) {
+      height -= $(selector).outerHeight();
+    });
     return {
-      width: $(window).width(),
-      height: $(window).height() - this.getHeaderHeight() - this.getFooterHeight()
+      width: width, 
+      height: height 
     };
   },
 
@@ -227,13 +230,13 @@ storybase.viewer.views.Spider = Backbone.View.extend({
   render: function() {
     var $this = this;
     var elId = this.$el.attr('id');
-    var width = this.getVisDimensions().width; 
-    var height = this.getVisDimensions().height; 
-    var treeRadius = this.getTreeRadius(width, height); 
-    var vis = d3.select("#" + elId).insert("svg", "section")
+    var dimensions = this.getVisDimensions();
+    var treeRadius = this.getTreeRadius(dimensions.width, dimensions.height); 
+    var vis = d3.select("#" + elId).insert("svg", this.insertBefore)
         .attr("id", this.visId)
-        .attr("width", width)
-        .attr("height", height)
+        .attr("width", dimensions.width)
+        .attr("height", dimensions.height)
+	.attr("style", "float:left")
       .append("g");
     var rootSection = this.sections.at(0).populateChildren();
     var tree = d3.layout.tree()
@@ -298,8 +301,8 @@ storybase.viewer.views.Spider = Backbone.View.extend({
 
     // Center the tree within the viewport
     var treeBBox = vis[0][0].getBBox(); 
-    var translateX = (0 - treeBBox.x) + ((width - treeBBox.width) / 2);
-    var translateY = (0 - treeBBox.y) + ((height - treeBBox.height) / 2); 
+    var translateX = (0 - treeBBox.x) + ((dimensions.width - treeBBox.width) / 2);
+    var translateY = (0 - treeBBox.y) + ((dimensions.height - treeBBox.height) / 2); 
     vis.attr("transform", "translate(" + translateX + ", " + translateY + ")");
   },
 
@@ -313,6 +316,8 @@ storybase.viewer.views.Spider = Backbone.View.extend({
 
 // Master view that shows a story in a linear fashion
 storybase.viewer.views.LinearViewerApp = storybase.viewer.views.ViewerApp.extend({
+  elClass: 'linear',
+
   // Get the position, from the top of the winder, of the lower edge of the
   // header
   headerBottom: function() {
@@ -374,6 +379,8 @@ storybase.viewer.views.LinearViewerApp = storybase.viewer.views.ViewerApp.extend
 
 // Master view that shows the story structure visualization initially
 storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend({
+  elClass: 'spider',
+
   events: {
     "click #topic-map": "clickTopicMapLink",
     "click g.node": "clickSectionNode"
@@ -386,25 +393,32 @@ storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend
     this.headerView = new storybase.viewer.views.StoryHeader();
     this.initialView = new storybase.viewer.views.Spider({
       el: this.$('#body'),
-      sections: this.options.sections
+      sections: this.options.sections,
+      insertBefore: '.section',
+      subtractWidth: ['.summary'],
+      subtractHeight: ['header', 'footer']
     });
     this.sections = this.options.sections;
     this.story = this.options.story;
   },
 
   render: function() {
+    this.$el.addClass(this.elClass);
     this.$('footer').append(this.navigationView.el);
     this.navigationView.render();
     this.initialView.render();
     // Hide all the section content initially
-    this.$('section').hide();
+    this.$('.section').hide();
     return this;
   },
 
+
   // Show the active section
   showActiveSection: function() {
+    // Hide the summary
+    this.$('.summary').hide();
     // Hide all sections other than the active one
-    this.$('section').hide();
+    this.$('.section').hide();
     this.$('#' + this.activeSection.id).show();
     // Hide the visualization 
     this.initialView.$('svg').hide();
@@ -434,6 +448,7 @@ storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend
   clickTopicMapLink: function(e) {
     this.activeSectionEl().toggle();
     this.initialView.visEl().show();
+    this.$('.summary').show();
   }
 
 });
