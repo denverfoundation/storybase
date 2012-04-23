@@ -1,6 +1,7 @@
 """Views for the actions app"""
 
 from django.contrib import messages
+from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 from django.views.generic import CreateView
 
@@ -19,8 +20,8 @@ class SiteContactMessageCreateView(CreateView):
         Determine the URL to redirect to when the form is successfully 
         validated
         """
-        # Just redirect to the front page for now
-        return "/" 
+        # Just redirect back to the contact page for now
+        return reverse('contact')
    
     def form_valid(self, form):
 	"""
