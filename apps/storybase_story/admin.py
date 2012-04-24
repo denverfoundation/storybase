@@ -11,11 +11,13 @@ from storybase.admin import (StorybaseModelAdmin, StorybaseStackedInline,
 from storybase_asset.models import Asset
 from storybase_story.models import (Story, StoryTranslation,
     Section, SectionTranslation, SectionAsset, SectionRelation)        
-from storybase_story.forms import StoryAdminForm, InlineSectionAdminForm
+from storybase_story.forms import (StoryAdminForm, InlineSectionAdminForm,
+		                   StoryTranslationAdminForm)
 
 class StoryTranslationInline(StorybaseStackedInline):
     """Inline for translated fields of a Story"""
     model = StoryTranslation
+    form = StoryTranslationAdminForm
     extra = 1
 
 

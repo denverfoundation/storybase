@@ -35,6 +35,8 @@ class StoryTranslation(TranslationModel):
     story = models.ForeignKey('Story')
     title = ShortTextField() 
     summary = models.TextField(blank=True)
+    call_to_action = models.TextField(_("Call to Action"),
+                                      blank=True)
 
     class Meta:
         """Model metadata options"""

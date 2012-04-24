@@ -14,7 +14,8 @@ from django.utils.safestring import mark_safe
 from tinymce.widgets import TinyMCE
 
 from storybase.widgets import AdminLongTextInputWidget
-from storybase_story.models import Section, SectionTranslation, Story
+from storybase_story.models import (Section, SectionTranslation, 
+		                    Story, StoryTranslation)
 
 
 class GroupedCheckboxSelectMultiple(forms.CheckboxSelectMultiple):
@@ -194,4 +195,14 @@ class StoryAdminForm(forms.ModelForm):
                     'plugins': 'table',
                     'theme_advanced_buttons3_add': 'tablecontrols'},
                 )
+        }
+
+class StoryTranslationAdminForm(forms.ModelForm):
+    class Meta:
+        model = StoryTranslation 
+        widgets = {
+            'call_to_action': TinyMCE(
+                attrs={'cols': 80, 'rows': 30},
+                mce_attrs={'theme': 'advanced', 'force_p_newlines': False, 'forced_root_block': '', 'theme_advanced_toolbar_location': 'top', 'plugins': 'table', 'theme_advanced_buttons3_add': 'tablecontrols'},
+            )
         }
