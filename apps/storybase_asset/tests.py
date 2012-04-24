@@ -1,8 +1,11 @@
 from datetime import datetime
+
+from django.contrib.auth.models import User
 from django.template.defaultfilters import striptags, truncatewords
 from django.test import TestCase
+
 from models import (ExternalAsset, HtmlAsset, HtmlAssetTranslation,
-    create_html_asset, create_external_asset)
+    create_html_asset, create_external_asset, create_external_dataset)
 from embedable_resource import EmbedableResource
 
 class AssetModelTest(TestCase):
@@ -200,3 +203,24 @@ class AssetApiTest(TestCase):
         self.assertEqual(retrieved_asset.caption, caption)
         self.assertEqual(retrieved_asset.asset_created, asset_created)
         self.assertEqual(retrieved_asset.attribution, attribution)
+
+class DataSetApiTest(TestCase):
+    """ Test the public API for creating DataSets """
+
+    def test_create_external_dataset(self):
+        """Test create_external_dataset()"""
+        user = User.objects.create(username='admin')
+        url = 'http://www.box.com/s/erutk9kacq6akzlvqcdr'
+        title = ("Metro Denver Free and Reduced Lunch Trends by School "
+                 "District")
+        source = "Colorado Department of Education for Source"
+        attribution = "The Piton Foundation"
+        dataset = create_external_dataset(title=title, url=url, 
+                                          source=source, 
+                                          attribution=attribution,
+                                          owner=user)
+        self.assertEqual(dataset.title, title)
+        self.assertEqual(dataset.download_url(), url)
+        self.assertEqual(dataset.owner, user)
+        self.assertEqual(dataset.source, source)
+        self.assertEqual(dataset.attribution, attribution)

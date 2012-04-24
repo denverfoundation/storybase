@@ -511,3 +511,25 @@ def create_external_asset(type, title='', caption='', url='',
         language=language)
     translation.save()
     return obj
+
+
+def create_external_dataset(title, url, description='',
+                            language=settings.LANGUAGE_CODE,
+                            *args, **kwargs):
+    """ Convenience function for creating an ExternalDataSet
+
+    Allows for creation of a DataSet without having to explicitly deal with
+    the translations.
+
+    """
+    obj = ExternalDataSet(
+        url=url,
+        *args, **kwargs)
+    obj.save()
+    translation = DataSetTranslation(
+        dataset=obj, 
+        title=title, 
+        description=description,
+        language=language)
+    translation.save()
+    return obj
