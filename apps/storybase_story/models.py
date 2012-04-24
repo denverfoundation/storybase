@@ -84,7 +84,7 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
 
     objects = StoryManager()
 
-    translated_fields = ['title', 'summary']
+    translated_fields = ['title', 'summary', 'call_to_action']
     translation_set = 'storytranslation_set'
 
     _structure_obj = None
