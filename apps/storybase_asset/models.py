@@ -147,20 +147,38 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
 	    """Return the URL of the Asset's thumbnail"""
 	    return None
 
+    def dataset_html(self, label=_("Associated Datasets")):
+        """Return an HTML list of associated datasets"""
+        output = []
+        if self.datasets.count():
+            download_label = _("Download the data")
+            output.append("p class=\"datasets-label\">%s:</p>" %
+                          label)
+            output.append("<ul class=\"datasets\">")
+            for dataset in self.datasets.select_subclasses():
+                output.append("<li>%s <a href=\"%s\">%s</a></li>" % 
+                              (dataset.title, dataset.download_url(),
+                               download_label))
+            output.append("</ul>")
+        return mark_safe(u'\n'.join(output))
+
     def full_caption_html(self, wrapper='figcaption'):
         """Return the caption and attribution text together"""
         output = self.caption
         if self.attribution:
-	     if output:
-                 output += " "
-	     output += "<div class='attribution'>%s: %s</div>" % (
-			_("Attribution"), self.attribution)
+            output += "<div class='attribution'>%s: %s</div>" % (
+			    _("Attribution"), self.attribution)
+
+        dataset_html = self.dataset_html()
+        if dataset_html:
+            output += dataset_html
 
         if output:
             output = "<%s>%s</%s>" % (wrapper, output, wrapper)
 
         return output
 
+        
 class AssetTranslation(TranslationModel):
     """
     Abstract base class for common translated metadata fields for Asset

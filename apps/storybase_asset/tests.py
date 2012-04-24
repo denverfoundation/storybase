@@ -74,7 +74,7 @@ class AssetModelTest(TestCase):
         self.assertIn(caption, asset.full_caption_html())
         self.assertIn(attribution, asset.full_caption_html())
 
-    def dataset_html_nothing(self):
+    def test_dataset_html_nothing(self):
         """
         Test that dataset_html() returns nothing when there are no
         associated datasets
@@ -82,13 +82,53 @@ class AssetModelTest(TestCase):
         asset = create_html_asset(type='image', title='Test Asset')
         self.assertEqual(asset.dataset_html(), "")
 
-    def dataset_html_one_dataset(self):
+    def test_dataset_html_one(self):
         """
         Test that dataset_html() lists a lone dataset associated
         with an Asset
         """
+        dataset_title = ("Metro Denver Free and Reduced Lunch Trends by "
+                         "School District")
+        dataset_url = 'http://www.box.com/s/erutk9kacq6akzlvqcdr'
         asset = create_html_asset(type='image', title='Test Asset')
-        self.fail("This tests needs to be implemented")
+        dataset = create_external_dataset(
+            title=dataset_title,
+            url=dataset_url,
+            source="Colorado Department of Education for Source",
+            attribution="The Piton Foundation")
+        asset.datasets.add(dataset)
+        asset.save()
+        self.assertIn(dataset_title, asset.dataset_html()) 
+        self.assertIn(dataset_url, asset.dataset_html())
+
+    def test_dataset_html_two(self):
+        """
+        Test that dataset_html() lists a lone dataset associated
+        with an Asset
+        """
+        dataset_title1 = ("Metro Denver Free and Reduced Lunch Trends by "
+                         "School District")
+        dataset_url1 = 'http://www.box.com/s/erutk9kacq6akzlvqcdr'
+        asset = create_html_asset(type='image', title='Test Asset')
+        dataset1 = create_external_dataset(
+            title=dataset_title1,
+            url=dataset_url1,
+            source="Colorado Department of Education for Source",
+            attribution="The Piton Foundation")
+        dataset_url2 = 'http://www.example.com/somedata.csv'
+        dataset_title2 = "Test Dataset"
+        dataset2 = create_external_dataset(
+            title=dataset_title2,
+            url=dataset_url2,
+            source="Test Dataset Source",
+            attribution="Test Dataset Hacker")
+        asset.datasets.add(dataset1)
+        asset.datasets.add(dataset2)
+        asset.save()
+        self.assertIn(dataset_title1, asset.dataset_html()) 
+        self.assertIn(dataset_url1, asset.dataset_html())
+        self.assertIn(dataset_title2, asset.dataset_html()) 
+        self.assertIn(dataset_url2, asset.dataset_html())
 
     def test_full_html_caption_dataset_only(self):
         """
@@ -96,7 +136,17 @@ class AssetModelTest(TestCase):
         when only datasets are associated with an asset
         """
         asset = create_html_asset(type='image', title='Test Asset')
-        self.fail("This test needs to be implemented")
+        dataset_title = ("Metro Denver Free and Reduced Lunch Trends by "
+                         "School District")
+        dataset_url = 'http://www.box.com/s/erutk9kacq6akzlvqcdr'
+        dataset = create_external_dataset(
+            title=dataset_title,
+            url=dataset_url,
+            source="Colorado Department of Education for Source",
+            attribution="The Piton Foundation")
+        asset.datasets.add(dataset)
+        asset.save()
+        self.assertIn(dataset_title, asset.full_caption_html())
 
 
 class HtmlAssetModelTest(TestCase):
@@ -203,6 +253,7 @@ class AssetApiTest(TestCase):
         self.assertEqual(retrieved_asset.caption, caption)
         self.assertEqual(retrieved_asset.asset_created, asset_created)
         self.assertEqual(retrieved_asset.attribution, attribution)
+
 
 class DataSetApiTest(TestCase):
     """ Test the public API for creating DataSets """
