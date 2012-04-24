@@ -458,6 +458,10 @@ storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend
   clickTopicMapLink: function(e) {
     var activeSectionEl = this.activeSectionEl();
     if (activeSectionEl !== null) {
+      // Only toggle the topic map if an active section has been set
+      // The only time there should not be one set is when the viewer 
+      // first loads
+      activeSectionEl.toggle();
       var visEl = this.initialView.visEl();
       if (visEl.css('display') == 'none') {
 	this.initialView.visEl().show();
