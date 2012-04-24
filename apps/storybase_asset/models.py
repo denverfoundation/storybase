@@ -152,7 +152,7 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
         output = []
         if self.datasets.count():
             download_label = _("Download the data")
-            output.append("p class=\"datasets-label\">%s:</p>" %
+            output.append("<p class=\"datasets-label\">%s:</p>" %
                           label)
             output.append("<ul class=\"datasets\">")
             for dataset in self.datasets.select_subclasses():
