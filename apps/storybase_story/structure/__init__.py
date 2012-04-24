@@ -1,6 +1,7 @@
 """Interpret a story and render its structure"""
 from django.utils import simplejson
 from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext as _
 
 class StructureManager(object):
     def __init__(self):
@@ -115,6 +116,10 @@ class BaseStructure(object):
     def get_previous_section(self, section):
         return self._previous_sections[section]
 
+    def call_to_action_toc_link(self):
+	"""Return a link to the call to action section in the viewer"""
+	return "<a href=\"#sections/call-to-action\">%s</a>" % _("How Can You Help?")
+
     def render_toc(self, format='html'):
         """Return a rendered table of contents for a story"""
         raise NotImplemented
@@ -152,6 +157,8 @@ class SpiderStructure(BaseStructure):
         for root_section in self.story.sections.filter(root=True) \
                                                .order_by('weight'):
             output.append(render_toc_section(root_section))
+	if self.story.call_to_action:
+	    output.append("<li>%s</li>" % self.call_to_action_toc_link())
         output.append("</ul>")
         return mark_safe(u'\n'.join(output))
 
@@ -182,6 +189,8 @@ class LinearStructure(BaseStructure):
         for root_section in self.story.sections.filter(root=True) \
                                                .order_by('weight'):
             output.append(render_toc_section(root_section))
+	if self.story.call_to_action:
+	    output.append("<li>%s</li>" % self.call_to_action_toc_link())
         output.append("</ul>")
         return mark_safe(u'\n'.join(output))
 

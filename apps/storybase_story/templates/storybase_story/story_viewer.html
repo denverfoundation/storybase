@@ -60,15 +60,23 @@
         </header>
 
         <div id="body">
-		<section class="summary" style="display: none;">
+          <section class="summary" style="display: none;">
 	    <h2>{%trans "Summary" %}</h2>
             {{ story.summary|safe|linebreaks }}
 	  </section>
+
           {% for section in story.structure.sections_flat %}
 	  <section id="{{ section.section_id }}" class="section" style="display:none;">
           {{ section.render }}
 	  </section>
           {% endfor %}
+
+	  {% if story.call_to_action %} 
+	  <section id="call-to-action" class="section call-to-action" style="display:none;">
+	    <h2>{% trans "How Can You Help?" %}</h2>
+	    {{ story.call_to_action|safe }}
+	  </section>
+	  {% endif %}
         </div>
 
         <nav id="toc">{{ story.structure.render_toc }}</nav>
@@ -100,6 +108,12 @@
 
     <script type="text/javascript">
     $(document).ready(function() {
+	{% if story.call_to_action %}
+	var hasCallToAction = true;
+	{% else %}
+	var hasCallToAction = false;
+	{% endif %}
+	var storyStructureType = '{{ story.structure_type }}';
         Globalize.culture("{{ LANGUAGE_CODE }}");
         $('#toggle-toc').click(function(event) {
             event.preventDefault();
@@ -110,9 +124,21 @@
         var story = new storybase.viewer.models.Story({{ story.structure.to_json }});
         var sections = new storybase.viewer.collections.Sections;
         sections.reset({{ story.structure.sections_json }});
+	if (hasCallToAction) {
+	  var lastSection = sections.last();
+	  var callSection = new storybase.viewer.models.Section({
+	    section_id: 'call-to-action',
+	    title: Globalize.localize("How Can You Help?"),
+	    children: [],
+	    previous_section_id: lastSection.id 
+	  });
+	  sections.push(callSection);
+	  lastSection.set({next_section_id : callSection.id});
+	}
         storybase.viewer.app = storybase.viewer.views.getViewerApp(
-            '{{ story.structure_type }}',
+            storyStructureType,
             {
+		hasCallToAction: hasCallToAction,
                 el: $('#app'),
                 story: story,
                 sections: sections

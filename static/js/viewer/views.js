@@ -6,13 +6,15 @@ Namespace('storybase.viewer');
 // Translations for interface text
 Globalize.addCultureInfo('en', {
   messages: {
-    "Topic Map": "Topic Map"
+    "Topic Map": "Topic Map",
+    "How Can You Help?": "How Can You Help?"
   }
 });
 
 Globalize.addCultureInfo('es', {
   messages: {
-    "Topic Map": "Mapa Temático"
+    "Topic Map": "Mapa Temático",
+    "How Can You Help?": "How Can You Help?"
   }
 });
 
@@ -23,10 +25,12 @@ Globalize.addCultureInfo('es', {
 storybase.viewer.views.ViewerApp = Backbone.View.extend({
   // Initialize the view
   initialize: function() {
-    this.navigationView = new storybase.viewer.views.StoryNavigation(); 
-    this.headerView = new storybase.viewer.views.StoryHeader();
     this.sections = this.options.sections;
     this.story = this.options.story;
+    this.navigationView = new storybase.viewer.views.StoryNavigation({
+      sections: this.options.sections
+    }); 
+    this.headerView = new storybase.viewer.views.StoryHeader();
     this.setSection(this.sections.at(0), {showActiveSection: false});
     _.bindAll(this, 'handleScroll');
     $(window).scroll(this.handleScroll);
@@ -70,9 +74,9 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
     this.setSection(this.sections.get(id));
   },
 
-  // Convenience method to get the element for the active
+  // Convenience method to get the element for the active section
   activeSectionEl: function() {
-    return this.$('#' + this.activeSection.id);
+      return this.$('#' + this.activeSection.id); 
   },
 
   // Event handler for scroll event
@@ -110,6 +114,7 @@ storybase.viewer.views.StoryNavigation = Backbone.View.extend({
 
   initialize: function() {
     this.section = null;
+    this.sections = this.options.sections;
     if (this.options.hasOwnProperty('addlLinks')) {
       this.addlLinks = this.options.addlLinks.map(function(link) {
         return {
@@ -127,10 +132,10 @@ storybase.viewer.views.StoryNavigation = Backbone.View.extend({
   render: function() {
     var context = {};
     if (this.section) {
-      context.next_section = this.section.collection.get(
-        this.section.get('next_section_id'));
-      context.previous_section = this.section.collection.get(
-        this.section.get('previous_section_id'));
+      context.next_section = this.sections.get(
+	this.section.get('next_section_id'));
+      context.previous_section = this.sections.get(
+	this.section.get('previous_section_id'));
     }
     context.addl_links = this.addlLinks;
 
@@ -202,7 +207,6 @@ storybase.viewer.views.Spider = Backbone.View.extend({
     d3.selectAll('g.node').classed('active', false);
     d3.select('g.node.section-' + sectionId).classed('active', true);
   },
-
 
   // Get the dimensions of the visualization's wrapper element
   getVisDimensions: function() {
@@ -364,7 +368,7 @@ storybase.viewer.views.LinearViewerApp = storybase.viewer.views.ViewerApp.extend
       }
       else {
 	var $lastVisibleSectionEl = this.getLastVisibleSectionEl();
-	  if ($lastVisibleSectionEl) {
+	if ($lastVisibleSectionEl) {
 	  var lastVisibleSection = this.sections.get($lastVisibleSectionEl.attr('id'));
 	  if (lastVisibleSection != this.activeSection) {
 	    newSection = lastVisibleSection; 
@@ -389,7 +393,10 @@ storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend
   },
 
   initialize: function() {
+    this.sections = this.options.sections;
+    this.story = this.options.story;
     this.navigationView = new storybase.viewer.views.StoryNavigation({
+      sections: this.options.sections,
       addlLinks: [{text: Globalize.localize("Topic Map"), id: 'topic-map'}]
     });
     this.headerView = new storybase.viewer.views.StoryHeader();
@@ -400,8 +407,6 @@ storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend
       subtractWidth: ['.summary'],
       subtractHeight: ['header', 'footer']
     });
-    this.sections = this.options.sections;
-    this.story = this.options.story;
   },
 
   render: function() {
@@ -449,9 +454,17 @@ storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend
 
   // Event handler for clicking the "Topic Map" link
   clickTopicMapLink: function(e) {
-    this.activeSectionEl().toggle();
-    this.initialView.visEl().show();
-    this.$('.summary').show();
+    var activeSectionEl = this.activeSectionEl();
+    if (activeSectionEl !== null) {
+      var visEl = this.initialView.visEl();
+      if (visEl.css('display') == 'none') {
+	this.initialView.visEl().show();
+      }
+      else {
+	this.initialView.visEl().hide();
+      }
+      this.$('.summary').toggle();
+    }
   }
 
 });
