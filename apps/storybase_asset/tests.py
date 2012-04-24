@@ -71,6 +71,30 @@ class AssetModelTest(TestCase):
         self.assertIn(caption, asset.full_caption_html())
         self.assertIn(attribution, asset.full_caption_html())
 
+    def dataset_html_nothing(self):
+        """
+        Test that dataset_html() returns nothing when there are no
+        associated datasets
+        """
+        asset = create_html_asset(type='image', title='Test Asset')
+        self.assertEqual(asset.dataset_html(), "")
+
+    def dataset_html_one_dataset(self):
+        """
+        Test that dataset_html() lists a lone dataset associated
+        with an Asset
+        """
+        asset = create_html_asset(type='image', title='Test Asset')
+        self.fail("This tests needs to be implemented")
+
+    def test_full_html_caption_dataset_only(self):
+        """
+        Test that full_html_caption() includes listed datasets
+        when only datasets are associated with an asset
+        """
+        asset = create_html_asset(type='image', title='Test Asset')
+        self.fail("This test needs to be implemented")
+
 
 class HtmlAssetModelTest(TestCase):
     def test_string_representation_from_title(self):
