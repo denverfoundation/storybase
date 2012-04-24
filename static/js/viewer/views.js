@@ -327,7 +327,7 @@ storybase.viewer.views.LinearViewerApp = storybase.viewer.views.ViewerApp.extend
   // Get the position, from the top of the winder, of the lower edge of the
   // header
   headerBottom: function() {
-    return this.$('header').offset().top + this.$('header').outerHeight(); 
+    return headerHeight = this.$('header').outerHeight()
   },
 
   footerTop: function() {
@@ -338,7 +338,9 @@ storybase.viewer.views.LinearViewerApp = storybase.viewer.views.ViewerApp.extend
   showActiveSection: function() {
     var sectionTop = this.$('#' + this.activeSection.id).offset().top;
     this._preventScrollEvent = true;
-    $(window).scrollTop(sectionTop - this.headerBottom());
+    var headerBottom = this.headerBottom();
+    var scrollBy = Math.ceil(sectionTop - this.headerBottom());
+    $(window).scrollTop(scrollBy);
   },
 
   // Return the element of the last visible story section
