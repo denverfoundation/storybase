@@ -386,7 +386,8 @@ def update_story_last_edited(sender, instance, **kwargs):
 post_save.connect(update_story_last_edited, sender=Section)
 
 def create_story(title, structure_type=structure.DEFAULT_STRUCTURE,
-                 summary='', language=settings.LANGUAGE_CODE, 
+                 summary='', call_to_action='',
+		 language=settings.LANGUAGE_CODE, 
                  *args, **kwargs):
     """Convenience function for creating a Story
 
@@ -397,7 +398,8 @@ def create_story(title, structure_type=structure.DEFAULT_STRUCTURE,
     obj = Story(structure_type=structure_type, *args, **kwargs)
     obj.save()
     translation = StoryTranslation(story=obj, title=title, summary=summary,
-                                   language=language)
+                                   call_to_action=call_to_action,
+				   language=language)
     translation.save()
     return obj
 
