@@ -470,7 +470,8 @@ class LocalDataSet(DataSet):
         """Returns the URL to the downloadable version of the data set"""
         return self.file.url 
 
-def create_html_asset(type, title='', caption='', body='', language=settings.LANGUAGE_CODE, *args, **kwargs):
+def create_html_asset(type, title='', caption='', body='', 
+                      language=settings.LANGUAGE_CODE, *args, **kwargs):
     """ Convenience function for creating a HtmlAsset
 
     Allows for creation of Assets without having to explicitly deal with
@@ -490,7 +491,8 @@ def create_html_asset(type, title='', caption='', body='', language=settings.LAN
     translation.save()
     return obj
 
-def create_external_asset(type, title='', caption='', url='', language=settings.LANGUAGE_CODE, *args, **kwargs):
+def create_external_asset(type, title='', caption='', url='', 
+                          language=settings.LANGUAGE_CODE, *args, **kwargs):
     """ Convenience function for creating a HtmlAsset
 
     Allows for creation of Assets without having to explicitly deal with
