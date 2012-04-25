@@ -420,6 +420,7 @@ storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend
       sections: this.options.sections,
       addlLinks: [{text: Globalize.localize("Topic Map"), id: 'topic-map'}]
     });
+    this.navigationView.setNextSection(this.sections.at(0));
     this.headerView = new storybase.viewer.views.StoryHeader();
     this.initialView = new storybase.viewer.views.Spider({
       el: this.$('#body'),
