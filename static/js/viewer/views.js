@@ -113,7 +113,7 @@ storybase.viewer.views.StoryNavigation = Backbone.View.extend({
   className: 'story-nav',
 
   initialize: function() {
-    this.section = null;
+    this.activeSection = null;
     this.sections = this.options.sections;
     if (this.options.hasOwnProperty('addlLinks')) {
       this.addlLinks = this.options.addlLinks.map(function(link) {
@@ -131,11 +131,11 @@ storybase.viewer.views.StoryNavigation = Backbone.View.extend({
 
   render: function() {
     var context = {};
-    if (this.section) {
+    if (this.activeSection) {
       context.next_section = this.sections.get(
-	this.section.get('next_section_id'));
+	this.activeSection.get('next_section_id'));
       context.previous_section = this.sections.get(
-	this.section.get('previous_section_id'));
+	this.activeSection.get('previous_section_id'));
     }
     context.addl_links = this.addlLinks;
 
@@ -144,7 +144,7 @@ storybase.viewer.views.StoryNavigation = Backbone.View.extend({
   },
 
   setSection: function(section) {
-    this.section = section;
+    this.activeSection = section;
     this.render();
   }
 });
