@@ -129,13 +129,15 @@ storybase.viewer.views.StoryNavigation = Backbone.View.extend({
     }
   },
 
+  // Render the view
+  // Updates the next/previous buttons and where the links point
   render: function() {
     var context = {};
-    if (this.activeSection) {
-      context.next_section = this.sections.get(
-	this.activeSection.get('next_section_id'));
-      context.previous_section = this.sections.get(
-	this.activeSection.get('previous_section_id'));
+    if (this.nextSection) {
+      context.next_section = this.nextSection;
+    }
+    if (this.previousSection) {
+      context.previous_section = this.previousSection;
     }
     context.addl_links = this.addlLinks;
 
@@ -143,8 +145,25 @@ storybase.viewer.views.StoryNavigation = Backbone.View.extend({
     return this;
   },
 
+  // Set the section pointed to by the next button
+  setNextSection: function(section) {
+    this.nextSection = section ? section : null; 
+  },
+
+  // Set the section pointed to by the previous button
+  setPreviousSection: function(section) { 
+    this.previousSection = section ? section : null;
+  },
+
+  // Set the active section of the view 
   setSection: function(section) {
     this.activeSection = section;
+    this.setNextSection(this.sections.get(
+      this.activeSection.get('next_section_id')
+    ));
+    this.setPreviousSection(this.sections.get( 	
+	this.activeSection.get('previous_section_id')
+    ));
     this.render();
   }
 });
