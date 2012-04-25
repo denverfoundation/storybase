@@ -355,10 +355,13 @@ storybase.viewer.views.LinearViewerApp = storybase.viewer.views.ViewerApp.extend
 	
   // Show the active section
   showActiveSection: function() {
+    console.debug('Scrolling to section "' + this.activeSection.get('title') +
+	          '"');
     var sectionTop = this.$('#' + this.activeSection.id).offset().top;
     this._preventScrollEvent = true;
     var headerBottom = this.headerBottom();
     var scrollBy = Math.ceil(sectionTop - this.headerBottom());
+    console.debug("Scrolling window by " + scrollBy);
     $(window).scrollTop(scrollBy);
   },
 
