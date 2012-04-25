@@ -130,6 +130,44 @@ class AssetModelTest(TestCase):
         self.assertIn(dataset_title2, asset.dataset_html()) 
         self.assertIn(dataset_url2, asset.dataset_html())
 
+    def test_dataset_html_download_text_links_to_file_true(self):
+        """
+        Test that dataset_html() has the correct interface text when the
+        dataset URL points to a downloadable file.
+        """
+        dataset_title = ("Metro Denver Free and Reduced Lunch Trends by "
+                         "School District")
+        dataset_url = 'http://www.box.com/s/erutk9kacq6akzlvqcdr'
+        asset = create_html_asset(type='image', title='Test Asset')
+        dataset = create_external_dataset(
+            title=dataset_title,
+            url=dataset_url,
+            source="Colorado Department of Education for Source",
+            attribution="The Piton Foundation",
+	    links_to_file=True)
+        asset.datasets.add(dataset)
+        asset.save()
+        self.assertIn("Download the data", asset.dataset_html()) 
+
+    def test_dataset_html_download_text_links_to_file_false(self):
+        """
+        Test that dataset_html() has the correct interface text when the
+        dataset URL doesn't point to a downloadable file.
+        """
+        dataset_title = ("Metro Denver Free and Reduced Lunch Trends by "
+                         "School District")
+        dataset_url = 'http://www.box.com/s/erutk9kacq6akzlvqcdr'
+        asset = create_html_asset(type='image', title='Test Asset')
+        dataset = create_external_dataset(
+            title=dataset_title,
+            url=dataset_url,
+            source="Colorado Department of Education for Source",
+            attribution="The Piton Foundation",
+	    links_to_file=False)
+        asset.datasets.add(dataset)
+        asset.save()
+        self.assertIn("View the data", asset.dataset_html()) 
+
     def test_full_html_caption_dataset_only(self):
         """
         Test that full_html_caption() includes listed datasets

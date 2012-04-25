@@ -156,6 +156,9 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
                           label)
             output.append("<ul class=\"datasets\">")
             for dataset in self.datasets.select_subclasses():
+                download_label = (_("Download the data") 
+				  if dataset.links_to_file
+				  else _("View the data"))
                 output.append("<li>%s <a href=\"%s\">%s</a></li>" % 
                               (dataset.title, dataset.download_url(),
                                download_label))
@@ -428,6 +431,11 @@ class DataSet(TranslatedModel, PublishedModel, TimestampedModel):
     dataset_id = UUIDField(auto=True)
     source = models.TextField(blank=True)
     attribution = models.TextField(blank=True)
+    links_to_file = models.BooleanField(_("Links to file"), default=True)
+    """
+    Whether the dataset links to a file that can be downloaded or to
+    a view of the data or a page describing the data.
+    """
     owner = models.ForeignKey(User, related_name="datasets", blank=True,
                               null=True)
     # dataset_created is when the data set itself was created
