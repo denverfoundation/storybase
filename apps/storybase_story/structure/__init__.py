@@ -120,6 +120,10 @@ class BaseStructure(object):
 	"""Return a link to the call to action section in the viewer"""
 	return "<a href=\"#sections/call-to-action\">%s</a>" % _("How Can You Help?")
 
+    def summary_toc_link(self):
+	"""Return a link to the summary section in the viewer"""
+        return "<a href=\"#sections/summary\">%s</a>" % _("Summary")
+
     def render_toc(self, format='html'):
         """Return a rendered table of contents for a story"""
         raise NotImplemented
@@ -154,6 +158,8 @@ class SpiderStructure(BaseStructure):
         if html_class is not None:
             html_class_str = " class='%s'" % html_class
         output.append("<ul%s>" % html_class_str)
+	if self.story.summary:
+	    output.append("<li>%s</li>" % self.summary_toc_link())
         for root_section in self.story.sections.filter(root=True) \
                                                .order_by('weight'):
             output.append(render_toc_section(root_section))
@@ -186,6 +192,8 @@ class LinearStructure(BaseStructure):
         if html_class is not None:
             html_class_str = " class='%s'" % html_class
         output.append("<ul%s>" % html_class_str)
+	if self.story.summary:
+	    output.append("<li>%s</li>" % self.summary_toc_link())
         for root_section in self.story.sections.filter(root=True) \
                                                .order_by('weight'):
             output.append(render_toc_section(root_section))

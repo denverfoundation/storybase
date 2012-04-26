@@ -60,7 +60,7 @@
         </header>
 
         <div id="body">
-          <section class="summary" style="display: none;">
+          <section id="summary" class="section summary" style="display: none;">
 	    <h2>{%trans "Summary" %}</h2>
             {{ story.summary|safe|linebreaks }}
 	  </section>
@@ -113,6 +113,11 @@
 	{% else %}
 	var hasCallToAction = false;
 	{% endif %}
+	{% if story.summary %}
+	var hasSummary = true;
+	{% else %}
+	var hasSummary = false;
+	{% endif %}
 	var storyStructureType = '{{ story.structure_type }}';
         Globalize.culture("{{ LANGUAGE_CODE }}");
         $('#toggle-toc').click(function(event) {
@@ -124,6 +129,17 @@
         var story = new storybase.viewer.models.Story({{ story.structure.to_json }});
         var sections = new storybase.viewer.collections.Sections;
         sections.reset({{ story.structure.sections_json }});
+	if (hasSummary) {
+	  var firstSection = sections.first();
+	  var summarySection = new storybase.viewer.models.Section({
+	    section_id: 'summary',
+	    title: Globalize.localize("Summary"),
+	    children: [],
+	    next_section_id: firstSection.id 
+	  });
+	  sections.unshift(summarySection);
+	  firstSection.set({previous_section_id : summarySection.id});
+	}
 	if (hasCallToAction) {
 	  var lastSection = sections.last();
 	  var callSection = new storybase.viewer.models.Section({
@@ -138,7 +154,6 @@
         storybase.viewer.app = storybase.viewer.views.getViewerApp(
             storyStructureType,
             {
-		hasCallToAction: hasCallToAction,
                 el: $('#app'),
                 story: story,
                 sections: sections

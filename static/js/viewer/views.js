@@ -7,14 +7,16 @@ Namespace('storybase.viewer');
 Globalize.addCultureInfo('en', {
   messages: {
     "Topic Map": "Topic Map",
-    "How Can You Help?": "How Can You Help?"
+    "How Can You Help?": "How Can You Help?",
+    "Summary": "Summary"
   }
 });
 
 Globalize.addCultureInfo('es', {
   messages: {
     "Topic Map": "Mapa Temático",
-    "How Can You Help?": "How Can You Help?"
+    "How Can You Help?": "How Can You Help?",
+    "Summary": "Summary"
   }
 });
 
@@ -178,6 +180,7 @@ storybase.viewer.views.Spider = Backbone.View.extend({
 
   initialize: function() {
     this.sections = this.options.sections;
+    this.firstSection = this.options.firstSection;
     this.insertBefore = this.options.insertBefore;
     this.subtractHeight = this.options.subtractHeight;
     this.subtractWidth = this.options.subtractWidth;
@@ -187,7 +190,7 @@ storybase.viewer.views.Spider = Backbone.View.extend({
     this.maxDepth = null;
     this.sectionsAtDepth = [];
     this.maxSectionsAtDepth = 0;
-    this.walkSectionHierarchy(0, this.sections.at(0));
+    this.walkSectionHierarchy(0, this.firstSection);
   },
 
   // Walk the section hierarchy to build a sense of its "shape"
@@ -265,7 +268,7 @@ storybase.viewer.views.Spider = Backbone.View.extend({
         .attr("height", dimensions.height)
 	.attr("style", "float:left")
       .append("g");
-    var rootSection = this.sections.at(0).populateChildren();
+    var rootSection = this.firstSection.populateChildren();
     var tree = d3.layout.tree()
       .size([360, treeRadius - 120])
       .separation(function(a, b) { return (a.parent == b.parent ? 1 : 2) / a.depth; });
@@ -431,16 +434,18 @@ storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend
 
   initialize: function() {
     this.sections = this.options.sections;
+    var firstSection = this.sections.at(0).id == 'summary' ? this.sections.at(1) : this.sections.at(0);
     this.story = this.options.story;
     this.navigationView = new storybase.viewer.views.StoryNavigation({
       sections: this.options.sections,
       addlLinks: [{text: Globalize.localize("Topic Map"), id: 'topic-map'}]
     });
-    this.navigationView.setNextSection(this.sections.at(0));
+    this.navigationView.setNextSection(firstSection);
     this.headerView = new storybase.viewer.views.StoryHeader();
     this.initialView = new storybase.viewer.views.Spider({
       el: this.$('#body'),
       sections: this.options.sections,
+      firstSection: firstSection,
       insertBefore: '.section',
       subtractWidth: ['.sidebar'],
       subtractHeight: ['header', 'footer']
@@ -449,15 +454,15 @@ storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend
 
   render: function() {
     this.$el.addClass(this.elClass);
-    // Create an element for the sidebar and move the summary into it
-    $('<div></div>').prependTo(this.$('#body')).addClass('sidebar')
-      .append(this.$('.summary'));
+    // Create an element for the sidebar 
+    $('<div></div>').prependTo(this.$('#body')).addClass('sidebar');
+    // Clone the summary and place it in the sidebar
+    this.$('#summary').clone().appendTo('.sidebar').removeAttr('id').removeClass('section').show();
     // Copy the call to action and place it in the sidebar
-    $('#call-to-action').clone().appendTo('.sidebar').removeAttr('id').removeClass('section').show();
+    this.$('#call-to-action').clone().appendTo('.sidebar').removeAttr('id').removeClass('section').show();
     this.$('footer').append(this.navigationView.el);
     this.navigationView.render();
     this.initialView.render();
-    this.$('.summary').show();
     // Hide all the section content initially
     this.$('.section').hide();
     return this;
