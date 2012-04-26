@@ -3,24 +3,6 @@
  */
 Namespace('storybase.viewer');
 
-// Translations for interface text
-Globalize.addCultureInfo('en', {
-  messages: {
-    "Topic Map": "Topic Map",
-    "How Can You Help?": "How Can You Help?",
-    "Summary": "Summary"
-  }
-});
-
-Globalize.addCultureInfo('es', {
-  messages: {
-    "Topic Map": "Mapa Temático",
-    "How Can You Help?": "How Can You Help?",
-    "Summary": "Summary"
-  }
-});
-
-
 // Container view for the viewer application.
 // It delegates rendering and events for the entire app to views
 // rendering more specific "widgets"
@@ -438,7 +420,7 @@ storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend
     this.story = this.options.story;
     this.navigationView = new storybase.viewer.views.StoryNavigation({
       sections: this.options.sections,
-      addlLinks: [{text: Globalize.localize("Topic Map"), id: 'topic-map'}]
+      addlLinks: [{text: gettext("Topic Map"), id: 'topic-map'}]
     });
     this.navigationView.setNextSection(firstSection);
     this.headerView = new storybase.viewer.views.StoryHeader();

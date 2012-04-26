@@ -27,6 +27,9 @@ urlpatterns += patterns('',
     #url(r'^admin/lookups/', include(ajax_select_urls)),
     url(r'^admin/', include(admin.site.urls)),
 
+    # Make translations available in JavaScript
+    (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', {}),
+
     # 3rd-party apps
     #(r'^taggit_autosuggest/', include('taggit_autosuggest.urls')),
     (r'^tinymce/', include('tinymce.urls')),
@@ -34,6 +37,7 @@ urlpatterns += patterns('',
 
     # django CMS URLs
     url(r'^', include('cms.urls')),
+
 )
 
 if settings.DEBUG:

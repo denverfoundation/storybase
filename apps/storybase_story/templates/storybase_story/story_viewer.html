@@ -93,13 +93,13 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.6.2/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="{{ STATIC_URL }}js/libs/jquery-1.6.2.min.js"><\/script>')</script>
 
+    <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
     <script src="{{ STATIC_URL }}js/libs/Namespace.js"></script>
     <script src="{{ STATIC_URL }}js/libs/underscore-min.js"></script>
     <script src="{{ STATIC_URL }}js/libs/json2.js"></script>
     <script src="{{ STATIC_URL }}js/libs/backbone-min.js"></script>
     <script src="{{ STATIC_URL }}js/libs/ICanHaz.min.js"></script>
     <script src="{{ STATIC_URL }}js/libs/d3.v2.min.js"></script>
-    <script src="{{  STATIC_URL }}js/libs/globalize.js"></script>
 
     <script src="{{ STATIC_URL }}js/viewer/application.js"></script>
     <script src="{{ STATIC_URL }}js/viewer/models.js"></script>
@@ -119,7 +119,6 @@
 	var hasSummary = false;
 	{% endif %}
 	var storyStructureType = '{{ story.structure_type }}';
-        Globalize.culture("{{ LANGUAGE_CODE }}");
         $('#toggle-toc').click(function(event) {
             event.preventDefault();
             $('#toc').slideToggle();
@@ -133,7 +132,7 @@
 	  var firstSection = sections.first();
 	  var summarySection = new storybase.viewer.models.Section({
 	    section_id: 'summary',
-	    title: Globalize.localize("Summary"),
+	    title: gettext("Summary"),
 	    children: [],
 	    next_section_id: firstSection.id 
 	  });
@@ -144,7 +143,7 @@
 	  var lastSection = sections.last();
 	  var callSection = new storybase.viewer.models.Section({
 	    section_id: 'call-to-action',
-	    title: Globalize.localize("How Can You Help?"),
+	    title: gettext("How Can You Help?"),
 	    children: [],
 	    previous_section_id: lastSection.id 
 	  });
