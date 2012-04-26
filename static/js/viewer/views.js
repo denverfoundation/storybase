@@ -442,13 +442,18 @@ storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend
       el: this.$('#body'),
       sections: this.options.sections,
       insertBefore: '.section',
-      subtractWidth: ['.summary'],
+      subtractWidth: ['.sidebar'],
       subtractHeight: ['header', 'footer']
     });
   },
 
   render: function() {
     this.$el.addClass(this.elClass);
+    // Create an element for the sidebar and move the summary into it
+    $('<div></div>').prependTo(this.$('#body')).addClass('sidebar')
+      .append(this.$('.summary'));
+    // Copy the call to action and place it in the sidebar
+    $('#call-to-action').clone().appendTo('.sidebar').removeAttr('id').removeClass('section').show();
     this.$('footer').append(this.navigationView.el);
     this.navigationView.render();
     this.initialView.render();
@@ -462,7 +467,7 @@ storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend
   // Show the active section
   showActiveSection: function() {
     // Hide the summary
-    this.$('.summary').hide();
+    this.$('.sidebar').hide();
     // Hide all sections other than the active one
     this.$('.section').hide();
     this.$('#' + this.activeSection.id).show();
@@ -499,13 +504,15 @@ storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend
       // first loads
       activeSectionEl.toggle();
       var visEl = this.initialView.visEl();
+      // $.toggle() doesn't seem to work on the svg element.
+      // Toggle the visibility of the element the hard way
       if (visEl.css('display') == 'none') {
 	this.initialView.visEl().show();
       }
       else {
 	this.initialView.visEl().hide();
       }
-      this.$('.summary').toggle();
+      this.$('.sidebar').toggle();
     }
   }
 
