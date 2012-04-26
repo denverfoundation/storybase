@@ -126,9 +126,11 @@ class BaseStructure(object):
                'section_id': 'summary',
                'title': _("Summary"),
                'children': [],
-               'next_section_id': sections[0]['section_id']
+               'next_section_id': (sections[0]['section_id'] if len(sections)
+		                   else None)
            }
-	   sections[0]['previous_section_id'] = 'summary'
+	   if len(sections):
+	       sections[0]['previous_section_id'] = 'summary'
 	   sections.insert(0, summary_section)
 
         if include_call_to_action and self.story.call_to_action:
@@ -136,9 +138,11 @@ class BaseStructure(object):
                 'section_id': 'call-to-action',
                 'title': _("How Can You Help?"),
                 'children': [],
-                'previous_section_id': sections[-1]['section_id']
+                'previous_section_id': (sections[-1]['section_id']
+			                if len(sections) else None)
             }
-	    sections[-1]['next_section_id'] = 'call-to-action'
+	    if len(sections):
+	        sections[-1]['next_section_id'] = 'call-to-action'
 	    sections.append(call_to_action_section)
 
         return mark_safe(simplejson.dumps(sections))
