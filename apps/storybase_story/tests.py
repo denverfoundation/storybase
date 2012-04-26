@@ -494,9 +494,10 @@ class StructureTest(TestCase):
         #print rendered_toc
         fragment = lxml.html.fromstring(rendered_toc)
         elements = fragment.cssselect('li')
-        self.assertEqual(len(elements), len(section_data))
-        for i in range(len(section_data)):
-            self.assertEqual(section_data[i]['title'],
+        self.assertEqual(len(elements), len(section_data) + 1)
+	self.assertEqual(elements[0].text_content().strip(), "Summary")
+        for i in range(1, len(section_data)):
+            self.assertEqual(section_data[i-1]['title'],
                              elements[i].text_content().strip())
         
     def test_sections_flat_linear_nested(self):
