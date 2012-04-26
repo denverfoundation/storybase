@@ -101,12 +101,45 @@ class BaseStructure(object):
     def sections_flat(self):
         return self._sections_flat
 
-    @property
-    def sections_json(self):
-        """Return a JSON representation of the story sections"""
+    def sections_json(self, include_summary=True, include_call_to_action=True):
+        """Return a JSON representation of the story sections
+
+	This representation doesn't include the content of sections, just
+	their titles, IDs and the relationship with other sections.
+
+	This is useful for calling from templates to bootstrap a Backbone
+	collection.
+	
+	Keyword arguments:
+	include_summary -- Include the story summary as the first section 
+	                   (default True)
+	include_call_to_action -- Include the call to action as the last
+	                          section (default True)
+
+	"""
         sections = [] 
         for section in self._sections_flat:
             sections.append(section.to_simple())
+
+	if include_summary and self.story.summary:
+	   summary_section = {
+               'section_id': 'summary',
+               'title': _("Summary"),
+               'children': [],
+               'next_section_id': sections[0]['section_id']
+           }
+	   sections[0]['previous_section_id'] = 'summary'
+	   sections.insert(0, summary_section)
+
+        if include_call_to_action and self.story.call_to_action:
+            call_to_action_section = {
+                'section_id': 'call-to-action',
+                'title': _("How Can You Help?"),
+                'children': [],
+                'previous_section_id': sections[-1]['section_id']
+            }
+	    sections[-1]['next_section_id'] = 'call-to-action'
+	    sections.append(call_to_action_section)
 
         return mark_safe(simplejson.dumps(sections))
 

@@ -108,16 +108,6 @@
 
     <script type="text/javascript">
     $(document).ready(function() {
-	{% if story.call_to_action %}
-	var hasCallToAction = true;
-	{% else %}
-	var hasCallToAction = false;
-	{% endif %}
-	{% if story.summary %}
-	var hasSummary = true;
-	{% else %}
-	var hasSummary = false;
-	{% endif %}
 	var storyStructureType = '{{ story.structure_type }}';
         $('#toggle-toc').click(function(event) {
             event.preventDefault();
@@ -128,28 +118,6 @@
         var story = new storybase.viewer.models.Story({{ story.structure.to_json }});
         var sections = new storybase.viewer.collections.Sections;
         sections.reset({{ story.structure.sections_json }});
-	if (hasSummary) {
-	  var firstSection = sections.first();
-	  var summarySection = new storybase.viewer.models.Section({
-	    section_id: 'summary',
-	    title: gettext("Summary"),
-	    children: [],
-	    next_section_id: firstSection.id 
-	  });
-	  sections.unshift(summarySection);
-	  firstSection.set({previous_section_id : summarySection.id});
-	}
-	if (hasCallToAction) {
-	  var lastSection = sections.last();
-	  var callSection = new storybase.viewer.models.Section({
-	    section_id: 'call-to-action',
-	    title: gettext("How Can You Help?"),
-	    children: [],
-	    previous_section_id: lastSection.id 
-	  });
-	  sections.push(callSection);
-	  lastSection.set({next_section_id : callSection.id});
-	}
         storybase.viewer.app = storybase.viewer.views.getViewerApp(
             storyStructureType,
             {
