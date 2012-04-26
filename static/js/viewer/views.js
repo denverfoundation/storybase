@@ -158,12 +158,14 @@ storybase.viewer.views.StoryNavigation = Backbone.View.extend({
   // Set the active section of the view 
   setSection: function(section) {
     this.activeSection = section;
-    this.setNextSection(this.sections.get(
-      this.activeSection.get('next_section_id')
-    ));
-    this.setPreviousSection(this.sections.get( 	
-	this.activeSection.get('previous_section_id')
-    ));
+    if (this.activeSection) {
+      this.setNextSection(this.sections.get(
+	this.activeSection.get('next_section_id')
+      ));
+      this.setPreviousSection(this.sections.get( 	
+	  this.activeSection.get('previous_section_id')
+      ));
+    }
     this.render();
   }
 });
@@ -343,59 +345,70 @@ storybase.viewer.views.Spider = Backbone.View.extend({
 storybase.viewer.views.LinearViewerApp = storybase.viewer.views.ViewerApp.extend({
   elClass: 'linear',
 
-  // Get the position, from the top of the winder, of the lower edge of the
-  // header
-  headerBottom: function() {
-    return headerHeight = this.$('header').outerHeight()
-  },
-
   footerTop: function() {
     return this.$('footer').offset().top;
   },
 	
   // Show the active section
   showActiveSection: function() {
-    console.debug('Scrolling to section "' + this.activeSection.get('title') +
-	          '"');
     var sectionTop = this.$('#' + this.activeSection.id).offset().top;
     this._preventScrollEvent = true;
-    var headerBottom = this.headerBottom();
-    var scrollBy = Math.ceil(sectionTop - this.headerBottom());
-    console.debug("Scrolling window by " + scrollBy);
-    $(window).scrollTop(scrollBy);
+    var headerHeight = this.$('header').outerHeight();
+    // Calculate
+    var scrollPosition = Math.ceil(sectionTop - headerHeight);
+    if (scrollPosition >= $(document).height() - $(window).height()) {  
+      // The scroll bar will hit the bottom of the page before can scroll
+      // to the desired position.  Add some padding to the bottom of the 
+      // wrapper element so we can scroll to the desired position
+      var padding = scrollPosition - $(window).height() + headerHeight;
+      this.$('#body').css("padding-bottom", padding);
+    }
+    $(window).scrollTop(scrollPosition);
   },
 
-  // Return the element of the last visible story section
-  getLastVisibleSectionEl: function() {
-    var visibleSections = [];
-    var numSections = this.$('section').length;
+  getLastSection: function() {
+    return this.$('.section').last();
+  },
+
+  getFirstVisibleSectionEl: function() {
+    var numSections = this.$('.section').length;
     for (var i = 0; i < numSections; i++) {
-      var $section = this.$('section').eq(i);
+      var $section = this.$('.section').eq(i);
       var sectionTop = $section.offset().top;
       var sectionBottom = sectionTop + $section.outerHeight(); 
-      if (sectionTop >= this.headerBottom() && 
-          sectionBottom <= this.footerTop()) { 
-        visibleSections.push($section);
+      if (sectionBottom >= this.$('header').offset().top + this.$('header').outerHeight()) {
+	return $section;
       }
     }
-    return _.last(visibleSections);
+    return null;
   },
 
   // Event handler for scroll event
   handleScroll: function(e) {
     var newSection = this.activeSection;
+    var scrollTop = $(window).scrollTop();
     if (this._preventScrollEvent !== true) {
-      if ($(window).scrollTop() == 0) {
+      if (scrollTop == 0) {
 	// At the top of the window.  Set the active section to the 
 	// first section
 	newSection = this.sections.first();
       }
       else {
-	var $lastVisibleSectionEl = this.getLastVisibleSectionEl();
-	if ($lastVisibleSectionEl) {
-	  var lastVisibleSection = this.sections.get($lastVisibleSectionEl.attr('id'));
-	  if (lastVisibleSection != this.activeSection) {
-	    newSection = lastVisibleSection; 
+	if (scrollTop == $(document).height() - $(window).height()) {  
+	  // Reached the bottom of the window
+	  // Add enough padding so we can scroll the last section to the 
+	  // top of the window
+	  var $lastSection = this.getLastSection();
+	  var padding = $lastSection.offset().top - this.$('header').offset().top;
+	  if (padding > this.$('header').outerHeight()) {
+	    this.$('#body').css("padding-bottom", padding);
+	  }
+	}
+	var $firstVisibleSectionEl = this.getFirstVisibleSectionEl();
+	if ($firstVisibleSectionEl) {
+	  var firstVisibleSection = this.sections.get($firstVisibleSectionEl.attr('id'));
+	  if (firstVisibleSection != this.activeSection) {
+	    newSection = firstVisibleSection; 
 	  }
 	}
       }
