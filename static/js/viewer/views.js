@@ -439,7 +439,7 @@ storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend
     // Create an element for the sidebar 
     $('<div></div>').prependTo(this.$('#body')).addClass('sidebar');
     // Clone the summary and place it in the sidebar
-    this.$('#summary').clone().appendTo('.sidebar').removeAttr('id').removeClass('section').show();
+    this.$('#summary').clone().appendTo('.sidebar').removeAttr('id').removeClass('section').show().condense({moreText: gettext("Read more")});
     // Copy the call to action and place it in the sidebar
     this.$('#call-to-action').clone().appendTo('.sidebar').removeAttr('id').removeClass('section').show();
     this.$('footer').append(this.navigationView.el);
@@ -490,16 +490,22 @@ storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend
       // The only time there should not be one set is when the viewer 
       // first loads
       activeSectionEl.toggle();
+      this.$('.sidebar').toggle();
       var visEl = this.initialView.visEl();
       // $.toggle() doesn't seem to work on the svg element.
       // Toggle the visibility of the element the hard way
       if (visEl.css('display') == 'none') {
 	this.initialView.visEl().show();
+	// Explicitly set the position of the svg element to accomodate the
+	// sidebar
+	this.initialView.visEl().css(
+	  'left', 
+	  this.$('.sidebar').outerWidth()
+	);
       }
       else {
 	this.initialView.visEl().hide();
       }
-      this.$('.sidebar').toggle();
     }
   }
 

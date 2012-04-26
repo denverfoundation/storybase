@@ -49,6 +49,11 @@
   width: 18%;
 }
 
+.story-viewer .spider svg {
+  float: left;
+  position: fixed;
+}
+
 .story-viewer .spider .sidebar .summary,
 .story-viewer .spider .sidebar .call-to-action {
   padding: 0 6%;
