@@ -60,7 +60,7 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
 
   // Convenience method to get the element for the active section
   activeSectionEl: function() {
-      return this.$('#' + this.activeSection.id); 
+      return this.activeSection ? this.$('#' + this.activeSection.id) : null;
   },
 
   // Event handler for scroll event
