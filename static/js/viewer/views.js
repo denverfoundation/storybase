@@ -244,12 +244,51 @@ storybase.viewer.views.Spider = Backbone.View.extend({
     var elId = this.$el.attr('id');
     var dimensions = this.getVisDimensions();
     var treeRadius = this.getTreeRadius(dimensions.width, dimensions.height); 
-    var vis = d3.select("#" + elId).insert("svg", this.insertBefore)
+    var svg = d3.select("#" + elId).insert("svg", this.insertBefore)
         .attr("id", this.visId)
         .attr("width", dimensions.width)
         .attr("height", dimensions.height)
-	.attr("style", "float:left")
-      .append("g");
+	.attr("style", "float:left");
+    var vis = svg.append("g");
+    $this.mouseDown = false;
+    svg.on('mouseover', function() {
+      document.onselectstart = function() { return false; };
+    });
+    svg.on('mouseout', function() {
+      if (!$this.mouseDown) {
+        document.onselectstart = null;
+      }	
+    });
+    svg.on('mousedown', function() {
+      d3.event.target.style.cursor = 'move';
+      $this.mouseDown = true; 
+      $this.pos = d3.svg.mouse(this);
+    });
+    d3.select(window).on('mouseup', function() {
+      $this.mouseDown = false;
+      d3.event.target.style.cursor = 'default';
+    });
+    svg.on('mousemove', function() {
+      svg.on('selectstart', function() { return false; });
+      if ($this.mouseDown) {
+        var currentPos = d3.svg.mouse(this);
+	var dx = currentPos[0] - $this.pos[0];
+	var dy = currentPos[1] - $this.pos[1];
+	var newTranslateX = $this.translateX + dx;
+	var newTranslateY = $this.translateY + dy;
+	var bBox = vis[0][0].getBBox();
+	// TODO: Factor this into a function to update the translation both
+	// when the visualization is initally rendered and when the user
+	// drags it
+	if (newTranslateX > 0 && newTranslateY > 0 && 
+	    newTranslateX < 1.25 * bBox.width && newTranslateY < bBox.height) {
+	  $this.translateX = newTranslateX;
+	  $this.translateY = newTranslateY;
+          vis.attr("transform", "translate(" + $this.translateX + ", " + $this.translateY + ")");
+	}
+	$this.pos = currentPos;
+      }
+    });
     var rootSection = this.firstSection.populateChildren();
     var tree = d3.layout.tree()
       .size([360, treeRadius - 120])
@@ -313,9 +352,9 @@ storybase.viewer.views.Spider = Backbone.View.extend({
 
     // Center the tree within the viewport
     var treeBBox = vis[0][0].getBBox(); 
-    var translateX = (0 - treeBBox.x) + ((dimensions.width - treeBBox.width) / 2);
-    var translateY = (0 - treeBBox.y) + ((dimensions.height - treeBBox.height) / 2); 
-    vis.attr("transform", "translate(" + translateX + ", " + translateY + ")");
+    $this.translateX = (0 - treeBBox.x) + ((dimensions.width - treeBBox.width) / 2);
+    $this.translateY = (0 - treeBBox.y) + ((dimensions.height - treeBBox.height) / 2); 
+    vis.attr("transform", "translate(" + $this.translateX + ", " + $this.translateY + ")");
   },
 
   // Event handler for hovering over a section node
