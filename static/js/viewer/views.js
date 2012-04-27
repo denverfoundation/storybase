@@ -244,59 +244,85 @@ storybase.viewer.views.Spider = Backbone.View.extend({
     var elId = this.$el.attr('id');
     var dimensions = this.getVisDimensions();
     var treeRadius = this.getTreeRadius(dimensions.width, dimensions.height); 
+    // Create an SVG element for the spider visualization, attache it to the
+    // DOM and set some properties.
     var svg = d3.select("#" + elId).insert("svg", this.insertBefore)
         .attr("id", this.visId)
         .attr("width", dimensions.width)
         .attr("height", dimensions.height)
 	.attr("style", "float:left");
+    // Create a group inside the SVG element for our visualization
     var vis = svg.append("g");
+
+    // Initialize some attributes used by event handlers
     $this.mouseDown = false;
+
+    // Bind some event handlers to the SVG element 
+    
+    // Disable text selection when we enter the SVG element
+    // We need to do this in order to switch the cursor to the 
+    // move icon
     svg.on('mouseover', function() {
       document.onselectstart = function() { return false; };
     });
+
+    // Re-enable text selection once we leave the SVG element
     svg.on('mouseout', function() {
       if (!$this.mouseDown) {
         document.onselectstart = null;
       }	
     });
+
+    // Bind an event handler for when there's a click inside the SVG element
     svg.on('mousedown', function() {
-      console.debug('mousedown');
+      // Change the curser icon
       d3.event.target.style.cursor = 'move';
+      // Set our flag
       $this.mouseDown = true; 
+      // Make a record of our present mouse position
       $this.pos = d3.svg.mouse(this);
-      console.debug($this.pos);
     });
+
+    // Bind an event handler for when the mouse button is released
     d3.select(window).on('mouseup', function() {
-      console.debug('mouseup');
+      // Unset the flag
       $this.mouseDown = false;
+      // Change the cursor back to normal
       d3.event.target.style.cursor = 'default';
     });
+
+    // Bind an event handler for moving the mouse within the SVG element
+    // This does the heavy lifting for the panning
     svg.on('mousemove', function() {
       svg.on('selectstart', function() { return false; });
       if ($this.mouseDown) {
-	console.debug('Panning');
+	// Only move things around if the mouse button is held down
+	
+	// Save the new mouse position
         var currentPos = d3.svg.mouse(this);
+	// Calculate how far we've moved since the last recorded mouse
+	// position
 	var dx = currentPos[0] - $this.pos[0];
 	var dy = currentPos[1] - $this.pos[1];
+
+	// Calculate a new translation of the visualization based on
+	// the mouse movement
 	var newTranslateX = $this.translateX + dx;
 	var newTranslateY = $this.translateY + dy;
-	// TODO: Factor this into a function to update the translation both
-	// when the visualization is initally rendered and when the user
-	// drags it
+
+	// Only pan the visualization if it remains partially visible
+	// within the SVG element
 	if (newTranslateX > 0 && newTranslateY > 0 && 
 	    newTranslateX < dimensions.width && newTranslateY < dimensions.height) {
-          console.debug('Moving the visualization');
 	  $this.translateX = newTranslateX;
 	  $this.translateY = newTranslateY;
           vis.attr("transform", "translate(" + $this.translateX + ", " + $this.translateY + ")");
 	}
-	else {
-	  console.debug('Not moving the visualization');
-	  console.debug(newTranslateX, newTranslateY);
-	}
+	// Update the saved mouse position
 	$this.pos = currentPos;
       }
     });
+    
     var rootSection = this.firstSection.populateChildren();
     var tree = d3.layout.tree()
       .size([360, treeRadius - 120])
