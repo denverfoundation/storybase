@@ -258,6 +258,9 @@ storybase.viewer.views.Spider = Backbone.View.extend({
     $this.mouseDown = false;
 
     // Bind some event handlers to the SVG element 
+    // It would be nice to use Backbone/jQuery to do this, but
+    // it's hard to give the handlers access to both the view
+    // object and the d3 event/element
     
     // Disable text selection when we enter the SVG element
     // We need to do this in order to switch the cursor to the 
