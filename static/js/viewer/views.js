@@ -193,9 +193,9 @@ storybase.viewer.views.Spider = Backbone.View.extend({
       this.maxSectionsAtDepth = this.sectionsAtDepth[depth];
     }
     
-    var $this = this;
+    var that = this;
     _.each(section.get('children'), function(childId) {
-      $this.walkSectionHierarchy(depth + 1, $this.sections.get(childId));
+      that.walkSectionHierarchy(depth + 1, that.sections.get(childId));
     });
   },
 
@@ -240,7 +240,7 @@ storybase.viewer.views.Spider = Backbone.View.extend({
   },
 
   render: function() {
-    var $this = this;
+    var that = this;
     var elId = this.$el.attr('id');
     var dimensions = this.getVisDimensions();
     var treeRadius = this.getTreeRadius(dimensions.width, dimensions.height); 
@@ -255,7 +255,7 @@ storybase.viewer.views.Spider = Backbone.View.extend({
     var vis = svg.append("g");
 
     // Initialize some attributes used by event handlers
-    $this.mouseDown = false;
+    that.mouseDown = false;
 
     // Bind some event handlers to the SVG element 
     // It would be nice to use Backbone/jQuery to do this, but
@@ -271,7 +271,7 @@ storybase.viewer.views.Spider = Backbone.View.extend({
 
     // Re-enable text selection once we leave the SVG element
     svg.on('mouseout', function() {
-      if (!$this.mouseDown) {
+      if (!that.mouseDown) {
         document.onselectstart = null;
       }	
     });
@@ -281,15 +281,15 @@ storybase.viewer.views.Spider = Backbone.View.extend({
       // Change the curser icon
       d3.event.target.style.cursor = 'move';
       // Set our flag
-      $this.mouseDown = true; 
+      that.mouseDown = true; 
       // Make a record of our present mouse position
-      $this.pos = d3.svg.mouse(this);
+      that.pos = d3.svg.mouse(this);
     });
 
     // Bind an event handler for when the mouse button is released
     d3.select(window).on('mouseup', function() {
       // Unset the flag
-      $this.mouseDown = false;
+      that.mouseDown = false;
       // Change the cursor back to normal
       d3.event.target.style.cursor = 'default';
     });
@@ -298,31 +298,31 @@ storybase.viewer.views.Spider = Backbone.View.extend({
     // This does the heavy lifting for the panning
     svg.on('mousemove', function() {
       svg.on('selectstart', function() { return false; });
-      if ($this.mouseDown) {
+      if (that.mouseDown) {
 	// Only move things around if the mouse button is held down
 	
 	// Save the new mouse position
         var currentPos = d3.svg.mouse(this);
 	// Calculate how far we've moved since the last recorded mouse
 	// position
-	var dx = currentPos[0] - $this.pos[0];
-	var dy = currentPos[1] - $this.pos[1];
+	var dx = currentPos[0] - that.pos[0];
+	var dy = currentPos[1] - that.pos[1];
 
 	// Calculate a new translation of the visualization based on
 	// the mouse movement
-	var newTranslateX = $this.translateX + dx;
-	var newTranslateY = $this.translateY + dy;
+	var newTranslateX = that.translateX + dx;
+	var newTranslateY = that.translateY + dy;
 
 	// Only pan the visualization if it remains partially visible
 	// within the SVG element
 	if (newTranslateX > 0 && newTranslateY > 0 && 
 	    newTranslateX < dimensions.width && newTranslateY < dimensions.height) {
-	  $this.translateX = newTranslateX;
-	  $this.translateY = newTranslateY;
-          vis.attr("transform", "translate(" + $this.translateX + ", " + $this.translateY + ")");
+	  that.translateX = newTranslateX;
+	  that.translateY = newTranslateY;
+          vis.attr("transform", "translate(" + that.translateX + ", " + that.translateY + ")");
 	}
 	// Update the saved mouse position
-	$this.pos = currentPos;
+	that.pos = currentPos;
       }
     });
     
@@ -336,7 +336,7 @@ storybase.viewer.views.Spider = Backbone.View.extend({
     // Fix x coordinate (angle) when each level has only one child
     // In this case d.x = NaN which breakins things
     nodes = _.map(nodes, function(node) {
-      node.x = $this.maxSectionsAtDepth == 1 ? 90 : node.x;
+      node.x = that.maxSectionsAtDepth == 1 ? 90 : node.x;
       return node;
     });
     var links = tree.links(nodes);
@@ -376,7 +376,7 @@ storybase.viewer.views.Spider = Backbone.View.extend({
         return d.x < 180 ? "start" : "end"; })
       .attr("transform", function(d) {
 	var rotation = 0;
-	if ($this.maxSectionsAtDepth == 1) {
+	if (that.maxSectionsAtDepth == 1) {
 	  rotation = 315;
 	}
 	else if (d.depth > 0) {
@@ -389,9 +389,9 @@ storybase.viewer.views.Spider = Backbone.View.extend({
 
     // Center the tree within the viewport
     var treeBBox = vis[0][0].getBBox(); 
-    $this.translateX = (0 - treeBBox.x) + ((dimensions.width - treeBBox.width) / 2);
-    $this.translateY = (0 - treeBBox.y) + ((dimensions.height - treeBBox.height) / 2); 
-    vis.attr("transform", "translate(" + $this.translateX + ", " + $this.translateY + ")");
+    that.translateX = (0 - treeBBox.x) + ((dimensions.width - treeBBox.width) / 2);
+    that.translateY = (0 - treeBBox.y) + ((dimensions.height - treeBBox.height) / 2); 
+    vis.attr("transform", "translate(" + that.translateX + ", " + that.translateY + ")");
   },
 
   // Event handler for hovering over a section node
