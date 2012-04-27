@@ -260,31 +260,39 @@ storybase.viewer.views.Spider = Backbone.View.extend({
       }	
     });
     svg.on('mousedown', function() {
+      console.debug('mousedown');
       d3.event.target.style.cursor = 'move';
       $this.mouseDown = true; 
       $this.pos = d3.svg.mouse(this);
+      console.debug($this.pos);
     });
     d3.select(window).on('mouseup', function() {
+      console.debug('mouseup');
       $this.mouseDown = false;
       d3.event.target.style.cursor = 'default';
     });
     svg.on('mousemove', function() {
       svg.on('selectstart', function() { return false; });
       if ($this.mouseDown) {
+	console.debug('Panning');
         var currentPos = d3.svg.mouse(this);
 	var dx = currentPos[0] - $this.pos[0];
 	var dy = currentPos[1] - $this.pos[1];
 	var newTranslateX = $this.translateX + dx;
 	var newTranslateY = $this.translateY + dy;
-	var bBox = vis[0][0].getBBox();
 	// TODO: Factor this into a function to update the translation both
 	// when the visualization is initally rendered and when the user
 	// drags it
 	if (newTranslateX > 0 && newTranslateY > 0 && 
-	    newTranslateX < 1.25 * bBox.width && newTranslateY < bBox.height) {
+	    newTranslateX < dimensions.width && newTranslateY < dimensions.height) {
+          console.debug('Moving the visualization');
 	  $this.translateX = newTranslateX;
 	  $this.translateY = newTranslateY;
           vis.attr("transform", "translate(" + $this.translateX + ", " + $this.translateY + ")");
+	}
+	else {
+	  console.debug('Not moving the visualization');
+	  console.debug(newTranslateX, newTranslateY);
 	}
 	$this.pos = currentPos;
       }
