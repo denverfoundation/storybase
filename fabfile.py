@@ -191,7 +191,8 @@ def make_pil_dependency_symlinks():
 def install_python_package_depencies():
     """ Install libraries needed by Python packages that will be installed later """
     # Splinter needs lxml, which needs libxml2-dev and libxslt-dev
-    sudo('apt-get install libxml2-dev libxslt-dev')
+    # Django's translations need gettext
+    sudo('apt-get install libxml2-dev libxslt-dev gettext')
 
 @task
 def install_nginx():

@@ -2,3 +2,4 @@ Fabric==1.4.0
 lettuce==0.1.34
 splinter==0.4.4
 nose==1.1.2
+transifex-client
