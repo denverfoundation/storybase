@@ -135,6 +135,10 @@ class SectionAdmin(StorybaseModelAdmin):
 class SectionRelationAdmin(admin.ModelAdmin):
     """Custom Admin for SectionRelation model"""
     form = SectionRelationAdminForm
+    # TODO: If we switch to Django 1.4, use a SimpleListFilter to be able
+    # to specify a label that's more descriptive.  Right now this just shows up
+    # as 'title'
+    list_filter = ('parent__story__storytranslation__title',)
 
 
 admin.site.register(Story, StoryAdmin)
