@@ -8,8 +8,38 @@ from django.utils import simplejson
 from storybase.tests import SloppyTimeTestCase
 from storybase.utils import slugify
 from storybase_asset.models import HtmlAsset, HtmlAssetTranslation
+from storybase_story.forms import SectionRelationAdminForm
 from storybase_story.models import (create_story, Story, StoryTranslation, 
     create_section, Section, SectionAsset, SectionRelation)
+
+
+class SectionRelationFormTest(TestCase):
+    """Test custom forms for SectionRelations"""
+
+    def test_select_label(self):
+	"""
+	Test that both Section title and its Story title appear in select
+	labels
+	"""
+        title = ('Transportation Challenges Limit Education Choices for '
+                 'Denver Parents')
+        summary = """
+            Many families in the Denver metro area use public
+            transportation instead of a school bus because for them, a
+            quality education is worth hours of daily commuting. Colorado's
+            school choice program is meant to foster educational equity,
+            but the families who benefit most are those who have time and
+            money to travel. Low-income families are often left in a lurch.
+            """
+        byline = "Mile High Connects"
+        story = create_story(title=title, summary=summary, byline=byline)
+        section1 = create_section(title="Test Section 1", story=story)
+	section2 = create_section(title="Test Section 2", story=story)
+	form = SectionRelationAdminForm()
+	choices_list = list(form.fields['parent'].widget.choices)
+	self.assertIn(story.title, choices_list[1][1])
+	self.assertIn(story.title, choices_list[2][1])
+
 
 class StoryModelTest(SloppyTimeTestCase):
     """Unit tests for Story Model"""

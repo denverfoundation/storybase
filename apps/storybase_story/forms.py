@@ -14,7 +14,9 @@ from django.utils.safestring import mark_safe
 from tinymce.widgets import TinyMCE
 
 from storybase.widgets import AdminLongTextInputWidget
-from storybase_story.models import (Section, SectionTranslation, 
+from storybase_story.fields import SectionModelChoiceField
+from storybase_story.models import (Section, SectionRelation,
+		                    SectionTranslation, 
 		                    Story, StoryTranslation)
 
 
@@ -179,6 +181,20 @@ class InlineSectionAdminForm(forms.ModelForm):
             model.save()
 
         return model
+
+
+class SectionRelationAdminForm(forms.ModelForm):
+    """"Custom model form for SectionRelations
+
+    Uses a ModelChoiceField that shows both the section and story title
+    to differentiate between sections with the same name.
+
+    """
+    parent = SectionModelChoiceField(queryset=Section.objects.all()) 
+    child = SectionModelChoiceField(queryset=Section.objects.all())
+
+    class Meta:
+	model = SectionRelation
 
 
 class StoryAdminForm(forms.ModelForm):

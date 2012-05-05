@@ -11,7 +11,8 @@ from storybase.admin import (StorybaseModelAdmin, StorybaseStackedInline,
 from storybase_asset.models import Asset
 from storybase_story.models import (Story, StoryTranslation,
     Section, SectionTranslation, SectionAsset, SectionRelation)        
-from storybase_story.forms import (StoryAdminForm, InlineSectionAdminForm,
+from storybase_story.forms import (SectionRelationAdminForm,
+		                   StoryAdminForm, InlineSectionAdminForm,
 		                   StoryTranslationAdminForm)
 
 class StoryTranslationInline(StorybaseStackedInline):
@@ -131,6 +132,11 @@ class SectionAdmin(StorybaseModelAdmin):
     search_fields = ['sectiontranslation__title']
     readonly_fields = ['section_id']
 
+class SectionRelationAdmin(admin.ModelAdmin):
+    """Custom Admin for SectionRelation model"""
+    form = SectionRelationAdminForm
+
+
 admin.site.register(Story, StoryAdmin)
 admin.site.register(Section, SectionAdmin)
-admin.site.register(SectionRelation, admin.ModelAdmin)
+admin.site.register(SectionRelation, SectionRelationAdmin)
