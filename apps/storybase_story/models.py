@@ -11,12 +11,6 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 from django_dag.models import edge_factory, node_factory
 
-# TODO: Decide on tagging suggestion admin app.
-# Right now, I'm using a hacked version of
-# https://bitbucket.org/fabian/django-taggit-autosuggest
-# which I modified to allow for specifying a Tag model
-# other than taggit.models.Tag
-#from taggit_autosuggest.managers import TaggableManager
 from uuidfield.fields import UUIDField
 
 from storybase.fields import ShortTextField
