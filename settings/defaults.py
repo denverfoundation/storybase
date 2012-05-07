@@ -186,7 +186,7 @@ INSTALLED_APPS = (
     'storybase_user',
     'storybase_asset',
     'storybase_story',
-    #'storybase_tag',
+    #'storybase_taxonomy',
     #'storybase_place',
     'cmsplugin_storybase',
 )

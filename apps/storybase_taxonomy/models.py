@@ -17,9 +17,11 @@ class TagAdmin(admin.ModelAdmin):
 
 admin.site.register(Tag, TagAdmin)
 
+
 class TaggedItem(GenericTaggedItemBase):
     tag = models.ForeignKey('Tag',  
                             related_name="%(app_label)s_%(class)s_items")
+
 
 class TagSet(models.Model):
     name = models.CharField(verbose_name=_('Name'), max_length=100)
@@ -29,6 +31,7 @@ class TagSet(models.Model):
 
     def __unicode__(self):
         return self.name
+
 
 class TagSetAdmin(admin.ModelAdmin):
     list_display = ('name', 'official')
