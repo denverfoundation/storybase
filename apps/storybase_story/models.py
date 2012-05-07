@@ -80,7 +80,9 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
 		                      default=False)
     contact_info = models.TextField(_("Contact Information"),
                                     blank=True)
-    #tags = TaggableManager(through=TaggedItem, blank=True)
+    topics = models.ManyToManyField('storybase_taxonomy.Category',
+		                    verbose_name=_("Topics"),
+		                    related_name='stories')
 
     objects = StoryManager()
 

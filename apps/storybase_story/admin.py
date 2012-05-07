@@ -39,7 +39,7 @@ class StoryAdmin(StorybaseModelAdmin):
     list_display = (obj_title, 'author', 'last_edited', 'status', 'view_link')
     list_filter = ('status', 'author')
     filter_horizontal = ['assets', 'featured_assets', 'projects',
-                         'organizations']
+                         'organizations', 'topics']
     inlines = [SectionInline, StoryTranslationInline]
     prefix_inline_classes = ['StoryTranslationInline']
 
