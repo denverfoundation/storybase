@@ -290,27 +290,66 @@ header.pagetop h1 a {
   text-decoration: none;
 }
 
-header.pagetop nav.main li {
-  display: inline-block;
-  list-style-type: none;
-  margin: 0 2px;
+/* Site navigation */
+
+#sitenav .navroot {
+  list-style: none;
+  height: 10%;
+}
+
+#sitenav li {
   padding: 4px 8px;
-  border-radius: 4px 4px 0 0;
   background-color: #666666;
+  position: relative;
 }
 
-header.pagetop nav.main li.selected {
-  background-color: #fff;
-}
-
-header.pagetop nav.main li a {
+#sitenav li a {
   color: #fff;
-  font-weight: bold;
   text-decoration: none;
 }
 
-header.pagetop nav.main li.selected a {
+
+#sitenav .navroot > li {
+  display: inline-block;
+  margin: 0 2px;
+  border-radius: 4px 4px 0 0;
+}
+
+#sitenav .navroot > li > a {
+  font-weight: bold;
+}
+
+#sitenav .selected {
+  background-color: #fff;
+}
+
+#sitenav .has-children > a:after {
+  content: " +";
+}
+
+#sitenav li.selected a {
   color: #000;
+}
+
+/* Dropdown */
+#sitenav .navroot ul {
+  list-style: none;
+  position: absolute;
+  /* Hide off-screen when not shown.  This is more accessible than 
+   * using display: none
+   */
+  left: -9999px; 
+  margin-top: 4px;
+  width: 100%;
+}
+
+#sitenav .navroot li:hover ul {
+  /* Bring hidden menu back into view */
+  left: 0;
+}
+
+#sitenav li:hover ul li:hover a {
+  text-decoration: underline;
 }
 
 /* Main content container */
