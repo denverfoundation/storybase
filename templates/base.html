@@ -66,14 +66,20 @@
     {% endif %}
     <nav id="sitenav">
       <ul class="navroot">
-        {% show_menu 0 100 2 %}
+        {% show_menu 0 1 2 %}
       </ul>
     </nav>
   </header>
   <div id="container" class="container">
+    {% block above_content %}
+    {% endblock %}    
     <div id="main" role="main" class="row">
       {% placeholder base_content %}
-      {% block base_content%}{% endblock %}
+      {% block base_content%}
+      {% block col_left %}{% endblock %}
+      {% block col_center %}{% endblock %}
+      {% block col_right %}{% endblock %}
+      {% endblock %}
     </div>
     {% block below_content %}{% endblock %}
   </div> <!--! end of #container -->
