@@ -342,7 +342,7 @@ header.pagetop h1 a {
    */
   left: -9999px; 
   margin-top: 4px;
-  width: 100%;
+  min-width: 100%;
 }
 
 #sitenav .navroot li:hover ul {

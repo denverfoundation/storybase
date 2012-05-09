@@ -11,7 +11,7 @@ class StorybaseMenu(Menu):
     """
     def get_nodes(self, request): 
 	nodes = []
-        explore = NavigationNode(title=_("Explore the Atlas"),
+        explore = NavigationNode(title=_("Explore"),
                                  url="/explore/", id='explore')
 				 
 	nodes.append(explore)
