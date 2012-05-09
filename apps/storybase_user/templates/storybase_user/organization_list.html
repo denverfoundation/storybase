@@ -1,1 +1,23 @@
 {% extends "base.html" %}
+
+{% load i18n sekizai_tags menu_tags %}
+
+{% block head_title %}{% trans "Contributing Organizations" %}{{ block.super }}{% endblock %}
+
+{% block above_content %}
+<ul id="breadcrumbs">{% show_breadcrumb %}</ul>
+{% endblock %}
+
+{% block col_left %}
+<div class="threecol sidebar-left">
+  <nav id="sectionnav">
+    <ul>{% show_menu 1 %}</ul>
+  </nav>
+</div>
+{% endblock %}
+
+{% block col_right %}
+<div class="ninecol last primary-content">
+  <h2>{% trans "Contributing Organizations" %}</h2>
+</div>
+{% endblock %}

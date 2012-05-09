@@ -356,6 +356,10 @@ header.pagetop h1 a {
   text-decoration: underline;
 }
 
+/* Breadcrumbs */
+#breadcrumbs { list-style: none; }
+#breadcrumbs li { float: left; }
+
 /* Main content container */
 
 #container {
