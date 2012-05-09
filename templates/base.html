@@ -13,7 +13,7 @@
        More info: h5bp.com/b/378 -->
   <meta http-equiv="X-UA-Compatible" content="IE=edge,chrome=1">
 
-  <title>{% block head_title %}{% page_attribute "page_title" %}{% endblock %}</title>
+  <title>{% block head_title %}{% page_attribute "page_title" %} | {{ storybase_site_name }}{% endblock %}</title>
   {% block extrameta %}{% endblock %}
 
   <!-- Mobile viewport optimized: j.mp/bplateviewport -->
@@ -60,7 +60,10 @@
         <li><a href="{% url contact %}">{% trans "Contact Us" %}</a></li>
       </ul>
     </nav>
-    <h1><a href="/">The Citizen Atlas</a></h1>
+    <h1><a href="/">{{ storybase_site_name }}</a></h1>
+    {% if storybase_site_tagline %}
+    <p class="tagline">{{ storybase_site_tagline }}</p>
+    {% endif %}
     <nav class="main">
       <ul>
         {% show_menu %}

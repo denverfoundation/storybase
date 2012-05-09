@@ -2,7 +2,7 @@ import os
 import sys
 
 # Dummy Gettext
-gettext = lambda s: s
+ugettext = lambda s: s
 
 PROJECT_PATH = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
@@ -228,8 +228,8 @@ LOGGING = {
 }
 
 LANGUAGES = [
-    ('en', gettext('English')),
-    ('es', gettext('Spanish')),
+    ('en', ugettext('English')),
+    ('es', ugettext('Spanish')),
 ]
 
 # Don't hide menu items that are untranslated
@@ -261,6 +261,8 @@ ADMIN_GROUP_NAME = 'CA Admin'
 # The "from" address of emails sent from the system
 # Set this in per-instance settings
 #DEFAULT_FROM_EMAIL = ''
+STORYBASE_SITE_NAME = "Your Storybase Site"
+STORYBASE_SITE_TAGLINE = ugettext("Your site tagline")
 
 # allauth settings
 ACCOUNT_EMAIL_REQUIRED = True
