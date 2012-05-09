@@ -321,7 +321,7 @@ header.pagetop h1 a {
   font-weight: bold;
 }
 
-#sitenav .selected {
+#sitenav .navroot > .selected {
   background-color: #fff;
 }
 
@@ -329,7 +329,7 @@ header.pagetop h1 a {
   content: " +";
 }
 
-#sitenav li.selected a {
+#sitenav .navroot > .selected a {
   color: #000;
 }
 
