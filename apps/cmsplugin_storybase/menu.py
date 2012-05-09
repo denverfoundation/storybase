@@ -1,3 +1,4 @@
+from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
 from menus.base import Menu, Modifier, NavigationNode 
@@ -15,12 +16,13 @@ class StorybaseMenu(Menu):
                                  url="/explore/", id='explore')
 				 
 	nodes.append(explore)
-	projects = NavigationNode(title=_("Projects"), url="/projects/", 
+	projects = NavigationNode(title=_("Projects"), 
+			          url=reverse('project_list'),
 			          id='projects',
 				  parent_id=explore.id)
 	nodes.append(projects)
 	organizations = NavigationNode(title=_("Organizations"),
-			               url="/organizations/",
+                                       url=reverse('organization_list'),
 				       id='organizations',
 				       parent_id=explore.id)
 	nodes.append(organizations)
