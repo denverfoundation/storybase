@@ -321,16 +321,18 @@ header.pagetop h1 a {
   font-weight: bold;
 }
 
-#sitenav .navroot > .selected {
+#sitenav .navroot > .selected,
+#sitenav .navroot > .ancestor {
   background-color: #fff;
+}
+
+#sitenav .navroot > .selected a,
+#sitenav .navroot > .ancestor a {
+  color: #000;
 }
 
 #sitenav .has-children > a:after {
   content: " +";
-}
-
-#sitenav .navroot > .selected a {
-  color: #000;
 }
 
 /* Dropdown */
