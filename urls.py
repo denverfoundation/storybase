@@ -31,7 +31,6 @@ urlpatterns += patterns('',
     (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', {}),
 
     # 3rd-party apps
-    #(r'^taggit_autosuggest/', include('taggit_autosuggest.urls')),
     (r'^tinymce/', include('tinymce.urls')),
     #(r'^accounts/', include('allauth.urls')),
 

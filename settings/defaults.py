@@ -175,9 +175,8 @@ INSTALLED_APPS = (
     # StoryBase dependencies
     #'ajax_select',
     #'haystack',
-    #'taggit',
-    #'taggit_autosuggest',
     #'tastypie',
+    'categories.editor',
     'oembed',
     'tinymce',
 
@@ -186,7 +185,7 @@ INSTALLED_APPS = (
     'storybase_user',
     'storybase_asset',
     'storybase_story',
-    #'storybase_taxonomy',
+    'storybase_taxonomy',
     #'storybase_place',
     'cmsplugin_storybase',
 )
