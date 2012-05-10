@@ -552,6 +552,11 @@ li.section {
   color: #fff;
 }	
 
+#subnav .navroot > .selected li,
+#subnav .navroot > .ancestor li {
+  background-color: #AED6FE;
+}
+
 #subnav li a {
   color: #000;
   display: block;
@@ -560,7 +565,7 @@ li.section {
 }
 
 #subnav li:hover {
-  background-color: #4B7CAF;
+  background-color: #4B7CAF !important;
 }
 
 #subnav li:hover > a {
