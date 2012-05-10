@@ -18,18 +18,6 @@ class StorybaseMenu(Menu):
                                  url="/explore/", id='explore')
 				 
 	nodes.append(explore)
-	projects = NavigationNode(title=_("Projects"), 
-			          url=reverse('project_list'),
-			          id='projects',
-				  parent_id=explore.id)
-	nodes.append(projects)
-	for project in Project.objects.all():
-            nodes.append(
-	        NavigationNode(
-	            title=project.name,
-		    url=project.get_absolute_url(),
-		    id=project.project_id,
-		    parent_id=projects.id))
 	organizations = NavigationNode(title=_("Organizations"),
                                        url=reverse('organization_list'),
 				       id='organizations',
@@ -42,6 +30,18 @@ class StorybaseMenu(Menu):
 		    url=organization.get_absolute_url(),
 		    id=organization.organization_id,
 		    parent_id=organizations.id))
+	projects = NavigationNode(title=_("Projects"), 
+			          url=reverse('project_list'),
+			          id='projects',
+				  parent_id=explore.id)
+	nodes.append(projects)
+	for project in Project.objects.all():
+            nodes.append(
+	        NavigationNode(
+	            title=project.name,
+		    url=project.get_absolute_url(),
+		    id=project.project_id,
+		    parent_id=projects.id))
                                         
         return nodes
 
