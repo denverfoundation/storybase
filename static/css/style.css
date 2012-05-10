@@ -292,7 +292,15 @@ header.pagetop h1 a {
   text-decoration: none;
 }
 
+/* Columnar layout */
+
+.sidebar-left {
+  padding-top: 4%;
+}
+
 /* Site navigation */
+
+#sitenav { overflow: visible; }
 
 #sitenav .navroot {
   list-style: none;
@@ -326,8 +334,8 @@ header.pagetop h1 a {
   background-color: #fff;
 }
 
-#sitenav .navroot > .selected a,
-#sitenav .navroot > .ancestor a {
+#sitenav .navroot > .selected > a,
+#sitenav .navroot > .ancestor > a {
   color: #000;
 }
 
@@ -360,7 +368,6 @@ header.pagetop h1 a {
 
 #breadcrumbs { 
   list-style: none; 
-  margin: 0;
   padding: 0; 
 }
 
@@ -509,6 +516,7 @@ li.section {
 }
 
 /* Subnavigation */
+
 #subnav .navroot {
   list-style-type: none;
   border-top: 4px solid #666666;
