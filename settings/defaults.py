@@ -174,7 +174,7 @@ INSTALLED_APPS = (
 
     # StoryBase dependencies
     #'ajax_select',
-    #'haystack',
+    'haystack',
     #'tastypie',
     'categories.editor',
     'oembed',

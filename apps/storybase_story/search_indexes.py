@@ -1,38 +1,27 @@
-from haystack.indexes import (SearchIndex, CharField, FacetCharField, 
+from haystack.indexes import (RealTimeSearchIndex, CharField, FacetCharField, 
     FacetDateTimeField, FacetMultiValueField)
 from haystack import site
 
 from models import Story
 
-class StoryIndex(SearchIndex):
+class StoryIndex(RealTimeSearchIndex):
     text = CharField(document=True, use_template=True)
     author = FacetCharField(model_attr='author')
-    pub_date = FacetDateTimeField(model_attr='pub_date')
+    published = FacetDateTimeField(model_attr='published')
     # TODO: Use a meta class to dynamically populate these from "official"
     # tag sets 
-    school = FacetMultiValueField()
-    neighborhood = FacetMultiValueField()
-    topic = FacetMultiValueField()
-    organization = FacetMultiValueField()
-    project = FacetMultiValueField()
+    topics = FacetMultiValueField()
+    organizations = FacetMultiValueField()
+    projects = FacetMultiValueField()
 
-    def _prepare_tag_set(self, obj, set_name):
-        return [tag.name for tag in obj.tags.filter(tag_set__name=set_name)]
+    def prepare_topics(self, obj):
+        return [topic.name for topic in obj.topics.all()]
 
-    def prepare_school(self, obj):
-        return self._prepare_tag_set(obj, 'School')
+    def prepare_organizations(self, obj):
+        return [organization.name for organization in obj.organizations.all()]
 
-    def prepare_neighborhood(self, obj):
-        return self._prepare_tag_set(obj, 'Neighborhood')
-
-    def prepare_topic(self, obj):
-        return self._prepare_tag_set(obj, 'Topic')
-
-    def prepare_organization(self, obj):
-        return self._prepare_tag_set(obj, 'Organization')
-
-    def prepare_project(self, obj):
-        return self._prepare_tag_set(obj, 'Project')
+    def prepare_projects(self, obj):
+	return [project.name for project in obj.projects.all()]
 
     def index_queryset(self):
         return Story.objects.filter(status__exact='published')
