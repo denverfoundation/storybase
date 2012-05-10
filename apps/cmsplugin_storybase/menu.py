@@ -14,14 +14,16 @@ class StorybaseMenu(Menu):
     """
     def get_nodes(self, request): 
 	nodes = []
-        explore = NavigationNode(title=_("Explore"),
-                                 url="/explore/", id='explore')
+        explore = NavigationNode(
+            title=_(plugin_settings.STORYBASE_EXPLORE_TITLE),
+            url="/explore/", id='explore')
 				 
 	nodes.append(explore)
-	organizations = NavigationNode(title=_("Organizations"),
-                                       url=reverse('organization_list'),
-				       id='organizations',
-				       parent_id=explore.id)
+	organizations = NavigationNode(
+            title=_(plugin_settings.STORYBASE_ORGANIZATION_LIST_TITLE),
+            url=reverse('organization_list'),
+            id='organizations',
+            parent_id=explore.id)
 	nodes.append(organizations)
 	for organization in Organization.objects.all():
             nodes.append(
@@ -30,10 +32,11 @@ class StorybaseMenu(Menu):
 		    url=organization.get_absolute_url(),
 		    id=organization.organization_id,
 		    parent_id=organizations.id))
-	projects = NavigationNode(title=_("Projects"), 
-			          url=reverse('project_list'),
-			          id='projects',
-				  parent_id=explore.id)
+	projects = NavigationNode(
+            title=_(plugin_settings.STORYBASE_PROJECT_LIST_TITLE), 
+            url=reverse('project_list'),
+            id='projects',
+            parent_id=explore.id)
 	nodes.append(projects)
 	for project in Project.objects.all():
             nodes.append(

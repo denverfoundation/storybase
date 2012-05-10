@@ -261,8 +261,16 @@ ADMIN_GROUP_NAME = 'CA Admin'
 # The "from" address of emails sent from the system
 # Set this in per-instance settings
 #DEFAULT_FROM_EMAIL = ''
+# The name of the site
 STORYBASE_SITE_NAME = "Your Storybase Site"
+# The tagline of the site
 STORYBASE_SITE_TAGLINE = ugettext("Your site tagline")
+# The title of the organization list view
+STORYBASE_ORGANIZATION_LIST_TITLE = ugettext("Organizations")
+# The title of the project list view
+STORYBASE_PROJECT_LIST_TITLE = ugettext("Projects") 
+# The title of the story exploration view
+STORYBASE_EXPLORE_TITLE = ugettext("Explore")
 
 # allauth settings
 ACCOUNT_EMAIL_REQUIRED = True

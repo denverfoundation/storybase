@@ -7,7 +7,10 @@ def conf(request):
     """Add selected settings values to the template context"""
     context = {}
     for setting in ('ADDTHIS_PUBID', 'GA_PROPERTY_ID', 'GA_DOMAIN_NAME',
-		    'STORYBASE_SITE_NAME', 'STORYBASE_SITE_TAGLINE'):
+		    'STORYBASE_SITE_NAME', 'STORYBASE_SITE_TAGLINE',
+		    'STORYBASE_EXLORE_TITLE', 
+		    'STORYBASE_ORGANIZATION_LIST_TITLE',
+		    'STORYBASE_PROJECT_LIST_TITLE'):
         setting_val = getattr(settings, setting, None)
         if setting_val is not None:
             context.update({setting.lower(): _(setting_val)})
