@@ -8,7 +8,7 @@ def conf(request):
     context = {}
     for setting in ('ADDTHIS_PUBID', 'GA_PROPERTY_ID', 'GA_DOMAIN_NAME',
 		    'STORYBASE_SITE_NAME', 'STORYBASE_SITE_TAGLINE',
-		    'STORYBASE_EXLORE_TITLE', 
+		    'STORYBASE_EXPLORE_TITLE', 
 		    'STORYBASE_ORGANIZATION_LIST_TITLE',
 		    'STORYBASE_PROJECT_LIST_TITLE'):
         setting_val = getattr(settings, setting, None)
