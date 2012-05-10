@@ -1,0 +1,25 @@
+{% extends "base.html" %}
+
+{% load i18n sekizai_tags menu_tags %}
+
+{% block above_content %}
+<ul id="breadcrumbs" class="row">{% show_breadcrumb %}</ul>
+{% endblock %}
+
+{% block col_left %}
+<div class="threecol sidebar-left">
+  <nav id="subnav">
+    <ul class="navroot">{% show_menu 1 %}</ul>
+  </nav>
+</div>
+{% endblock %}
+
+{% block col_right %}
+<div class="ninecol last primary-content">
+  <h2>{% block body_title %}{% endblock%}</h2>
+  {% block intro %}
+  {% endblock %}
+  {% block primary_content %}
+  {% endblock %}
+</div>
+{% endblock %}
