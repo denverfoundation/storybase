@@ -538,16 +538,17 @@ li.section {
   border-bottom: 1px solid #d3dbe3;
 }
 
-#subnav .selected {
+#subnav .navroot > .selected,
+#subnav .navroot > .ancestor {
   background-color: #4B7CAF;
 }
 
-#subnav .selected > a,
-#subnav .sibling > a {
+#subnav .navroot > li > a {
   font-weight: bold;
 }
 
-#subnav .selected > a {
+#subnav .navroot > .selected > a,
+#subnav .navroot > .ancestor > a {
   color: #fff;
 }	
 
@@ -569,6 +570,10 @@ li.section {
   
 #subnav .navroot ul li {
   padding-left: 4%;
+}
+
+#subnav .navroot ul li.selected a {
+  font-weight: bold;
 }
 
 /* Organization/Project list */

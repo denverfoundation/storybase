@@ -1,10 +1,12 @@
-{% extends "base.html" %}
+{% extends "twocol.html" %}
 
-{% block head_title %}{{ organization.name }}{% endblock %}
+{% load i18n sekizai_tags menu_tags %}
 
-{% block base_content %}
-<h2>{{ organization.name }}</h2>
+{% block head_title %}{{ organization.name }}{{ block.super }}{% endblock %}
 
+{% block body_title %}{{ organization.name }}{% endblock %}
+
+{% block primary_content %}
 {% if organization.website_url %}
 <h3>Website URL</h3>
 <p><a href="{{ organization.website_url }}">{{ organization.website_url }}</a></p>
