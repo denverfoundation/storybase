@@ -357,7 +357,13 @@ header.pagetop h1 a {
 }
 
 /* Breadcrumbs */
-#breadcrumbs { list-style: none; }
+
+#breadcrumbs { 
+  list-style: none; 
+  margin: 0;
+  padding: 0; 
+}
+
 #breadcrumbs li { float: left; }
 
 /* Main content container */
@@ -500,6 +506,52 @@ li.section {
   position: absolute;
   right: 0;
   padding: 0 2%;
+}
+
+/* Subnavigation */
+#subnav .navroot {
+  list-style-type: none;
+  border-top: 4px solid #666666;
+  border-bottom: 4px solid #666666;
+}	
+
+#subnav li {
+  background-color: #eee;
+  border-bottom: 1px solid #d3dbe3;
+}
+
+#subnav .selected {
+  background-color: #4B7CAF;
+}
+
+#subnav .selected > a,
+#subnav .sibling > a {
+  font-weight: bold;
+}
+
+#subnav .selected > a {
+  color: #fff;
+}	
+
+#subnav li a {
+  color: #000;
+  display: block;
+  padding: 2%;
+  text-decoration: none;
+}
+
+#subnav li:hover {
+  background-color: #4B7CAF;
+}
+
+#subnav li:hover > a {
+  color: #fff;
+  text-decoration: underline;
+}
+  
+
+#subnav .navroot ul li {
+  padding-left: 4%;
 }
 
 /* ==|== non-semantic helper classes ========================================
