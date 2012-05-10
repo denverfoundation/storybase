@@ -2,6 +2,7 @@
 
 from django.conf.urls.defaults import url
 
+from tastypie import fields
 from tastypie.resources import ModelResource
 from tastypie.utils import trailing_slash
 from tastypie.authentication import Authentication
@@ -10,6 +11,10 @@ from tastypie.authorization import ReadOnlyAuthorization
 from storybase_story.models import Story
 
 class StoryResource(ModelResource):
+    # Explicitly declare fields that are on the translation model
+    title = fields.CharField(attribute='title')
+    summary = fields.CharField(attribute='summary')
+
     class Meta:
         queryset = Story.objects.filter(status__exact='published')
         resource_name = 'stories'
