@@ -18,6 +18,10 @@ urlpatterns = patterns('')
 # Set up Tastypie API resources
 v0_1_api = Api(api_name='0.1')
 v0_1_api.register(StoryResource())
+urlpatterns += patterns('', 
+    # REST API
+    (r'^api/', include(v0_1_api.urls)),
+)
 
 # Include storybase_user URL patterns
 # Use this pattern instead of include since we want to put the URLs
@@ -35,8 +39,6 @@ urlpatterns += patterns('',
     #url(r'^admin/lookups/', include(ajax_select_urls)),
     url(r'^admin/', include(admin.site.urls)),
     
-    # REST API
-    (r'^api/', include(v0_1_api.urls)),
 
     # Make translations available in JavaScript
     (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', {}),
