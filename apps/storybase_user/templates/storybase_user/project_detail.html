@@ -1,9 +1,12 @@
-{% extends "base.html" %}
+{% extends "twocol.html" %}
 
-{% block head_title %}{{ project.name }}{% endblock %}
+{% load i18n sekizai_tags menu_tags %}
 
-{% block base_content %}
-<h2>{{ project.name }}</h2>
+{% block head_title %}{{ project.name }}{{ block.super }}{% endblock %}
+
+{% block body_title %}{{ project.name }}{% endblock %}
+
+{% block primary_content %}
 
 {% if project.website_url %}
 <h3>Website URL</h3>
