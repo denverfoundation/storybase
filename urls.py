@@ -1,15 +1,23 @@
 from django.conf.urls.defaults import patterns, include, url
 from django.contrib import admin
 from django.conf import settings
+
 #from ajax_select import urls as ajax_select_urls
+from tastypie.api import Api
+
 from storybase_action.urls import urlpatterns as action_urlpatterns
 from storybase_asset.urls import urlpatterns as asset_urlpatterns
 from storybase_user.urls import urlpatterns as user_urlpatterns
 from storybase_story.urls import urlpatterns as story_urlpatterns
+from storybase_story.api import StoryResource
 
 admin.autodiscover()
 
 urlpatterns = patterns('')
+
+# Set up Tastypie API resources
+v0_1_api = Api(api_name='0.1')
+v0_1_api.register(StoryResource())
 
 # Include storybase_user URL patterns
 # Use this pattern instead of include since we want to put the URLs
@@ -26,6 +34,9 @@ urlpatterns += patterns('',
 
     #url(r'^admin/lookups/', include(ajax_select_urls)),
     url(r'^admin/', include(admin.site.urls)),
+    
+    # REST API
+    (r'^api/', include(v0_1_api.urls)),
 
     # Make translations available in JavaScript
     (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', {}),
