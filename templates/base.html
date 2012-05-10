@@ -55,16 +55,16 @@
 <body>
   {% cms_toolbar %}
   <header class="container pagetop">
-    <nav class="help">
+    <nav class="help row">
       <ul>
         <li><a href="{% url contact %}">{% trans "Contact Us" %}</a></li>
       </ul>
     </nav>
-    <h1><a href="/">{{ storybase_site_name }}</a></h1>
+    <h1 class="row"><a href="/">{{ storybase_site_name }}</a></h1>
     {% if storybase_site_tagline %}
-    <p class="tagline">{{ storybase_site_tagline }}</p>
+    <p class="tagline row">{{ storybase_site_tagline }}</p>
     {% endif %}
-    <nav id="sitenav">
+    <nav id="sitenav" class="row">
       <ul class="navroot">
         {% show_menu 0 1 2 %}
       </ul>
@@ -86,7 +86,7 @@
   <footer class="container social">
   </footer>
   <footer class="container nav">
-    <nav>
+    <nav class="row">
       <ul>
           {% comment %}
           <li><a href="{% page_url "home" %}">Home</a></li>
@@ -94,7 +94,9 @@
           {% endcomment %}
       </ul>
     </nav>
-    <small class="copyright">Copyright Information. dead trees Tim Carmody community Knight Foundation totally blowing up on Twitter newsroom cafe experiment Gardening & War section Neil Postman newsroom cafe</small>
+    <div class="row">
+      <small class="copyright eightcol">Copyright Information. dead trees Tim Carmody community Knight Foundation totally blowing up on Twitter newsroom cafe experiment Gardening & War section Neil Postman newsroom cafe</small>
+    </div>
   </footer>
 
   {% block bodyend %}{% endblock bodyend %}
