@@ -1,6 +1,14 @@
 """Shared utility functions"""
 
+from django.conf import settings
 from django.template.defaultfilters import slugify as django_slugify
+from django.utils.translation import ugettext as _
+
+def get_language_name(language_code):
+    """Convert a language code into its full (localized) name"""
+    languages = dict(settings.LANGUAGES)
+    return _(languages[language_code])
+    
 
 def slugify(value):
     """
