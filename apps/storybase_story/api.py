@@ -5,6 +5,7 @@ from django.conf.urls.defaults import url
 from haystack.query import SearchQuerySet
 
 from tastypie import fields
+from tastypie.bundle import Bundle
 from tastypie.resources import ModelResource
 from tastypie.utils import trailing_slash
 from tastypie.authentication import Authentication
@@ -27,11 +28,34 @@ class StoryResource(ModelResource):
 	# Allow open access to this resource for now since it's read-only
         authentication = Authentication()
 	authorization = ReadOnlyAuthorization()
+	# Hide the underlying id
+	excludes = ['id']
 
     def override_urls(self):
         return [
             url(r'^(?P<resource_name>%s)/explore%s$'  % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_explore'), name="api_get_explore"),
+            url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/$" % self._meta.resource_name, self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
         ]
+
+    def get_resource_uri(self, bundle_or_obj):
+        """
+        Handles generating a resource URI for a single resource.
+
+        Uses the model's ``story_id`` in order to create the URI.
+        """
+        kwargs = {
+            'resource_name': self._meta.resource_name,
+        }
+
+        if isinstance(bundle_or_obj, Bundle):
+            kwargs['pk'] = bundle_or_obj.obj.story_id
+        else:
+            kwargs['pk'] = bundle_or_obj.story_id
+
+        if self._meta.api_name is not None:
+            kwargs['api_name'] = self._meta.api_name
+
+        return self._build_reverse_url("api_dispatch_detail", kwargs=kwargs)
 
     def _get_facet_field_name(self, field_name):
         """Convert public filter name to underlying Haystack index field"""
