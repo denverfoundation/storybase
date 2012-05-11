@@ -1,0 +1,17 @@
+{% extends "base.html" %}
+
+{% load i18n sekizai_tags menu_tags %}
+
+{% block head_title %}{{ storybase_explore_title }}{{ block.super }}{% endblock %}
+
+
+{% block above_content %}
+<ul id="breadcrumbs" class="row">{% show_breadcrumb %}</ul>
+{% endblock %}
+
+{% block col_center %}
+<div class="twelvecol last">
+  <h2>{{ storybase_explore_title }}</h2>
+</div>
+{% endblock %}
+
