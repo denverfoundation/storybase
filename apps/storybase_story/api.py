@@ -20,6 +20,11 @@ class StoryResource(ModelResource):
     # Explicitly declare fields that are on the translation model
     title = fields.CharField(attribute='title')
     summary = fields.CharField(attribute='summary')
+    url = fields.CharField(attribute='get_absolute_url')
+    topics = fields.ListField(readonly=True)
+    organizations = fields.ListField(readonly=True)
+    projects = fields.ListField(readonly=True)
+    languages = fields.ListField(readonly=True)
 
     class Meta:
         queryset = Story.objects.filter(status__exact='published')
@@ -57,6 +62,31 @@ class StoryResource(ModelResource):
 
         return self._build_reverse_url("api_dispatch_detail", kwargs=kwargs)
 
+    def dehydrate_topics(self, bundle):
+        """Populate a list of topic ids and names in the response objects"""
+        return [(topic.pk, topic.name) for topic in bundle.obj.topics.all()]
+
+    def dehydrate_organizations(self, bundle):
+        """
+        Populate a list of organization ids and names in the response objects
+	"""
+	return [(organization.organization_id, organization.name)
+                for organization in bundle.obj.organizations.all()]
+
+    def dehydrate_projects(self, bundle):
+        """
+        Populate a list of project ids and names in the response objects
+	"""
+	return [(project.project_id, project.name)
+                for project in bundle.obj.projects.all()]
+
+    def dehydrate_languages(self, bundle):
+        """
+        Populate a list of language codes and names in the response objects
+	"""
+        return [(code, get_language_name(code))
+                for code in bundle.obj.get_languages()]
+
     def _get_facet_field_name(self, field_name):
         """Convert public filter name to underlying Haystack index field"""
 	return field_name.rstrip('s') + '_ids'
@@ -87,8 +117,6 @@ class StoryResource(ModelResource):
             
     def get_explore(self, request, **kwargs):
 	"""Custom endpoint to drive the drill-down in the "Explore" view"""
-	# TODO: Implement paging
-	# BOOKMARK
         self.method_check(request, allowed=['get'])
         self.is_authenticated(request)
         self.throttle_check(request)
@@ -113,13 +141,12 @@ class StoryResource(ModelResource):
 	    bundle = self.full_dehydrate(bundle)
             objects.append(bundle)
 
-        object_list = {
-            'objects': objects,
-        }
+        paginator = self._meta.paginator_class(request.GET, objects, resource_uri=self.get_resource_list_uri(), limit=self._meta.limit)
+        to_be_serialized = paginator.page()
 
 	for facet_field, items in sqs.facet_counts()['fields'].iteritems():
             filter_field = self._get_filter_field_name(facet_field)
-            object_list[filter_field] = self._get_facet_choices(
+            to_be_serialized[filter_field] = self._get_facet_choices(
                 facet_field, [item[0] for item in items])
 
-        return self.create_response(request, object_list)
+        return self.create_response(request, to_be_serialized)
