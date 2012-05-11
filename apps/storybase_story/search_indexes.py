@@ -10,20 +10,25 @@ class StoryIndex(RealTimeSearchIndex):
     published = FacetDateTimeField(model_attr='published')
     # TODO: Use a meta class to dynamically populate these from "official"
     # tag sets 
-    topics = FacetMultiValueField()
-    organizations = FacetMultiValueField()
-    projects = FacetMultiValueField()
+    topic_ids = FacetMultiValueField()
+    organization_ids = FacetMultiValueField()
+    project_ids = FacetMultiValueField()
+    language_ids = FacetMultiValueField()
 
-    def prepare_topics(self, obj):
-        return [topic.name for topic in obj.topics.all()]
+    def prepare_topic_ids(self, obj):
+        return [topic.id for topic in obj.topics.all()]
 
-    def prepare_organizations(self, obj):
-        return [organization.name for organization in obj.organizations.all()]
+    def prepare_organization_ids(self, obj):
+        return [organization.organization_id for organization in obj.organizations.all()]
 
-    def prepare_projects(self, obj):
-	return [project.name for project in obj.projects.all()]
+    def prepare_project_ids(self, obj):
+	return [project.project_id for project in obj.projects.all()]
+
+    def prepare_language_ids(self, obj):
+        return obj.get_languages()
 
     def index_queryset(self):
         return Story.objects.filter(status__exact='published')
+        
 
 site.register(Story, StoryIndex)
