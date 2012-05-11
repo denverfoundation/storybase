@@ -2,6 +2,7 @@
 
 from django.template import Context
 from django.template.loader import get_template
+from django.views.generic import TemplateView 
 from storybase.views.generic import ModelIdDetailView
 from storybase_story.models import Story
 
@@ -22,9 +23,14 @@ def homepage_story_list():
     stories = Story.objects.on_homepage().order_by('-last_edited')
     return simple_story_list(stories)
 
+
+class ExploreStoriesView(TemplateView):
+    template_name = "storybase_story/explore_stories.html"
+
 class StoryDetailView(ModelIdDetailView):
     context_object_name = "story"
     queryset = Story.objects.all()
+
 
 class StoryViewerView(ModelIdDetailView):
     context_object_name = "story"

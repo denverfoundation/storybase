@@ -6,7 +6,8 @@ from django.conf.urls.defaults import patterns, url
 #from haystack.views import FacetedSearchView
 
 #from storybase_story.forms import StoryFacetedSearchForm
-from storybase_story.views import StoryDetailView, StoryViewerView
+from storybase_story.views import (ExploreStoriesView, 
+    StoryDetailView, StoryViewerView)
 
 #sqs = SearchQuerySet().date_facet('pub_date', 
 #                                   start_date=datetime.date(2009, 1, 1),
@@ -18,6 +19,7 @@ urlpatterns = patterns('',
 #    url(r'search/', FacetedSearchView(form_class=StoryFacetedSearchForm,
 #                                      searchqueryset=sqs),
 #        name='story_search'),
+    url(r'explore/$', ExploreStoriesView.as_view(), name='explore_stories'),
     url(r'stories/(?P<story_id>[0-9a-f]{32,32})/$',
         StoryDetailView.as_view(), name='story_detail_by_id'), 
     url(r'stories/(?P<slug>[0-9a-z-]+)/$',
