@@ -7,34 +7,34 @@
 {% block extrahead %}
 {% verbatim %}
 <script type="text/html" id="filtersTemplate">
-<label for="topics">{{ topics_label }}</label>
+<label for="topics">{{#gettext}}Topic{{/gettext}}</label>
 <select name="topics">
   {{#topics}}
   <option value="{{id}}">{{name}}</option>
   {{/topics}}
 </select>
 
-<label for="places">{{ places_label }}</label>
+<label for="places">{{#gettext}}Place{{/gettext}}</label>
 <select name="places">
   {{#places}}
   <option value="{{id}}">{{name}}</option>
   {{/places}}
 </select>
 
-<label for="organizations">{{ organizations_label }}</label>
+<label for="organizations">{{#gettext}}Organization{{/gettext}}</label>
 <select name="organizations">
   {{#organizations}}
   <option value="{{id}}">{{name}}</option>
   {{/organizations}}
 </select>
 
-<label for="projects">{{ projects_label }}</label>
+<label for="projects">{{#gettext}}Project{{/gettext}}</label>
   {{#projects}}
   <option value="{{id}}">{{name}}</option>
   {{/projects}}
 <select name="projects"></select>
 
-<label for="languages">{{ languages_label }}</label>
+<label for="languages">{{#gettext}}Language{{/gettext}}</label>
 <select name="languages">
   {{#languages}}
   <option value="{{id}}">{{name}}</option>
@@ -80,15 +80,7 @@ $(document).ready(function() {
     projects: storyData.projecs,
     languages: storyData.languages
   });
-  filters.render({
-    extraContext: {
-      topics_label: gettext("Topic"),
-      places_label: gettext("Place"),
-      organizations_label: gettext("Organization"),
-      projects_label: gettext("Project"),
-      languages_label: gettext("Language")
-    }
-  });
+  filters.render();
 });
 </script>
 {% endaddtoblock %}
