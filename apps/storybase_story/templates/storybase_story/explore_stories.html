@@ -54,7 +54,7 @@
 
 <div class="twelvecol last">
   <h2>{{ storybase_explore_title }}</h2>
-  <div id="filters"></div>
+  <div id="explorer"></div>
 </div>
 
 {% addtoblock "js" %}
@@ -74,13 +74,10 @@ $(document).ready(function() {
   var stories = new storybase.collections.Stories;
   stories.reset(storyData.objects);
   console.debug(stories);
-  var filters = new storybase.explorer.views.Filters({
-    topics: storyData.topics,
-    organizations: storyData.organizations,
-    projects: storyData.projecs,
-    languages: storyData.languages
+  var explorer = new storybase.explorer.views.ExplorerApp({
+    storyData: storyData
   });
-  filters.render();
+  explorer.render();
 });
 </script>
 {% endaddtoblock %}

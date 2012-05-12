@@ -3,8 +3,30 @@
  */
 Namespace('storybase.explorer');
 
+storybase.explorer.views.ExplorerApp = Backbone.View.extend({
+  el: $('#explorer'),
+
+  initialize: function() {
+    this.storyData = this.options.storyData;
+    this.filterView = new storybase.explorer.views.Filters({
+      topics: this.storyData.topics,
+      organizations: this.storyData.organizations,
+      projects: this.storyData.projecs,
+      languages: this.storyData.languages
+    });
+  },
+
+  render: function() {
+    this.filterView.render();
+    console.debug(this.filterView.el);
+    this.$el.append(this.filterView.el);
+  }
+});
+
 storybase.explorer.views.Filters = Backbone.View.extend({
-  el: $('#filters'),
+  tagName: 'div',
+
+  id: 'filters',
 
   render: function() {
     var context = {};
