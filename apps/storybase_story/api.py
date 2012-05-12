@@ -35,10 +35,12 @@ class StoryResource(ModelResource):
 	authorization = ReadOnlyAuthorization()
 	# Hide the underlying id
 	excludes = ['id']
+	# Filter arguments for custom explore endpoint
+	explore_filter_fields = ['topics', 'projects', 'organizations', 'languages']
 
     def override_urls(self):
         return [
-            url(r'^(?P<resource_name>%s)/explore%s$'  % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_explore'), name="api_get_explore"),
+            url(r'^(?P<resource_name>%s)/explore%s$'  % (self._meta.resource_name, trailing_slash()), self.wrap_view('explore_get_list'), name="api_explore_get_list"),
             url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/$" % self._meta.resource_name, self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
         ]
 
@@ -114,29 +116,57 @@ class StoryResource(ModelResource):
 
     def _get_facet_choices_language_ids(self, items):
         return [(item, get_language_name(item)) for item in items]
+
+    def explore_get_result_list(self, request):
+	sqs = SearchQuerySet().models(Story)
+	filter_fields = self._meta.explore_filter_fields
+	for filter_field in filter_fields:
+            facet_field = self._get_facet_field_name(filter_field)
+            sqs = sqs.facet(facet_field)
+
+	return sqs
+
+    def explore_build_filters(self, filters=None):
+	applicable_filters = {}
+	filter_fields = self._meta.explore_filter_fields
+	for filter_field in filter_fields:
+            facet_field = self._get_facet_field_name(filter_field)
+            filter_values = filters.get(filter_field, '').split(',')
+	    if filter_values:
+                applicable_filters['%s__in' % facet_field] = filter_values
+
+        return applicable_filters
+
+    def explore_apply_filters(self, request, applicable_filters):
+	object_list = self.explore_get_result_list(request)
+	if applicable_filters:
+            return object_list.filter(**applicable_filters)
+        else:
+            return object_list
+        
+    def explore_result_get_list(self, request=None, **kwargs):
+        filters = {}
+
+        if hasattr(request, 'GET'):
+            # Grab a mutable copy.
+            filters = request.GET.copy()
+
+        # Update with the provided kwargs.
+        filters.update(kwargs)
+        applicable_filters = self.build_filters(filters=filters)
+	results = self.explore_apply_filters(request, applicable_filters)
+	return results
             
-    def get_explore(self, request, **kwargs):
+    def explore_get_list(self, request, **kwargs):
 	"""Custom endpoint to drive the drill-down in the "Explore" view"""
         self.method_check(request, allowed=['get'])
         self.is_authenticated(request)
         self.throttle_check(request)
 
-	sqs = SearchQuerySet().models(Story)
-
-        filter_fields = ['topics', 'projects', 'organizations', 'languages']
-	filters = {}
-	for filter_field in filter_fields:
-            facet_field = self._get_facet_field_name(filter_field)
-            sqs = sqs.facet(facet_field)
-            filter_values = request.GET.get(filter_field, '').split(',')
-	    if filter_values:
-                filters['%s__in' % facet_field] = filter_values
-	if filters:
-            sqs = sqs.filter(**filters)
-
         objects = []
+	results = self.explore_result_get_list(request, **kwargs)
 
-	for result in sqs.all():
+	for result in results:
             bundle = self.build_bundle(obj=result.object, request=request)
 	    bundle = self.full_dehydrate(bundle)
             objects.append(bundle)
@@ -144,7 +174,7 @@ class StoryResource(ModelResource):
         paginator = self._meta.paginator_class(request.GET, objects, resource_uri=self.get_resource_list_uri(), limit=self._meta.limit)
         to_be_serialized = paginator.page()
 
-	for facet_field, items in sqs.facet_counts()['fields'].iteritems():
+	for facet_field, items in results.facet_counts()['fields'].iteritems():
             filter_field = self._get_filter_field_name(facet_field)
             to_be_serialized[filter_field] = self._get_facet_choices(
                 facet_field, [item[0] for item in items])
