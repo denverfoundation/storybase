@@ -1,8 +1,31 @@
 {% extends "base.html" %}
 
-{% load i18n sekizai_tags menu_tags %}
+{% load i18n sekizai_tags menu_tags verbatim %}
 
 {% block head_title %}{{ storybase_explore_title }}{{ block.super }}{% endblock %}
+
+
+
+{% block extrahead %}
+{% verbatim %}
+<script type="text/html" id="filtersTemplate">
+<label for="topics">{{ topics_label }}</label>
+<select name="topics"></select>
+
+<label for="places">{{ places_label }}</label>
+<select name="places"></select>
+
+<label for="organizations">{{ organizations_label }}</label>
+<select name="organizations"></select>
+
+<label for="projects">{{ projects_label }}</label>
+<select name="projects"></select>
+
+<label for="languages">{{ languages_label }}</label>
+<select name="languages"></select>
+</script>
+{% endverbatim %}
+{% endblock %}
 
 
 {% block above_content %}
@@ -10,8 +33,38 @@
 {% endblock %}
 
 {% block col_center %}
+{% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/explorer.css">{% endaddtoblock %}
+
 <div class="twelvecol last">
   <h2>{{ storybase_explore_title }}</h2>
+  <div id="filters"></div>
 </div>
+
+{% addtoblock "js" %}
+<script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
+<script src="{{ STATIC_URL }}js/libs/Namespace.js"></script>
+<script src="{{ STATIC_URL }}js/libs/underscore-min.js"></script>
+<script src="{{ STATIC_URL }}js/libs/json2.js"></script>
+<script src="{{ STATIC_URL }}js/libs/backbone-min.js"></script>
+<script src="{{ STATIC_URL }}js/libs/ICanHaz.min.js"></script>
+<script src="{{ STATIC_URL }}js/explorer/application.js"></script>
+<script src="{{ STATIC_URL }}js/explorer/views.js"></script>
+<script type="text/javascript">
+
+$(document).ready(function() {
+  Namespace('storybase.explorer');
+  var filters = new storybase.explorer.views.Filters();
+  filters.render({
+    extraContext: {
+      topics_label: gettext("Topic"),
+      places_label: gettext("Place"),
+      organizations_label: gettext("Organization"),
+      projects_label: gettext("Project"),
+      languages_label: gettext("Language")
+    }
+  });
+});
+</script>
+{% endaddtoblock %}
 {% endblock %}
 
