@@ -34,11 +34,7 @@ storybase.explorer.views.Filters = Backbone.View.extend({
     context.organizations = this.options.organizations;
     context.projects = this.options.projects;
     context.languages = this.options.languages;
-    context.gettext = function() {
-      return function(text) {
-        return gettext(text);
-      }
-    };
+    context.gettext = storybase.utils.gettext;
     this.$el.html(ich.filtersTemplate(context));
   }
 });
