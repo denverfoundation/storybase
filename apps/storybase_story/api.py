@@ -66,27 +66,28 @@ class StoryResource(ModelResource):
 
     def dehydrate_topics(self, bundle):
         """Populate a list of topic ids and names in the response objects"""
-        return [(topic.pk, topic.name) for topic in bundle.obj.topics.all()]
+	return [{ 'id': topic.pk, 'name': topic.name }
+                for topic in bundle.obj.topics.all()]
 
     def dehydrate_organizations(self, bundle):
         """
         Populate a list of organization ids and names in the response objects
 	"""
-	return [(organization.organization_id, organization.name)
+	return [{ 'id': organization.organization_id, 'name': organization.name }
                 for organization in bundle.obj.organizations.all()]
 
     def dehydrate_projects(self, bundle):
         """
         Populate a list of project ids and names in the response objects
 	"""
-	return [(project.project_id, project.name)
+	return [{ 'id': project.project_id, 'name': project.name }
                 for project in bundle.obj.projects.all()]
 
     def dehydrate_languages(self, bundle):
         """
         Populate a list of language codes and names in the response objects
 	"""
-        return [(code, get_language_name(code))
+	return [{ 'id': code, 'name': get_language_name(code) }
                 for code in bundle.obj.get_languages()]
 
     def _get_facet_field_name(self, field_name):
@@ -103,19 +104,19 @@ class StoryResource(ModelResource):
         return getter_fn(items)
 
     def _get_facet_choices_topic_ids(self, items):
-        return [(obj.pk, obj.name) 
+        return [{ 'id': obj.pk, 'name': obj.name } 
                 for obj in Category.objects.filter(pk__in=items)]
 
     def _get_facet_choices_project_ids(self, items):
-        return [(obj.project_id, obj.name) 
+        return [{ 'id': obj.project_id, 'name': obj.name }
                 for obj in Project.objects.filter(project_id__in=items)]
 
     def _get_facet_choices_organization_ids(self, items):
-        return [(obj.organization_id, obj.name) 
+        return [{ 'id': obj.organization_id, 'name': obj.name}
                 for obj in Organization.objects.filter(organization_id__in=items)]
 
     def _get_facet_choices_language_ids(self, items):
-        return [(item, get_language_name(item)) for item in items]
+        return [{ 'id': item, 'name': get_language_name(item)} for item in items]
 
     def explore_get_result_list(self, request):
 	sqs = SearchQuerySet().models(Story)
@@ -156,13 +157,16 @@ class StoryResource(ModelResource):
         applicable_filters = self.build_filters(filters=filters)
 	results = self.explore_apply_filters(request, applicable_filters)
 	return results
-            
-    def explore_get_list(self, request, **kwargs):
-	"""Custom endpoint to drive the drill-down in the "Explore" view"""
-        self.method_check(request, allowed=['get'])
-        self.is_authenticated(request)
-        self.throttle_check(request)
 
+    def explore_get_data_to_be_serialized(self, request=None, **kwargs):
+        """
+	Helper to build a filtered and paginated list of stories and
+	facet and paging metadta
+
+	This is broken out of ``explore_get_list`` so it can be called
+	from other views, often to bootstrap JavaScript objects.
+
+	"""
         objects = []
 	results = self.explore_result_get_list(request, **kwargs)
 
@@ -171,12 +175,26 @@ class StoryResource(ModelResource):
 	    bundle = self.full_dehydrate(bundle)
             objects.append(bundle)
 
-        paginator = self._meta.paginator_class(request.GET, objects, resource_uri=self.get_resource_list_uri(), limit=self._meta.limit)
+        request_data = {}
+        if hasattr(request, 'GET'):
+            request_data.update(request.GET)
+        paginator = self._meta.paginator_class(request_data, objects, resource_uri=self.get_resource_list_uri(), limit=self._meta.limit)
         to_be_serialized = paginator.page()
 
 	for facet_field, items in results.facet_counts()['fields'].iteritems():
             filter_field = self._get_filter_field_name(facet_field)
             to_be_serialized[filter_field] = self._get_facet_choices(
                 facet_field, [item[0] for item in items])
+
+	return to_be_serialized
+            
+    def explore_get_list(self, request, **kwargs):
+	"""Custom endpoint to drive the drill-down in the "Explore" view"""
+        self.method_check(request, allowed=['get'])
+        self.is_authenticated(request)
+        self.throttle_check(request)
+
+	to_be_serialized = self.explore_get_data_to_be_serialized(
+            request, **kwargs)
 
         return self.create_response(request, to_be_serialized)

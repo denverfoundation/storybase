@@ -18,6 +18,10 @@ storybase.explorer.views.Filters = Backbone.View.extend({
     else {
       context = options.extraContext;
     }
+    context.topics = this.options.topics;
+    context.organizations = this.options.organizations;
+    context.projects = this.options.projects;
+    context.languages = this.options.languages;
     this.$el.html(ich.filtersTemplate(context));
   }
 });

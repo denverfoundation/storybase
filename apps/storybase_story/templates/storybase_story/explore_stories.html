@@ -4,25 +4,42 @@
 
 {% block head_title %}{{ storybase_explore_title }}{{ block.super }}{% endblock %}
 
-
-
 {% block extrahead %}
 {% verbatim %}
 <script type="text/html" id="filtersTemplate">
 <label for="topics">{{ topics_label }}</label>
-<select name="topics"></select>
+<select name="topics">
+  {{#topics}}
+  <option value="{{id}}">{{name}}</option>
+  {{/topics}}
+</select>
 
 <label for="places">{{ places_label }}</label>
-<select name="places"></select>
+<select name="places">
+  {{#places}}
+  <option value="{{id}}">{{name}}</option>
+  {{/places}}
+</select>
 
 <label for="organizations">{{ organizations_label }}</label>
-<select name="organizations"></select>
+<select name="organizations">
+  {{#organizations}}
+  <option value="{{id}}">{{name}}</option>
+  {{/organizations}}
+</select>
 
 <label for="projects">{{ projects_label }}</label>
+  {{#projects}}
+  <option value="{{id}}">{{name}}</option>
+  {{/projects}}
 <select name="projects"></select>
 
 <label for="languages">{{ languages_label }}</label>
-<select name="languages"></select>
+<select name="languages">
+  {{#languages}}
+  <option value="{{id}}">{{name}}</option>
+  {{/languages}}
+</select>
 </script>
 {% endverbatim %}
 {% endblock %}
@@ -47,13 +64,22 @@
 <script src="{{ STATIC_URL }}js/libs/json2.js"></script>
 <script src="{{ STATIC_URL }}js/libs/backbone-min.js"></script>
 <script src="{{ STATIC_URL }}js/libs/ICanHaz.min.js"></script>
+<script src="{{ STATIC_URL }}js/models.js"></script>
 <script src="{{ STATIC_URL }}js/explorer/application.js"></script>
 <script src="{{ STATIC_URL }}js/explorer/views.js"></script>
 <script type="text/javascript">
 
 $(document).ready(function() {
-  Namespace('storybase.explorer');
-  var filters = new storybase.explorer.views.Filters();
+  var storyData = {{ stories_json }};
+  var stories = new storybase.collections.Stories;
+  stories.reset(storyData.objects);
+  console.debug(stories);
+  var filters = new storybase.explorer.views.Filters({
+    topics: storyData.topics,
+    organizations: storyData.organizations,
+    projects: storyData.projecs,
+    languages: storyData.languages
+  });
   filters.render({
     extraContext: {
       topics_label: gettext("Topic"),
@@ -67,4 +93,3 @@ $(document).ready(function() {
 </script>
 {% endaddtoblock %}
 {% endblock %}
-
