@@ -3,10 +3,6 @@
  */
 Namespace('storybase.viewer');
 
-storybase.viewer.models.Story = Backbone.Model.extend({
-  idAttribute: "story_id"
-});
-
 storybase.viewer.models.Section = Backbone.Model.extend({
   idAttribute: "section_id",
 
