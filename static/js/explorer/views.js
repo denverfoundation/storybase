@@ -6,8 +6,11 @@ Namespace('storybase.explorer');
 storybase.explorer.views.ExplorerApp = Backbone.View.extend({
   el: $('#explorer'),
 
+  templateSource: $('#explorer-template').html(),
+
   initialize: function() {
     this.storyData = this.options.storyData;
+    this.template = Handlebars.compile(this.templateSource);
     this.filterView = new storybase.explorer.views.Filters({
       topics: this.storyData.topics,
       organizations: this.storyData.organizations,
@@ -20,7 +23,7 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     var context = {
       gettext: storybase.utils.gettext
     };
-    this.$el.html(ich.explorerTemplate(context));
+    this.$el.html(this.template(context));
     this.filterView.render();
     this.$el.prepend(this.filterView.el);
     return this;
@@ -32,6 +35,12 @@ storybase.explorer.views.Filters = Backbone.View.extend({
 
   id: 'filters',
 
+  templateSource: $('#filters-template').html(),
+
+  initialize: function() {
+    this.template = Handlebars.compile(this.templateSource);
+  },
+
   render: function() {
     var context = {
       topics: this.options.topics,
@@ -40,7 +49,7 @@ storybase.explorer.views.Filters = Backbone.View.extend({
       languages: this.options.languages,
       gettext: storybase.utils.gettext
     }
-    this.$el.html(ich.filtersTemplate(context));
+    this.$el.html(this.template(context));
     return this;
   }
 });
@@ -50,8 +59,11 @@ storybase.explorer.views.StoryList = Backbone.View.extend({
 
   id: 'story-list',
 
+  templateSource: $('#story-list-template').html(),
+
   initialize: function() {
     this.stories = this.options.stories;
+    this.template = Handlebars.compile(this.templateSource);
   },
 
   render: function() {
@@ -59,7 +71,7 @@ storybase.explorer.views.StoryList = Backbone.View.extend({
        gettext: storybasse.utils.getext,
        stories: this.stories
     }
-    this.$el.html(ich.storyListTemplate(context));
+    this.$el.html(this.template(context));
     return this;
   }
 });

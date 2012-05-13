@@ -96,9 +96,12 @@ storybase.viewer.views.StoryNavigation = Backbone.View.extend({
 
   className: 'story-nav',
 
+  templateSource: $('#navigation-template').html(),
+
   initialize: function() {
     this.activeSection = null;
     this.sections = this.options.sections;
+    this.template = Handlebars.compile(this.templateSource);
     if (this.options.hasOwnProperty('addlLinks')) {
       this.addlLinks = this.options.addlLinks.map(function(link) {
         return {
@@ -125,7 +128,7 @@ storybase.viewer.views.StoryNavigation = Backbone.View.extend({
     }
     context.addl_links = this.addlLinks;
 
-    this.$el.html(ich.navigationTemplate(context));
+    this.$el.html(this.template(context));
     return this;
   },
 

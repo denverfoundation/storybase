@@ -19,8 +19,8 @@ This project includes a number of excellent open-source libraries:
 * `The 1140px Grid V2 <http://cssgrid.net/>`_ by Andy Taylor
 * `Backbone <http://documentcloud.github.com/backbone/>`_ by Jeremy Ashkenas, DocumentCloud
 * `D3 <http://mbostock.github.com/d3/>`_ by Michael Bostock
+* `Handlebars <http://handlebarsjs.com/>`_ by Yehuda Katz
 * `HTML5 Boilerplate <http://html5boilerplate.com/>`_
-* `ICanHaz.js <http://icanhazjs.com/>`_ by  Henrik Joreteg
 * `jQuery <http://jquery.org/>`_ by John Resig
 * `jQuery Condense Plugin <https://github.com/jsillitoe/jquery-condense-plugin>`_ by Joe Sillitoe
 * `json2.js <https://github.com/douglascrockford/JSON-js/>`_ by Douglas Crockford

@@ -5,8 +5,12 @@
 {% block head_title %}{{ storybase_explore_title }}{{ block.super }}{% endblock %}
 
 {% block extrahead %}
+{% comment %}
+Handlebars templates for rendering Backbone views.
+{% endcomment %}
+
 {% verbatim %}
-<script type="text/html" id="explorerTemplate">
+<script type="text/x-handlebars-template" id="explorer-template">
 <ul id="view-selector">
   <li><a class="tile-view" href="#">{{#gettext}}Tile View{{/gettext}}</a></li>
   <li><a class="list-view" href="#">{{#gettext}}List View{{/gettext}}</a></li>
@@ -14,7 +18,7 @@
 </ul>
 </script>
 
-<script type="text/html" id="filtersTemplate">
+<script type="text/x-handlebars-template" id="filters-template">
 <label for="topics">{{#gettext}}Topic{{/gettext}}</label>
 <select name="topics">
   {{#topics}}
@@ -50,7 +54,7 @@
 </select>
 </script>
 
-<script type="text/html" id="storyListTemplate">
+<script type="text/x-handlebars-template" id="story-list-template">
 </script>
 
 {% endverbatim %}
@@ -75,7 +79,7 @@
 <script src="{{ STATIC_URL }}js/libs/underscore-min.js"></script>
 <script src="{{ STATIC_URL }}js/libs/json2.js"></script>
 <script src="{{ STATIC_URL }}js/libs/backbone-min.js"></script>
-<script src="{{ STATIC_URL }}js/libs/ICanHaz.min.js"></script>
+<script src="{{ STATIC_URL }}js/libs/handlebars-1.0.0.beta.6.js"></script>
 <script src="{{ STATIC_URL }}js/models.js"></script>
 <script src="{{ STATIC_URL }}js/utils.js"></script>
 <script src="{{ STATIC_URL }}js/explorer/application.js"></script>
