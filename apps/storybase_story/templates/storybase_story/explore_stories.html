@@ -55,11 +55,27 @@ Handlebars templates for rendering Backbone views.
 </script>
 
 <script type="text/x-handlebars-template" id="story-list-template">
+{{#each stories}}
+<li id="{{story_id}}" class="story">
+  <h3><a href="{{url}}">{{title}}</a></h3>
+  <p class="byline">{{byline}}</p>
+  {{summary}}
+  <dl>
+    <dt>{{gettext message="Languages"}}}</dt>
+    <dd>
+      <ul class="languages">
+        {{#each languages}}
+        <li>{{name}}</li>
+        {{/each}}
+      </ul>
+    </dd>
+  </dl>
+</li>
+{{/each}}
 </script>
 
 {% endverbatim %}
 {% endblock %}
-
 
 {% block above_content %}
 <ul id="breadcrumbs" class="row">{% show_breadcrumb %}</ul>
@@ -88,9 +104,6 @@ Handlebars templates for rendering Backbone views.
 
 $(document).ready(function() {
   var storyData = {{ stories_json }};
-  var stories = new storybase.collections.Stories;
-  stories.reset(storyData.objects);
-  console.debug(stories);
   var explorer = new storybase.explorer.views.ExplorerApp({
     storyData: storyData
   });

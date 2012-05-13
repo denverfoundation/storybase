@@ -9,13 +9,18 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
   templateSource: $('#explorer-template').html(),
 
   initialize: function() {
-    this.storyData = this.options.storyData;
+    this.stories = new storybase.collections.Stories;
+    this.stories.reset(this.options.storyData.objects);
+    console.debug(this.stories.toJSON());
     this.template = Handlebars.compile(this.templateSource);
     this.filterView = new storybase.explorer.views.Filters({
-      topics: this.storyData.topics,
-      organizations: this.storyData.organizations,
-      projects: this.storyData.projecs,
-      languages: this.storyData.languages
+      topics: this.options.storyData.topics,
+      organizations: this.options.storyData.organizations,
+      projects: this.options.storyData.projecs,
+      languages: this.options.storyData.languages
+    });
+    this.storyListView = new storybase.explorer.views.StoryList({
+      stories: this.stories
     });
   },
 
@@ -25,6 +30,8 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     this.$el.html(this.template(context));
     this.filterView.render();
     this.$el.prepend(this.filterView.el);
+    this.storyListView.render();
+    this.$el.append(this.storyListView.el);
     return this;
   }
 });
@@ -66,7 +73,7 @@ storybase.explorer.views.StoryList = Backbone.View.extend({
 
   render: function() {
     var context = {
-       stories: this.stories
+       stories: this.stories.toJSON()
     }
     this.$el.html(this.template(context));
     return this;
