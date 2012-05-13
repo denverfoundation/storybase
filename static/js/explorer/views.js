@@ -21,7 +21,6 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
 
   render: function() {
     var context = {
-      gettext: storybase.utils.gettext
     };
     this.$el.html(this.template(context));
     this.filterView.render();
@@ -47,7 +46,6 @@ storybase.explorer.views.Filters = Backbone.View.extend({
       organizations: this.options.organizations,
       projects: this.options.projects,
       languages: this.options.languages,
-      gettext: storybase.utils.gettext
     }
     this.$el.html(this.template(context));
     return this;
@@ -68,7 +66,6 @@ storybase.explorer.views.StoryList = Backbone.View.extend({
 
   render: function() {
     var context = {
-       gettext: storybasse.utils.getext,
        stories: this.stories
     }
     this.$el.html(this.template(context));

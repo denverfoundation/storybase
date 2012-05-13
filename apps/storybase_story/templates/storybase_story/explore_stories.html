@@ -12,41 +12,41 @@ Handlebars templates for rendering Backbone views.
 {% verbatim %}
 <script type="text/x-handlebars-template" id="explorer-template">
 <ul id="view-selector">
-  <li><a class="tile-view" href="#">{{#gettext}}Tile View{{/gettext}}</a></li>
-  <li><a class="list-view" href="#">{{#gettext}}List View{{/gettext}}</a></li>
-  <li><a class="map-view" href="#">{{#gettext}}Map View{{/gettext}}</a></li>
+  <li><a class="tile-view" href="#">{{gettext message="Tile View"}}</a></li>
+  <li><a class="list-view" href="#">{{gettext message="List View"}}</a></li>
+  <li><a class="map-view" href="#">{{gettext message="Map View"}}</a></li>
 </ul>
 </script>
 
 <script type="text/x-handlebars-template" id="filters-template">
-<label for="topics">{{#gettext}}Topic{{/gettext}}</label>
+  <label for="topics">{{gettext message="Topic"}}</label>
 <select name="topics">
   {{#topics}}
   <option value="{{id}}">{{name}}</option>
   {{/topics}}
 </select>
 
-<label for="places">{{#gettext}}Place{{/gettext}}</label>
+<label for="places">{{gettext message="Place"}}</label>
 <select name="places">
   {{#places}}
   <option value="{{id}}">{{name}}</option>
   {{/places}}
 </select>
 
-<label for="organizations">{{#gettext}}Organization{{/gettext}}</label>
+<label for="organizations">{{gettext message="Organization"}}</label>
 <select name="organizations">
   {{#organizations}}
   <option value="{{id}}">{{name}}</option>
   {{/organizations}}
 </select>
 
-<label for="projects">{{#gettext}}Project{{/gettext}}</label>
+<label for="projects">{{gettext message="Project"}}</label>
   {{#projects}}
   <option value="{{id}}">{{name}}</option>
   {{/projects}}
 <select name="projects"></select>
 
-<label for="languages">{{#gettext}}Language{{/gettext}}</label>
+<label for="languages">{{gettext message="Language"}}</label>
 <select name="languages">
   {{#languages}}
   <option value="{{id}}">{{name}}</option>
