@@ -6,6 +6,14 @@
 
 {% block extrahead %}
 {% verbatim %}
+<script type="text/html" id="explorerTemplate">
+<ul id="view-selector">
+  <li><a class="tile-view" href="#">{{#gettext}}Tile View{{/gettext}}</a></li>
+  <li><a class="list-view" href="#">{{#gettext}}List View{{/gettext}}</a></li>
+  <li><a class="map-view" href="#">{{#gettext}}Map View{{/gettext}}</a></li>
+</ul>
+</script>
+
 <script type="text/html" id="filtersTemplate">
 <label for="topics">{{#gettext}}Topic{{/gettext}}</label>
 <select name="topics">
@@ -41,6 +49,10 @@
   {{/languages}}
 </select>
 </script>
+
+<script type="text/html" id="storyListTemplate">
+</script>
+
 {% endverbatim %}
 {% endblock %}
 

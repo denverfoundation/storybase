@@ -1,3 +1,8 @@
+#explorer {
+  position: relative;
+  width: 100%; 
+}
+
 #filters {
   /* TODO: Tweak these styles */
   background: none repeat scroll 0 0 #EEEEEE;
@@ -6,6 +11,15 @@
   color: #000000;
   padding: 5px 10px;
   position: static;
-  width: 880px;
   z-index: 40;
+}
+
+#view-selector {
+  text-align: right;
+  padding: 0;
+  list-style-type: none;
+}
+
+#view-selector li {
+  display: inline-block;
 }

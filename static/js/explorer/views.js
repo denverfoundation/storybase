@@ -17,9 +17,13 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
   },
 
   render: function() {
+    var context = {
+      gettext: storybase.utils.gettext
+    };
+    this.$el.html(ich.explorerTemplate(context));
     this.filterView.render();
-    console.debug(this.filterView.el);
-    this.$el.append(this.filterView.el);
+    this.$el.prepend(this.filterView.el);
+    return this;
   }
 });
 
@@ -29,12 +33,33 @@ storybase.explorer.views.Filters = Backbone.View.extend({
   id: 'filters',
 
   render: function() {
-    var context = {};
-    context.topics = this.options.topics;
-    context.organizations = this.options.organizations;
-    context.projects = this.options.projects;
-    context.languages = this.options.languages;
-    context.gettext = storybase.utils.gettext;
+    var context = {
+      topics: this.options.topics,
+      organizations: this.options.organizations,
+      projects: this.options.projects,
+      languages: this.options.languages,
+      gettext: storybase.utils.gettext
+    }
     this.$el.html(ich.filtersTemplate(context));
+    return this;
+  }
+});
+
+storybase.explorer.views.StoryList = Backbone.View.extend({
+  tagName: 'ul',
+
+  id: 'story-list',
+
+  initialize: function() {
+    this.stories = this.options.stories;
+  },
+
+  render: function() {
+    var context = {
+       gettext: storybasse.utils.getext,
+       stories: this.stories
+    }
+    this.$el.html(ich.storyListTemplate(context));
+    return this;
   }
 });
