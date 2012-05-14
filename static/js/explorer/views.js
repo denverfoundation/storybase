@@ -8,12 +8,21 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
 
   templateSource: $('#explorer-template').html(),
 
+  defaults: {
+    bufferPx: 40,
+    pixelsFromListToBottom: undefined
+  },
+
   events: {
     "click .select-tile-view": "selectTile",
     "click .select-list-view": "selectList"
   },
 
   initialize: function() {
+    var that = this;
+    _.defaults(this.options, this.defaults);
+    console.debug(this.options.storyData);
+    this.nextUrl = this.options.storyData.next;
     this.stories = new storybase.collections.Stories;
     this.stories.reset(this.options.storyData.objects);
     //console.debug(this.stories.toJSON());
@@ -27,9 +36,14 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     this.storyListView = new storybase.explorer.views.StoryList({
       stories: this.stories
     });
+
+    $(window).bind('scroll', function(ev) {
+      that.scrollWindow(ev);
+    });
   },
 
   render: function() {
+    var opts = this.options;
     var context = {
     };
     this.$el.html(this.template(context));
@@ -38,6 +52,10 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     this.filterView.setInitialProperties();
     this.storyListView.render();
     this.$el.append(this.storyListView.el);
+    // Distance from story list to bottom
+    // Computed as: height of the document - top offset of story list container
+    // - outer height of story list container
+    this.options.pixelsFromListToBottom = $(document).height() - this.storyListView.$el.offset().top - this.storyListView.$el.outerHeight(); 
     this.selectTile();
     return this;
   },
@@ -52,9 +70,33 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     return false;
   },
 
+  /** 
+   * Check if the window has been scrolled to the bottom.
+   */
+  _nearbottom: function() {
+    var opts = this.options;
+    var pixelsFromWindowBottomToBottom = 0 + $(document).height() - $(window).scrollTop() - $(window).height();
+    console.debug(pixelsFromWindowBottomToBottom);
+    return (pixelsFromWindowBottomToBottom - opts.bufferPx < opts.pixelsFromListToBottom);
+  },
+
+  getMoreStories: function() {
+      var that = this;
+      if (this.nextUrl) {
+        $.getJSON(this.nextUrl, function(data) {
+          this.nextUrl = data.meta.next;
+          _.each(data.objects, function(storyJSON) {
+            that.stories.push(new storybase.models.Story(storyJSON));
+          });
+        });
+      }
+      console.debug('No more stories');
+  },
+
   scrollWindow: function(e) {
-    console.debug('got here');
-    console.debug($(window).scrollTop());
+    if (this._nearbottom()) {
+      this.getMoreStories();
+    }
   }
 });
 
