@@ -53,5 +53,16 @@
 
 #story-list.tile .story {
   float: left;
-  width: 22%;
+  width: 21%;
+  
+  margin: 1% 0;
+  border: 1px solid #ccc;
+  border-radius: 5px;
+  padding: 1%;
+  background: none repeat scroll 0 0 #eee;
 }
+
+#story-list .byline {
+  font-style: italic;
+}
+
