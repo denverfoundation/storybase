@@ -29,8 +29,17 @@
   list-style-type: none;
 }
 
+#story-list dt:after {
+  content: ": ";
+}
+
 #story-list dd {
   margin: 0;
+}
+
+#story-list dt,
+#story-list dd {
+  display: inline-block;
 }
 
 #story-list .languages {
@@ -40,4 +49,9 @@
 
 #story-list .languages li {
   display: inline-block;
+}
+
+#story-list.tile .story {
+  float: left;
+  width: 22%;
 }

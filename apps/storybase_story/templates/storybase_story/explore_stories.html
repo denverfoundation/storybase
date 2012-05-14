@@ -12,9 +12,9 @@ Handlebars templates for rendering Backbone views.
 {% verbatim %}
 <script type="text/x-handlebars-template" id="explorer-template">
 <ul id="view-selector">
-  <li><a class="tile-view" href="#">{{gettext message="Tile View"}}</a></li>
-  <li><a class="list-view" href="#">{{gettext message="List View"}}</a></li>
-  <li><a class="map-view" href="#">{{gettext message="Map View"}}</a></li>
+  <li><a class="select-tile-view" href="#">{{gettext message="Tile View"}}</a></li>
+  <li><a class="select-list-view" href="#">{{gettext message="List View"}}</a></li>
+  <li><a class="select-map-view" href="#">{{gettext message="Map View"}}</a></li>
 </ul>
 </script>
 
@@ -96,6 +96,7 @@ Handlebars templates for rendering Backbone views.
 <script src="{{ STATIC_URL }}js/libs/json2.js"></script>
 <script src="{{ STATIC_URL }}js/libs/backbone-min.js"></script>
 <script src="{{ STATIC_URL }}js/libs/handlebars-1.0.0.beta.6.js"></script>
+<script src="{{ STATIC_URL }}js/libs/jquery.masonry.min.js"></script>
 <script src="{{ STATIC_URL }}js/models.js"></script>
 <script src="{{ STATIC_URL }}js/utils.js"></script>
 <script src="{{ STATIC_URL }}js/explorer/application.js"></script>

@@ -23,6 +23,7 @@ This project includes a number of excellent open-source libraries:
 * `HTML5 Boilerplate <http://html5boilerplate.com/>`_
 * `jQuery <http://jquery.org/>`_ by John Resig
 * `jQuery Condense Plugin <https://github.com/jsillitoe/jquery-condense-plugin>`_ by Joe Sillitoe
+* `jQuery Masonry <http://masonry.desandro.com/>`_ by David DeSandro
 * `json2.js <https://github.com/douglascrockford/JSON-js/>`_ by Douglas Crockford
 * `Formalize <http://formalize.me/>` by Nathan Smith
 * `Modernizr <http://modernizr.com/>`_
