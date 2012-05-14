@@ -4,14 +4,22 @@
 }
 
 #filters {
-  /* TODO: Tweak these styles */
   background: none repeat scroll 0 0 #EEEEEE;
   border: 1px solid #CCCCCC;
   border-radius: 5px 5px 5px 5px;
   color: #000000;
-  padding: 5px 10px;
+  padding: 1%;
   position: static;
   z-index: 40;
+}
+
+#filters .field {
+  display: inline-block;
+}
+
+#filters label {
+  display: block;
+  font-weight: bold;
 }
 
 #view-selector {

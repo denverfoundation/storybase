@@ -19,39 +19,49 @@ Handlebars templates for rendering Backbone views.
 </script>
 
 <script type="text/x-handlebars-template" id="filters-template">
-  <label for="topics">{{gettext message="Topic"}}</label>
+<div class="field">
+<label for="topics">{{gettext message="Topic"}}</label>
 <select name="topics">
   {{#topics}}
   <option value="{{id}}">{{name}}</option>
   {{/topics}}
 </select>
+</div>
 
+<div class="field">
 <label for="places">{{gettext message="Place"}}</label>
 <select name="places">
   {{#places}}
   <option value="{{id}}">{{name}}</option>
   {{/places}}
 </select>
+</div>
 
+<div class="field">
 <label for="organizations">{{gettext message="Organization"}}</label>
 <select name="organizations">
   {{#organizations}}
   <option value="{{id}}">{{name}}</option>
   {{/organizations}}
 </select>
+</div>
 
+<div class="field">
 <label for="projects">{{gettext message="Project"}}</label>
   {{#projects}}
   <option value="{{id}}">{{name}}</option>
   {{/projects}}
 <select name="projects"></select>
+</div>
 
+<div class="field">
 <label for="languages">{{gettext message="Language"}}</label>
 <select name="languages">
   {{#languages}}
   <option value="{{id}}">{{name}}</option>
   {{/languages}}
 </select>
+</div>
 </script>
 
 <script type="text/x-handlebars-template" id="story-list-template">
