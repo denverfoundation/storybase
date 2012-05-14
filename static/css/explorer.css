@@ -68,7 +68,7 @@
 
 #story-list.tile .story {
   float: left;
-  width: 21%;
+  width: 100%;
   
   margin: 1% 0;
   border: 1px solid #ccc;
@@ -79,5 +79,19 @@
 
 #story-list .byline {
   font-style: italic;
+}
+
+@media only screen and (min-width: 480px) {
+  /* Style adjustments for viewports 480px and over go here */
+  #story-list.tile .story {
+    width: 41%;
+  }
+}
+
+@media only screen and (min-width: 768px) {
+  /* Style adjustments for viewports 480px and over go here */
+  #story-list.tile .story {
+    width: 21%;
+  }
 }
 

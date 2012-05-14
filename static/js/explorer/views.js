@@ -157,7 +157,16 @@ storybase.explorer.views.StoryList = Backbone.View.extend({
     this.$el.removeClass('list');
     this.$el.masonry({
       itemSelector: '.story',
-      columnWidth: width / 4 
+      columnWidth: function(containerWidth) {
+        var columnWidth = containerWidth;
+        if (containerWidth >= 700) {
+          columnWidth = containerWidth / 4;
+        } 
+        else if (containerWidth >= 400) {
+          columnWidth = containerWidth / 2;
+        }
+        return columnWidth;
+      }
     });
   },
 
