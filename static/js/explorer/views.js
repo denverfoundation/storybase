@@ -21,11 +21,9 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
   initialize: function() {
     var that = this;
     _.defaults(this.options, this.defaults);
-    console.debug(this.options.storyData);
     this.nextUrl = this.options.storyData.next;
     this.stories = new storybase.collections.Stories;
     this.stories.reset(this.options.storyData.objects);
-    //console.debug(this.stories.toJSON());
     this.template = Handlebars.compile(this.templateSource);
     this.filterView = new storybase.explorer.views.Filters({
       topics: this.options.storyData.topics,
@@ -50,13 +48,13 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     this.filterView.render();
     this.$el.prepend(this.filterView.el);
     this.filterView.setInitialProperties();
-    this.storyListView.render();
     this.$el.append(this.storyListView.el);
+    this.selectTile();
+    this.storyListView.render();
     // Distance from story list to bottom
     // Computed as: height of the document - top offset of story list container
     // - outer height of story list container
     this.options.pixelsFromListToBottom = $(document).height() - this.storyListView.$el.offset().top - this.storyListView.$el.outerHeight(); 
-    this.selectTile();
     return this;
   },
 
@@ -76,26 +74,54 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
   _nearbottom: function() {
     var opts = this.options;
     var pixelsFromWindowBottomToBottom = 0 + $(document).height() - $(window).scrollTop() - $(window).height();
-    console.debug(pixelsFromWindowBottomToBottom);
     return (pixelsFromWindowBottomToBottom - opts.bufferPx < opts.pixelsFromListToBottom);
   },
 
+  /*
   getMoreStories: function() {
       var that = this;
       if (this.nextUrl) {
         $.getJSON(this.nextUrl, function(data) {
           this.nextUrl = data.meta.next;
           _.each(data.objects, function(storyJSON) {
-            that.stories.push(new storybase.models.Story(storyJSON));
+            var story = new storybase.models.Story(storyJSON);
+            that.stories.push(story);
+            that.storyListView.appendStory(story);
           });
         });
       }
       console.debug('No more stories');
   },
+  */
+
+  getMoreStories: function() {
+    if (typeof this.storycount === "undefined") {
+      this.storycount = 0;
+    }
+    for (var i = 0; i <= 5; i++) {
+      this.storycount++;
+      var story = new storybase.models.Story({
+          byline: "Test Author",
+          contact_info: "",
+          created: "2012-04-11T14:50:00",
+          languages: [{id: "en", name: "English"}],
+          last_edited: "2012-04-11T14:50:00",
+          on_homepage: false,
+          organizations: [],
+          projects: [],
+          summary: "synergize SEO gotta grok it before you rock it curation discuss vast wasteland Gutenberg, gamification Gutenberg parenthesis pay curtain serendipity Frontline Encyclo, experiment get me rewrite paywall future of context horse-race coverage. WaPo aggregation newspaper strike MinnPost try PR Voice of San Diego Walter Cronkite died for your sins dying content is king column-inch the power of the press belongs to the person who owns one circulation data journalism, SEO gutter TechCrunch we need a Nate Silver copyright a giant stack of newspapers that you'll never read discuss dingbat Google News Jay Rosen Alberto Ibarguen.", 
+          title: "Test Story " + this.storycount,
+          url: "/stories/test-story-" + i
+      });
+      this.stories.push(story);
+      this.storyListView.appendStory(story);
+    }
+  },
 
   scrollWindow: function(e) {
     if (this._nearbottom()) {
       this.getMoreStories();
+      this.storyListView.render();
     }
   }
 });
@@ -175,19 +201,29 @@ storybase.explorer.views.StoryList = Backbone.View.extend({
 
   id: 'story-list',
 
-  templateSource: $('#story-list-template').html(),
+  templateSource: $('#story-template').html(),
 
   initialize: function() {
-    this.stories = this.options.stories;
+    this.newStories = this.options.stories.toArray();
     this.template = Handlebars.compile(this.templateSource);
   },
 
   render: function() {
-    var context = {
-       stories: this.stories.toJSON()
+    var that = this;
+    var appended = [];
+    _.each(this.newStories, function(story) {
+      var $el = that.$el.append(that.template(story.toJSON()));
+      appended.push($el[0]);
+    });
+    if (this.$el.hasClass('tile')) {
+      this.$el.masonry('reload');
     }
-    this.$el.html(this.template(context));
+    this.newStories = [];
     return this;
+  },
+
+  appendStory: function(story) {
+    this.newStories.push(story);
   },
 
   /**

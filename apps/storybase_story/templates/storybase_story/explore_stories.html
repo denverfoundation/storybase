@@ -64,8 +64,7 @@ Handlebars templates for rendering Backbone views.
 </div>
 </script>
 
-<script type="text/x-handlebars-template" id="story-list-template">
-{{#each stories}}
+<script type="text/x-handlebars-template" id="story-template">
 <li id="{{story_id}}" class="story">
   <h3><a href="{{url}}">{{title}}</a></h3>
   <p class="byline">{{byline}}</p>
@@ -81,7 +80,6 @@ Handlebars templates for rendering Backbone views.
     </dd>
   </dl>
 </li>
-{{/each}}
 </script>
 
 {% endverbatim %}
