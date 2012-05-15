@@ -155,7 +155,7 @@ class StoryResource(ModelResource):
 
         # Update with the provided kwargs.
         filters.update(kwargs)
-        applicable_filters = self.build_filters(filters=filters)
+        applicable_filters = self.explore_build_filters(filters=filters)
 	results = self.explore_apply_filters(request, applicable_filters)
 	return results
 
@@ -195,7 +195,7 @@ class StoryResource(ModelResource):
 
         request_data = {}
         if hasattr(request, 'GET'):
-            request_data.update(request.GET)
+	    request_data = request.GET
         paginator = self._meta.paginator_class(request_data, objects,
             resource_uri=resource_uri,
 	    limit=self._meta.limit)
