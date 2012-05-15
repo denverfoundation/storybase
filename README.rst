@@ -29,6 +29,7 @@ This project includes a number of excellent open-source libraries:
 * `Modernizr <http://modernizr.com/>`_
 * `Namespace.js <https://github.com/maximebf/Namespace.js>`_ by Maxime Bouroumeau-Fuseau
 * `Normalize.css <http://github.com/necolas/normalize.css>`_ by Nicolas Gallagher and Jonathan Neal
+* `Select2 <http://ivaynberg.github.com/select2/>`_ by Igor Vaynberg
 * `SimpleModal <http://simplemodal.com>`_ by Eric Martin
 * `TinyMCE <http://tinymce.com/>`_ by Moxiecode Systems AB
 * `Underscore <http://documentcloud.github.com/underscore/>`_ by Jeremy Ashkenas, DocumentCloud

@@ -52,6 +52,7 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     this.filterView.render();
     this.$el.prepend(this.filterView.el);
     this.filterView.setInitialProperties();
+    this.filterView.initializeSelect2();
     this.$el.append(this.storyListView.el);
     this.selectTile();
     this.storyListView.render();
@@ -144,6 +145,12 @@ storybase.explorer.views.Filters = Backbone.View.extend({
   setInitialProperties: function() {
     this.initialOffset = this.$el.offset(); 
     this.initialWidth = this.$el.width();
+  },
+
+  initializeSelect2: function() {
+    this.$("select").select2({
+      allowClear: true
+    });
   },
 
   /**

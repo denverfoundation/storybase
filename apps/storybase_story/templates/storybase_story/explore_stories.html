@@ -21,7 +21,8 @@ Handlebars templates for rendering Backbone views.
 <script type="text/x-handlebars-template" id="filters-template">
 <div class="field">
 <label for="topics">{{gettext message="Topic"}}</label>
-<select name="topics">
+<select name="topics" data-placeholder="{{gettext message="Select a Topic"}}">
+  <option></option>
   {{#topics}}
   <option value="{{id}}">{{name}}</option>
   {{/topics}}
@@ -30,7 +31,8 @@ Handlebars templates for rendering Backbone views.
 
 <div class="field">
 <label for="places">{{gettext message="Place"}}</label>
-<select name="places">
+<select name="places" data-placeholder="{{gettext message="Select a Place"}}">
+  <option></option>
   {{#places}}
   <option value="{{id}}">{{name}}</option>
   {{/places}}
@@ -39,7 +41,8 @@ Handlebars templates for rendering Backbone views.
 
 <div class="field">
 <label for="organizations">{{gettext message="Organization"}}</label>
-<select name="organizations">
+<select name="organizations" data-placeholder="{{gettext message="Select an Organization"}}">
+  <option></option>
   {{#organizations}}
   <option value="{{id}}">{{name}}</option>
   {{/organizations}}
@@ -48,15 +51,18 @@ Handlebars templates for rendering Backbone views.
 
 <div class="field">
 <label for="projects">{{gettext message="Project"}}</label>
+<select name="projects" data-placeholder="{{gettext message="Select a Project"}}">
+  <option></option>
   {{#projects}}
   <option value="{{id}}">{{name}}</option>
   {{/projects}}
-<select name="projects"></select>
+</select>
 </div>
 
 <div class="field">
 <label for="languages">{{gettext message="Language"}}</label>
-<select name="languages">
+<select name="languages" data-placeholder="{{gettext message="Select a Language"}}">
+  <option></option>
   {{#languages}}
   <option value="{{id}}">{{name}}</option>
   {{/languages}}
@@ -90,6 +96,7 @@ Handlebars templates for rendering Backbone views.
 {% endblock %}
 
 {% block col_center %}
+{% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/select2/select2.css">{% endaddtoblock %}
 {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/explorer.css">{% endaddtoblock %}
 
 <div class="twelvecol last">
@@ -98,6 +105,11 @@ Handlebars templates for rendering Backbone views.
 </div>
 
 {% addtoblock "js" %}
+<script>
+// Before loading all of our jQuery plugins, switch jQuery to our recent version
+jQuery = jqLatest;
+$ = jQuery;
+</script>
 <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
 <script src="{{ STATIC_URL }}js/libs/Namespace.js"></script>
 <script src="{{ STATIC_URL }}js/libs/underscore-min.js"></script>
@@ -105,12 +117,12 @@ Handlebars templates for rendering Backbone views.
 <script src="{{ STATIC_URL }}js/libs/backbone-min.js"></script>
 <script src="{{ STATIC_URL }}js/libs/handlebars-1.0.0.beta.6.js"></script>
 <script src="{{ STATIC_URL }}js/libs/jquery.masonry.min.js"></script>
+<script src="{{ STATIC_URL }}js/libs/select2/select2.js"></script>
 <script src="{{ STATIC_URL }}js/models.js"></script>
 <script src="{{ STATIC_URL }}js/utils.js"></script>
 <script src="{{ STATIC_URL }}js/explorer/application.js"></script>
 <script src="{{ STATIC_URL }}js/explorer/views.js"></script>
 <script type="text/javascript">
-
 $(document).ready(function() {
   var storyData = {{ stories_json }};
   var explorer = new storybase.explorer.views.ExplorerApp({
