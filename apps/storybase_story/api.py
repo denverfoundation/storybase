@@ -207,7 +207,7 @@ class StoryResource(ModelResource):
 	for facet_field, items in results.facet_counts()['fields'].iteritems():
             filter_field = self._get_filter_field_name(facet_field)
             to_be_serialized[filter_field] = self._get_facet_choices(
-                facet_field, [item[0] for item in items])
+                facet_field, [item[0] for item in items if item[1] > 0])
 
 	return to_be_serialized
             
