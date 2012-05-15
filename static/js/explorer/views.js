@@ -15,7 +15,8 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
 
   events: {
     "click .select-tile-view": "selectTile",
-    "click .select-list-view": "selectList"
+    "click .select-list-view": "selectList",
+    "change #filters select": "changeFilters"
   },
 
   initialize: function() {
@@ -24,10 +25,11 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     // Flag to keep from re-fetching the same page of items when we're 
     // scrolled near the bottom of the window, but the new items haven't yet
     // loaded
+    this.filters = {}; 
     this.isDuringAjax = false; 
-    this.nextUrl = this.options.storyData.meta.next;
     this.stories = new storybase.collections.Stories;
-    this.stories.reset(this.options.storyData.objects);
+    this.reset(this.options.storyData);
+    console.debug(this.options.storyData);
     this.template = Handlebars.compile(this.templateSource);
     this.filterView = new storybase.explorer.views.Filters({
       topics: this.options.storyData.topics,
@@ -42,6 +44,12 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     $(window).bind('scroll', function(ev) {
       that.scrollWindow(ev);
     });
+  },
+
+  reset: function(data) {
+    this.nextUri = data.meta.next;
+    this.resourceUri = data.meta.resource_uri;
+    this.stories.reset(data.objects);
   },
 
   render: function() {
@@ -84,10 +92,10 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
 
   getMoreStories: function() {
       var that = this;
-      if (this.nextUrl) {
+      if (this.nextUri) {
         this.isDuringAjax = true;
-        $.getJSON(this.nextUrl, function(data) {
-          that.nextUrl = data.meta.next;
+        $.getJSON(this.nextUri, function(data) {
+          that.nextUri = data.meta.next;
           _.each(data.objects, function(storyJSON) {
             var story = new storybase.models.Story(storyJSON);
             that.stories.push(story);
@@ -106,6 +114,46 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
       this.getMoreStories();
       this.storyListView.render();
     }
+  },
+
+  /**
+   * Get the resource URI including a query string based on the filters
+   */
+  getFilterUri: function() {
+    var filterUri = this.resourceUri;
+    var filterStrings = [];
+    _.each(this.filters, function(value, key, list) {
+      if (!!value && value.length > 0) {
+        var filterString = key + "=";
+        if (typeof value === "string") {
+          filterString += value;
+        }
+        else if (value instanceof Array) {
+          var values = [];
+          _.each(value, function(element, index, list) {
+            values.push(element);
+          });
+          filterString += values.join(",");
+        }
+        filterStrings.push(filterString);
+      }
+    });
+    filterUri = filterStrings.length > 0 ? filterUri + '?' : filterUri;
+    filterUri += filterStrings.join("&");
+    return filterUri;
+  },
+
+  changeFilters: function(ev) {
+    var that = this;
+    var name = ev.currentTarget.name;
+    var value =  $(ev.currentTarget).val();
+    var storyData;
+    this.filters[name] = value;
+    $.getJSON(this.getFilterUri(), function(data) {
+      that.reset(data);
+      that.storyListView.reset(that.stories);
+      that.storyListView.render();
+    });
   }
 });
 
@@ -195,11 +243,16 @@ storybase.explorer.views.StoryList = Backbone.View.extend({
   initialize: function() {
     this.newStories = this.options.stories.toArray();
     this.template = Handlebars.compile(this.templateSource);
+    this.renderStyle = 'append';
   },
 
   render: function() {
     var that = this;
     var appended = [];
+    if (this.renderStyle == 'replace') {
+      this.$el.empty();
+      this.renderStyle = 'append';
+    }
     _.each(this.newStories, function(story) {
       var $el = that.$el.append(that.template(story.toJSON()));
       appended.push($el[0]);
@@ -209,6 +262,11 @@ storybase.explorer.views.StoryList = Backbone.View.extend({
     }
     this.newStories = [];
     return this;
+  },
+
+  reset: function(stories) {
+    this.newStories = stories.toArray();
+    this.renderStyle = 'replace';
   },
 
   appendStory: function(story) {
