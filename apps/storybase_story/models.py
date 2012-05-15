@@ -76,7 +76,8 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
                                     blank=True)
     topics = models.ManyToManyField('storybase_taxonomy.Category',
 		                    verbose_name=_("Topics"),
-		                    related_name='stories')
+		                    related_name='stories',
+				    blank=True)
 
     objects = StoryManager()
 
