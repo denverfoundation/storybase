@@ -1,6 +1,7 @@
 """REST API for Stories"""
 
 from django.conf.urls.defaults import url
+from django.core.urlresolvers import NoReverseMatch
 
 from haystack.query import SearchQuerySet
 
@@ -158,6 +159,22 @@ class StoryResource(ModelResource):
 	results = self.explore_apply_filters(request, applicable_filters)
 	return results
 
+    def explore_get_resource_list_uri(self):
+        """
+        Returns a URL specific to this resource's list endpoint.
+        """
+        kwargs = {
+            'resource_name': self._meta.resource_name,
+        }
+
+        if self._meta.api_name is not None:
+            kwargs['api_name'] = self._meta.api_name
+
+        try:
+            return self._build_reverse_url("api_explore_get_list", kwargs=kwargs)
+        except NoReverseMatch:
+            return None
+
     def explore_get_data_to_be_serialized(self, request=None, **kwargs):
         """
 	Helper to build a filtered and paginated list of stories and
@@ -167,6 +184,7 @@ class StoryResource(ModelResource):
 	from other views, often to bootstrap JavaScript objects.
 
 	"""
+	resource_uri = self.explore_get_resource_list_uri()
         objects = []
 	results = self.explore_result_get_list(request, **kwargs)
 
@@ -178,8 +196,13 @@ class StoryResource(ModelResource):
         request_data = {}
         if hasattr(request, 'GET'):
             request_data.update(request.GET)
-        paginator = self._meta.paginator_class(request_data, objects, resource_uri=self.get_resource_list_uri(), limit=self._meta.limit)
+        paginator = self._meta.paginator_class(request_data, objects,
+            resource_uri=resource_uri,
+	    limit=self._meta.limit)
         to_be_serialized = paginator.page()
+	# Add the resource URI to the response metadata so the client-side
+	# code can be naive
+	to_be_serialized['meta']['resource_uri'] = resource_uri 
 
 	for facet_field, items in results.facet_counts()['fields'].iteritems():
             filter_field = self._get_filter_field_name(facet_field)
