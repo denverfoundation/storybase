@@ -21,7 +21,11 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
   initialize: function() {
     var that = this;
     _.defaults(this.options, this.defaults);
-    this.nextUrl = this.options.storyData.next;
+    // Flag to keep from re-fetching the same page of items when we're 
+    // scrolled near the bottom of the window, but the new items haven't yet
+    // loaded
+    this.isDuringAjax = false; 
+    this.nextUrl = this.options.storyData.meta.next;
     this.stories = new storybase.collections.Stories;
     this.stories.reset(this.options.storyData.objects);
     this.template = Handlebars.compile(this.templateSource);
@@ -77,49 +81,27 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     return (pixelsFromWindowBottomToBottom - opts.bufferPx < opts.pixelsFromListToBottom);
   },
 
-  /*
   getMoreStories: function() {
       var that = this;
       if (this.nextUrl) {
+        this.isDuringAjax = true;
         $.getJSON(this.nextUrl, function(data) {
-          this.nextUrl = data.meta.next;
+          that.nextUrl = data.meta.next;
           _.each(data.objects, function(storyJSON) {
             var story = new storybase.models.Story(storyJSON);
             that.stories.push(story);
             that.storyListView.appendStory(story);
           });
+          that.isDuringAjax = false;
         });
       }
-      console.debug('No more stories');
-  },
-  */
-
-  getMoreStories: function() {
-    if (typeof this.storycount === "undefined") {
-      this.storycount = 0;
-    }
-    for (var i = 0; i <= 5; i++) {
-      this.storycount++;
-      var story = new storybase.models.Story({
-          byline: "Test Author",
-          contact_info: "",
-          created: "2012-04-11T14:50:00",
-          languages: [{id: "en", name: "English"}],
-          last_edited: "2012-04-11T14:50:00",
-          on_homepage: false,
-          organizations: [],
-          projects: [],
-          summary: "synergize SEO gotta grok it before you rock it curation discuss vast wasteland Gutenberg, gamification Gutenberg parenthesis pay curtain serendipity Frontline Encyclo, experiment get me rewrite paywall future of context horse-race coverage. WaPo aggregation newspaper strike MinnPost try PR Voice of San Diego Walter Cronkite died for your sins dying content is king column-inch the power of the press belongs to the person who owns one circulation data journalism, SEO gutter TechCrunch we need a Nate Silver copyright a giant stack of newspapers that you'll never read discuss dingbat Google News Jay Rosen Alberto Ibarguen.", 
-          title: "Test Story " + this.storycount,
-          url: "/stories/test-story-" + i
-      });
-      this.stories.push(story);
-      this.storyListView.appendStory(story);
-    }
+      else {
+        console.debug('No more stories');
+      }
   },
 
   scrollWindow: function(e) {
-    if (this._nearbottom()) {
+    if (this._nearbottom() && !this.isDuringAjax) {
       this.getMoreStories();
       this.storyListView.render();
     }
