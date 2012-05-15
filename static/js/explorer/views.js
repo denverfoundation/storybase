@@ -125,16 +125,11 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     _.each(this.filters, function(value, key, list) {
       if (!!value && value.length > 0) {
         var filterString = key + "=";
-        if (typeof value === "string") {
-          filterString += value;
-        }
-        else if (value instanceof Array) {
-          var values = [];
-          _.each(value, function(element, index, list) {
-            values.push(element);
-          });
-          filterString += values.join(",");
-        }
+        var values = [];
+        _.each(value, function(element, index, list) {
+          values.push(element);
+        });
+        filterString += values.join(",");
         filterStrings.push(filterString);
       }
     });
@@ -143,12 +138,21 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     return filterUri;
   },
 
+  setFilter : function(name, value) {
+    if (typeof value === "string") {
+      this.filters[name] = [value];
+    }
+    else {
+      this.filters[name] = value;
+    }
+  },
+
   changeFilters: function(ev) {
     var that = this;
     var name = ev.currentTarget.name;
     var value =  $(ev.currentTarget).val();
     var storyData;
-    this.filters[name] = value;
+    this.setFilter(name, value);
     $.getJSON(this.getFilterUri(), function(data) {
       that.reset(data);
       that.storyListView.reset(that.stories);
