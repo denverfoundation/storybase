@@ -24,7 +24,7 @@ Handlebars templates for rendering Backbone views.
 <select name="topics" data-placeholder="{{gettext message="Select a Topic"}}">
   <option></option>
   {{#topics}}
-  <option value="{{id}}">{{name}}</option>
+  <option value="{{id}}"{{#if selected}}selected{{/if}}>{{name}}</option>
   {{/topics}}
 </select>
 </div>
@@ -34,7 +34,7 @@ Handlebars templates for rendering Backbone views.
 <select name="places" data-placeholder="{{gettext message="Select a Place"}}">
   <option></option>
   {{#places}}
-  <option value="{{id}}">{{name}}</option>
+  <option value="{{id}}"{{#if selected}}selected{{/if}}>{{name}}</option>
   {{/places}}
 </select>
 </div>
@@ -44,7 +44,7 @@ Handlebars templates for rendering Backbone views.
 <select name="organizations" data-placeholder="{{gettext message="Select an Organization"}}">
   <option></option>
   {{#organizations}}
-  <option value="{{id}}">{{name}}</option>
+  <option value="{{id}}"{{#if selected}}selected{{/if}}>{{name}}</option>
   {{/organizations}}
 </select>
 </div>
@@ -54,7 +54,7 @@ Handlebars templates for rendering Backbone views.
 <select name="projects" data-placeholder="{{gettext message="Select a Project"}}">
   <option></option>
   {{#projects}}
-  <option value="{{id}}">{{name}}</option>
+  <option value="{{id}}"{{#if selected}}selected{{/if}}>{{name}}</option>
   {{/projects}}
 </select>
 </div>
@@ -64,7 +64,7 @@ Handlebars templates for rendering Backbone views.
 <select name="languages" data-placeholder="{{gettext message="Select a Language"}}">
   <option></option>
   {{#languages}}
-  <option value="{{id}}">{{name}}</option>
+  <option value="{{id}}"{{#if selected}}selected{{/if}}>{{name}}</option>
   {{/languages}}
 </select>
 </div>

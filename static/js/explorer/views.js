@@ -22,14 +22,13 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
   initialize: function() {
     var that = this;
     _.defaults(this.options, this.defaults);
+    this.selectedFilters = {}; 
     // Flag to keep from re-fetching the same page of items when we're 
     // scrolled near the bottom of the window, but the new items haven't yet
     // loaded
-    this.filters = {}; 
     this.isDuringAjax = false; 
     this.stories = new storybase.collections.Stories;
     this.reset(this.options.storyData);
-    console.debug(this.options.storyData);
     this.template = Handlebars.compile(this.templateSource);
     this.filterView = new storybase.explorer.views.Filters({
       topics: this.options.storyData.topics,
@@ -60,7 +59,6 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     this.filterView.render();
     this.$el.prepend(this.filterView.el);
     this.filterView.setInitialProperties();
-    this.filterView.initializeSelect2();
     this.$el.append(this.storyListView.el);
     this.selectTile();
     this.storyListView.render();
@@ -122,7 +120,7 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
   getFilterUri: function() {
     var filterUri = this.resourceUri;
     var filterStrings = [];
-    _.each(this.filters, function(value, key, list) {
+    _.each(this.selectedFilters, function(value, key, list) {
       if (!!value && value.length > 0) {
         var filterString = key + "=";
         var values = [];
@@ -140,10 +138,10 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
 
   setFilter : function(name, value) {
     if (typeof value === "string") {
-      this.filters[name] = [value];
+      this.selectedFilters[name] = [value];
     }
     else {
-      this.filters[name] = value;
+      this.selectedFilters[name] = value;
     }
   },
 
@@ -154,9 +152,18 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     var storyData;
     this.setFilter(name, value);
     $.getJSON(this.getFilterUri(), function(data) {
+      console.debug(data);
       that.reset(data);
       that.storyListView.reset(that.stories);
       that.storyListView.render();
+      that.filterView.reset({
+        topics: data.topics,
+        organizations: data.organizations,
+        projects: data.projects,
+        languages: data.languages,
+        selected: that.selectedFilters
+      });
+      that.filterView.render();
     });
   }
 });
@@ -183,26 +190,51 @@ storybase.explorer.views.Filters = Backbone.View.extend({
     });
   },
 
-  render: function() {
+
+  /**
+   * Build a context object for passing to the template
+   *
+   * Sets a selected attribute on filter options that should be selected.
+   */
+  buildContext: function() {
     var context = {
       topics: this.options.topics,
       organizations: this.options.organizations,
       projects: this.options.projects,
       languages: this.options.languages,
+    };
+    if (!(typeof this.options.selected === "undefined")) {
+      _.each(this.options.selected, function(selected, filter, list) {
+        _.each(selected, function(element, index, list) {
+          var option = _.find(context[filter], function(obj) {
+            return obj.id == element;
+          });
+          if(!(typeof option === "undefined")) {
+            option.selected = true;
+          }
+        });
+      });
     }
+
+    return context;
+  },
+
+  render: function() {
+    var context = this.buildContext();
     this.$el.html(this.template(context));
+    this.$('select').select2({
+      allowClear: true
+    });
     return this;
+  },
+
+  reset: function(options) {
+    _.extend(this.options, options);
   },
 
   setInitialProperties: function() {
     this.initialOffset = this.$el.offset(); 
     this.initialWidth = this.$el.width();
-  },
-
-  initializeSelect2: function() {
-    this.$("select").select2({
-      allowClear: true
-    });
   },
 
   /**
