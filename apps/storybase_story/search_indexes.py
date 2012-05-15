@@ -8,6 +8,8 @@ class StoryIndex(RealTimeSearchIndex):
     text = CharField(document=True, use_template=True)
     author = FacetCharField(model_attr='author')
     published = FacetDateTimeField(model_attr='published')
+    created = FacetDateTimeField(model_attr='created')
+    last_edited = FacetDateTimeField(model_attr='last_edited')
     # TODO: Use a meta class to dynamically populate these from "official"
     # tag sets 
     topic_ids = FacetMultiValueField()
@@ -29,6 +31,16 @@ class StoryIndex(RealTimeSearchIndex):
 
     def index_queryset(self):
         return Story.objects.filter(status__exact='published')
+
+    def should_update(self, instance, **kwargs):
+        """
+        Determine if an object should be updated in the index.
+        """
+	should_update = True
+        translation_set = getattr(instance, instance.translation_set)
+	if translation_set.count() == 0:
+	    should_update = False
+	return should_update
         
 
 site.register(Story, StoryIndex)
