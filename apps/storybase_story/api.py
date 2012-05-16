@@ -144,7 +144,7 @@ class StoryResource(ModelResource):
 	if applicable_filters:
             object_list = object_list.filter(**applicable_filters)
 
-	return object_list.order_by('-published')
+	return object_list.order_by('-published').load_all()
         
     def explore_result_get_list(self, request=None, **kwargs):
         filters = {}
