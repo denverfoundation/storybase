@@ -1,6 +1,4 @@
 from django.contrib.gis import admin
-from models import Corridor, DenverNeighborhood, Hub
+from storybase_geo.models import Location
 
-admin.site.register(Corridor, admin.OSMGeoAdmin)
-admin.site.register(DenverNeighborhood, admin.OSMGeoAdmin)
-admin.site.register(Hub, admin.OSMGeoAdmin)
+admin.site.register(Location, admin.OSMGeoAdmin)
