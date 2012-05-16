@@ -142,9 +142,9 @@ class StoryResource(ModelResource):
     def explore_apply_filters(self, request, applicable_filters):
 	object_list = self.explore_get_result_list(request)
 	if applicable_filters:
-            return object_list.filter(**applicable_filters)
-        else:
-            return object_list
+            object_list = object_list.filter(**applicable_filters)
+
+	return object_list.order_by('-published')
         
     def explore_result_get_list(self, request=None, **kwargs):
         filters = {}
