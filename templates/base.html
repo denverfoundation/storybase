@@ -109,7 +109,7 @@
   <script>
   // Save the up-to-date version of jQuery to avoid conflicts with other
   // jQueries loaded by Django/Django CMS
-  var jqLatest = jQuery.noConflict();
+  var jqLatest = jQuery;
   </script>
 
   {% addtoblock "js" %}<script src="{{ STATIC_URL }}js/libs/jquery.formalize.min.js"></script>{% endaddtoblock %}
