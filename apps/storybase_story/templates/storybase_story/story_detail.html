@@ -81,6 +81,17 @@
       </dd>
       {% endif %}
 
+      {% if story.topics.count %}
+      <dt>{% trans "Topics" %}</dt>
+      <dd>
+        <ul class="topics inline">
+        {% for topic in story.topics_with_links %}
+        <li{% if forloop.last %} class="last"{% endif %}><a href="{{ topic.url }}">{{ topic.name }}</a></li>
+        {% endfor %}
+        </ul>
+      </dd>
+      {% endif %}
+
       {% if story.contact_info %}
       <dt>{% trans "Contact Info" %}</dt>
       <dd>
