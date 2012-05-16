@@ -201,8 +201,6 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
 	url = urlresolvers.reverse('explore_stories')
 	qs_params = []
 	for filter, values in filters.items():
-	    print filter
-	    print values
 	    if values:
 	        qs_params.append("%s=%s" % (filter, ",".join([str(value) for value in values])))
 
@@ -221,9 +219,7 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
 	# decoupled from the Categories model in case we want to use 
 	# Categories for categorizing things other than stories.
 	topics = [{'name': topic.name, 'url': self.get_explore_url({'topics': [topic.pk]})} for topic in self.topics.all()]
-	print topics
 	return topics
-
 
 
 def set_story_slug(sender, instance, **kwargs):
