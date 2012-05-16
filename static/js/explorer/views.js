@@ -9,6 +9,7 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
   templateSource: $('#explorer-template').html(),
 
   defaults: {
+    selectedFilters: {},
     bufferPx: 40,
     pixelsFromListToBottom: undefined
   },
@@ -22,7 +23,7 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
   initialize: function() {
     var that = this;
     _.defaults(this.options, this.defaults);
-    this.selectedFilters = {}; 
+    this.selectedFilters = this.options.selectedFilters;
     // Flag to keep from re-fetching the same page of items when we're 
     // scrolled near the bottom of the window, but the new items haven't yet
     // loaded
@@ -34,7 +35,8 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
       topics: this.options.storyData.topics,
       organizations: this.options.storyData.organizations,
       projects: this.options.storyData.projecs,
-      languages: this.options.storyData.languages
+      languages: this.options.storyData.languages,
+      selected: this.selectedFilters
     });
     this.storyListView = new storybase.explorer.views.StoryList({
       stories: this.stories

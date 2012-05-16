@@ -194,6 +194,37 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
         output.append('</ul>')
         return mark_safe(u'\n'.join(output))
 
+    def get_explore_url(self, filters=None):
+        """
+	Get a URL pointing to the explore view with specific filters set
+	"""
+	url = urlresolvers.reverse('explore_stories')
+	qs_params = []
+	for filter, values in filters.items():
+	    print filter
+	    print values
+	    if values:
+	        qs_params.append("%s=%s" % (filter, ",".join([str(value) for value in values])))
+
+        url += "?" + "&".join(qs_params) 
+	return url
+	
+    def topics_with_links(self):
+        """
+	Return topics with links to the explore view with filters set
+	to that topic
+
+	"""
+	# This is a little kludgy and it seems to be cleaner to just handle this
+	# in a ``get_absolute_url`` method of the ``Category`` model.  
+	# However, I wanted to keep the knowledge of the explore view 
+	# decoupled from the Categories model in case we want to use 
+	# Categories for categorizing things other than stories.
+	topics = [{'name': topic.name, 'url': self.get_explore_url({'topics': [topic.pk]})} for topic in self.topics.all()]
+	print topics
+	return topics
+
+
 
 def set_story_slug(sender, instance, **kwargs):
     """

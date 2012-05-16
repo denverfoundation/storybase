@@ -511,6 +511,18 @@ dl.story-metadata dd ul {
   padding: 0;
 }
 
+dl.story-metadata dd ul.inline li {
+  display: inline;
+}	
+
+dl.story-metadata dd ul.inline li:after {
+  content: ", ";
+}
+
+dl.story-metadata dd ul.inline li.last:after {
+  content: "";
+}
+
 li.section {
    list-style-type: none;
 }

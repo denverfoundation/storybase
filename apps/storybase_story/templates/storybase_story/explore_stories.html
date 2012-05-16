@@ -125,8 +125,10 @@ $ = jQuery;
 <script type="text/javascript">
 $(document).ready(function() {
   var storyData = {{ stories_json }};
+  var selectedFilters = {{ selected_filters }};
   var explorer = new storybase.explorer.views.ExplorerApp({
-    storyData: storyData
+    storyData: storyData,
+    selectedFilters: selectedFilters
   });
   explorer.render();
 });
