@@ -1,12 +1,16 @@
 """Abstract base classes for common Model functionality"""
 
 from datetime import datetime
+
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models.fields.related import OneToOneField
 from django.utils import translation
+
 from uuidfield.fields import UUIDField
+
+from storybase.models.dirtyfields import DirtyFieldsMixin
 
 LICENSES = (
    ('CC BY-NC-SA', u'Attribution-NonCommercial-ShareAlike Creative Commons'),

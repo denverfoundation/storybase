@@ -1,9 +1,16 @@
+from geopy import geocoders
+from geopy.geocoders.base import GeocoderError
+
 from django.contrib.gis.db import models
+from django.contrib.gis.geos import Point
 from django.contrib.localflavor.us.us_states import STATE_CHOICES
+from django.db.models.signals import pre_save
 from uuidfield.fields import UUIDField
+
+from storybase.models import DirtyFieldsMixin
 from storybase.fields import ShortTextField
 
-class Location(models.Model):
+class Location(DirtyFieldsMixin, models.Model):
     """A location with a specific address or latitude and longitude"""
     location_id = UUIDField(auto=True)
     name = ShortTextField(blank=True)
@@ -28,3 +35,37 @@ class Location(models.Model):
             return u"Location %s" % self.location_id
 
         return unicode_rep
+
+    def _geocode(self, address):
+        g = geocoders.Google()
+        # There might be more than one matching location.  For now, just
+        # assume the first one.
+        results = list(g.geocode(address, exactly_one=False))
+        place, (lat, lng) = results[0]
+        return (lat, lng)
+
+def geocode(sender, instance, **kwargs):
+    """Geocode a Location instance based on its address fields"""
+    changed_fields = instance.get_dirty_fields().keys()
+    if ('address' in changed_fields or 'city' in changed_fields or
+            'state' in changed_fields or 'postcode' in changed_fields or
+            instance.lat is None or instance.lon is None):
+        try:
+            (lat, lng) = instance._geocode("%s %s %s %s" % 
+                (instance.address, instance.city, instance.state, 
+                 instance.postcode))
+            instance.lat = lat
+            instance.lng = lng
+            instance.point = Point(lng, lat)
+        except GeocoderError:
+            pass
+
+    elif ('lat' in changed_fields or 'lon' in changed_fields or
+          (instance.lat is not None and instance.lng is not None and
+           instance.point is None)):
+        # A latitude or longitude was explictly set or changed
+        # Set or update the point
+        instance.point = Point(lng, lat)
+
+
+pre_save.connect(geocode, sender=Location)
