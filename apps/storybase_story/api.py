@@ -26,6 +26,9 @@ class StoryResource(ModelResource):
     organizations = fields.ListField(readonly=True)
     projects = fields.ListField(readonly=True)
     languages = fields.ListField(readonly=True)
+    # A list of lat/lon values for related Location objects as well as
+    # centroids of Place tags
+    points = fields.ListField(readonly=True)
 
     class Meta:
         queryset = Story.objects.filter(status__exact='published')
