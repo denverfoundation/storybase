@@ -6,6 +6,10 @@ from django.db import models
 
 class Migration(SchemaMigration):
 
+    depends_on = (
+        ("storybase_taxonomy", "0001_initial.py"),
+    )
+
     def forwards(self, orm):
         
         # Adding M2M table for field topics on 'Story'
