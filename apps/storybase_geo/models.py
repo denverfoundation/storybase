@@ -49,7 +49,7 @@ def geocode(sender, instance, **kwargs):
     changed_fields = instance.get_dirty_fields().keys()
     if ('address' in changed_fields or 'city' in changed_fields or
             'state' in changed_fields or 'postcode' in changed_fields or
-            instance.lat is None or instance.lon is None):
+            instance.lat is None or instance.lng is None):
         try:
             (lat, lng) = instance._geocode("%s %s %s %s" % 
                 (instance.address, instance.city, instance.state, 
@@ -60,7 +60,7 @@ def geocode(sender, instance, **kwargs):
         except GeocoderError:
             pass
 
-    elif ('lat' in changed_fields or 'lon' in changed_fields or
+    elif ('lat' in changed_fields or 'lng' in changed_fields or
           (instance.lat is not None and instance.lng is not None and
            instance.point is None)):
         # A latitude or longitude was explictly set or changed
