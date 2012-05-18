@@ -88,3 +88,29 @@ fields and some after.
 </div>
 </form></div>
 {% endblock %}
+
+{% block footer %}
+{{ block.super }}
+{% comment %}
+Add an Edit link to open a popup to edit items selected in foreign key or many 
+to many widgets.
+{% endcomment %}
+<script type="text/javascript">
+(function($) {
+  $(document).ready(function() {
+    $('<a href="#">Edit</a>').appendTo($('.add-another').parent()).click(function(ev) {
+     var $select = $(this).parent().find('.selector-chosen .filtered')
+     $select = $select.length ? $select : $(this).parent().find('select')
+     var selected = $select.val();
+     if (selected) {
+       var selectedId = selected[0];
+       var popupUrl = $(this).parent().find('.add-another').attr('href').replace('add', selectedId);
+       window.open(popupUrl+'?_popup=1', 'WINDOW_NAME','height=500,width=800,resizable=yes,scrollbars=yes')
+     }
+     ev.preventDefault();
+     return false;
+    });
+  });
+})(django.jQuery);
+</script>
+{% endblock %}

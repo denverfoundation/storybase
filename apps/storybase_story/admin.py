@@ -29,7 +29,6 @@ class SectionInline(StorybaseStackedInline):
     extra = 0
     readonly_fields = ('change_link',)
 
-
 class StoryAdmin(StorybaseModelAdmin):
     """Representation of Story model in the admin interface"""
     form = StoryAdminForm
@@ -38,7 +37,7 @@ class StoryAdmin(StorybaseModelAdmin):
                      'author__last_name']
     list_display = (obj_title, 'author', 'last_edited', 'status', 'view_link')
     list_filter = ('status', 'author')
-    filter_horizontal = ['assets', 'featured_assets', 'projects',
+    filter_horizontal = ['assets', 'featured_assets', 'locations', 'projects',
                          'organizations', 'topics']
     inlines = [SectionInline, StoryTranslationInline]
     prefix_inline_classes = ['StoryTranslationInline']

@@ -7,5 +7,6 @@ class LocationAdmin(admin.OSMGeoAdmin):
     formfield_overrides = {
         ShortTextField: {'widget': AdminLongTextInputWidget},
     }
+    list_filter = ['stories']
 
 admin.site.register(Location, LocationAdmin)

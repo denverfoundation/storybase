@@ -75,9 +75,13 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
     contact_info = models.TextField(_("Contact Information"),
                                     blank=True)
     topics = models.ManyToManyField('storybase_taxonomy.Category',
-		                    verbose_name=_("Topics"),
-		                    related_name='stories',
-				    blank=True)
+                                    verbose_name=_("Topics"),
+                                    related_name='stories',
+                                    blank=True)
+    locations = models.ManyToManyField('storybase_geo.Location',
+                                       verbose_name=_("Locations"),
+                                       related_name='stories',
+                                       blank=True)
 
     objects = StoryManager()
 
