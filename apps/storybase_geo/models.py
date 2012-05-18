@@ -5,10 +5,23 @@ from django.contrib.gis.db import models
 from django.contrib.gis.geos import Point
 from django.contrib.localflavor.us.us_states import STATE_CHOICES
 from django.db.models.signals import pre_save
+from django.utils.translation import ugettext as _
+from mptt.models import MPTTModel, TreeForeignKey
 from uuidfield.fields import UUIDField
 
 from storybase.models import DirtyFieldsMixin
 from storybase.fields import ShortTextField
+
+class GeoLevel(MPTTModel):
+    """A hierarchical type of geography"""
+    name = models.CharField(_("Name"), max_length=255, unique=True)
+    parent = TreeForeignKey('self', null=True, blank=True, 
+                            related_name='children',
+                            verbose_name=_("Parent"))
+
+    def __unicode__(self):
+        return self.name
+
 
 class Location(DirtyFieldsMixin, models.Model):
     """A location with a specific address or latitude and longitude"""
