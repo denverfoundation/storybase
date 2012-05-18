@@ -68,13 +68,25 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     this.$el.append(this.storyListView.el);
     this.$el.append(this.mapView.el);
     this.mapView.render();
-    this.selectTile();
+    this.selectView(this.options.viewType);
     this.storyListView.render();
     // Distance from story list to bottom
     // Computed as: height of the document - top offset of story list container
     // - outer height of story list container
     this.options.pixelsFromListToBottom = $(document).height() - this.storyListView.$el.offset().top - this.storyListView.$el.outerHeight(); 
     return this;
+  },
+
+  selectView: function(viewType) {
+    if (viewType == 'list') {
+      this.selectList();
+    }
+    else if (viewType == 'map') {
+      this.selectMap();
+    }
+    else {
+      this.selectTile();
+    }
   },
 
   selectTile: function(e) {

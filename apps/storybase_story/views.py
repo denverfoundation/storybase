@@ -54,13 +54,23 @@ class ExploreStoriesView(TemplateView):
                 selected_filters[filter] = values.split(",")
         return selected_filters
 
+    def _get_selected_view_type(self):
+        """
+        Set the default view (tile, list, map) based on a request parameter
+        or set a reasonable default.
+        """
+        view_type = self.request.GET.get('view', 'tile')
+        view_type = view_type if view_type in ('tile', 'list', 'map') else 'tile'
+        return view_type
+
     def get_context_data(self, **kwargs):
         resource = StoryResource()
         to_be_serialized = resource.explore_get_data_to_be_serialized(self.request)
         return {
             'stories_json': mark_safe(resource.serialize(None, to_be_serialized,
                                                          'application/json')),
-            'selected_filters': mark_safe(json.dumps(self._get_selected_filters()))
+            'selected_filters': mark_safe(json.dumps(self._get_selected_filters())),
+            'view_type': mark_safe(json.dumps(self._get_selected_view_type()))
         }
 
 

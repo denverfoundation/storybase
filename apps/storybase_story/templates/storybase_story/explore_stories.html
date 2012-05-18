@@ -129,6 +129,7 @@ $(document).ready(function() {
   var storyData = {{ stories_json }};
   var selectedFilters = {{ selected_filters }};
   var explorer = new storybase.explorer.views.ExplorerApp({
+    viewType: {{view_type}},
     storyData: storyData,
     selectedFilters: selectedFilters
   });
