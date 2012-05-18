@@ -94,6 +94,13 @@ class StoryResource(ModelResource):
         return [{ 'id': code, 'name': get_language_name(code) }
                 for code in bundle.obj.get_languages()]
 
+    def dehydrate_points(self, bundle):
+        """
+        Populate a list of geographic points in the response object
+        """
+        return [(location.lat, location.lng) for location in
+                bundle.obj.locations.all()]
+
     def _get_facet_field_name(self, field_name):
         """Convert public filter name to underlying Haystack index field"""
         return field_name.rstrip('s') + '_ids'
