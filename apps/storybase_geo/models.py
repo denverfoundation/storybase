@@ -65,7 +65,7 @@ def geocode(sender, instance, **kwargs):
            instance.point is None)):
         # A latitude or longitude was explictly set or changed
         # Set or update the point
-        instance.point = Point(lng, lat)
+        instance.point = Point(instance.lng, instance.lat)
 
 
 pre_save.connect(geocode, sender=Location)
