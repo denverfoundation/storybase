@@ -3,11 +3,14 @@
 from time import sleep
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.http import HttpRequest
 from django.test import TestCase
 from django.utils import simplejson
 from storybase.tests import SloppyTimeTestCase
 from storybase.utils import slugify
 from storybase_asset.models import HtmlAsset, HtmlAssetTranslation
+from storybase_geo.models import Location
+from storybase_story.api import StoryResource
 from storybase_story.forms import SectionRelationAdminForm
 from storybase_story.models import (create_story, Story, StoryTranslation, 
     create_section, Section, SectionAsset, SectionRelation)
@@ -34,11 +37,11 @@ class SectionRelationFormTest(TestCase):
         byline = "Mile High Connects"
         story = create_story(title=title, summary=summary, byline=byline)
         section1 = create_section(title="Test Section 1", story=story)
-	section2 = create_section(title="Test Section 2", story=story)
-	form = SectionRelationAdminForm()
-	choices_list = list(form.fields['parent'].widget.choices)
-	self.assertIn(story.title, choices_list[1][1])
-	self.assertIn(story.title, choices_list[2][1])
+        section2 = create_section(title="Test Section 2", story=story)
+        form = SectionRelationAdminForm()
+        choices_list = list(form.fields['parent'].widget.choices)
+        self.assertIn(story.title, choices_list[1][1])
+        self.assertIn(story.title, choices_list[2][1])
 
 
 class StoryModelTest(SloppyTimeTestCase):
@@ -1085,3 +1088,39 @@ class StructureTest(TestCase):
 	self.assertEqual(json_sections[-1]['previous_section_id'], 
 			 json_sections[-2]['section_id'])
 	self.assertEqual(json_sections[-2]['next_section_id'], 'call-to-action')
+
+
+class StoryResourceTest(TestCase):
+    """Tests for backend to Tastypie-driven REST endpoint"""
+    def setUp(self):
+        self.resource = StoryResource()
+
+    def assertPointInList(self, point, l):
+        for p in l:
+            if p == point:
+                return True
+        else:
+            self.fail("Point (%f, %f) not found in %s" % (point[0], point[1], str(l)))
+
+    def test_locations_in_points(self):
+        """
+        Test that related Location coordinates are included in the ``points``
+        field of a story's serialized data
+        """
+        locations = [
+            Location.objects.create(name="The Piton Foundation", lat=39.7438167, lng=-104.9884953),
+            Location.objects.create(name="Hull House", lat=41.8716782, lng=-87.6474517)
+        ]
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status='published')
+        story.locations.add(locations[0])
+        story.locations.add(locations[1])
+        story.save()
+        req = HttpRequest()
+        req.GET['story_id'] = story.story_id
+        resp = self.resource.get_detail(req)
+        dehydrated = simplejson.loads(resp.content)
+        self.assertEqual(len(dehydrated['points']), 2)
+        for location in locations:
+            self.assertPointInList([location.lat, location.lng],
+                                   dehydrated['points'])
