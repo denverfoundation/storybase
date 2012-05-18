@@ -25,17 +25,17 @@ class GeoLevel(MPTTModel):
 
 class Location(DirtyFieldsMixin, models.Model):
     """A location with a specific address or latitude and longitude"""
-    location_id = UUIDField(auto=True)
-    name = ShortTextField(blank=True)
-    address = ShortTextField(blank=True)
-    address2 = ShortTextField(blank=True)
-    city = models.CharField(max_length=255, blank=True)
-    state = models.CharField(max_length=255, blank=True,
+    location_id = UUIDField(auto=True, verbose_name=_("Location ID"))
+    name = ShortTextField(_("Name"), blank=True)
+    address = ShortTextField(_("Addres"), blank=True)
+    address2 = ShortTextField(_("Address 2"), blank=True)
+    city = models.CharField(_("City"), max_length=255, blank=True)
+    state = models.CharField(_("State"), max_length=255, blank=True,
                              choices=STATE_CHOICES)
-    postcode = models.CharField(max_length=255, blank=True)
-    lat = models.FloatField(blank=True, null=True)
-    lng = models.FloatField(blank=True, null=True)
-    point = models.PointField(blank=True, null=True)
+    postcode = models.CharField(_("Postal Code"), max_length=255, blank=True)
+    lat = models.FloatField(_("Latitude"), blank=True, null=True)
+    lng = models.FloatField(_("Longitude"), blank=True, null=True)
+    point = models.PointField(_("Point"), blank=True, null=True)
     objects = models.GeoManager()
 
     def __unicode__(self):
