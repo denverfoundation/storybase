@@ -34,13 +34,13 @@ class StoryResource(ModelResource):
         queryset = Story.objects.filter(status__exact='published')
         resource_name = 'stories'
         allowed_methods = ['get']
-	# Allow open access to this resource for now since it's read-only
+	    # Allow open access to this resource for now since it's read-only
         authentication = Authentication()
-	authorization = ReadOnlyAuthorization()
-	# Hide the underlying id
-	excludes = ['id']
-	# Filter arguments for custom explore endpoint
-	explore_filter_fields = ['topics', 'projects', 'organizations', 'languages']
+        authorization = ReadOnlyAuthorization()
+        # Hide the underlying id
+        excludes = ['id']
+        # Filter arguments for custom explore endpoint
+        explore_filter_fields = ['topics', 'projects', 'organizations', 'languages']
 
     def override_urls(self):
         return [
@@ -70,37 +70,37 @@ class StoryResource(ModelResource):
 
     def dehydrate_topics(self, bundle):
         """Populate a list of topic ids and names in the response objects"""
-	return [{ 'id': topic.pk, 'name': topic.name }
+        return [{ 'id': topic.pk, 'name': topic.name }
                 for topic in bundle.obj.topics.all()]
 
     def dehydrate_organizations(self, bundle):
         """
         Populate a list of organization ids and names in the response objects
-	"""
-	return [{ 'id': organization.organization_id, 'name': organization.name }
+        """
+        return [{ 'id': organization.organization_id, 'name': organization.name }
                 for organization in bundle.obj.organizations.all()]
 
     def dehydrate_projects(self, bundle):
         """
         Populate a list of project ids and names in the response objects
-	"""
-	return [{ 'id': project.project_id, 'name': project.name }
+        """
+        return [{ 'id': project.project_id, 'name': project.name }
                 for project in bundle.obj.projects.all()]
 
     def dehydrate_languages(self, bundle):
         """
         Populate a list of language codes and names in the response objects
-	"""
-	return [{ 'id': code, 'name': get_language_name(code) }
+        """
+        return [{ 'id': code, 'name': get_language_name(code) }
                 for code in bundle.obj.get_languages()]
 
     def _get_facet_field_name(self, field_name):
         """Convert public filter name to underlying Haystack index field"""
-	return field_name.rstrip('s') + '_ids'
+        return field_name.rstrip('s') + '_ids'
 
     def _get_filter_field_name(self, field_name):
         """Convert underlying Haystack index field to public filter name"""
-	return field_name.rstrip('_ids') + 's'
+        return field_name.rstrip('_ids') + 's'
 
     def _get_facet_choices(self, field_name, items):
         """Build tuples of ids and human readable strings for a given facet"""
@@ -123,31 +123,31 @@ class StoryResource(ModelResource):
         return [{ 'id': item, 'name': get_language_name(item)} for item in items]
 
     def explore_get_result_list(self, request):
-	sqs = SearchQuerySet().models(Story)
-	filter_fields = self._meta.explore_filter_fields
-	for filter_field in filter_fields:
+        sqs = SearchQuerySet().models(Story)
+        filter_fields = self._meta.explore_filter_fields
+        for filter_field in filter_fields:
             facet_field = self._get_facet_field_name(filter_field)
             sqs = sqs.facet(facet_field)
 
-	return sqs
+        return sqs
 
     def explore_build_filters(self, filters=None):
-	applicable_filters = {}
-	filter_fields = self._meta.explore_filter_fields
-	for filter_field in filter_fields:
+        applicable_filters = {}
+        filter_fields = self._meta.explore_filter_fields
+        for filter_field in filter_fields:
             facet_field = self._get_facet_field_name(filter_field)
             filter_values = filters.get(filter_field, '').split(',')
-	    if filter_values:
+            if filter_values:
                 applicable_filters['%s__in' % facet_field] = filter_values
 
         return applicable_filters
 
     def explore_apply_filters(self, request, applicable_filters):
-	object_list = self.explore_get_result_list(request)
-	if applicable_filters:
+        object_list = self.explore_get_result_list(request)
+        if applicable_filters:
             object_list = object_list.filter(**applicable_filters)
 
-	return object_list.order_by('-published').load_all()
+        return object_list.order_by('-published').load_all()
         
     def explore_result_get_list(self, request=None, **kwargs):
         filters = {}
@@ -159,8 +159,8 @@ class StoryResource(ModelResource):
         # Update with the provided kwargs.
         filters.update(kwargs)
         applicable_filters = self.explore_build_filters(filters=filters)
-	results = self.explore_apply_filters(request, applicable_filters)
-	return results
+        results = self.explore_apply_filters(request, applicable_filters)
+        return results
 
     def explore_get_resource_list_uri(self):
         """
@@ -180,47 +180,48 @@ class StoryResource(ModelResource):
 
     def explore_get_data_to_be_serialized(self, request=None, **kwargs):
         """
-	Helper to build a filtered and paginated list of stories and
-	facet and paging metadta
+        Helper to build a filtered and paginated list of stories and
+        facet and paging metadta
 
-	This is broken out of ``explore_get_list`` so it can be called
-	from other views, often to bootstrap JavaScript objects.
+        This is broken out of ``explore_get_list`` so it can be called
+        from other views, often to bootstrap JavaScript objects.
 
-	"""
-	resource_uri = self.explore_get_resource_list_uri()
+        """
+        resource_uri = self.explore_get_resource_list_uri()
         objects = []
-	results = self.explore_result_get_list(request, **kwargs)
-
-	for result in results:
-            bundle = self.build_bundle(obj=result.object, request=request)
-	    bundle = self.full_dehydrate(bundle)
-            objects.append(bundle)
-
+        results = self.explore_result_get_list(request, **kwargs)
         request_data = {}
         if hasattr(request, 'GET'):
-	    request_data = request.GET
-        paginator = self._meta.paginator_class(request_data, objects,
-            resource_uri=resource_uri,
-	    limit=self._meta.limit)
-        to_be_serialized = paginator.page()
-	# Add the resource URI to the response metadata so the client-side
-	# code can be naive
-	to_be_serialized['meta']['resource_uri'] = resource_uri 
+            request_data = request.GET
 
-	for facet_field, items in results.facet_counts()['fields'].iteritems():
+        for result in results:
+            bundle = self.build_bundle(obj=result.object, request=request)
+            bundle = self.full_dehydrate(bundle)
+            objects.append(bundle)
+
+        paginator = self._meta.paginator_class(request_data, objects,
+                                               resource_uri=resource_uri,
+                                               limit=self._meta.limit)
+        to_be_serialized = paginator.page()
+
+        # Add the resource URI to the response metadata so the client-side
+        # code can be naive
+        to_be_serialized['meta']['resource_uri'] = resource_uri 
+
+        for facet_field, items in results.facet_counts()['fields'].iteritems():
             filter_field = self._get_filter_field_name(facet_field)
             to_be_serialized[filter_field] = self._get_facet_choices(
                 facet_field, [item[0] for item in items if item[1] > 0])
 
-	return to_be_serialized
+        return to_be_serialized
             
     def explore_get_list(self, request, **kwargs):
-	"""Custom endpoint to drive the drill-down in the "Explore" view"""
+        """Custom endpoint to drive the drill-down in the "Explore" view"""
         self.method_check(request, allowed=['get'])
         self.is_authenticated(request)
         self.throttle_check(request)
 
-	to_be_serialized = self.explore_get_data_to_be_serialized(
+        to_be_serialized = self.explore_get_data_to_be_serialized(
             request, **kwargs)
 
         return self.create_response(request, to_be_serialized)
