@@ -17,6 +17,7 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
   events: {
     "click .select-tile-view": "selectTile",
     "click .select-list-view": "selectList",
+    "click .select-map-view": "selectMap",
     "change #filters select": "changeFilters"
   },
 
@@ -41,6 +42,9 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     this.storyListView = new storybase.explorer.views.StoryList({
       stories: this.stories
     });
+    this.mapView = new storybase.explorer.views.Map({
+      stories: this.stories
+    });
 
     $(window).bind('scroll', function(ev) {
       that.scrollWindow(ev);
@@ -62,6 +66,8 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     this.$el.prepend(this.filterView.el);
     this.filterView.setInitialProperties();
     this.$el.append(this.storyListView.el);
+    this.$el.append(this.mapView.el);
+    this.mapView.render();
     this.selectTile();
     this.storyListView.render();
     // Distance from story list to bottom
@@ -72,12 +78,22 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
   },
 
   selectTile: function(e) {
+    this.mapView.$el.hide();
+    this.storyListView.$el.show();
     this.storyListView.tile();
     return false;
   },
 
   selectList: function(e) {
+    this.mapView.$el.hide();
+    this.storyListView.$el.show();
     this.storyListView.list();
+    return false;
+  },
+
+  selectMap: function(e) {
+    this.storyListView.$el.hide();
+    this.mapView.$el.show();
     return false;
   },
 
@@ -343,4 +359,37 @@ storybase.explorer.views.StoryList = Backbone.View.extend({
     this.$el.masonry('destroy');
   }
 
+});
+
+storybase.explorer.views.Map = Backbone.View.extend({
+  tagName: 'div',
+  
+  id: 'map',  
+
+  initialize: function() {
+    this.stories = this.options.stories;
+  },
+
+  render: function() {
+    // TODO: Set width/height more inteligently
+    this.$el.width(this.$el.parent().width());
+    this.$el.height(500);
+    var map = new L.Map(this.id);
+    // See http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames 
+    var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        osmAttrib = 'Map data &copy; 2012 OpenStreetMap contributors',
+        osm = new L.TileLayer(osmUrl, {maxZoom: 18, attribution: osmAttrib});
+    var denver = new L.LatLng(39.74151, -104.98672);
+    var placeMarker = function(rawLatLng) {
+        var latlng = new L.LatLng(rawLatlng[0], rawLatlng[1]);
+        var marker = new L.Marker(latlng);
+        map.addLayer(marker);
+    };
+    var placeStoryMarkers = function(story) {
+      _.each(story.points, placeMarker); 
+    };
+    map.setView(denver, 10).addLayer(osm);
+
+    _.each(this.stories, placeStoryMarkers); 
+  }
 });
