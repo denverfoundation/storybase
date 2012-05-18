@@ -6,6 +6,7 @@ from django.contrib.gis.geos import Point
 from django.contrib.localflavor.us.us_states import STATE_CHOICES
 from django.db.models.signals import pre_save
 from django.utils.translation import ugettext as _
+from django_dag.models import edge_factory, node_factory
 from mptt.models import MPTTModel, TreeForeignKey
 from uuidfield.fields import UUIDField
 
@@ -80,5 +81,28 @@ def geocode(sender, instance, **kwargs):
         # Set or update the point
         instance.point = Point(instance.lng, instance.lat)
 
-
 pre_save.connect(geocode, sender=Location)
+
+
+class Place(node_factory('PlaceRelation')):
+    """
+    A larger scale geographic area such as a neighborhood or zip code
+    
+    Places are related hierachically using a directed graph as a place can
+    have multiple parents.
+
+    """
+    name = ShortTextField(_("Name"))
+    geolevel = models.ForeignKey(GeoLevel, null=True, blank=True,  
+                                 related_name='places',
+                                 verbose_name=_("GeoLevel"))
+    place_id = UUIDField(auto=True, verbose_name=_("Place ID"))
+
+    def __unicode__(self):
+        return self.name
+
+
+class PlaceRelation(edge_factory(Place, concrete=False)):
+    # Define this explicitly so I can easily set up inlines in the admin and
+    # in case I want to add fields on the relationship model later
+    pass
