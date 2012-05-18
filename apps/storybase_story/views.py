@@ -18,7 +18,6 @@ def simple_story_list(stories):
 
     """
     template = get_template('storybase_story/simple_story_list.html')
-    # TODO: Implement this template
     context =  Context({"stories": stories})
     return template.render(context)
 
@@ -40,29 +39,29 @@ class ExploreStoriesView(TemplateView):
 
     def _get_selected_filters(self):
         """
-	Build a data structure of selected filters
-	
-	The selected filters are based on the parameters passed in request.GET
+        Build a data structure of selected filters
 
-	The returned data structure is meant to be serialized and passed to
-	client-side code.
+        The selected filters are based on the parameters passed in request.GET
 
-	"""
-	selected_filters = {}
-	for filter in StoryResource._meta.explore_filter_fields:
-	  values = self.request.GET.get(filter, None)
-	  if values:
-	    selected_filters[filter] = values.split(",")
-	return selected_filters
+        The returned data structure is meant to be serialized and passed to
+        client-side code.
+
+        """
+        selected_filters = {}
+        for filter in StoryResource._meta.explore_filter_fields:
+            values = self.request.GET.get(filter, None)
+            if values:
+                selected_filters[filter] = values.split(",")
+        return selected_filters
 
     def get_context_data(self, **kwargs):
         resource = StoryResource()
-	to_be_serialized = resource.explore_get_data_to_be_serialized(self.request)
-	return {
+        to_be_serialized = resource.explore_get_data_to_be_serialized(self.request)
+        return {
             'stories_json': mark_safe(resource.serialize(None, to_be_serialized,
                                                          'application/json')),
-	    'selected_filters': mark_safe(json.dumps(self._get_selected_filters()))
-	}
+            'selected_filters': mark_safe(json.dumps(self._get_selected_filters()))
+        }
 
 
 class StoryDetailView(ModelIdDetailView):
