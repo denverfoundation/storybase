@@ -31,6 +31,9 @@ class PlaceRelationAdminForm(forms.ModelForm):
 
     def __init__(self, *args, **kwargs):
         super(PlaceRelationAdminForm, self).__init__(*args, **kwargs)
+        # We're using a public API endpoint that hides the "real" pks
+        # and instead exposes a UUID-based key.  We need to translate
+        # between the UUID and the Django pk
         parent_pk = self.initial.get('parent', None)
         if parent_pk:
             parent_obj = Place.objects.get(pk=parent_pk)
@@ -38,6 +41,8 @@ class PlaceRelationAdminForm(forms.ModelForm):
             
         if (hasattr(self.instance, 'child') and
                 self.instance.child.geolevel):
+            # This is a bound instance
+            # Limit the queryset
             self.fields['parent'].queryset = Place.objects.filter(
                 geolevel=self.instance.child.geolevel.parent)
             widget_style = self.fields['parent'].widget.attrs.get(
@@ -48,6 +53,10 @@ class PlaceRelationAdminForm(forms.ModelForm):
             self.fields['parent'].widget.attrs['style'] = widget_style
 
         else:
+            # This is a new instance
+            # Swap the selection widget out with a hidden input
+            # (as required by Select2) and pass some parameters to
+            # client-side JavaScript
             attrs = {
               'class': 'select2-enable',
               'data-ajax-url': reverse("api_dispatch_list", kwargs={
