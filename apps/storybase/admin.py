@@ -6,7 +6,8 @@ from storybase.widgets import AdminLongTextInputWidget
 
 
 class StorybaseModelAdmin(admin.ModelAdmin):
-    """ Base class for ModelAdmin classes in this project 
+    """
+    Base class for ModelAdmin classes in this project 
 
     Correctly sets the widget for our text field class in the Django
     Admin.  It seems like this is the only place you can do it, though
@@ -37,6 +38,7 @@ class StorybaseModelAdmin(admin.ModelAdmin):
         return super(StorybaseModelAdmin, self).change_view(request, object_id,
            extra_context=extra_context) 
 
+
 class StorybaseStackedInline(admin.StackedInline):
     """Custom version of StackedInline
 
@@ -59,6 +61,24 @@ class StorybaseStackedInline(admin.StackedInline):
 
         """
         return self.__class__.__name__
+
+
+class Select2StackedInline(admin.StackedInline):
+    """
+    Stacked inline that allows for using Select2 for the select widget
+    
+    The heavy lifting is performed by additional JavaScript in the template.
+
+    """
+    template = 'admin/edit_inline/select2_stacked.html'
+
+    class Media:
+        css = {
+            "all": ("js/libs/select2/select2.css",)
+        }
+        js = ("js/admin/init.js", "js/libs/select2/select2.js",
+              "js/admin/select_filters.js")
+
 
 def obj_title(obj):
     """ Callable to display an object title in the Django admin
