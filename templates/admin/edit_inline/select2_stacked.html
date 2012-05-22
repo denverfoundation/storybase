@@ -57,9 +57,12 @@
                     opts.ajax = {};
                     opts.ajax.url = $(el).attr('data-ajax-url');
                     opts.ajax.dataType = $(el).attr('data-ajax-datatype');
-                    opts.ajax.data = function (term, page) {
+                    opts.ajax.data = function(term, page) {
                         var args = {};
                         args[$(el).attr('data-ajax-selection-attr') + '__istartswith'] = term;
+                        // TODO: Assumes default Tastypie limit of 20, may
+                        // want to paramaterize this
+                        args['offset'] = (page - 1) * 20;
                         if (typeof $(el).attr('data-ajax-filter-function')
                             !== "undefined") {
                             var fnName = $(el).attr('data-ajax-filter-function');
@@ -68,11 +71,17 @@
                         return args;
                     };
                     opts.ajax.results = function(data, page) {
+                        var more = data.meta.next !== null;
                         var cleanedObjects = $(data.objects).map(function() {
-                            console.debug(this);
-                            return {id: this.place_id, name: this.name};
+                            return {
+                                id: this.place_id, 
+                                name: this.name
+                            };
                         }).get();
-                        return {results: cleanedObjects, more: false};
+                        return {
+                            results: cleanedObjects, 
+                            more: more
+                        };
                     };
                     opts.formatResult = function(item) {
                         return item[resultAttr];
