@@ -217,17 +217,17 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
 	
     def topics_with_links(self):
         """
-	Return topics with links to the explore view with filters set
-	to that topic
+        Return topics with links to the explore view with filters set
+        to that topic
 
-	"""
-	# This is a little kludgy and it seems to be cleaner to just handle this
-	# in a ``get_absolute_url`` method of the ``Category`` model.  
-	# However, I wanted to keep the knowledge of the explore view 
-	# decoupled from the Categories model in case we want to use 
-	# Categories for categorizing things other than stories.
-	topics = [{'name': topic.name, 'url': self.get_explore_url({'topics': [topic.pk]})} for topic in self.topics.all()]
-	return topics
+        """
+        # This is a little kludgy and it seems to be cleaner to just 
+        # handle this in a ``get_absolute_url`` method of the 
+        # ``Category`` model.  However, I wanted to keep the knowledge of 
+        # the explore view decoupled from the Categories model in case we 
+        # want to use Categories for categorizing things other than stories.
+        topics = [{'name': topic.name, 'url': self.get_explore_url({'topics': [topic.pk]})} for topic in self.topics.all()]
+        return topics
 
 
 def set_story_slug(sender, instance, **kwargs):
