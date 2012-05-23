@@ -82,6 +82,10 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
                                        verbose_name=_("Locations"),
                                        related_name='stories',
                                        blank=True)
+    places = models.ManyToManyField('storybase_geo.Place',
+                                       verbose_name=_("Places"),
+                                       related_name='stories',
+                                       blank=True)
 
     objects = StoryManager()
 
