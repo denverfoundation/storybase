@@ -96,6 +96,8 @@ class Place(node_factory('PlaceRelation')):
     geolevel = models.ForeignKey(GeoLevel, null=True, blank=True,  
                                  related_name='places',
                                  verbose_name=_("GeoLevel"))
+    boundary = models.MultiPolygonField(blank=True, null=True,
+                                        verbose_name=_("Boundary"))
     place_id = UUIDField(auto=True, verbose_name=_("Place ID"))
 
     def __unicode__(self):
