@@ -16,7 +16,6 @@ class Command(BaseCommand):
     )
 
     def handle(self, *args, **options):
-        print args
         try:
             shapefile = args[0]
             name_field = args[1]
