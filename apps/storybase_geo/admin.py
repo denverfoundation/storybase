@@ -10,6 +10,9 @@ from storybase.fields import ShortTextField
 from storybase.widgets import AdminLongTextInputWidget, Select2Select
 from storybase_geo.models import GeoLevel, Location, Place, PlaceRelation
 
+class GeoLevelAdmin(MPTTModelAdmin):
+    prepopulated_fields = {"slug": ("name",)}
+
 class LocationAdmin(admin.OSMGeoAdmin):
     formfield_overrides = {
         ShortTextField: {'widget': AdminLongTextInputWidget},
@@ -101,6 +104,6 @@ class PlaceAdmin(admin.OSMGeoAdmin):
     list_filter = ['geolevel']
 
 
-admin.site.register(GeoLevel, MPTTModelAdmin)
+admin.site.register(GeoLevel, GeoLevelAdmin)
 admin.site.register(Location, LocationAdmin)
 admin.site.register(Place, PlaceAdmin)

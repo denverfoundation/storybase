@@ -19,6 +19,7 @@ class GeoLevel(MPTTModel):
     parent = TreeForeignKey('self', null=True, blank=True, 
                             related_name='children',
                             verbose_name=_("Parent"))
+    slug = models.SlugField(_("Slug"), unique=True)
 
     def __unicode__(self):
         return self.name
