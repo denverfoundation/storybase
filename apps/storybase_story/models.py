@@ -238,6 +238,31 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
             inherited_places.update(place.ancestors_set())
         return inherited_places
 
+    @property
+    def points(self):
+        """
+        Get points (longitude, latitude pairs) related to the story
+        
+        If the story has locations related with the story, use those,
+        otherwise try to find centroids of related places.
+
+        """
+        points = []
+        if self.locations.count():
+            points = [(loc.lat, loc.lng) for loc in self.locations.all()]
+        elif self.places.count():
+            # Loop through related places looking at smaller geographies 
+            # first
+            for place in self.places.all().order_by('-geolevel__level'):
+                if place.boundary:
+                    # Place has a geometry associated with it
+                    centroid = place.boundary.centroid
+                    points.append((centroid.y, centroid.x))
+                    break
+            # TODO: Decide if we should check non-explicit places
+
+        return points
+
 
 def set_story_slug(sender, instance, **kwargs):
     """

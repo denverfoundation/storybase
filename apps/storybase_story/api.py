@@ -106,9 +106,7 @@ class StoryResource(ModelResource):
         """
         Populate a list of geographic points in the response object
         """
-        return [(location.lat, location.lng) for location in
-                bundle.obj.locations.all()]
-
+        return [point for point in bundle.obj.points]
 
     def _get_facet_field_name(self, field_name):
         """Convert public filter name to underlying Haystack index field"""
