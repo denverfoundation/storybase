@@ -1,5 +1,4 @@
 import csv
-from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
 from django.utils.translation import ugettext as _
