@@ -24,7 +24,7 @@ class StoryIndex(RealTimeSearchIndex):
         return [organization.organization_id for organization in obj.organizations.all()]
 
     def prepare_project_ids(self, obj):
-	return [project.project_id for project in obj.projects.all()]
+        return [project.project_id for project in obj.projects.all()]
 
     def prepare_language_ids(self, obj):
         return obj.get_languages()
@@ -36,11 +36,10 @@ class StoryIndex(RealTimeSearchIndex):
         """
         Determine if an object should be updated in the index.
         """
-	should_update = True
+        should_update = True
         translation_set = getattr(instance, instance.translation_set)
-	if translation_set.count() == 0:
-	    should_update = False
-	return should_update
+        if translation_set.count() == 0:
+            should_update = False
+        return should_update
         
-
 site.register(Story, StoryIndex)
