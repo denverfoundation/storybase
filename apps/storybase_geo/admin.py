@@ -2,6 +2,7 @@ from django import forms
 from django.forms import widgets
 from django.contrib.gis import admin
 from django.core.urlresolvers import reverse
+from django.utils.translation import ugettext as _
 from mptt.admin import MPTTModelAdmin
 
 from storybase.admin import Select2StackedInline
@@ -69,6 +70,19 @@ class PlaceRelationAdminForm(forms.ModelForm):
               'style': 'min-width: 200px;'
             }
             self.fields['parent'].widget = widgets.HiddenInput(attrs=attrs)
+
+    def clean(self):
+        cleaned_data = self.cleaned_data
+        parent = cleaned_data.get("parent")
+        child = cleaned_data.get("child")
+
+        if parent.geolevel != child.geolevel.parent:
+            raise forms.ValidationError(
+                _("You tried to set a parent with the wrong GeoLevel. "
+                  "You need to pick one with a GeoLevel of %s" % 
+                  child.geolevel.parent))
+
+        return cleaned_data
 
 
 class PlaceRelationInline(Select2StackedInline):
