@@ -106,6 +106,5 @@ class Place(node_factory('PlaceRelation')):
 
 
 class PlaceRelation(edge_factory(Place, concrete=False)):
-    # Define this explicitly so I can easily set up inlines in the admin and
-    # in case I want to add fields on the relationship model later
-    pass
+    class Meta:
+        unique_together = (("parent", "child"),)
