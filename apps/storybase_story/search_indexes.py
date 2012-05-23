@@ -16,6 +16,7 @@ class StoryIndex(RealTimeSearchIndex):
     organization_ids = FacetMultiValueField()
     project_ids = FacetMultiValueField()
     language_ids = FacetMultiValueField()
+    place_ids = FacetMultiValueField()
 
     def prepare_topic_ids(self, obj):
         return [topic.id for topic in obj.topics.all()]
@@ -28,6 +29,9 @@ class StoryIndex(RealTimeSearchIndex):
 
     def prepare_language_ids(self, obj):
         return obj.get_languages()
+
+    def prepare_place_ids(self, obj):
+        return [place.place_id for place in obj.inherited_places]
 
     def index_queryset(self):
         return Story.objects.filter(status__exact='published')

@@ -13,6 +13,7 @@ from tastypie.authentication import Authentication
 from tastypie.authorization import ReadOnlyAuthorization
 
 from storybase.utils import get_language_name
+from storybase_geo.models import Place
 from storybase_story.models import Story
 from storybase_taxonomy.models import Category
 from storybase_user.models import Organization, Project
@@ -40,7 +41,7 @@ class StoryResource(ModelResource):
         # Hide the underlying id
         excludes = ['id']
         # Filter arguments for custom explore endpoint
-        explore_filter_fields = ['topics', 'projects', 'organizations', 'languages']
+        explore_filter_fields = ['topics', 'projects', 'organizations', 'languages', 'places']
 
     def override_urls(self):
         return [
@@ -94,12 +95,20 @@ class StoryResource(ModelResource):
         return [{ 'id': code, 'name': get_language_name(code) }
                 for code in bundle.obj.get_languages()]
 
+    def dehydrate_places(self, bundle):
+        """
+        Populate a list of place ids and names in the response objects
+        """
+        return [{ 'id': place.place_id, 'name': place.name }
+                for place in bundle.obj.inherited_places]
+
     def dehydrate_points(self, bundle):
         """
         Populate a list of geographic points in the response object
         """
         return [(location.lat, location.lng) for location in
                 bundle.obj.locations.all()]
+
 
     def _get_facet_field_name(self, field_name):
         """Convert public filter name to underlying Haystack index field"""
@@ -128,6 +137,10 @@ class StoryResource(ModelResource):
 
     def _get_facet_choices_language_ids(self, items):
         return [{ 'id': item, 'name': get_language_name(item)} for item in items]
+
+    def _get_facet_choices_place_ids(self, items):
+        return [{ 'id': obj.place_id, 'name': obj.name }
+                for obj in Place.objects.filter(place_id__in=items)]
 
     def explore_get_result_list(self, request):
         sqs = SearchQuerySet().models(Story)

@@ -229,6 +229,15 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
         topics = [{'name': topic.name, 'url': self.get_explore_url({'topics': [topic.pk]})} for topic in self.topics.all()]
         return topics
 
+    @property
+    def inherited_places(self):
+        """Get places related to this story, including parents"""
+        inherited_places = set()
+        for place in self.places.all():
+            inherited_places.add(place)
+            inherited_places.update(place.ancestors_set())
+        return inherited_places
+
 
 def set_story_slug(sender, instance, **kwargs):
     """

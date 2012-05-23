@@ -35,6 +35,7 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     this.filterView = new storybase.explorer.views.Filters({
       topics: this.options.storyData.topics,
       organizations: this.options.storyData.organizations,
+      places: this.options.storyData.places,
       projects: this.options.storyData.projecs,
       languages: this.options.storyData.languages,
       selected: this.selectedFilters
@@ -190,6 +191,7 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
       that.filterView.reset({
         topics: data.topics,
         organizations: data.organizations,
+        places: data.places,
         projects: data.projects,
         languages: data.languages,
         selected: that.selectedFilters
@@ -231,6 +233,7 @@ storybase.explorer.views.Filters = Backbone.View.extend({
     var context = {
       topics: this.options.topics,
       organizations: this.options.organizations,
+      places: this.options.places,
       projects: this.options.projects,
       languages: this.options.languages,
     };
