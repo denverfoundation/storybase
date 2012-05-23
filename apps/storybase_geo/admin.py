@@ -102,6 +102,7 @@ class PlaceAdmin(admin.OSMGeoAdmin):
     inlines = (PlaceRelationInline,)
     list_display = ['name', 'geolevel']
     list_filter = ['geolevel']
+    search_fields = ['name']
 
 
 admin.site.register(GeoLevel, GeoLevelAdmin)
