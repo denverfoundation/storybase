@@ -251,14 +251,27 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
         if self.locations.count():
             points = [(loc.lat, loc.lng) for loc in self.locations.all()]
         elif self.places.count():
+            # We need to track the geolevel of the first place we've found
+            # with a boundary so we can try to add points for all other
+            # places at that geolevel
+            point_geolevel = None
             # Loop through related places looking at smaller geographies 
             # first
             for place in self.places.all().order_by('-geolevel__level'):
                 if place.boundary:
                     # Place has a geometry associated with it
                     centroid = place.boundary.centroid
-                    points.append((centroid.y, centroid.x))
-                    break
+                    if not point_geolevel:
+                        points.append((centroid.y, centroid.x))
+                        point_geolevel = place.geolevel
+                    else:
+                        if place.geolevel == point_geolevel:
+                            points.append((centroid.y, centroid.x))
+                        else:
+                            # We've exhausted all the points at the 
+                            # lowest geolevel.  Quit.
+                            break
+
             # TODO: Decide if we should check non-explicit places
 
         return points
