@@ -6,6 +6,10 @@ from django.db import models
 
 class Migration(SchemaMigration):
 
+    depends_on = (
+        ("storybase_geo", "0001_initial.py"),
+    )
+
     def forwards(self, orm):
         
         # Adding M2M table for field locations on 'Story'
