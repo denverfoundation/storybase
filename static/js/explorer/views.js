@@ -394,19 +394,27 @@ storybase.explorer.views.Map = Backbone.View.extend({
     this.$el.width(this.$el.parent().width());
     this.$el.height(500);
     var map = new L.Map(this.id);
+    var center = new L.LatLng(storybase.explorer.globals.MAP_CENTER[0],
+                              storybase.explorer.globals.MAP_CENTER[1]);
+    map.setView(center, 10);
+    // Initialize the clusterer
+    var clustererOpts = {
+      maxZoom: 30,
+      gridSize: 30 
+    };
+    var clusterer = new LeafClusterer(map, null, clustererOpts);
+    
     // See http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames 
     var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
         osmAttrib = 'Map data &copy; 2012 OpenStreetMap contributors',
         osm = new L.TileLayer(osmUrl, {maxZoom: 18, attribution: osmAttrib});
-    // TODO: Make center of map a setting
-    var center = new L.LatLng(storybase.explorer.globals.MAP_CENTER[0],
-                              storybase.explorer.globals.MAP_CENTER[1]);
     var placeMarker = function(bundle) {
         var latlng = new L.LatLng(bundle.point[0], bundle.point[1]);
         var marker = new L.Marker(latlng);
+        clusterer.addMarker(marker);
         var popupContent = that.markerTemplate(bundle.story.toJSON());
         marker.bindPopup(popupContent);
-        map.addLayer(marker);
+        //map.addLayer(marker);
     };
     var makeBundle = function(story, points) {
       return _.map(points, function(point) {
@@ -419,7 +427,7 @@ storybase.explorer.views.Map = Backbone.View.extend({
     var placeStoryMarkers = function(story) {
       _.each(makeBundle(story, story.get("points")), placeMarker); 
     };
-    map.setView(center, 10).addLayer(osm);
+    map.addLayer(osm);
 
     this.stories.each(placeStoryMarkers); 
   }
