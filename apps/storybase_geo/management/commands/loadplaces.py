@@ -1,10 +1,11 @@
 from optparse import make_option
 
 from django.core.management.base import BaseCommand, CommandError
+from django.db.models.signals import pre_save
 from django.utils.translation import ugettext as _
 
 from storybase_geo.models import GeoLevel, Place
-from storybase_geo.utils.layermapping import ExtraLayerMapping
+from storybase_geo.utils.layermapping import LayerMapping
 
 class Command(BaseCommand):
     args = "<shapefile> <name_field> <boundary_field>"
@@ -27,9 +28,16 @@ class Command(BaseCommand):
         mapping = {'name': name_field,
                    'boundary': boundary_field
                   }
-        model_kwargs = {}
         if options['geolevel']:
-            model_kwargs['geolevel'] = GeoLevel.objects.get(slug=options['geolevel'])
+            geolevel = GeoLevel.objects.get(slug=options['geolevel'])
+            def _set_geolevel(sender, instance, **kwargs):
+                """
+                Signal callback to set the geolevel for a
+                place                 
+                """
+                instance.geolevel = geolevel
 
-        lm = ExtraLayerMapping(Place, shapefile, mapping)
-        lm.save(verbose=True, model_kwargs=model_kwargs)
+            pre_save.connect(_set_geolevel, sender=Place)
+
+        lm = LayerMapping(Place, shapefile, mapping)
+        lm.save(verbose=True)
