@@ -29,7 +29,7 @@ class Location(DirtyFieldsMixin, models.Model):
     """A location with a specific address or latitude and longitude"""
     location_id = UUIDField(auto=True, verbose_name=_("Location ID"))
     name = ShortTextField(_("Name"), blank=True)
-    address = ShortTextField(_("Addres"), blank=True)
+    address = ShortTextField(_("Address"), blank=True)
     address2 = ShortTextField(_("Address 2"), blank=True)
     city = models.CharField(_("City"), max_length=255, blank=True)
     state = models.CharField(_("State"), max_length=255, blank=True,
