@@ -24,13 +24,22 @@ class CategoryAdmin(CategoryBaseAdmin):
     prepopulated_fields = {} 
     inlines = [CategoryTranslationInline]
 
-    def obj_name(self, obj):
-	"""
-	Workaround to show the name in the change list view of the admin
+    def get_actions(self, request):
+        """
+        Override CategoryBaseAdmin's implementation because we want to
+        allow bulk deletion 
+        """
+        actions = super(CategoryBaseAdmin, self).get_actions(request)
+        return actions
 
-	We need to do this because the name field is on the translation class
-	
-	"""
+    def obj_name(self, obj):
+        """
+        Workaround to show the name in the change list view of the admin
+
+        We need to do this because the name field is on the translation
+        class
+        
+        """
         return obj.name
     obj_name.short_description = _('Name')
 	
