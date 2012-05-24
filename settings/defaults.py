@@ -271,6 +271,9 @@ STORYBASE_ORGANIZATION_LIST_TITLE = ugettext("Organizations")
 STORYBASE_PROJECT_LIST_TITLE = ugettext("Projects") 
 # The title of the story exploration view
 STORYBASE_EXPLORE_TITLE = ugettext("Explore")
+# A tuple representing the latitude and longitude of where the story 
+# exploration map should be centered
+STORYBASE_MAP_CENTER = (39.74151, -104.98672)
 
 # allauth settings
 ACCOUNT_EMAIL_REQUIRED = True

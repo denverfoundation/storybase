@@ -136,6 +136,7 @@ $ = jQuery;
 <script src="{{ STATIC_URL }}js/explorer/views.js"></script>
 <script type="text/javascript">
 $(document).ready(function() {
+  storybase.explorer.globals.MAP_CENTER = {{ storybase_map_center }};
   var storyData = {{ stories_json }};
   var selectedFilters = {{ selected_filters }};
   var explorer = new storybase.explorer.views.ExplorerApp({

@@ -399,7 +399,8 @@ storybase.explorer.views.Map = Backbone.View.extend({
         osmAttrib = 'Map data &copy; 2012 OpenStreetMap contributors',
         osm = new L.TileLayer(osmUrl, {maxZoom: 18, attribution: osmAttrib});
     // TODO: Make center of map a setting
-    var denver = new L.LatLng(39.74151, -104.98672);
+    var center = new L.LatLng(storybase.explorer.globals.MAP_CENTER[0],
+                              storybase.explorer.globals.MAP_CENTER[1]);
     var placeMarker = function(bundle) {
         var latlng = new L.LatLng(bundle.point[0], bundle.point[1]);
         var marker = new L.Marker(latlng);
@@ -418,7 +419,7 @@ storybase.explorer.views.Map = Backbone.View.extend({
     var placeStoryMarkers = function(story) {
       _.each(makeBundle(story, story.get("points")), placeMarker); 
     };
-    map.setView(denver, 10).addLayer(osm);
+    map.setView(center, 10).addLayer(osm);
 
     this.stories.each(placeStoryMarkers); 
   }
