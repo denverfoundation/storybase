@@ -70,8 +70,7 @@ Handlebars templates for rendering Backbone views.
 </div>
 </script>
 
-<script type="text/x-handlebars-template" id="story-template">
-<li id="{{story_id}}" class="story">
+<script type="text/x-handlebars-template" id="story-partial-template">
   <h3><a href="{{url}}">{{title}}</a></h3>
   <p class="byline">{{byline}}</p>
   {{summary}}
@@ -85,7 +84,18 @@ Handlebars templates for rendering Backbone views.
       </ul>
     </dd>
   </dl>
+</script>
+
+<script type="text/x-handlebars-template" id="story-template">
+<li id="{{story_id}}" class="story">
+  {{> story}}
 </li>
+</script>
+
+<script type="text/x-handlebars-template" id="story-marker-template">
+<div class="story">
+  {{> story}}
+</div>
 </script>
 
 {% endverbatim %}

@@ -49,32 +49,37 @@
   list-style-type: none;
 }
 
-#story-list dt:after {
+#story-list dt:after,
+#map dt:after {
   content: ": ";
 }
 
-#story-list dd {
+#story-list dd,
+#map dd {
   margin: 0;
 }
 
 #story-list dt,
-#story-list dd {
+#story-list dd,
+#map dt,
+#map dd {
   display: inline-block;
 }
 
-#story-list .languages {
+#story-list .languages,
+#map .languages {
   padding: 0;
   list-style-type: none;
 }
 
-#story-list .languages li {
+#story-list .languages li,
+#map .languages li {
   display: inline-block;
 }
 
 #story-list.tile .story {
   float: left;
   width: 100%;
-  
   margin: 10px 0;
   border: 1px solid #ccc;
   border-radius: 5px;

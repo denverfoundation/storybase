@@ -3,6 +3,8 @@
  */
 Namespace('storybase.explorer');
 
+Handlebars.registerPartial("story", $("#story-partial-template").html());
+
 storybase.explorer.views.ExplorerApp = Backbone.View.extend({
   el: $('#explorer'),
 
@@ -383,9 +385,11 @@ storybase.explorer.views.Map = Backbone.View.extend({
 
   initialize: function() {
     this.stories = this.options.stories;
+    this.markerTemplate = Handlebars.compile($("#story-marker-template").html()); 
   },
 
   render: function() {
+    var that = this;
     // TODO: Set width/height more inteligently
     this.$el.width(this.$el.parent().width());
     this.$el.height(500);
@@ -394,17 +398,28 @@ storybase.explorer.views.Map = Backbone.View.extend({
     var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
         osmAttrib = 'Map data &copy; 2012 OpenStreetMap contributors',
         osm = new L.TileLayer(osmUrl, {maxZoom: 18, attribution: osmAttrib});
+    // TODO: Make center of map a setting
     var denver = new L.LatLng(39.74151, -104.98672);
-    var placeMarker = function(rawLatLng) {
-        var latlng = new L.LatLng(rawLatlng[0], rawLatlng[1]);
+    var placeMarker = function(bundle) {
+        var latlng = new L.LatLng(bundle.point[0], bundle.point[1]);
         var marker = new L.Marker(latlng);
+        var popupContent = that.markerTemplate(bundle.story.toJSON());
+        marker.bindPopup(popupContent);
         map.addLayer(marker);
     };
+    var makeBundle = function(story, points) {
+      return _.map(points, function(point) {
+        return {
+          story: story,
+          point: point
+        };
+      });
+    };
     var placeStoryMarkers = function(story) {
-      _.each(story.points, placeMarker); 
+      _.each(makeBundle(story, story.get("points")), placeMarker); 
     };
     map.setView(denver, 10).addLayer(osm);
 
-    _.each(this.stories, placeStoryMarkers); 
+    this.stories.each(placeStoryMarkers); 
   }
 });
