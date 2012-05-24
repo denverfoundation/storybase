@@ -23,10 +23,10 @@ class CategoryTranslationBase(TranslationModel):
         return force_unicode(self.name)
 
     def save(self, *args, **kwargs):
-        super(CategoryTranslationBase, self).save(*args, **kwargs)
-
         if not self.slug:
             self.slug = slugify(SLUG_TRANSLITERATOR(self.name))[:50]
+
+        super(CategoryTranslationBase, self).save(*args, **kwargs)
 
 
 class TranslatedCategoryBase(MPTTModel, TranslatedModel): 

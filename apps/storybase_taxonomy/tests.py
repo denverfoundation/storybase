@@ -1,16 +1,14 @@
-"""
-This file demonstrates writing tests using the unittest module. These will pass
-when you run "manage.py test".
-
-Replace this with more appropriate tests for your application.
-"""
-
+"""Tests for taxonomy app"""
 from django.test import TestCase
 
+from storybase_taxonomy.models import Category, CategoryTranslation
 
-class SimpleTest(TestCase):
-    def test_basic_addition(self):
-        """
-        Tests that 1 + 1 always equals 2.
-        """
-        self.assertEqual(1 + 1, 2)
+class CategoryModelTest(TestCase):
+    """Test the Category model"""
+
+    def test_auto_slug(self):
+        """Test slug field is set automatically"""
+        category = Category.objects.create()
+        translation = CategoryTranslation.objects.create(
+            name="Charter Schools", category=category)
+        self.assertEqual(category.slug, "charter-schools")
