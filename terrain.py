@@ -13,8 +13,10 @@ from nose.tools import assert_equal
 from splinter.browser import Browser
 from splinter.exceptions import ElementDoesNotExist
 import storybase_asset
+from storybase_geo.models import GeoLevel, Location, Place
 import storybase_story
 from storybase_story.models import create_story, Story, StoryTranslation
+from storybase_story.utils import bulk_create
 from storybase_taxonomy.models import create_category, Category
 import storybase_user
 from storybase_user.models import (create_organization, create_project,
@@ -536,3 +538,37 @@ def story_topics(step, title):
         story.topics.add(topic)
     story.save()
 
+@step(u'the following projects have been created:')
+def projects_in_database(step):
+    for project_dict in step.hashes:
+        create_project(**project_dict)
+
+@step(u'the following organizations have been created:')
+def organizations_in_database(step):
+    for organization_dict in step.hashes:
+        create_organization(**organization_dict)
+
+@step(u'the following geolevels have been created:')
+def geolevels_in_database(step):
+    for geolevel_dict in step.hashes:
+        parent = None
+        if geolevel_dict['parent_slug']:
+            parent = GeoLevel.objects.get(slug=geolevel_dict['parent_slug'])
+        GeoLevel.objects.create(name=geolevel_dict['name'],
+                                slug=geolevel_dict['slug'],
+                                parent=parent)
+
+@step(u'the following places have been created:')
+def places_in_database(step):
+    for place_dict in step.hashes:
+        geolevel = GeoLevel.objects.get(slug=place_dict['geolevel_slug'])
+        Place.objects.create(name=place_dict['name'], geolevel=geolevel)
+
+@step(u'the following locations have been created:')
+def locations_in_database(step):
+    for loc_dict in step.hashes:
+        Location.objects.create(**loc_dict)
+
+@step(u'the following stories have been created:')
+def stories_in_database(step):
+    bulk_create(step.hashes)
