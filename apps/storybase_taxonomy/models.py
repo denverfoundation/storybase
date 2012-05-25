@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.db import models
 from django.utils.encoding import force_unicode
 from django.utils.translation import ugettext_lazy as _
@@ -87,3 +88,19 @@ class Category(TranslatedCategoryBase):
 
     class Meta:
         verbose_name_plural = "categories"
+
+
+def create_category(name, slug='', language=settings.LANGUAGE_CODE, 
+                 *args, **kwargs):
+    """Convenience function for creating a Category 
+
+    Allows for the creation of categories without having to explicitly
+    deal with the translations.
+
+    """
+    obj = Category(*args, **kwargs)
+    obj.save()
+    translation = CategoryTranslation(category=obj, name=name, slug=slug,
+                                      language=language)
+    translation.save()
+    return obj
