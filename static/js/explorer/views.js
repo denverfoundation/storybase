@@ -223,6 +223,8 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
       that.reset(data);
       that.storyListView.reset(that.stories);
       that.storyListView.render();
+      that.mapView.reset(that.stories);
+      that.mapView.render();
       that.filterView.reset({
         topics: data.topics,
         organizations: data.organizations,
@@ -419,39 +421,47 @@ storybase.explorer.views.Map = Backbone.View.extend({
   initialize: function() {
     this.stories = this.options.stories;
     this.markerTemplate = Handlebars.compile($("#story-marker-template").html()); 
+    this.map = null;
   },
 
   render: function() {
     var that = this;
-    // TODO: Set width/height more inteligently
-    this.$el.width(this.$el.parent().width());
-    this.$el.height(500);
-    var map = new L.Map(this.id, {
-      // Setting the closePopupOnClick option to false is neccessary
-      // to make our cluster popup work.
-      closePopupOnClick: false
-    });
-    var center = new L.LatLng(storybase.explorer.globals.MAP_CENTER[0],
-                              storybase.explorer.globals.MAP_CENTER[1]);
-    map.setView(center, 10);
-    // Initialize the clusterer
-    var clustererOpts = {
-      maxZoom: 30,
-      gridSize: 30 
-    };
-    var clusterer = new LeafClusterer(map, null, clustererOpts);
-    
-    // See http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames 
-    var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-        osmAttrib = 'Map data &copy; 2012 OpenStreetMap contributors',
-        osm = new L.TileLayer(osmUrl, {maxZoom: 18, attribution: osmAttrib});
+    if (this.map === null) {
+      // Map has not yet been initialized
+      this.$el.width(this.$el.parent().width());
+      this.$el.height(500);
+      this.map = new L.Map(this.id, {
+        // Setting the closePopupOnClick option to false is neccessary
+        // to make our cluster popup work.
+        closePopupOnClick: false
+      });
+      var center = new L.LatLng(storybase.explorer.globals.MAP_CENTER[0],
+                                storybase.explorer.globals.MAP_CENTER[1]);
+      this.map.setView(center, 10);
+      
+      // See http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames 
+      var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+          osmAttrib = 'Map data &copy; 2012 OpenStreetMap contributors',
+          osm = new L.TileLayer(osmUrl, {maxZoom: 18, attribution: osmAttrib});
+      this.map.addLayer(osm);
+      // Initialize the clusterer
+      var clustererOpts = {
+        maxZoom: 30,
+        gridSize: 30 
+      };
+      this.clusterer = new LeafClusterer(this.map, null, clustererOpts);
+    }
+    else {
+      // Map has already been initialized
+      this.clusterer.clearMarkers();
+    }
+
     var placeMarker = function(bundle) {
         var latlng = new L.LatLng(bundle.point[0], bundle.point[1]);
         var marker = new StoryMarker(latlng, bundle.story);
-        clusterer.addMarker(marker);
+        that.clusterer.addMarker(marker);
         var popupContent = that.markerTemplate(bundle.story.toJSON());
         marker.bindPopup(popupContent);
-        //map.addLayer(marker);
     };
     var makeBundle = function(story, points) {
       return _.map(points, function(point) {
@@ -464,8 +474,11 @@ storybase.explorer.views.Map = Backbone.View.extend({
     var placeStoryMarkers = function(story) {
       _.each(makeBundle(story, story.get("points")), placeMarker); 
     };
-    map.addLayer(osm);
 
     this.stories.each(placeStoryMarkers); 
+  },
+
+  reset: function(stories) {
+    this.stories = stories;
   }
 });
