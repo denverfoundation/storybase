@@ -70,20 +70,24 @@ Handlebars templates for rendering Backbone views.
 </div>
 </script>
 
+<script type="text/x-handlebars-template" id="story-link-partial-template">
+<a href="{{url}}">{{title}}</a>
+</script>
+
 <script type="text/x-handlebars-template" id="story-partial-template">
-  <h3><a href="{{url}}">{{title}}</a></h3>
-  <p class="byline">{{byline}}</p>
-  {{summary}}
-  <dl>
-    <dt>{{gettext message="Languages"}}}</dt>
-    <dd>
-      <ul class="languages">
-        {{#each languages}}
-        <li>{{name}}</li>
-        {{/each}}
-      </ul>
-    </dd>
-  </dl>
+<h3>{{>story_link}}</h3>
+<p class="byline">{{byline}}</p>
+{{summary}}
+<dl>
+<dt>{{gettext message="Languages"}}}</dt>
+<dd>
+  <ul class="languages">
+    {{#each languages}}
+    <li>{{name}}</li>
+    {{/each}}
+  </ul>
+</dd>
+</dl>
 </script>
 
 <script type="text/x-handlebars-template" id="story-template">
@@ -96,6 +100,14 @@ Handlebars templates for rendering Backbone views.
 <div class="story">
   {{> story}}
 </div>
+</script>
+
+<script type="text/x-handlebars-template" id="story-list-marker-template">
+<ul>
+    {{#each stories}}
+    <li>{{>story_link}}</li>
+    {{/each}}
+</ul>
 </script>
 
 {% endverbatim %}
@@ -129,8 +141,8 @@ $ = jQuery;
 <script src="{{ STATIC_URL }}js/libs/handlebars-1.0.0.beta.6.js"></script>
 <script src="{{ STATIC_URL }}js/libs/jquery.masonry.min.js"></script>
 <script src="{{ STATIC_URL }}js/libs/select2/select2.js"></script>
-<script defer src="{{ STATIC_URL}}js/libs/leaflet/leaflet.js"></script>
-<script defer src="{{ STATIC_URL}}js/libs/leafclusterer.js"></script>
+<script src="{{ STATIC_URL}}js/libs/leaflet/leaflet.js"></script>
+<script src="{{ STATIC_URL}}js/libs/leafclusterer.js"></script>
 <script src="{{ STATIC_URL }}js/models.js"></script>
 <script src="{{ STATIC_URL }}js/utils.js"></script>
 <script src="{{ STATIC_URL }}js/explorer/application.js"></script>

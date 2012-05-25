@@ -25,7 +25,9 @@ This project includes a number of excellent open-source libraries:
 * `jQuery Condense Plugin <https://github.com/jsillitoe/jquery-condense-plugin>`_ by Joe Sillitoe
 * `jQuery Masonry <http://masonry.desandro.com/>`_ by David DeSandro
 * `json2.js <https://github.com/douglascrockford/JSON-js/>`_ by Douglas Crockford
-* `Formalize <http://formalize.me/>` by Nathan Smith
+* `Formalize <http://formalize.me/>`_ by Nathan Smith
+* `Leaflet <http://leaflet.cloudmade.com/>` by CloudMade, Vladimir Agafonkin 
+* `LeafClusterer <https://github.com/ideak/leafclusterer/>`_ by Imre Deak
 * `Modernizr <http://modernizr.com/>`_
 * `Namespace.js <https://github.com/maximebf/Namespace.js>`_ by Maxime Bouroumeau-Fuseau
 * `Normalize.css <http://github.com/necolas/normalize.css>`_ by Nicolas Gallagher and Jonathan Neal

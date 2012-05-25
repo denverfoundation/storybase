@@ -5,6 +5,39 @@ Namespace('storybase.explorer');
 
 Handlebars.registerPartial("story", $("#story-partial-template").html());
 
+Handlebars.registerPartial("story_link", $("#story-link-partial-template").html());
+
+StoryMarker = L.Marker.extend({
+  initialize: function (latlng, story, options) {
+    L.Util.setOptions(this, options);
+    this._latlng = latlng;
+    this.story = story;
+  }
+});
+
+StoryClusterMarker = ClusterMarker_.extend({
+  onClick_: function(cluster) {
+    var map = cluster.map_;
+    var popup = new L.Popup();
+    var stories = _.uniq(_.map(cluster.cluster_.getMarkers(), function(marker) {
+      return marker.marker.story;
+    }));
+    var storiesJSON = _.map(stories, function(story) {
+      return story.toJSON();
+    });
+    var popupContent = StoryClusterMarker.template({
+      stories: storiesJSON
+    });
+    popup.setLatLng(cluster.latlng_);
+    popup.setContent(popupContent);
+    map.openPopup(popup); 
+  }
+});
+StoryClusterMarker.template = Handlebars.compile($('#story-list-marker-template').html());
+// Monkey patch leafclusterer's ClusterMarker_ to use our inherited 
+// class
+ClusterMarker_ = StoryClusterMarker;
+
 storybase.explorer.views.ExplorerApp = Backbone.View.extend({
   el: $('#explorer'),
 
@@ -393,7 +426,11 @@ storybase.explorer.views.Map = Backbone.View.extend({
     // TODO: Set width/height more inteligently
     this.$el.width(this.$el.parent().width());
     this.$el.height(500);
-    var map = new L.Map(this.id);
+    var map = new L.Map(this.id, {
+      // Setting the closePopupOnClick option to false is neccessary
+      // to make our cluster popup work.
+      closePopupOnClick: false
+    });
     var center = new L.LatLng(storybase.explorer.globals.MAP_CENTER[0],
                               storybase.explorer.globals.MAP_CENTER[1]);
     map.setView(center, 10);
@@ -410,7 +447,7 @@ storybase.explorer.views.Map = Backbone.View.extend({
         osm = new L.TileLayer(osmUrl, {maxZoom: 18, attribution: osmAttrib});
     var placeMarker = function(bundle) {
         var latlng = new L.LatLng(bundle.point[0], bundle.point[1]);
-        var marker = new L.Marker(latlng);
+        var marker = new StoryMarker(latlng, bundle.story);
         clusterer.addMarker(marker);
         var popupContent = that.markerTemplate(bundle.story.toJSON());
         marker.bindPopup(popupContent);
