@@ -2,11 +2,10 @@
 
 from django.conf.urls.defaults import patterns, url
 
-import oembed
-
 from storybase_asset.views import AssetDetailView, DataSetDetailView
 
-#oembed.autodiscover()
+import oembed
+oembed.autodiscover()
 
 urlpatterns = patterns('',
     url(r'assets/(?P<asset_id>[0-9a-f]{32,32})/$', AssetDetailView.as_view(),
