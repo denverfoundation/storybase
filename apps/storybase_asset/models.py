@@ -7,7 +7,7 @@ from django.db import models
 from django.db.models.signals import pre_save
 from django.utils.html import strip_tags
 from django.utils.text import truncate_words
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 from filer.fields.image import FilerFileField, FilerImageField
 from model_utils.managers import InheritanceManager
@@ -20,8 +20,6 @@ from storybase.models import (LicensedModel, PublishedModel,
     set_date_on_published)
 from embedable_resource import EmbedableResource
 from embedable_resource.exceptions import UrlNotMatched
-   
-oembed.autodiscover()
 
 ASSET_TYPES = (
   (u'image', u'image'),
@@ -195,6 +193,7 @@ class AssetTranslation(TranslationModel):
     class Meta:
         abstract = True
         unique_together = (('asset', 'language')) 
+
 
 class ExternalAsset(Asset):
     """Asset not stored on the same system as the application
