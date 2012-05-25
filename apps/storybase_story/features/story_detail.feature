@@ -5,6 +5,9 @@ Feature: Viewing story metadata on the story detail page
         Given the user "admin" has first name "Jordan" and last name "Wirfs-Brock"
         Given the Organization "Mile High Connects" has been created
         Given the Project "The Metro Denver Regional Equity Atlas" has been created
+        Given the following topics have been created:
+            | name      |
+            | Education |
         Given the Story "Transportation Challenges Limit Education Choices for Denver Parents" has been created
         Given the Story "Transportation Challenges Limit Education Choices for Denver Parents" has author "admin"
         Given the Story "Transportation Challenges Limit Education Choices for Denver Parents" is published
@@ -20,6 +23,9 @@ Feature: Viewing story metadata on the story detail page
         Given the Story "Transportation Challenges Limit Education Choices for Denver Parents" has the byline "Mile High Connects"
         Given the Project "The Metro Denver Regional Equity Atlas" is associated with the Story "Transportation Challenges Limit Education Choices for Denver Parents"
         Given the Organization "Mile High Connects" is associated with the Story "Transportation Challenges Limit Education Choices for Denver Parents"
+        Given the Story "Transportation Challenges Limit Education Choices for Denver Parents" has the following topics:
+            | name      |
+            | Education |
         Given the user navigates to "/stories/transportation-challenges-limit-education-choices"
         Then the Story's title should be "Transportation Challenges Limit Education Choices for Denver Parents"
         Then the Story's summary is listed as the following:
@@ -37,3 +43,6 @@ Feature: Viewing story metadata on the story detail page
         Then the Story's published date should be set the current date
         Then the Story's last edited date should be set to the current date
         Then the Story's contributor is "Jordan W."
+        Then the following the following topics are listed in the Story's Topics list:
+            | name      |
+            | Education |

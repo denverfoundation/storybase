@@ -15,6 +15,7 @@ from splinter.exceptions import ElementDoesNotExist
 import storybase_asset
 import storybase_story
 from storybase_story.models import create_story, Story, StoryTranslation
+from storybase_taxonomy.models import create_category, Category
 import storybase_user
 from storybase_user.models import (create_organization, create_project,
                                    Organization, Project)
@@ -520,3 +521,18 @@ def set_story_author(step, title, author_username):
     user = User.objects.get(username=author_username)
     story.author = user 
     story.save()
+
+@step(u'the following topics have been created:')
+def topics_in_database(step):
+    for topic_dict in step.hashes:
+        create_category(**topic_dict)
+
+@step(u'the Story "([^"]*)" has the following topics:')
+def story_topics(step, title):
+    story = Story.objects.get(storytranslation__title=title)
+    topic_names = [topic_dict['name'] for topic_dict in step.hashes]
+    topics = Category.objects.filter(categorytranslation__name__in=topic_names)
+    for topic in topics:
+        story.topics.add(topic)
+    story.save()
+

@@ -25,6 +25,11 @@ def org_in_list(step, org_name):
 def proj_in_list(step, proj_name):
     world.assert_text_in_list('ul.projects li', proj_name)
 
+@step(u'the following topics are listed in the Story\'s Topics list')
+def topics_in_list(step):
+    topic_names = [topic_dict['name'] for topic_dict in step.hashes]
+    world.assert_list_equals('ul.topics li', topic_names)
+
 @step(u'Then the Story\'s published date should be set the current date')
 def published_today(step):
     date_el = world.browser.find_by_css('time.published').first
