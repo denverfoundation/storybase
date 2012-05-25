@@ -464,9 +464,10 @@ def update_story_last_edited(sender, instance, **kwargs):
 # Update a section's story's last edited field when the section is saved
 post_save.connect(update_story_last_edited, sender=Section)
 
+
 def create_story(title, structure_type=structure.DEFAULT_STRUCTURE,
                  summary='', call_to_action='',
-		 language=settings.LANGUAGE_CODE, 
+                 language=settings.LANGUAGE_CODE, 
                  *args, **kwargs):
     """Convenience function for creating a Story
 
@@ -478,7 +479,7 @@ def create_story(title, structure_type=structure.DEFAULT_STRUCTURE,
     obj.save()
     translation = StoryTranslation(story=obj, title=title, summary=summary,
                                    call_to_action=call_to_action,
-				   language=language)
+                                   language=language)
     translation.save()
     return obj
 
