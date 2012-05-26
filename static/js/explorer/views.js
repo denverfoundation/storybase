@@ -60,6 +60,10 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     var that = this;
     _.defaults(this.options, this.defaults);
     this.selectedFilters = this.options.selectedFilters;
+    // Point around which to filter stories 
+    this.near = null;
+    // Radius in miles around this.near to filter stories
+    this.distance = storybase.explorer.globals.SEARCH_DISTANCE;
     // Flag to keep from re-fetching the same page of items when we're 
     // scrolled near the bottom of the window, but the new items haven't yet
     // loaded
@@ -190,6 +194,7 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
   getFilterUri: function() {
     var filterUri = this.resourceUri;
     var filterStrings = [];
+    // Update the querystring based on the pull-down filters
     _.each(this.selectedFilters, function(value, key, list) {
       if (!!value && value.length > 0) {
         var values = [];
@@ -203,6 +208,10 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
         }
       }
     });
+    // Update the querystring based on the address search
+    if (this.near !== null) {
+      filterStrings.push("near=" + this.near.lat + '@' + this.near.lng + ',' + this.distance);
+    }
     filterUri = filterStrings.length > 0 ? filterUri + '?' : filterUri;
     filterUri += filterStrings.join("&");
     return filterUri;
@@ -215,6 +224,11 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     else {
       this.selectedFilters[name] = value;
     }
+  },
+
+  setNear: function(point) {
+    this.near = point
+    return this;
   },
 
   /**
@@ -439,9 +453,12 @@ storybase.explorer.views.Map = Backbone.View.extend({
 
   searchButtonId: 'do-proximity-search',
 
+  clearButtonId: 'clear-proximity-search',
+
   events: function() {
     var events = {};
     events["click #" + this.searchButtonId] = "proximitySearch"; 
+    events["click #" + this.clearButtonId] = "clearProximitySearch";
     return events;
   },
 
@@ -450,6 +467,10 @@ storybase.explorer.views.Map = Backbone.View.extend({
     this.stories = this.options.stories;
     this.markerTemplate = Handlebars.compile($("#story-marker-template").html()); 
     this.searchTemplate = Handlebars.compile($('#proximity-search-template').html());
+    this.initialCenter = new L.LatLng(storybase.explorer.globals.MAP_CENTER[0],
+                                      storybase.explorer.globals.MAP_CENTER[1]);
+    this.initialZoom = storybase.explorer.globals.MAP_ZOOM_LEVEL;
+
     // Bind our callbacks to the view object
     _.bindAll(this, ['redrawMap']);
     this.$el.append('<div id="' + this.mapId + '"></div>');
@@ -467,9 +488,7 @@ storybase.explorer.views.Map = Backbone.View.extend({
         // to make our cluster popup work.
         closePopupOnClick: false
       });
-      var center = new L.LatLng(storybase.explorer.globals.MAP_CENTER[0],
-                                storybase.explorer.globals.MAP_CENTER[1]);
-      this.map.setView(center, 10);
+      this.map.setView(this.initialCenter, this.initialZoom);
       
       // See http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames 
       var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
@@ -484,7 +503,8 @@ storybase.explorer.views.Map = Backbone.View.extend({
       this.clusterer = new LeafClusterer(this.map, null, clustererOpts);
       this.$el.append(this.searchTemplate({
         button_id: this.searchButtonId,
-        field_id: this.searchFieldId
+        field_id: this.searchFieldId,
+        clear_button_id: this.clearButtonId
       }));
     }
     else {
@@ -557,11 +577,18 @@ storybase.explorer.views.Map = Backbone.View.extend({
     // Recenter the map based on the geocoded point 
     var center = new L.LatLng(point.lat, point.lng);
     this.map.setView(center, this.map.getZoom());
+    this.parentView.setNear(point);
+    this.parentView.fetchStories();
   },
 
   proximitySearch: function() {
-    var that = this;
     var address = this.$('#' + this.searchFieldId).val();
     this.geocode(address, this.redrawMap);
+  },
+
+  clearProximitySearch: function() {
+    this.$('#' + this.searchFieldId).val('');
+    this.parentView.setNear(null).fetchStories();
+    this.map.setView(this.initialCenter, this.initialZoom);
   }
 });

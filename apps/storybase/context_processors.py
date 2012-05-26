@@ -11,7 +11,8 @@ def conf(request):
 		    'STORYBASE_SITE_NAME', 'STORYBASE_SITE_TAGLINE',
 		    'STORYBASE_EXPLORE_TITLE', 
 		    'STORYBASE_ORGANIZATION_LIST_TITLE',
-		    'STORYBASE_PROJECT_LIST_TITLE', 'STORYBASE_MAP_CENTER')
+		    'STORYBASE_PROJECT_LIST_TITLE', 'STORYBASE_MAP_CENTER',
+            'STORYBASE_MAP_ZOOM_LEVEL', 'STORYBASE_SEARCH_DISTANCE')
     json_settings = ('STORYBASE_MAP_CENTER',)
     context = {}
 
@@ -22,8 +23,9 @@ def conf(request):
                 # Value needs to be JSONified
                 setting_val = mark_safe(simplejson.dumps(setting_val))
             else:
-                # Value is text, translate it
-                setting_val = _(setting_val)
+                if isinstance(setting_val, (str, unicode)):
+                    # Value is text, translate it
+                    setting_val = _(setting_val)
 
             context.update({setting.lower(): setting_val})
     

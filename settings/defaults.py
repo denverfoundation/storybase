@@ -270,6 +270,10 @@ STORYBASE_EXPLORE_TITLE = ugettext("Explore")
 # A tuple representing the latitude and longitude of where the story 
 # exploration map should be centered
 STORYBASE_MAP_CENTER = (39.74151, -104.98672)
+# Initial map zoom level
+STORYBASE_MAP_ZOOM_LEVEL = 10
+# Distance in miles to search around a point when doing a proximity search
+STORYBASE_SEARCH_DISTANCE = 1
 
 # allauth settings
 ACCOUNT_EMAIL_REQUIRED = True

@@ -114,6 +114,7 @@ Handlebars templates for rendering Backbone views.
 <div id="proximity-search-form">
     <input id="{{field_id}}" type="text" />
     <input id="{{button_id}}" type="button" value="{{gettext message="Search"}}" />
+    <input id="{{clear_button_id}}" type="button" value="{{gettext message="Clear"}}" />
 </div>
 </script>
 
@@ -157,6 +158,8 @@ $ = jQuery;
 <script type="text/javascript">
 $(document).ready(function() {
   storybase.explorer.globals.MAP_CENTER = {{ storybase_map_center }};
+  storybase.explorer.globals.MAP_ZOOM_LEVEL = {{ storybase_map_zoom_level }};
+  storybase.explorer.globals.SEARCH_DISTANCE = {{ storybase_search_distance }};
   var storyData = {{ stories_json }};
   var selectedFilters = {{ selected_filters }};
   var explorer = new storybase.explorer.views.ExplorerApp({
