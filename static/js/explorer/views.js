@@ -79,7 +79,8 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
       stories: this.stories
     });
     this.mapView = new storybase.explorer.views.Map({
-      stories: this.stories
+      stories: this.stories,
+      parentView: this
     });
 
     $(window).bind('scroll', function(ev) {
@@ -416,11 +417,28 @@ storybase.explorer.views.StoryList = Backbone.View.extend({
 storybase.explorer.views.Map = Backbone.View.extend({
   tagName: 'div',
   
-  id: 'map',  
+  id: 'map-container',  
+
+  mapId: 'map',
+
+  searchFieldId: 'proximity-search-address',
+
+  searchButtonId: 'do-proximity-search',
+
+  events: function() {
+    var events = {};
+    events["click #" + this.searchButtonId] = "proximitySearch"; 
+    return events;
+  },
 
   initialize: function() {
+    this.parentView = this.options.parentView;
     this.stories = this.options.stories;
     this.markerTemplate = Handlebars.compile($("#story-marker-template").html()); 
+    this.searchTemplate = Handlebars.compile($('#proximity-search-template').html());
+    // Bind our callbacks to the view object
+    _.bindAll(this, ['redrawMap']);
+    this.$el.append('<div id="' + this.mapId + '"></div>');
     this.map = null;
   },
 
@@ -428,9 +446,9 @@ storybase.explorer.views.Map = Backbone.View.extend({
     var that = this;
     if (this.map === null) {
       // Map has not yet been initialized
-      this.$el.width(this.$el.parent().width());
-      this.$el.height(500);
-      this.map = new L.Map(this.id, {
+      this.$('#' + this.mapId).width(this.$el.parent().width());
+      this.$('#' + this.mapId).height(425);
+      this.map = new L.Map(this.mapId, {
         // Setting the closePopupOnClick option to false is neccessary
         // to make our cluster popup work.
         closePopupOnClick: false
@@ -450,6 +468,10 @@ storybase.explorer.views.Map = Backbone.View.extend({
         gridSize: 30 
       };
       this.clusterer = new LeafClusterer(this.map, null, clustererOpts);
+      this.$el.append(this.searchTemplate({
+        button_id: this.searchButtonId,
+        field_id: this.searchFieldId
+      }));
     }
     else {
       // Map has already been initialized
@@ -480,5 +502,52 @@ storybase.explorer.views.Map = Backbone.View.extend({
 
   reset: function(stories) {
     this.stories = stories;
+  },
+
+  /**
+   * Geocode an address using Nominatim
+   *
+   * Nominatim is OpenStreetMap's geocoding service.
+   * See http://http://nominatim.openstreetmap.org/
+   *
+   * This view could be extended and this method overriden to
+   * use a different Geocoding Service.
+   *
+   */
+  geocode: function(address, callback) {
+    $.ajax('http://nominatim.openstreetmap.org/search/', {
+      dataType: 'jsonp',
+      data: {
+        format: 'json',
+        q: address,
+      },
+      jsonp: 'json_callback',
+      success: function(data, textStatus, jqXHR) {
+        if (data.length) {
+          // Found a point for the address
+          callback({
+            'lat': data[0].lat,
+            'lng': data[0].lon
+          });
+        }
+        // TODO: Do something on geocoding failure
+      }
+    });
+    
+  },
+
+  /**
+   * Post geocoding callback
+   */
+  redrawMap: function(point) {
+    // Recenter the map based on the geocoded point 
+    var center = new L.LatLng(point.lat, point.lng);
+    this.map.setView(center, this.map.getZoom());
+  },
+
+  proximitySearch: function() {
+    var that = this;
+    var address = this.$('#' + this.searchFieldId).val();
+    this.geocode(address, this.redrawMap);
   }
 });
