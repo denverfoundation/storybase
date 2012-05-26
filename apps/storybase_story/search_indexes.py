@@ -2,6 +2,9 @@ from haystack import indexes
 
 from models import Story
 
+class LocationMultiValueField(indexes.MultiValueField):
+    field_type = 'location'
+
 class StoryIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
     author = indexes.FacetCharField(model_attr='author')
@@ -15,6 +18,7 @@ class StoryIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
     project_ids = indexes.FacetMultiValueField()
     language_ids = indexes.FacetMultiValueField()
     place_ids = indexes.FacetMultiValueField()
+    points = LocationMultiValueField()
 
     def get_model(self):
         return Story
@@ -33,6 +37,9 @@ class StoryIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
 
     def prepare_place_ids(self, obj):
         return [place.place_id for place in obj.inherited_places]
+
+    def prepare_points(self, obj):
+        return ["%s,%s" % (point[0], point[1]) for point in obj.points]
 
     def index_queryset(self):
         return Story.objects.filter(status__exact='published')

@@ -1124,3 +1124,40 @@ class StoryResourceTest(TestCase):
         for location in locations:
             self.assertPointInList([location.lat, location.lng],
                                    dehydrated['points'])
+
+class StoryExploreResourceTest(TestCase):
+    """Test story exploration REST endpoint"""
+
+    def setUp(self):
+        self.resource = StoryResource()
+
+    def _rebuild_index(self):
+        """Call management command to rebuild the Haystack search index"""
+        from django.core.management import call_command
+        call_command('rebuild_index', interactive=False, verbosity=0)
+
+    def test_distance_query(self):
+        """
+        Test that resource can be filtered based on distance about a point
+        """
+        locations = [
+            Location.objects.create(name="The Piton Foundation", lat=39.7438167, lng=-104.9884953),
+            Location.objects.create(name="Hull House", lat=41.8716782, lng=-87.6474517)
+        ]
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status='published')
+        story.locations.add(locations[0])
+        story.save()
+        story2 = create_story(title="Test Story 2", summary="Test Summary 2",
+                             byline="Test Byline 2", status='published')
+        story2.locations.add(locations[1])
+        story2.save()
+        # TODO: Figure out why this is neccessary
+        self._rebuild_index()
+        req = HttpRequest()
+        req.method = 'GET'
+        req.GET['near'] = '39.7414581054089@-104.9877892025,1'
+        resp = self.resource.explore_get_list(req)
+        dehydrated = simplejson.loads(resp.content)
+        self.assertEqual(len(dehydrated['objects']), 1)
+        self.assertEqual(dehydrated['objects'][0]['story_id'], story.story_id)

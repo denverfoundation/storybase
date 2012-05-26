@@ -4,6 +4,7 @@ from django.conf.urls.defaults import url
 from django.core.urlresolvers import NoReverseMatch
 
 from haystack.query import SearchQuerySet
+from haystack.utils.geo import D, Point
 
 from tastypie import fields
 from tastypie.bundle import Bundle
@@ -42,6 +43,7 @@ class StoryResource(ModelResource):
         excludes = ['id']
         # Filter arguments for custom explore endpoint
         explore_filter_fields = ['topics', 'projects', 'organizations', 'languages', 'places']
+        explore_point_field = 'points'
 
     def override_urls(self):
         return [
@@ -160,8 +162,33 @@ class StoryResource(ModelResource):
 
         return applicable_filters
 
+    def _explore_spatial_filter_object_list(self, request, object_list):
+        """Apply spatial filters to object list"""
+        def _parse_near_param(s):
+            """
+            Parse the ``near`` query string parameter
+
+            The parameter should be of the form lat@lng,miles 
+
+            Returns a tuple of a Point and D object suitable for passing
+            to ``SearchQuerySet.dwithin()``
+
+            """
+            (latlng, dist) = s.split(',')
+            (lat, lng) = latlng.split('@')
+            return (Point(float(lng), float(lat)),  D(mi=dist))
+
+        near_param = request.GET.get('near', None)
+        if near_param:
+            (point, dist) = _parse_near_param(near_param)
+            return object_list.dwithin(self._meta.explore_point_field, point, dist)
+
+        else:
+            return object_list
+
     def explore_apply_filters(self, request, applicable_filters):
         object_list = self.explore_get_result_list(request)
+        object_list = self._explore_spatial_filter_object_list(request, object_list)
         if applicable_filters:
             object_list = object_list.filter(**applicable_filters)
 
