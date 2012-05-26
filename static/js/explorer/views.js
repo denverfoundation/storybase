@@ -86,6 +86,9 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     $(window).bind('scroll', function(ev) {
       that.scrollWindow(ev);
     });
+
+    // Bind 'this' variable in callbacks to the view object
+    _.bindAll(this, ['resetAll']);
   },
 
   reset: function(data) {
@@ -214,28 +217,39 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     }
   },
 
+  /**
+   * Reset the data and redraw all child views.
+   *
+   * Arguments:
+   * data - response Object returned by endpoint
+   */
+  resetAll: function(data) {
+    this.reset(data);
+    this.storyListView.reset(this.stories);
+    this.storyListView.render();
+    this.mapView.reset(this.stories);
+    this.mapView.render();
+    this.filterView.reset({
+      topics: data.topics,
+      organizations: data.organizations,
+      places: data.places,
+      projects: data.projects,
+      languages: data.languages,
+      selected: this.selectedFilters
+    });
+    this.filterView.render();
+  },
+
+  fetchStories: function() {
+    $.getJSON(this.getFilterUri(), this.resetAll);
+  },
+
   changeFilters: function(ev) {
     var that = this;
     var name = ev.currentTarget.name;
     var value =  $(ev.currentTarget).val();
-    var storyData;
     this.setFilter(name, value);
-    $.getJSON(this.getFilterUri(), function(data) {
-      that.reset(data);
-      that.storyListView.reset(that.stories);
-      that.storyListView.render();
-      that.mapView.reset(that.stories);
-      that.mapView.render();
-      that.filterView.reset({
-        topics: data.topics,
-        organizations: data.organizations,
-        places: data.places,
-        projects: data.projects,
-        languages: data.languages,
-        selected: that.selectedFilters
-      });
-      that.filterView.render();
-    });
+    this.fetchStories();
   }
 });
 
