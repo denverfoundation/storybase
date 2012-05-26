@@ -235,10 +235,6 @@ LANGUAGES = [
 # Don't hide menu items that are untranslated
 CMS_HIDE_UNTRANSLATED = False
 
-HAYSTACK_SITECONF = 'atlas.search_sites'
-HAYSTACK_SEARCH_ENGINE = 'solr'
-HAYSTACK_SOLR_URL = 'http://127.0.0.1:8983/solr' 
-
 TAGGIT_AUTOSUGGEST_MODEL = 'storybase_tag.models.Tag'
 
 FILER_STATICMEDIA_PREFIX = os.path.join(STATIC_URL, 'filer/')

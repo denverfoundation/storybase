@@ -1,22 +1,23 @@
-from haystack.indexes import (RealTimeSearchIndex, CharField, FacetCharField, 
-    FacetDateTimeField, FacetMultiValueField)
-from haystack import site
+from haystack import indexes
 
 from models import Story
 
-class StoryIndex(RealTimeSearchIndex):
-    text = CharField(document=True, use_template=True)
-    author = FacetCharField(model_attr='author')
-    published = FacetDateTimeField(model_attr='published')
-    created = FacetDateTimeField(model_attr='created')
-    last_edited = FacetDateTimeField(model_attr='last_edited')
+class StoryIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
+    text = indexes.CharField(document=True, use_template=True)
+    author = indexes.FacetCharField(model_attr='author')
+    published = indexes.FacetDateTimeField(model_attr='published')
+    created = indexes.FacetDateTimeField(model_attr='created')
+    last_edited = indexes.FacetDateTimeField(model_attr='last_edited')
     # TODO: Use a meta class to dynamically populate these from "official"
     # tag sets 
-    topic_ids = FacetMultiValueField()
-    organization_ids = FacetMultiValueField()
-    project_ids = FacetMultiValueField()
-    language_ids = FacetMultiValueField()
-    place_ids = FacetMultiValueField()
+    topic_ids = indexes.FacetMultiValueField()
+    organization_ids = indexes.FacetMultiValueField()
+    project_ids = indexes.FacetMultiValueField()
+    language_ids = indexes.FacetMultiValueField()
+    place_ids = indexes.FacetMultiValueField()
+
+    def get_model(self):
+        return Story
 
     def prepare_topic_ids(self, obj):
         return [topic.id for topic in obj.topics.all()]
@@ -45,5 +46,3 @@ class StoryIndex(RealTimeSearchIndex):
         if translation_set.count() == 0:
             should_update = False
         return should_update
-        
-site.register(Story, StoryIndex)

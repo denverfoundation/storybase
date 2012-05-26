@@ -154,9 +154,9 @@ class StoryResource(ModelResource):
         filter_fields = self._meta.explore_filter_fields
         for filter_field in filter_fields:
             facet_field = self._get_facet_field_name(filter_field)
-            filter_values = filters.get(filter_field, '').split(',')
+            filter_values = filters.get(filter_field, None)
             if filter_values:
-                applicable_filters['%s__in' % facet_field] = filter_values
+                applicable_filters['%s__in' % facet_field] = filter_values.split(',')
 
         return applicable_filters
 

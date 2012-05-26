@@ -12,7 +12,7 @@ django-email-confirmation==0.2
 # Install django-filer develop branch because it fixes 
 # https://github.com/stefanfoulis/django-filer/issues/59
 git+git://github.com/stefanfoulis/django-filer.git
-django-haystack==1.2.6
+git+https://github.com/toastdriven/django-haystack.git@master#egg=django-haystack
 django-mptt==0.5.2
 django-reversion==1.4
 django-sekizai==0.5
