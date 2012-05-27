@@ -19,7 +19,7 @@ Handlebars templates for rendering Backbone views.
 </script>
 
 <script type="text/x-handlebars-template" id="story-count-template">
-    {{count}} Stor{{pluralize count suffix="y,ies"}} Shown
+        {{count}} {{#blockgettext}}Stor{{pluralize count suffix="y,ies"}} Shown{{/blockgettext}}
 </script>
 
 <script type="text/x-handlebars-template" id="filters-template">
