@@ -139,6 +139,9 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     this.stories = new storybase.collections.Stories;
     this.reset(this.options.storyData);
     this.template = Handlebars.compile(this.templateSource);
+    this.counterView = new storybase.explorer.views.StoryCount({
+      count: this.stories.length
+    });
     this.filterView = new storybase.explorer.views.Filters({
       topics: this.options.storyData.topics,
       organizations: this.options.storyData.organizations,
@@ -170,10 +173,10 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
   },
 
   render: function() {
-    var opts = this.options;
-    var context = {
-    };
+    var context = {};
     this.$el.html(this.template(context));
+    this.counterView.render();
+    this.$el.prepend(this.counterView.el);
     this.filterView.render();
     this.$el.prepend(this.filterView.el);
     this.filterView.setInitialProperties();
@@ -252,6 +255,8 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
   scrollWindow: function(e) {
     if (this._nearbottom() && !this.isDuringAjax) {
       this.getMoreStories();
+      this.counterView.setCount(this.stories.length);
+      this.counterView.render();
       this.storyListView.render();
     }
   },
@@ -307,6 +312,8 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
    */
   resetAll: function(data) {
     this.reset(data);
+    this.counterView.setCount(this.stories.length);
+    this.counterView.render();
     this.storyListView.reset(this.stories);
     this.storyListView.render();
     this.mapView.reset(this.stories);
@@ -332,6 +339,31 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     var value =  $(ev.currentTarget).val();
     this.setFilter(name, value);
     this.fetchStories();
+  }
+});
+
+storybase.explorer.views.StoryCount = Backbone.View.extend({
+  tagName: 'h3',
+
+  id: 'story-count',
+
+  templateSource: $('#story-count-template').html(),
+
+  initialize: function() {
+    this.count = this.options.count;
+    this.template = Handlebars.compile(this.templateSource);
+  },
+
+  render: function() {
+    var context = {
+      count: this.count
+    };
+    this.$el.html(this.template(context));
+    return this;
+  },
+
+  setCount: function(count) {
+    this.count = count;
   }
 });
 
