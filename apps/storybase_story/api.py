@@ -181,7 +181,11 @@ class StoryResource(ModelResource):
         near_param = request.GET.get('near', None)
         if near_param:
             (point, dist) = _parse_near_param(near_param)
-            return object_list.dwithin(self._meta.explore_point_field, point, dist)
+            print point
+            print dist
+            proximity_filtered_object_list = object_list.dwithin(self._meta.explore_point_field, point, dist).distance(self._meta.explore_point_field, point)
+            print [r.distance for r in proximity_filtered_object_list]
+            return proximity_filtered_object_list 
 
         else:
             return object_list

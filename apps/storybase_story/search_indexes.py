@@ -2,8 +2,8 @@ from haystack import indexes
 
 from models import Story
 
-class LocationMultiValueField(indexes.MultiValueField):
-    field_type = 'location'
+class GeoHashMultiValueField(indexes.MultiValueField):
+    field_type = 'geohash'
 
 class StoryIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
@@ -18,7 +18,7 @@ class StoryIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
     project_ids = indexes.FacetMultiValueField()
     language_ids = indexes.FacetMultiValueField()
     place_ids = indexes.FacetMultiValueField()
-    points = LocationMultiValueField()
+    points = GeoHashMultiValueField()
 
     def get_model(self):
         return Story
