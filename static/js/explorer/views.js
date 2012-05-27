@@ -194,12 +194,22 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
 
   selectView: function(viewType) {
     if (viewType == 'list') {
+      if (this.hasNear()) {
+        // Proximity search was enabled
+        // Disable it
+        this.setNear(null).fetchStories();
+      }
       this.selectList();
     }
     else if (viewType == 'map') {
       this.selectMap();
     }
     else {
+      if (this.hasNear()) {
+        // Proximity search was enabled
+        // Disable it
+        this.setNear(null).fetchStories();
+      }
       this.selectTile();
     }
   },
@@ -299,7 +309,15 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     }
   },
 
+  // Is proximity search enabled?
+  hasNear: function() {
+    return this.near !== null;
+  },
+
   setNear: function(point) {
+    if (point === null) {
+      console.debug("clearing proximity search");
+    }
     this.near = point
     return this;
   },
@@ -572,7 +590,7 @@ storybase.explorer.views.Map = Backbone.View.extend({
     this.initialZoom = storybase.explorer.globals.MAP_ZOOM_LEVEL;
 
     // Bind our callbacks to the view object
-    _.bindAll(this, ['redrawMap']);
+    _.bindAll(this, 'redrawMap', 'geocodeFail');
     this.$el.append('<div id="' + this.mapId + '"></div>');
     this.map = null;
   },
@@ -648,7 +666,7 @@ storybase.explorer.views.Map = Backbone.View.extend({
    * use a different Geocoding Service.
    *
    */
-  geocode: function(address, callback) {
+  geocode: function(address, success, failure) {
     $.ajax('http://nominatim.openstreetmap.org/search/', {
       dataType: 'jsonp',
       data: {
@@ -659,31 +677,39 @@ storybase.explorer.views.Map = Backbone.View.extend({
       success: function(data, textStatus, jqXHR) {
         if (data.length) {
           // Found a point for the address
-          callback({
+          success({
             'lat': data[0].lat,
             'lng': data[0].lon
           });
         }
-        // TODO: Do something on geocoding failure
+        else {
+          failure(address);
+        }
       }
     });
     
   },
 
   /**
-   * Post geocoding callback
+   * Post-geocoding callback when geocoding succeeds
    */
   redrawMap: function(point) {
     // Recenter the map based on the geocoded point 
+    console.debug("Found point (" + point.lat + "," + point.lng + ")")
     var center = new L.LatLng(point.lat, point.lng);
     this.map.setView(center, this.map.getZoom());
     this.parentView.setNear(point);
     this.parentView.fetchStories();
   },
 
+  geocodeFail: function(address) {
+    // TODO: Do something more exciting when geocoding fails
+    console.debug("Geocoding of address " + address + " failed");
+  },
+
   proximitySearch: function() {
     var address = this.$('#' + this.searchFieldId).val();
-    this.geocode(address, this.redrawMap);
+    this.geocode(address, this.redrawMap, this.geocodeFail);
   },
 
   clearProximitySearch: function() {
