@@ -579,8 +579,8 @@ function Cluster(leafClusterer) {
 }
 
 ClusterMarker_ = L.Class.extend({
-  initialize: function(latLng_, cluster_, count_, styles_, padding_) {
-    this.reset({latLng:latLng_, cluster: cluster_, count: count_, styles: styles_, padding: padding_});
+  initialize: function(latLng_, count_, styles_, padding_) {
+    this.reset({latLng:latLng_, count: count_, styles: styles_, padding: padding_});
   },
                
   reset: function(opts) {
@@ -590,10 +590,6 @@ ClusterMarker_ = L.Class.extend({
     var updated = 0;
     if (typeof opts.latLng === "object" && opts.latLng != this.latlng_) {
       this.latlng_ = opts.latLng;
-      updated = 1;
-    }
-    if (typeof opts.cluster === "object" && opts.cluster != this.cluster_) {
-      this.cluster_ = opts.cluster;
       updated = 1;
     }
 

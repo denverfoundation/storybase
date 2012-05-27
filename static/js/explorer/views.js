@@ -16,13 +16,81 @@ StoryMarker = L.Marker.extend({
 });
 
 StoryClusterMarker = ClusterMarker_.extend({
+  /**
+   * Override the original to pass the cluster object to be able to have
+   * access to the markers and stories
+   */
+  initialize: function(latLng_, cluster_, count_, styles_, padding_) {
+    this.reset({latLng:latLng_, cluster: cluster_, count: count_, styles: styles_, padding: padding_});
+  },
+
+  /**
+   * Override the original to display the marker count based on the number
+   * of stories, not the number of markers.  I'm still not sure this is
+   * a good idea.
+   */
+  reset: function(opts) {
+    if (!opts || typeof opts !== "object")
+      return;
+
+    var updated = 0;
+    if (typeof opts.latLng === "object" && opts.latLng != this.latlng_) {
+      this.latlng_ = opts.latLng;
+      updated = 1;
+    }
+    if (typeof opts.cluster === "object" && opts.cluster != this.cluster_) {
+      this.cluster_ = opts.cluster;
+      console.debug(this.cluster_);
+      this.stories_ = _.uniq(_.map(this.cluster_.getMarkers(), 
+        function(marker) {
+          console.debug(marker);
+          return marker.marker.story;
+      }));
+      console.debug(this.stories_.length);
+      this.count_ = this.stories_.length; 
+    }
+
+    var styles_updated = 0;
+    if (typeof opts.styles === "object" && opts.styles != this.styles_) {
+      this.styles_ = opts.styles;
+      updated = 1;
+      styles_updated = 1;
+    }
+
+    if (this.count_) {
+      var index = 0;
+      var dv = this.count_;
+      while (dv !== 0) {
+          dv = parseInt(dv / 10, 10);
+          index ++;
+      }
+
+      var styles = this.styles_;
+
+      if (styles.length < index) {
+          index = styles.length;
+      }
+      this.url_ = styles[index - 1].url;
+      this.height_ = styles[index - 1].height;
+      this.width_ = styles[index - 1].width;
+      this.textColor_ = styles[index - 1].opt_textColor;
+      this.anchor_ = styles[index - 1].opt_anchor;
+      this.index_ = index;
+      updated = 1;
+    }
+
+    if (typeof opts.padding === "number" && this.padding_ != opts.padding) {
+      this.padding_ = opts.padding;
+      updated = 1;
+    }
+
+    this.updated |= updated;
+  },
+
   onClick_: function(cluster) {
     var map = cluster.map_;
     var popup = new L.Popup();
-    var stories = _.uniq(_.map(cluster.cluster_.getMarkers(), function(marker) {
-      return marker.marker.story;
-    }));
-    var storiesJSON = _.map(stories, function(story) {
+    var storiesJSON = _.map(this.stories_, function(story) {
       return story.toJSON();
     });
     var popupContent = StoryClusterMarker.template({
