@@ -1,7 +1,8 @@
 #explorer {
   position: relative;
-  width: 100%; 
+  width: 100%;
 }
+
 
 #filters {
   background: none repeat scroll 0 0 #EEEEEE;
@@ -14,7 +15,7 @@
 }
 
 #filters .select2-container {
-  min-width: 200px; 
+  min-width: 200px;
 }
 
 #filters.sticky {
@@ -34,7 +35,14 @@
   font-weight: bold;
 }
 
+#story-count {
+  margin: 1em 0;
+  float: left;
+}
+
 #view-selector {
+  /* HACK: Provide min-height so first story clears the story count */
+  min-height: 25px;
   text-align: right;
   padding: 0;
   list-style-type: none;
