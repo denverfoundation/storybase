@@ -271,7 +271,7 @@ STORYBASE_EXPLORE_TITLE = ugettext("Explore")
 # exploration map should be centered
 STORYBASE_MAP_CENTER = (39.74151, -104.98672)
 # Initial map zoom level
-STORYBASE_MAP_ZOOM_LEVEL = 10
+STORYBASE_MAP_ZOOM_LEVEL = 11
 # Distance in miles to search around a point when doing a proximity search
 STORYBASE_SEARCH_DISTANCE = 1
 
