@@ -194,27 +194,22 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
 
   selectView: function(viewType) {
     if (viewType == 'list') {
-      if (this.hasNear()) {
-        // Proximity search was enabled
-        // Disable it
-        this.setNear(null).fetchStories();
-      }
       this.selectList();
     }
     else if (viewType == 'map') {
       this.selectMap();
     }
     else {
-      if (this.hasNear()) {
-        // Proximity search was enabled
-        // Disable it
-        this.setNear(null).fetchStories();
-      }
       this.selectTile();
     }
   },
 
   selectTile: function(e) {
+    if (this.hasNear()) {
+      // Proximity search was enabled
+      // Disable it
+      this.setNear(null).fetchStories();
+    }
     this.mapView.$el.hide();
     this.storyListView.$el.show();
     this.storyListView.tile();
@@ -222,6 +217,11 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
   },
 
   selectList: function(e) {
+    if (this.hasNear()) {
+      // Proximity search was enabled
+      // Disable it
+      this.setNear(null).fetchStories();
+    }
     this.mapView.$el.hide();
     this.storyListView.$el.show();
     this.storyListView.list();
@@ -311,10 +311,13 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
 
   // Is proximity search enabled?
   hasNear: function() {
+    console.debug("In hasNear");
+    console.debug(this.near);
     return this.near !== null;
   },
 
   setNear: function(point) {
+    console.debug(point);
     if (point === null) {
       console.debug("clearing proximity search");
     }
