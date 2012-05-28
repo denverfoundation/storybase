@@ -40,13 +40,10 @@ StoryClusterMarker = ClusterMarker_.extend({
     }
     if (typeof opts.cluster === "object" && opts.cluster != this.cluster_) {
       this.cluster_ = opts.cluster;
-      console.debug(this.cluster_);
       this.stories_ = _.uniq(_.map(this.cluster_.getMarkers(), 
         function(marker) {
-          console.debug(marker);
           return marker.marker.story;
       }));
-      console.debug(this.stories_.length);
       this.count_ = this.stories_.length; 
     }
 
@@ -155,6 +152,7 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     });
     this.mapView = new storybase.explorer.views.Map({
       stories: this.stories,
+      boundaryPoints: this.options.storyData.boundaries,
       parentView: this
     });
 
@@ -311,13 +309,10 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
 
   // Is proximity search enabled?
   hasNear: function() {
-    console.debug("In hasNear");
-    console.debug(this.near);
     return this.near !== null;
   },
 
   setNear: function(point) {
-    console.debug(point);
     if (point === null) {
       console.debug("clearing proximity search");
     }
@@ -337,7 +332,7 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     this.counterView.render();
     this.storyListView.reset(this.stories);
     this.storyListView.render();
-    this.mapView.reset(this.stories);
+    this.mapView.reset(this.stories, data.boundaries);
     this.mapView.render();
     this.filterView.reset({
       topics: data.topics,
@@ -586,6 +581,8 @@ storybase.explorer.views.Map = Backbone.View.extend({
   initialize: function() {
     this.parentView = this.options.parentView;
     this.stories = this.options.stories;
+    this.boundaryPoints = this.options.boundaryPoints;
+    this.boundaryLayers = new L.LayerGroup(); 
     this.markerTemplate = Handlebars.compile($("#story-marker-template").html()); 
     this.searchTemplate = Handlebars.compile($('#proximity-search-template').html());
     this.initialCenter = new L.LatLng(storybase.explorer.globals.MAP_CENTER[0],
@@ -596,6 +593,40 @@ storybase.explorer.views.Map = Backbone.View.extend({
     _.bindAll(this, 'redrawMap', 'geocodeFail');
     this.$el.append('<div id="' + this.mapId + '"></div>');
     this.map = null;
+  },
+
+  /**
+   * Convert a 2-dimensional array of latitude/longitude pairs to
+   * an array of L.LatLng objects
+   */
+  makeLatLngs: function(featurePoints) {
+    return _.map(featurePoints, function(point) {
+      var latlng = new L.LatLng(point[1], point[0]);
+      return latlng; 
+    });
+  },
+
+  /**
+   * Create a mapping library objects representing place boundaries  
+   * @param {array} boundaryPoints Three dimensional array representing
+   *    multipolygons.  The top level of the array represents the
+   *    different place boundaries, the next level is each shape in the
+   *    boundary, and the smallest level is a latitude/longitude pair.
+   * @return {array} An array of L.MultiPolygon objects 
+   */
+  makeBoundaries: function(boundaryPoints) {
+    var that = this;
+    var boundaries = [];
+    _.each(boundaryPoints, function(singleBoundaryPoints) {
+      var singleBoundaryLatlngs = [];  
+      _.each(singleBoundaryPoints, function(shapePoints) {
+        var latlngs = that.makeLatLngs(shapePoints);
+        singleBoundaryLatlngs.push(latlngs);
+      });
+      var mp = new L.MultiPolygon(singleBoundaryLatlngs);
+      boundaries.push(mp);
+    });
+    return boundaries;
   },
 
   render: function() {
@@ -627,6 +658,7 @@ storybase.explorer.views.Map = Backbone.View.extend({
         field_id: this.searchFieldId,
         clear_button_id: this.clearButtonId
       }));
+      this.map.addLayer(this.boundaryLayers);
     }
     else {
       // Map has already been initialized
@@ -653,10 +685,21 @@ storybase.explorer.views.Map = Backbone.View.extend({
     };
 
     this.stories.each(placeStoryMarkers); 
+
+    // Remove existing boundaries from the map
+    this.boundaryLayers.clearLayers();
+    // Add new boundaries
+    if (this.boundaryPoints.length) {
+      var polygons = this.makeBoundaries(this.boundaryPoints);
+      _.each(polygons, function(polygon) {
+        that.boundaryLayers.addLayer(polygon);
+      });
+    }
   },
 
-  reset: function(stories) {
+  reset: function(stories, boundaryPoints) {
     this.stories = stories;
+    this.boundaryPoints = boundaryPoints;
   },
 
   /**

@@ -227,6 +227,23 @@ class StoryResource(ModelResource):
         except NoReverseMatch:
             return None
 
+    def _add_boundaries(self, request, to_be_serialized):
+        """
+        Add boundaries field to data to be seriazlized
+        """
+        boundaries = []
+        specified_places = request.GET.get('places', None)
+        if specified_places and to_be_serialized['places']:
+            specified_place_ids = specified_places.split(",")
+            for place in to_be_serialized['places']:
+                if place['id'] in specified_place_ids:
+                    place = Place.objects.get(place_id=place['id'])
+                    boundary = place.boundary
+                    coords = boundary.coords
+                    boundary = [coords[0][i] for i in range(boundary.num_geom)]
+                    boundaries.append(boundary)
+        to_be_serialized['boundaries'] = boundaries
+
     def explore_get_data_to_be_serialized(self, request=None, **kwargs):
         """
         Helper to build a filtered and paginated list of stories and
@@ -261,6 +278,8 @@ class StoryResource(ModelResource):
             filter_field = self._get_filter_field_name(facet_field)
             to_be_serialized[filter_field] = self._get_facet_choices(
                 facet_field, [item[0] for item in items if item[1] > 0])
+
+        self._add_boundaries(request, to_be_serialized)
 
         return to_be_serialized
             
