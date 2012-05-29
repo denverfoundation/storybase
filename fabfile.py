@@ -48,6 +48,9 @@ env['db_auth_config'] = env.get('db_auth_config',
                                 '/etc/postgresql/9.1/main/pg_hba.conf')
 """Path to PostgreSQL's client authentication configuration file"""
 
+env['solr_root'] = env.get('solr_root', '/usr/local/share/solr3')
+env['solr_data_root'] = env.get('solr_data_root', '/usr/local/lib/solr3')
+
 def _get_config_dir():
     """Get the path for an instance's local configuration"""
     return os.path.join(os.getcwd(), 'config', env['instance']) + '/'
@@ -211,6 +214,65 @@ def install_solr():
     print "You'll probably need to edit /etc/default/jetty"
 
 @task
+def upgrade_to_solr3(solr_version='3.6.0'):
+    """
+    Upgrade Solr to version 3.5+ as the version supported in the
+    Ubuntu packages don't support spatial queries
+    """
+    sudo('mkdir /usr/local/share/solr3')
+    sudo('mkdir /usr/local/etc/solr3')
+    sudo('mkdir -p /usr/local/lib/solr3/data')
+    sudo('chown -R jetty /usr/local/lib/solr3/data')
+    run('wget -P /tmp http://www.reverse.net/pub/apache/lucene/solr/%s/apache-solr-%s.tgz' % (solr_version, solr_version))
+    run('tar --directory=/tmp -zxf /tmp/apache-solr-%s.tgz' % (solr_version))
+    sudo('sudo unzip -d /usr/local/share/solr3/ /tmp/apache-solr-%s/dist/apache-solr-%s.war' % (solr_version, solr_version))
+    
+    # Make symlinks to mirror Ubuntu/Debian layout
+    sudo('ln -s /usr/local/etc/solr3/conf /usr/local/share/solr3/conf')
+    sudo('ln -s /usr/local/etc/solr3/ /etc/solr3')
+    sudo('ln ln -s /usr/local/lib/solr3/ /var/lib/solr3')
+
+    # Copy existing configuration
+    sudo('sudo cp -a /etc/solr/* /usr/local/etc/solr3/')
+    print ("You need to manually edit "
+           "/usr/local/etc/solr3/conf/solrconfig.xml and set the dataDir "
+           "element to /usr/local/lib/solr3/data")
+    sudo('cp /usr/share/solr/solr.xml /usr/local/share/solr3/')
+    print ("You need to manually edit "
+           "/usr/local/share/solr3/solr.xml and set eacho core's dataDir "
+           "element to a subdirectory of /usr/lib/solr3")
+
+    # Copy jetty JARs to new solr directory
+    sudo("cp /usr/share/solr/WEB-INF/lib/jetty* /usr/local/share/solr3/WEB-INF/lib/")
+    # Copy jetty config 
+    sudo("cp /usr/share/solr/WEB-INF/jetty-web.xml /usr/local/share/solr3/WEB-INF/")
+    print ("You need to manually edit "
+           "/usr/local/share/solr3/WEB-INF/jetty-web.xml to reflect the new "
+           "Solr location")
+
+    # Make Solr3 instance available to Jetty
+    sudo("ln -s /usr/local/share/solr3/ /usr/share/jetty/webapps")
+    # Remove symlink to old Solr
+    sudo("rm /usr/share/jetty/webapps/solr")
+
+    # Clean up downloaded files
+    run('rm -rf /tmp/apache-solr-%s' % (solr_version))
+    run('rm /tmp/apache-solr-%s.tgz' % (solr_version))
+
+    print ("Next, you'll need to create configuration and data directories "
+           "for each instance's core by runing the make_solr_data_dir and "
+           "make_solr_config_dir tasks.  Finally, restart Jetty using the "
+           "restart_jetty task")
+
+@task
+def install_solr_2155(solr_root=env['solr_root']):
+    """Install the Solr-2155 Plugin to allow multivalue spatial fields"""
+    pass
+    sudo("wget -P %s/WEB-INF/lib/ https://github.com/downloads/dsmiley/SOLR-2155/Solr2155-1.0.5.jar" % (solr_root))
+           
+
+
+@task
 def create_spatial_db_template():
     """ Create the spatial database template for PostGIS """
     # Upload the spatial template creation script
@@ -289,17 +351,23 @@ def upload_config(config_dir=None):
     put(config_dir, remote_dir)
 
 @task
-def install_config(instance=env['instance']):
+def install_config(instance=env['instance'], solr_root=env['solr_root']):
     """ Install files that were uploaded via upload_local_config to their final homes """
+    solr_conf_dir = "%s/%s/conf" % (solr_root, instance)
     with cd(env['instance_root'] + '/atlas/'):
-        run("cp config/%s/settings.py settings/%s.py" % (env['instance'], env['instance']))
-        run("cp config/%s/wsgi.py wsgi.py" % (env['instance']))
-        sudo("cp config/%s/apache/site /etc/apache2/sites-available/%s" % (env['instance'], env['instance']))
-        sudo("cp config/%s/nginx/site /etc/nginx/sites-available/%s" % (env['instance'], env['instance']))
-        sudo("cp config/%s/solr/solrconfig.xml /usr/share/solr/%s/conf/" % (instance, instance))
-        sudo("cp config/%s/solr/protwords.txt /usr/share/solr/%s/conf/" % (instance, instance))
-        sudo("cp config/%s/solr/stopwords.txt /usr/share/solr/%s/conf/" % (instance, instance))
-        sudo("cp config/%s/solr/synonyms.txt /usr/share/solr/%s/conf/" % (instance, instance))
+        run("cp config/%s/settings.py settings/%s.py" % (instance, instance))
+        run("cp config/%s/wsgi.py wsgi.py" % (instance))
+        sudo("cp config/%s/apache/site /etc/apache2/sites-available/%s" %
+             (instance, instance))
+        sudo("cp config/%s/nginx/site /etc/nginx/sites-available/%s" %
+             (instance, instance))
+        sudo("cp config/%s/solr/solrconfig.xml %s/" %
+             (instance, solr_conf_dir))
+        sudo("cp config/%s/solr/protwords.txt %s/" % (instance, solr_conf_dir))
+        sudo("cp config/%s/solr/stopwords.txt %s/" % (instance, solr_conf_dir))
+        sudo("cp config/%s/solr/stopwords_en.txt %s/" %
+             (instance, solr_conf_dir))
+        sudo("cp config/%s/solr/synonyms.txt %s/" % (instance, solr_conf_dir))
 
 @task 
 def syncdb(instance=env['instance']):
@@ -368,15 +436,18 @@ def write_solr_xml(instance=env['instance']):
     raise NotImplemented
 
 @task
-def make_solr_data_dir(instance=env['instance']):
+def make_solr_data_dir(instance=env['instance'], 
+                       solr_data_root=env['solr_data_root']):
     """ Make the directory for the instance's Solr core data """
-    sudo("mkdir -p /var/lib/solr/%s/data" % (instance))
-    sudo("chown -R jetty /var/lib/solr/%s/" % (instance))
+    solr_data_dir = "%s/%s" % (solr_data_root, instance)
+    sudo("mkdir -p %s/data" % (solr_data_dir))
+    sudo("chown -R jetty %s/" % (solr_data_dir))
 
 @task
-def make_solr_config_dir(instance=env['instance']):
+def make_solr_config_dir(instance=env['instance'], solr_root=env['solr_root']):
     """ Make the directory for the instance's Solr core configuration """
-    sudo("mkdir -p /usr/share/solr/%s/conf" % (instance))
+    solr_conf_dir = "%s/%s/conf" % (solr_root, instance)
+    sudo("mkdir -p %s/" % (solr_conf_dir))
 
 @task
 def restart_jetty():
