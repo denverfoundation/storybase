@@ -118,7 +118,7 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     "click .select-tile-view": "selectTile",
     "click .select-list-view": "selectList",
     "click .select-map-view": "selectMap",
-    "change #filters select": "changeFilters"
+    "change #filters select": "handleChangeFilters"
   },
 
   initialize: function() {
@@ -135,6 +135,11 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     this.isDuringAjax = false; 
     this.stories = new storybase.collections.Stories;
     this.reset(this.options.storyData);
+    this.messages = {
+      placeNotVisible: {
+        seen: false
+      }
+    };
     this.template = Handlebars.compile(this.templateSource);
     this.counterView = new storybase.explorer.views.StoryCount({
       count: this.stories.length
@@ -162,6 +167,18 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
 
     // Bind 'this' variable in callbacks to the view object
     _.bindAll(this, ['resetAll']);
+  },
+
+  setMessageSeen: function(messageName) {
+    this.messages[messageName].seen = true;
+  },
+
+  resetMessageSeen: function(messageName) {
+    this.messages[messageName].seen = false;
+  },
+
+  messageSeen: function(messageName) {
+    return this.messages[messageName].seen;
   },
 
   reset: function(data) {
@@ -299,6 +316,10 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
   },
 
   setFilter : function(name, value) {
+    if (name == "places") {
+      this.resetMessageSeen('placeNotVisible');
+    }
+
     if (typeof value === "string") {
       this.selectedFilters[name] = [value];
     }
@@ -349,12 +370,19 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     $.getJSON(this.getFilterUri(), this.resetAll);
   },
 
-  changeFilters: function(ev) {
-    var that = this;
-    var name = ev.currentTarget.name;
-    var value =  $(ev.currentTarget).val();
+  changeFilter: function(name, value) {
     this.setFilter(name, value);
     this.fetchStories();
+  },
+
+  clearFilter: function(name) {
+    this.changeFilter(name, null);
+  },
+
+  handleChangeFilters: function(ev) {
+    var name = ev.currentTarget.name;
+    var value =  $(ev.currentTarget).val();
+    this.changeFilter(name, value);
   }
 });
 
@@ -585,12 +613,14 @@ storybase.explorer.views.Map = Backbone.View.extend({
     this.boundaryLayers = new L.FeatureGroup(); 
     this.markerTemplate = Handlebars.compile($("#story-marker-template").html()); 
     this.searchTemplate = Handlebars.compile($('#proximity-search-template').html());
+    this.mapMovePopupTemplate = Handlebars.compile($('#map-move-popup-template').html());
     this.initialCenter = new L.LatLng(storybase.explorer.globals.MAP_CENTER[0],
                                       storybase.explorer.globals.MAP_CENTER[1]);
     this.initialZoom = storybase.explorer.globals.MAP_ZOOM_LEVEL;
 
     // Bind our callbacks to the view object
-    _.bindAll(this, 'redrawMap', 'geocodeFail');
+    _.bindAll(this, 'redrawMap', 'geocodeFail', 'checkPlaceInMapBounds',
+              'clearPlaceFilters', 'keepPlaceFilters');
     this.$el.append('<div id="' + this.mapId + '"></div>');
     this.map = null;
   },
@@ -629,6 +659,44 @@ storybase.explorer.views.Map = Backbone.View.extend({
     return boundaries;
   },
 
+  keepPlaceFilters: function(popup) {
+    this.parentView.setMessageSeen('placeNotVisible');
+    this.map.removeLayer(popup);
+  },
+
+  clearPlaceFilters: function(popup) {
+    this.parentView.clearFilter('places');
+    this.map.removeLayer(popup);
+  },
+
+  /**
+   * Check that selected places are visible on the map.
+   * This is an event handler that should be bound to the map's 'move'
+   * event.
+   */
+  checkPlaceInMapBounds: function() {
+    var that = this;
+    if (this.boundaryPoints.length) {
+      // One or more places have been selected
+      var boundaryBounds = this.boundaryLayers.getBounds();
+      var mapBounds = this.map.getBounds();
+      if (!mapBounds.intersects(boundaryBounds) &&
+          !this.parentView.messageSeen('placeNotVisible')) {
+        var popupContent = this.mapMovePopupTemplate({}); 
+        var popup = new L.Popup();
+        popup.setLatLng(this.map.getCenter());
+        popup.setContent(popupContent);
+        this.map.openPopup(popup);
+        $('#keep-place-filters').click(function(e) {
+          that.keepPlaceFilters(popup);
+        });
+        $('#clear-place-filters').click(function(e) {
+          that.clearPlaceFilters(popup);
+        });
+      }
+    }
+  },
+
   render: function() {
     var that = this;
     if (this.map === null) {
@@ -659,6 +727,8 @@ storybase.explorer.views.Map = Backbone.View.extend({
         clear_button_id: this.clearButtonId
       }));
       this.map.addLayer(this.boundaryLayers);
+      this.map.on('move', this.checkPlaceInMapBounds);
+      
     }
     else {
       // Map has already been initialized
@@ -740,6 +810,7 @@ storybase.explorer.views.Map = Backbone.View.extend({
    * Post-geocoding callback when geocoding succeeds
    */
   redrawMap: function(point) {
+    this.parentView.setMessageSeen('placeNotVisible');
     // Recenter the map based on the geocoded point 
     console.debug("Found point (" + point.lat + "," + point.lng + ")")
     var center = new L.LatLng(point.lat, point.lng);

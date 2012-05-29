@@ -114,6 +114,11 @@ Handlebars templates for rendering Backbone views.
 </ul>
 </script>
 
+<script type="text/x-handlebars-template" id="map-move-popup-template">
+<p>{{gettext message="The map no longer shows the Place filter you have set above. Do you want to remove this filter so that you can see updated results on the map?"}}</p>
+<p><input id="keep-place-filters" type="button" value="{{gettext message="Leave Filter Alone"}}" /> <input id="clear-place-filters" type="button" value="{{gettext message="Remove the Filter"}}" /></p>
+</script>
+
 <script type="text/x-handlebars-template" id="proximity-search-template">
 <div id="proximity-search-form">
     <input id="{{field_id}}" type="text" placeholder="{{gettext message="Highlight stories near this address"}}" />
