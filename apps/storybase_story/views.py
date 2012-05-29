@@ -5,7 +5,10 @@ import json
 from django.template import Context
 from django.template.loader import get_template
 from django.views.generic import TemplateView 
+from django.utils.decorators import method_decorator
 from django.utils.safestring import mark_safe
+
+from storybase.utils import simple_language_changer
 from storybase.views.generic import ModelIdDetailView
 from storybase_story.api import StoryResource
 from storybase_story.models import Story
@@ -36,6 +39,10 @@ class ExploreStoriesView(TemplateView):
 
     """
     template_name = "storybase_story/explore_stories.html"
+
+    @method_decorator(simple_language_changer)
+    def dispatch(self, *args, **kwargs):
+        return super(ExploreStoriesView, self).dispatch(*args, **kwargs)
 
     def _get_selected_filters(self):
         """

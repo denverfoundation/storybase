@@ -1,0 +1,6 @@
+{% load menu_tags i18n %}
+{% for language in languages %}
+{% ifnotequal current_language language.0 %}
+<a href="{% page_language_url language.0 %}">{% trans "In" %} {{ language.0|language_name_local|capfirst }}</a>
+{% endifnotequal %}
+{% endfor % }

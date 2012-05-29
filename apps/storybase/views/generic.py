@@ -5,10 +5,16 @@ from django.core.exceptions import ObjectDoesNotExist
 from django.http import Http404
 from django.shortcuts import redirect
 from django.views.generic import DetailView
+from django.utils.decorators import method_decorator
 from django.utils.translation import get_language, ugettext as _
+
+from storybase.utils import simple_language_changer
 
 class ModelIdDetailView(DetailView):
     """DetailView that retrieves objects by custom id instead of pk"""
+    @method_decorator(simple_language_changer)
+    def dispatch(self, *args, **kwargs):
+        return super(ModelIdDetailView, self).dispatch(*args, **kwargs)
 
     def render_to_response(self, context, **response_kwargs):
 	"""Handle language-aware paths"""

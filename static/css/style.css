@@ -297,6 +297,10 @@ header.pagetop nav.help {
   padding-top: 1%;
 }
 
+header.pagetop nav.help li {
+  display: inline-block;
+}
+
 header.pagetop h1 a {
   color: #000;
   text-decoration: none;
