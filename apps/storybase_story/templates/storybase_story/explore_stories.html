@@ -82,15 +82,15 @@ Handlebars templates for rendering Backbone views.
 <h3>{{>story_link}}</h3>
 <p class="byline">{{byline}}</p>
 {{firstparagraph summary}}
-<dl>
-<dt>{{gettext message="Languages"}}</dt>
-<dd>
-  <ul class="languages">
-    {{#each languages}}
-    <li><a href="{{url}}">{{name}}</a></li>
-    {{/each}}
-  </ul>
-</dd>
+<dl class="story-attributes">
+  <dt>{{gettext message="Languages"}}</dt>
+  <dd>
+    <ul class="languages">
+      {{#each languages}}
+      <li><a href="{{url}}">{{name}}</a></li>
+      {{/each}}
+    </ul>
+  </dd>
 </dl>
 </script>
 

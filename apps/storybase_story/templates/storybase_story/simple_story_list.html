@@ -1,5 +1,20 @@
+{% load i18n %} 
 <ul class="stories">
-   {% for story in stories %}
-   <li><a href="{{ story.get_absolute_url }}">{{ story.title }}</a></li> 
-   {% endfor %}
+  {% for story in stories %}
+  <li>
+    <h3><a href="{{ story.get_absolute_url }}">{{ story.title }}</a></h3>
+    <p class="byline">{{ story.byline }}</p>
+    {{ story.summary }}
+    <dl class="story-attributes">
+      <dt>{% trans "Languages" %}</dt>
+      <dd>
+        <ul class="languages">
+          {% for language in story.languages %}
+	  <li><a href="{{ language.url }}">{{ language.name }}</a></li>
+	  {% endfor %}
+	</ul>
+      </dd>
+    </dl>
+  </li>
+ {% endfor %}
 </ul>

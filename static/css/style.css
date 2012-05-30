@@ -634,6 +634,29 @@ li.section {
   padding-bottom: 0;
 }
 
+
+dl.story-attributes dt:after {
+  content: ": ";
+}
+
+dl.story-attributes dd {
+  margin: 0;
+}
+
+dl.story-attributes dd,
+dl.story-attributes dt {
+  display: inline-block;
+}
+
+dl.story-attributes .languages {
+  padding: 0;
+  list-style-type: none;
+}
+
+dl.story-attributes .languages li {
+  display: inline-block;
+}
+
 /* ==|== non-semantic helper classes ========================================
    Please define your styles before this section.
    ========================================================================== */
