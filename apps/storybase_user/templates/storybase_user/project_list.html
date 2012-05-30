@@ -21,7 +21,7 @@ cancel my subscription I saw it on Mediagazer crowdfunding trolls hyperhyperloca
   {% for project in projects %}
   <li class="project">
     <h3><a href="{{ project.get_absolute_url }}">{{ project.name }}</a></h3>
-    <p class="description">{{ project.description|truncatewords_html:50 }}</p>
+    <p class="description">{{ project.description|truncatewords_html:100 }}</p>
     <a class="more" href="{{ project.get_absolute_url }}">{% trans "More" %}</a>
   </li>
   {% endfor %}
