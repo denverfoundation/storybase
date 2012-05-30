@@ -94,7 +94,7 @@ class StoryResource(ModelResource):
         """
         Populate a list of language codes and names in the response objects
         """
-        return [{ 'id': code, 'name': get_language_name(code) }
+        return [{ 'id': code, 'name': get_language_name(code), 'url': "/%s%s" % (code, bundle.obj.get_absolute_url()) }
                 for code in bundle.obj.get_languages()]
 
     def dehydrate_places(self, bundle):
