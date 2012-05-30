@@ -43,7 +43,13 @@ def simple_list(objects):
     return template.render(context)
 
 
+def homepage_organization_list(count):
+    """Render a listing of organizations for the homepage"""
+    orgs = Organization.objects.on_homepage().order_by('-last_edited')[:count]
+    return simple_list(orgs)
+
+
 def homepage_project_list(count):
-    """Render a listing of stories for the homepage"""
+    """Render a listing of projects for the homepage"""
     projects = Project.objects.on_homepage().order_by('-last_edited')[:count]
     return simple_list(projects)
