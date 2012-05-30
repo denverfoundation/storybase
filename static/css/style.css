@@ -396,24 +396,16 @@ header.pagetop h1 a {
   padding-bottom: 2%;
 }
 
-/* Front page featured stories */
-
-
-.featured-stories ul.stories {
-  list-style: none;
-  padding: 0;
-}
-
-.featured-stories-wrapper {
-  border: 1px solid #CCC;
-  padding: 2%;
-  background-color: #EEE;
-}
+/* Front page featured items */
 
 .featured-wrapper {
  border: 1px solid #CCC; 
  padding: 2%;
  background-color: #CCC;
+}
+
+.featured-stories .featured-wrapper {
+  background-color: #EEE;
 }
 
 .featured-wrapper > ul {

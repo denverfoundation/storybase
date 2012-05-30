@@ -1,7 +1,7 @@
 {% load i18n %}
 <section class="featured-stories">
   <h2>{% trans "Featured Stories" %}</h2>
-  <div class="featured-stories-wrapper">
+  <div class="featured-wrapper">
     {{ story_list }}
     <a href="{% url explore_stories %}">{% blocktrans %}Explore {{ storybase_site_name }} {% endblocktrans %}</a>
   </div>
