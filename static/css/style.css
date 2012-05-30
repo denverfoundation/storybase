@@ -403,8 +403,10 @@ header.pagetop h1 a {
   padding: 0;
 }
 
-.featured-stories ul.stories li {
-  padding: 1% 0;
+.featured-stories-wrapper {
+  border: 1px solid #CCC;
+  padding: 2%;
+  background-color: #EEE;
 }
 
 /* Footer 1 */
