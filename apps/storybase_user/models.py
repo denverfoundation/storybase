@@ -10,9 +10,9 @@ from django.utils.translation import ugettext_lazy as _
 from uuidfield.fields import UUIDField
 
 from storybase.fields import ShortTextField
+from storybase.managers import FeaturedManager
 from storybase.models import (TimestampedModel, TranslatedModel,
                               TranslationModel)
-    
 from storybase.utils import slugify
 
 ADMIN_GROUP_NAME = getattr(settings, 'ADMIN_GROUP_NAME', 'CA Admin')
@@ -38,6 +38,8 @@ class Organization(TranslatedModel, TimestampedModel):
     curated_stories = models.ManyToManyField('storybase_story.Story', related_name='curated_in_organizations', blank=True, through='OrganizationStory')
     on_homepage = models.BooleanField(_("Featured on homepage"),
 		                      default=False)
+
+    objects = FeaturedManager()
 
     translated_fields = ['name', 'description']
     translation_set = 'organizationtranslation_set'
@@ -124,6 +126,8 @@ class Project(TranslatedModel, TimestampedModel):
     curated_stories = models.ManyToManyField('storybase_story.Story', related_name='curated_in_projects', blank=True, through='ProjectStory')
     on_homepage = models.BooleanField(_("Featured on homepage"),
 		                      default=False)
+
+    objects = FeaturedManager()
 
     translated_fields = ['name', 'description']
     translation_set = 'projecttranslation_set'

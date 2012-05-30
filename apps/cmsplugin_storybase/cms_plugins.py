@@ -1,11 +1,12 @@
 from django.utils.translation import ugettext as _
 
-from cms.models.pluginmodel import CMSPlugin
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
-from storybase_story.views import homepage_story_list
 
-from models import StoryList, StoryPlugin as StoryPluginModel
+from storybase_story.views import homepage_story_list
+from storybase_user.views import homepage_project_list
+
+from cmsplugin_storybase.models import List, StoryPlugin as StoryPluginModel
 
 class StoryPlugin(CMSPluginBase):
     model = StoryPluginModel
@@ -17,13 +18,23 @@ class StoryPlugin(CMSPluginBase):
         return context
 
 class HomepageStoriesPlugin(CMSPluginBase):
-    model = StoryList 
+    model = List 
     name = _("StoryBase Homepage Stories")
     render_template = "homepage_stories_plugin.html"
 
     def render(self, context, instance, placeholder):
-        context['story_list'] = homepage_story_list(instance.num_stories)
+        context['story_list'] = homepage_story_list(instance.num_items)
+	return context 
+
+class HomepageProjectsPlugin(CMSPluginBase):
+    model = List
+    name = _("StoryBase Homepage Projects")
+    render_template = "homepage_projects_plugin.html"
+
+    def render(self, context, instance, placeholder):
+        context['list'] = homepage_project_list(instance.num_items)
 	return context 
 
 plugin_pool.register_plugin(StoryPlugin)
 plugin_pool.register_plugin(HomepageStoriesPlugin)
+plugin_pool.register_plugin(HomepageProjectsPlugin)

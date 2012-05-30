@@ -398,6 +398,7 @@ header.pagetop h1 a {
 
 /* Front page featured stories */
 
+
 .featured-stories ul.stories {
   list-style: none;
   padding: 0;
@@ -407,6 +408,17 @@ header.pagetop h1 a {
   border: 1px solid #CCC;
   padding: 2%;
   background-color: #EEE;
+}
+
+.featured-wrapper {
+ border: 1px solid #CCC; 
+ padding: 2%;
+ background-color: #CCC;
+}
+
+.featured-wrapper > ul {
+  list-style: none;
+  padding: 0;
 }
 
 /* Footer 1 */

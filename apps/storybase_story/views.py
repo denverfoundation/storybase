@@ -27,6 +27,7 @@ def simple_story_list(stories):
 def homepage_story_list(num_stories):
     """Render a listing of stories for the homepage"""
     stories = Story.objects.on_homepage().order_by('-last_edited')[:num_stories]
+    print stories
     return simple_story_list(stories)
 
 

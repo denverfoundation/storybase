@@ -1,0 +1,8 @@
+{% load i18n %}
+<section class="featured-projects">
+  <h2>{% trans "Featured Projects" %}</h2>
+  <div class="featured-wrapper">
+    {{ list }}
+    <a href="{% url explore_stories %}">{% trans "View all Projects" %}</a>
+  </div>
+</section>
