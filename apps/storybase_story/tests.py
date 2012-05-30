@@ -245,7 +245,7 @@ class StoryManagerTest(TestCase):
 
     def test_on_homepage(self):
         """
-	Test that StoryManager.on_homepage() returns filtered queryset
+	Test that Story.objects.on_homepage() returns filtered queryset
 	"""
 	homepage_titles = (
 	    "The Power of Play: Playground Locations in the Children's Corridor",
@@ -265,7 +265,7 @@ class StoryManagerTest(TestCase):
 
     def test_on_homepage_published_only(self):
 	"""
-	Test that StoryManager.on_homepage() returns only published stories
+	Test that story.objects.on_homepage() returns only published stories
 	"""
 	published_titles = (
 	    "The Power of Play: Playground Locations in the Children's Corridor",
