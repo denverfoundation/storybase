@@ -129,6 +129,7 @@ TEMPLATE_DIRS = (
 
 CMS_TEMPLATES = (
     ('homepage.html', 'Home Page'),
+    ('cms_twocol.html', 'Two Column'),
 )
 
 INSTALLED_APPS = (

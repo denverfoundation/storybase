@@ -13,7 +13,7 @@ django-email-confirmation==0.2
 # https://github.com/stefanfoulis/django-filer/issues/59
 git+git://github.com/stefanfoulis/django-filer.git
 git+https://github.com/toastdriven/django-haystack.git@master#egg=django-haystack
-django-mptt==0.5.2
+django-mptt==0.5.1
 django-reversion==1.4
 django-sekizai==0.5
 django-tastypie==0.9.11
