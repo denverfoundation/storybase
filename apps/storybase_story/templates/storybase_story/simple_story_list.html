@@ -1,10 +1,10 @@
-{% load i18n %} 
+{% load i18n storybase_tags %} 
 <ul class="stories">
   {% for story in stories %}
   <li>
     <h3><a href="{{ story.get_absolute_url }}">{{ story.title }}</a></h3>
     <p class="byline">{{ story.byline }}</p>
-    {{ story.summary }}
+    <p class="summary">{{ story.summary|firstparagraph }}</p>
     <dl class="story-attributes">
       <dt>{% trans "Languages" %}</dt>
       <dd>

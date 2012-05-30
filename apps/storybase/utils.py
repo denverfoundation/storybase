@@ -2,7 +2,7 @@
 
 from django.conf import settings
 from django.template.defaultfilters import slugify as django_slugify
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 def get_language_name(language_code):
     """Convert a language code into its full (localized) name"""
@@ -32,3 +32,9 @@ def simple_language_changer(func):
         return simple_language_changer(func)
     else:
         return func
+
+
+def first_paragraph(value): 
+    import re
+    graphs = re.split(r'[\r\n]{2,}', value)
+    return graphs[0]
