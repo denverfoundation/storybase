@@ -14,7 +14,7 @@ class OrganizationDetailView(ModelIdDetailView):
 class OrganizationListView(ListView):
     """Display a list of all Organizations"""
     context_object_name = 'organizations'
-    queryset = Organization.objects.all()
+    queryset = Organization.objects.all().order_by('organizationtranslation__name')
 
 
 class ProjectDetailView(ModelIdDetailView):
@@ -22,7 +22,8 @@ class ProjectDetailView(ModelIdDetailView):
     context_object_name = "project"
     queryset = Project.objects.all()
 
+
 class ProjectListView(ListView):
     """Display a list of all Projects"""
     context_object_name = "projects"
-    queryset = Project.objects.all()
+    queryset = Project.objects.all().order_by('-last_edited')
