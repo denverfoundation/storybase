@@ -1,0 +1,25 @@
+{% extends "twocol.html" %}
+
+{% load cms_tags i18n sekizai_tags menu_tags %}
+
+{% block col_left %}
+<div class="threecol sidebar-left">
+  <nav id="subnav">
+  {% ifequal request.current_page.level 0 %}
+    <ul class="navroot">{% show_sub_menu 1 %}</ul>
+  {% endifequal %}
+  {% if request.current_page.level >= 1 %}
+    <ul class="navroot">{% show_menu 1 %}</ul>
+  {% endif %}
+  </nav>
+  {% placeholder col_left %}
+</div>
+{% endblock %}
+
+{% block body_title %}{% page_attribute "page_title" %}{% endblock%}
+{% block intro %}
+{% placeholder intro %}
+{% endblock %}
+{% block primary_content %}
+{% placeholder primary_content %}
+{% endblock %}
