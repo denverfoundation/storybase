@@ -181,6 +181,7 @@ INSTALLED_APPS = (
     'tinymce',
 
     # StoryBase
+    'storybase',
     'storybase_action',
     'storybase_user',
     'storybase_asset',
