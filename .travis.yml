@@ -5,10 +5,10 @@ python:
 install: pip install -r REQUIREMENTS --use-mirrors && pip install -r REQUIREMENTS-dev --use-mirrors
 #script: python manage.py harvest --apps=storybase_user  --settings=settings.travis
 script: python manage.py test storybase_user storybase_story storybase_asset --settings=settings.travis
-#postgres:
-#  adapter: postgresql
-#  database: atlas_test
-#  username: postgres
+postgres:
+  adapter: postgresql
+  database: atlas_test
+  username: postgres
 before_install:
   - "sudo apt-get install gdal-bin libproj-dev postgis postgresql-9.1-postgis"
   - "sudo bash ./scripts/create_template_postgis-debian.sh"
