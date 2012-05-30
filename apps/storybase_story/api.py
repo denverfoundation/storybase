@@ -27,7 +27,7 @@ class StoryResource(ModelResource):
     topics = fields.ListField(readonly=True)
     organizations = fields.ListField(readonly=True)
     projects = fields.ListField(readonly=True)
-    languages = fields.ListField(readonly=True)
+    languages = fields.ListField(readonly=True, attribute='languages')
     # A list of lat/lon values for related Location objects as well as
     # centroids of Place tags
     points = fields.ListField(readonly=True)
@@ -89,13 +89,6 @@ class StoryResource(ModelResource):
         """
         return [{ 'id': project.project_id, 'name': project.name }
                 for project in bundle.obj.projects.all()]
-
-    def dehydrate_languages(self, bundle):
-        """
-        Populate a list of language codes and names in the response objects
-        """
-        return [{ 'id': code, 'name': get_language_name(code), 'url': "/%s%s" % (code, bundle.obj.get_absolute_url()) }
-                for code in bundle.obj.get_languages()]
 
     def dehydrate_places(self, bundle):
         """
