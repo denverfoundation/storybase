@@ -1,11 +1,13 @@
 """Models for stories and story sections"""
 
+from datetime import datetime
+
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core import urlresolvers
 from django.db import models
-from django.db.models.signals import post_save, pre_save
+from django.db.models.signals import post_save, pre_save, m2m_changed
 from django.utils import simplejson
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
@@ -293,9 +295,28 @@ def set_story_slug(sender, instance, **kwargs):
         # Encountered this when loading fixture
         pass
 
+
+def update_last_edited(sender, instance, **kwargs):
+    """
+    When an object is added to a Story, update the related object's
+    last edited field.
+    """
+    action = kwargs.get('action')
+    pk_set = kwargs.get('pk_set')
+    model = kwargs.get('model')
+    reverse = kwargs.get('reverse')
+    if action in ("post_add", "post_remove") and pk_set and not reverse:
+        for obj in model.objects.filter(pk__in=pk_set):
+            obj.last_edited = datetime.now()
+            obj.save()
+
+
 # Hook up some signal handlers
 pre_save.connect(set_date_on_published, sender=Story)
 post_save.connect(set_story_slug, sender=StoryTranslation)
+m2m_changed.connect(update_last_edited, sender=Story.organizations.through)
+m2m_changed.connect(update_last_edited, sender=Story.projects.through)
+
 
 class Section(node_factory('SectionRelation'), TranslatedModel):
     """ Section of a story """
