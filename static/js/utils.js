@@ -57,3 +57,25 @@ Handlebars.registerHelper('pluralize', function(count, options) {
 
   return suffix;
 });
+
+Handlebars.registerHelper('firstparagraph', function(s, maxWords) {
+   var result;
+   var $s = $(s);
+   var $p = $s.find('p');
+   if ($p.length) {
+     result = $p.html();
+   }
+   else {
+     result = s.split(/\r\n|\r|\n/)[0];
+   }
+   var words = result.split(/\s/);
+   if (typeof maxWords === "number" && words.length > maxWords) {
+     result = "";
+     for (var i = 0; i <= maxWords; i++) {
+         result += words[i] + " "; 
+     }
+     result += "&hellip;"
+   }
+
+   return new Handlebars.SafeString("<p>" + result + "</p>"); 
+});

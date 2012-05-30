@@ -81,9 +81,9 @@ Handlebars templates for rendering Backbone views.
 <script type="text/x-handlebars-template" id="story-partial-template">
 <h3>{{>story_link}}</h3>
 <p class="byline">{{byline}}</p>
-{{{summary}}}
+{{firstparagraph summary}}
 <dl>
-<dt>{{gettext message="Languages"}}}</dt>
+<dt>{{gettext message="Languages"}}</dt>
 <dd>
   <ul class="languages">
     {{#each languages}}
