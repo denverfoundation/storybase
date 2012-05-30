@@ -5,7 +5,7 @@ from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 from uuidfield.fields import UUIDField
 
@@ -28,6 +28,7 @@ class CuratedStory(models.Model):
         abstract = True
         verbose_name = "story"
 
+
 class Organization(TranslatedModel, TimestampedModel):
     """ An organization or a community group that users and stories can be associated with. """
     organization_id = UUIDField(auto=True)
@@ -35,6 +36,8 @@ class Organization(TranslatedModel, TimestampedModel):
     website_url = models.URLField(blank=True)
     members = models.ManyToManyField(User, related_name='organizations', blank=True)
     curated_stories = models.ManyToManyField('storybase_story.Story', related_name='curated_in_organizations', blank=True, through='OrganizationStory')
+    on_homepage = models.BooleanField(_("Featured on homepage"),
+		                      default=False)
 
     translated_fields = ['name', 'description']
     translation_set = 'organizationtranslation_set'
@@ -68,6 +71,7 @@ class Organization(TranslatedModel, TimestampedModel):
 
         """
         return self.curated_stories.order_by('organizationstory__weight', '-organizationstory__added')
+
 
 class OrganizationTranslation(TranslationModel, TimestampedModel):
     organization = models.ForeignKey('Organization')
@@ -118,6 +122,8 @@ class Project(TranslatedModel, TimestampedModel):
     organizations = models.ManyToManyField(Organization, related_name='projects', blank=True)
     members = models.ManyToManyField(User, related_name='projects', blank=True) 
     curated_stories = models.ManyToManyField('storybase_story.Story', related_name='curated_in_projects', blank=True, through='ProjectStory')
+    on_homepage = models.BooleanField(_("Featured on homepage"),
+		                      default=False)
 
     translated_fields = ['name', 'description']
     translation_set = 'projecttranslation_set'
