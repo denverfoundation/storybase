@@ -24,9 +24,9 @@ def simple_story_list(stories):
     context =  Context({"stories": stories})
     return template.render(context)
 
-def homepage_story_list():
+def homepage_story_list(num_stories):
     """Render a listing of stories for the homepage"""
-    stories = Story.objects.on_homepage().order_by('-last_edited')
+    stories = Story.objects.on_homepage().order_by('-last_edited')[:num_stories]
     return simple_story_list(stories)
 
 

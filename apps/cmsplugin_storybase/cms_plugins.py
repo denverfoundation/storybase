@@ -5,7 +5,7 @@ from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
 from storybase_story.views import homepage_story_list
 
-from models import StoryPlugin as StoryPluginModel
+from models import StoryList, StoryPlugin as StoryPluginModel
 
 class StoryPlugin(CMSPluginBase):
     model = StoryPluginModel
@@ -17,12 +17,12 @@ class StoryPlugin(CMSPluginBase):
         return context
 
 class HomepageStoriesPlugin(CMSPluginBase):
-    model = CMSPlugin
+    model = StoryList 
     name = _("StoryBase Homepage Stories")
     render_template = "homepage_stories_plugin.html"
 
     def render(self, context, instance, placeholder):
-        context['story_list'] = homepage_story_list() 
+        context['story_list'] = homepage_story_list(instance.num_stories)
 	return context 
 
 plugin_pool.register_plugin(StoryPlugin)
