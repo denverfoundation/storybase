@@ -232,9 +232,11 @@ class StoryResource(ModelResource):
                 if place['id'] in specified_place_ids:
                     place = Place.objects.get(place_id=place['id'])
                     boundary = place.boundary
-                    coords = boundary.coords
-                    boundary = [coords[0][i] for i in range(boundary.num_geom)]
-                    boundaries.append(boundary)
+                    if boundary:
+                        coords = boundary.coords
+                        boundary = [coords[0][i]
+                                    for i in range(boundary.num_geom)]
+                        boundaries.append(boundary)
         to_be_serialized['boundaries'] = boundaries
 
     def explore_get_data_to_be_serialized(self, request=None, **kwargs):
