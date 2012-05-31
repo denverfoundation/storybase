@@ -427,7 +427,9 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
   },
 
   fetchStories: function() {
-    this.storyListView.spin();
+    if (this.activeView !== 'map') {
+      this.storyListView.spin();
+    }
     $.getJSON(this.getFilterUri(), this.resetAll);
   },
 
@@ -625,14 +627,18 @@ storybase.explorer.views.StoryList = Backbone.View.extend({
     return this;
   },
 
+  /**
+   * Display a spinner while data is loading
+   */
   spin: function() {
-    var width = this.$el.width();
+    var height = 200;
     this.$el.empty();
-    this.$el.width(width);
+    this.$el.width('100%');
+    this.$el.css('min-height', height);
     var spinner = new Spinner({
-      left: width / 2
+      top: height / 2, 
+      left: this.$el.width() / 2
     }).spin(this.$el[0]);
-    $(spinner.el).height(100);
   },
 
   reset: function(stories) {
