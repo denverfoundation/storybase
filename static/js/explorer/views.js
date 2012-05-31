@@ -270,6 +270,7 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
    */
   clickShowMore: function(e) {
     e.preventDefault();
+    this.counterView.render({loading: true});
     this.getMoreStories(this.showMoreStories);
   },
 
@@ -423,12 +424,25 @@ storybase.explorer.views.StoryCount = Backbone.View.extend({
     this.template = Handlebars.compile(this.templateSource);
   },
 
-  render: function() {
+  render: function(options) {
+    options = typeof options === "undefined" ? {} : options;
+    var defaults = {
+      loading: false
+    };
+    _.defaults(options, defaults);
     var context = {
       count: this.count,
-      hasMore: this.hasMore
+      showMore: this.hasMore && !options.loading
     };
     this.$el.html(this.template(context));
+    if (options.loading) {
+      var spinner = new Spinner({
+        length: this.$el.innerHeight() / 4,
+        radius: this.$el.innerHeight() / 8,
+        width: 2
+      }).spin();
+      this.$el.append(spinner.el); 
+    }
     return this;
   },
 

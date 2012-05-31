@@ -20,7 +20,7 @@ Handlebars templates for rendering Backbone views.
 
 <script type="text/x-handlebars-template" id="story-count-template">
   <h3>{{count}} {{#blockgettext}}Stor{{pluralize count suffix="y,ies"}} Shown{{/blockgettext}}</h3>
-  {{#if hasMore }}
+  {{#if showMore }}
   <a id="show-more" href="#">{{gettext message="Show More"}}</a>
   {{/if}}
 </script>
@@ -163,6 +163,7 @@ $ = jQuery;
 <script src="{{ STATIC_URL }}js/libs/select2/select2.js"></script>
 <script src="{{ STATIC_URL}}js/libs/leaflet/leaflet.js"></script>
 <script src="{{ STATIC_URL}}js/libs/leafclusterer.js"></script>
+<script src="{{ STATIC_URL}}js/libs/spin.min.js"></script>
 <script src="{{ STATIC_URL }}js/models.js"></script>
 <script src="{{ STATIC_URL }}js/utils.js"></script>
 <script src="{{ STATIC_URL }}js/explorer/application.js"></script>

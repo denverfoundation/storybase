@@ -45,6 +45,11 @@
   display: inline-block;
 }
 
+#story-count .spinner {
+  display: inline-block;
+  margin-left: 1em;
+}
+
 #view-selector {
   /* HACK: Provide min-height so first story clears the story count */
   min-height: 25px;
