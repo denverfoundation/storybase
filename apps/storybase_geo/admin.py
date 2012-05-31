@@ -103,6 +103,7 @@ class PlaceAdmin(admin.OSMGeoAdmin):
     list_display = ['name', 'geolevel']
     list_filter = ['geolevel']
     search_fields = ['name']
+    readonly_fields = ['place_id']
 
 
 admin.site.register(GeoLevel, GeoLevelAdmin)
