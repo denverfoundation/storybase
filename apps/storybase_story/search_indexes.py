@@ -1,6 +1,9 @@
+from django.db.models import signals
+
 from haystack import indexes
 
-from models import Story
+from storybase_geo.models import Location
+from storybase_story.models import Story, StoryTranslation
 
 class GeoHashMultiValueField(indexes.MultiValueField):
     field_type = 'geohash'
@@ -56,4 +59,55 @@ class StoryIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
         translation_set = getattr(instance, instance.translation_set)
         if translation_set.count() == 0:
             should_update = False
+        if 'action' in kwargs:
+            # The signal is m2m_changed.  We only want to update
+            # on the post actions
+            if kwargs['action'] in ('pre_add', 'pre_remove', 'pre_clear'):
+                should_update = False
         return should_update
+
+    def translation_update_object(self, sender, instance, **kwargs):
+        """Signal handler for updating story index when the translation changes"""
+        self.update_object(instance.story)
+
+    def location_update_object(self, sender, instance, **kwargs):
+        """Signal handler for updating story index when a related location changes"""
+        for story in instance.stories.all():
+            self.update_object(story)
+
+    def _setup_save(self):
+        super(StoryIndex, self)._setup_save()
+        # Update object when many-to-many fields change
+        signals.m2m_changed.connect(self.update_object, sender=self.get_model().organizations.through)
+        signals.m2m_changed.connect(self.update_object, sender=self.get_model().projects.through)
+        signals.m2m_changed.connect(self.update_object, sender=self.get_model().topics.through)
+        signals.m2m_changed.connect(self.update_object, sender=self.get_model().locations.through)
+        signals.m2m_changed.connect(self.update_object, sender=self.get_model().places.through)
+
+        signals.post_save.connect(self.translation_update_object,
+                                  sender=StoryTranslation)
+        signals.post_save.connect(self.location_update_object,
+                                  sender=Location)
+
+    def _teardown_save(self):
+        super(StoryIndex, self)._teardown_save()
+        signals.m2m_changed.disconnect(self.update_object, sender=self.get_model().organizations.through)
+        signals.m2m_changed.disconnect(self.update_object, sender=self.get_model().projects.through)
+        signals.m2m_changed.disconnect(self.update_object, sender=self.get_model().topics.through)
+        signals.m2m_changed.disconnect(self.update_object, sender=self.get_model().locations.through)
+        signals.m2m_changed.disconnect(self.update_object, sender=self.get_model().places.through)
+
+        signals.post_save.disconnect(self.translation_update_object,
+                                     sender=StoryTranslation)
+        signals.post_save.disconnect(self.location_update_object,
+                                     sender=Location)
+
+    def _setup_delete(self):
+        super(StoryIndex, self)._setup_delete()
+        signals.post_delete.connect(self.translation_update_object,
+                                    sender=StoryTranslation)
+
+    def _teardown_delete(self):
+        super(StoryIndex, self)._teardown_delete()
+        signals.post_delete.disconnect(self.translation_update_object,
+                                      sender=StoryTranslation)
