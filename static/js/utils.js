@@ -59,13 +59,15 @@ Handlebars.registerHelper('pluralize', function(count, options) {
 });
 
 Handlebars.registerHelper('firstparagraph', function(s, maxWords) {
-   var result;
-   var $s = $(s);
-   var $p = $s.find('p');
-   if ($p.length) {
-     result = $p.html();
+   var result = null;
+   var el = $(s);
+   if (el.length > 0) {
+     var $p = $(el[0]);
+     if ($p.is('p')) {
+       result = $p.html();
+     }
    }
-   else {
+   if (result === null) {
      result = s.split(/\r\n|\r|\n/)[0];
    }
    var words = result.split(/\s/);
