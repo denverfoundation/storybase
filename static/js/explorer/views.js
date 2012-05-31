@@ -629,7 +629,6 @@ storybase.explorer.views.StoryList = Backbone.View.extend({
     var width = this.$el.width();
     this.$el.empty();
     this.$el.width(width);
-    console.debug(this.$el.height());
     var spinner = new Spinner({
       left: width / 2
     }).spin(this.$el[0]);
