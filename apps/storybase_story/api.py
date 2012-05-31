@@ -145,6 +145,15 @@ class StoryResource(ModelResource):
         return sqs
 
     def explore_build_filters(self, filters=None):
+        def _get_num_points_filter(filters):
+            for suffix in ('__gt', '__gte', '__lt', '__lte'):
+                filter_name = "%s%s" % ("num_points", suffix)
+                filter_value = filters.get(filter_name, None)
+                if filter_value is not None:
+                    return (filter_name, filter_value)
+            else:
+                return (None, None)
+                
         applicable_filters = {}
         filter_fields = self._meta.explore_filter_fields
         for filter_field in filter_fields:
@@ -153,6 +162,11 @@ class StoryResource(ModelResource):
             if filter_values:
                 applicable_filters['%s__in' % facet_field] = filter_values.split(',')
 
+        (num_points_filter_name, num_points_filter_value) =  _get_num_points_filter(filters)
+        if num_points_filter_name:
+            applicable_filters[num_points_filter_name] = int(num_points_filter_value)
+
+            
         return applicable_filters
 
     def _explore_spatial_filter_object_list(self, request, object_list):

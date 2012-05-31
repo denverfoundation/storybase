@@ -19,6 +19,7 @@ class StoryIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
     language_ids = indexes.FacetMultiValueField()
     place_ids = indexes.FacetMultiValueField()
     points = GeoHashMultiValueField()
+    num_points = indexes.IntegerField()
 
     def get_model(self):
         return Story
@@ -40,6 +41,9 @@ class StoryIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
 
     def prepare_points(self, obj):
         return ["%s,%s" % (point[0], point[1]) for point in obj.points]
+
+    def prepare_num_points(self, obj):
+        return len(obj.points)
 
     def index_queryset(self):
         return Story.objects.filter(status__exact='published')

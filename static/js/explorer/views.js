@@ -130,12 +130,16 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     this.near = null;
     // Radius in miles around this.near to filter stories
     this.distance = storybase.explorer.globals.SEARCH_DISTANCE;
+    // Should only stories with geographic points be shown
+    this.onlyPoints = false;
     // Flag to keep from re-fetching the same page of items when we're 
     // scrolled near the bottom of the window, but the new items haven't yet
     // loaded
     this.isDuringAjax = false; 
     // Is the tile, list or map view currently active
     this.activeView = null;
+    // Total number of matching stories
+    this.totalMatchingStories = 0;
     this.stories = new storybase.collections.Stories;
     this.reset(this.options.storyData);
     this.messages = {
@@ -146,6 +150,7 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     this.template = Handlebars.compile(this.templateSource);
     this.counterView = new storybase.explorer.views.StoryCount({
       count: this.stories.length,
+      total: this.totalMatchingStories,
       hasMore: this.hasMoreStories()
     });
     this.filterView = new storybase.explorer.views.Filters({
@@ -189,6 +194,7 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     this.nextUri = data.meta.next;
     this.resourceUri = data.meta.resource_uri;
     this.stories.reset(data.objects);
+    this.totalMatchingStories = data.meta.total_count;
   },
 
   render: function() {
@@ -224,11 +230,20 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
   },
 
   selectTile: function(e) {
+    var refetchStories = false;
     this.activeView = 'tile';
     if (this.hasNear()) {
       // Proximity search was enabled
       // Disable it
-      this.setNear(null).fetchStories();
+      this.setNear(null);
+      refetchStories = true;
+    }
+    if (this.onlyPoints) {
+      this.onlyPoints = false;
+      refetchStories = true;
+    }
+    if (refetchStories) {
+      this.fetchStories();
     }
     this.mapView.$el.hide();
     this.storyListView.$el.show();
@@ -237,11 +252,20 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
   },
 
   selectList: function(e) {
+    var refetchStories = false;
     this.activeView = 'list';
     if (this.hasNear()) {
       // Proximity search was enabled
       // Disable it
-      this.setNear(null).fetchStories();
+      this.setNear(null);
+      refetchStories = true;
+    }
+    if (this.onlyPoints) {
+      this.onlyPoints = false;
+      refetchStories = true;
+    }
+    if (refetchStories) {
+      this.fetchStories();
     }
     this.mapView.$el.hide();
     this.storyListView.$el.show();
@@ -251,6 +275,10 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
 
   selectMap: function(e) {
     this.activeView = 'map';
+    if (!this.onlyPoints) {
+      this.onlyPoints = true;
+      this.fetchStories();
+    }
     this.storyListView.$el.hide();
     this.mapView.$el.show();
     return false;
@@ -300,7 +328,8 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
   },
 
   showMoreStories: function() {
-    this.counterView.reset(this.stories.length, this.hasMoreStories());
+    this.counterView.reset(this.stories.length, this.totalMatchingStories,
+                           this.hasMoreStories());
     this.counterView.render();
     this.storyListView.render();
   },
@@ -334,6 +363,11 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     // Update the querystring based on the address search
     if (this.near !== null) {
       filterStrings.push("near=" + this.near.lat + '@' + this.near.lng + ',' + this.distance);
+    }
+    // Update the querystring based on if we only want to show stories with
+    // places
+    if (this.onlyPoints) {
+      filterStrings.push("num_points__gt=0");
     }
     filterUri = filterStrings.length > 0 ? filterUri + '?' : filterUri;
     filterUri += filterStrings.join("&");
@@ -374,7 +408,8 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
    */
   resetAll: function(data) {
     this.reset(data);
-    this.counterView.setCount(this.stories.length, this.hasMoreStories());
+    this.counterView.reset(this.stories.length, this.totalMatchingStories,
+                           this.hasMoreStories());
     this.counterView.render();
     this.storyListView.reset(this.stories);
     this.storyListView.render();
@@ -392,6 +427,7 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
   },
 
   fetchStories: function() {
+    this.storyListView.spin();
     $.getJSON(this.getFilterUri(), this.resetAll);
   },
 
@@ -421,6 +457,7 @@ storybase.explorer.views.StoryCount = Backbone.View.extend({
   initialize: function() {
     this.count = this.options.count;
     this.hasMore = this.options.hasMore;
+    this.total = this.options.total;
     this.template = Handlebars.compile(this.templateSource);
   },
 
@@ -432,6 +469,7 @@ storybase.explorer.views.StoryCount = Backbone.View.extend({
     _.defaults(options, defaults);
     var context = {
       count: this.count,
+      total: this.total,
       showMore: this.hasMore && !options.loading
     };
     this.$el.html(this.template(context));
@@ -446,8 +484,9 @@ storybase.explorer.views.StoryCount = Backbone.View.extend({
     return this;
   },
 
-  reset: function(count, hasMore) {
+  reset: function(count, total, hasMore) {
     this.count = count;
+    this.total = total;
     this.hasMore = hasMore;
   }
 
@@ -584,6 +623,17 @@ storybase.explorer.views.StoryList = Backbone.View.extend({
     }
     this.newStories = [];
     return this;
+  },
+
+  spin: function() {
+    var width = this.$el.width();
+    this.$el.empty();
+    this.$el.width(width);
+    console.debug(this.$el.height());
+    var spinner = new Spinner({
+      left: width / 2
+    }).spin(this.$el[0]);
+    $(spinner.el).height(100);
   },
 
   reset: function(stories) {
