@@ -273,6 +273,7 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
             var story = new storybase.models.Story(storyJSON);
             that.stories.push(story);
             that.storyListView.appendStory(story);
+            that.mapView.appendStory(story);
           });
           that.isDuringAjax = false;
         });
@@ -625,7 +626,8 @@ storybase.explorer.views.Map = Backbone.View.extend({
 
     // Bind our callbacks to the view object
     _.bindAll(this, 'redrawMap', 'geocodeFail', 'checkPlaceInMapBounds',
-              'clearPlaceFilters', 'keepPlaceFilters');
+              'clearPlaceFilters', 'keepPlaceFilters', '_placeMarker',
+              '_placeStoryMarkers');
     this.$el.append('<div id="' + this.mapId + '"></div>');
     this.map = null;
   },
@@ -702,6 +704,46 @@ storybase.explorer.views.Map = Backbone.View.extend({
     }
   },
 
+  /**
+   * Return a list of points and their associated stories
+   * @param {story} story Story model instance
+   * @param {array} points An array of arrays with each inner array
+   *    representing a point. array[0] is longitude, array[1] is latitude
+   * @return {array} An array of objects with each object having a story
+   *    story attribute set to the story parameter and a point array set
+   *    to one of the elements in points
+   */
+  _makeBundle: function(story, points) {
+    return _.map(points, function(point) {
+      return {
+        story: story,
+        point: point
+      };
+    });
+  },
+
+  /**
+   * Place a marker on the map
+   * @param {object} bundle An object with a story and point attribute, as
+   *     returned by _makeBundle()
+   */
+  _placeMarker: function(bundle) {
+    console.debug(this);
+    var latlng = new L.LatLng(bundle.point[0], bundle.point[1]);
+    var marker = new StoryMarker(latlng, bundle.story);
+    this.clusterer.addMarker(marker);
+    var popupContent = this.markerTemplate(bundle.story.toJSON());
+    marker.bindPopup(popupContent);
+  },
+
+  /**
+   * Place markers on the map for each point associated with a story
+   * @param {object} story a Story model instance
+   */
+  _placeStoryMarkers: function(story) {
+    _.each(this._makeBundle(story, story.get("points")), this._placeMarker); 
+  },
+
   render: function() {
     var that = this;
     if (this.map === null) {
@@ -740,26 +782,7 @@ storybase.explorer.views.Map = Backbone.View.extend({
       this.clusterer.clearMarkers();
     }
 
-    var placeMarker = function(bundle) {
-        var latlng = new L.LatLng(bundle.point[0], bundle.point[1]);
-        var marker = new StoryMarker(latlng, bundle.story);
-        that.clusterer.addMarker(marker);
-        var popupContent = that.markerTemplate(bundle.story.toJSON());
-        marker.bindPopup(popupContent);
-    };
-    var makeBundle = function(story, points) {
-      return _.map(points, function(point) {
-        return {
-          story: story,
-          point: point
-        };
-      });
-    };
-    var placeStoryMarkers = function(story) {
-      _.each(makeBundle(story, story.get("points")), placeMarker); 
-    };
-
-    this.stories.each(placeStoryMarkers); 
+    this.stories.each(that._placeStoryMarkers); 
 
     // Remove existing boundaries from the map
     this.boundaryLayers.clearLayers();
@@ -838,5 +861,10 @@ storybase.explorer.views.Map = Backbone.View.extend({
     this.$('#' + this.searchFieldId).val('');
     this.parentView.setNear(null).fetchStories();
     this.map.setView(this.initialCenter, this.initialZoom);
+  },
+
+  appendStory: function(story) {
+    this.stories.push(story);
+    this._placeStoryMarkers(story);
   }
 });
