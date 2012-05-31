@@ -10,7 +10,7 @@
       <dd>
         <ul class="languages">
           {% for language in story.languages %}
-	  <li><a href="{{ language.url }}">{{ language.name }}</a></li>
+	  <li><a href="{{ language.url }}" class="language-{{ language.id }}">{{ language.name }}</a></li>
 	  {% endfor %}
 	</ul>
       </dd>
