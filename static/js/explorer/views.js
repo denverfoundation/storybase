@@ -133,6 +133,8 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     // scrolled near the bottom of the window, but the new items haven't yet
     // loaded
     this.isDuringAjax = false; 
+    // Is the tile, list or map view currently active
+    this.activeView = null;
     this.stories = new storybase.collections.Stories;
     this.reset(this.options.storyData);
     this.messages = {
@@ -220,6 +222,7 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
   },
 
   selectTile: function(e) {
+    this.activeView = 'tile';
     if (this.hasNear()) {
       // Proximity search was enabled
       // Disable it
@@ -232,6 +235,7 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
   },
 
   selectList: function(e) {
+    this.activeView = 'list';
     if (this.hasNear()) {
       // Proximity search was enabled
       // Disable it
@@ -244,6 +248,7 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
   },
 
   selectMap: function(e) {
+    this.activeView = 'map';
     this.storyListView.$el.hide();
     this.mapView.$el.show();
     return false;
@@ -278,7 +283,7 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
   },
 
   scrollWindow: function(e) {
-    if (this._nearbottom() && !this.isDuringAjax) {
+    if (this._nearbottom() && !this.isDuringAjax && this.activeView != 'map') {
       this.getMoreStories();
       this.counterView.setCount(this.stories.length);
       this.counterView.render();
