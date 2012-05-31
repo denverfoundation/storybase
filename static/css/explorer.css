@@ -40,6 +40,11 @@
   float: left;
 }
 
+#story-count a,
+#story-count h3 {
+  display: inline-block;
+}
+
 #view-selector {
   /* HACK: Provide min-height so first story clears the story count */
   min-height: 25px;

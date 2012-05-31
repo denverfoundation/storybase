@@ -19,7 +19,10 @@ Handlebars templates for rendering Backbone views.
 </script>
 
 <script type="text/x-handlebars-template" id="story-count-template">
-        {{count}} {{#blockgettext}}Stor{{pluralize count suffix="y,ies"}} Shown{{/blockgettext}}
+  <h3>{{count}} {{#blockgettext}}Stor{{pluralize count suffix="y,ies"}} Shown{{/blockgettext}}</h3>
+  {{#if hasMore }}
+  <a id="show-more" href="#">{{gettext message="Show More"}}</a>
+  {{/if}}
 </script>
 
 <script type="text/x-handlebars-template" id="filters-template">

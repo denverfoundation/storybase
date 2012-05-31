@@ -118,6 +118,7 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     "click .select-tile-view": "selectTile",
     "click .select-list-view": "selectList",
     "click .select-map-view": "selectMap",
+    "click #show-more": "clickShowMore",
     "change #filters select": "handleChangeFilters"
   },
 
@@ -144,7 +145,8 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     };
     this.template = Handlebars.compile(this.templateSource);
     this.counterView = new storybase.explorer.views.StoryCount({
-      count: this.stories.length
+      count: this.stories.length,
+      hasMore: this.hasMoreStories()
     });
     this.filterView = new storybase.explorer.views.Filters({
       topics: this.options.storyData.topics,
@@ -168,7 +170,7 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     });
 
     // Bind 'this' variable in callbacks to the view object
-    _.bindAll(this, ['resetAll']);
+    _.bindAll(this, 'resetAll', 'showMoreStories');
   },
 
   setMessageSeen: function(messageName) {
@@ -263,9 +265,21 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     return (pixelsFromWindowBottomToBottom - opts.bufferPx < opts.pixelsFromListToBottom);
   },
 
-  getMoreStories: function() {
+  /**
+   * Event handler for clicking the "show more" link.
+   */
+  clickShowMore: function(e) {
+    e.preventDefault();
+    this.getMoreStories(this.showMoreStories);
+  },
+
+  hasMoreStories: function() {
+    return Boolean(this.nextUri);
+  },
+
+  getMoreStories: function(callback) {
       var that = this;
-      if (this.nextUri) {
+      if (this.hasMoreStories()) {
         this.isDuringAjax = true;
         $.getJSON(this.nextUri, function(data) {
           that.nextUri = data.meta.next;
@@ -276,6 +290,7 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
             that.mapView.appendStory(story);
           });
           that.isDuringAjax = false;
+          callback();
         });
       }
       else {
@@ -283,12 +298,15 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
       }
   },
 
+  showMoreStories: function() {
+    this.counterView.reset(this.stories.length, this.hasMoreStories());
+    this.counterView.render();
+    this.storyListView.render();
+  },
+
   scrollWindow: function(e) {
     if (this._nearbottom() && !this.isDuringAjax && this.activeView != 'map') {
-      this.getMoreStories();
-      this.counterView.setCount(this.stories.length);
-      this.counterView.render();
-      this.storyListView.render();
+      this.getMoreStories(this.showMoreStories);
     }
   },
 
@@ -355,7 +373,7 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
    */
   resetAll: function(data) {
     this.reset(data);
-    this.counterView.setCount(this.stories.length);
+    this.counterView.setCount(this.stories.length, this.hasMoreStories());
     this.counterView.render();
     this.storyListView.reset(this.stories);
     this.storyListView.render();
@@ -393,7 +411,7 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
 });
 
 storybase.explorer.views.StoryCount = Backbone.View.extend({
-  tagName: 'h3',
+  tagName: 'div',
 
   id: 'story-count',
 
@@ -401,20 +419,24 @@ storybase.explorer.views.StoryCount = Backbone.View.extend({
 
   initialize: function() {
     this.count = this.options.count;
+    this.hasMore = this.options.hasMore;
     this.template = Handlebars.compile(this.templateSource);
   },
 
   render: function() {
     var context = {
-      count: this.count
+      count: this.count,
+      hasMore: this.hasMore
     };
     this.$el.html(this.template(context));
     return this;
   },
 
-  setCount: function(count) {
+  reset: function(count, hasMore) {
     this.count = count;
+    this.hasMore = hasMore;
   }
+
 });
 
 storybase.explorer.views.Filters = Backbone.View.extend({
@@ -728,7 +750,6 @@ storybase.explorer.views.Map = Backbone.View.extend({
    *     returned by _makeBundle()
    */
   _placeMarker: function(bundle) {
-    console.debug(this);
     var latlng = new L.LatLng(bundle.point[0], bundle.point[1]);
     var marker = new StoryMarker(latlng, bundle.story);
     this.clusterer.addMarker(marker);
