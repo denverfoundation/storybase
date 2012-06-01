@@ -15,7 +15,7 @@
 
 {% if project.description %}
 <h3>Description</h3>
-{{ project.description|linebreaks }}
+{{ project.description|safe|linebreaks }}
 {% endif %}
 
 {% if project.members.count %}

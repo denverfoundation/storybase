@@ -3,7 +3,7 @@
   {% for object in objects %}
   <li>
     <h3><a href="{{ object.get_absolute_url }}">{{ object.name }}</a></h3>
-    <p class="description">{{ object.description|firstparagraph }}</p>
+    <p class="description">{{ object.description|firstparagraph|safe }}</p>
   </li>
  {% endfor %}
 </ul>
