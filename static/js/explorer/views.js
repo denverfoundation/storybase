@@ -157,7 +157,7 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
       topics: this.options.storyData.topics,
       organizations: this.options.storyData.organizations,
       places: this.options.storyData.places,
-      projects: this.options.storyData.projecs,
+      projects: this.options.storyData.projects,
       languages: this.options.storyData.languages,
       selected: this.selectedFilters
     });
