@@ -969,7 +969,7 @@ storybase.explorer.views.Map = Backbone.View.extend({
     // Recenter the map based on the geocoded point 
     console.debug("Found point (" + point.lat + "," + point.lng + ")")
     var center = new L.LatLng(point.lat, point.lng);
-    this.map.setView(center, this.map.getZoom());
+    this.map.setView(center, storybase.explorer.globals.MAP_POINT_ZOOM_LEVEL);
     this.parentView.setNear(point);
     this.parentView.fetchStories();
   },
@@ -977,6 +977,11 @@ storybase.explorer.views.Map = Backbone.View.extend({
   geocodeFail: function(address) {
     // TODO: Do something more exciting when geocoding fails
     console.debug("Geocoding of address " + address + " failed");
+    var popupContent = "<p>Geocoding of address " + address + " failed</p>"; 
+    var popup = new L.Popup();
+    popup.setLatLng(this.map.getCenter());
+    popup.setContent(popupContent);
+    this.map.openPopup(popup);
   },
 
   proximitySearch: function() {

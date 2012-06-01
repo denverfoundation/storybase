@@ -276,6 +276,8 @@ STORYBASE_MAP_CENTER = (39.74151, -104.98672)
 STORYBASE_MAP_ZOOM_LEVEL = 11
 # Distance in miles to search around a point when doing a proximity search
 STORYBASE_SEARCH_DISTANCE = 1
+# Zoom level when zooming into a point
+STORYBASE_MAP_POINT_ZOOM_LEVEL = 14
 
 # allauth settings
 ACCOUNT_EMAIL_REQUIRED = True
