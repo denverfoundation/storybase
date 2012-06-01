@@ -34,7 +34,16 @@ def simple_language_changer(func):
         return func
 
 
+# TODO: Test this a bit, make signature match handlebars implementation
 def first_paragraph(value): 
     import re
+    from lxml.html import fragments_fromstring, tostring
+    fragments = fragments_fromstring(value)
+    if len(fragments):
+        for fragment in fragments:
+            if fragment.tag == 'p':
+                fragment.drop_tag()
+                return tostring(fragment)
+
     graphs = re.split(r'[\r\n]{2,}', value)
     return graphs[0]

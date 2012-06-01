@@ -4,7 +4,7 @@
   <li>
     <h3><a href="{{ story.get_absolute_url }}">{{ story.title }}</a></h3>
     <p class="byline">{{ story.byline }}</p>
-    <p class="summary">{{ story.summary|firstparagraph }}</p>
+    <p class="summary">{{ story.summary|firstparagraph|safe }}</p>
     <dl class="story-attributes">
       <dt>{% trans "Languages" %}</dt>
       <dd>
