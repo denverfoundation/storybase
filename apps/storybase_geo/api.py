@@ -46,7 +46,7 @@ class GeocodeObject(object):
         self.lat = lat
         self.lng =lng
 
-class GeocodeResource(Resource):
+class GeocoderResource(Resource):
     lat = fields.FloatField(attribute='lat')
     lng = fields.FloatField(attribute='lng')
 
