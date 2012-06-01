@@ -476,7 +476,7 @@ msgstr ""
 
 #: templates/menu/language_chooser.html:4
 msgid "In"
-msgstr ""
+msgstr "En"
 
 #: templates/socialaccount/account_inactive.html:5
 #: templates/socialaccount/account_inactive.html:8
