@@ -899,7 +899,7 @@ storybase.explorer.views.Map = Backbone.View.extend({
    * The heavy lifting is handled by a service-specific method
    */
   geocode: function(address, success, failure) {
-    this.geocodeNominatim(address, success, failure);
+    this.geocodeLocal(address, success, failure);
   },
 
   /**
@@ -934,6 +934,31 @@ storybase.explorer.views.Map = Backbone.View.extend({
       }
     });
     
+  },
+
+  /**
+   * Geocode using the local geocoding proxy
+   */
+  geocodeLocal: function(address, success, failure) {
+    // TODO: Don't hardcode this URL
+    $.ajax('/api/0.1/geocode', {
+      dataType: 'json',
+      data: {
+        q: address,
+      },
+      success: function(data, textStatus, jqXHR) {
+        if (data.meta.total_count > 0) {
+          // Found a point for the address
+          success({
+            'lat': data.objects[0].lat,
+            'lng': data.objects[0].lng
+          });
+        }
+        else {
+          failure(address);
+        }
+      }
+    });
   },
 
   /**

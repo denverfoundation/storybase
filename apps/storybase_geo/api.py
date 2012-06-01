@@ -1,6 +1,8 @@
+from geopy import geocoders
+
 from tastypie import fields
 from tastypie.constants import ALL, ALL_WITH_RELATIONS 
-from tastypie.resources import ModelResource
+from tastypie.resources import Resource, ModelResource
 from tastypie.authentication import Authentication
 from tastypie.authorization import ReadOnlyAuthorization
 
@@ -37,3 +39,35 @@ class PlaceResource(ModelResource):
             'geolevel': ALL_WITH_RELATIONS,
             'name': ALL,
         }
+
+# TODO: Document, error handling, remove uri field
+class GeocodeObject(object):
+    def __init__(self, lat, lng):
+        self.lat = lat
+        self.lng =lng
+
+class GeocodeResource(Resource):
+    lat = fields.FloatField(attribute='lat')
+    lng = fields.FloatField(attribute='lng')
+
+    class Meta:
+        resource_name = 'geocode'
+        allowed_methods = ['get']
+	# Allow open access to this resource for now since it's read-only
+        authentication = Authentication()
+        authorization = ReadOnlyAuthorization()
+
+    def obj_get_list(self, request=None, **kwargs):
+        results = []
+        geocoder = geocoders.GeocoderDotUS()
+        address = request.GET.get('q', None)
+        if address:
+            place, (lat, lng) = geocoder.geocode(address)
+            result = {
+              'lat': float(lat),
+              'lng': float(lng)
+            }
+            result = GeocodeObject(lat=float(lat), lng=float(lng))
+            results.append(result)
+
+        return results 
