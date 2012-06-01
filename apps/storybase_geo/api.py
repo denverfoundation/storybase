@@ -40,7 +40,7 @@ class PlaceResource(ModelResource):
             'name': ALL,
         }
 
-# TODO: Document, error handling, remove uri field
+# TODO: Document, error handling
 class GeocodeObject(object):
     def __init__(self, lat, lng):
         self.lat = lat
@@ -53,6 +53,8 @@ class GeocodeResource(Resource):
     class Meta:
         resource_name = 'geocode'
         allowed_methods = ['get']
+        detail_allowed_methods = []
+        include_resource_uri = False
 	# Allow open access to this resource for now since it's read-only
         authentication = Authentication()
         authorization = ReadOnlyAuthorization()
