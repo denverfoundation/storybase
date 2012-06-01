@@ -60,14 +60,15 @@ Handlebars.registerHelper('pluralize', function(count, options) {
 
 Handlebars.registerHelper('firstparagraph', function(s, maxWords) {
    var result = null;
-   var el = $(s);
-   if (el.length > 0) {
-     var $p = $(el[0]);
-     if ($p.is('p')) {
-       result = $p.html();
-     }
+   var $el = $("<div></div>");
+   // Toss the text in a dummy div
+   $el.html(s);
+   if ($el.find('p').length > 0) {
+     // Found a paragraph tag.  Return its contents
+     result = $el.find('p').html(); 
    }
    if (result === null) {
+     // We didn't find a paragraph tag, try splitting on newlines
      result = s.split(/\r\n|\r|\n/)[0];
    }
    var words = result.split(/\s/);
@@ -78,6 +79,5 @@ Handlebars.registerHelper('firstparagraph', function(s, maxWords) {
      }
      result += "&hellip;"
    }
-
    return new Handlebars.SafeString("<p>" + result + "</p>"); 
 });
