@@ -62,12 +62,14 @@ class GeocodeResource(Resource):
         geocoder = geocoders.GeocoderDotUS()
         address = request.GET.get('q', None)
         if address:
-            place, (lat, lng) = geocoder.geocode(address)
-            result = {
-              'lat': float(lat),
-              'lng': float(lng)
-            }
-            result = GeocodeObject(lat=float(lat), lng=float(lng))
-            results.append(result)
+            response = geocoder.geocode(address)
+            if response:
+                place, (lat, lng) = response
+                result = {
+                  'lat': float(lat),
+                  'lng': float(lng)
+                }
+                result = GeocodeObject(lat=float(lat), lng=float(lng))
+                results.append(result)
 
         return results 
