@@ -716,9 +716,9 @@ storybase.explorer.views.Map = Backbone.View.extend({
     this.initialZoom = storybase.explorer.globals.MAP_ZOOM_LEVEL;
 
     // Bind our callbacks to the view object
-    _.bindAll(this, 'redrawMap', 'geocodeFail', 'checkPlaceInMapBounds',
-              'clearPlaceFilters', 'keepPlaceFilters', '_placeMarker',
-              '_placeStoryMarkers');
+    _.bindAll(this, 'redrawMap', 'geocode', 'geocodeFail', 
+              'checkPlaceInMapBounds', 'clearPlaceFilters', 'keepPlaceFilters', 
+              '_placeMarker', '_placeStoryMarkers');
     this.$el.append('<div id="' + this.mapId + '"></div>');
     this.map = null;
   },
@@ -894,6 +894,15 @@ storybase.explorer.views.Map = Backbone.View.extend({
   },
 
   /**
+   * Wrapper for geocoding method
+   *
+   * The heavy lifting is handled by a service-specific method
+   */
+  geocode: function(address, success, failure) {
+    this.geocodeNominatim(address, success, failure);
+  },
+
+  /**
    * Geocode an address using Nominatim
    *
    * Nominatim is OpenStreetMap's geocoding service.
@@ -903,7 +912,7 @@ storybase.explorer.views.Map = Backbone.View.extend({
    * use a different Geocoding Service.
    *
    */
-  geocode: function(address, success, failure) {
+  geocodeNominatim: function(address, success, failure) {
     $.ajax('http://nominatim.openstreetmap.org/search/', {
       dataType: 'jsonp',
       data: {
