@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-04 13:31-0500\n"
+"POT-Creation-Date: 2012-05-31 23:40-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -18,15 +18,64 @@ msgstr ""
 "Content-Transfer-Encoding: 8bit\n"
 "Plural-Forms: nplurals=2; plural=(n != 1)\n"
 
-#: apps/cmsplugin_storybase/cms_plugins.py:12
+#: apps/cmsplugin_storybase/cms_plugins.py:14
 msgid "StoryBase Story"
 msgstr ""
 
-#: apps/cmsplugin_storybase/cms_plugins.py:21
+#: apps/cmsplugin_storybase/cms_plugins.py:23
+msgid "StoryBase Homepage Projects"
+msgstr ""
+
+#: apps/cmsplugin_storybase/cms_plugins.py:32
+msgid "StoryBase Homepage Organizations"
+msgstr ""
+
+#: apps/cmsplugin_storybase/cms_plugins.py:41
 msgid "StoryBase Homepage Stories"
 msgstr ""
 
-#: apps/storybase/views/generic.py:48
+#: apps/cmsplugin_storybase/settings.py:17
+#: apps/storybase_story/templates/storybase_story/story_detail.html:63
+#: apps/storybase_user/admin.py:45 settings/defaults.py:267
+msgid "Organizations"
+msgstr ""
+
+#: apps/cmsplugin_storybase/settings.py:25
+#: apps/storybase_story/templates/storybase_story/story_detail.html:74
+#: apps/storybase_user/admin.py:46 settings/defaults.py:269
+msgid "Projects"
+msgstr ""
+
+#: apps/cmsplugin_storybase/settings.py:33 settings/defaults.py:271
+msgid "Explore"
+msgstr ""
+
+#: apps/cmsplugin_storybase/templates/homepage_organizations_plugin.html:3
+msgid "Featured Organizations"
+msgstr ""
+
+#: apps/cmsplugin_storybase/templates/homepage_organizations_plugin.html:6
+msgid "View all Organizations"
+msgstr ""
+
+#: apps/cmsplugin_storybase/templates/homepage_projects_plugin.html:3
+msgid "Featured Projects"
+msgstr ""
+
+#: apps/cmsplugin_storybase/templates/homepage_projects_plugin.html:6
+msgid "View all Projects"
+msgstr ""
+
+#: apps/cmsplugin_storybase/templates/homepage_stories_plugin.html:3
+msgid "Featured Stories"
+msgstr ""
+
+#: apps/cmsplugin_storybase/templates/homepage_stories_plugin.html:6
+#, python-format
+msgid "Explore %(storybase_site_name)s "
+msgstr ""
+
+#: apps/storybase/views/generic.py:54
 #, python-format
 msgid "No %(verbose_name)s found matching the query"
 msgstr ""
@@ -68,7 +117,7 @@ msgid "Please fill out all required information"
 msgstr ""
 
 #: apps/storybase_action/templates/storybase_action/sitecontactmessage_form.html:4
-#: templates/base.html:60
+#: templates/base.html:61
 msgid "Contact Us"
 msgstr ""
 
@@ -80,61 +129,158 @@ msgstr ""
 msgid "Submit"
 msgstr ""
 
-#: apps/storybase_asset/models.py:150
+#: apps/storybase_asset/models.py:148
 msgid "Associated Datasets"
 msgstr ""
 
-#: apps/storybase_asset/models.py:154 apps/storybase_asset/models.py:159
+#: apps/storybase_asset/models.py:152 apps/storybase_asset/models.py:157
 msgid "Download the data"
 msgstr ""
 
-#: apps/storybase_asset/models.py:161
+#: apps/storybase_asset/models.py:159
 msgid "View the data"
 msgstr ""
 
-#: apps/storybase_asset/models.py:173
+#: apps/storybase_asset/models.py:171
 msgid "Attribution"
 msgstr ""
 
-#: apps/storybase_asset/models.py:434
+#: apps/storybase_asset/models.py:433
 msgid "Links to file"
 msgstr ""
 
-#: apps/storybase_story/models.py:38
+#: apps/storybase_geo/admin.py:84
+#, python-format
+msgid ""
+"You tried to set a parent with the wrong GeoLevel. You need to pick one with "
+"a GeoLevel of %s"
+msgstr ""
+
+#: apps/storybase_geo/models.py:18 apps/storybase_geo/models.py:31
+#: apps/storybase_geo/models.py:96 apps/storybase_taxonomy/admin.py:44
+#: apps/storybase_taxonomy/models.py:17
+msgid "Name"
+msgstr ""
+
+#: apps/storybase_geo/models.py:21
+msgid "Parent"
+msgstr ""
+
+#: apps/storybase_geo/models.py:22 apps/storybase_taxonomy/models.py:18
+msgid "Slug"
+msgstr ""
+
+#: apps/storybase_geo/models.py:30
+msgid "Location ID"
+msgstr ""
+
+#: apps/storybase_geo/models.py:32
+msgid "Address"
+msgstr ""
+
+#: apps/storybase_geo/models.py:33
+msgid "Address 2"
+msgstr ""
+
+#: apps/storybase_geo/models.py:34
+msgid "City"
+msgstr ""
+
+#: apps/storybase_geo/models.py:35
+msgid "State"
+msgstr ""
+
+#: apps/storybase_geo/models.py:37
+msgid "Postal Code"
+msgstr ""
+
+#: apps/storybase_geo/models.py:38
+msgid "Latitude"
+msgstr ""
+
+#: apps/storybase_geo/models.py:39
+msgid "Longitude"
+msgstr ""
+
+#: apps/storybase_geo/models.py:40
+msgid "Point"
+msgstr ""
+
+#: apps/storybase_geo/models.py:99
+msgid "GeoLevel"
+msgstr ""
+
+#: apps/storybase_geo/models.py:101
+msgid "Boundary"
+msgstr ""
+
+#: apps/storybase_geo/models.py:102
+msgid "Place ID"
+msgstr ""
+
+#: apps/storybase_geo/management/commands/loadplacerelations.py:29
+msgid ""
+"You must provide a CSV file, child field, parent field, lookup field and "
+"child geolevel argument"
+msgstr ""
+
+#: apps/storybase_geo/management/commands/loadplaces.py:25
+msgid "You must provide a shapefile, name field  and boundary field argument"
+msgstr ""
+
+#: apps/storybase_story/models.py:35
 msgid "Call to Action"
 msgstr ""
 
-#: apps/storybase_story/models.py:60
+#: apps/storybase_story/models.py:57
 msgid "structure"
 msgstr ""
 
-#: apps/storybase_story/models.py:73
+#: apps/storybase_story/models.py:70
 msgid "Assets to be displayed in teaser version of Story"
 msgstr ""
 
-#: apps/storybase_story/models.py:79
+#: apps/storybase_story/models.py:76 apps/storybase_user/models.py:39
+#: apps/storybase_user/models.py:127
 msgid "Featured on homepage"
 msgstr ""
 
-#: apps/storybase_story/models.py:81
+#: apps/storybase_story/models.py:78
 msgid "Contact Information"
+msgstr ""
+
+#: apps/storybase_story/models.py:81
+#: apps/storybase_story/templates/storybase_story/story_detail.html:85
+msgid "Topics"
+msgstr ""
+
+#: apps/storybase_story/models.py:85
+msgid "Locations"
+msgstr ""
+
+#: apps/storybase_story/models.py:89
+msgid "Places"
 msgstr ""
 
 #: apps/storybase_story/structure/__init__.py:127
 #: apps/storybase_story/structure/__init__.py:162
-#: apps/storybase_story/templates/storybase_story/story_viewer.html:65
+#: apps/storybase_story/templates/storybase_story/story_viewer.html:64
 msgid "Summary"
 msgstr ""
 
 #: apps/storybase_story/structure/__init__.py:139
 #: apps/storybase_story/structure/__init__.py:158
 #: apps/storybase_story/templates/storybase_story/story_detail.html:34
-#: apps/storybase_story/templates/storybase_story/story_viewer.html:77
+#: apps/storybase_story/templates/storybase_story/story_viewer.html:76
 msgid "How Can You Help?"
 msgstr ""
 
+#: apps/storybase_story/templates/storybase_story/simple_story_list.html:9
+msgid "Languages"
+msgstr ""
+
 #: apps/storybase_story/templates/storybase_story/story_detail.html:23
-#: apps/storybase_story/templates/storybase_story/story_viewer.html:60
+#: apps/storybase_story/templates/storybase_story/story_viewer.html:59
 msgid "By"
 msgstr ""
 
@@ -160,30 +306,12 @@ msgstr ""
 msgid "Updated"
 msgstr ""
 
-#: apps/storybase_story/templates/storybase_story/story_detail.html:63
-#: apps/storybase_user/admin.py:45
-msgid "Organizations"
-msgstr ""
-
-#: apps/storybase_story/templates/storybase_story/story_detail.html:74
-#: apps/storybase_user/admin.py:46
-msgid "Projects"
-msgstr ""
-
-#: apps/storybase_story/templates/storybase_story/story_detail.html:85
+#: apps/storybase_story/templates/storybase_story/story_detail.html:96
 msgid "Contact Info"
 msgstr ""
 
-#: apps/storybase_tag/models.py:11
-msgid "Tag"
-msgstr ""
-
-#: apps/storybase_tag/models.py:12 apps/storybase_tag/models.py:28
-msgid "Tags"
-msgstr ""
-
-#: apps/storybase_tag/models.py:25
-msgid "Name"
+#: apps/storybase_taxonomy/management/commands/loadtopics.py:24
+msgid "You must provide a CSV file and name field"
 msgstr ""
 
 #: apps/storybase_user/admin.py:40
@@ -202,12 +330,38 @@ msgstr ""
 msgid "Groups"
 msgstr ""
 
-#: settings/defaults.py:232
-msgid "English"
+#: apps/storybase_user/templates/storybase_user/organization_list.html:25
+#: apps/storybase_user/templates/storybase_user/project_list.html:25
+msgid "More"
+msgstr ""
+
+#: config/atlas_dev/settings.py:49 settings/atlas_dev.py:49
+msgid "Because what you can't see, you can't change."
+msgstr ""
+
+#: config/atlas_dev/settings.py:51 settings/atlas_dev.py:51
+msgid "Contributing Organizations"
+msgstr ""
+
+#: config/atlas_dev/settings.py:53 settings/atlas_dev.py:53
+msgid "Special Projects"
+msgstr ""
+
+#: config/atlas_dev/settings.py:55 settings/atlas_dev.py:55
+#, python-format
+msgid "Explore %s"
 msgstr ""
 
 #: settings/defaults.py:233
+msgid "English"
+msgstr ""
+
+#: settings/defaults.py:234
 msgid "Spanish"
+msgstr ""
+
+#: settings/defaults.py:265
+msgid "Your site tagline"
 msgstr ""
 
 #: templates/homepage.html:6 templates/homepage.html.py:10
@@ -282,6 +436,7 @@ msgid "History"
 msgstr ""
 
 #: templates/admin/change_form.html:37
+#: templates/admin/edit_inline/select2_stacked.html:9
 msgid "View on site"
 msgstr ""
 
@@ -290,6 +445,15 @@ msgid "Please correct the error below."
 msgid_plural "Please correct the errors below."
 msgstr[0] ""
 msgstr[1] ""
+
+#: templates/admin/edit_inline/select2_stacked.html:112
+#, python-format
+msgid "Add another %(verbose_name)s"
+msgstr ""
+
+#: templates/admin/edit_inline/select2_stacked.html:115
+msgid "Remove"
+msgstr ""
 
 #: templates/emailconfirmation/confirm_email.html:5
 #: templates/emailconfirmation/confirm_email.html:8
@@ -305,6 +469,10 @@ msgstr ""
 
 #: templates/emailconfirmation/confirm_email.html:13
 msgid "Invalid confirmation key."
+msgstr ""
+
+#: templates/menu/language_chooser.html:4
+msgid "In"
 msgstr ""
 
 #: templates/socialaccount/account_inactive.html:5
