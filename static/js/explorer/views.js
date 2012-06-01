@@ -882,6 +882,9 @@ storybase.explorer.views.Map = Backbone.View.extend({
       _.each(polygons, function(polygon) {
         that.boundaryLayers.addLayer(polygon);
       });
+      // Zoom and recenter the map to the selected boundaries
+      var boundaryBounds = this.boundaryLayers.getBounds();
+      this.map.fitBounds(boundaryBounds);
     }
   },
 
