@@ -41,7 +41,7 @@ def first_paragraph(value):
     fragments = fragments_fromstring(value)
     if len(fragments):
         for fragment in fragments:
-            if fragment.tag == 'p':
+            if getattr(fragment, 'tag', None) == 'p':
                 fragment.drop_tag()
                 return tostring(fragment)
 
