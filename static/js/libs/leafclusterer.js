@@ -634,7 +634,7 @@ ClusterMarker_ = L.Class.extend({
   onAdd: function(map) {
     this.map_ = map;
     this.container_ = L.DomUtil.create('div', 'cluster-marker-container');
-    map.getPanes().overlayPane.appendChild(this.container_);
+    map.getPanes().markerPane.appendChild(this.container_);
     var cluster = this;
 
     if (this.container_.addEventListener) {
@@ -666,7 +666,7 @@ ClusterMarker_ = L.Class.extend({
   },
 
   onRemove: function(map) {
-    map.getPanes().overlayPane.removeChild(this.container_);
+    map.getPanes().markerPane.removeChild(this.container_);
     map.off('viewreset', this.redraw, this);
   },
 
