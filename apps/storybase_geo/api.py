@@ -6,6 +6,7 @@ from tastypie.authorization import ReadOnlyAuthorization
 
 from storybase_geo import settings
 from storybase_geo.models import GeoLevel, Place
+from storybase_geo.utils import get_geocoder
 
 class GeoLevelResource(ModelResource):
     parent_id = fields.IntegerField(attribute='parent__id', blank=True, null=True)
@@ -72,16 +73,7 @@ class GeocoderResource(Resource):
         authorization = ReadOnlyAuthorization()
 
     def get_geocoder(self):
-        def import_class(import_path):
-            path_parts = import_path.split('.')
-            class_name = path_parts[-1]
-            module_name = '.'.join(path_parts[:-1])
-            module = __import__(module_name, globals(), locals(), [class_name],
-                                -1)
-            return getattr(module, class_name)
-
-        geocoder_class = import_class(settings.STORYBASE_GEOCODER)
-        return geocoder_class(**settings.STORYBASE_GEOCODER_ARGS)
+        return get_geocoder()
         
     def obj_get_list(self, request=None, **kwargs):
         results = []

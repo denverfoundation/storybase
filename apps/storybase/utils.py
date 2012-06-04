@@ -47,3 +47,13 @@ def first_paragraph(value):
 
     graphs = re.split(r'[\r\n]{2,}', value)
     return graphs[0]
+
+
+def import_class(import_path):
+    """Return a class object from its import path"""
+    path_parts = import_path.split('.')
+    class_name = path_parts[-1]
+    module_name = '.'.join(path_parts[:-1])
+    module = __import__(module_name, globals(), locals(), [class_name], -1)
+                        
+    return getattr(module, class_name)
