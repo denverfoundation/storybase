@@ -46,6 +46,12 @@ class GeocodeObject(object):
         self.lat = lat
         self.lng =lng
 
+    def __unicode__(self):
+        return "%s (%f, %f)" % (self.place, self.lng, self.lat)
+
+    def __str__(self):
+        return self.__unicode__()
+
 class GeocoderResource(Resource):
     """
     Proxy for geocoding as most geocoders don't support JSONP
@@ -85,8 +91,12 @@ class GeocoderResource(Resource):
             geocoding_kwargs = {
                 'exactly_one': settings.STORYBASE_GEOCODE_EXACTLY_ONE
             }
-            for place, (lat, lng) in geocoder.geocode(address, **geocoding_kwargs):
-                result = GeocodeObject(place=place, lat=float(lat), lng=float(lng))
-                results.append(result)
+            try:
+                for place, (lat, lng) in geocoder.geocode(address, **geocoding_kwargs):
+                    result = GeocodeObject(place=place, lat=float(lat), lng=float(lng))
+                    results.append(result)
+            except ValueError:
+                # No match for address found, results list will be empty
+                pass
 
         return results 
