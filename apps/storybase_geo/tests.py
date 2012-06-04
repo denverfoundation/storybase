@@ -1,15 +1,44 @@
 from django.http import HttpRequest
-from django.test import TestCase
 
+from storybase.tests.base import SettingsChangingTestCase
 from storybase_geo.api import GeocoderResource
 from storybase_geo.models import Location
 
-class LocationModelTest(TestCase):
+class YahooGeocoderTestMixin(object):
+    """Mixin that sets gecoder to Yahoo
+
+    Must be used with SettingsChangingTestCase
+
+    """
+    def _select_yahoo_geocoder(self):
+        settings = self.get_settings_module()
+        self._old_settings['STORYBASE_GEOCODER'] = getattr(settings, 'STORYBASE_GEOCODER', None)
+        self._old_settings['STORYBASE_GEOCODER_ARGS'] = getattr(settings, 'STORYBASE_GEOCODER_ARGS', None)
+        settings.STORYBASE_GEOCODER = "geopy.geocoders.Yahoo"
+        settings.STORYBASE_GEOCODER_ARGS = {
+            'app_id': ""
+        }
+
+
+class LocationModelTest(SettingsChangingTestCase, YahooGeocoderTestMixin):
+    def get_settings_module(self):
+        from storybase_geo import settings
+        return settings
+
+    def test_geocode(self):
+        """Test internal geocoding method"""
+        self._select_yahoo_geocoder()
+        loc = Location()
+        latlng = loc._geocode("370 17th St Denver CO 80202")
+        self.assertEqual(latlng[0], 39.7438167)
+        self.assertEqual(latlng[1], -104.9884953)
+
     def test_geocode_on_save(self):
         """
         Tests that address information in a Location is geocoded when the
         Location is saved
         """
+        self._select_yahoo_geocoder()
         loc = Location(name="The Piton Foundation",
                        address="370 17th St",
                        address2="#5300",
@@ -27,6 +56,7 @@ class LocationModelTest(TestCase):
         Tests that address information in a Location is re-geocoded when
         the address is changed.
         """
+        self._select_yahoo_geocoder()
         loc = Location(name="The Piton Foundation",
                        address="370 17th St",
                        address2="#5300",
@@ -47,30 +77,19 @@ class LocationModelTest(TestCase):
         self.assertEqual(loc.point.x, -87.6474517)
         self.assertEqual(loc.point.y, 41.8716782)
 
-class GeocoderResourceTest(TestCase):
+
+class GeocoderResourceTest(SettingsChangingTestCase, YahooGeocoderTestMixin):
     """Tests for geocoding endpoint"""
-    def setUp(self):
-        self._old_settings = {}
-
-    def tearDown(self):
-        from storybase_geo import settings as geo_settings
-        for key, value in self._old_settings.items():
-            setattr(geo_settings, key, value)
-
-    def _select_yahoo_geocoder(self):
-        from storybase_geo import settings as geo_settings
-        self._old_settings['STORYBASE_GEOCODER'] = geo_settings.STORYBASE_GEOCODER
-        self._old_settings['STORYBASE_GEOCODER_ARGS'] = geo_settings.STORYBASE_GEOCODER_ARGS
-        geo_settings.STORYBASE_GEOCODER = "geopy.geocoders.Yahoo"
-        geo_settings.STORYBASE_GEOCODER_ARGS = {
-            'app_id': ""
-        }
 
     def assertApxEqual(self, value1, value2, precision=1e-03):
         """Tests that values are approximately equal to each other"""
         if (not (abs(value1 - value2) <= precision)):
             self.fail("abs(%f - %f) is not less than %f" %
                       (value1, value2, precision))
+
+    def get_settings_module(self):
+        from storybase_geo import settings
+        return settings
 
     def test_get_default_geocoder(self):
         """Test that the OpenMapQuest/Nominatum geocoder is used by default"""
@@ -161,4 +180,3 @@ class GeocoderResourceTest(TestCase):
         req.GET['q'] = "11zzzzzzzzzz1234asfdasdasgw"
         results = resource.obj_get_list(req)
         self.assertEqual(len(results), 0)
-

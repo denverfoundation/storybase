@@ -1,6 +1,8 @@
 """TestCase base classes and mixins"""
 
 from datetime import datetime
+
+import django.conf
 from django.test import TestCase
 
 class SloppyTimeTestMixin(object):
@@ -27,3 +29,19 @@ class SloppyTimeTestMixin(object):
         """
         delta = timestamp2 - timestamp1
         self.assertTrue(delta.seconds <= tolerance)
+
+
+class SettingsChangingTestCase(TestCase):
+    """TestCase that allows for changing (and then restoring) settings"""
+    def get_settings_module(self):
+        from django.conf import settings
+        return settings
+
+    def setUp(self, settings_module=django.conf.settings):
+        self._settings_module=settings_module
+        self._old_settings = {}
+
+    def tearDown(self):
+        settings_module = self.get_settings_module()
+        for key, value in self._old_settings.items():
+            setattr(settings_module, key, value)
