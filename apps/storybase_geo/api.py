@@ -1,11 +1,10 @@
-from geopy import geocoders
-
 from tastypie import fields
 from tastypie.constants import ALL, ALL_WITH_RELATIONS 
 from tastypie.resources import Resource, ModelResource
 from tastypie.authentication import Authentication
 from tastypie.authorization import ReadOnlyAuthorization
 
+from storybase_geo import settings
 from storybase_geo.models import GeoLevel, Place
 
 class GeoLevelResource(ModelResource):
@@ -42,13 +41,20 @@ class PlaceResource(ModelResource):
 
 # TODO: Document, error handling
 class GeocodeObject(object):
-    def __init__(self, lat, lng):
+    def __init__(self, place, lat, lng):
+        self.place = place
         self.lat = lat
         self.lng =lng
 
 class GeocoderResource(Resource):
+    """
+    Proxy for geocoding as most geocoders don't support JSONP
+   
+    This simply wraps a geopy geocoder object.
+    """
     lat = fields.FloatField(attribute='lat')
     lng = fields.FloatField(attribute='lng')
+    place = fields.CharField(attribute='place')
 
     class Meta:
         resource_name = 'geocode'
@@ -59,19 +65,28 @@ class GeocoderResource(Resource):
         authentication = Authentication()
         authorization = ReadOnlyAuthorization()
 
+    def get_geocoder(self):
+        def import_class(import_path):
+            path_parts = import_path.split('.')
+            class_name = path_parts[-1]
+            module_name = '.'.join(path_parts[:-1])
+            module = __import__(module_name, globals(), locals(), [class_name],
+                                -1)
+            return getattr(module, class_name)
+
+        geocoder_class = import_class(settings.STORYBASE_GEOCODER)
+        return geocoder_class(**settings.STORYBASE_GEOCODER_ARGS)
+        
     def obj_get_list(self, request=None, **kwargs):
         results = []
-        geocoder = geocoders.GeocoderDotUS()
+        geocoder = self.get_geocoder()
         address = request.GET.get('q', None)
         if address:
-            response = geocoder.geocode(address)
-            if response:
-                place, (lat, lng) = response
-                result = {
-                  'lat': float(lat),
-                  'lng': float(lng)
-                }
-                result = GeocodeObject(lat=float(lat), lng=float(lng))
+            geocoding_kwargs = {
+                'exactly_one': settings.STORYBASE_GEOCODE_EXACTLY_ONE
+            }
+            for place, (lat, lng) in geocoder.geocode(address, **geocoding_kwargs):
+                result = GeocodeObject(place=place, lat=float(lat), lng=float(lng))
                 results.append(result)
 
         return results 

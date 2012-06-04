@@ -5,8 +5,10 @@ unittest). These will both pass when you run "manage.py test".
 Replace these with more appropriate tests for your application.
 """
 
+from django.http import HttpRequest
 from django.test import TestCase
 
+from storybase_geo.api import GeocoderResource
 from storybase_geo.models import Location
 
 class LocationModelTest(TestCase):
@@ -52,3 +54,24 @@ class LocationModelTest(TestCase):
         self.assertEqual(loc.point.x, -87.6474517)
         self.assertEqual(loc.point.y, 41.8716782)
 
+class GeocoderResourceTest(TestCase):
+    """Tests for geocoding endpoint"""
+
+    def setUp(self):
+        self.resource = GeocoderResource()
+
+
+    def test_get_default_geocoder(self):
+        """Test that the OpenMapQuest/Nominatum geocoder is used by default"""
+        geocoder = self.resource.get_geocoder()
+        self.assertEqual(geocoder.__class__.__name__,
+                         "OpenMapQuest")
+
+    def test_geocode_with_default_geocoder(self):
+        """Test geocoding with default geocoder"""
+        req = HttpRequest()
+        req.method = 'GET'
+        req.GET['q'] = "370 17th St, Denver"
+        results = self.resource.obj_get_list(req)
+        self.assertEqual(results[0].lat, 39.7434926) 
+        self.assertEqual(results[0].lng, -104.9886368) 
