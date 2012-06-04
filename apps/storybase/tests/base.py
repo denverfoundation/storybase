@@ -1,9 +1,9 @@
-"""Base TestCase classes"""
+"""TestCase base classes and mixins"""
 
 from datetime import datetime
 from django.test import TestCase
 
-class SloppyTimeTestCase(TestCase):
+class SloppyTimeTestMixin(object):
     """ TestCase with extra assertion methods for checking times """
     def assertNowish(self, timestamp, tolerance=1):
         """ Confirm datetime instance is close to current time
