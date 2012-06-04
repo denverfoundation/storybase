@@ -977,7 +977,7 @@ storybase.explorer.views.Map = Backbone.View.extend({
   geocodeFail: function(address) {
     // TODO: Do something more exciting when geocoding fails
     console.debug("Geocoding of address " + address + " failed");
-    var popupContent = "<p>Geocoding of address " + address + " failed</p>"; 
+    var popupContent = "<p>Geocoding of address " + address + " failed.  Try including a city and state in your address.</p>"; 
     var popup = new L.Popup();
     popup.setLatLng(this.map.getCenter());
     popup.setContent(popupContent);
