@@ -1,4 +1,3 @@
-from geopy import geocoders
 from geopy.geocoders.base import GeocoderError
 
 from django.contrib.gis.db import models
@@ -12,6 +11,7 @@ from uuidfield.fields import UUIDField
 
 from storybase.models import DirtyFieldsMixin
 from storybase.fields import ShortTextField
+from storybase_geo.utils import get_geocoder
 
 class GeoLevel(MPTTModel):
     """A hierarchical type of geography"""
@@ -52,12 +52,17 @@ class Location(DirtyFieldsMixin, models.Model):
         return unicode_rep
 
     def _geocode(self, address):
-        g = geocoders.Google()
+        point = None
+        geocoder = get_geocoder()
         # There might be more than one matching location.  For now, just
         # assume the first one.
-        results = list(g.geocode(address, exactly_one=False))
-        place, (lat, lng) = results[0]
-        return (lat, lng)
+        results = list(geocoder.geocode(address, exactly_one=False))
+        if results:
+            place, (lat, lng) = results[0]
+            point = (lat, lng)
+
+        return point
+
 
 def geocode(sender, instance, **kwargs):
     """Geocode a Location instance based on its address fields"""
@@ -65,15 +70,14 @@ def geocode(sender, instance, **kwargs):
     if ('address' in changed_fields or 'city' in changed_fields or
             'state' in changed_fields or 'postcode' in changed_fields or
             instance.lat is None or instance.lng is None):
-        try:
-            (lat, lng) = instance._geocode("%s %s %s %s" % 
-                (instance.address, instance.city, instance.state, 
-                 instance.postcode))
+        point = instance._geocode("%s %s %s %s" % 
+            (instance.address, instance.city, instance.state, 
+             instance.postcode))
+        if point:
+            (lat, lng) = point
             instance.lat = lat
             instance.lng = lng
             instance.point = Point(lng, lat)
-        except GeocoderError:
-            pass
 
     elif ('lat' in changed_fields or 'lng' in changed_fields or
           (instance.lat is not None and instance.lng is not None and
