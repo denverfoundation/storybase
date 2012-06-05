@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.http import HttpRequest
 from django.test import TestCase
 from django.utils import simplejson
-from storybase.tests.base import SloppyTimeTestMixin
+from storybase.tests.base import SloppyComparisonTestMixin
 from storybase.utils import slugify
 from storybase_asset.models import HtmlAsset, HtmlAssetTranslation
 from storybase_geo.models import Location
@@ -44,7 +44,7 @@ class SectionRelationFormTest(TestCase):
         self.assertIn(story.title, choices_list[2][1])
 
 
-class StoryModelTest(TestCase, SloppyTimeTestMixin):
+class StoryModelTest(TestCase, SloppyComparisonTestMixin):
     """Unit tests for Story Model"""
 
     def test_auto_slug(self):
@@ -316,7 +316,7 @@ class ViewsTest(TestCase):
 	   self.assertTrue(sorted_titles[i] in elements[i].text_content())
 
 
-class SectionModelTest(TestCase, SloppyTimeTestMixin):
+class SectionModelTest(TestCase, SloppyComparisonTestMixin):
     """Test Case for Section model"""
 
     def test_update_story_timestamp(self):

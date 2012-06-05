@@ -1,6 +1,7 @@
 from django.http import HttpRequest
 
-from storybase.tests.base import SettingsChangingTestCase
+from storybase.tests.base import (SettingsChangingTestCase,
+                                  SloppyComparisonTestMixin)
 from storybase_geo.api import GeocoderResource
 from storybase_geo.models import Location
 
@@ -20,7 +21,8 @@ class YahooGeocoderTestMixin(object):
         }
 
 
-class LocationModelTest(SettingsChangingTestCase, YahooGeocoderTestMixin):
+class LocationModelTest(SettingsChangingTestCase, YahooGeocoderTestMixin,
+                        SloppyComparisonTestMixin):
     def get_settings_module(self):
         from storybase_geo import settings
         return settings
@@ -30,8 +32,8 @@ class LocationModelTest(SettingsChangingTestCase, YahooGeocoderTestMixin):
         self._select_yahoo_geocoder()
         loc = Location()
         latlng = loc._geocode("370 17th St Denver CO 80202")
-        self.assertEqual(latlng[0], 39.7438167)
-        self.assertEqual(latlng[1], -104.9884953)
+        self.assertApxEqual(latlng[0], 39.7438167)
+        self.assertApxEqual(latlng[1], -104.9884953)
 
     def test_geocode_on_save(self):
         """
@@ -46,10 +48,10 @@ class LocationModelTest(SettingsChangingTestCase, YahooGeocoderTestMixin):
                        state="CO",
                        postcode="80202")
         loc.save()
-        self.assertEqual(loc.lat, 39.7438167)
-        self.assertEqual(loc.lng, -104.9884953)
-        self.assertEqual(loc.point.x, -104.9884953)
-        self.assertEqual(loc.point.y, 39.7438167)
+        self.assertApxEqual(loc.lat, 39.7438167)
+        self.assertApxEqual(loc.lng, -104.9884953)
+        self.assertApxEqual(loc.point.x, -104.9884953)
+        self.assertApxEqual(loc.point.y, 39.7438167)
 
     def test_geocode_on_change(self):
         """
@@ -64,29 +66,23 @@ class LocationModelTest(SettingsChangingTestCase, YahooGeocoderTestMixin):
                        state="CO",
                        postcode="80202")
         loc.save()
-        self.assertEqual(loc.lat, 39.7438167)
-        self.assertEqual(loc.lng, -104.9884953)
+        self.assertApxEqual(loc.lat, 39.7438167)
+        self.assertApxEqual(loc.lng, -104.9884953)
         loc.name = "The Hull House"
         loc.address = "800 S. Halsted St."
         loc.city = "Chicago"
         loc.state = "IL"
         loc.postcode = "60607"
         loc.save()
-        self.assertEqual(loc.lat, 41.8716782)
-        self.assertEqual(loc.lng, -87.6474517)
-        self.assertEqual(loc.point.x, -87.6474517)
-        self.assertEqual(loc.point.y, 41.8716782)
+        self.assertApxEqual(loc.lat, 41.8716782)
+        self.assertApxEqual(loc.lng, -87.6474517)
+        self.assertApxEqual(loc.point.x, -87.6474517)
+        self.assertApxEqual(loc.point.y, 41.8716782)
 
 
-class GeocoderResourceTest(SettingsChangingTestCase, YahooGeocoderTestMixin):
+class GeocoderResourceTest(SettingsChangingTestCase, YahooGeocoderTestMixin,
+                           SloppyComparisonTestMixin):
     """Tests for geocoding endpoint"""
-
-    def assertApxEqual(self, value1, value2, precision=1e-03):
-        """Tests that values are approximately equal to each other"""
-        if (not (abs(value1 - value2) <= precision)):
-            self.fail("abs(%f - %f) is not less than %f" %
-                      (value1, value2, precision))
-
     def get_settings_module(self):
         from storybase_geo import settings
         return settings

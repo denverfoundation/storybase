@@ -5,7 +5,7 @@ from datetime import datetime
 import django.conf
 from django.test import TestCase
 
-class SloppyTimeTestMixin(object):
+class SloppyComparisonTestMixin(object):
     """ TestCase with extra assertion methods for checking times """
     def assertNowish(self, timestamp, tolerance=1):
         """ Confirm datetime instance is close to current time
@@ -29,6 +29,12 @@ class SloppyTimeTestMixin(object):
         """
         delta = timestamp2 - timestamp1
         self.assertTrue(delta.seconds <= tolerance)
+
+    def assertApxEqual(self, value1, value2, precision=1e-03):
+        """Tests that values are approximately equal to each other"""
+        if (not (abs(value1 - value2) <= precision)):
+            self.fail("abs(%f - %f) is not less than %f" %
+                      (value1, value2, precision))
 
 
 class SettingsChangingTestCase(TestCase):
