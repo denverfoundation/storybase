@@ -13,10 +13,9 @@ before_install:
   - "sudo apt-get install gdal-bin libproj-dev postgis postgresql-9.1-postgis"
   - "sudo apt-get install openjdk-6-jdk solr-jetty" 
   - "sudo bash ./scripts/create_template_postgis-debian.sh"
-after_install:
+before_script:
   - "sudo bash ./scripts/apply_django_patches /home/vagrant/virtualenv/python2.7/lib/python2.7/site-packages/django"
   - "fab -H install_solr upgrade_to_solr3"
-before_script:
   - "createdb -T template_postgis atlas_test -U postgres"
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
