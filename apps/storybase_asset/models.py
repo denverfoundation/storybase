@@ -230,7 +230,10 @@ class ExternalAsset(Asset):
         output.append('<figure>')
         try:
             # First try to embed the resource via oEmbed
-            resource = oembed.site.embed(self.url, format='json')
+            # TODO: Set maxwidth and maxheight more intelligently
+            # Hard-coding them is just a workaround for #130 as the Flickr API
+            # doesn't support not having them.
+            resource = oembed.site.embed(self.url, format='json', maxwidth=1000, maxheight=1000)
             resource_data = resource.get_data()
             if resource_data['type'] in ('rich', 'video'):
                 output.append(resource_data['html'])
