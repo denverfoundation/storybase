@@ -35,6 +35,10 @@
   font-weight: bold;
 }
 
+#filters a.clear-filters {
+  display: block;
+}
+
 #story-count {
   margin: 1em 0;
   float: left;

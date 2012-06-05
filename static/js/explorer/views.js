@@ -119,7 +119,8 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     "click .select-list-view": "selectList",
     "click .select-map-view": "selectMap",
     "click #show-more": "clickShowMore",
-    "change #filters select": "handleChangeFilters"
+    "change #filters select": "handleChangeFilters",
+    "click #filters .clear-filters": "clearAllFilters",
   },
 
   initialize: function() {
@@ -176,6 +177,10 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
 
     // Bind 'this' variable in callbacks to the view object
     _.bindAll(this, 'resetAll', 'showMoreStories');
+  },
+
+  getFilterNames: function() {
+    return ["topics", "places", "organizations", "projects", "languages"];
   },
 
   setMessageSeen: function(messageName) {
@@ -433,13 +438,26 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     $.getJSON(this.getFilterUri(), this.resetAll);
   },
 
-  changeFilter: function(name, value) {
+  changeFilter: function(name, value, fetch) {
+    fetch = typeof fetch === "undefined" ? true : fetch;
     this.setFilter(name, value);
-    this.fetchStories();
+    if (fetch) {
+      this.fetchStories();
+    }
   },
 
-  clearFilter: function(name) {
-    this.changeFilter(name, null);
+  clearFilter: function(name, fetch) {
+    fetch = typeof fetch === "undefined" ? true : fetch;
+    this.changeFilter(name, null, fetch);
+  },
+
+  clearAllFilters: function(ev) {
+    var that = this;
+    ev.preventDefault();
+    _.each(this.getFilterNames(), function(name) {
+      that.clearFilter(name, false);
+    });
+    this.fetchStories();
   },
 
   handleChangeFilters: function(ev) {
