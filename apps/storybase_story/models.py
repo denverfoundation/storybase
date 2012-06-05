@@ -15,7 +15,6 @@ from django_dag.models import edge_factory, node_factory
 
 from uuidfield.fields import UUIDField
 
-from storybase.managers import FeaturedManager
 from storybase.utils import get_language_name
 from storybase.fields import ShortTextField
 from storybase.models import (LicensedModel, PublishedModel,
@@ -25,6 +24,7 @@ from storybase.utils import slugify
 from storybase_asset.models import Asset
 from storybase_user.models import Organization, Project
 from storybase_story import structure
+from storybase_story.managers import StoryManager
 #from storybase_tag.models import TaggedItem
 
 class StoryTranslation(TranslationModel):
@@ -90,7 +90,7 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
                                        related_name='stories',
                                        blank=True)
 
-    objects = FeaturedManager()
+    objects = StoryManager()
 
     translated_fields = ['title', 'summary', 'call_to_action']
     translation_set = 'storytranslation_set'
