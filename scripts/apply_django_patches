@@ -1,0 +1,29 @@
+#!/bin/bash
+
+django_version()
+{
+  local version_string=`django-admin.py --version`
+  echo $version_string|awk '{split($0, a, "."); printf "%d %d %d", a[1], a[2], a[3]}'
+}
+
+postgres_version()
+{
+  local version_string=`psql --version|awk '{ if (NR == 1) split($0, a, " "); } END { print a[3] }'`
+  echo $version_string|awk '{split($0, a, "."); printf "%d %d %d", a[1], a[2], a[3]}'
+}
+
+SOURCE="${BASH_SOURCE[0]}"
+while [ -h "$SOURCE" ] ; do SOURCE="$(readlink "$SOURCE")"; done
+DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
+DJANGO_PATH=$1
+PATCH_DIR="$( cd "$DIR/../patches" && pwd)"
+PATCH="$PATCH_DIR/postgis-adapter-2.patch"
+
+
+DJANGO_VERSION=( `django_version` )
+POSTGRES_VERSION=( `postgres_version` )
+
+if [ ${DJANGO_VERSION[0]} -le  1 -a ${DJANGO_VERSION[1]} -le 3 -a ${POSTGRES_VERSION[0]} -ge 9 -a ${POSTGRES_VERSION[1]} -ge 1 ]; then
+  patch -d $DJANGO_PATH -p1 --backup < $PATCH
+fi
+
