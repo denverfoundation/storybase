@@ -90,7 +90,10 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
         translation = StoryTranslation(story=story, title="Spanish Title",
             summary="Spanish Summary", language="es")
         translation.save()
-        self.assertEqual([settings.LANGUAGE_CODE, 'es'], story.get_languages())
+        story_languages = story.get_languages()
+        self.assertEqual(len(story_languages), 2)
+        for code in (settings.LANGUAGE_CODE, 'es'):
+            self.assertIn(code, story_languages)
 
     def test_auto_set_published_on_create(self):
         """
