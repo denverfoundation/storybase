@@ -118,22 +118,28 @@ class StoryResource(ModelResource):
 
     def _get_facet_choices_topic_ids(self, items):
         return [{ 'id': obj.pk, 'name': obj.name } 
-                for obj in Category.objects.filter(pk__in=items)]
+                for obj in Category.objects.filter(pk__in=items)\
+                                           .order_by('categorytranslation__name')]
 
     def _get_facet_choices_project_ids(self, items):
         return [{ 'id': obj.project_id, 'name': obj.name }
-                for obj in Project.objects.filter(project_id__in=items)]
+                for obj in Project.objects.filter(project_id__in=items)\
+                                          .order_by('projecttranslation__name')]
 
     def _get_facet_choices_organization_ids(self, items):
         return [{ 'id': obj.organization_id, 'name': obj.name}
-                for obj in Organization.objects.filter(organization_id__in=items)]
+                for obj in Organization.objects.filter(organization_id__in=items)\
+                                               .order_by('organizationtranslation__name')]
 
     def _get_facet_choices_language_ids(self, items):
-        return [{ 'id': item, 'name': get_language_name(item)} for item in items]
+        return sorted([{ 'id': item, 'name': get_language_name(item)} 
+                       for item in items],
+                       key=lambda language: language['name'])
 
     def _get_facet_choices_place_ids(self, items):
         return [{ 'id': obj.place_id, 'name': obj.name }
-                for obj in Place.objects.filter(place_id__in=items)]
+                for obj in Place.objects.filter(place_id__in=items)\
+                                        .order_by('name')]
 
     def explore_get_result_list(self, request):
         sqs = SearchQuerySet().models(Story)
