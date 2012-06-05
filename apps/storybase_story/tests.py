@@ -309,10 +309,10 @@ class ViewsTest(TestCase):
 	    # Force different timestamps for stories
 	    sleep(1)
 	homepage_stories = Story.objects.on_homepage()
-        html = homepage_story_list()
+        html = homepage_story_list(len(homepage_titles))
 	fragment = lxml.html.fromstring(html)
 	# TODO: Finish implementing this
-	elements = fragment.cssselect('li')
+	elements = fragment.cssselect('.stories > li')
 	self.assertEqual(len(elements), homepage_stories.count())
 	sorted_titles = tuple(reversed(homepage_titles))
 	for i in range(len(sorted_titles)):
