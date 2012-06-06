@@ -7,7 +7,7 @@ install: pip install -r REQUIREMENTS --use-mirrors && pip install -r REQUIREMENT
 script: python manage.py test storybase_user storybase_story storybase_asset --settings=settings.travis
 postgres:
   adapter: postgresql
-  database: atlas_test
+  database: atlas_travis
   username: postgres
 before_install:
   - "sudo apt-get install gdal-bin libproj-dev postgis postgresql-9.1-postgis"
@@ -18,10 +18,10 @@ before_script:
   - "fab --set run_local=True install_solr upgrade_to_solr3 install_solr_2155"
   - "fab --set run_local=True install_solr_config:instance=travis,solr_multicore=,project_root=`pwd`"
   - "fab --set run_local=True enable_jetty_start"
+  - "createdb -T template_postgis atlas_travis -U postgres"
   - "python manage.py build_solr_schema --settings=settings.travis > config/travis/solr/schema.xml"
   - "sudo cp config/travis/solr/schema.xml /usr/local/share/solr3/conf/"
   - "sudo service jetty restart"
-  - "createdb -T template_postgis atlas_test -U postgres"
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
 branches:

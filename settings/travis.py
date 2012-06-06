@@ -5,7 +5,7 @@ DATABASES = {
         #'ENGINE': 'django.db.backends.postgresql_psycopg2',
         'ENGINE': 'django.contrib.gis.db.backends.postgis',
 #        'ENGINE': 'django.db.backends.sqlite3',
-        'NAME': 'atlas_test',
+        'NAME': 'atlas_travis',
         'USER': 'postgres',
         'PASSWORD': '',
         'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
