@@ -15,7 +15,7 @@ before_install:
   - "sudo bash ./scripts/create_template_postgis-debian.sh"
 before_script:
   - "sudo bash ./scripts/apply_django_patches /home/vagrant/virtualenv/python2.7/lib/python2.7/site-packages/django"
-  - "fab -H localhost install_solr upgrade_to_solr3"
+  - "fab -H localhost --set use_sudo= install_solr upgrade_to_solr3 install_solr_2155"
   - "createdb -T template_postgis atlas_test -U postgres"
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"

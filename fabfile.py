@@ -51,6 +51,8 @@ env['db_auth_config'] = env.get('db_auth_config',
 env['solr_root'] = env.get('solr_root', '/usr/local/share/solr3')
 env['solr_data_root'] = env.get('solr_data_root', '/usr/local/lib/solr3')
 
+env['use_sudo'] = env.get('use_sudo', True)
+
 def _get_config_dir():
     """Get the path for an instance's local configuration"""
     return os.path.join(os.getcwd(), 'config', env['instance']) + '/'
@@ -205,55 +207,57 @@ def install_nginx():
     sudo('rm /etc/nginx/sites-enabled/default') 
 
 @task
-def install_solr():
+def install_solr(use_sudo=env['use_sudo']):
     """ Install the Solr search server """
+    runner = sudo if use_sudo else run 
     # Solr doesn't work with openjdk-7-jdk, we need to install oepnjdk-6-jdk
     # as a workaround. See https://bugs.launchpad.net/ubuntu/+source/solr/+bug/901165
-    sudo('apt-get install openjdk-6-jdk')
-    sudo('apt-get install solr-jetty')
+    runner('apt-get install openjdk-6-jdk')
+    runner('apt-get install solr-jetty')
     print "You'll probably need to edit /etc/default/jetty"
 
 @task
-def upgrade_to_solr3(solr_version='3.6.0'):
+def upgrade_to_solr3(solr_version='3.6.0', use_sudo=env['use_sudo']):
     """
     Upgrade Solr to version 3.5+ as the version supported in the
     Ubuntu packages don't support spatial queries
     """
-    sudo('mkdir /usr/local/share/solr3')
-    sudo('mkdir /usr/local/etc/solr3')
-    sudo('mkdir -p /usr/local/lib/solr3/data')
-    sudo('chown -R jetty /usr/local/lib/solr3/data')
+    runner = sudo if use_sudo else run 
+    runner('mkdir /usr/local/share/solr3')
+    runner('mkdir /usr/local/etc/solr3')
+    runner('mkdir -p /usr/local/lib/solr3/data')
+    runner('chown -R jetty /usr/local/lib/solr3/data')
     run('wget -P /tmp http://www.reverse.net/pub/apache/lucene/solr/%s/apache-solr-%s.tgz' % (solr_version, solr_version))
     run('tar --directory=/tmp -zxf /tmp/apache-solr-%s.tgz' % (solr_version))
-    sudo('sudo unzip -d /usr/local/share/solr3/ /tmp/apache-solr-%s/dist/apache-solr-%s.war' % (solr_version, solr_version))
+    runner('unzip -d /usr/local/share/solr3/ /tmp/apache-solr-%s/dist/apache-solr-%s.war' % (solr_version, solr_version))
     
     # Make symlinks to mirror Ubuntu/Debian layout
-    sudo('ln -s /usr/local/etc/solr3/conf /usr/local/share/solr3/conf')
-    sudo('ln -s /usr/local/etc/solr3/ /etc/solr3')
-    sudo('ln ln -s /usr/local/lib/solr3/ /var/lib/solr3')
+    runner('ln -s /usr/local/etc/solr3/conf /usr/local/share/solr3/conf')
+    runner('ln -s /usr/local/etc/solr3/ /etc/solr3')
+    runner('ln ln -s /usr/local/lib/solr3/ /var/lib/solr3')
 
     # Copy existing configuration
-    sudo('sudo cp -a /etc/solr/* /usr/local/etc/solr3/')
+    runner('cp -a /etc/solr/* /usr/local/etc/solr3/')
     print ("You need to manually edit "
            "/usr/local/etc/solr3/conf/solrconfig.xml and set the dataDir "
            "element to /usr/local/lib/solr3/data")
-    sudo('cp /usr/share/solr/solr.xml /usr/local/share/solr3/')
+    runner('cp /usr/share/solr/solr.xml /usr/local/share/solr3/')
     print ("You need to manually edit "
            "/usr/local/share/solr3/solr.xml and set eacho core's dataDir "
            "element to a subdirectory of /usr/lib/solr3")
 
     # Copy jetty JARs to new solr directory
-    sudo("cp /usr/share/solr/WEB-INF/lib/jetty* /usr/local/share/solr3/WEB-INF/lib/")
+    runner("cp /usr/share/solr/WEB-INF/lib/jetty* /usr/local/share/solr3/WEB-INF/lib/")
     # Copy jetty config 
-    sudo("cp /usr/share/solr/WEB-INF/jetty-web.xml /usr/local/share/solr3/WEB-INF/")
+    runner("cp /usr/share/solr/WEB-INF/jetty-web.xml /usr/local/share/solr3/WEB-INF/")
     print ("You need to manually edit "
            "/usr/local/share/solr3/WEB-INF/jetty-web.xml to reflect the new "
            "Solr location")
 
     # Make Solr3 instance available to Jetty
-    sudo("ln -s /usr/local/share/solr3/ /usr/share/jetty/webapps")
+    runner("ln -s /usr/local/share/solr3/ /usr/share/jetty/webapps")
     # Remove symlink to old Solr
-    sudo("rm /usr/share/jetty/webapps/solr")
+    runner("rm /usr/share/jetty/webapps/solr")
 
     # Clean up downloaded files
     run('rm -rf /tmp/apache-solr-%s' % (solr_version))
@@ -265,12 +269,10 @@ def upgrade_to_solr3(solr_version='3.6.0'):
            "restart_jetty task")
 
 @task
-def install_solr_2155(solr_root=env['solr_root']):
+def install_solr_2155(solr_root=env['solr_root'], use_sudo=env['use_sudo']):
     """Install the Solr-2155 Plugin to allow multivalue spatial fields"""
-    pass
-    sudo("wget -P %s/WEB-INF/lib/ https://github.com/downloads/dsmiley/SOLR-2155/Solr2155-1.0.5.jar" % (solr_root))
-           
-
+    runner = sudo if use_sudo else run
+    runner("wget -P %s/WEB-INF/lib/ https://github.com/downloads/dsmiley/SOLR-2155/Solr2155-1.0.5.jar" % (solr_root))
 
 @task
 def create_spatial_db_template():
