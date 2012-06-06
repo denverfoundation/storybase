@@ -62,6 +62,11 @@ def _get_config_dir():
     """Get the path for an instance's local configuration"""
     return os.path.join(os.getcwd(), 'config', env['instance']) + '/'
 
+def _escape_slashes(value):
+    """Convert '/' to '\\/'"""
+    import re
+    return re.sub(r'/', r'\\/', value)
+
 def local_sudo(command, capture=False):
     """Naive wrapper for running local commands with sudo.
 
@@ -283,7 +288,8 @@ def upgrade_to_solr3(solr_version='3.6.0', run_local=env['run_local']):
     sudo("cp /usr/share/solr/WEB-INF/jetty-web.xml /usr/local/share/solr3/WEB-INF/")
     print ("You need to manually edit "
            "/usr/local/share/solr3/WEB-INF/jetty-web.xml to reflect the new "
-           "Solr location")
+           "Solr location or run the update_solr_jetty_config task to try "
+           "to do it automatically")
 
     # Make Solr3 instance available to Jetty
     sudo("ln -s /usr/local/share/solr3/ /usr/share/jetty/webapps")
@@ -507,6 +513,18 @@ def restart_jetty(run_local=env['run_local']):
     """ Restart the Jetty application server (effictively restarting Solr) """
     sudo = _sudo if not run_local else local_sudo
     sudo("service jetty restart")
+
+@task
+def update_solr_jetty_config(solr_root=env['solr_root'],
+                             run_local=env['run_local']):
+    """Update Jetty config file to reflect Solr3 location"""
+    sudo = _sudo if not run_local else local_sudo
+
+    old_solr_root = "/usr/share/solr"
+    new_solr_root = solr_root
+    sudo("sed -i.bak -r -e \"s/%s/%s/g\" %s/WEB-INF/jetty-web.xml" %
+         (_escape_slashes(old_solr_root), _escape_slashes(new_solr_root),
+          solr_root))
 
 @task
 def manual_configuration_msg():
