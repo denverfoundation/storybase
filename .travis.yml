@@ -23,8 +23,6 @@ before_script:
   - "sudo cp config/travis/solr/schema.xml /usr/local/share/solr3/conf/"
   - "fab --set run_local=True update_solr_jetty_config"
   - "sudo service jetty restart"
-# DEBUG: Try rebuilding index before tests start
-  - "python manage.py rebuild_index --settings=settings.travis --noinput"
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
 branches:
