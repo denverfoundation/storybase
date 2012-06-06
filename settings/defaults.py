@@ -163,16 +163,6 @@ INSTALLED_APPS = (
     'cmsplugin_filer_teaser',
     'cmsplugin_filer_video',
 
-    # allauth
-    #'emailconfirmation',
-    #'uni_form',
-    #'allauth',
-    #'allauth.account',
-    #'allauth.socialaccount',
-    #'allauth.twitter',
-    #'allauth.openid',
-    #'allauth.facebook',
-
     # StoryBase dependencies
     #'ajax_select',
     'haystack',
@@ -202,8 +192,6 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'cms.context_processors.media',
     'sekizai.context_processors.sekizai',
     'storybase.context_processors.conf',
-#    "allauth.context_processors.allauth",
-#    "allauth.account.context_processors.account",
 )
 
 # A sample logging configuration. The only tangible logging
@@ -279,15 +267,6 @@ STORYBASE_SEARCH_DISTANCE = 1
 # Zoom level when zooming into a point
 STORYBASE_MAP_POINT_ZOOM_LEVEL = 14
 
-# allauth settings
-ACCOUNT_EMAIL_REQUIRED = True
-ACCOUNT_EMAIL_VERIFICATION = True
-ACCOUNT_SIGNUP_PASSWORD_VERIFICATION = True
-ACCOUNT_UNIQUE_EMAIL = True
-ACCOUNT_USERNAME_REQUIRED = True
-SOCIALACCOUNT_QUERY_EMAIL = ACCOUNT_EMAIL_REQUIRED
-SOCIALACCOUNT_AUTO_SIGNUP = True
-EMAIL_CONFIRMATION_DAYS = 7
 # Pick one of the two
 # TODO: Choose a better redirect URL
 LOGIN_REDIRECT_URL = '/'
