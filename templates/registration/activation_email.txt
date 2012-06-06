@@ -1,0 +1,9 @@
+{% load i18n %}
+
+{% trans "Thanks for registering. Follow the link below to activate your account." %}
+
+http://{{ site.domain }}{% url registration_activate activation_key %}
+
+{% trans "Your activation key is" %} {{ activation_key }}
+
+{% trans "You must activate your account in" %} {{ expiration_days }} {% trans "days" %}

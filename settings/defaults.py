@@ -170,6 +170,7 @@ INSTALLED_APPS = (
     'categories.editor',
     'oembed',
     'tinymce',
+    'registration',
 
     # StoryBase
     'storybase',
@@ -240,6 +241,9 @@ AJAX_SELECT_INLINES = 'inline'
 # tinymce settings
 TINYMCE_JS_URL = os.path.join(STATIC_URL, 'js/libs/tiny_mce/tiny_mce.js')
 TINYMCE_JS_ROOT = os.path.join(STATIC_ROOT, 'js/libs/tiny_mce')
+
+# registration settings
+ACCOUNT_ACTIVATION_DAYS = 7
 
 # storybase settings
 # The name of the group used for site administrators

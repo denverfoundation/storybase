@@ -1,0 +1,12 @@
+{% extends "base.html" %}
+
+{% load cms_tags sekizai_tags menu_tags i18n %}
+
+{% block base_content %}
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <input type="submit" value="{% trans "Login" %}" />
+</form>
+<p><a href="{% url registration_register %}">{% trans "Sign Up" %}</a></p>
+{% endblock %}

@@ -50,6 +50,7 @@ urlpatterns += patterns('',
 
     # 3rd-party apps
     (r'^tinymce/', include('tinymce.urls')),
+    (r'^accounts/', include('registration.backends.default.urls')),
 
     # django CMS URLs
     url(r'^', include('cms.urls')),

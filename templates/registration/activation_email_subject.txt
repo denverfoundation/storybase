@@ -1,0 +1,2 @@
+{% load i18n %}
+{% blocktrans %}Confirm your {{ storybase_site_name }} account{% endblocktrans %}
