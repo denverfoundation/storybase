@@ -31,6 +31,10 @@ have write permissions on it. This is what I did to get started:
 
 """
 
+env['project_root'] = env.get('project_root',
+                          os.path.join(env['instance_root'], 'atlas'))
+"""The path to this Django project"""
+
 env['production'] = env.get('production', False)
 """Flag to indicate whether an instance is production"""
 
@@ -393,12 +397,15 @@ def install_config(instance=env['instance'], solr_root=env['solr_root']):
     install_solr_config(instance, solr_root)
 
 @task
-def install_solr_config(instance=env['instance'], solr_root=env['solr_root'],
-                        solr_multicore=True, run_local=env['run_local']):
+def install_solr_config(instance=env['instance'], project_root=env['project_root'],
+                        solr_root=env['solr_root'], solr_multicore=True,
+                        run_local=env['run_local']):
     sudo = _sudo if not run_local else local_sudo
-    solr_conf_dir = "%s/%s/conf" % (solr_root, instance) if solr_multicore else "%s/conf" % (solr_root)
     cd = _cd if not run_local else lcd
-    with cd(env['instance_root'] + '/atlas/'):
+
+    solr_conf_dir = "%s/%s/conf" % (solr_root, instance) if solr_multicore else "%s/conf" % (solr_root)
+
+    with cd(project_root): 
         sudo("cp config/%s/solr/solrconfig.xml %s/" %
              (instance, solr_conf_dir))
         sudo("cp config/%s/solr/protwords.txt %s/" % (instance, solr_conf_dir))
@@ -490,8 +497,9 @@ def make_solr_config_dir(instance=env['instance'], solr_root=env['solr_root'],
     sudo_runner("mkdir -p %s/" % (solr_conf_dir))
 
 @task
-def restart_jetty():
+def restart_jetty(run_local=env['run_local']):
     """ Restart the Jetty application server (effictively restarting Solr) """
+    sudo = _sudo if not run_local else local_sudo
     sudo("service jetty restart")
 
 @task
