@@ -15,6 +15,7 @@ DATABASES = {
 
 HAYSTACK_CONNECTIONS = {
     'default': {
-        'ENGINE': 'haystack.backends.simple_backend.SimpleEngine'
-    }
+        'ENGINE': 'storybase_geo.search.backends.Solr2155Engine', 
+        'URL': 'http://localhost:8080/solr3', 
+    },
 }
