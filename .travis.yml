@@ -18,7 +18,7 @@ before_script:
   - "fab --set run_local=True install_solr upgrade_to_solr3 install_solr_2155"
   - "fab --set run_local=True install_solr_config:instance=travis,solr_multicore=,project_root=`pwd`"
   - "fab --set run_local=True enable_jetty_start"
-  - "python manage.py build_solr_schema > config/travis/solr/schema.xml"
+  - "python manage.py build_solr_schema --settings=settings.travis > config/travis/solr/schema.xml"
   - "sudo cp config/travis/solr/schema.xml /usr/local/share/solr3/conf/"
   - "sudo service jetty restart"
   - "createdb -T template_postgis atlas_test -U postgres"
