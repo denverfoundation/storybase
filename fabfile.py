@@ -492,9 +492,15 @@ def make_solr_data_dir(instance=env['instance'],
 def make_solr_config_dir(instance=env['instance'], solr_root=env['solr_root'],
                          run_local=env['run_local']):
     """ Make the directory for the instance's Solr core configuration """
-    sudo_runner = sudo if not run_local else local_sudo
+    sudo = _sudo if not run_local else local_sudo
     solr_conf_dir = "%s/%s/conf" % (solr_root, instance)
-    sudo_runner("mkdir -p %s/" % (solr_conf_dir))
+    sudo("mkdir -p %s/" % (solr_conf_dir))
+
+@task
+def enable_jetty_start(run_local=env['run_local']):
+    """Edit /etc/default/jetty so it can start"""
+    sudo = _sudo if not run_local else local_sudo
+    sudo("sed -i.bak -r -e \"s/NO_START=1/NO_START=0/g\" /etc/default/jetty")
 
 @task
 def restart_jetty(run_local=env['run_local']):
