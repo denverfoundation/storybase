@@ -16,6 +16,7 @@ before_install:
 before_script:
   - "sudo bash ./scripts/apply_django_patches /home/vagrant/virtualenv/python2.7/lib/python2.7/site-packages/django"
   - "fab --set run_local=True install_solr upgrade_to_solr3 install_solr_2155"
+  - "fab --set run_local=True install_solr_config:instance=travis,solr_multicore="
   - "createdb -T template_postgis atlas_test -U postgres"
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"

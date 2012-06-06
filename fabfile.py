@@ -5,7 +5,7 @@ Tested on Ubuntu 11.10
 """
 import os
 from fabric.api import env, execute, local, settings, task
-from fabric.context_managers import cd, prefix
+from fabric.context_managers import cd, lcd, prefix
 from fabric.operations import put, run, sudo
 from fabric.utils import abort, puts
 from pprint import pprint
@@ -245,7 +245,7 @@ def upgrade_to_solr3(solr_version='3.6.0', run_local=env['run_local']):
     # Make symlinks to mirror Ubuntu/Debian layout
     sudo_runner('ln -s /usr/local/etc/solr3/conf /usr/local/share/solr3/conf')
     sudo_runner('ln -s /usr/local/etc/solr3/ /etc/solr3')
-    sudo_runner('ln ln -s /usr/local/lib/solr3/ /var/lib/solr3')
+    sudo_runner('ln -s /usr/local/lib/solr3/ /var/lib/solr3')
 
     # Copy existing configuration
     sudo_runner('cp -a /etc/solr/* /usr/local/etc/solr3/')
@@ -366,7 +366,6 @@ def upload_config(config_dir=None):
 @task
 def install_config(instance=env['instance'], solr_root=env['solr_root']):
     """ Install files that were uploaded via upload_local_config to their final homes """
-    solr_conf_dir = "%s/%s/conf" % (solr_root, instance)
     with cd(env['instance_root'] + '/atlas/'):
         run("cp config/%s/settings.py settings/%s.py" % (instance, instance))
         run("cp config/%s/wsgi.py wsgi.py" % (instance))
@@ -374,13 +373,23 @@ def install_config(instance=env['instance'], solr_root=env['solr_root']):
              (instance, instance))
         sudo("cp config/%s/nginx/site /etc/nginx/sites-available/%s" %
              (instance, instance))
-        sudo("cp config/%s/solr/solrconfig.xml %s/" %
+
+    install_solr_config(instance, solr_root)
+
+@task
+def install_solr_config(instance=env['instance'], solr_root=env['solr_root'],
+                        solr_multicore=True, run_local=env['run_local']):
+    sudo_runner = sudo if not run_local else local_sudo
+    solr_conf_dir = "%s/%s/conf" % (solr_root, instance) if solr_multicore else "%s/conf" % (solr_root)
+    do_cd = cd if not run_local else lcd
+    with do_cd(env['instance_root'] + '/atlas/'):
+        sudo_runner("cp config/%s/solr/solrconfig.xml %s/" %
              (instance, solr_conf_dir))
-        sudo("cp config/%s/solr/protwords.txt %s/" % (instance, solr_conf_dir))
-        sudo("cp config/%s/solr/stopwords.txt %s/" % (instance, solr_conf_dir))
-        sudo("cp config/%s/solr/stopwords_en.txt %s/" %
+        sudo_runner("cp config/%s/solr/protwords.txt %s/" % (instance, solr_conf_dir))
+        sudo_runner("cp config/%s/solr/stopwords.txt %s/" % (instance, solr_conf_dir))
+        sudo_runner("cp config/%s/solr/stopwords_en.txt %s/" %
              (instance, solr_conf_dir))
-        sudo("cp config/%s/solr/synonyms.txt %s/" % (instance, solr_conf_dir))
+        sudo_runner("cp config/%s/solr/synonyms.txt %s/" % (instance, solr_conf_dir))
 
 @task 
 def syncdb(instance=env['instance']):
@@ -457,10 +466,12 @@ def make_solr_data_dir(instance=env['instance'],
     sudo("chown -R jetty %s/" % (solr_data_dir))
 
 @task
-def make_solr_config_dir(instance=env['instance'], solr_root=env['solr_root']):
+def make_solr_config_dir(instance=env['instance'], solr_root=env['solr_root'],
+                         run_local=env['run_local']):
     """ Make the directory for the instance's Solr core configuration """
+    sudo_runner = sudo if not run_local else local_sudo
     solr_conf_dir = "%s/%s/conf" % (solr_root, instance)
-    sudo("mkdir -p %s/" % (solr_conf_dir))
+    sudo_runner("mkdir -p %s/" % (solr_conf_dir))
 
 @task
 def restart_jetty():
