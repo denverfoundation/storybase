@@ -19,3 +19,5 @@ HAYSTACK_CONNECTIONS = {
         'URL': 'http://localhost:8080/solr3', 
     },
 }
+
+EMAIL_BACKEND = 'django.core.mail.backends.locmem.EmailBackend'
