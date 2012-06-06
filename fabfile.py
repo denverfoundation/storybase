@@ -58,6 +58,12 @@ def _get_config_dir():
     return os.path.join(os.getcwd(), 'config', env['instance']) + '/'
 
 def local_sudo(command, capture=False):
+    """Naive wrapper for running local commands with sudo.
+
+    This allows keeping the same command string for both local and remote
+    execution.
+
+    """
     local("sudo %s" % (command), capture)
 
 @task
