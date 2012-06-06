@@ -21,6 +21,8 @@
  It is *not* a good example to work from. 
 -->
 <config>
+  <dataDir>/usr/local/lib/solr3/data</dataDir>
+
   <updateHandler class="solr.DirectUpdateHandler2" />
 
   <requestDispatcher handleSelect="true" >
