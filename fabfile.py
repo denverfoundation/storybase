@@ -5,8 +5,9 @@ Tested on Ubuntu 11.10
 """
 import os
 from fabric.api import env, execute, local, settings, task
-from fabric.context_managers import cd, lcd, prefix
-from fabric.operations import put, run, sudo
+from fabric.context_managers import cd as _cd, lcd, prefix
+from fabric.contrib.files import exists as _exists
+from fabric.operations import put, run as _run, sudo as _sudo
 from fabric.utils import abort, puts
 from pprint import pprint
 
@@ -65,6 +66,18 @@ def local_sudo(command, capture=False):
 
     """
     local("sudo %s" % (command), capture)
+
+def local_exists(path, use_sudo=False, verbose=False):
+    """Check if a local path exists"""
+    if os.path.exists(path):
+        return True
+    else:
+        return False
+
+sudo = _sudo
+run = _run
+cd = _cd
+exists = _exists
 
 @task
 def check_local_config(config_dir=None):
@@ -232,47 +245,50 @@ def upgrade_to_solr3(solr_version='3.6.0', run_local=env['run_local']):
     Upgrade Solr to version 3.5+ as the version supported in the
     Ubuntu packages don't support spatial queries
     """
-    runner = run if not run_local else local
-    sudo_runner = sudo if not run_local else local_sudo
-    sudo_runner('mkdir /usr/local/share/solr3')
-    sudo_runner('mkdir /usr/local/etc/solr3')
-    sudo_runner('mkdir -p /usr/local/lib/solr3/data')
-    sudo_runner('chown -R jetty /usr/local/lib/solr3/data')
-    runner('wget -P /tmp http://www.reverse.net/pub/apache/lucene/solr/%s/apache-solr-%s.tgz' % (solr_version, solr_version))
-    runner('tar --directory=/tmp -zxf /tmp/apache-solr-%s.tgz' % (solr_version))
-    sudo_runner('unzip -d /usr/local/share/solr3/ /tmp/apache-solr-%s/dist/apache-solr-%s.war' % (solr_version, solr_version))
+    run = _run if not run_local else local
+    sudo = _sudo if not run_local else local_sudo
+    exists = _exists if not run_local else local_exists
+
+    sudo('mkdir /usr/local/share/solr3')
+    sudo('mkdir /usr/local/etc/solr3')
+    sudo('mkdir -p /usr/local/lib/solr3/data')
+    sudo('chown -R jetty /usr/local/lib/solr3/data')
+    run('wget -P /tmp http://www.reverse.net/pub/apache/lucene/solr/%s/apache-solr-%s.tgz' % (solr_version, solr_version))
+    run('tar --directory=/tmp -zxf /tmp/apache-solr-%s.tgz' % (solr_version))
+    sudo('unzip -d /usr/local/share/solr3/ /tmp/apache-solr-%s/dist/apache-solr-%s.war' % (solr_version, solr_version))
     
     # Make symlinks to mirror Ubuntu/Debian layout
-    sudo_runner('ln -s /usr/local/etc/solr3/conf /usr/local/share/solr3/conf')
-    sudo_runner('ln -s /usr/local/etc/solr3/ /etc/solr3')
-    sudo_runner('ln -s /usr/local/lib/solr3/ /var/lib/solr3')
+    sudo('ln -s /usr/local/etc/solr3/conf /usr/local/share/solr3/conf')
+    sudo('ln -s /usr/local/etc/solr3/ /etc/solr3')
+    sudo('ln -s /usr/local/lib/solr3/ /var/lib/solr3')
 
     # Copy existing configuration
-    sudo_runner('cp -a /etc/solr/* /usr/local/etc/solr3/')
+    sudo('cp -a /etc/solr/* /usr/local/etc/solr3/')
     print ("You need to manually edit "
            "/usr/local/etc/solr3/conf/solrconfig.xml and set the dataDir "
            "element to /usr/local/lib/solr3/data")
-    sudo_runner('cp /usr/share/solr/solr.xml /usr/local/share/solr3/')
+    if exists("/usr/share/solr/solr.xml"):
+        sudo('cp /usr/share/solr/solr.xml /usr/local/share/solr3/')
     print ("You need to manually edit "
            "/usr/local/share/solr3/solr.xml and set eacho core's dataDir "
            "element to a subdirectory of /usr/lib/solr3")
 
     # Copy jetty JARs to new solr directory
-    sudo_runner("cp /usr/share/solr/WEB-INF/lib/jetty* /usr/local/share/solr3/WEB-INF/lib/")
+    sudo("cp /usr/share/solr/WEB-INF/lib/jetty* /usr/local/share/solr3/WEB-INF/lib/")
     # Copy jetty config 
-    sudo_runner("cp /usr/share/solr/WEB-INF/jetty-web.xml /usr/local/share/solr3/WEB-INF/")
+    sudo("cp /usr/share/solr/WEB-INF/jetty-web.xml /usr/local/share/solr3/WEB-INF/")
     print ("You need to manually edit "
            "/usr/local/share/solr3/WEB-INF/jetty-web.xml to reflect the new "
            "Solr location")
 
     # Make Solr3 instance available to Jetty
-    sudo_runner("ln -s /usr/local/share/solr3/ /usr/share/jetty/webapps")
+    sudo("ln -s /usr/local/share/solr3/ /usr/share/jetty/webapps")
     # Remove symlink to old Solr
-    sudo_runner("rm /usr/share/jetty/webapps/solr")
+    sudo("rm /usr/share/jetty/webapps/solr")
 
     # Clean up downloaded files
-    runner('rm -rf /tmp/apache-solr-%s' % (solr_version))
-    runner('rm /tmp/apache-solr-%s.tgz' % (solr_version))
+    run('rm -rf /tmp/apache-solr-%s' % (solr_version))
+    run('rm /tmp/apache-solr-%s.tgz' % (solr_version))
 
     print ("Next, you'll need to create configuration and data directories "
            "for each instance's core by runing the make_solr_data_dir and "
@@ -282,8 +298,8 @@ def upgrade_to_solr3(solr_version='3.6.0', run_local=env['run_local']):
 @task
 def install_solr_2155(solr_root=env['solr_root'], run_local=env['run_local']):
     """Install the Solr-2155 Plugin to allow multivalue spatial fields"""
-    runner = sudo if not run_local else local_sudo
-    runner("wget -P %s/WEB-INF/lib/ https://github.com/downloads/dsmiley/SOLR-2155/Solr2155-1.0.5.jar" % (solr_root))
+    sudo = _sudo if not run_local else local_sudo
+    sudo("wget -P %s/WEB-INF/lib/ https://github.com/downloads/dsmiley/SOLR-2155/Solr2155-1.0.5.jar" % (solr_root))
 
 @task
 def create_spatial_db_template():
@@ -379,17 +395,17 @@ def install_config(instance=env['instance'], solr_root=env['solr_root']):
 @task
 def install_solr_config(instance=env['instance'], solr_root=env['solr_root'],
                         solr_multicore=True, run_local=env['run_local']):
-    sudo_runner = sudo if not run_local else local_sudo
+    sudo = _sudo if not run_local else local_sudo
     solr_conf_dir = "%s/%s/conf" % (solr_root, instance) if solr_multicore else "%s/conf" % (solr_root)
-    do_cd = cd if not run_local else lcd
-    with do_cd(env['instance_root'] + '/atlas/'):
-        sudo_runner("cp config/%s/solr/solrconfig.xml %s/" %
+    cd = _cd if not run_local else lcd
+    with cd(env['instance_root'] + '/atlas/'):
+        sudo("cp config/%s/solr/solrconfig.xml %s/" %
              (instance, solr_conf_dir))
-        sudo_runner("cp config/%s/solr/protwords.txt %s/" % (instance, solr_conf_dir))
-        sudo_runner("cp config/%s/solr/stopwords.txt %s/" % (instance, solr_conf_dir))
-        sudo_runner("cp config/%s/solr/stopwords_en.txt %s/" %
+        sudo("cp config/%s/solr/protwords.txt %s/" % (instance, solr_conf_dir))
+        sudo("cp config/%s/solr/stopwords.txt %s/" % (instance, solr_conf_dir))
+        sudo("cp config/%s/solr/stopwords_en.txt %s/" %
              (instance, solr_conf_dir))
-        sudo_runner("cp config/%s/solr/synonyms.txt %s/" % (instance, solr_conf_dir))
+        sudo("cp config/%s/solr/synonyms.txt %s/" % (instance, solr_conf_dir))
 
 @task 
 def syncdb(instance=env['instance']):
