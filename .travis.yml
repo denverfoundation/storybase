@@ -21,6 +21,8 @@ before_script:
   - "createdb -T template_postgis atlas_travis -U postgres"
   - "python manage.py build_solr_schema --settings=settings.travis > config/travis/solr/schema.xml"
   - "sudo cp config/travis/solr/schema.xml /usr/local/share/solr3/conf/"
+# Debug: output Solr schema
+  - "cat /usr/local/share/solr3/conf/schema.xml"
   - "sudo service jetty restart"
   - "export DISPLAY=:99.0"
   - "sh -e /etc/init.d/xvfb start"
