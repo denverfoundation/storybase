@@ -171,6 +171,8 @@ INSTALLED_APPS = (
     'oembed',
     'tinymce',
     'registration',
+    'social_auth',
+
 
     # StoryBase
     'storybase',
@@ -193,6 +195,12 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'cms.context_processors.media',
     'sekizai.context_processors.sekizai',
     'storybase.context_processors.conf',
+)
+
+AUTHENTICATION_BACKENDS = (
+    'social_auth.backends.twitter.TwitterBackend',
+    'social_auth.backends.facebook.FacebookBackend',
+    'django.contrib.auth.backends.ModelBackend',
 )
 
 # A sample logging configuration. The only tangible logging

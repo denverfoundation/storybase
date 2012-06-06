@@ -8,5 +8,9 @@
   {{ form.as_p }}
   <input type="submit" value="{% trans "Login" %}" />
 </form>
-<p><a href="{% url registration_register %}">{% trans "Sign Up" %}</a></p>
+<ul>
+    <li><a href="{% url registration_register %}">{% trans "Sign Up" %}</a></li>
+    <li><a href="{% url socialauth_begin "twitter" %}">{% trans "Sign in with" %} Twitter</a></li>
+</ul>
+
 {% endblock %}
