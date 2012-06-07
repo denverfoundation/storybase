@@ -5,13 +5,16 @@
 {% block head_title %}{% trans "Sign In" %}{% endblock %}
 
 {% block base_content %}
+<h1>{% trans "Sign In" %}</h1>
+
 <form method="post">
   {% csrf_token %}
   {{ form.as_p }}
-  <input type="submit" value="{% trans "Login" %}" />
+  <input type="submit" value="{% trans "Sign In" %}" />
 </form>
 <ul>
     <li><a href="{% url registration_register %}">{% trans "Sign Up" %}</a></li>
+    <li><a href="{%url password_reset %}">{% trans "Forgot password?" %}</a></li>
     <li><a href="{% url socialauth_begin "twitter" %}">{% trans "Sign in with" %} Twitter</a></li>
     <li><a href="{% url socialauth_begin "facebook" %}">{% trans "Sign in with" %} Facebook</a></li>
 </ul>
