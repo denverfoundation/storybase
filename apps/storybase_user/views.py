@@ -1,11 +1,23 @@
 """Views"""
 
+from django.contrib.auth.decorators import login_required
 from django.template import Context
 from django.template.loader import get_template
+from django.utils.decorators import method_decorator
+from django.views.generic.base import TemplateView
 from django.views.generic.list import ListView
 
 from storybase.views.generic import ModelIdDetailView
 from storybase_user.models import Organization, Project
+
+class AccountSummaryView(TemplateView):
+    """Display user account information"""
+    template_name = "storybase_user/account_summary.html"
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(AccountSummaryView, self).dispatch(*args, **kwargs)
+
 
 class OrganizationDetailView(ModelIdDetailView):
     """Display details about an Organization"""

@@ -53,6 +53,9 @@ urlpatterns += patterns('',
     (r'^accounts/', include('registration.backends.default.urls')),
     (r'^accounts/', include('social_auth.urls')),
 
+    # StoryBase account management
+    (r'^accounts/', include('storybase_user.account_urls')),
+
     # django CMS URLs
     url(r'^', include('cms.urls')),
 

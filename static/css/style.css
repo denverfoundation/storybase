@@ -319,12 +319,18 @@ header.pagetop h1 a {
 #sitenav .navroot {
   list-style: none;
   height: 10%;
+  position: relative;
 }
 
 #sitenav li {
   padding: 4px 8px;
   background-color: #666666;
   position: relative;
+}
+
+#sitenav li.accounts {
+  position: absolute;
+  right: 0;
 }
 
 #sitenav li a {
