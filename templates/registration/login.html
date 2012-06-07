@@ -2,6 +2,8 @@
 
 {% load cms_tags sekizai_tags menu_tags i18n %}
 
+{% block head_title %}{% trans "Sign In" %}{% endblock %}
+
 {% block base_content %}
 <form method="post">
   {% csrf_token %}
