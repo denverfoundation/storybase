@@ -50,7 +50,7 @@ urlpatterns += patterns('',
 
     # 3rd-party apps
     (r'^tinymce/', include('tinymce.urls')),
-    (r'^accounts/', include('registration.backends.default.urls')),
+    (r'^accounts/', include('storybase_user.registration.backends.extrainfo.urls')),
     (r'^accounts/', include('social_auth.urls')),
 
     # StoryBase account management
