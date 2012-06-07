@@ -57,9 +57,6 @@
   <header class="container pagetop">
     <nav class="help row">
       <ul>
-	{% if not user.is_authenticated %}
-	<li><a href="{% url auth_login %}">{% trans "Sign In" %}</a></li>
-	{% endif %}
         <li>{% language_chooser %}</li>
         <li><a href="{% url contact %}">{% trans "Contact Us" %}</a></li>
       </ul>
@@ -71,9 +68,7 @@
     <nav id="sitenav" class="row">
       <ul class="navroot">
         {% show_menu 0 1 2 %}
-	{% if user.is_authenticated %}
 	{% include "account_menu.html" %}
-	{% endif %}
       </ul>
     </nav>
   </header>
