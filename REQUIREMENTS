@@ -38,3 +38,5 @@ git+git://github.com/ghing/djangoembed.git#egg=djangoembed-0.1.1-py2.7-dev
 # InheritanceManager.get_subclass()
 hg+https://bitbucket.org/carljm/django-model-utils
 django-categories
+social_auth
+registration
