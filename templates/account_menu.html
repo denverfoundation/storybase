@@ -2,15 +2,13 @@
 Account management links included in the main navigation menu
 {% endcomment %}
 {% load i18n %}
+{% if user.is_authenticated %}
 <li class="accounts">
-  {% if user.is_authenticated %}
   <a href="{% url account_summary %}">{% trans "My Account" %}</a>
   <ul>
     <li><a href="{% url auth_logout %}">{% trans "Sign Out" %}</a>
   </ul>
-  {% else %}
-  <a href="{% url auth_login %}">{% trans "Sign In" %}</a>
-  {% endif %}
 </li>
+{% endif %}
 
 

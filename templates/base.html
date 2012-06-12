@@ -59,6 +59,11 @@
       <ul>
         <li>{% language_chooser %}</li>
         <li><a href="{% url contact %}">{% trans "Contact Us" %}</a></li>
+	{% if user.is_authenticated %}
+        <li><a href="{% url auth_logout %}">{% trans "Sign Out" %}</a>
+	{% else %}
+	<li><a href="{% url auth_login %}">{% trans "Sign In" %}</a></li>
+	{% endif %}
       </ul>
     </nav>
     <h1 class="row"><a href="/">{{ storybase_site_name }}</a></h1>
