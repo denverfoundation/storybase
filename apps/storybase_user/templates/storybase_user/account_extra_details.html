@@ -1,0 +1,15 @@
+{% extends "base.html" %}
+
+{% load cms_tags sekizai_tags menu_tags i18n %}
+
+{% block head_title %}{% trans "Provide additional information" %}{% endblock %}
+
+{% block base_content %}
+<h1>{% trans "Provide additional information" %}</h1>
+
+<form method="post">
+  {% csrf_token %}
+  {{ form.as_p }}
+  <input type="submit" value="{% trans "Submit" %}" />
+</form>
+{% endblock %}

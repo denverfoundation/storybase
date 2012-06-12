@@ -10,9 +10,11 @@ from django.conf.urls.defaults import *
 from django.contrib.auth.views import password_reset
 
 from storybase_user.views import AccountSummaryView
+from storybase_user.social_auth.views import GetExtraAccountDetailsView 
 
 urlpatterns = patterns('',
     url(r'^$', AccountSummaryView.as_view(),
 	name='account_summary'),
+    url(r'^extradetails/$', GetExtraAccountDetailsView.as_view(), name='account_extra_details'),
     url(r'^password/reset$', password_reset, name='password_reset'),
 )
