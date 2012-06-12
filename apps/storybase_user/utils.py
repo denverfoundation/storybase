@@ -1,5 +1,7 @@
 """Utility functions for dealing with users and groups of users"""
 
+import re
+
 from django.contrib.auth.models import User
 
 import storybase_user.models
@@ -33,3 +35,20 @@ def bulk_create_organization(hashes, name_field='name',
 def bulk_create_project(hashes, name_field='name',
                         description_field='description'):
     bulk_create(Project, hashes, name_field, description_field)
+
+def split_name(full_name):
+    """Split a full name into first and last names"""
+    first_name = ""
+    last_name = ""
+    # Split the name along whitespace
+    name_chunks = re.split(r'\s+', full_name)
+    if len(name_chunks):
+        if len(name_chunks) >= 2:
+            first_name = ' '.join(name_chunks[:-1])
+            last_name = name_chunks[-1]
+        else:
+            # Only one part of the name, set the first name
+            first_name = name_chunks[0]
+
+    return (first_name, last_name)
+
