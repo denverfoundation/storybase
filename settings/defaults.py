@@ -200,6 +200,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 AUTHENTICATION_BACKENDS = (
     'social_auth.backends.twitter.TwitterBackend',
     'social_auth.backends.facebook.FacebookBackend',
+    'storybase_user.auth.backends.EmailModelBackend',
+    # Allow lookup by username, but try email address first
     'django.contrib.auth.backends.ModelBackend',
 )
 

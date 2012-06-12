@@ -38,6 +38,11 @@ urlpatterns += patterns('',
     # url(r'^$', 'atlas.views.home', name='home'),
     # url(r'^atlas/', include('atlas.foo.urls')),
 
+    # StoryBase account management
+    # This needs to come before the admin URLs in order to use
+    # the custom login form
+    (r'^accounts/', include('storybase_user.account_urls')),
+
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 
@@ -53,8 +58,6 @@ urlpatterns += patterns('',
     (r'^accounts/', include('storybase_user.registration.backends.extrainfo.urls')),
     (r'^accounts/', include('social_auth.urls')),
 
-    # StoryBase account management
-    (r'^accounts/', include('storybase_user.account_urls')),
 
     # django CMS URLs
     url(r'^', include('cms.urls')),
