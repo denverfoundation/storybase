@@ -7,16 +7,27 @@
 {% block base_content %}
 <h1>{% trans "Sign In" %}</h1>
 
+<p><a href="{% url registration_register %}">{% trans "Need to create an account?" %}</a></p>
+
+{% if social_auth %}
+<h2>{% trans "Sign in using your favorite social media account" %}</h2>
+<ul>
+  {% for name, value in social_auth.items %}
+  <li><a href="{% url socialauth_begin name %}" class="{{ name }}">{{ name|capfirst }}</a></li>
+  {% endfor %}
+</ul>
+{% endif %}
+
+<h2>{% blocktrans %}Or, sign in with your {{ storybase_site_name }} account{% endblocktrans %}</h2>
+
 <form method="post">
   {% csrf_token %}
   {{ form.as_p }}
   <input type="submit" value="{% trans "Sign In" %}" />
 </form>
+
 <ul>
-    <li><a href="{% url registration_register %}">{% trans "Sign Up" %}</a></li>
     <li><a href="{%url password_reset %}">{% trans "Forgot password?" %}</a></li>
-    <li><a href="{% url socialauth_begin "twitter" %}">{% trans "Sign in with" %} Twitter</a></li>
-    <li><a href="{% url socialauth_begin "facebook" %}">{% trans "Sign in with" %} Facebook</a></li>
 </ul>
 
 {% endblock %}
