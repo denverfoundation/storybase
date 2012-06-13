@@ -55,30 +55,13 @@ class CustomContextPasswordResetForm(PasswordResetForm):
         """
         Generates a one-use only link for resetting password and sends to the user
         """
-        from django.core.mail import send_mail
-        from django.contrib.sites.models import get_current_site
-        from django.template import Context, loader
-        from django.utils.http import int_to_base36
+        from storybase_user.auth.utils import send_password_reset_email
         for user in self.users_cache:
-            if not domain_override:
-                current_site = get_current_site(request)
-                site_name = current_site.name
-                domain = current_site.domain
-            else:
-                site_name = domain = domain_override
-            t = loader.get_template(email_template_name)
-            c = {
-                'email': user.email,
-                'domain': domain,
-                'site_name': site_name,
-                'uid': int_to_base36(user.id),
-                'user': user,
-                'token': token_generator.make_token(user),
-                'protocol': use_https and 'https' or 'http',
-            }
-            # Update the context dict with custom context
-            # At first, I thought I could just use RequestContext, but this
-            # clobbers the user variable
-            c.update(self.get_custom_context(request))
-            send_mail(_("Password reset on %s") % site_name,
-                t.render(Context(c)), from_email, [user.email])
+            send_password_reset_email(user,
+                domain_override=domain_override, 
+                email_template_name=email_template_name,
+                use_https=use_https,
+                token_generator=token_generator,
+                from_email=from_email,
+                request=request,
+                extra_context=self.get_custom_context(request))
