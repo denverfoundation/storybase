@@ -194,6 +194,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.static',
     'cms.context_processors.media',
     'sekizai.context_processors.sekizai',
+    'social_auth.context_processors.social_auth_by_name_backends',
     'storybase.context_processors.conf',
 )
 
@@ -217,6 +218,8 @@ SOCIAL_AUTH_PIPELINE = (
     'social_auth.backends.pipeline.social.load_extra_data',
     'social_auth.backends.pipeline.user.update_user_details',
 )
+SOCIAL_AUTH_NEW_ASSOCIATION_REDIRECT_URL = '/accounts/'
+SOCIAL_AUTH_DISCONNECT_REDIRECT_URL = '/accounts/'
 
 # A sample logging configuration. The only tangible logging
 # performed by this configuration is to send an email to
