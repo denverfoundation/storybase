@@ -5,6 +5,7 @@ from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
 from storybase.admin import StorybaseModelAdmin, StorybaseStackedInline
+from storybase_story.models import Story
 from storybase_user.models import (Organization, OrganizationTranslation, 
                                    Project, ProjectStory, 
                                    ProjectTranslation)
@@ -24,6 +25,10 @@ class StoryUserAdminForm(UserChangeForm):
     projects = forms.ModelMultipleChoiceField(
         queryset=Project.objects.all(),
         required=False)
+    stories = forms.ModelMultipleChoiceField(
+        queryset=Story.objects.all(),
+        required=False)
+
 
 def send_password_reset_emails(modeladmin, request, queryset):
     """Send a password reset email to users
@@ -63,6 +68,7 @@ class StoryUserAdmin(UserAdmin):
         # These are the custom fieldsets
         (_('Organizations'), {'fields': ('organizations',)}),
         (_('Projects'), {'fields': ('projects',)}),
+        (_('Stories'), {'fields': ('stories',)}),
     )
 
     list_filter = UserAdmin.list_filter + ('groups__name',)
@@ -73,10 +79,13 @@ class StoryUserAdmin(UserAdmin):
             # Object is not new
             obj.organizations.clear()
             obj.projects.clear()
+            obj.stories.clear()
             for organization in form.cleaned_data['organizations']:
                 obj.organizations.add(organization)
             for project in form.cleaned_data['projects']:
                 obj.projects.add(project)
+            for story in form.cleaned_data['stories']:
+                obj.stories.add(story)
 
         obj.save()
 
@@ -84,6 +93,8 @@ class StoryUserAdmin(UserAdmin):
         if obj:
             self.form.base_fields['organizations'].initial = obj.organizations.all()
             self.form.base_fields['projects'].initial = obj.projects.all()
+            self.form.base_fields['stories'].queryset = obj.stories.all()
+            self.form.base_fields['stories'].initial = obj.stories.all()
         return super(StoryUserAdmin, self).get_form(request, obj)
 
 admin.site.unregister(User)
