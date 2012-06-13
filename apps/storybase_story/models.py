@@ -135,8 +135,8 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
         Return the contributor's first name and last initial or username
         """ 
         contributor = self.author
-        contributor_name = contributor.username
-        if contributor.first_name:
+        contributor_name = "" 
+        if contributor.is_active and contributor.first_name:
             contributor_name = contributor.first_name 
                                 
             if contributor.last_name:
