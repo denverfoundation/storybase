@@ -25,6 +25,8 @@ have write permissions on it. This is what I did to get started:
  
     $ sudo addgroup atlas
     $ sudo adduser ghing atlas
+    # Add Apache's user to the group so it can write to the log directory
+    $ sudo usermod -g atlas www-data
     $ sudo mkdir /srv/www/atlas_dev
     $ sudo chgrp atlas /srv/www/atlas_dev
     $ sudo chmod g+rwxs /srv/www/atlas_dev
