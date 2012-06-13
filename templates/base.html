@@ -61,6 +61,7 @@
         <li><a href="{% url contact %}">{% trans "Contact Us" %}</a></li>
 	{% if user.is_authenticated %}
         <li><a href="{% url auth_logout %}">{% trans "Sign Out" %}</a>
+	<li>{% trans "Welcome" %}, <a href="{% url account_summary %}">{{ user.first_name }}</a></li>
 	{% else %}
 	<li><a href="{% url auth_login %}">{% trans "Sign In" %}</a></li>
 	{% endif %}
