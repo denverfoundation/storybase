@@ -14,7 +14,8 @@ def conf(request):
 		    'STORYBASE_PROJECT_LIST_TITLE', 'STORYBASE_MAP_CENTER',
                     'STORYBASE_MAP_ZOOM_LEVEL',
                     'STORYBASE_MAP_POINT_ZOOM_LEVEL',
-                    'STORYBASE_SEARCH_DISTANCE')
+                    'STORYBASE_SEARCH_DISTANCE',
+                    'STORYBASE_CONTACT_EMAIL')
     json_settings = ('STORYBASE_MAP_CENTER',)
     context = {}
 

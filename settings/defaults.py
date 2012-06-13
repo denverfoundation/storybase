@@ -296,6 +296,7 @@ STORYBASE_MAP_ZOOM_LEVEL = 11
 STORYBASE_SEARCH_DISTANCE = 1
 # Zoom level when zooming into a point
 STORYBASE_MAP_POINT_ZOOM_LEVEL = 14
+STORYBASE_CONTACT_EMAIL = ""
 
 # Pick one of the two
 # TODO: Choose a better redirect URL
