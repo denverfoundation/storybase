@@ -231,7 +231,7 @@ LOGGING = {
     'disable_existing_loggers': False,
     'handlers': {
         'mail_admins': {
-            'level': 'ERROR',
+            'level': 'INFO',
             'class': 'django.utils.log.AdminEmailHandler'
         }
     },
@@ -240,6 +240,11 @@ LOGGING = {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
             'propagate': True,
+        },
+        'storybase_user.admin': {
+            'handlers': ['mail_admins'],
+            'level': 'INFO',
+            'propogate': True,
         },
     }
 }

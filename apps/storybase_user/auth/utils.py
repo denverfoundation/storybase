@@ -13,10 +13,13 @@ def send_password_reset_email(user, domain_override=None,
     Based on django.contrib.auth.forms.ResetPasswordForm.save()
 
     """
+    import logging
     from django.core.mail import send_mail
     from django.contrib.sites.models import get_current_site
     from django.template import Context, loader
     from django.utils.http import int_to_base36
+
+    logger = logging.getLogger('storybase_user.admin')
 
     if not domain_override:
         current_site = get_current_site(request)
@@ -37,3 +40,4 @@ def send_password_reset_email(user, domain_override=None,
     c.update(extra_context)
     send_mail(_("Password reset on %s") % site_name,
         t.render(Context(c)), from_email, [user.email])
+    logger.info("Password reset email sent to %s" % (user.email))
