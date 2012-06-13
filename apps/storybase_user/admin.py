@@ -25,6 +25,20 @@ class StoryUserAdminForm(UserChangeForm):
         queryset=Project.objects.all(),
         required=False)
 
+def send_password_reset_emails(modeladmin, request, queryset):
+    """Send a password reset email to users
+    
+    This is an admin action.
+    """
+    from storybase.context_processors import conf
+    from storybase_user.auth.utils import send_password_reset_email
+    
+    for user in queryset:
+        send_password_reset_email(user, request=request, 
+                                  extra_context=conf(request))
+send_password_reset_emails.short_description = "Send password reset email"
+
+
 class StoryUserAdmin(UserAdmin):
     """
     Custom admin for Users
@@ -47,6 +61,7 @@ class StoryUserAdmin(UserAdmin):
     )
 
     list_filter = UserAdmin.list_filter + ('groups__name',)
+    actions = [send_password_reset_emails]
 
     def save_model(self, request, obj, form, change):  
         if getattr(obj, 'pk', None) is not None:
