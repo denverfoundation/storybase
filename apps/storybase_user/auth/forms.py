@@ -48,7 +48,6 @@ class CustomContextPasswordResetForm(PasswordResetForm):
         from storybase.context_processors import conf
         # Return site-wide configuration context variables 
         context = conf(request)
-        print context
         return context 
 
     def save(self, domain_override=None, email_template_name='registration/password_reset_email.html',
@@ -81,6 +80,5 @@ class CustomContextPasswordResetForm(PasswordResetForm):
             # At first, I thought I could just use RequestContext, but this
             # clobbers the user variable
             c.update(self.get_custom_context(request))
-            print Context(c)
             send_mail(_("Password reset on %s") % site_name,
                 t.render(Context(c)), from_email, [user.email])
