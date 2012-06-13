@@ -229,6 +229,11 @@ SOCIAL_AUTH_DISCONNECT_REDIRECT_URL = '/accounts/'
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': False,
+    'formatters': {
+        'default': {
+            'format': '%(asctime)s %(levelname)s %(module)s %(message)s'
+        },
+    },
     'handlers': {
         'mail_admins': {
             'level': 'INFO',
