@@ -7,6 +7,16 @@ from registration.forms import RegistrationFormUniqueEmail
 # https://bitbucket.org/hakanw/django-email-usernames
 class EmailUsernameRegistrationForm(RegistrationFormUniqueEmail):
     """Registration form that uses the user's email address for the username"""
+
+    # If django-passwords is installed, replace the password fields with
+    # the fields from this package for extra validation
+    try:
+        from passwords.fields import PasswordField
+        password1 = PasswordField(label=_("Password"))
+        password2 = PasswordField(label=_("Password (again)"))
+    except ImportError:
+        pass
+
     def __init__(self, *args, **kwargs):
         super(EmailUsernameRegistrationForm, self).__init__(*args, **kwargs)
         # Remove the username field

@@ -40,3 +40,5 @@ hg+https://bitbucket.org/carljm/django-model-utils
 django-categories
 django-social-auth
 django-registration
+# django-passwords is optional
+django-passwords

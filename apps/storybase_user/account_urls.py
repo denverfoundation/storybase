@@ -7,9 +7,10 @@ at a different root than the other URL patterns.
 """
 
 from django.conf.urls.defaults import *
-from django.contrib.auth.views import password_reset
 
-from storybase_user.auth.forms import EmailAuthenticationForm
+from storybase_user.auth.forms import (EmailAuthenticationForm,
+                                       CustomContextPasswordResetForm,
+                                       StrongSetPasswordForm)
 from storybase_user.views import AccountSummaryView
 from storybase_user.social_auth.views import GetExtraAccountDetailsView 
 
@@ -17,6 +18,15 @@ urlpatterns = patterns('',
     url(r'^$', AccountSummaryView.as_view(),
 	name='account_summary'),
     url(r'^extradetails/$', GetExtraAccountDetailsView.as_view(), name='account_extra_details'),
-    url(r'^password/reset$', password_reset, name='password_reset'),
+    url(r'^password/change/$', 'django.contrib.auth.views.password_change',
+        {'password_change_form': StrongSetPasswordForm},
+        name='auth_password_change'),
+    url(r'^password/reset/$', 'django.contrib.auth.views.password_reset', 
+        {'password_reset_form': CustomContextPasswordResetForm},
+        name='password_reset'),
+    url(r'^password/reset/confirm/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)/$',
+        'django.contrib.auth.views.password_reset_confirm',
+        {'set_password_form': StrongSetPasswordForm},
+        name='auth_password_reset_confirm'),
     (r'^login/$', 'django.contrib.auth.views.login', {'authentication_form': EmailAuthenticationForm}),
 )
