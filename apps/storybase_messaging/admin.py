@@ -2,7 +2,14 @@ from django.contrib import admin
 from django.utils.translation import ugettext_lazy as _
 
 from storybase.admin import (StorybaseModelAdmin, StorybaseStackedInline)
-from storybase_messaging.models import SystemMessage, SystemMessageTranslation
+from storybase_messaging.models import (SiteContactMessage, SystemMessage,
+                                        SystemMessageTranslation)
+
+
+class SiteContactMessageAdmin(StorybaseModelAdmin):
+    """Admin interface for SiteContactMessage model"""
+    list_display = ('name', 'email', 'created')
+
 
 class SystemMessageTranslationInline(StorybaseStackedInline):
     """Inline for translated fields of a Story"""
@@ -37,4 +44,6 @@ class SystemMessageAdmin(StorybaseModelAdmin):
     actions = [send_message]
     prefix_inline_classes = ['SystemMessageTranslationInline']
 
+
+admin.site.register(SiteContactMessage, SiteContactMessageAdmin)
 admin.site.register(SystemMessage, SystemMessageAdmin)

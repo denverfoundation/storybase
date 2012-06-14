@@ -177,7 +177,6 @@ INSTALLED_APPS = (
 
     # StoryBase
     'storybase',
-    'storybase_action',
     'storybase_user',
     'storybase_asset',
     'storybase_story',

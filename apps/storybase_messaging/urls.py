@@ -1,8 +1,8 @@
-"""URL routing for actions app"""
-
 from django.conf.urls.defaults import patterns, url
 
-from storybase_action.views import SiteContactMessageCreateView
+from storybase_messaging.views import SiteContactMessageCreateView
+
+print "GOT HERE"
 
 urlpatterns = patterns('',
     url(r'^contact/$',
