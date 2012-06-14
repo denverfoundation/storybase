@@ -1138,7 +1138,7 @@ class StoryResourceTest(ResourceTestCase):
 
     def test_post_list_unauthorized(self):
         """Test that a user cannot create a story if they aren't logged in"""
-        return self.assertHttpUnauthorized(self.api_client.post('/api/0.1/stories/', format='json'))
+        self.assertHttpUnauthorized(self.api_client.post('/api/0.1/stories/', format='json'))
 
     def test_post_list(self):
         """Test that a user can create a story"""
@@ -1192,6 +1192,58 @@ class StoryResourceTest(ResourceTestCase):
         returned_story_id = response['location'].split('/')[-2]
         self.assertEqual(created_story.story_id, returned_story_id)
 
+    def test_patch_detail_unauthorized_unauthenticated(self):
+        """Test that anonymouse users cannot update a story"""
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status='published',
+                             author=self.user)
+        post_data = {
+            'title': "New Title",
+            'summary': "New Summary",
+            'byline': "New Byline",
+            'status': "published",
+        }
+        response = self.api_client.patch('/api/0.1/stories/%s/' % (story.story_id),
+                               format='json', data=post_data)
+        self.assertHttpUnauthorized(response)
+
+    def test_patch_detail_unauthorized(self):
+        """Test that user who is not author cannot update a story"""
+        author = User.objects.create_user("test2", "test2@example.com", "test2")
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status='published',
+                             author=author)
+        self.api_client.client.login(username=self.username, password=self.password)
+        post_data = {
+            'title': "New Title",
+            'summary': "New Summary",
+            'byline': "New Byline",
+            'status': "published",
+        }
+        response = self.api_client.patch('/api/0.1/stories/%s/' % (story.story_id),
+                               format='json', data=post_data)
+        self.assertHttpUnauthorized(response)
+
+    def test_patch_detail(self):
+        """Test that an author can update her own story"""
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status='published',
+                             author=self.user)
+        self.api_client.client.login(username=self.username, password=self.password)
+        data = {
+            'title': "New Title",
+            'summary': "New Summary",
+            'byline': "New Byline",
+            'status': "published",
+        }
+        response = self.api_client.patch('/api/0.1/stories/%s/' % (story.story_id),
+                               format='json', data=data)
+        self.assertHttpAccepted(response)
+        story.update()
+        self.assertEqual(story.title, data['title'])
+        self.assertEqual(story.summary, data['summary'])
+        self.assertEqual(story.byline, data['byline'])
+        self.assertEqual(story.status, data['status'])
 
 
 class StoryExploreResourceTest(TestCase):
