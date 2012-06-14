@@ -11,6 +11,7 @@ from django.utils import translation
 from uuidfield.fields import UUIDField
 
 from storybase.models.dirtyfields import DirtyFieldsMixin
+from storybase.utils import get_language_name
 
 LICENSES = (
    ('CC BY-NC-SA', u'Attribution-NonCommercial-ShareAlike Creative Commons'),
@@ -118,6 +119,11 @@ class TranslatedModel(models.Model):
         translated_manager = getattr(self, translation_set)
         return [trans.language 
                 for trans in translated_manager.all()]
+
+    def get_language_urls(self):
+        """Return a list of language codes, full names and URLs"""
+        return [{ 'id': code, 'name': get_language_name(code), 'url': "/%s%s" % (code, self.get_absolute_url()) }
+                for code in self.get_languages()]
 
 
     @classmethod

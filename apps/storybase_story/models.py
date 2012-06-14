@@ -15,7 +15,6 @@ from django_dag.models import edge_factory, node_factory
 
 from uuidfield.fields import UUIDField
 
-from storybase.utils import get_language_name
 from storybase.fields import ShortTextField
 from storybase.models import (LicensedModel, PublishedModel,
     TimestampedModel, TranslatedModel, TranslationModel,
@@ -280,10 +279,6 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
 
         return points
 
-    @property
-    def languages(self):
-        return [{ 'id': code, 'name': get_language_name(code), 'url': "/%s%s" % (code, self.get_absolute_url()) }
-                for code in self.get_languages()]
 
 
 def set_story_slug(sender, instance, **kwargs):
