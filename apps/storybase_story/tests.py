@@ -1166,6 +1166,33 @@ class StoryResourceTest(ResourceTestCase):
         returned_story_id = response['location'].split('/')[-2]
         self.assertEqual(created_story.story_id, returned_story_id)
 
+    def test_post_list_es(self):
+        """Test that a user can create a story in Spanish"""
+        post_data = {
+            'title': "Test Story",
+            'summary': "Test Summary",
+            'byline': "Test Byline",
+            'status': "draft",
+            'language': "es",
+        }
+        self.assertEqual(Story.objects.count(), 0)
+        self.api_client.client.login(username=self.username, password=self.password)
+        response = self.api_client.post('/api/0.1/stories/',
+                               format='json', data=post_data)
+        self.assertHttpCreated(response)
+        self.assertEqual(Story.objects.count(), 1)
+        created_story = Story.objects.get()
+        self.assertEqual(created_story.title, post_data['title'])
+        self.assertEqual(created_story.summary, post_data['summary'])
+        self.assertEqual(created_story.byline, post_data['byline'])
+        self.assertEqual(created_story.status, post_data['status'])
+        self.assertEqual(created_story.get_languages(), [post_data['language']])
+        self.assertEqual(created_story.author, self.user)
+        # Check that the story id is returned by the endpoint
+        returned_story_id = response['location'].split('/')[-2]
+        self.assertEqual(created_story.story_id, returned_story_id)
+
+
 
 class StoryExploreResourceTest(TestCase):
     """Test story exploration REST endpoint"""

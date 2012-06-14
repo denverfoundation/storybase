@@ -1,5 +1,6 @@
 """REST API for Stories"""
 
+from django.conf import settings
 from django.conf.urls.defaults import url
 from django.core.urlresolvers import NoReverseMatch
 
@@ -47,6 +48,11 @@ class LoggedInAuthorization(Authorization):
 
 class TranslatedModelResource(ModelResource):
     """A version of ModelResource that handles our translation implementation"""
+    # This is a write-only field that we include to allow specifying the
+    # language when creating an object.  We remove it from the response in
+    # dehydrate()
+    language = fields.CharField(attribute='language', default=settings.LANGUAGE_CODE)
+    languages = fields.ListField(readonly=True)
 
     def full_hydrate(self, bundle):
         """
@@ -97,6 +103,13 @@ class TranslatedModelResource(ModelResource):
 
         return bundle
 
+    def dehydrate(self, bundle):
+        # Remove the language field since it doesn't make sense in the response
+        del bundle.data['language']
+        return bundle
+
+    def dehydrate_languages(self, bundle):
+        return bundle.obj.get_language_urls() 
 
     def obj_create(self, bundle, request=None, **kwargs):
         """
@@ -146,7 +159,6 @@ class StoryResource(TranslatedModelResource):
     topics = fields.ListField(readonly=True)
     organizations = fields.ListField(readonly=True)
     projects = fields.ListField(readonly=True)
-    languages = fields.ListField(readonly=True, attribute='languages')
     # A list of lat/lon values for related Location objects as well as
     # centroids of Place tags
     points = fields.ListField(readonly=True)
@@ -164,30 +176,30 @@ class StoryResource(TranslatedModelResource):
         explore_point_field = 'points'
 
     def override_urls(self):
+        return self.prepend_urls()
+
+    def prepend_urls(self):
         return [
             url(r'^(?P<resource_name>%s)/explore%s$'  % (self._meta.resource_name, trailing_slash()), self.wrap_view('explore_get_list'), name="api_explore_get_list"),
             url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/$" % self._meta.resource_name, self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
         ]
 
-    def get_resource_uri(self, bundle_or_obj):
+    def detail_uri_kwargs(self, bundle_or_obj):
         """
-        Handles generating a resource URI for a single resource.
+        Given a ``Bundle`` or an object (typically a ``Model`` instance),
+        it returns the extra kwargs needed to generate a detail URI.
 
-        Uses the model's ``story_id`` in order to create the URI.
+        This version returns the story_id field instead of the pk
         """
-        kwargs = {
-            'resource_name': self._meta.resource_name,
-        }
+        kwargs = {}
 
         if isinstance(bundle_or_obj, Bundle):
-            kwargs['pk'] = bundle_or_obj.obj.story_id
+            kwargs[self._meta.detail_uri_name] = bundle_or_obj.obj.story_id
         else:
-            kwargs['pk'] = bundle_or_obj.story_id
+            kwargs[self._meta.detail_uri_name] = bundle_or_obj.story_id
 
-        if self._meta.api_name is not None:
-            kwargs['api_name'] = self._meta.api_name
+        return kwargs
 
-        return self._build_reverse_url("api_dispatch_detail", kwargs=kwargs)
 
     def obj_create(self, bundle, request=None, **kwargs):
         # Set the story's author to the request's user
