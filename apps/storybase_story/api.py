@@ -30,17 +30,31 @@ class LoggedInAuthorization(Authorization):
 
         # Users must be logged-in and active in order to use
         # non-GET-style methods
-        if (not request.user.is_authenticated or 
+        if (not hasattr(request, 'user') or
+            not request.user.is_authenticated or 
             not request.user.is_active):
             return False
+
+        # Logged in users can create new objects
+        if request.method in ('POST') and object is None:
+            return True
 
         # TODO: Check this on a per-user/object basis
         # For now, disallow these methods
         if request.method in ('PUT', 'PATCH', 'DELETE'):
             return False
 
-        if request.method in ('POST'):
-            return True
+        permission_map = {
+            'POST': ['add'],
+            'PUT': ['change'],
+            'DELETE': ['delete'],
+            'PATCH': ['add', 'change', 'delete'],
+        }
+        permission_codes = permission_map[request.method]
+
+        if hasattr(object, 'has_perms'):
+            # If the object supports row-level permissions,
+            return object.has_perms(request.user, permission_codes)
 
         # Fall-back to failure
         return False 
@@ -166,7 +180,7 @@ class StoryResource(TranslatedModelResource):
     class Meta:
         queryset = Story.objects.filter(status__exact='published')
         resource_name = 'stories'
-        allowed_methods = ['get', 'post']
+        allowed_methods = ['get', 'post', 'patch']
         authentication = Authentication()
         authorization = LoggedInAuthorization()
         # Hide the underlying id
