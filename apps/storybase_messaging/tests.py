@@ -4,8 +4,8 @@ from django.conf import settings
 from django.contrib.auth.models import Group, User
 from django.test import TestCase
 
-from storybase_action.models import SiteContactMessage
 from storybase_user.models import ADMIN_GROUP_NAME
+from storybase_messaging.models import SiteContactMessage
 
 class SiteContactMessageModelTest(TestCase):
     """Test methods of the SiteContactMessge model"""

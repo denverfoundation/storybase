@@ -1,12 +1,10 @@
-"""Views for the actions app"""
-
 from django.contrib import messages
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 from django.views.generic import CreateView
 
-from storybase_action.forms import SiteContactMessageForm
-from storybase_action.models import SiteContactMessage 
+from storybase_messaging.forms import SiteContactMessageForm
+from storybase_messaging.models import SiteContactMessage 
 
 class SiteContactMessageCreateView(CreateView):
     """View for site-wide contact form"""

@@ -172,16 +172,17 @@ INSTALLED_APPS = (
     'tinymce',
     'registration',
     'social_auth',
+    'notification',
 
 
     # StoryBase
     'storybase',
-    'storybase_action',
     'storybase_user',
     'storybase_asset',
     'storybase_story',
     'storybase_taxonomy',
     'storybase_geo',
+    'storybase_messaging',
     'cmsplugin_storybase',
 )
 
