@@ -187,8 +187,8 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
 
     def test_contributor_name_no_names(self):
         """
-        Test that the Story.contributor_name returns the username 
-        the Story's author user when there is no first or last name
+        Test that the Story.contributor_name returns an empty string 
+         when there is no first or last name
         """
         user = User.objects.create(username='admin')
         title = ('Transportation Challenges Limit Education Choices for '
@@ -204,7 +204,7 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
         byline = "Mile High Connects"
         story = create_story(title=title, summary=summary, byline=byline,
                              author=user)
-        self.assertEqual(story.contributor_name, 'admin')
+        self.assertEqual(story.contributor_name, '')
 
 
 class StoryApiTest(TestCase):
