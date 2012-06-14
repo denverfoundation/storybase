@@ -15,7 +15,10 @@ git+https://github.com/toastdriven/django-haystack.git@master#egg=django-haystac
 django-mptt==0.5.1
 django-reversion==1.4
 django-sekizai==0.5
-django-tastypie==0.9.11
+# Use trunk of django-tastypie because it has testing utilities that aren't in
+# 0.9.11 
+#django-tastypie==0.9.11
+git+https://github.com/toastdriven/django-tastypie.git@master#egg=django-tastypie
 django-tinymce==1.5.1b2
 django-uni-form==0.9.0
 geopy
