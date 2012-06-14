@@ -1,11 +1,15 @@
 """Unit tests for storybase_story app"""
 
 from time import sleep
+
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.http import HttpRequest
 from django.test import TestCase
 from django.utils import simplejson
+
+from tastypie.test import ResourceTestCase
+
 from storybase.tests.base import SloppyComparisonTestMixin
 from storybase.utils import slugify
 from storybase_asset.models import HtmlAsset, HtmlAssetTranslation
@@ -1093,10 +1097,14 @@ class StructureTest(TestCase):
 	self.assertEqual(json_sections[-2]['next_section_id'], 'call-to-action')
 
 
-class StoryResourceTest(TestCase):
+class StoryResourceTest(ResourceTestCase):
     """Tests for backend to Tastypie-driven REST endpoint"""
     def setUp(self):
+        super(StoryResourceTest, self).setUp()
         self.resource = StoryResource()
+        self.username = 'test'
+        self.password = 'test'
+        self.user = User.objects.create_user(self.username, 'test@example.com', self.password)
 
     def assertPointInList(self, point, l):
         for p in l:
@@ -1127,6 +1135,37 @@ class StoryResourceTest(TestCase):
         for location in locations:
             self.assertPointInList([location.lat, location.lng],
                                    dehydrated['points'])
+
+    def test_post_list_unauthorized(self):
+        """Test that a user cannot create a story if they aren't logged in"""
+        return self.assertHttpUnauthorized(self.api_client.post('/api/0.1/stories/', format='json'))
+
+    def test_post_list(self):
+        """Test that a user can create a story"""
+        post_data = {
+            'title': "Test Story",
+            'summary': "Test Summary",
+            'byline': "Test Byline",
+            'status': "draft",
+            'language': "en",
+        }
+        self.assertEqual(Story.objects.count(), 0)
+        self.api_client.client.login(username=self.username, password=self.password)
+        response = self.api_client.post('/api/0.1/stories/',
+                               format='json', data=post_data)
+        self.assertHttpCreated(response)
+        self.assertEqual(Story.objects.count(), 1)
+        created_story = Story.objects.get()
+        self.assertEqual(created_story.title, post_data['title'])
+        self.assertEqual(created_story.summary, post_data['summary'])
+        self.assertEqual(created_story.byline, post_data['byline'])
+        self.assertEqual(created_story.status, post_data['status'])
+        self.assertEqual(created_story.get_languages(), [post_data['language']])
+        self.assertEqual(created_story.author, self.user)
+        # Check that the story id is returned by the endpoint
+        returned_story_id = response['location'].split('/')[-2]
+        self.assertEqual(created_story.story_id, returned_story_id)
+
 
 class StoryExploreResourceTest(TestCase):
     """Test story exploration REST endpoint"""

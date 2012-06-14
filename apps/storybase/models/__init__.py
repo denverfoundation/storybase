@@ -119,9 +119,25 @@ class TranslatedModel(models.Model):
         return [trans.language 
                 for trans in translated_manager.all()]
 
+
+    @classmethod
+    def get_translation_fk_field_name(cls):
+        """
+        Get the name of the ForeignKey field on the translation class
+        """
+        # TODO: Decide if it's better to just follow the convention and 
+        # look for a field that matches the lowercase version of the class'
+        # name, i.e. cls.__name__.lower()
+        for field in cls.translation_class._meta.fields:
+            if field.rel and field.rel.to == cls:
+                return field.name
+
+        return None 
+
     class Meta:
         """Model metadata options"""
         abstract = True
+
 
 class TranslationModel(models.Model):
     """Base class for model that encapsulates translated fields"""

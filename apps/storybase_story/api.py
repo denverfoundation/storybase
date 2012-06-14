@@ -11,7 +11,7 @@ from tastypie.bundle import Bundle
 from tastypie.resources import ModelResource
 from tastypie.utils import trailing_slash
 from tastypie.authentication import Authentication
-from tastypie.authorization import ReadOnlyAuthorization
+from tastypie.authorization import Authorization
 
 from storybase.utils import get_language_name
 from storybase_geo.models import Place
@@ -19,7 +19,126 @@ from storybase_story.models import Story
 from storybase_taxonomy.models import Category
 from storybase_user.models import Organization, Project
 
-class StoryResource(ModelResource):
+
+class LoggedInAuthorization(Authorization):
+    """Custom authorization that checks Django authentication"""
+    def is_authorized(self, request, object=None):
+        # GET-style methods are always allowed.
+        if request.method in ('GET', 'OPTIONS', 'HEAD'):
+            return True
+
+        # Users must be logged-in and active in order to use
+        # non-GET-style methods
+        if (not request.user.is_authenticated or 
+            not request.user.is_active):
+            return False
+
+        # TODO: Check this on a per-user/object basis
+        # For now, disallow these methods
+        if request.method in ('PUT', 'PATCH', 'DELETE'):
+            return False
+
+        if request.method in ('POST'):
+            return True
+
+        # Fall-back to failure
+        return False 
+
+
+class TranslatedModelResource(ModelResource):
+    """A version of ModelResource that handles our translation implementation"""
+
+    def full_hydrate(self, bundle):
+        """
+        Given a populated bundle, distill it and turn it back into
+        a full-fledged object instance, taking into account translations.
+        """
+        object_class = self._meta.object_class
+        translation_class = object_class.translation_class
+        translation_fields = object_class.translated_fields + ['language']
+        
+        if bundle.obj is None:
+            bundle.obj = object_class()
+        if bundle.translation_obj is None:
+            bundle.translation_obj = translation_class()
+        bundle = self.hydrate(bundle)
+        for field_name, field_object in self.fields.items():
+            if field_object.readonly is True:
+                continue
+
+            # Check for an optional method to do further hydration.
+            method = getattr(self, "hydrate_%s" % field_name, None)
+
+            if method:
+                bundle = method(bundle)
+            if field_object.attribute:
+                value = field_object.hydrate(bundle)
+
+                # NOTE: We only get back a bundle when it is related field.
+                if isinstance(value, Bundle) and value.errors.get(field_name):
+                    bundle.errors[field_name] = value.errors[field_name]
+
+                if value is not None or field_object.null:
+                    # We need to avoid populating M2M data here as that will
+                    # cause things to blow up.
+                    if not getattr(field_object, 'is_related', False):
+                        if field_object.attribute in translation_fields:
+                            setattr(bundle.translation_obj, field_object.attribute, value)
+                        else:
+                            setattr(bundle.obj, field_object.attribute, value)
+
+                    elif not getattr(field_object, 'is_m2m', False):
+                        if value is not None:
+                            setattr(bundle.obj, field_object.attribute, value.obj)
+                        elif field_object.blank:
+                            continue
+                        elif field_object.null:
+                            setattr(bundle.obj, field_object.attribute, value)
+
+        return bundle
+
+
+    def obj_create(self, bundle, request=None, **kwargs):
+        """
+        A version of ``obj_create`` that deals with translated models
+        """
+
+        object_class = self._meta.object_class
+        translation_class = object_class.translation_class
+        translation_fields = object_class.translated_fields + ['language']
+
+        bundle.obj = object_class()
+        bundle.translation_obj = translation_class()
+
+        for key, value in kwargs.items():
+            if key in translation_fields: 
+                setattr(bundle.translation_obj, key, value)
+            else:
+                setattr(bundle.obj, key, value)
+        bundle = self.full_hydrate(bundle)
+        self.is_valid(bundle,request)
+
+        if bundle.errors:
+            self.error_response(bundle.errors, request)
+
+        # Save FKs just in case.
+        self.save_related(bundle)
+
+        # Save parent
+        bundle.obj.save()
+
+        # Associate and save the translation
+        fk_field_name = object_class.get_translation_fk_field_name()
+        setattr(bundle.translation_obj, fk_field_name, bundle.obj)
+        bundle.translation_obj.save()
+
+        # Now pick up the M2M bits.
+        m2m_bundle = self.hydrate_m2m(bundle)
+        self.save_m2m(m2m_bundle)
+        return bundle
+
+
+class StoryResource(TranslatedModelResource):
     # Explicitly declare fields that are on the translation model
     title = fields.CharField(attribute='title')
     summary = fields.CharField(attribute='summary')
@@ -35,10 +154,9 @@ class StoryResource(ModelResource):
     class Meta:
         queryset = Story.objects.filter(status__exact='published')
         resource_name = 'stories'
-        allowed_methods = ['get']
-	    # Allow open access to this resource for now since it's read-only
+        allowed_methods = ['get', 'post']
         authentication = Authentication()
-        authorization = ReadOnlyAuthorization()
+        authorization = LoggedInAuthorization()
         # Hide the underlying id
         excludes = ['id']
         # Filter arguments for custom explore endpoint
@@ -70,6 +188,12 @@ class StoryResource(ModelResource):
             kwargs['api_name'] = self._meta.api_name
 
         return self._build_reverse_url("api_dispatch_detail", kwargs=kwargs)
+
+    def obj_create(self, bundle, request=None, **kwargs):
+        # Set the story's author to the request's user
+        if request.user:
+            kwargs['author'] = request.user
+        return super(StoryResource, self).obj_create(bundle, request, **kwargs)
 
     def dehydrate_topics(self, bundle):
         """Populate a list of topic ids and names in the response objects"""

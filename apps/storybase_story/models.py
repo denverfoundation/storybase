@@ -94,6 +94,7 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
 
     translated_fields = ['title', 'summary', 'call_to_action']
     translation_set = 'storytranslation_set'
+    translation_class = StoryTranslation
 
     _structure_obj = None
 
