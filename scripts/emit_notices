@@ -1,0 +1,12 @@
+#!/bin/bash
+# Example script for running the emit_notices management command
+# from a cron job, e.g.:
+#
+# *  *    * * *   root    /srv/www/atlas_dev/atlas/scripts/emit_notices 
+
+export PYTHONPATH=/srv/www/atlas_dev/atlas/..:/srv/www/atlas_dev/atlas
+export DJANGO_SETTINGS_MODULE=atlas.settings.atlas_dev
+VENV=/srv/www/atlas_dev/venv
+
+. ${VENV}/bin/activate
+django-admin.py emit_notices
