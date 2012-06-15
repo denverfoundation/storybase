@@ -214,6 +214,8 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
 class StoryPermissionTest(TestCase):
     """Test case for story permissions"""
     def setUp(self):
+        from django.contrib.auth.models import Group
+        self.admin_group = Group.objects.create(name=settings.ADMIN_GROUP_NAME)
         self.user1 = User.objects.create_user("test1", "test1@example.com",
                                               "test1")
         self.user2 = User.objects.create_user("test2", "test2@example.com",
@@ -234,6 +236,14 @@ class StoryPermissionTest(TestCase):
         """Test that a superuser can change another user's story"""
         self.assertFalse(self.story.user_can_change(self.user2))
         self.user2.is_superuser = True
+        self.user2.save()
+        self.assertTrue(self.story.user_can_change(self.user2))
+
+    def test_user_can_change_admin(self):
+        """Test that a member of the admin group can change another user's story"""
+        self.assertFalse(self.story.user_can_change(self.user2))
+        self.user2.groups.add(self.admin_group)
+        self.user2.save()
         self.assertTrue(self.story.user_can_change(self.user2))
 
     def test_user_can_change_inactive(self):

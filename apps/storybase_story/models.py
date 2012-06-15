@@ -29,13 +29,15 @@ from storybase_story.managers import StoryManager
 class StoryPermission(PermissionMixin):
     """Permissions for the Story model"""
     def user_can_change(self, user):
+        from storybase_user.utils import is_admin
+
         if not user.is_active:
             return False
 
         if self.author == user:
             return True
 
-        if user.is_superuser:
+        if is_admin(user):
             return True
 
         return False
