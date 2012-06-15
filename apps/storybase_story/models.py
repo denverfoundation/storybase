@@ -42,6 +42,12 @@ class StoryPermission(PermissionMixin):
 
         return False
 
+    def user_can_add(self, user):
+        return self.user_can_change(user)
+
+    def user_can_delete(self, user):
+        return self.user_can_change(user)
+
 
 class StoryTranslation(TranslationModel):
     """Encapsulates translated fields of a Story"""
