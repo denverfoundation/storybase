@@ -16,7 +16,7 @@ from django_dag.models import edge_factory, node_factory
 from uuidfield.fields import UUIDField
 
 from storybase.fields import ShortTextField
-from storybase.models import (LicensedModel, PublishedModel,
+from storybase.models import (LicensedModel, PermissionMixin, PublishedModel,
     TimestampedModel, TranslatedModel, TranslationModel,
     set_date_on_published)
 from storybase.utils import slugify
@@ -24,6 +24,22 @@ from storybase_asset.models import Asset
 from storybase_user.models import Organization, Project
 from storybase_story import structure
 from storybase_story.managers import StoryManager
+
+
+class StoryPermission(PermissionMixin):
+    """Permissions for the Story model"""
+    def user_can_change(self, user):
+        if not user.is_active:
+            return False
+
+        if self.author == user:
+            return True
+
+        if user.is_superuser:
+            return True
+
+        return False
+
 
 class StoryTranslation(TranslationModel):
     """Encapsulates translated fields of a Story"""
@@ -42,7 +58,7 @@ class StoryTranslation(TranslationModel):
 
 
 class Story(TranslatedModel, LicensedModel, PublishedModel, 
-            TimestampedModel):
+            TimestampedModel, StoryPermission):
     """Metadata for a story
 
     The Story model stores a story's metadata and aggregates a story's

@@ -211,6 +211,44 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
         self.assertEqual(story.contributor_name, '')
 
 
+class StoryPermissionTest(TestCase):
+    """Test case for story permissions"""
+    def setUp(self):
+        self.user1 = User.objects.create_user("test1", "test1@example.com",
+                                              "test1")
+        self.user2 = User.objects.create_user("test2", "test2@example.com",
+                                              "test2")
+        self.story = create_story(title="Test Story", summary="Test Summary",
+                                  byline="Test Byline", status='published',
+                                  author=self.user1)
+
+    def test_user_can_change_as_author(self):
+        """Test that author has permissions to change their story"""
+        self.assertTrue(self.story.user_can_change(self.user1))
+
+    def test_user_can_change_not_author(self):
+        """Test that a user doesn't have permissions to change another users story"""
+        self.assertFalse(self.story.user_can_change(self.user2))
+
+    def test_user_can_change_superuser(self):
+        """Test that a superuser can change another user's story"""
+        self.assertFalse(self.story.user_can_change(self.user2))
+        self.user2.is_superuser = True
+        self.assertTrue(self.story.user_can_change(self.user2))
+
+    def test_user_can_change_inactive(self):
+        """Test that an inactive user can't change their own story"""
+        self.assertTrue(self.story.user_can_change(self.user1))
+        self.user1.is_active = False 
+        self.assertFalse(self.story.user_can_change(self.user1))
+
+    def test_has_perm_change(self):
+        """Test that has_perm(user, 'change') calls through to user_can_change"""
+        perm = "change"
+        self.assertTrue(self.story.has_perm(self.user1, perm))
+        self.assertFalse(self.story.has_perm(self.user2, perm))
+
+
 class StoryApiTest(TestCase):
     """Test case for the internal Story API"""
 
