@@ -11,6 +11,7 @@ from django.utils import translation
 from uuidfield.fields import UUIDField
 
 from storybase.models.dirtyfields import DirtyFieldsMixin
+from storybase.models.permission import PermissionMixin
 from storybase.utils import get_language_name
 
 LICENSES = (
