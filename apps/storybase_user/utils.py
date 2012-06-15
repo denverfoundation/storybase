@@ -5,6 +5,12 @@ from django.contrib.auth.models import User
 import storybase_user.models
 from storybase_user.models import Organization, Project, ADMIN_GROUP_NAME
 
+def is_admin(user):
+    from django.db.models import Q
+    return user in User.objects.filter(
+        Q(groups__name=ADMIN_GROUP_NAME) | Q(is_superuser=True)
+    )
+
 def get_admin_emails():
     """Get a list of admin email addresses"""
     admin_qs = User.objects.filter(groups__name=ADMIN_GROUP_NAME)

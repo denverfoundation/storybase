@@ -12,7 +12,7 @@ from storybase_user.models import (create_organization, create_project,
     Organization, OrganizationStory, OrganizationTranslation,
     Project, ProjectStory, ProjectTranslation,
     ADMIN_GROUP_NAME)
-from storybase_user.utils import get_admin_emails
+from storybase_user.utils import is_admin, get_admin_emails
 
 class OrganizationModelTest(TestCase):
     def _create_organization(self, name, language):
@@ -254,16 +254,17 @@ class ProjectApiTest(TestCase):
 
 class UtilityTest(TestCase):
     """Test for utility functions"""
+    def setUp(self):
+        self.admin_group = Group.objects.create(name=ADMIN_GROUP_NAME)
     def test_get_admin_emails(self):
         """Test get_admin_emails() returns a list of administrator emails"""
-        admin_group = Group.objects.create(name=ADMIN_GROUP_NAME)
         admin1 = User.objects.create(username='admin1', password='password',
                                      email='foo@bar.com')
-        admin1.groups.add(admin_group)
+        admin1.groups.add(self.admin_group)
         admin1.save()
         admin2 = User.objects.create(username='admin2', password='password',
                                      email='foo2@bar.com')
-        admin2.groups.add(admin_group)
+        admin2.groups.add(self.admin_group)
         admin2.save()
         nonadmin = User.objects.create(username='test1', 
                                        password='password',
@@ -291,3 +292,21 @@ class UtilityTest(TestCase):
         self.assertEqual(len(admin_emails), 2)
         self.assertIn(admin1.email, admin_emails)
         self.assertIn(admin2.email, admin_emails)
+
+    def test_is_admin(self):
+        admin = User.objects.create_user(username='admin1', password='password',
+                                         email='foo@bar.com')
+        superuser = User.objects.create_user(username='superuser1',
+                                             password='superuser1',
+                                             email='superuser1@example.com')
+        nonadmin = User.objects.create_user(username='test1', 
+                                       password='password',
+                                       email='foo3@bar.com')
+        admin.groups.add(self.admin_group)
+        admin.save()
+        superuser.is_superuser = True
+        superuser.save()
+
+        self.assertTrue(is_admin(admin))
+        self.assertTrue(is_admin(superuser))
+        self.assertFalse(is_admin(nonadmin))
