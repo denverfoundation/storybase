@@ -10,7 +10,7 @@ from django.utils import simplejson
 
 from tastypie.test import ResourceTestCase
 
-from storybase.tests.base import SloppyComparisonTestMixin
+from storybase.tests.base import SloppyComparisonTestMixin, FixedTestApiClient
 from storybase.utils import slugify
 from storybase_asset.models import HtmlAsset, HtmlAssetTranslation
 from storybase_geo.models import Location
@@ -579,7 +579,6 @@ class StructureTest(TestCase):
                            weight=section_dict['weight'],
                            root=True)
         rendered_toc = story.structure.render_toc(format='html')
-        #print rendered_toc
         fragment = lxml.html.fromstring(rendered_toc)
         elements = fragment.cssselect('li')
         self.assertEqual(len(elements), len(section_data) + 1)
@@ -1149,6 +1148,8 @@ class StoryResourceTest(ResourceTestCase):
     """Tests for backend to Tastypie-driven REST endpoint"""
     def setUp(self):
         super(StoryResourceTest, self).setUp()
+        # Use our fixed TestApiClient instead of the default
+        self.api_client = FixedTestApiClient()
         self.resource = StoryResource()
         self.username = 'test'
         self.password = 'test'
