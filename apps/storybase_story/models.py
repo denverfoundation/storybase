@@ -24,7 +24,6 @@ from storybase_asset.models import Asset
 from storybase_user.models import Organization, Project
 from storybase_story import structure
 from storybase_story.managers import StoryManager
-#from storybase_tag.models import TaggedItem
 
 class StoryTranslation(TranslationModel):
     """Encapsulates translated fields of a Story"""
