@@ -1288,11 +1288,28 @@ class StoryResourceTest(ResourceTestCase):
         response = self.api_client.patch('/api/0.1/stories/%s/' % (story.story_id),
                                format='json', data=data)
         self.assertHttpAccepted(response)
-        story.update()
+        story = Story.objects.get(story_id=story.story_id)
         self.assertEqual(story.title, data['title'])
         self.assertEqual(story.summary, data['summary'])
         self.assertEqual(story.byline, data['byline'])
         self.assertEqual(story.status, data['status'])
+
+    def test_patch_detail_no_translation_in_lang(self):
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status='published',
+                             language="en",
+                             author=self.user)
+        self.api_client.client.login(username=self.username, password=self.password)
+        data = {
+            'title': "New Title",
+            'summary': "New Summary",
+            'byline': "New Byline",
+            'status': "published",
+            'language': "es",
+        }
+        response = self.api_client.patch('/api/0.1/stories/%s/' % (story.story_id),
+                               format='json', data=data)
+        self.assertHttpNotFound(response)
 
 
 class StoryExploreResourceTest(TestCase):

@@ -2,14 +2,17 @@
 
 from django.conf import settings
 from django.conf.urls.defaults import url
+from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.urlresolvers import NoReverseMatch
+from django.http import HttpResponse
 
 from haystack.query import SearchQuerySet
 from haystack.utils.geo import D, Point
 
-from tastypie import fields
+from tastypie import fields, http
 from tastypie.bundle import Bundle
-from tastypie.resources import ModelResource
+from tastypie.exceptions import ImmediateHttpResponse, NotFound
+from tastypie.resources import ModelResource, convert_post_to_put, convert_post_to_patch, NOT_AVAILABLE
 from tastypie.utils import trailing_slash
 from tastypie.authentication import Authentication
 from tastypie.authorization import Authorization
@@ -38,11 +41,6 @@ class LoggedInAuthorization(Authorization):
         # Logged in users can create new objects
         if request.method in ('POST') and object is None:
             return True
-
-        # TODO: Check this on a per-user/object basis
-        # For now, disallow these methods
-        if request.method in ('PUT', 'PATCH', 'DELETE'):
-            return False
 
         permission_map = {
             'POST': ['add'],
@@ -79,9 +77,15 @@ class TranslatedModelResource(ModelResource):
         
         if bundle.obj is None:
             bundle.obj = object_class()
-        if bundle.translation_obj is None:
             bundle.translation_obj = translation_class()
+
         bundle = self.hydrate(bundle)
+
+        if bundle.obj.pk and not hasattr(bundle, 'translation_obj'):
+            language = bundle.data.get('language', self.fields['language'].default)
+            translation_set = getattr(bundle.obj, bundle.obj.translation_set)
+            bundle.translation_obj = translation_set.get(language=language)
+
         for field_name, field_object in self.fields.items():
             if field_object.readonly is True:
                 continue
@@ -164,6 +168,60 @@ class TranslatedModelResource(ModelResource):
         self.save_m2m(m2m_bundle)
         return bundle
 
+    def obj_update(self, bundle, request=None, skip_errors=False, **kwargs):
+        """
+        A ORM-specific implementation of ``obj_update``.
+        """
+        if not bundle.obj or not bundle.obj.pk:
+            # Attempt to hydrate data from kwargs before doing a lookup for the object.
+            # This step is needed so certain values (like datetime) will pass model validation.
+            try:
+                object_class = self.get_object_list(bundle.request).model
+                translation_class = object_class.translation_class()
+                bundle.obj = object_class()
+                bundle.translation_obj = translation_class()
+                bundle.data.update(kwargs)
+                bundle = self.full_hydrate(bundle)
+                lookup_kwargs = kwargs.copy()
+
+                for key in kwargs.keys():
+                    if key == 'pk':
+                        continue
+                    elif getattr(bundle.obj, key, NOT_AVAILABLE) is not NOT_AVAILABLE:
+                        lookup_kwargs[key] = getattr(bundle.obj, key)
+                    else:
+                        del lookup_kwargs[key]
+            except:
+                # if there is trouble hydrating the data, fall back to just
+                # using kwargs by itself (usually it only contains a "pk" key
+                # and this will work fine.
+                lookup_kwargs = kwargs
+
+            try:
+                bundle.obj = self.obj_get(bundle.request, **lookup_kwargs)
+            except ObjectDoesNotExist:
+                raise NotFound("A model instance matching the provided arguments could not be found.")
+
+        bundle = self.full_hydrate(bundle)
+        self.is_valid(bundle,request)
+
+        if bundle.errors and not skip_errors:
+            self.error_response(bundle.errors, request)
+
+        # Save FKs just in case.
+        self.save_related(bundle)
+
+        # Save the main object.
+        bundle.obj.save()
+
+        # Save the translation
+        bundle.translation_obj.save()
+
+        # Now pick up the M2M bits.
+        m2m_bundle = self.hydrate_m2m(bundle)
+        self.save_m2m(m2m_bundle)
+        return bundle
+
 
 class StoryResource(TranslatedModelResource):
     # Explicitly declare fields that are on the translation model
@@ -214,6 +272,85 @@ class StoryResource(TranslatedModelResource):
 
         return kwargs
 
+    def dispatch(self, request_type, request, **kwargs):
+        """
+        Handles the common operations (allowed HTTP method, authentication,
+        throttling, method lookup) surrounding most CRUD interactions.
+
+        This version moves the authorization check to later in the pipeline
+        """
+        allowed_methods = getattr(self._meta, "%s_allowed_methods" % request_type, None)
+        request_method = self.method_check(request, allowed=allowed_methods)
+        method_name = "%s_%s" % (request_method, request_type)
+        method = getattr(self, method_name, None)
+
+        if method is None:
+            raise ImmediateHttpResponse(response=http.HttpNotImplemented())
+
+        self.is_authenticated(request)
+        if method_name not in ('patch_detail',):
+            self.is_authorized(request)
+        self.throttle_check(request)
+
+        # All clear. Process the request.
+        request = convert_post_to_put(request)
+        response = method(request, **kwargs)
+
+        # Add the throttled request.
+        self.log_throttled_access(request)
+
+        # If what comes back isn't a ``HttpResponse``, assume that the
+        # request was accepted and that some action occurred. This also
+        # prevents Django from freaking out.
+        if not isinstance(response, HttpResponse):
+            return http.HttpNoContent()
+
+        return response
+
+    def patch_detail(self, request, **kwargs):
+        """
+        Updates a resource in-place.
+
+        Calls ``obj_update``.
+
+        If the resource is updated, return ``HttpAccepted`` (202 Accepted).
+        If the resource did not exist, return ``HttpNotFound`` (404 Not Found).
+        """
+        request = convert_post_to_patch(request)
+
+        # We want to be able to validate the update, but we can't just pass
+        # the partial data into the validator since all data needs to be
+        # present. Instead, we basically simulate a PUT by pulling out the
+        # original data and updating it in-place.
+        # So first pull out the original object. This is essentially
+        # ``get_detail``.
+        try:
+            obj = self.cached_obj_get(request=request, **self.remove_api_resource_names(kwargs))
+        except ObjectDoesNotExist:
+            return http.HttpNotFound()
+        except MultipleObjectsReturned:
+            return http.HttpMultipleChoices("More than one resource is found at this URI.")
+
+        # Now that we have an object, check authorization
+        self.is_authorized(request, obj)
+
+        bundle = self.build_bundle(obj=obj, request=request)
+        bundle = self.full_dehydrate(bundle)
+        bundle = self.alter_detail_data_to_serialize(request, bundle)
+
+        # Now update the bundle in-place.
+        deserialized = self.deserialize(request, request.raw_post_data, format=request.META.get('CONTENT_TYPE', 'application/json'))
+        try:
+            self.update_in_place(request, bundle, deserialized)
+        except ObjectDoesNotExist:
+            return http.HttpNotFound()
+
+        if not self._meta.always_return_data:
+            return http.HttpAccepted()
+        else:
+            bundle = self.full_dehydrate(bundle)
+            bundle = self.alter_detail_data_to_serialize(request, bundle)
+            return self.create_response(request, bundle, response_class=http.HttpAccepted)
 
     def obj_create(self, bundle, request=None, **kwargs):
         # Set the story's author to the request's user
