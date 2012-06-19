@@ -17,6 +17,8 @@ class EmailUsernameRegistrationForm(RegistrationFormUniqueEmail):
     except ImportError:
         pass
 
+    required_css_class = 'required'
+
     def __init__(self, *args, **kwargs):
         super(EmailUsernameRegistrationForm, self).__init__(*args, **kwargs)
         # Remove the username field
@@ -35,5 +37,7 @@ class ExtraInfoRegistrationForm(EmailUsernameRegistrationForm):
     first_name = forms.CharField(max_length=30)
     last_name = forms.CharField(max_length=30, required=False)
     tos = forms.BooleanField(widget=forms.CheckboxInput(),
-                             label=_(u'I have read and agree to the Terms of Service'),
+                             label=_(u'I have agree to the terms of service'),
                              error_messages={'required': _("You must agree to the terms to register")})
+
+    required_css_class = 'required'
