@@ -30,24 +30,6 @@ class StoryUserAdminForm(UserChangeForm):
         required=False)
 
 
-def send_password_reset_emails(modeladmin, request, queryset):
-    """Send a password reset email to users
-    
-    This is an admin action.
-    """
-    from storybase.context_processors import conf
-    from storybase_user.auth.utils import send_password_reset_email
-    
-    for user in queryset:
-        send_password_reset_email(user, request=request, 
-                                  extra_context=conf(request))
-send_password_reset_emails.short_description = "Send password reset email"
-
-
-def set_inactive(modeladmin, request, queryset):
-    """Set a user account to be inactive"""
-    queryset.update(is_active=False)
-set_inactive.short_description = "Deactivate user"
 
 
 class StoryUserAdmin(UserAdmin):
@@ -74,7 +56,7 @@ class StoryUserAdmin(UserAdmin):
 
     list_filter = UserAdmin.list_filter + ('groups__name',)
     list_display = UserAdmin.list_display + ('is_active',)
-    actions = [send_password_reset_emails, set_inactive]
+    actions = ['send_password_reset_emails', 'set_inactive']
 
     def save_model(self, request, obj, form, change):  
         if getattr(obj, 'pk', None) is not None:
@@ -98,6 +80,25 @@ class StoryUserAdmin(UserAdmin):
             self.form.base_fields['stories'].queryset = obj.stories.all()
             self.form.base_fields['stories'].initial = obj.stories.all()
         return super(StoryUserAdmin, self).get_form(request, obj)
+
+    def send_password_reset_emails(self, request, queryset):
+        """Send a password reset email to users
+        
+        This is an admin action.
+        """
+        from storybase.context_processors import conf
+        from storybase_user.auth.utils import send_password_reset_email
+        
+        for user in queryset:
+            send_password_reset_email(user, request=request, 
+                                      extra_context=conf(request))
+    send_password_reset_emails.short_description = "Send password reset email"
+
+
+    def set_inactive(self, request, queryset):
+        """Set a user account to be inactive"""
+        queryset.update(is_active=False)
+    set_inactive.short_description = "Deactivate user"
 
 admin.site.unregister(User)
 admin.site.register(User, StoryUserAdmin)
