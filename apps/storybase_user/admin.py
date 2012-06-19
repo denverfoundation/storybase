@@ -30,8 +30,6 @@ class StoryUserAdminForm(UserChangeForm):
         required=False)
 
 
-
-
 class StoryUserAdmin(UserAdmin):
     """
     Custom admin for Users
@@ -92,12 +90,14 @@ class StoryUserAdmin(UserAdmin):
         for user in queryset:
             send_password_reset_email(user, request=request, 
                                       extra_context=conf(request))
+        self.message_user(request, "Password reset email sent")
     send_password_reset_emails.short_description = "Send password reset email"
 
 
     def set_inactive(self, request, queryset):
         """Set a user account to be inactive"""
         queryset.update(is_active=False)
+        self.message_user(request, "Deactivated user(s)")
     set_inactive.short_description = "Deactivate user"
 
 admin.site.unregister(User)
