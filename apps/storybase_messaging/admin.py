@@ -31,7 +31,7 @@ class SystemMessageAdmin(StorybaseModelAdmin):
         return obj.subject
     obj_subject.short_description = _("Subject") 
 
-    def send_message(modeladmin, request, queryset):
+    def send_message(self, request, queryset):
         """
         Send messages via email.
 
@@ -40,6 +40,7 @@ class SystemMessageAdmin(StorybaseModelAdmin):
         """
         for message in queryset:
             message.send_notifications()
+        self.message_user(request, "Message(s) sent")
     send_message.short_description = "Send message"
 
 
