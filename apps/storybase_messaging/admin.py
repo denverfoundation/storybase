@@ -17,32 +17,31 @@ class SystemMessageTranslationInline(StorybaseStackedInline):
     extra = 1
 
 
-def obj_subject(obj):
-    return obj.subject
-obj_subject.short_description = _("Subject") 
-
-
-def send_message(modeladmin, request, queryset):
-    """
-    Send messages via email.
-
-    This is an admin action.
-
-    """
-    for message in queryset:
-        message.send_notifications()
-send_message.short_description = "Send message"
-
-
 class SystemMessageAdmin(StorybaseModelAdmin):
     """Representation of Story model in the admin interface"""
     model = SystemMessage
     readonly_fields = ['created', 'last_edited']
     search_fields = ['systemmessagetranslation__title']
-    list_display = (obj_subject, 'created', 'sent')
+    list_display = ('obj_subject', 'created', 'sent')
     inlines = [SystemMessageTranslationInline]
-    actions = [send_message]
+    actions = ['send_message']
     prefix_inline_classes = ['SystemMessageTranslationInline']
+
+    def obj_subject(self, obj):
+        return obj.subject
+    obj_subject.short_description = _("Subject") 
+
+    def send_message(self, request, queryset):
+        """
+        Send messages via email.
+
+        This is an admin action.
+
+        """
+        for message in queryset:
+            message.send_notifications()
+        self.message_user(request, "Message(s) sent")
+    send_message.short_description = "Send message"
 
 
 admin.site.register(SiteContactMessage, SiteContactMessageAdmin)

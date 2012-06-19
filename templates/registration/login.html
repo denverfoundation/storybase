@@ -13,7 +13,7 @@
 <h2>{% trans "Sign in using your favorite social media account" %}</h2>
 <ul>
   {% for name, value in social_auth.items %}
-  <li><a href="{% url socialauth_begin name %}" class="{{ name }}">{{ name|capfirst }}</a></li>
+  <li><a href="{% url socialauth_begin name %}" class="{{ name }}">{% trans "Sign in with" %} {{ name|capfirst }}</a></li>
   {% endfor %}
 </ul>
 {% endif %}
