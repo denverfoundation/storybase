@@ -4,7 +4,10 @@ Collects additional information when registering the user
 
 """
 
+from django.contrib.auth import login
+
 from registration.backends.default import DefaultBackend
+from registration.signals import user_activated
 
 from storybase_user.registration.forms import ExtraInfoRegistrationForm
 
@@ -23,3 +26,18 @@ class ExtraInfoBackend(DefaultBackend):
         
         """
         return ExtraInfoRegistrationForm
+
+    def post_activation_redirect(self, request, user):
+        """
+        Redirect the user to the home page after successful
+        account activation.
+        
+        """
+        return ('/', (), {})
+
+
+def login_on_activation(sender, user, request, **kwargs):
+    """Log the user in after successful account activation"""
+    user.backend = 'storybase_user.auth.backends.EmailModelBackend'
+    login(request, user)
+user_activated.connect(login_on_activation) 
