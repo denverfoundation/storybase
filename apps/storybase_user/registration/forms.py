@@ -38,7 +38,7 @@ class ExtraInfoRegistrationForm(EmailUsernameRegistrationForm):
                                  error_messages={'required': _("A first name is required")})
     last_name = forms.CharField(max_length=30, required=False)
     tos = forms.BooleanField(widget=forms.CheckboxInput(),
-                             label=_(u'I have agree to the terms of service'),
+                             label=_(u'I agree to the terms of service'),
                              error_messages={'required': _("You must agree to the terms to register")})
 
     required_css_class = 'required'
