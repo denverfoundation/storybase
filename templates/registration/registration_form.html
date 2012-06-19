@@ -13,15 +13,14 @@
 <h2>{% blocktrans %}Join {{ storybase_site_name }} using your favorite social media account{% endblocktrans %}</h2>
 <ul>
   {% for name, value in social_auth.items %}
-  <li><a href="{% url socialauth_begin name %}" class="{{ name }}">{{ name|capfirst }}</a></li>
+  <li><a href="{% url socialauth_begin name %}" class="{{ name }}">{% trans "Sign up with" %} {{ name|capfirst }}</a></li>
   {% endfor %}
 </ul>
 {% endif %}
 
 <h2>{% blocktrans %}Or, create an account directly with {{ storybase_site_name }}{% endblocktrans %}</h2>
 
-<form method="post">
-  {% csrf_token %}
+<form method="post" {%if form.errors %}class="errors"{% endif %}>{% csrf_token %}
   {{ form.as_p }}
   <input type="submit" value="{% trans "Sign Up" %}" />
 </form>

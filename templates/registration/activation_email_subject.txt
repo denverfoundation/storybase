@@ -1,2 +1,2 @@
-{% load i18n %}
-{% blocktrans %}Confirm your {{ storybase_site_name }} account{% endblocktrans %}
+{% load i18n storybase_tags %}
+[{% storybase_conf "storybase_site_name" %}] {% trans "Please verify your email address" %}

@@ -7,7 +7,7 @@ from django.utils.translation import ugettext_lazy as _
 # storybase_user.registration.forms.ExtraInfoRegistrationForm
 class TosForm(forms.Form):
     tos = forms.BooleanField(widget=forms.CheckboxInput(),
-        label=_(u'I have read and agree to the Terms of Service'),
+        label=_(u'I agree to the terms of service'),
         error_messages={
             'required': _("You must agree to the terms to register")
         })
