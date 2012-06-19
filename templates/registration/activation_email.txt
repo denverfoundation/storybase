@@ -1,9 +1,12 @@
-{% load i18n %}
+{% load i18n storybase_tags %}
+{% trans "Welcome to" %} {% storybase_conf "storybase_site_name" %}!
 
-{% trans "Thanks for registering. Follow the link below to activate your account." %}
+{% trans "To activate your account, please verify your email by clicking this link, or pasting the address into your internet browser:" %}
 
 http://{{ site.domain }}{% url registration_activate activation_key %}
 
-{% trans "Your activation key is" %} {{ activation_key }}
-
 {% trans "You must activate your account in" %} {{ expiration_days }} {% trans "days" %}
+
+{% trans "If you have any problems, contact us at" %} {% storybase_conf "storybase_contact_email" %}.
+
+{% trans "The" %} {% storybase_conf "storybase_site_name" %} {% trans "Team" %}

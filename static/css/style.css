@@ -201,11 +201,8 @@ input:invalid, textarea:invalid { background-color: #f0dddd; }
 /* Required fields */
 form .required label:after { content: " *"; }
 
-form.errors .required input[type="text"] {
-  border-color: red;
-}
-
-form.errors .required textarea {
+form.errors .errorlist + .required input[type="text"],
+form.errors .errorlist + .required textarea {
   border-color: red;
 }
 

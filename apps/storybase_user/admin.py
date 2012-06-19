@@ -47,6 +47,7 @@ send_password_reset_emails.short_description = "Send password reset email"
 def set_inactive(modeladmin, request, queryset):
     """Set a user account to be inactive"""
     queryset.update(is_active=False)
+set_inactive.short_description = "Deactivate user"
 
 
 class StoryUserAdmin(UserAdmin):
@@ -72,6 +73,7 @@ class StoryUserAdmin(UserAdmin):
     )
 
     list_filter = UserAdmin.list_filter + ('groups__name',)
+    list_display = UserAdmin.list_display + ('is_active',)
     actions = [send_password_reset_emails, set_inactive]
 
     def save_model(self, request, obj, form, change):  
