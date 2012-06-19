@@ -72,6 +72,7 @@ class StoryUserAdmin(UserAdmin):
     )
 
     list_filter = UserAdmin.list_filter + ('groups__name',)
+    list_display = UserAdmin.list_display + ('is_active',)
     actions = [send_password_reset_emails, set_inactive]
 
     def save_model(self, request, obj, form, change):  
