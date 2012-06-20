@@ -1,15 +1,21 @@
 from django import forms
+from django.conf import settings
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import User
 from django.utils.translation import ugettext_lazy as _
+
 from storybase.admin import StorybaseModelAdmin, StorybaseStackedInline
 from storybase_story.models import Story
 from storybase_user.models import (Organization, OrganizationTranslation, 
                                    Project, ProjectStory, 
                                    ProjectTranslation)
 
+if 'social_auth' in settings.INSTALLED_APPS:
+    import social_auth
+else:
+    social_auth = None
 
 class StoryUserAdminForm(UserChangeForm):
     """ 
@@ -54,6 +60,8 @@ class StoryUserAdmin(UserAdmin):
 
     list_filter = UserAdmin.list_filter + ('groups__name',)
     list_display = UserAdmin.list_display + ('is_active',)
+    if social_auth:
+        list_display = list_display + ('social_accounts',)
     actions = ['send_password_reset_emails', 'set_inactive']
 
     def save_model(self, request, obj, form, change):  
@@ -78,6 +86,13 @@ class StoryUserAdmin(UserAdmin):
             self.form.base_fields['stories'].queryset = obj.stories.all()
             self.form.base_fields['stories'].initial = obj.stories.all()
         return super(StoryUserAdmin, self).get_form(request, obj)
+
+    def social_accounts(self, obj):
+        """Return a list of federated login accounts created with social_auth"""
+        auth_accounts = []
+        if social_auth:
+            auth_accounts = [user_auth.provider for user_auth in obj.social_auth.all()]
+        return ", ".join(auth_accounts)
 
     def send_password_reset_emails(self, request, queryset):
         """Send a password reset email to users
