@@ -19,7 +19,7 @@ from tastypie.authorization import Authorization
 
 from storybase.utils import get_language_name
 from storybase_geo.models import Place
-from storybase_story.models import Story
+from storybase_story.models import Story, Section
 from storybase_taxonomy.models import Category
 from storybase_user.models import Organization, Project
 
@@ -228,6 +228,7 @@ class StoryResource(TranslatedModelResource):
     title = fields.CharField(attribute='title')
     summary = fields.CharField(attribute='summary')
     url = fields.CharField(attribute='get_absolute_url')
+    sections = fields.ToManyField('storybase_story.api.SectionResource', 'sections', readonly=True)
     topics = fields.ListField(readonly=True)
     organizations = fields.ListField(readonly=True)
     projects = fields.ListField(readonly=True)
@@ -254,6 +255,8 @@ class StoryResource(TranslatedModelResource):
         return [
             url(r'^(?P<resource_name>%s)/explore%s$'  % (self._meta.resource_name, trailing_slash()), self.wrap_view('explore_get_list'), name="api_explore_get_list"),
             url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/$" % self._meta.resource_name, self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
+            url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/sections/$" % self._meta.resource_name, self.wrap_view('dispatch_section_list'), name="api_dispatch_list_sections"),
+            url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/sections/(?P<section_id>[0-9a-f]{32,32})/$" % self._meta.resource_name, self.wrap_view('dispatch_section_detail'), name="api_dispatch_detail_sections"),
         ]
 
     def detail_uri_kwargs(self, bundle_or_obj):
@@ -592,3 +595,96 @@ class StoryResource(TranslatedModelResource):
             request, **kwargs)
 
         return self.create_response(request, to_be_serialized)
+
+    def dispatch_section_detail(self, request, **kwargs):
+        try:
+            obj = self.cached_obj_get(request=request, **self.remove_api_resource_names(kwargs))
+        except ObjectDoesNotExist:
+            return http.HttpNotFound()
+        except MultipleObjectsReturned:
+            return http.HttpMultipleChoices("More than one resource is found at this URI.")
+
+        section_resource = SectionResource()
+        return section_resource.dispatch_detail(request, story__story_id=obj.story_id)
+
+    def dispatch_section_list(self, request, **kwargs):
+        try:
+            obj = self.cached_obj_get(request=request, **self.remove_api_resource_names(kwargs))
+        except ObjectDoesNotExist:
+            return http.HttpNotFound()
+        except MultipleObjectsReturned:
+            return http.HttpMultipleChoices("More than one resource is found at this URI.")
+
+        section_resource = SectionResource()
+        return section_resource.dispatch_list(request, story__story_id=obj.story_id)
+
+
+class SectionResource(TranslatedModelResource):
+    # Explicitly declare fields that are on the translation model
+    title = fields.CharField(attribute='title')
+    story = fields.ToOneField(StoryResource, 'sections')
+
+    class Meta:
+        queryset = Section.objects.all()
+        resource_name = 'sections'
+        allowed_methods = ['get']
+        authentication = Authentication()
+        authorization = LoggedInAuthorization()
+        # Hide the underlying id
+        excludes = ['id']
+        # Class of the resource under which this is nested
+        parent_resource = StoryResource
+
+    def detail_uri_kwargs(self, bundle_or_obj):
+        """
+        Given a ``Bundle`` or an object (typically a ``Model`` instance),
+        it returns the extra kwargs needed to generate a detail URI.
+
+        This version returns the section_id field instead of the pk
+        as well as the related story's story_id
+
+        """
+        kwargs = {}
+
+        if isinstance(bundle_or_obj, Bundle):
+            obj = bundle_or_obj.obj 
+        else:
+            obj = bundle_or_obj
+
+        kwargs['section_id'] = obj.section_id
+        kwargs['story_id'] = obj.story.story_id
+
+        return kwargs
+
+    def resource_uri_kwargs(self, bundle_or_obj=None):
+        """
+        Builds a dictionary of kwargs to help generate URIs.
+
+        This retrieves the resource_name and api_name from the parent resource
+        as this resource is designed to be nested under ``StoryResource``
+
+        """
+        kwargs = super(SectionResource, self).resource_uri_kwargs(bundle_or_obj)
+        kwargs['resource_name'] = self._meta.parent_resource._meta.resource_name 
+        if self._meta.parent_resource._meta.api_name is not None:
+            kwargs['api_name'] = self._meta.parent_resource._meta.api_name
+        return kwargs
+
+    def get_resource_uri(self, bundle_or_obj=None, url_name='api_dispatch_list'):
+        """
+        Handles generating a resource URI.
+
+        This version appends the resource name to the URL name so it can
+        be looked up in the URIs defined in ``StoryResource.prepend_urls``
+
+        """
+        if bundle_or_obj is not None:
+            url_name = 'api_dispatch_detail'
+
+        nested_url_name = url_name + "_%s" % (self._meta.resource_name)
+
+        try:
+            kwargs = self.resource_uri_kwargs(bundle_or_obj)
+            return self._build_reverse_url(nested_url_name, kwargs=kwargs)
+        except NoReverseMatch:
+            return ''

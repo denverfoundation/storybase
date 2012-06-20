@@ -14,7 +14,7 @@ from storybase.tests.base import SloppyComparisonTestMixin, FixedTestApiClient
 from storybase.utils import slugify
 from storybase_asset.models import HtmlAsset, HtmlAssetTranslation
 from storybase_geo.models import Location
-from storybase_story.api import StoryResource
+from storybase_story.api import SectionResource, StoryResource
 from storybase_story.forms import SectionRelationAdminForm
 from storybase_story.models import (create_story, Story, StoryTranslation, 
     create_section, Section, SectionAsset, SectionRelation)
@@ -1185,6 +1185,51 @@ class StoryResourceTest(ResourceTestCase):
             self.assertPointInList([location.lat, location.lng],
                                    dehydrated['points'])
 
+    def test_get_detail(self):
+        story_attribute_keys = ['byline',
+                                'contact_info',
+                                'created',
+                                'languages', 
+                                'last_edited',
+                                'license',
+                                'on_homepage',
+                                'organizations',
+                                'points',
+                                'projects',
+                                'published',
+                                'resource_uri',
+                                'sections',
+                                'slug',
+                                'status',
+                                'story_id',
+                                'structure_type',
+                                'summary',
+                                'title',
+                                'topics',
+                                'url']
+                                
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status="published",
+                             language="en")
+        section1 = create_section(title="Test Section 1", story=story)
+        section2 = create_section(title="Test Section 2", story=story)
+        resp = self.api_client.get('/api/0.1/stories/%s/' % story.story_id)
+        self.assertValidJSONResponse(resp)
+        self.assertKeys(self.deserialize(resp), story_attribute_keys)
+        self.assertEqual(self.deserialize(resp)['byline'], "Test Byline")
+        self.assertEqual(self.deserialize(resp)['title'], "Test Story")
+        self.assertEqual(self.deserialize(resp)['summary'], "Test Summary")
+        self.assertEqual(self.deserialize(resp)['status'], "published")
+        self.assertEqual(len(self.deserialize(resp)['languages']), 1)
+        self.assertEqual(self.deserialize(resp)['languages'][0]['id'], "en")
+        self.assertEqual(len(self.deserialize(resp)['sections']), 2)
+        self.assertIn('/api/0.1/stories/%s/sections/%s/' % 
+                      (story.story_id, section1.section_id), 
+                      self.deserialize(resp)['sections'])
+        self.assertIn('/api/0.1/stories/%s/sections/%s/' % 
+                      (story.story_id, section2.section_id), 
+                      self.deserialize(resp)['sections'])
+
     def test_post_list_unauthorized(self):
         """Test that a user cannot create a story if they aren't logged in"""
         self.assertHttpUnauthorized(self.api_client.post('/api/0.1/stories/', format='json'))
@@ -1310,6 +1355,21 @@ class StoryResourceTest(ResourceTestCase):
         response = self.api_client.patch('/api/0.1/stories/%s/' % (story.story_id),
                                format='json', data=data)
         self.assertHttpNotFound(response)
+
+
+class SectionResourceTest(ResourceTestCase):
+    def setUp(self):
+        self.resource = SectionResource(api_name='0.1')
+
+    def test_get_resource_uri_detail(self):
+        """Tests retrieving a URI for a specific section"""
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status="published",
+                             language="en")
+        section = create_section(title="Test Section 1", story=story)
+        uri = self.resource.get_resource_uri(bundle_or_obj=section)
+        self.assertEqual(uri, "/api/0.1/stories/%s/sections/%s/" %
+                        (story.story_id, section.section_id))
 
 
 class StoryExploreResourceTest(TestCase):
