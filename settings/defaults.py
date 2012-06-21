@@ -236,6 +236,15 @@ LOGGING = {
         },
     },
     'handlers': {
+        'null': {
+            'level':'DEBUG',
+            'class':'django.utils.log.NullHandler',
+        },
+        'console':{
+            'level':'DEBUG',
+            'class':'logging.StreamHandler',
+            'formatter': 'default',
+        },
         'mail_admins': {
             'level': 'INFO',
             'class': 'django.utils.log.AdminEmailHandler'
@@ -246,6 +255,11 @@ LOGGING = {
             'handlers': ['mail_admins'],
             'level': 'ERROR',
             'propagate': True,
+        },
+        'storybase': {
+            'handlers': ['null'],
+            'level': 'INFO',
+            'propogate': True,
         },
         'storybase_user.admin': {
             'handlers': ['mail_admins'],
