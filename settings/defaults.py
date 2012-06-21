@@ -247,6 +247,11 @@ LOGGING = {
             'level': 'ERROR',
             'propagate': True,
         },
+        'storybase': {
+            'handlers': ['null'],
+            'level': 'INFO',
+            'propogate': True,
+        },
         'storybase_user.admin': {
             'handlers': ['mail_admins'],
             'level': 'INFO',
