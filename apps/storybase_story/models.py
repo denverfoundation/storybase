@@ -473,6 +473,10 @@ class SectionRelation(edge_factory(Section, concrete=False)):
     """Through class for parent/child relationships between sections"""
     weight = models.IntegerField(default=0)
 
+    def __unicode__(self):
+        return u"%s is child of %s" % (self.child, self.parent)
+
+
 class SectionAsset(models.Model):
     """Through class for Asset to Section relations"""
     section = models.ForeignKey('Section')
