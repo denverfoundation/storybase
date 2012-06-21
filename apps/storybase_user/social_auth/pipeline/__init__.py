@@ -1,9 +1,13 @@
 """Custom pipeline steps for django-social-auth"""
 
+import logging
+
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 
 from social_auth.backends.exceptions import StopPipeline
+
+logger = logging.getLogger('storybase')
 
 def get_data_from_user(request, *args, **kwargs):
     """Get additional account details provided by user"""
@@ -24,6 +28,12 @@ def get_data_from_user(request, *args, **kwargs):
     if email:
         details['email'] = email
 
+    # Remove the flag that indicates extra information exists from the
+    # session, otherwise, the user will bypass entering the additional
+    # account information if their account is deleted and they recreate
+    # the account.  See issue #136
+    del request.session['new_account_extra_details']
+
     return out 
 
 def redirect_to_form(*args, **kwargs):
@@ -38,4 +48,5 @@ def redirect_to_form(*args, **kwargs):
         redirect_url = reverse('account_extra_details')
         return HttpResponseRedirect(redirect_url)
     else:
+        logger.info('Bypassing collecting additional registration details')
         return None
