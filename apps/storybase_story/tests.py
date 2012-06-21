@@ -1,3 +1,4 @@
+# vim: set fileencoding=utf-8 :
 """Unit tests for storybase_story app"""
 
 from time import sleep
@@ -343,6 +344,35 @@ class SectionModelTest(TestCase, SloppyComparisonTestMixin):
         sleep(2)
         section.save()
         self.assertNowish(story.last_edited)
+
+
+class SectionRelationModelTest(TestCase):
+    def test_force_unicode(self):
+        """
+        Test that the unicode representation of SectionRelation model instances
+        can be passed to ``force_unicode``
+
+        Test to reproduce issue #135
+
+        """
+        from django.utils.encoding import force_unicode
+        title = ('Transportation Challenges Limit Education Choices for '
+                 'Denver Parents')
+        summary = """
+            Many families in the Denver metro area use public
+            transportation instead of a school bus because for them, a
+            quality education is worth hours of daily commuting. Colorado's
+            school choice program is meant to foster educational equity,
+            but the families who benefit most are those who have time and
+            money to travel. Low-income families are often left in a lurch.
+            """
+        byline = "Mile High Connects"
+        unicode_section_title = u"What’s in this guide?"
+        story = create_story(title=title, summary=summary, byline=byline)
+        section1 = create_section(title=unicode_section_title, story=story)
+        section2 = create_section(title="Understanding the School Performance Framework: A Guide for Parents", story=story)
+        relation = SectionRelation.objects.create(parent=section2, child=section1)
+        self.assertEqual(force_unicode(relation), u"What’s in this guide? is child of Understanding the School Performance Framework: A Guide for Parents")
 
 
 class SectionApiTest(TestCase):
