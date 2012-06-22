@@ -238,7 +238,7 @@ class StoryResource(TranslatedModelResource):
     points = fields.ListField(readonly=True)
 
     class Meta:
-        queryset = Story.objects.filter(status__exact='published')
+        queryset = Story.objects.all()
         resource_name = 'stories'
         allowed_methods = ['get', 'post', 'patch']
         authentication = Authentication()
@@ -254,8 +254,12 @@ class StoryResource(TranslatedModelResource):
         explore_filter_fields = ['topics', 'projects', 'organizations', 'languages', 'places']
         explore_point_field = 'points'
 
-    def override_urls(self):
-        return self.prepend_urls()
+   
+    # TODO: If not using the development branch of tastypie, uncomment this
+    # as the prepend_urls was called override_urls in previous versions. This
+    # code can be removed altogether when Tastypie reaches 1.0
+    #def override_urls(self):
+    #    return self.prepend_urls()
 
     def prepend_urls(self):
         return [
@@ -315,6 +319,18 @@ class StoryResource(TranslatedModelResource):
             return http.HttpNoContent()
 
         return response
+
+    def get_object_list(self, request):
+        """Get a list of stories, filtering based on the request's user"""
+        from django.db.models import Q
+        # Only show published stories  
+        q = Q(status='published')
+        if hasattr(request, 'user') and request.user.is_authenticated():
+            # If the user is logged in, show their unpublished stories as
+            # well
+            q = q | Q(author=request.user)
+
+        return super(StoryResource, self).get_object_list(request).filter(q)
 
     def patch_detail(self, request, **kwargs):
         """

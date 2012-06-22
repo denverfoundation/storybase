@@ -1386,6 +1386,38 @@ class StoryResourceTest(ResourceTestCase):
                                format='json', data=data)
         self.assertHttpNotFound(response)
 
+    def test_get_list_published_only(self):
+        """Test that unauthenticated users see only published stories"""
+        story1 = create_story(title="Test Story", summary="Test Summary",
+                              byline="Test Byline", status='published',
+                              language="en", author=self.user)
+        story2 = create_story(title="Test Story 2", summary="Test Summary 2",
+                              byline="Test Byline 2", status='draft',
+                              language="en", author=self.user)
+        uri = '/api/0.1/stories/'
+        resp = self.api_client.get(uri)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 1)
+        story_ids = [story['story_id'] for story in self.deserialize(resp)['objects']]
+        self.assertNotIn(story2.story_id, story_ids)
+
+    def test_get_list_published_user_drafts(self):
+        """Test that unauthenticated users see only published stories"""
+        story1 = create_story(title="Test Story", summary="Test Summary",
+                              byline="Test Byline", status='published',
+                              language="en", author=self.user)
+        story2 = create_story(title="Test Story 2", summary="Test Summary 2",
+                              byline="Test Byline 2", status='draft',
+                              language="en", author=self.user)
+        self.api_client.client.login(username=self.username, password=self.password)
+        uri = '/api/0.1/stories/'
+        resp = self.api_client.get(uri)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 2)
+        story_ids = [story['story_id'] for story in self.deserialize(resp)['objects']]
+        self.assertIn(story1.story_id, story_ids)
+        self.assertIn(story2.story_id, story_ids)
+
     def test_get_list_sections(self):
         """Test that a user can get a list of story sections"""
         story = create_story(title="Test Story", summary="Test Summary",
@@ -1426,8 +1458,9 @@ class StoryResourceTest(ResourceTestCase):
         # Confirm there are no sections
         self.assertEqual(len(story.sections.all()), 0)
         # Create a new section
-        response = self.api_client.post('%ssections/' % story_resource_uri,
-                               format='json', data=section_post_data)
+        sections_uri = "%ssections/" % (story_resource_uri)
+        response = self.api_client.post(sections_uri,
+                                        format='json', data=section_post_data)
         self.assertHttpCreated(response)
         # Retrieve a model instance for the newly created section
         story = Story.objects.get(story_id=story_id)
@@ -1453,11 +1486,13 @@ class SectionResourceTest(ResourceTestCase):
                         (story.story_id, section.section_id))
 
 
-class StoryExploreResourceTest(TestCase):
+class StoryExploreResourceTest(ResourceTestCase):
     """Test story exploration REST endpoint"""
 
     def setUp(self):
+        super(StoryExploreResourceTest, self).setUp()
         self.resource = StoryResource()
+        self._rebuild_index()
 
     def _rebuild_index(self):
         """Call management command to rebuild the Haystack search index"""
@@ -1480,8 +1515,13 @@ class StoryExploreResourceTest(TestCase):
                              byline="Test Byline 2", status='published')
         story2.locations.add(locations[1])
         story2.save()
-        # TODO: Figure out why this is neccessary
-        self._rebuild_index()
+        # If south migrations are enabled, we need to explicitly rebuild
+        # the indexes because the RealTimeIndex signal handlers don't get
+        # wired up. 
+        # See https://github.com/toastdriven/django-haystack/issues/599
+        # In general, I think we can work around this by just setting
+        # SOUTH_TESTS_MIGRATE = False in the settings
+        #self._rebuild_index()
         req = HttpRequest()
         req.method = 'GET'
         req.GET['near'] = '39.7414581054089@-104.9877892025,1'
@@ -1489,3 +1529,15 @@ class StoryExploreResourceTest(TestCase):
         dehydrated = simplejson.loads(resp.content)
         self.assertEqual(len(dehydrated['objects']), 1)
         self.assertEqual(dehydrated['objects'][0]['story_id'], story.story_id)
+
+    def test_explore_get_list_only_published(self):
+        """Test that story exploration endpoint doesn't show unpublished stories"""
+        story1 = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status='published')
+        
+        story2 = create_story(title="Test Story 2", summary="Test Summary 2",
+                             byline="Test Byline 2", status='draft')
+        resp = self.api_client.get('/api/0.1/stories/explore/')
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 1)
+        self.assertEqual(self.deserialize(resp)['objects'][0]['story_id'], story1.story_id)
