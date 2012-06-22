@@ -137,7 +137,6 @@ class TranslatedModel(models.Model):
         else:
             return self.get_language_names()
 
-
     @classmethod
     def get_translation_fk_field_name(cls):
         """
