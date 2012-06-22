@@ -70,6 +70,24 @@ class StoryIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
                 should_update = False
         return should_update
 
+    def should_remove_on_update(self, instance, **kwargs):
+        if instance.status != 'published':
+            return True
+
+        return False
+
+    def update_object(self, instance, using=None, **kwargs):
+        """
+        Update the index for a single object. Attached to the class's
+        post-save hook.
+
+        This version removes unpublished stories from the index
+        """
+        if self.should_remove_on_update(instance, **kwargs):
+            self.remove_object(instance, using, **kwargs)
+        else:
+            super(StoryIndex, self).update_object(instance, using, **kwargs)
+
     def translation_update_object(self, sender, instance, **kwargs):
         """Signal handler for updating story index when the translation changes"""
         # Deal with race condition when stories are deleted
