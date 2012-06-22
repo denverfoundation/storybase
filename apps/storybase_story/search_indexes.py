@@ -1,9 +1,13 @@
+import logging
+
 from django.db.models import signals
 
 from haystack import indexes
 
 from storybase_geo.models import Location
 from storybase_story.models import Story, StoryTranslation
+
+logger = logging.getLogger('storybase')
 
 class GeoHashMultiValueField(indexes.MultiValueField):
     field_type = 'geohash'
@@ -68,7 +72,12 @@ class StoryIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
 
     def translation_update_object(self, sender, instance, **kwargs):
         """Signal handler for updating story index when the translation changes"""
-        self.update_object(instance.story)
+        # Deal with race condition when stories are deleted
+        # See issue #138
+        try:
+            self.update_object(instance.story)
+        except Story.DoesNotExist:
+            pass
 
     def location_update_object(self, sender, instance, **kwargs):
         """Signal handler for updating story index when a related location changes"""
