@@ -1386,6 +1386,57 @@ class StoryResourceTest(ResourceTestCase):
                                format='json', data=data)
         self.assertHttpNotFound(response)
 
+    def test_get_list_sections(self):
+        """Test that a user can get a list of story sections"""
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status="published",
+                             language="en", author=self.user)
+        section1 = create_section(title="Test Section 1", story=story)
+        section2 = create_section(title="Test Section 2", story=story)
+        uri = '/api/0.1/stories/%s/sections/' % story.story_id
+        resp = self.api_client.get(uri)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 2)
+        section_titles = [section['title'] for section in self.deserialize(resp)['objects']]
+        self.assertIn(section1.title, section_titles)
+        self.assertIn(section2.title, section_titles)
+
+    def test_post_list_sections(self):
+        """Test that a user can add a new section to a story"""
+        story_post_data = {
+            'title': "Test Story",
+            'summary': "Test Summary",
+            'byline': "Test Byline",
+            'status': "draft",
+            'language': "en",
+        }
+        section_post_data = {
+            'title': "Test Section",
+            'language': "en",
+        }
+        self.assertEqual(Story.objects.count(), 0)
+        self.api_client.client.login(username=self.username, password=self.password)
+        # Create a new story through the API
+        response = self.api_client.post('/api/0.1/stories/',
+                               format='json', data=story_post_data)
+        story_resource_uri = response['location']
+        # Retrieve a model instance for the created story
+        story_id = story_resource_uri.split('/')[-2]
+        story = Story.objects.get(story_id=story_id)
+        # Confirm there are no sections
+        self.assertEqual(len(story.sections.all()), 0)
+        # Create a new section
+        response = self.api_client.post('%ssections/' % story_resource_uri,
+                               format='json', data=section_post_data)
+        self.assertHttpCreated(response)
+        # Retrieve a model instance for the newly created section
+        story = Story.objects.get(story_id=story_id)
+        self.assertEqual(len(story.sections.all()), 1)
+        section = story.sections[0]
+        self.assertEqual(section.title, section_post_data['title'])
+        # BOOKMARK
+        self.fail("Not implemented")
+
 
 class SectionResourceTest(ResourceTestCase):
     def setUp(self):

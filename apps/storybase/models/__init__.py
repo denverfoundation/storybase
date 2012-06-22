@@ -126,6 +126,17 @@ class TranslatedModel(models.Model):
         return [{ 'id': code, 'name': get_language_name(code), 'url': "/%s%s" % (code, self.get_absolute_url()) }
                 for code in self.get_languages()]
 
+    def get_language_names(self):
+        """Return a list of language_codes and full names"""
+        return [{ 'id': code, 'name': get_language_name(code) }
+                for code in self.get_languages()]
+
+    def get_language_info(self):
+        if hasattr(self, 'get_absolute_url'):
+            return self.get_language_urls()
+        else:
+            return self.get_language_names()
+
 
     @classmethod
     def get_translation_fk_field_name(cls):

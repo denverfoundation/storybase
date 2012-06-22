@@ -11,6 +11,7 @@ from haystack.utils.geo import D, Point
 
 from tastypie import fields, http
 from tastypie.bundle import Bundle
+from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.exceptions import ImmediateHttpResponse, NotFound
 from tastypie.resources import ModelResource, convert_post_to_put, convert_post_to_patch, NOT_AVAILABLE
 from tastypie.utils import trailing_slash
@@ -127,7 +128,7 @@ class TranslatedModelResource(ModelResource):
         return bundle
 
     def dehydrate_languages(self, bundle):
-        return bundle.obj.get_language_urls() 
+        return bundle.obj.get_language_info()
 
     def obj_create(self, bundle, request=None, **kwargs):
         """
@@ -244,6 +245,11 @@ class StoryResource(TranslatedModelResource):
         authorization = LoggedInAuthorization()
         # Hide the underlying id
         excludes = ['id']
+        filtering = {
+            'story_id': ALL, 
+        }
+
+        # Custom meta attributes
         # Filter arguments for custom explore endpoint
         explore_filter_fields = ['topics', 'projects', 'organizations', 'languages', 'places']
         explore_point_field = 'points'
@@ -622,7 +628,7 @@ class StoryResource(TranslatedModelResource):
 class SectionResource(TranslatedModelResource):
     # Explicitly declare fields that are on the translation model
     title = fields.CharField(attribute='title')
-    story = fields.ToOneField(StoryResource, 'sections')
+    story = fields.ToOneField(StoryResource, 'story')
 
     class Meta:
         queryset = Section.objects.all()
@@ -632,6 +638,11 @@ class SectionResource(TranslatedModelResource):
         authorization = LoggedInAuthorization()
         # Hide the underlying id
         excludes = ['id']
+        filtering = {
+            'story': ALL_WITH_RELATIONS,
+        }
+
+        # Custom meta attributes
         # Class of the resource under which this is nested
         parent_resource = StoryResource
 
