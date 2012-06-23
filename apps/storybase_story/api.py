@@ -59,9 +59,13 @@ class LoggedInAuthorization(Authorization):
         # Fall-back to failure
         return False 
 
+# Signals sent by HookedModelResource
 post_bundle_obj_construct = Signal(providing_args=["bundle", "request"])
+"""Signal sent after the object is constructed, but not saved"""
 pre_bundle_obj_hydrate = Signal(providing_args=["bundle", "request"])
+"""Signal sent before the bundle is hydrated"""
 post_bundle_obj_save = Signal(providing_args=["bundle", "request"])
+"""Signal sent after the bundle is saved"""
 
 class HookedModelResource(ModelResource):
     """A version of ModelResource with extra actions at various points in the pipeline"""
