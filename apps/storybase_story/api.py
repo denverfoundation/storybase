@@ -690,7 +690,7 @@ class SectionResource(DelayedAuthorizationResource):
     class Meta:
         queryset = Section.objects.all()
         resource_name = 'sections'
-        allowed_methods = ['get', 'post']
+        allowed_methods = ['get', 'post', 'patch']
         authentication = Authentication()
         authorization = LoggedInAuthorization()
         # Hide the underlying id
@@ -763,3 +763,8 @@ class SectionResource(DelayedAuthorizationResource):
         story_id = kwargs.pop('story_id')
         kwargs['story'] = Story.objects.get(story_id=story_id)
         return super(SectionResource, self).obj_create(bundle, request, **kwargs)
+
+    def obj_get(self, request=None, **kwargs):
+        story_id = kwargs.pop('story_id')
+        kwargs['story'] = Story.objects.get(story_id=story_id)
+        return super(SectionResource, self).obj_get(request, **kwargs)

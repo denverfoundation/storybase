@@ -1533,6 +1533,7 @@ class StoryResourceTest(ResourceTestCase):
         # Update the section title
         response = self.api_client.patch(section_uri, format='json',
                                          data=section_patch_data)
+        self.assertHttpAccepted(response)
         # Retrieve a model instance for the newly modified section
         story = Story.objects.get(story_id=story_id)
         self.assertEqual(len(story.sections.all()), 1)
