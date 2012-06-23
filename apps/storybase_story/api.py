@@ -64,6 +64,8 @@ post_bundle_obj_construct = Signal(providing_args=["bundle", "request"])
 """Signal sent after the object is constructed, but not saved"""
 pre_bundle_obj_hydrate = Signal(providing_args=["bundle", "request"])
 """Signal sent before the bundle is hydrated"""
+post_bundle_obj_hydrate = Signal(providing_args=["bundle", "request"])
+"""Signal sent after the bundle is hydrated"""
 post_bundle_obj_save = Signal(providing_args=["bundle", "request"])
 """Signal sent after the bundle is saved"""
 post_obj_get = Signal(providing_args=["request", "object"])
@@ -72,6 +74,47 @@ class HookedModelResource(ModelResource):
     """A version of ModelResource with extra actions at various points in the pipeline"""
     def _bundle_setattr(self, bundle, key, value):
         setattr(bundle.obj, key, value)
+
+    def full_hydrate(self, bundle):
+        """
+        Given a populated bundle, distill it and turn it back into
+        a full-fledged object instance.
+        """
+        if bundle.obj is None:
+            bundle.obj = self._meta.object_class()
+            post_bundle_obj_construct.send(sender=self, bundle=bundle, request=None) 
+        bundle = self.hydrate(bundle)
+        post_bundle_obj_hydrate.send(sender=self, bundle=bundle, request=None)
+        for field_name, field_object in self.fields.items():
+            if field_object.readonly is True:
+                continue
+
+            # Check for an optional method to do further hydration.
+            method = getattr(self, "hydrate_%s" % field_name, None)
+
+            if method:
+                bundle = method(bundle)
+            if field_object.attribute:
+                value = field_object.hydrate(bundle)
+
+                # NOTE: We only get back a bundle when it is related field.
+                if isinstance(value, Bundle) and value.errors.get(field_name):
+                    bundle.errors[field_name] = value.errors[field_name]
+
+                if value is not None or field_object.null:
+                    # We need to avoid populating M2M data here as that will
+                    # cause things to blow up.
+                    if not getattr(field_object, 'is_related', False):
+                        self._bundle_setattr(bundle, field_object.attribute, value)
+                    elif not getattr(field_object, 'is_m2m', False):
+                        if value is not None:
+                            setattr(bundle.obj, field_object.attribute, value.obj)
+                        elif field_object.blank:
+                            continue
+                        elif field_object.null:
+                            setattr(bundle.obj, field_object.attribute, value)
+
+        return bundle
 
     def obj_create(self, bundle, request=None, **kwargs):
         """
@@ -206,61 +249,6 @@ class TranslatedModelResource(HookedModelResource):
     language = fields.CharField(attribute='language', default=settings.LANGUAGE_CODE)
     languages = fields.ListField(readonly=True)
 
-    def full_hydrate(self, bundle):
-        """
-        Given a populated bundle, distill it and turn it back into
-        a full-fledged object instance, taking into account translations.
-        """
-        object_class = self._meta.object_class
-        translation_class = object_class.translation_class
-        translation_fields = object_class.translated_fields + ['language']
-        
-        if bundle.obj is None:
-            bundle.obj = object_class()
-            bundle.translation_obj = translation_class()
-
-        bundle = self.hydrate(bundle)
-
-        if bundle.obj.pk and not hasattr(bundle, 'translation_obj'):
-            language = bundle.data.get('language', self.fields['language'].default)
-            translation_set = getattr(bundle.obj, bundle.obj.translation_set)
-            bundle.translation_obj = translation_set.get(language=language)
-
-        for field_name, field_object in self.fields.items():
-            if field_object.readonly is True:
-                continue
-
-            # Check for an optional method to do further hydration.
-            method = getattr(self, "hydrate_%s" % field_name, None)
-
-            if method:
-                bundle = method(bundle)
-            if field_object.attribute:
-                value = field_object.hydrate(bundle)
-
-                # NOTE: We only get back a bundle when it is related field.
-                if isinstance(value, Bundle) and value.errors.get(field_name):
-                    bundle.errors[field_name] = value.errors[field_name]
-
-                if value is not None or field_object.null:
-                    # We need to avoid populating M2M data here as that will
-                    # cause things to blow up.
-                    if not getattr(field_object, 'is_related', False):
-                        if field_object.attribute in translation_fields:
-                            setattr(bundle.translation_obj, field_object.attribute, value)
-                        else:
-                            setattr(bundle.obj, field_object.attribute, value)
-
-                    elif not getattr(field_object, 'is_m2m', False):
-                        if value is not None:
-                            setattr(bundle.obj, field_object.attribute, value.obj)
-                        elif field_object.blank:
-                            continue
-                        elif field_object.null:
-                            setattr(bundle.obj, field_object.attribute, value)
-
-        return bundle
-
     def dehydrate(self, bundle):
         # Remove the language field since it doesn't make sense in the response
         del bundle.data['language']
@@ -271,10 +259,8 @@ class TranslatedModelResource(HookedModelResource):
 
     @receiver(post_bundle_obj_construct)
     def _post_bundle_obj_construct(sender, bundle, request, **kwargs):
-        object_class = sender._meta.object_class
-        translation_class = object_class.translation_class
+        translation_class = sender._meta.object_class.translation_class
         bundle.translation_obj = translation_class()
-        bundle.translation_fields = object_class.translated_fields + ['language']
 
     @receiver(post_bundle_obj_save)
     def _post_bundle_obj_save(sender, bundle, request, **kwargs):
@@ -284,7 +270,20 @@ class TranslatedModelResource(HookedModelResource):
         setattr(bundle.translation_obj, fk_field_name, bundle.obj)
         bundle.translation_obj.save()
 
+    @receiver(post_bundle_obj_hydrate)
+    def _post_bundle_obj_hydrate(sender, bundle, request, **kwargs):
+        if bundle.obj.pk and not hasattr(bundle, 'translation_obj'):
+            language = bundle.data.get('language', sender.fields['language'].default)
+            translation_set = getattr(bundle.obj, bundle.obj.translation_set)
+            bundle.translation_obj = translation_set.get(language=language)
+
+    def _get_translation_fields(self):
+        return self._meta.object_class.translated_fields + ['language']
+
     def _bundle_setattr(self, bundle, key, value):
+        if not hasattr(bundle, 'translation_fields'):
+            bundle.translation_fields = self._get_translation_fields() 
+
         if key in bundle.translation_fields: 
             setattr(bundle.translation_obj, key, value)
         else:
