@@ -147,6 +147,11 @@ class TranslatedModelResource(ModelResource):
                 setattr(bundle.translation_obj, key, value)
             else:
                 setattr(bundle.obj, key, value)
+        # Check if the user is authorized to create this object before going
+        # any further
+        # TODO: Break this out to separate the translation logic and the into i
+        # a different method
+        self.is_authorized(request, bundle.obj)
         bundle = self.full_hydrate(bundle)
         self.is_valid(bundle,request)
 
@@ -223,8 +228,44 @@ class TranslatedModelResource(ModelResource):
         self.save_m2m(m2m_bundle)
         return bundle
 
+class DelayedAuthorizationResource(TranslatedModelResource):
+    def dispatch(self, request_type, request, **kwargs):
+        """
+        Handles the common operations (allowed HTTP method, authentication,
+        throttling, method lookup) surrounding most CRUD interactions.
 
-class StoryResource(TranslatedModelResource):
+        This version moves the authorization check to later in the pipeline
+        """
+        allowed_methods = getattr(self._meta, "%s_allowed_methods" % request_type, None)
+        request_method = self.method_check(request, allowed=allowed_methods)
+        method_name = "%s_%s" % (request_method, request_type)
+        method = getattr(self, method_name, None)
+
+        if method is None:
+            raise ImmediateHttpResponse(response=http.HttpNotImplemented())
+
+        self.is_authenticated(request)
+        if method_name not in self._meta.delayed_authorization_methods:
+            self.is_authorized(request)
+        self.throttle_check(request)
+
+        # All clear. Process the request.
+        request = convert_post_to_put(request)
+        response = method(request, **kwargs)
+
+        # Add the throttled request.
+        self.log_throttled_access(request)
+
+        # If what comes back isn't a ``HttpResponse``, assume that the
+        # request was accepted and that some action occurred. This also
+        # prevents Django from freaking out.
+        if not isinstance(response, HttpResponse):
+            return http.HttpNoContent()
+
+        return response
+
+
+class StoryResource(DelayedAuthorizationResource):
     # Explicitly declare fields that are on the translation model
     title = fields.CharField(attribute='title')
     summary = fields.CharField(attribute='summary')
@@ -250,6 +291,8 @@ class StoryResource(TranslatedModelResource):
         }
 
         # Custom meta attributes
+        # Methods that handle authorization later than normain in the flow
+        delayed_authorization_methods = ('patch_detail',)
         # Filter arguments for custom explore endpoint
         explore_filter_fields = ['topics', 'projects', 'organizations', 'languages', 'places']
         explore_point_field = 'points'
@@ -285,40 +328,6 @@ class StoryResource(TranslatedModelResource):
 
         return kwargs
 
-    def dispatch(self, request_type, request, **kwargs):
-        """
-        Handles the common operations (allowed HTTP method, authentication,
-        throttling, method lookup) surrounding most CRUD interactions.
-
-        This version moves the authorization check to later in the pipeline
-        """
-        allowed_methods = getattr(self._meta, "%s_allowed_methods" % request_type, None)
-        request_method = self.method_check(request, allowed=allowed_methods)
-        method_name = "%s_%s" % (request_method, request_type)
-        method = getattr(self, method_name, None)
-
-        if method is None:
-            raise ImmediateHttpResponse(response=http.HttpNotImplemented())
-
-        self.is_authenticated(request)
-        if method_name not in ('patch_detail',):
-            self.is_authorized(request)
-        self.throttle_check(request)
-
-        # All clear. Process the request.
-        request = convert_post_to_put(request)
-        response = method(request, **kwargs)
-
-        # Add the throttled request.
-        self.log_throttled_access(request)
-
-        # If what comes back isn't a ``HttpResponse``, assume that the
-        # request was accepted and that some action occurred. This also
-        # prevents Django from freaking out.
-        if not isinstance(response, HttpResponse):
-            return http.HttpNoContent()
-
-        return response
 
     def get_object_list(self, request):
         """Get a list of stories, filtering based on the request's user"""
@@ -627,7 +636,7 @@ class StoryResource(TranslatedModelResource):
             return http.HttpMultipleChoices("More than one resource is found at this URI.")
 
         section_resource = SectionResource()
-        return section_resource.dispatch_detail(request, story__story_id=obj.story_id)
+        return section_resource.dispatch_detail(request, story_id=obj.story_id)
 
     def dispatch_section_list(self, request, **kwargs):
         try:
@@ -638,10 +647,10 @@ class StoryResource(TranslatedModelResource):
             return http.HttpMultipleChoices("More than one resource is found at this URI.")
 
         section_resource = SectionResource()
-        return section_resource.dispatch_list(request, story__story_id=obj.story_id)
+        return section_resource.dispatch_list(request, story_id=obj.story_id)
 
 
-class SectionResource(TranslatedModelResource):
+class SectionResource(DelayedAuthorizationResource):
     # Explicitly declare fields that are on the translation model
     title = fields.CharField(attribute='title')
     story = fields.ToOneField(StoryResource, 'story')
@@ -649,7 +658,7 @@ class SectionResource(TranslatedModelResource):
     class Meta:
         queryset = Section.objects.all()
         resource_name = 'sections'
-        allowed_methods = ['get']
+        allowed_methods = ['get', 'post']
         authentication = Authentication()
         authorization = LoggedInAuthorization()
         # Hide the underlying id
@@ -661,6 +670,8 @@ class SectionResource(TranslatedModelResource):
         # Custom meta attributes
         # Class of the resource under which this is nested
         parent_resource = StoryResource
+        # Methods that handle authorization later than normain in the flow
+        delayed_authorization_methods = ('patch_detail',)
 
     def detail_uri_kwargs(self, bundle_or_obj):
         """
@@ -715,3 +726,8 @@ class SectionResource(TranslatedModelResource):
             return self._build_reverse_url(nested_url_name, kwargs=kwargs)
         except NoReverseMatch:
             return ''
+
+    def obj_create(self, bundle, request=None, **kwargs):
+        story_id = kwargs.pop('story_id')
+        kwargs['story'] = Story.objects.get(story_id=story_id)
+        super(SectionResource, self).obj_create(bundle, request, **kwargs)

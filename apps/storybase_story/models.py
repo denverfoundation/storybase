@@ -43,7 +43,10 @@ class StoryPermission(PermissionMixin):
         return False
 
     def user_can_add(self, user):
-        return self.user_can_change(user)
+        if user.is_active:
+            return True
+
+        return False
 
     def user_can_delete(self, user):
         return self.user_can_change(user)
@@ -343,7 +346,43 @@ m2m_changed.connect(update_last_edited, sender=Story.organizations.through)
 m2m_changed.connect(update_last_edited, sender=Story.projects.through)
 
 
-class Section(node_factory('SectionRelation'), TranslatedModel):
+class SectionPermission(PermissionMixin):
+    """Permissions for the Story model"""
+    def user_can_change(self, user):
+        from storybase_user.utils import is_admin
+
+        if not user.is_active:
+            return False
+
+        if self.story.author == user:
+            return True
+
+        if is_admin(user):
+            return True
+
+        return False
+
+    def user_can_add(self, user):
+        return self.user_can_change(user)
+
+    def user_can_delete(self, user):
+        return self.user_can_change(user)
+
+
+class SectionTranslation(TranslationModel):
+    """Translated fields of a Section"""
+    section = models.ForeignKey('Section')
+    title = ShortTextField() 
+
+    class Meta:
+        """Model metadata options"""
+        unique_together = (('section', 'language'))
+
+    def __unicode__(self):
+        return self.title
+
+
+class Section(node_factory('SectionRelation'), TranslatedModel, SectionPermission):
     """ Section of a story """
     section_id = UUIDField(auto=True)
     story = models.ForeignKey('Story', related_name='sections')
@@ -358,6 +397,7 @@ class Section(node_factory('SectionRelation'), TranslatedModel):
 
     translated_fields = ['title']
     translation_set = 'sectiontranslation_set'
+    translation_class = SectionTranslation
 
     def __unicode__(self):
         try:
@@ -457,17 +497,6 @@ class Section(node_factory('SectionRelation'), TranslatedModel):
     change_link.allow_tags = True
 
 
-class SectionTranslation(TranslationModel):
-    """Translated fields of a Section"""
-    section = models.ForeignKey('Section')
-    title = ShortTextField() 
-
-    class Meta:
-        """Model metadata options"""
-        unique_together = (('section', 'language'))
-
-    def __unicode__(self):
-        return self.title
 
 class SectionRelation(edge_factory(Section, concrete=False)):
     """Through class for parent/child relationships between sections"""

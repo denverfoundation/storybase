@@ -1465,10 +1465,37 @@ class StoryResourceTest(ResourceTestCase):
         # Retrieve a model instance for the newly created section
         story = Story.objects.get(story_id=story_id)
         self.assertEqual(len(story.sections.all()), 1)
-        section = story.sections[0]
+        section = story.sections.all()[0]
         self.assertEqual(section.title, section_post_data['title'])
-        # BOOKMARK
-        self.fail("Not implemented")
+
+    def test_post_list_sections_other_user(self):
+        """Test that a user can't add a new section to another user's story"""
+        story_post_data = {
+            'title': "Test Story",
+            'summary': "Test Summary",
+            'byline': "Test Byline",
+            'status': "draft",
+            'language': "en",
+        }
+        section_post_data = {
+            'title': "Test Section",
+            'language': "en",
+        }
+        user2 = User.objects.create(username="test2", email="test2@example.com",
+                                    password="test2")
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status='published',
+                             author=user2)
+        self.api_client.client.login(username=self.username, password=self.password)
+        story_resource_uri = '/api/0.1/stories/%s/' % story.story_id 
+        # Confirm there are no sections
+        self.assertEqual(len(story.sections.all()), 0)
+        # Create a new section
+        sections_uri = "%ssections/" % (story_resource_uri)
+        response = self.api_client.post(sections_uri,
+                                        format='json', data=section_post_data)
+        self.assertHttpUnauthorized(response)
+        self.assertEqual(len(story.sections.all()), 0)
 
 
 class SectionResourceTest(ResourceTestCase):
