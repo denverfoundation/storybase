@@ -66,6 +66,7 @@ pre_bundle_obj_hydrate = Signal(providing_args=["bundle", "request"])
 """Signal sent before the bundle is hydrated"""
 post_bundle_obj_save = Signal(providing_args=["bundle", "request"])
 """Signal sent after the bundle is saved"""
+post_obj_get = Signal(providing_args=["request", "object"])
 
 class HookedModelResource(ModelResource):
     """A version of ModelResource with extra actions at various points in the pipeline"""
@@ -100,6 +101,51 @@ class HookedModelResource(ModelResource):
         m2m_bundle = self.hydrate_m2m(bundle)
         self.save_m2m(m2m_bundle)
         return bundle
+
+    def patch_detail(self, request, **kwargs):
+        """
+        Updates a resource in-place.
+
+        Calls ``obj_update``.
+
+        If the resource is updated, return ``HttpAccepted`` (202 Accepted).
+        If the resource did not exist, return ``HttpNotFound`` (404 Not Found).
+        """
+        request = convert_post_to_patch(request)
+
+        # We want to be able to validate the update, but we can't just pass
+        # the partial data into the validator since all data needs to be
+        # present. Instead, we basically simulate a PUT by pulling out the
+        # original data and updating it in-place.
+        # So first pull out the original object. This is essentially
+        # ``get_detail``.
+        try:
+            obj = self.cached_obj_get(request=request, **self.remove_api_resource_names(kwargs))
+        except ObjectDoesNotExist:
+            return http.HttpNotFound()
+        except MultipleObjectsReturned:
+            return http.HttpMultipleChoices("More than one resource is found at this URI.")
+
+        # Send a signal
+        post_obj_get.send(sender=self, request=request, obj=obj)
+
+        bundle = self.build_bundle(obj=obj, request=request)
+        bundle = self.full_dehydrate(bundle)
+        bundle = self.alter_detail_data_to_serialize(request, bundle)
+
+        # Now update the bundle in-place.
+        deserialized = self.deserialize(request, request.raw_post_data, format=request.META.get('CONTENT_TYPE', 'application/json'))
+        try:
+            self.update_in_place(request, bundle, deserialized)
+        except ObjectDoesNotExist:
+            return http.HttpNotFound()
+
+        if not self._meta.always_return_data:
+            return http.HttpAccepted()
+        else:
+            bundle = self.full_dehydrate(bundle)
+            bundle = self.alter_detail_data_to_serialize(request, bundle)
+            return self.create_response(request, bundle, response_class=http.HttpAccepted)
 
 
 class TranslatedModelResource(HookedModelResource):
@@ -288,6 +334,10 @@ class DelayedAuthorizationResource(TranslatedModelResource):
     def _pre_bundle_obj_hydrate(sender, bundle, request, **kwargs):
         sender.is_authorized(request, bundle.obj)
 
+    @receiver(post_obj_get)
+    def _post_obj_get(sender, request, obj, **kwargs):
+        sender.is_authorized(request, obj)
+
 
 class StoryResource(DelayedAuthorizationResource):
     # Explicitly declare fields that are on the translation model
@@ -365,50 +415,6 @@ class StoryResource(DelayedAuthorizationResource):
 
         return super(StoryResource, self).get_object_list(request).filter(q)
 
-    def patch_detail(self, request, **kwargs):
-        """
-        Updates a resource in-place.
-
-        Calls ``obj_update``.
-
-        If the resource is updated, return ``HttpAccepted`` (202 Accepted).
-        If the resource did not exist, return ``HttpNotFound`` (404 Not Found).
-        """
-        request = convert_post_to_patch(request)
-
-        # We want to be able to validate the update, but we can't just pass
-        # the partial data into the validator since all data needs to be
-        # present. Instead, we basically simulate a PUT by pulling out the
-        # original data and updating it in-place.
-        # So first pull out the original object. This is essentially
-        # ``get_detail``.
-        try:
-            obj = self.cached_obj_get(request=request, **self.remove_api_resource_names(kwargs))
-        except ObjectDoesNotExist:
-            return http.HttpNotFound()
-        except MultipleObjectsReturned:
-            return http.HttpMultipleChoices("More than one resource is found at this URI.")
-
-        # Now that we have an object, check authorization
-        self.is_authorized(request, obj)
-
-        bundle = self.build_bundle(obj=obj, request=request)
-        bundle = self.full_dehydrate(bundle)
-        bundle = self.alter_detail_data_to_serialize(request, bundle)
-
-        # Now update the bundle in-place.
-        deserialized = self.deserialize(request, request.raw_post_data, format=request.META.get('CONTENT_TYPE', 'application/json'))
-        try:
-            self.update_in_place(request, bundle, deserialized)
-        except ObjectDoesNotExist:
-            return http.HttpNotFound()
-
-        if not self._meta.always_return_data:
-            return http.HttpAccepted()
-        else:
-            bundle = self.full_dehydrate(bundle)
-            bundle = self.alter_detail_data_to_serialize(request, bundle)
-            return self.create_response(request, bundle, response_class=http.HttpAccepted)
 
     def obj_create(self, bundle, request=None, **kwargs):
         # Set the story's author to the request's user
@@ -653,6 +659,10 @@ class StoryResource(DelayedAuthorizationResource):
 
     def dispatch_section_detail(self, request, **kwargs):
         try:
+            # Remove the section id from the keyword arguments to lookup the
+            # the story, saving it to pass to SectionResource.dispatch_detail
+            # later
+            section_id = kwargs.pop('section_id')
             obj = self.cached_obj_get(request=request, **self.remove_api_resource_names(kwargs))
         except ObjectDoesNotExist:
             return http.HttpNotFound()
@@ -660,7 +670,8 @@ class StoryResource(DelayedAuthorizationResource):
             return http.HttpMultipleChoices("More than one resource is found at this URI.")
 
         section_resource = SectionResource()
-        return section_resource.dispatch_detail(request, story_id=obj.story_id)
+        return section_resource.dispatch_detail(request, story_id=obj.story_id,
+                                                section_id=section_id)
 
     def dispatch_section_list(self, request, **kwargs):
         try:
