@@ -754,4 +754,4 @@ class SectionResource(DelayedAuthorizationResource):
     def obj_create(self, bundle, request=None, **kwargs):
         story_id = kwargs.pop('story_id')
         kwargs['story'] = Story.objects.get(story_id=story_id)
-        super(SectionResource, self).obj_create(bundle, request, **kwargs)
+        return super(SectionResource, self).obj_create(bundle, request, **kwargs)

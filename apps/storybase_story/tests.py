@@ -1462,10 +1462,13 @@ class StoryResourceTest(ResourceTestCase):
         response = self.api_client.post(sections_uri,
                                         format='json', data=section_post_data)
         self.assertHttpCreated(response)
+        section_resource_uri = response['location']
         # Retrieve a model instance for the newly created section
         story = Story.objects.get(story_id=story_id)
         self.assertEqual(len(story.sections.all()), 1)
         section = story.sections.all()[0]
+        self.assertEqual("%s%s/" % (sections_uri, section.section_id), 
+                         section_resource_uri)
         self.assertEqual(section.title, section_post_data['title'])
 
     def test_post_list_sections_other_user(self):
@@ -1496,6 +1499,45 @@ class StoryResourceTest(ResourceTestCase):
                                         format='json', data=section_post_data)
         self.assertHttpUnauthorized(response)
         self.assertEqual(len(story.sections.all()), 0)
+
+    def test_patch_detail_sections(self):
+        """Test that a user can update the metadata of a section"""
+        story_post_data = {
+            'title': "Test Story",
+            'summary': "Test Summary",
+            'byline': "Test Byline",
+            'status': "draft",
+            'language': "en",
+        }
+        section_post_data = {
+            'title': "Test Section",
+            'language': "en",
+        }
+        section_patch_data = {
+            'title': "New Test Section Title",
+            'language': "en",
+        }
+        self.api_client.client.login(username=self.username, password=self.password)
+        # Create a new story through the API
+        response = self.api_client.post('/api/0.1/stories/',
+                               format='json', data=story_post_data)
+        story_resource_uri = response['location']
+        story_id = story_resource_uri.split('/')[-2]
+        # Create a new section
+        sections_uri = "%ssections/" % (story_resource_uri)
+        response = self.api_client.post(sections_uri,
+                                        format='json', data=section_post_data)
+        self.assertHttpCreated(response)
+        section_uri = response['location']
+        section_id = section_uri.split('/')[-2]
+        # Update the section title
+        response = self.api_client.patch(section_uri, format='json',
+                                         data=section_patch_data)
+        # Retrieve a model instance for the newly modified section
+        story = Story.objects.get(story_id=story_id)
+        self.assertEqual(len(story.sections.all()), 1)
+        section = story.sections.get(section_id=section_id)
+        self.assertEqual(section.title, section_patch_data['title'])
 
 
 class SectionResourceTest(ResourceTestCase):
