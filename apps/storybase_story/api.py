@@ -4,6 +4,7 @@ from django.conf import settings
 from django.conf.urls.defaults import url
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.urlresolvers import NoReverseMatch
+from django.dispatch import receiver, Signal
 from django.http import HttpResponse
 
 from haystack.query import SearchQuerySet
@@ -58,22 +59,14 @@ class LoggedInAuthorization(Authorization):
         # Fall-back to failure
         return False 
 
-class HookedModelResource(ModelResource):
-    """A version of ModelResource that defines hooks to do extra actions at various points in the pipeline"""
-    def _call_hook(self, hook, bundle, request, **kwargs):
-        hook_func = getattr(self, "_%s" % (hook), None)
-        if hook_func:
-            hook_func(bundle, request, **kwargs)
+post_bundle_obj_construct = Signal(providing_args=["bundle", "request"])
+pre_bundle_obj_hydrate = Signal(providing_args=["bundle", "request"])
+post_bundle_obj_save = Signal(providing_args=["bundle", "request"])
 
+class HookedModelResource(ModelResource):
+    """A version of ModelResource with extra actions at various points in the pipeline"""
     def _bundle_setattr(self, bundle, key, value):
         setattr(bundle.obj, key, value)
-
-    def _post_obj_save(self, bundle, request, **kwargs):
-        object_class = self._meta.object_class
-        # Associate and save the translation
-        fk_field_name = object_class.get_translation_fk_field_name()
-        setattr(bundle.translation_obj, fk_field_name, bundle.obj)
-        bundle.translation_obj.save()
 
     def obj_create(self, bundle, request=None, **kwargs):
         """
@@ -81,11 +74,11 @@ class HookedModelResource(ModelResource):
         """
 
         bundle.obj = self._meta.object_class()
-        self._call_hook('post_obj_construct', bundle, request, **kwargs)
+        post_bundle_obj_construct.send(sender=self, bundle=bundle, request=request, **kwargs)
 
         for key, value in kwargs.items():
             self._bundle_setattr(bundle, key, value)
-        self._call_hook('pre_obj_hydrate', bundle, request, **kwargs)
+        pre_bundle_obj_hydrate.send(sender=self, bundle=bundle, request=request, **kwargs)
         bundle = self.full_hydrate(bundle)
         self.is_valid(bundle,request)
 
@@ -97,7 +90,7 @@ class HookedModelResource(ModelResource):
 
         # Save parent
         bundle.obj.save()
-        self._call_hook('post_obj_save', bundle, request, **kwargs)
+        post_bundle_obj_save.send(sender=self, bundle=bundle, request=request, **kwargs)
 
         # Now pick up the M2M bits.
         m2m_bundle = self.hydrate_m2m(bundle)
@@ -176,11 +169,20 @@ class TranslatedModelResource(HookedModelResource):
     def dehydrate_languages(self, bundle):
         return bundle.obj.get_language_info()
 
-    def _post_obj_construct(self, bundle, request, **kwargs):
-        object_class = self._meta.object_class
+    @receiver(post_bundle_obj_construct)
+    def _post_bundle_obj_construct(sender, bundle, request, **kwargs):
+        object_class = sender._meta.object_class
         translation_class = object_class.translation_class
         bundle.translation_obj = translation_class()
         bundle.translation_fields = object_class.translated_fields + ['language']
+
+    @receiver(post_bundle_obj_save)
+    def _post_bundle_obj_save(sender, bundle, request, **kwargs):
+        object_class = sender._meta.object_class
+        # Associate and save the translation
+        fk_field_name = object_class.get_translation_fk_field_name()
+        setattr(bundle.translation_obj, fk_field_name, bundle.obj)
+        bundle.translation_obj.save()
 
     def _bundle_setattr(self, bundle, key, value):
         if key in bundle.translation_fields: 
@@ -278,8 +280,9 @@ class DelayedAuthorizationResource(TranslatedModelResource):
 
         return response
 
-    def _pre_obj_hydrate(self, bundle, request, **kwargs):
-        self.is_authorized(request, bundle.obj)
+    @receiver(pre_bundle_obj_hydrate)
+    def _pre_bundle_obj_hydrate(sender, bundle, request, **kwargs):
+        sender.is_authorized(request, bundle.obj)
 
 
 class StoryResource(DelayedAuthorizationResource):
