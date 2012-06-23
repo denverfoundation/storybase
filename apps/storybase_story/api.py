@@ -58,8 +58,54 @@ class LoggedInAuthorization(Authorization):
         # Fall-back to failure
         return False 
 
+class HookedModelResource(ModelResource):
+    """A version of ModelResource that defines hooks to do extra actions at various points in the pipeline"""
+    def _call_hook(self, hook, bundle, request, **kwargs):
+        hook_func = getattr(self, "_%s" % (hook), None)
+        if hook_func:
+            hook_func(bundle, request, **kwargs)
 
-class TranslatedModelResource(ModelResource):
+    def _bundle_setattr(self, bundle, key, value):
+        setattr(bundle.obj, key, value)
+
+    def _post_obj_save(self, bundle, request, **kwargs):
+        object_class = self._meta.object_class
+        # Associate and save the translation
+        fk_field_name = object_class.get_translation_fk_field_name()
+        setattr(bundle.translation_obj, fk_field_name, bundle.obj)
+        bundle.translation_obj.save()
+
+    def obj_create(self, bundle, request=None, **kwargs):
+        """
+        A ORM-specific implementation of ``obj_create``.
+        """
+
+        bundle.obj = self._meta.object_class()
+        self._call_hook('post_obj_construct', bundle, request, **kwargs)
+
+        for key, value in kwargs.items():
+            self._bundle_setattr(bundle, key, value)
+        self._call_hook('pre_obj_hydrate', bundle, request, **kwargs)
+        bundle = self.full_hydrate(bundle)
+        self.is_valid(bundle,request)
+
+        if bundle.errors:
+            self.error_response(bundle.errors, request)
+
+        # Save FKs just in case.
+        self.save_related(bundle)
+
+        # Save parent
+        bundle.obj.save()
+        self._call_hook('post_obj_save', bundle, request, **kwargs)
+
+        # Now pick up the M2M bits.
+        m2m_bundle = self.hydrate_m2m(bundle)
+        self.save_m2m(m2m_bundle)
+        return bundle
+
+
+class TranslatedModelResource(HookedModelResource):
     """A version of ModelResource that handles our translation implementation"""
     # This is a write-only field that we include to allow specifying the
     # language when creating an object.  We remove it from the response in
@@ -130,49 +176,17 @@ class TranslatedModelResource(ModelResource):
     def dehydrate_languages(self, bundle):
         return bundle.obj.get_language_info()
 
-    def obj_create(self, bundle, request=None, **kwargs):
-        """
-        A version of ``obj_create`` that deals with translated models
-        """
-
+    def _post_obj_construct(self, bundle, request, **kwargs):
         object_class = self._meta.object_class
         translation_class = object_class.translation_class
-        translation_fields = object_class.translated_fields + ['language']
-
-        bundle.obj = object_class()
         bundle.translation_obj = translation_class()
+        bundle.translation_fields = object_class.translated_fields + ['language']
 
-        for key, value in kwargs.items():
-            if key in translation_fields: 
-                setattr(bundle.translation_obj, key, value)
-            else:
-                setattr(bundle.obj, key, value)
-        # Check if the user is authorized to create this object before going
-        # any further
-        # TODO: Break this out to separate the translation logic and the into i
-        # a different method
-        self.is_authorized(request, bundle.obj)
-        bundle = self.full_hydrate(bundle)
-        self.is_valid(bundle,request)
-
-        if bundle.errors:
-            self.error_response(bundle.errors, request)
-
-        # Save FKs just in case.
-        self.save_related(bundle)
-
-        # Save parent
-        bundle.obj.save()
-
-        # Associate and save the translation
-        fk_field_name = object_class.get_translation_fk_field_name()
-        setattr(bundle.translation_obj, fk_field_name, bundle.obj)
-        bundle.translation_obj.save()
-
-        # Now pick up the M2M bits.
-        m2m_bundle = self.hydrate_m2m(bundle)
-        self.save_m2m(m2m_bundle)
-        return bundle
+    def _bundle_setattr(self, bundle, key, value):
+        if key in bundle.translation_fields: 
+            setattr(bundle.translation_obj, key, value)
+        else:
+            setattr(bundle.obj, key, value)
 
     def obj_update(self, bundle, request=None, skip_errors=False, **kwargs):
         """
@@ -263,6 +277,9 @@ class DelayedAuthorizationResource(TranslatedModelResource):
             return http.HttpNoContent()
 
         return response
+
+    def _pre_obj_hydrate(self, bundle, request, **kwargs):
+        self.is_authorized(request, bundle.obj)
 
 
 class StoryResource(DelayedAuthorizationResource):
