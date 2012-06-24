@@ -13,6 +13,11 @@ DATABASES = {
     }
 }
 
+# Haystack doesn't correctly hook up RealTimeIndex signals when
+# migrations are enabled, so disable migrations.
+# See https://github.com/toastdriven/django-haystack/issues/599
+SOUTH_TESTS_MIGRATE = False
+
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'storybase_geo.search.backends.Solr2155Engine', 
