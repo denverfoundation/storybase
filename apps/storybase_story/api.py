@@ -71,7 +71,22 @@ post_bundle_obj_save = Signal(providing_args=["bundle", "request"])
 post_obj_get = Signal(providing_args=["request", "object"])
 
 class HookedModelResource(ModelResource):
-    """A version of ModelResource with extra actions at various points in the pipeline"""
+    """
+    A version of ModelResource with extra actions at various points in the pipeline
+    
+    This allows for doing things like creating related translation model
+    instances or doing row-level authorization checks in a DRY way since
+    most of the logic for the core logic of the request/response cycle
+    remains the same as ModelResource.
+
+    The hooks are implemented using Django's signal framework.  In this case
+    the resource is sending a signal to itself and the signal handlers
+    are defined as methods of the HookedModelResource subclass.  Because
+    of this, the signature for these methods has an initial argument of
+    sender instead of the conventional self, even though its referring
+    to the resource object.
+
+    """
     def _bundle_setattr(self, bundle, key, value):
         setattr(bundle.obj, key, value)
 
@@ -258,12 +273,24 @@ class TranslatedModelResource(HookedModelResource):
         return bundle.obj.get_language_info()
 
     @receiver(post_bundle_obj_construct)
-    def _post_bundle_obj_construct(sender, bundle, request, **kwargs):
+    def translation_obj_construct(sender, bundle, request, **kwargs):
+        """
+        Create a translation object and add it to the bundle
+        
+        This should be connected to the ``post_bundle_obj_construct`` signal
+
+        """
         translation_class = sender._meta.object_class.translation_class
         bundle.translation_obj = translation_class()
 
     @receiver(post_bundle_obj_save)
-    def _post_bundle_obj_save(sender, bundle, request, **kwargs):
+    def translation_obj_save(sender, bundle, request, **kwargs):
+        """
+        Associate the translation object with its parent and save
+
+        This should be connected to the ``post_bundle_obj_save`` signal
+
+        """
         object_class = sender._meta.object_class
         # Associate and save the translation
         fk_field_name = object_class.get_translation_fk_field_name()
@@ -271,7 +298,14 @@ class TranslatedModelResource(HookedModelResource):
         bundle.translation_obj.save()
 
     @receiver(post_bundle_obj_hydrate)
-    def _post_bundle_obj_hydrate(sender, bundle, request, **kwargs):
+    def translation_obj_get(sender, bundle, request, **kwargs):
+        """
+        Get the associated translation model instance
+
+        This should be connected to the ``post_bundle_obj_hydrate``
+        signal.
+
+        """
         if bundle.obj.pk and not hasattr(bundle, 'translation_obj'):
             language = bundle.data.get('language', sender.fields['language'].default)
             translation_set = getattr(bundle.obj, bundle.obj.translation_set)
@@ -327,11 +361,27 @@ class DelayedAuthorizationResource(TranslatedModelResource):
         return response
 
     @receiver(pre_bundle_obj_hydrate)
-    def _pre_bundle_obj_hydrate(sender, bundle, request, **kwargs):
+    def check_bundle_obj_authorization(sender, bundle, request, **kwargs):
+        """
+        Check authorization of the bundle's object
+        
+        Simply calls through to is_authorized.
+
+        This should be connected to the ``pre_bundle_obj_hydrate`` signal.
+
+        """
         sender.is_authorized(request, bundle.obj)
 
     @receiver(post_obj_get)
-    def _post_obj_get(sender, request, obj, **kwargs):
+    def check_obj_authorization(sender, request, obj, **kwargs):
+        """
+        Check authorization of an object based on the request
+
+        Simply calls through to the is_authorized method of the resource
+
+        This should be connected to the ``post_obj_get`` signal.
+
+        """
         sender.is_authorized(request, obj)
 
 
