@@ -14,7 +14,7 @@ from tastypie.utils import trailing_slash
 from tastypie.authentication import Authentication
 from tastypie.authorization import Authorization
 
-from storybase.api import DelayedAuthorizationResource
+from storybase.api import TranslatedModelResource, DelayedAuthorizationResource
 from storybase.utils import get_language_name
 from storybase_geo.models import Place
 from storybase_story.models import Story, Section
@@ -56,7 +56,7 @@ class LoggedInAuthorization(Authorization):
         return False 
 
 
-class StoryResource(DelayedAuthorizationResource):
+class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
     # Explicitly declare fields that are on the translation model
     title = fields.CharField(attribute='title')
     summary = fields.CharField(attribute='summary')
@@ -402,7 +402,7 @@ class StoryResource(DelayedAuthorizationResource):
         return section_resource.dispatch_list(request, story_id=obj.story_id)
 
 
-class SectionResource(DelayedAuthorizationResource):
+class SectionResource(DelayedAuthorizationResource, TranslatedModelResource):
     # Explicitly declare fields that are on the translation model
     title = fields.CharField(attribute='title')
     story = fields.ToOneField(StoryResource, 'story')

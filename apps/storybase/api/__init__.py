@@ -1,1 +1,1 @@
-from storybase.api.resources import TranslatedModelResource, DelayedAuthorizationResource
+from storybase.api.resources import DelayedAuthorizationResource, TranslatedModelResource

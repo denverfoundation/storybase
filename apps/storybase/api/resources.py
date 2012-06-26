@@ -206,6 +206,67 @@ class HookedModelResource(ModelResource):
             return self.create_response(request, bundle, response_class=http.HttpAccepted)
 
 
+class DelayedAuthorizationResource(HookedModelResource):
+    def dispatch(self, request_type, request, **kwargs):
+        """
+        Handles the common operations (allowed HTTP method, authentication,
+        throttling, method lookup) surrounding most CRUD interactions.
+
+        This version moves the authorization check to later in the pipeline
+        """
+        allowed_methods = getattr(self._meta, "%s_allowed_methods" % request_type, None)
+        request_method = self.method_check(request, allowed=allowed_methods)
+        method_name = "%s_%s" % (request_method, request_type)
+        method = getattr(self, method_name, None)
+
+        if method is None:
+            raise ImmediateHttpResponse(response=http.HttpNotImplemented())
+
+        self.is_authenticated(request)
+        if method_name not in self._meta.delayed_authorization_methods:
+            self.is_authorized(request)
+        self.throttle_check(request)
+
+        # All clear. Process the request.
+        request = convert_post_to_put(request)
+        response = method(request, **kwargs)
+
+        # Add the throttled request.
+        self.log_throttled_access(request)
+
+        # If what comes back isn't a ``HttpResponse``, assume that the
+        # request was accepted and that some action occurred. This also
+        # prevents Django from freaking out.
+        if not isinstance(response, HttpResponse):
+            return http.HttpNoContent()
+
+        return response
+
+    @receiver(pre_bundle_obj_hydrate)
+    def check_bundle_obj_authorization(sender, bundle, request, **kwargs):
+        """
+        Check authorization of the bundle's object
+        
+        Simply calls through to is_authorized.
+
+        This should be connected to the ``pre_bundle_obj_hydrate`` signal.
+
+        """
+        sender.is_authorized(request, bundle.obj)
+
+    @receiver(post_obj_get)
+    def check_obj_authorization(sender, request, obj, **kwargs):
+        """
+        Check authorization of an object based on the request
+
+        Simply calls through to the is_authorized method of the resource
+
+        This should be connected to the ``post_obj_get`` signal.
+
+        """
+        sender.is_authorized(request, obj)
+
+
 class TranslatedModelResource(HookedModelResource):
     """A version of ModelResource that handles our translation implementation"""
     # This is a write-only field that we include to allow specifying the
@@ -274,62 +335,3 @@ class TranslatedModelResource(HookedModelResource):
             setattr(bundle.obj, key, value)
 
 
-class DelayedAuthorizationResource(TranslatedModelResource):
-    def dispatch(self, request_type, request, **kwargs):
-        """
-        Handles the common operations (allowed HTTP method, authentication,
-        throttling, method lookup) surrounding most CRUD interactions.
-
-        This version moves the authorization check to later in the pipeline
-        """
-        allowed_methods = getattr(self._meta, "%s_allowed_methods" % request_type, None)
-        request_method = self.method_check(request, allowed=allowed_methods)
-        method_name = "%s_%s" % (request_method, request_type)
-        method = getattr(self, method_name, None)
-
-        if method is None:
-            raise ImmediateHttpResponse(response=http.HttpNotImplemented())
-
-        self.is_authenticated(request)
-        if method_name not in self._meta.delayed_authorization_methods:
-            self.is_authorized(request)
-        self.throttle_check(request)
-
-        # All clear. Process the request.
-        request = convert_post_to_put(request)
-        response = method(request, **kwargs)
-
-        # Add the throttled request.
-        self.log_throttled_access(request)
-
-        # If what comes back isn't a ``HttpResponse``, assume that the
-        # request was accepted and that some action occurred. This also
-        # prevents Django from freaking out.
-        if not isinstance(response, HttpResponse):
-            return http.HttpNoContent()
-
-        return response
-
-    @receiver(pre_bundle_obj_hydrate)
-    def check_bundle_obj_authorization(sender, bundle, request, **kwargs):
-        """
-        Check authorization of the bundle's object
-        
-        Simply calls through to is_authorized.
-
-        This should be connected to the ``pre_bundle_obj_hydrate`` signal.
-
-        """
-        sender.is_authorized(request, bundle.obj)
-
-    @receiver(post_obj_get)
-    def check_obj_authorization(sender, request, obj, **kwargs):
-        """
-        Check authorization of an object based on the request
-
-        Simply calls through to the is_authorized method of the resource
-
-        This should be connected to the ``post_obj_get`` signal.
-
-        """
-        sender.is_authorized(request, obj)
