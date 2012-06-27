@@ -4,6 +4,9 @@ from django.contrib.auth.models import User
 from django.template.defaultfilters import striptags, truncatewords
 from django.test import TestCase
 
+from tastypie.test import ResourceTestCase
+
+from storybase.tests.base import FixedTestApiClient
 from models import (ExternalAsset, HtmlAsset, HtmlAssetTranslation,
     create_html_asset, create_external_asset, create_external_dataset)
 from embedable_resource import EmbedableResource
@@ -313,3 +316,15 @@ class DataSetApiTest(TestCase):
         self.assertEqual(dataset.owner, user)
         self.assertEqual(dataset.source, source)
         self.assertEqual(dataset.attribution, attribution)
+
+
+class AssetResourceTest(ResourceTestCase):
+    def setUp(self):
+        super(AssetResourceTest, self).setUp()
+        # Use our fixed TestApiClient instead of the default
+        self.api_client = FixedTestApiClient()
+        self.username = 'test'
+        self.password = 'test'
+        self.user = User.objects.create_user(self.username, 'test@example.com', self.password)
+
+    # TODO: Implement these tests
