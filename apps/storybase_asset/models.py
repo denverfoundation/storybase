@@ -9,15 +9,17 @@ from django.utils.html import strip_tags
 from django.utils.text import truncate_words
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
+
 from filer.fields.image import FilerFileField, FilerImageField
 from model_utils.managers import InheritanceManager
 import oembed
 from oembed.exceptions import OEmbedMissingEndpoint
 from uuidfield.fields import UUIDField
+
 from storybase.fields import ShortTextField
 from storybase.models import (LicensedModel, PublishedModel,
     TimestampedModel, TranslatedModel, TranslationModel,
-    set_date_on_published)
+    PermissionMixin, set_date_on_published)
 from embedable_resource import EmbedableResource
 from embedable_resource.exceptions import UrlNotMatched
 
@@ -37,8 +39,36 @@ For example, a map might actually be stored as an image, or it could be
 an HTML snippet.
 """
 
+class AssetPermission(PermissionMixin):
+    """Permissions for the Story model"""
+    def user_can_change(self, user):
+        from storybase_user.utils import is_admin
+
+        if not user.is_active:
+            return False
+
+        # Authenticated, active users can change their own assets
+        if self.owner == user:
+            return True
+
+        # Admins can change any asset
+        if is_admin(user):
+            return True
+
+        return False
+
+    def user_can_add(self, user):
+        # All authenticated, active users can add assets
+        if not user.is_active:
+            return False
+
+        return True
+
+    def user_can_delete(self, user):
+        return self.user_can_change(user)
+
 class Asset(TranslatedModel, LicensedModel, PublishedModel,
-    TimestampedModel):
+    TimestampedModel, AssetPermission):
     """A piece of content included in a story
 
     An asset could be an image, a block of text, an embedded resource

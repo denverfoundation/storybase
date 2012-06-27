@@ -1,5 +1,6 @@
 from datetime import datetime
 
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.template.defaultfilters import striptags, truncatewords
 from django.test import TestCase
@@ -316,6 +317,57 @@ class DataSetApiTest(TestCase):
         self.assertEqual(dataset.owner, user)
         self.assertEqual(dataset.source, source)
         self.assertEqual(dataset.attribution, attribution)
+
+
+class AssetPermissionTest(TestCase):
+    def setUp(self):
+        from django.contrib.auth.models import Group
+        self.admin_group = Group.objects.create(name=settings.ADMIN_GROUP_NAME)
+        self.user1 = User.objects.create_user("test1", "test1@example.com",
+                                              "test1")
+        self.user2 = User.objects.create_user("test2", "test2@example.com",
+                                              "test2")
+        self.asset = create_html_asset(type='image', title='Test Asset',
+                                       owner=self.user1)
+
+
+    def test_user_can_add(self):
+        """Test that a user has permission to add an asset"""
+        self.assertTrue(self.asset.user_can_add(self.user1))
+
+    def test_user_can_add_inactive(self):
+        """Test that an inactive user can't add an asset"""
+        self.assertTrue(self.asset.user_can_add(self.user1))
+        self.user1.is_active = False 
+        self.assertFalse(self.asset.user_can_add(self.user1))
+
+    def test_user_can_change_as_owner(self):
+        """Test that owner has permissions to change their asset"""
+        self.assertTrue(self.asset.user_can_change(self.user1))
+
+    def test_user_can_change_not_author(self):
+        """Test that a owner doesn't have permissions to change another user's asset"""
+        self.assertFalse(self.asset.user_can_change(self.user2))
+
+    def test_user_can_change_superuser(self):
+        """Test that a superuser can change another user's asset"""
+        self.assertFalse(self.asset.user_can_change(self.user2))
+        self.user2.is_superuser = True
+        self.user2.save()
+        self.assertTrue(self.asset.user_can_change(self.user2))
+
+    def test_user_can_change_admin(self):
+        """Test that a member of the admin group can change another user's asset"""
+        self.assertFalse(self.asset.user_can_change(self.user2))
+        self.user2.groups.add(self.admin_group)
+        self.user2.save()
+        self.assertTrue(self.asset.user_can_change(self.user2))
+
+    def test_user_can_change_inactive(self):
+        """Test that an inactive user can't change their own story"""
+        self.assertTrue(self.asset.user_can_change(self.user1))
+        self.user1.is_active = False 
+        self.assertFalse(self.asset.user_can_change(self.user1))
 
 
 class AssetResourceTest(ResourceTestCase):
