@@ -371,6 +371,15 @@ class AssetPermissionTest(TestCase):
 
 
 class AssetResourceTest(ResourceTestCase):
+    def get_obj(self, objects, obj_id_field, obj_id):
+        for obj in objects:
+            if obj[obj_id_field] == obj_id:
+                return obj
+
+    def get_response_asset(self, resp, asset_id):
+        return self.get_obj(self.deserialize(resp)['objects'], 'asset_id', 
+                            asset_id)
+
     def setUp(self):
         super(AssetResourceTest, self).setUp()
         # Use our fixed TestApiClient instead of the default
@@ -379,4 +388,25 @@ class AssetResourceTest(ResourceTestCase):
         self.password = 'test'
         self.user = User.objects.create_user(self.username, 'test@example.com', self.password)
 
-    # TODO: Implement these tests
+    def test_get_list(self):
+        """Test getting a list of assets in the system"""
+        asset1 = create_html_asset(type='text', title='Test Html Asset',
+                                   body='<p>Test body</p>',
+                                   attribution="Jane Doe", 
+                                   status="published")
+        asset2 = create_external_asset(type='image', 
+            title='Test External Asset', url="http://example.com/image.jpg",
+            status="published")
+        uri = '/api/0.1/assets/'
+        resp = self.api_client.get(uri)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 2)
+        asset_ids = [asset['asset_id'] for asset 
+                     in self.deserialize(resp)['objects']]
+        self.assertIn(asset1.asset_id, asset_ids)
+        self.assertIn(asset2.asset_id, asset_ids)
+        self.assertEqual(self.get_response_asset(resp, asset1.asset_id)['body'],
+                         asset1.body)
+        self.assertEqual(self.get_response_asset(resp, asset2.asset_id)['url'],
+                         asset2.url)
+
