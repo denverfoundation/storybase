@@ -1402,7 +1402,11 @@ class StoryResourceTest(ResourceTestCase):
         self.assertNotIn(story2.story_id, story_ids)
 
     def test_get_list_published_user_drafts(self):
-        """Test that unauthenticated users see only published stories"""
+        """
+        Test that authenticated users see their own stories regardless of
+        publication status
+        
+        """
         story1 = create_story(title="Test Story", summary="Test Summary",
                               byline="Test Byline", status='published',
                               language="en", author=self.user)
