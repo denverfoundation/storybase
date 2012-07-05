@@ -9,8 +9,27 @@ from django.test.client import FakePayload
 
 from tastypie.test import TestApiClient
 
+class FileCleanupMixin(object):
+    """Delete files created during tests"""
+    def setUp(self):
+        super(FileCleanupMixin, self).setUp()
+        self._files_to_cleanup = []
+
+    def add_file_to_cleanup(self, path):
+        self._files_to_cleanup.append(path)
+
+    def cleanup_files(self):
+        import os
+        for path in self._files_to_cleanup:
+            os.remove(path)
+
+    def tearDown(self):
+        super(FileCleanupMixin, self).tearDown()
+        self.cleanup_files()
+
+
 class SloppyComparisonTestMixin(object):
-    """ TestCase with extra assertion methods for checking times """
+    """Extra assertion methods for checking times"""
     def assertNowish(self, timestamp, tolerance=1):
         """ Confirm datetime instance is close to current time
 
@@ -39,6 +58,7 @@ class SloppyComparisonTestMixin(object):
         if (not (abs(value1 - value2) <= precision)):
             self.fail("abs(%f - %f) is not less than %f" %
                       (value1, value2, precision))
+
 
 
 class SettingsChangingTestCase(TestCase):
@@ -110,3 +130,4 @@ class FixedTestApiClient(TestApiClient):
         }
         r.update(kwargs)
         return self.client.request(**r)
+

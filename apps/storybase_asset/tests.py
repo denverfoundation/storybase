@@ -8,7 +8,7 @@ from django.test import TestCase
 
 from tastypie.test import ResourceTestCase
 
-from storybase.tests.base import FixedTestApiClient
+from storybase.tests.base import FixedTestApiClient, FileCleanupMixin
 from models import (ExternalAsset, HtmlAsset, HtmlAssetTranslation,
     create_html_asset, create_external_asset, create_local_image_asset,
     create_external_dataset)
@@ -222,22 +222,8 @@ class EmbedableResourceTest(TestCase):
         expected = "<iframe width='500' height='300' frameborder='0' src='%s&widget=true'></iframe>" % url
         self.assertEqual(EmbedableResource.get_html(url), expected)
 
-class AssetApiTest(TestCase):
+class AssetApiTest(FileCleanupMixin, TestCase):
     """ Test the public API for creating Assets """
-    def setUp(self):
-        self._files_to_cleanup = []
-
-    def add_file_to_cleanup(self, path):
-        self._files_to_cleanup.append(path)
-
-    def cleanup_files(self):
-        for path in self._files_to_cleanup:
-            os.remove(path)
-
-
-
-    def tearDown(self):
-        self.cleanup_files()
 
     def test_create_html_asset(self):
         """ Test create_html_asset() """
