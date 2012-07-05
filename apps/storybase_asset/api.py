@@ -34,6 +34,6 @@ class AssetResource(DelayedAuthorizationResource, TranslatedModelResource):
         if hasattr(request, 'user') and request.user.is_authenticated():
             # If the user is logged in, show their unpublished stories as
             # well
-            q = q | Q(author=request.user)
+            q = q | Q(owner=request.user)
 
         return super(AssetResource, self).get_object_list(request).filter(q)
