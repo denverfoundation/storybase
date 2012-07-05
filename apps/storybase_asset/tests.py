@@ -1,4 +1,6 @@
+import base64
 from datetime import datetime
+import mimetypes
 import os
 
 from django.conf import settings
@@ -9,7 +11,7 @@ from django.test import TestCase
 from tastypie.test import ResourceTestCase
 
 from storybase.tests.base import FixedTestApiClient, FileCleanupMixin
-from models import (ExternalAsset, HtmlAsset, HtmlAssetTranslation,
+from models import (Asset, ExternalAsset, HtmlAsset, HtmlAssetTranslation,
     create_html_asset, create_external_asset, create_local_image_asset,
     create_external_dataset)
 from embedable_resource import EmbedableResource
@@ -416,6 +418,11 @@ class AssetResourceTest(FileCleanupMixin, ResourceTestCase):
         self.user2 = User.objects.create_user("test2", "test2@example.com",
                                               "test2")
 
+    def read_as_data_url(self, filename):
+        (type, encoding) = mimetypes.guess_type(filename)
+        with open(filename, "rb") as f:
+            return "data:%s;base64, %s" % (type, base64.b64encode(f.read()))
+
     def test_get_list(self):
         """Test getting a list of assets in the system"""
         asset1 = create_html_asset(type='text', title='Test Html Asset',
@@ -473,7 +480,7 @@ class AssetResourceTest(FileCleanupMixin, ResourceTestCase):
         self.assertEqual(self.deserialize(resp)['objects'][0]['asset_id'],
                          asset1.asset_id)
 
-    def test_get_detail_local_image(self):
+    def test_get_detail_image(self):
         """Test getting the details for a locally-stored image asset"""
         asset_type = 'image'
         asset_title = "Test Image Asset"
@@ -492,9 +499,41 @@ class AssetResourceTest(FileCleanupMixin, ResourceTestCase):
         uri = '/api/0.1/assets/%s/' % (asset.asset_id)
         resp = self.api_client.get(uri)
         self.assertValidJSONResponse(resp)
-         
         self.assertEqual(os.path.basename(self.deserialize(resp)['image']),
                          image_filename)
         self.assertEqual(self.deserialize(resp)['type'], asset_type)
         self.assertEqual(self.deserialize(resp)['title'], asset_title)
         self.assertEqual(self.deserialize(resp)['caption'], asset_caption)
+
+    def test_post_list_image(self):
+        """Test creating a asset with the data stored in an uploaded image"""
+        image_filename = "test_image.jpg"
+
+        app_dir = os.path.dirname(os.path.abspath(__file__))
+        img_path = os.path.join(app_dir, "test_files", image_filename)
+        encoded_file = self.read_as_data_url(img_path)
+        post_data = {
+            'type': "image",
+            'title': "Test Image Asset",
+            'caption': "This is a test image",
+            'status': "published",
+            'image': encoded_file,
+            'filename': image_filename,
+            'language': "en"
+        }
+        self.assertEqual(Asset.objects.count(), 0)
+        self.api_client.client.login(username=self.username, password=self.password)
+        response = self.api_client.post('/api/0.1/assets/',
+                               format='json', data=post_data)
+        self.assertHttpCreated(response)
+        self.assertEqual(Asset.objects.count(), 1)
+        created_asset = Asset.objects.get_subclass()
+        self.assertEqual(created_asset.type, post_data['type'])
+        self.assertEqual(created_asset.title, post_data['title'])
+        self.assertEqual(created_asset.caption, post_data['caption'])
+        self.assertEqual(created_asset.status, post_data['status'])
+        self.assertEqual(created_asset.get_languages(), [post_data['language']])
+        self.assertEqual(created_asset.owner, self.user)
+        # Check that the id is returned by the endpoint
+        returned_asset_id = response['location'].split('/')[-2]
+        self.assertEqual(created_asset.asset_id, returned_asset_id)

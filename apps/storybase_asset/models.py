@@ -67,6 +67,20 @@ class AssetPermission(PermissionMixin):
     def user_can_delete(self, user):
         return self.user_can_change(user)
 
+class AssetTranslation(TranslationModel):
+    """
+    Abstract base class for common translated metadata fields for Asset
+    instances
+    """
+    asset = models.ForeignKey('Asset',  
+        related_name="%(app_label)s_%(class)s_related") 
+    title = ShortTextField(blank=True) 
+    caption = models.TextField(blank=True)
+
+    class Meta:
+        abstract = True
+        unique_together = (('asset', 'language')) 
+
 class Asset(TranslatedModel, LicensedModel, PublishedModel,
     TimestampedModel, AssetPermission):
     """A piece of content included in a story
@@ -105,6 +119,7 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
     """
 
     translated_fields = ['title', 'caption']
+    translation_class = AssetTranslation
 
     # Use InheritanceManager from django-model-utils to make
     # fetching of subclassed objects easier
@@ -208,21 +223,11 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
             output = "<%s>%s</%s>" % (wrapper, output, wrapper)
 
         return output
-
         
-class AssetTranslation(TranslationModel):
-    """
-    Abstract base class for common translated metadata fields for Asset
-    instances
-    """
-    asset = models.ForeignKey('Asset',  
-        related_name="%(app_label)s_%(class)s_related") 
-    title = ShortTextField(blank=True) 
-    caption = models.TextField(blank=True)
 
-    class Meta:
-        abstract = True
-        unique_together = (('asset', 'language')) 
+class ExternalAssetTranslation(AssetTranslation):
+    """Translatable fields for an Asset model instance"""
+    url = models.URLField()
 
 
 class ExternalAsset(Asset):
@@ -234,6 +239,7 @@ class ExternalAsset(Asset):
     """
     translation_set = 'storybase_asset_externalassettranslation_related'
     translated_fields = Asset.translated_fields + ['url']
+    translation_class = ExternalAssetTranslation
 
     def __unicode__(self):
         if self.title:
@@ -334,9 +340,11 @@ class ExternalAsset(Asset):
 
         return url
 
-class ExternalAssetTranslation(AssetTranslation):
-    """Translatable fields for an Asset model instance"""
-    url = models.URLField()
+
+class HtmlAssetTranslation(AssetTranslation):
+    """Translatable fields for an HtmlAsset model instance"""
+    body = models.TextField(blank=True)
+
 
 class HtmlAsset(Asset):
     """An Asset that can be stored as a block of HTML.
@@ -349,6 +357,7 @@ class HtmlAsset(Asset):
     """
     translation_set = 'storybase_asset_htmlassettranslation_related'
     translated_fields = Asset.translated_fields + ['body']
+    translation_class = HtmlAssetTranslation
 
     def __unicode__(self):
         """ String representation of asset """
@@ -374,9 +383,11 @@ class HtmlAsset(Asset):
             
         return mark_safe(u'\n'.join(output))
 
-class HtmlAssetTranslation(AssetTranslation):
-    """Translatable fields for an HtmlAsset model instance"""
-    body = models.TextField(blank=True)
+
+class LocalImageAssetTranslation(AssetTranslation):
+    """Translatable fields for a LocalImageAsset model instance"""
+    image = FilerImageField()
+
 
 class LocalImageAsset(Asset):
     """
@@ -390,6 +401,7 @@ class LocalImageAsset(Asset):
     """
     translation_set = 'storybase_asset_localimageassettranslation_related'
     translated_fields = Asset.translated_fields + ['image']
+    translation_class = LocalImageAssetTranslation
 
     def __unicode__(self):
         if self.title:
@@ -438,10 +450,6 @@ class LocalImageAsset(Asset):
         return "http://%s%s" % (Site.objects.get_current().domain,
                                thumbnail.url)
 
-
-class LocalImageAssetTranslation(AssetTranslation):
-    """Translatable fields for a LocalImageAsset model instance"""
-    image = FilerImageField()
 
 # Hook up some signals so the publication date gets changed
 # on status changes
@@ -583,7 +591,6 @@ def create_local_image_asset(type, title='', caption='', url='',
         image = Image.objects.create(owner=kwargs.get('owner', None),
                                      original_filename=image_filename,
                                      file=image_file)
-        image.save()
         obj = LocalImageAsset(type=type, *args, **kwargs)
         obj.save()
         translation = LocalImageAssetTranslation(
