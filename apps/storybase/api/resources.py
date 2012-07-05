@@ -40,6 +40,16 @@ class HookedModelResource(ModelResource):
     def _bundle_setattr(self, bundle, key, value):
         setattr(bundle.obj, key, value)
 
+    def get_object_class(self, bundle=None, request=None, **kwargs):
+        """Get the resource's object class dynamically
+        
+        By default just returns ``object_class`` as defined in the resource
+        declaration, but this can be overridden in subclasses to do something
+        more interesting.
+
+        """
+        return self._meta.object_class
+
     def full_hydrate(self, bundle):
         """
         Given a populated bundle, distill it and turn it back into
@@ -86,7 +96,8 @@ class HookedModelResource(ModelResource):
         A ORM-specific implementation of ``obj_create``.
         """
 
-        bundle.obj = self._meta.object_class()
+        object_class = self.get_object_class(bundle, request, **kwargs)
+        bundle.obj = object_class()
         post_bundle_obj_construct.send(sender=self, bundle=bundle, request=request, **kwargs)
 
         for key, value in kwargs.items():
@@ -291,7 +302,8 @@ class TranslatedModelResource(HookedModelResource):
         This should be connected to the ``post_bundle_obj_construct`` signal
 
         """
-        translation_class = sender._meta.object_class.translation_class
+        object_class = sender.get_object_class(bundle, request, **kwargs)
+        translation_class = object_class.translation_class
         bundle.translation_obj = translation_class()
 
     @receiver(post_bundle_obj_save)
@@ -322,12 +334,13 @@ class TranslatedModelResource(HookedModelResource):
             translation_set = getattr(bundle.obj, bundle.obj.translation_set)
             bundle.translation_obj = translation_set.get(language=language)
 
-    def _get_translation_fields(self):
-        return self._meta.object_class.translated_fields + ['language']
+    def _get_translation_fields(self, bundle):
+        object_class = self.get_object_class(bundle)
+        return object_class.translated_fields + ['language']
 
     def _bundle_setattr(self, bundle, key, value):
         if not hasattr(bundle, 'translation_fields'):
-            bundle.translation_fields = self._get_translation_fields() 
+            bundle.translation_fields = self._get_translation_fields(bundle) 
 
         if key in bundle.translation_fields: 
             setattr(bundle.translation_obj, key, value)
