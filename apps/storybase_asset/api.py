@@ -26,6 +26,8 @@ class AssetResource(DelayedAuthorizationResource, TranslatedModelResource):
     body = fields.CharField(attribute='body', null=True)
     url = fields.CharField(attribute='url', null=True)
     image = fields.FileField(attribute='image', null=True)
+    # A "write-only" field for specifying the filename when uploading images
+    # This is removed from responses to GET requests
     filename = fields.CharField(null=True)
 
     class Meta:
