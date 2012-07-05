@@ -1,4 +1,5 @@
 from datetime import datetime
+import os
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -9,7 +10,8 @@ from tastypie.test import ResourceTestCase
 
 from storybase.tests.base import FixedTestApiClient
 from models import (ExternalAsset, HtmlAsset, HtmlAssetTranslation,
-    create_html_asset, create_external_asset, create_external_dataset)
+    create_html_asset, create_external_asset, create_local_image_asset,
+    create_external_dataset)
 from embedable_resource import EmbedableResource
 
 class AssetModelTest(TestCase):
@@ -222,6 +224,20 @@ class EmbedableResourceTest(TestCase):
 
 class AssetApiTest(TestCase):
     """ Test the public API for creating Assets """
+    def setUp(self):
+        self._files_to_cleanup = []
+
+    def add_file_to_cleanup(self, path):
+        self._files_to_cleanup.append(path)
+
+    def cleanup_files(self):
+        for path in self._files_to_cleanup:
+            os.remove(path)
+
+
+
+    def tearDown(self):
+        self.cleanup_files()
 
     def test_create_html_asset(self):
         """ Test create_html_asset() """
@@ -296,6 +312,30 @@ class AssetApiTest(TestCase):
         self.assertEqual(retrieved_asset.asset_created, asset_created)
         self.assertEqual(retrieved_asset.attribution, attribution)
 
+    def test_create_local_image_asset(self):
+        """Test creating a LocalImageAsset model instance"""
+        import hashlib
+
+        asset_type = 'image'
+        asset_title = "Test Image Asset"
+        asset_caption = "This is a test image"
+
+        app_dir = os.path.dirname(os.path.abspath(__file__))
+        img_path = os.path.join(app_dir, "test_files", "test_image.jpg")
+        original_hash = hashlib.sha1(file(img_path, 'r').read()).digest()
+        asset = create_local_image_asset(
+            type=asset_type,
+            title=asset_title,
+            caption=asset_caption,
+            image_path=img_path)
+        self.add_file_to_cleanup(asset.image.file.path)
+        copy_hash = hashlib.sha1(file(asset.image.file.path, 'r').read()).digest()
+        # Verify that the 2 files are the same
+        self.assertEqual(original_hash, copy_hash)
+        # Verify the metadata is the same
+        self.assertEqual(asset.title, asset_title)
+        self.assertEqual(asset.type, asset_type)
+        self.assertEqual(asset.caption, asset_caption)
 
 class DataSetApiTest(TestCase):
     """ Test the public API for creating DataSets """

@@ -570,6 +570,30 @@ def create_external_asset(type, title='', caption='', url='',
     translation.save()
     return obj
 
+def create_local_image_asset(type, title='', caption='', url='', 
+                             image_path=None, language=settings.LANGUAGE_CODE,
+                             *args, **kwargs):
+    with open(image_path) as f:
+        import os
+        from django.core.files import File
+        from filer.models import Image 
+
+        image_filename = os.path.basename(image_path)
+        image_file = File(f, name=image_filename)
+        image = Image.objects.create(owner=kwargs.get('owner', None),
+                                     original_filename=image_filename,
+                                     file=image_file)
+        image.save()
+        obj = LocalImageAsset(type=type, *args, **kwargs)
+        obj.save()
+        translation = LocalImageAssetTranslation(
+            asset=obj,
+            title=title,
+            caption=caption,
+            image=image)
+        translation.save()
+        return obj
+
 
 def create_external_dataset(title, url, description='',
                             language=settings.LANGUAGE_CODE,
