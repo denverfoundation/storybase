@@ -387,16 +387,20 @@ class AssetResourceTest(ResourceTestCase):
         self.username = 'test'
         self.password = 'test'
         self.user = User.objects.create_user(self.username, 'test@example.com', self.password)
+        self.user2 = User.objects.create_user("test2", "test2@example.com",
+                                              "test2")
 
     def test_get_list(self):
         """Test getting a list of assets in the system"""
         asset1 = create_html_asset(type='text', title='Test Html Asset',
                                    body='<p>Test body</p>',
                                    attribution="Jane Doe", 
-                                   status="published")
+                                   status="published",
+                                   owner=self.user)
         asset2 = create_external_asset(type='image', 
-            title='Test External Asset', url="http://example.com/image.jpg",
-            status="published")
+                                       title='Test External Asset',
+                                       url="http://example.com/image.jpg",
+                                       status="published", owner=self.user)
         uri = '/api/0.1/assets/'
         resp = self.api_client.get(uri)
         self.assertValidJSONResponse(resp)
@@ -410,3 +414,35 @@ class AssetResourceTest(ResourceTestCase):
         self.assertEqual(self.get_response_asset(resp, asset2.asset_id)['url'],
                          asset2.url)
 
+    def test_get_list_published_only(self):
+        """Test that unauthenticated users see only published assets"""
+        asset1 = create_html_asset(type='text', title='Test Html Asset',
+                                   body='<p>Test body</p>',
+                                   attribution="Jane Doe", 
+                                   status="published",
+                                   owner=self.user)
+        asset2 = create_external_asset(type='image', 
+                                       title='Test External Asset',
+                                       url="http://example.com/image.jpg",
+                                       status="draft", owner=self.user)
+        uri = '/api/0.1/assets/'
+        resp = self.api_client.get(uri)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 1)
+        self.assertEqual(self.deserialize(resp)['objects'][0]['asset_id'],
+                         asset1.asset_id)
+
+    def test_get_list_published_drafts(self):
+        """Test that a user's own unpublished assets appear in the list"""
+        asset1 = create_html_asset(type='text', title='Test Html Asset',
+                                   body='<p>Test body</p>',
+                                   attribution="Jane Doe", 
+                                   status="draft",
+                                   owner=self.user)
+        self.api_client.client.login(username=self.username, password=self.password)
+        uri = '/api/0.1/assets/'
+        resp = self.api_client.get(uri)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 1)
+        self.assertEqual(self.deserialize(resp)['objects'][0]['asset_id'],
+                         asset1.asset_id)
