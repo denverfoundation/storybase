@@ -519,7 +519,7 @@ class AssetResourceTest(FileCleanupMixin, ResourceTestCase):
             'status': "published",
             'image': encoded_file,
             'filename': image_filename,
-            'language': "en"
+            'language': "en",
         }
         self.assertEqual(Asset.objects.count(), 0)
         self.api_client.client.login(username=self.username, password=self.password)
@@ -537,3 +537,42 @@ class AssetResourceTest(FileCleanupMixin, ResourceTestCase):
         # Check that the id is returned by the endpoint
         returned_asset_id = response['location'].split('/')[-2]
         self.assertEqual(created_asset.asset_id, returned_asset_id)
+
+    def test_post_list_html(self):
+        """Test creating an HTML asset"""
+        post_data = {
+            'title' : "Success Express",
+            'type': "quotation",
+            'attribution': "Ed Brennan, EdNews Colorado",
+            'status': 'published',
+            'body': """
+            In both the Far Northeast and the Near Northeast, school buses 
+            will no longer make a traditional series of stops in neighborhoods
+            - once in the morning and once in the afternoon. Instead, a fleet
+            of DPS buses will circulate between area schools, offering students
+            up to three chances to catch the one that will get them to their
+            school of choice on time.
+
+            Martha Carranza, who has a child at Bruce Randolph, said that for
+            students who have depended on RTD, "I was very worried because it
+            is very dangerous for the children coming from Globeville and also
+            from Swansea ... the kids were arriving late and sometimes missing
+            classes altogether."
+
+            And, said Carranza, "... we are very happy that with the new
+            transportation system, no child will have any excuse to miss 
+            school."
+            """,
+            'language': "en",
+        }
+        self.assertEqual(Asset.objects.count(), 0)
+        self.api_client.client.login(username=self.username, password=self.password)
+        response = self.api_client.post('/api/0.1/assets/',
+                               format='json', data=post_data)
+        self.assertHttpCreated(response)
+        self.assertEqual(Asset.objects.count(), 1)
+        created_asset = Asset.objects.get_subclass()
+        self.assertEqual(created_asset.type, post_data['type'])
+        self.assertEqual(created_asset.title, post_data['title'])
+        self.assertEqual(created_asset.attribution, post_data['attribution'])
+        self.assertEqual(created_asset.status, post_data['status'])
