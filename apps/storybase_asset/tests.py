@@ -396,7 +396,7 @@ class AssetPermissionTest(TestCase):
         self.assertFalse(self.asset.user_can_change(self.user1))
 
 
-class AssetResourceTest(ResourceTestCase):
+class AssetResourceTest(FileCleanupMixin, ResourceTestCase):
     def get_obj(self, objects, obj_id_field, obj_id):
         for obj in objects:
             if obj[obj_id_field] == obj_id:
@@ -472,3 +472,29 @@ class AssetResourceTest(ResourceTestCase):
         self.assertEqual(len(self.deserialize(resp)['objects']), 1)
         self.assertEqual(self.deserialize(resp)['objects'][0]['asset_id'],
                          asset1.asset_id)
+
+    def test_get_detail_local_image(self):
+        """Test getting the details for a locally-stored image asset"""
+        asset_type = 'image'
+        asset_title = "Test Image Asset"
+        asset_caption = "This is a test image"
+        image_filename = "test_image.jpg"
+
+        app_dir = os.path.dirname(os.path.abspath(__file__))
+        img_path = os.path.join(app_dir, "test_files", image_filename)
+        asset = create_local_image_asset(
+            type=asset_type,
+            title=asset_title,
+            caption=asset_caption,
+            image_path=img_path,
+            status='published')
+        self.add_file_to_cleanup(asset.image.file.path)
+        uri = '/api/0.1/assets/%s/' % (asset.asset_id)
+        resp = self.api_client.get(uri)
+        self.assertValidJSONResponse(resp)
+         
+        self.assertEqual(os.path.basename(self.deserialize(resp)['image']),
+                         image_filename)
+        self.assertEqual(self.deserialize(resp)['type'], asset_type)
+        self.assertEqual(self.deserialize(resp)['title'], asset_title)
+        self.assertEqual(self.deserialize(resp)['caption'], asset_caption)
