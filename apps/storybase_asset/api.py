@@ -21,8 +21,8 @@ from storybase_asset.models import (Asset, ExternalAsset, HtmlAsset,
 class AssetResource(DelayedAuthorizationResource, TranslatedModelResource):
     # Explicitly declare fields that are on the translation model, or the
     # subclass
-    title = fields.CharField(attribute='title', null=True)
-    caption = fields.CharField(attribute='caption', null=True)
+    title = fields.CharField(attribute='title', blank=True, default='')
+    caption = fields.CharField(attribute='caption', blank=True, default='')
     body = fields.CharField(attribute='body', null=True)
     url = fields.CharField(attribute='url', null=True)
     image = fields.FileField(attribute='image', null=True)
@@ -106,18 +106,20 @@ class AssetResource(DelayedAuthorizationResource, TranslatedModelResource):
             f.seek(0, os.SEEK_END)
             return f.tell()
 
-        (content_type, encoding, data) = self.parse_data_uri(bundle.data['image'])
-        filename = bundle.data.get('filename')
-        f = StringIO()
-        f.write(base64.b64decode(data))
-        size = image_size(f)
-        image_file = InMemoryUploadedFile(file=f, field_name=None, 
-                                          name=filename,
-                                          content_type=content_type,
-                                          size=size, charset=None)
-        image = Image.objects.create(file=image_file)
-        bundle.data['image'] = image
-        f.close()
+        if 'image' in bundle.data.keys():
+            (content_type, encoding, data) = self.parse_data_uri(bundle.data['image'])
+            filename = bundle.data.get('filename')
+            f = StringIO()
+            f.write(base64.b64decode(data))
+            size = image_size(f)
+            image_file = InMemoryUploadedFile(file=f, field_name=None, 
+                                              name=filename,
+                                              content_type=content_type,
+                                              size=size, charset=None)
+            image = Image.objects.create(file=image_file)
+            bundle.data['image'] = image
+            f.close()
+
         return bundle
 
     def obj_create(self, bundle, request=None, **kwargs):
