@@ -576,3 +576,25 @@ class AssetResourceTest(FileCleanupMixin, ResourceTestCase):
         self.assertEqual(created_asset.title, post_data['title'])
         self.assertEqual(created_asset.attribution, post_data['attribution'])
         self.assertEqual(created_asset.status, post_data['status'])
+
+    def test_post_list_url(self):
+        """Test creating an asset for externally-hosted content"""
+        post_data = {
+            'title': 'Large Flock of birds in pomona, CA',
+            'type': 'video',
+            'caption': 'An intense flock of birds outside a theater in Pomona, CA',
+            'url': 'http://www.youtube.com/watch?v=BJQycHkddhA',
+            'attribution': 'Geoffrey Hing',
+        }
+        self.assertEqual(Asset.objects.count(), 0)
+        self.api_client.client.login(username=self.username, password=self.password)
+        response = self.api_client.post('/api/0.1/assets/',
+                               format='json', data=post_data)
+        self.assertHttpCreated(response)
+        self.assertEqual(Asset.objects.count(), 1)
+        created_asset = Asset.objects.get_subclass()
+        self.assertEqual(created_asset.title, post_data['title'])
+        self.assertEqual(created_asset.type, post_data['type'])
+        self.assertEqual(created_asset.caption, post_data['caption'])
+        self.assertEqual(created_asset.attribution, post_data['attribution'])
+        self.assertEqual(created_asset.url, post_data['url'])
