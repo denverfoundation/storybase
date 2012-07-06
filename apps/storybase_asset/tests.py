@@ -1,5 +1,6 @@
 import base64
 from datetime import datetime
+import hashlib
 import mimetypes
 import os
 
@@ -302,8 +303,6 @@ class AssetApiTest(FileCleanupMixin, TestCase):
 
     def test_create_local_image_asset(self):
         """Test creating a LocalImageAsset model instance"""
-        import hashlib
-
         asset_type = 'image'
         asset_title = "Test Image Asset"
         asset_caption = "This is a test image"
@@ -511,6 +510,7 @@ class AssetResourceTest(FileCleanupMixin, ResourceTestCase):
 
         app_dir = os.path.dirname(os.path.abspath(__file__))
         img_path = os.path.join(app_dir, "test_files", image_filename)
+        original_hash = hashlib.sha1(file(img_path, 'r').read()).digest()
         encoded_file = self.read_as_data_url(img_path)
         post_data = {
             'type': "image",
@@ -523,20 +523,29 @@ class AssetResourceTest(FileCleanupMixin, ResourceTestCase):
         }
         self.assertEqual(Asset.objects.count(), 0)
         self.api_client.client.login(username=self.username, password=self.password)
-        response = self.api_client.post('/api/0.1/assets/',
+        resp = self.api_client.post('/api/0.1/assets/',
                                format='json', data=post_data)
-        self.assertHttpCreated(response)
+        self.assertHttpCreated(resp)
+        # Check that asset was created in the system and has the correct
+        # metadata
         self.assertEqual(Asset.objects.count(), 1)
         created_asset = Asset.objects.get_subclass()
         self.assertEqual(created_asset.type, post_data['type'])
         self.assertEqual(created_asset.title, post_data['title'])
         self.assertEqual(created_asset.caption, post_data['caption'])
         self.assertEqual(created_asset.status, post_data['status'])
-        self.assertEqual(created_asset.get_languages(), [post_data['language']])
+        self.assertEqual(created_asset.get_languages(),
+                         [post_data['language']])
         self.assertEqual(created_asset.owner, self.user)
         # Check that the id is returned by the endpoint
-        returned_asset_id = response['location'].split('/')[-2]
+        returned_asset_id = resp['location'].split('/')[-2]
         self.assertEqual(created_asset.asset_id, returned_asset_id)
+        # Compare the uploaded image and the original 
+        created_hash = hashlib.sha1(file(created_asset.image.path, 'r').read()).digest()
+        self.assertEqual(original_hash, created_hash)
+        # Set our created file to be cleaned up
+        self.add_file_to_cleanup(created_asset.image.file.path)
+
 
     def test_post_list_html(self):
         """Test creating an HTML asset"""
