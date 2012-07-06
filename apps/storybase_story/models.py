@@ -544,6 +544,9 @@ def update_story_last_edited(sender, instance, **kwargs):
 post_save.connect(update_story_last_edited, sender=Section)
 
 
+# Internal API functions for creating model instances in a way that
+# abstracts out the translation logic a bit.
+
 def create_story(title, structure_type=structure.DEFAULT_STRUCTURE,
                  summary='', call_to_action='',
                  language=settings.LANGUAGE_CODE, 
