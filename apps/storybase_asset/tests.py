@@ -306,23 +306,26 @@ class AssetApiTest(FileCleanupMixin, TestCase):
         asset_type = 'image'
         asset_title = "Test Image Asset"
         asset_caption = "This is a test image"
+        image_filename = "test_image.jpg"
 
         app_dir = os.path.dirname(os.path.abspath(__file__))
-        img_path = os.path.join(app_dir, "test_files", "test_image.jpg")
-        original_hash = hashlib.sha1(file(img_path, 'r').read()).digest()
-        asset = create_local_image_asset(
-            type=asset_type,
-            title=asset_title,
-            caption=asset_caption,
-            image_path=img_path)
-        self.add_file_to_cleanup(asset.image.file.path)
-        copy_hash = hashlib.sha1(file(asset.image.file.path, 'r').read()).digest()
-        # Verify that the 2 files are the same
-        self.assertEqual(original_hash, copy_hash)
-        # Verify the metadata is the same
-        self.assertEqual(asset.title, asset_title)
-        self.assertEqual(asset.type, asset_type)
-        self.assertEqual(asset.caption, asset_caption)
+        img_path = os.path.join(app_dir, "test_files", image_filename)
+        with open(img_path) as image:
+            original_hash = hashlib.sha1(image.read()).digest()
+            asset = create_local_image_asset(
+                type=asset_type,
+                image=image,
+                image_filename="test_image.jpg",
+                title=asset_title,
+                caption=asset_caption)
+            self.add_file_to_cleanup(asset.image.file.path)
+            copy_hash = hashlib.sha1(file(asset.image.file.path, 'r').read()).digest()
+            # Verify that the 2 files are the same
+            self.assertEqual(original_hash, copy_hash)
+            # Verify the metadata is the same
+            self.assertEqual(asset.title, asset_title)
+            self.assertEqual(asset.type, asset_type)
+            self.assertEqual(asset.caption, asset_caption)
 
 class DataSetApiTest(TestCase):
     """ Test the public API for creating DataSets """
@@ -488,21 +491,23 @@ class AssetResourceTest(FileCleanupMixin, ResourceTestCase):
 
         app_dir = os.path.dirname(os.path.abspath(__file__))
         img_path = os.path.join(app_dir, "test_files", image_filename)
-        asset = create_local_image_asset(
-            type=asset_type,
-            title=asset_title,
-            caption=asset_caption,
-            image_path=img_path,
-            status='published')
-        self.add_file_to_cleanup(asset.image.file.path)
-        uri = '/api/0.1/assets/%s/' % (asset.asset_id)
-        resp = self.api_client.get(uri)
-        self.assertValidJSONResponse(resp)
-        self.assertEqual(os.path.basename(self.deserialize(resp)['image']),
-                         image_filename)
-        self.assertEqual(self.deserialize(resp)['type'], asset_type)
-        self.assertEqual(self.deserialize(resp)['title'], asset_title)
-        self.assertEqual(self.deserialize(resp)['caption'], asset_caption)
+        with open(img_path) as image:
+            asset = create_local_image_asset(
+                type=asset_type,
+                image=image,
+                image_filename=image_filename,
+                title=asset_title,
+                caption=asset_caption,
+                status='published')
+            self.add_file_to_cleanup(asset.image.file.path)
+            uri = '/api/0.1/assets/%s/' % (asset.asset_id)
+            resp = self.api_client.get(uri)
+            self.assertValidJSONResponse(resp)
+            self.assertEqual(os.path.basename(self.deserialize(resp)['image']),
+                             image_filename)
+            self.assertEqual(self.deserialize(resp)['type'], asset_type)
+            self.assertEqual(self.deserialize(resp)['title'], asset_title)
+            self.assertEqual(self.deserialize(resp)['caption'], asset_caption)
 
     def test_post_list_image(self):
         """Test creating a asset with the data stored in an uploaded image"""

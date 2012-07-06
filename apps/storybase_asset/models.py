@@ -1,8 +1,10 @@
 """Models for story content assets"""
+import os
 
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
+from django.core.files import File
 from django.db import models
 from django.db.models.signals import pre_save
 from django.utils.html import strip_tags
@@ -11,6 +13,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 
 from filer.fields.image import FilerFileField, FilerImageField
+from filer.models import Image 
 from model_utils.managers import InheritanceManager
 import oembed
 from oembed.exceptions import OEmbedMissingEndpoint
@@ -578,16 +581,11 @@ def create_external_asset(type, title='', caption='', url='',
     translation.save()
     return obj
 
-def create_local_image_asset(type, title='', caption='', url='', 
-                             image_path=None, language=settings.LANGUAGE_CODE,
+def create_local_image_asset(type, image, image_filename=None,
+                             title='', caption='', url='',
+                             language=settings.LANGUAGE_CODE,
                              *args, **kwargs):
-    with open(image_path) as f:
-        import os
-        from django.core.files import File
-        from filer.models import Image 
-
-        image_filename = os.path.basename(image_path)
-        image_file = File(f, name=image_filename)
+        image_file = File(image, name=image_filename)
         image = Image.objects.create(owner=kwargs.get('owner', None),
                                      original_filename=image_filename,
                                      file=image_file)
