@@ -1,0 +1,40 @@
+header {
+  background-color: #000;
+  color: #fff;
+}
+
+header .row {
+  position: relative;
+}
+
+header h1 {
+  float: left;
+  font-size: 1.5em;
+  padding: 1.25%;
+}
+
+#builder-nav ul {
+  float: left;
+  padding: 1.25%;
+  list-style: none;
+}
+
+#builder-nav .meta {
+  position: absolute;
+  right: 0;
+}
+
+#builder-nav ul li {
+  display: inline-block;
+}
+
+.story-templates {
+  list-style: none
+}
+
+.story-templates li {
+  display: block;
+  float: left;
+  width: 30%;
+  padding: 1%;
+}

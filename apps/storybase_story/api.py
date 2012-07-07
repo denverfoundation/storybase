@@ -17,7 +17,7 @@ from storybase.api import (TranslatedModelResource,
     DelayedAuthorizationResource, LoggedInAuthorization)
 from storybase.utils import get_language_name
 from storybase_geo.models import Place
-from storybase_story.models import Story, Section
+from storybase_story.models import Story, Section, StoryTemplate
 from storybase_taxonomy.models import Category
 from storybase_user.models import Organization, Project
 
@@ -63,6 +63,8 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
     def prepend_urls(self):
         return [
             url(r'^(?P<resource_name>%s)/explore%s$'  % (self._meta.resource_name, trailing_slash()), self.wrap_view('explore_get_list'), name="api_explore_get_list"),
+            url(r'^(?P<resource_name>%s)/templates%s$'  % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_template_list'), name="api_dispatch_list_templates"),
+            url(r'^(?P<resource_name>%s)/templates/(?P<template_id>[0-9a-f]{32,32})%s$'  % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_template_detail'), name="api_dispatch_detail_templates"),
             url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/$" % self._meta.resource_name, self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
             url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/sections/$" % self._meta.resource_name, self.wrap_view('dispatch_section_list'), name="api_dispatch_list_sections"),
             url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/sections/(?P<section_id>[0-9a-f]{32,32})/$" % self._meta.resource_name, self.wrap_view('dispatch_section_detail'), name="api_dispatch_detail_sections"),
@@ -366,6 +368,15 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
         section_resource = SectionResource()
         return section_resource.dispatch_list(request, story_id=obj.story_id)
 
+    def dispatch_template_list(self, request, **kwargs):
+        template_resource = StoryTemplateResource()
+        return template_resource.dispatch_list(request)
+
+    def dispatch_template_detail(self, request, **kwargs):
+        template_id = kwargs.pop('template_id')
+        template_resource = StoryTemplateResource()
+        return template_resource.dispatch_detail(request, template_id=template_id)
+
 
 class SectionResource(DelayedAuthorizationResource, TranslatedModelResource):
     # Explicitly declare fields that are on the translation model
@@ -453,3 +464,77 @@ class SectionResource(DelayedAuthorizationResource, TranslatedModelResource):
         story_id = kwargs.pop('story_id')
         kwargs['story'] = Story.objects.get(story_id=story_id)
         return super(SectionResource, self).obj_get(request, **kwargs)
+
+
+class StoryTemplateResource(TranslatedModelResource):
+    # Explicitly declare fields that are on the translation model
+    title = fields.CharField(attribute='title')
+    description = fields.CharField(attribute='description')
+    story = fields.ToOneField(StoryResource, attribute='story', 
+                               blank=True, null=True)
+    
+    class Meta:
+        queryset = StoryTemplate.objects.all()
+        resource_name = 'templates'
+        allowed_methods = ['get']
+        # Hide the underlying id
+        excludes = ['id']
+        authentication = Authentication()
+        authorization = LoggedInAuthorization()
+
+        # Custom meta attributes
+        # Class of the resource under which this is nested
+        parent_resource = StoryResource
+
+    def detail_uri_kwargs(self, bundle_or_obj):
+        """
+        Given a ``Bundle`` or an object (typically a ``Model`` instance),
+        it returns the extra kwargs needed to generate a detail URI.
+
+        This version returns the section_id field instead of the pk
+        as well as the related story's story_id
+
+        """
+        kwargs = {}
+
+        if isinstance(bundle_or_obj, Bundle):
+            obj = bundle_or_obj.obj 
+        else:
+            obj = bundle_or_obj
+
+        kwargs['template_id'] = obj.template_id
+
+        return kwargs
+
+    def resource_uri_kwargs(self, bundle_or_obj=None):
+        """
+        Builds a dictionary of kwargs to help generate URIs.
+
+        This retrieves the resource_name and api_name from the parent resource
+        as this resource is designed to be nested under ``StoryResource``
+
+        """
+        kwargs = super(StoryTemplateResource, self).resource_uri_kwargs(bundle_or_obj)
+        kwargs['resource_name'] = self._meta.parent_resource._meta.resource_name 
+        if self._meta.parent_resource._meta.api_name is not None:
+            kwargs['api_name'] = self._meta.parent_resource._meta.api_name
+        return kwargs
+
+    def get_resource_uri(self, bundle_or_obj=None, url_name='api_dispatch_list'):
+        """
+        Handles generating a resource URI.
+
+        This version appends the resource name to the URL name so it can
+        be looked up in the URIs defined in ``StoryResource.prepend_urls``
+
+        """
+        if bundle_or_obj is not None:
+            url_name = 'api_dispatch_detail'
+
+        nested_url_name = url_name + "_%s" % (self._meta.resource_name)
+
+        try:
+            kwargs = self.resource_uri_kwargs(bundle_or_obj)
+            return self._build_reverse_url(nested_url_name, kwargs=kwargs)
+        except NoReverseMatch:
+            return ''

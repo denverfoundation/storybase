@@ -543,6 +543,38 @@ def update_story_last_edited(sender, instance, **kwargs):
 # Update a section's story's last edited field when the section is saved
 post_save.connect(update_story_last_edited, sender=Section)
 
+class StoryTemplateTranslation(TranslationModel):
+    """Translatable fields for the StoryTemplate model"""
+    story_template = models.ForeignKey('StoryTemplate')
+    title = ShortTextField()
+    description = models.TextField(blank=True)
+
+    def __unicode__(self):
+        return self.title
+
+
+class StoryTemplate(TranslatedModel):
+    """Metadata for a template used to create new stories"""
+    TIME_NEEDED_CHOICES = (
+        ('5 minutes', _('5 minutes')),
+        ('30 minutes', _('30 minutes')),
+    )
+    
+    template_id = UUIDField(auto=True)
+    # The structure of the template comes from a story model instance
+    story = models.ForeignKey('Story', blank=True, null=True)
+    # The amount of time needed to create a story of this type
+    time_needed = models.CharField(max_length=140, choices=TIME_NEEDED_CHOICES,
+                                   blank=True)
+
+    # Class attributes to handle translation
+    translated_fields = ['title', 'description']
+    translation_set = 'storytemplatetranslation_set'
+    translation_class = StoryTemplateTranslation
+
+    def __unicode__(self):
+        return self.title
+    
 
 # Internal API functions for creating model instances in a way that
 # abstracts out the translation logic a bit.

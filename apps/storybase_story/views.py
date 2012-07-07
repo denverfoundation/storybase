@@ -10,7 +10,7 @@ from django.utils.safestring import mark_safe
 
 from storybase.utils import simple_language_changer
 from storybase.views.generic import ModelIdDetailView
-from storybase_story.api import StoryResource
+from storybase_story.api import StoryResource, StoryTemplateResource
 from storybase_story.models import Story
 
 def simple_story_list(stories):
@@ -90,3 +90,30 @@ class StoryViewerView(ModelIdDetailView):
     context_object_name = "story"
     queryset = Story.objects.all()
     template_name = 'storybase_story/story_viewer.html'
+
+
+class StoryBuilderView(TemplateView):
+    """
+    Story builder view
+
+    The heavy lifting is done by the REST API and client-side JavaScript
+
+    """
+    template_name = "storybase_story/story_builder.html"
+
+    def get_context_data(self, **kwargs):
+        """Provide Bootstrap data for Backbone models and collections"""
+        to_be_serialized = {}
+
+        # Use the Tastypie resource to retrieve a JSON list of story
+        # templates.  
+        # See http://django-tastypie.readthedocs.org/en/latest/cookbook.html#using-your-resource-in-regular-views
+        # and ModelResource.get_list()
+        resource = StoryTemplateResource()
+        objects = resource.obj_get_list()
+        bundles = [resource.build_bundle(obj=obj) for obj in objects]
+        to_be_serialized['objects'] = [resource.full_dehydrate(bundle) for bundle in bundles]
+
+        return {
+            'story_template_json': mark_safe(resource.serialize(None, to_be_serialized, 'application/json')),
+        }

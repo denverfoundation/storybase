@@ -1,0 +1,119 @@
+[
+    {
+        "fields": {
+            "call_to_action": "", 
+            "language": "en", 
+            "story": 1, 
+            "summary": "", 
+            "title": "PhotoVoice Story", 
+            "translation_id": "082e7631a02c4d3e85ae9e1486e43e19"
+        }, 
+        "model": "storybase_story.storytranslation", 
+        "pk": 1
+    }, 
+    {
+        "fields": {
+            "assets": [], 
+            "author": 1, 
+            "byline": "Byline goes here", 
+            "contact_info": "", 
+            "created": "2012-07-07 16:15:44", 
+            "featured_assets": [], 
+            "last_edited": "2012-07-07 16:20:51", 
+            "license": "CC BY-NC-SA", 
+            "locations": [], 
+            "on_homepage": false, 
+            "organizations": [], 
+            "places": [], 
+            "projects": [], 
+            "published": "2012-07-07 16:15:44", 
+            "slug": "photovoice-story", 
+            "status": "published", 
+            "story_id": "357c5885c4e844cb8a4cd4eebe912a1c", 
+            "structure_type": "linear", 
+            "topics": []
+        }, 
+        "model": "storybase_story.story", 
+        "pk": 1
+    }, 
+    {
+        "fields": {
+            "language": "en", 
+            "section": 1, 
+            "title": "Title", 
+            "translation_id": "f1b729cf05b6461db8947589806fe193"
+        }, 
+        "model": "storybase_story.sectiontranslation", 
+        "pk": 1
+    }, 
+    {
+        "fields": {
+            "language": "en", 
+            "section": 2, 
+            "title": "Image and Text", 
+            "translation_id": "3c01df21d5ab4755a14e40bd59eb9c8f"
+        }, 
+        "model": "storybase_story.sectiontranslation", 
+        "pk": 2
+    }, 
+    {
+        "fields": {
+            "root": false, 
+            "section_id": "dc044f23e93649d6b1bd48625fc301cd", 
+            "story": 1, 
+            "weight": 0
+        }, 
+        "model": "storybase_story.section", 
+        "pk": 1
+    }, 
+    {
+        "fields": {
+            "root": false, 
+            "section_id": "4dc57c4bc7a44d97bd5d0ed4861b1401", 
+            "story": 1, 
+            "weight": 1
+        }, 
+        "model": "storybase_story.section", 
+        "pk": 2
+    }, 
+    {
+        "fields": {
+            "description": "Create a quick, simple story by adding context to a picture", 
+            "language": "en", 
+            "story_template": 1, 
+            "title": "PhotoVoice", 
+            "translation_id": "d14d071a80834addb2b48156ac6d5d77"
+        }, 
+        "model": "storybase_story.storytemplatetranslation", 
+        "pk": 1
+    }, 
+    {
+        "fields": {
+            "description": "Explain a complex issue simply", 
+            "language": "en", 
+            "story_template": 2, 
+            "title": "Explainer", 
+            "translation_id": "fae567631cfe4e1d8310fd0841f7c18a"
+        }, 
+        "model": "storybase_story.storytemplatetranslation", 
+        "pk": 2
+    }, 
+    {
+        "fields": {
+            "story": 1, 
+            "template_id": "eda79b901fd543debb9fa1a757f1d2de", 
+            "time_needed": "5 minutes"
+        }, 
+        "model": "storybase_story.storytemplate", 
+        "pk": 1
+    }, 
+    {
+        "fields": {
+            "story": null, 
+            "template_id": "5586de9ad3674c7e926ca4f4f04da27b", 
+            "time_needed": "30 minutes"
+        }, 
+        "model": "storybase_story.storytemplate", 
+        "pk": 2
+    }
+]

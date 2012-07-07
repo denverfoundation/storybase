@@ -3,14 +3,12 @@
 from django.contrib import admin
 #from django.contrib.admin import SimpleListFilter
 
-#from ajax_select import make_ajax_form
-#from ajax_select.admin import AjaxSelectAdmin
-
 from storybase.admin import (StorybaseModelAdmin, StorybaseStackedInline,
     obj_title)
 from storybase_asset.models import Asset
 from storybase_story.models import (Story, StoryTranslation,
-    Section, SectionTranslation, SectionAsset, SectionRelation)        
+    Section, SectionTranslation, SectionAsset, SectionRelation,
+    StoryTemplate, StoryTemplateTranslation)
 from storybase_story.forms import (SectionRelationAdminForm,
 		                   StoryAdminForm, InlineSectionAdminForm,
 		                   StoryTranslationAdminForm)
@@ -28,6 +26,7 @@ class SectionInline(StorybaseStackedInline):
     model = Section
     extra = 0
     readonly_fields = ('change_link',)
+
 
 class StoryAdmin(StorybaseModelAdmin):
     """Representation of Story model in the admin interface"""
@@ -86,19 +85,8 @@ class SectionAssetInline(admin.TabularInline):
     
     """
     model = SectionAsset
-    # TODO: Fix this autocomplete
-    # It fails because the default autocomplete tries to to filter
-    # on the title of the Asset class which no longer exists after
-    # I moved that to the translations.
-    # See ajax_select.LookupChannel.get_query() to see where the 
-    # call to filter() that breaks things is.
-    # One solution might be to create a custom lookup class based
-    # on the Translation model instead of the Asset model.
-    # Another solution might be to add the Title field back to the
-    # Asset model and have the save hook of the translation update
-    # the related Asset's title.
-    #form = make_ajax_form(SectionAsset, dict(asset='asset'))
     extra = 0
+
 
 class SectionTranslationInline(StorybaseStackedInline):
     """Inline for translated section fields"""
@@ -119,7 +107,7 @@ class SectionTranslationInline(StorybaseStackedInline):
 #    def queryset(self, request, queryset):
 #        return queryset.filter(pk=self.value())
 
-#class SectionAdmin(AjaxSelectAdmin):
+
 class SectionAdmin(StorybaseModelAdmin):
     """Representation of Section model in the admin interface"""
     inlines = [SectionTranslationInline, SectionAssetInline]
@@ -131,6 +119,7 @@ class SectionAdmin(StorybaseModelAdmin):
     search_fields = ['sectiontranslation__title']
     readonly_fields = ['section_id']
 
+
 class SectionRelationAdmin(admin.ModelAdmin):
     """Custom Admin for SectionRelation model"""
     form = SectionRelationAdminForm
@@ -140,6 +129,19 @@ class SectionRelationAdmin(admin.ModelAdmin):
     list_filter = ('parent__story__storytranslation__title',)
 
 
+class StoryTemplateTranslationInline(StorybaseStackedInline):
+    """Inline for translated fields of a StoryTranslation"""
+    model = StoryTemplateTranslation
+    extra = 1
+
+
+class StoryTemplateAdmin(StorybaseModelAdmin):
+    raw_id_fields = ("story",)
+    inlines = [StoryTemplateTranslationInline]
+    prefix_inline_classes = ['StoryTemplateTranslationInline']
+
+
 admin.site.register(Story, StoryAdmin)
+admin.site.register(StoryTemplate, StoryTemplateAdmin)
 admin.site.register(Section, SectionAdmin)
 admin.site.register(SectionRelation, SectionRelationAdmin)

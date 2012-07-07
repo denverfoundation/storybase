@@ -17,8 +17,9 @@ from storybase_asset.models import HtmlAsset, HtmlAssetTranslation
 from storybase_geo.models import Location
 from storybase_story.api import SectionResource, StoryResource
 from storybase_story.forms import SectionRelationAdminForm
-from storybase_story.models import (create_story, Story, StoryTranslation, 
-    create_section, Section, SectionAsset, SectionRelation)
+from storybase_story.models import (Story, StoryTranslation, 
+    Section, SectionAsset, SectionRelation, StoryTemplate,
+    create_story, create_section)
 
 
 class SectionRelationFormTest(TestCase):
@@ -1615,3 +1616,32 @@ class StoryExploreResourceTest(ResourceTestCase):
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)['objects']), 1)
         self.assertEqual(self.deserialize(resp)['objects'][0]['story_id'], story1.story_id)
+
+
+class StoryTemplateResourceTest(ResourceTestCase):
+    fixtures = ['story_templates.json']
+
+    def setUp(self):
+        super(StoryTemplateResourceTest, self).setUp()
+        # Use our fixed TestApiClient instead of the default
+        self.api_client = FixedTestApiClient()
+
+    def test_get_list(self):
+        uri = '/api/0.1/stories/templates/'
+        resp = self.api_client.get(uri)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 2)
+        self.assertEqual(self.deserialize(resp)['objects'][0]['title'],
+                         "PhotoVoice")
+        self.assertEqual(self.deserialize(resp)['objects'][1]['title'],
+                         "Explainer")
+
+    def test_get_detail(self):
+        story_template = StoryTemplate.objects.all()[0]
+        uri = '/api/0.1/stories/templates/%s/' % (story_template.template_id)
+        resp = self.api_client.get(uri)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(self.deserialize(resp)['title'], story_template.title)
+        self.assertEqual(self.deserialize(resp)['description'], story_template.description)
+
+
