@@ -119,7 +119,7 @@
 
         Namespace('storybase.viewer');
         var story = new storybase.models.Story({{ story.structure.to_json }});
-        var sections = new storybase.viewer.collections.Sections;
+        var sections = new storybase.collections.Sections;
         sections.reset({{ story.structure.sections_json }});
         storybase.viewer.app = storybase.viewer.views.getViewerApp(
             storyStructureType,
