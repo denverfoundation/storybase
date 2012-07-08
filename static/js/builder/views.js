@@ -135,7 +135,6 @@ storybase.builder.views.StoryTemplateView = Backbone.View.extend({
     this.template = Handlebars.compile(this.templateSource);
   },
 
-
   render: function() {
     this.$el.html(this.template(this.model.toJSON()));
     return this;
@@ -156,22 +155,103 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
   className: 'builder',
 
+  templateSource: $('#builder-template').html(),
+
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
-    this.dispatcher.on("select:template", this.setTemplate, this);
+    this.dispatcher.on("select:template", this.setStoryTemplate, this);
+    this.dispatcher.on("ready:templateSections", this.initializeSections, this);
+
+    _.bindAll(this, 'addSectionThumbnail', 'setTemplateStory', 'setTemplateSections');
+
+    this.template = Handlebars.compile(this.templateSource);
+  },
+
+  addSectionThumbnail: function(section) {
+    console.debug("Adding section thumbnail"); 
+    var view = new storybase.builder.views.SectionThumbnailView({
+      dispatcher: this.dispatcher,
+      model: section 
+    });
+    this.$(".sections").append(view.render().el);
   },
 
   render: function() {
+    this.$el.html(this.template());
+    if (!_.isUndefined(this.sections)) {
+      this.sections.each(this.addSectionThumbnail);
+    }
     return this;
   },
 
-  setTemplate: function(template) {
-    this.template = template;
-    this.template.getStory({
-      success: function(templateStory) {
-        console.debug(templateStory.get("title"));
+  /**
+   * Generic error handler
+   *
+   * This is basically a stub that can later propogate error messages
+   * up to the UI
+   */
+  error: function(msg) {
+    // TODO: More robust error handling
+    console.error(msg);
+  },
+
+  setStoryTemplate: function(template) {
+    console.debug("Setting story template");
+    var that = this;
+    this.storyTemplate = template;
+    this.storyTemplate.getStory({
+      success: this.setTemplateStory,
+      error: function(story, response) {
+        that.error("Failed fetching template story");
       }
     });
-    // BOOKMARK
   },
+
+  setTemplateStory: function(story) {
+    console.debug("Setting template story");
+    var that = this;
+    this.templateStory = story;
+    this.templateStory.getSections({
+      success: this.setTemplateSections, 
+      error: function(sections, response) {
+        that.error("Failed fetching template story sections");
+      }
+    });
+  },
+
+  setTemplateSections: function(sections) {
+    console.debug("Setting template sections"); 
+    this.templateSections = sections;
+    this.dispatcher.trigger("ready:templateSections");
+  },
+
+  initializeSections: function() {
+    console.debug("Initializing sections");
+    var that = this;
+    this.sections = new storybase.collections.Sections();
+    this.templateSections.each(function(section) {
+      var sectionCopy = new storybase.models.Section();
+      sectionCopy.set("title", section.get("title"));
+      that.sections.push(sectionCopy);
+    });
+    this.render();
+  }
+});
+
+storybase.builder.views.SectionThumbnailView = Backbone.View.extend({
+  tagName: 'li',
+
+  className: 'section-thumbnail',
+
+  templateSource: $('#section-thumbnail-template').html(),
+
+  initialize: function() {
+    this.dispatcher = this.options.dispatcher;
+    this.template = Handlebars.compile(this.templateSource);
+  },
+
+  render: function() {
+    this.$el.html(this.template(this.model.toJSON()));
+    return this;
+  }
 });

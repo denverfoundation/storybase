@@ -9,7 +9,6 @@ storybase.builder.models.StoryTemplate = Backbone.Model.extend({
    * the model.
    */
   getStoryId: function() {
-    console.debug(this);
     var uriParts = this.get('story').split('/');
     return uriParts[uriParts.length - 2];
   },

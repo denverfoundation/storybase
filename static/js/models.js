@@ -20,7 +20,6 @@ storybase.models.Story = Backbone.Model.extend({
     var sections = new storybase.collections.Sections({
       story: this
     });
-    console.debug(sections.url());
     sections.fetch({
       success: function(collection, response) {
         if (_.isFunction(options.success)) {
@@ -65,7 +64,11 @@ storybase.collections.Sections = Backbone.Collection.extend({
     model: storybase.models.Section,
 
     initialize: function(options) {
-      this.story = options.story;
+      if (!_.isUndefined(options)) {
+        if (!_.isUndefined(options.story)) {
+          this.story = options.story;
+        }
+      }
     },
 
     url: function() {

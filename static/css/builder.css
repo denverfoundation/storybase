@@ -38,3 +38,19 @@ header h1 {
   width: 30%;
   padding: 1%;
 }
+
+.section-thumbnail {
+  position: relative;
+  display: inline-block;
+  width: 120px;
+  height: 75px;
+  margin: 10px;
+  border: 1px solid #000;
+  padding: 1% 0;
+  list-style: none;
+  text-align: center;
+}
+
+.section-thumbnail div {
+  padding: 22% 0;
+}
