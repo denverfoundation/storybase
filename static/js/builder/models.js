@@ -20,7 +20,6 @@ storybase.builder.models.StoryTemplate = Backbone.Model.extend({
    */
   getStory: function(options) {
     var story = new storybase.models.Story({ story_id: this.getStoryId() }); 
-    console.debug(story);
     story.fetch({
       success: function(model, response) {
         if (_.isFunction(options.success)) {

@@ -12,6 +12,29 @@ storybase.models.Story = Backbone.Model.extend({
   url: function() {
     return this.urlRoot() + "/" + this.id + "/";
   },
+
+  /**
+   * Retrieve a collection of sections of the story
+   */
+  getSections: function(options) {
+    var sections = new storybase.collections.Sections({
+      story: this
+    });
+    console.debug(sections.url());
+    sections.fetch({
+      success: function(collection, response) {
+        if (_.isFunction(options.success)) {
+          options.success(collection);
+        }
+      },
+      error: function(collection, response) {
+        if (_.isFunction(options.error)) {
+          options.error(collection, response);
+        }
+      }
+    });
+    return sections;
+  },
 });
 
 storybase.collections.Stories = Backbone.Collection.extend({
@@ -39,6 +62,22 @@ storybase.models.Section = Backbone.Model.extend({
 });
 
 storybase.collections.Sections = Backbone.Collection.extend({
-    model: storybase.models.Section
+    model: storybase.models.Section,
+
+    initialize: function(options) {
+      this.story = options.story;
+    },
+
+    url: function() {
+      if (!_.isUndefined(this.story)) {
+        return this.story.url() + 'sections/';
+      }
+      else {
+        return '/api/0.1/sections/';
+      }
+    },
+
+    parse: function(response) {
+      return response.objects;
+    }
 });
- 
