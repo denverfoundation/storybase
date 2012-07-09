@@ -55,7 +55,7 @@ class StoryPermission(PermissionMixin):
 class StoryTranslation(TranslationModel):
     """Encapsulates translated fields of a Story"""
     story = models.ForeignKey('Story')
-    title = ShortTextField() 
+    title = ShortTextField(blank=True) 
     summary = models.TextField(blank=True)
     call_to_action = models.TextField(_("Call to Action"),
                                       blank=True)
@@ -140,12 +140,18 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
     structure = property(get_structure_obj)
 
     def __unicode__(self):
-        return self.title
+        if self.title:
+            return self.title
+
+        return self.story_id
 
     @models.permalink
     def get_absolute_url(self):
         """Calculate the canonical URL for a Story"""
-        return ('story_detail', [self.slug])
+        if self.slug:
+            return ('story_detail', [self.slug])
+
+        return ('story_detail', [self.story_id])
 
     def get_full_url(self):
         """

@@ -87,5 +87,8 @@ def obj_title(obj):
     Section models, it's an attribute of the translation class.
 
     """
-    return obj.title
+    if obj.title:
+        return obj.title
+    else:
+        return str(obj)
 obj_title.short_description = 'Title'
