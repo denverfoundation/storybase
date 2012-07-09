@@ -16,11 +16,13 @@ storybase.models.Story = Backbone.Model.extend({
   /**
    * Retrieve a collection of sections of the story
    */
-  getSections: function(options) {
-    var sections = new storybase.collections.Sections({
-      story: this
-    });
-    sections.fetch({
+  fetchSections: function(options) {
+    if (_.isUndefined(this.sections)) {
+      this.sections = new storybase.collections.Sections({
+        story: this
+      });
+    }
+    this.sections.fetch({
       success: function(collection, response) {
         if (_.isFunction(options.success)) {
           options.success(collection);
@@ -32,7 +34,7 @@ storybase.models.Story = Backbone.Model.extend({
         }
       }
     });
-    return sections;
+    return this.sections;
   },
 });
 

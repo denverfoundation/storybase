@@ -61,7 +61,7 @@ describe('Story model', function() {
       var story = new storybase.models.Story({
         story_id: this.storyId 
       });
-      story.getSections({
+      story.fetchSections({
         success: function(sections) {
           fetchSucceeded = true;
           expect(sections.url()).toEqual('/api/0.1/stories/' + story.id + '/sections/');

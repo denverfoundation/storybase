@@ -211,7 +211,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     console.debug("Setting template story");
     var that = this;
     this.templateStory = story;
-    this.templateStory.getSections({
+    this.templateStory.fetchSections({
       success: this.setTemplateSections, 
       error: function(sections, response) {
         that.error("Failed fetching template story sections");
