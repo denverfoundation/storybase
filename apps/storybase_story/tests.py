@@ -1387,6 +1387,38 @@ class StoryResourceTest(ResourceTestCase):
                                format='json', data=data)
         self.assertHttpNotFound(response)
 
+    def test_put_detail_unauthorized_unauthenticated(self):
+        """Test that anonymouse users cannot update a story"""
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status='published',
+                             author=self.user)
+        post_data = {
+            'title': "New Title",
+            'summary': "New Summary",
+            'byline': "New Byline",
+            'status': "published",
+        }
+        response = self.api_client.put('/api/0.1/stories/%s/' % (story.story_id),
+                               format='json', data=post_data)
+        self.assertHttpUnauthorized(response)
+
+    def test_put_detail_unauthorized(self):
+        """Test that user who is not author cannot update a story"""
+        author = User.objects.create_user("test2", "test2@example.com", "test2")
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status='published',
+                             author=author)
+        self.api_client.client.login(username=self.username, password=self.password)
+        post_data = {
+            'title': "New Title",
+            'summary': "New Summary",
+            'byline': "New Byline",
+            'status': "published",
+        }
+        response = self.api_client.put('/api/0.1/stories/%s/' % (story.story_id),
+                               format='json', data=post_data)
+        self.assertHttpUnauthorized(response)
+
     def test_put_detail(self):
         """Test that an author can update her own story"""
         story = create_story(title="Test Story", summary="Test Summary",
@@ -1407,6 +1439,23 @@ class StoryResourceTest(ResourceTestCase):
         self.assertEqual(story.summary, data['summary'])
         self.assertEqual(story.byline, data['byline'])
         self.assertEqual(story.status, data['status'])
+
+    def test_put_detail_no_translation_in_lang(self):
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status='published',
+                             language="en",
+                             author=self.user)
+        self.api_client.client.login(username=self.username, password=self.password)
+        data = {
+            'title': "New Title",
+            'summary': "New Summary",
+            'byline': "New Byline",
+            'status': "published",
+            'language': "es",
+        }
+        response = self.api_client.put('/api/0.1/stories/%s/' % (story.story_id),
+                               format='json', data=data)
+        self.assertHttpNotFound(response)
 
     def test_get_list_published_only(self):
         """Test that unauthenticated users see only published stories"""

@@ -19,6 +19,7 @@ post_bundle_obj_hydrate = Signal(providing_args=["bundle", "request"])
 post_bundle_obj_save = Signal(providing_args=["bundle", "request"])
 """Signal sent after the bundle is saved"""
 post_obj_get = Signal(providing_args=["request", "object"])
+"""Signal sent after the object is retrieved"""
 
 class HookedModelResource(ModelResource):
     """
@@ -150,6 +151,9 @@ class HookedModelResource(ModelResource):
 
             try:
                 bundle.obj = self.obj_get(bundle.request, **lookup_kwargs)
+                # Send a signal
+                post_obj_get.send(sender=self, request=request,
+                                  obj=bundle.obj)
             except ObjectDoesNotExist:
                 raise NotFound("A model instance matching the provided arguments could not be found.")
 
@@ -347,4 +351,8 @@ class TranslatedModelResource(HookedModelResource):
         else:
             setattr(bundle.obj, key, value)
 
-
+    def put_detail(self, request, **kwargs):
+        try:
+            return super(TranslatedModelResource, self).put_detail(request, **kwargs)
+        except ObjectDoesNotExist:
+            return http.HttpNotFound()
