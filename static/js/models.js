@@ -6,11 +6,16 @@ storybase.models.Story = Backbone.Model.extend({
   idAttribute: "story_id",
 
   urlRoot: function() {
-    return '/api/0.1/stories'; 
+    return '/api/0.1/stories';
   },
 
   url: function() {
-    return this.urlRoot() + "/" + this.id + "/";
+    var url = this.urlRoot();
+    if (!this.isNew()) {
+      url = url + "/" + this.id;
+    }
+    url = url + "/";
+    return url;
   },
 
   /**

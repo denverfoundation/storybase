@@ -329,7 +329,7 @@ class TranslatedModelResource(HookedModelResource):
         signal.
 
         """
-        if bundle.obj.pk and not hasattr(bundle, 'translation_obj'):
+        if bundle.obj.pk:
             language = bundle.data.get('language', sender.fields['language'].default)
             translation_set = getattr(bundle.obj, bundle.obj.translation_set)
             bundle.translation_obj = translation_set.get(language=language)

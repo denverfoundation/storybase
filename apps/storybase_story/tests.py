@@ -1387,6 +1387,27 @@ class StoryResourceTest(ResourceTestCase):
                                format='json', data=data)
         self.assertHttpNotFound(response)
 
+    def test_put_detail(self):
+        """Test that an author can update her own story"""
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status='published',
+                             author=self.user)
+        self.api_client.client.login(username=self.username, password=self.password)
+        data = {
+            'title': "New Title",
+            'summary': "New Summary",
+            'byline': "New Byline",
+            'status': "published",
+        }
+        response = self.api_client.put('/api/0.1/stories/%s/' % (story.story_id),
+                               format='json', data=data)
+        self.assertHttpAccepted(response)
+        story = Story.objects.get(story_id=story.story_id)
+        self.assertEqual(story.title, data['title'])
+        self.assertEqual(story.summary, data['summary'])
+        self.assertEqual(story.byline, data['byline'])
+        self.assertEqual(story.status, data['status'])
+
     def test_get_list_published_only(self):
         """Test that unauthenticated users see only published stories"""
         story1 = create_story(title="Test Story", summary="Test Summary",

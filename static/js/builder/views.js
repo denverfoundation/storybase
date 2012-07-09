@@ -14,7 +14,8 @@ storybase.builder.views.AppView = Backbone.View.extend({
     this.activeStep = 'selectTemplate';
 
     this.navView = new storybase.builder.views.NavigationView({
-      el: this.$('#builder-nav')
+      el: this.$('#builder-nav'),
+      dispatcher: this.dispatcher
     });
 
     // Store subviews in an object keyed with values of this.activeStep
@@ -75,7 +76,12 @@ storybase.builder.views.AppView = Backbone.View.extend({
 storybase.builder.views.NavigationView = Backbone.View.extend({
   templateSource: $('#navigation-template').html(),
 
+  events: {
+    "click .save": "save"
+  },
+
   initialize: function() {
+    this.dispatcher = this.options.dispatcher;
     this.template = Handlebars.compile(this.templateSource);
   },
 
@@ -83,6 +89,14 @@ storybase.builder.views.NavigationView = Backbone.View.extend({
     var context = {};
     this.$el.html(this.template(context));
     return this;
+  },
+
+  /**
+   * Event handler for clicking the save link
+   */
+  save: function(e) {
+    this.dispatcher.trigger("save:story");
+    e.preventDefault();
   }
 });
 
@@ -160,7 +174,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
     this.dispatcher.on("select:template", this.setStoryTemplate, this);
-    this.dispatcher.on("ready:templateSections", this.initializeSections, this);
+    this.dispatcher.on("ready:templateSections", this.initializeStory, this);
+    this.dispatcher.on("save:story", this.save, this);
 
     _.bindAll(this, 'addSectionThumbnail', 'setTemplateStory', 'setTemplateSections');
 
@@ -178,8 +193,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
   render: function() {
     this.$el.html(this.template());
-    if (!_.isUndefined(this.sections)) {
-      this.sections.each(this.addSectionThumbnail);
+    if (!_.isUndefined(this.model)) {
+      this.model.sections.each(this.addSectionThumbnail);
     }
     return this;
   },
@@ -225,16 +240,25 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.dispatcher.trigger("ready:templateSections");
   },
 
-  initializeSections: function() {
+  initializeStory: function() {
     console.debug("Initializing sections");
     var that = this;
-    this.sections = new storybase.collections.Sections();
+    // Create the story instance
+    this.model = new storybase.models.Story({
+      title: ""
+    });
+    this.model.sections = new storybase.collections.Sections();
     this.templateSections.each(function(section) {
       var sectionCopy = new storybase.models.Section();
       sectionCopy.set("title", section.get("title"));
-      that.sections.push(sectionCopy);
+      that.model.sections.push(sectionCopy);
     });
     this.render();
+  },
+
+  save: function() {
+    console.debug("Saving story");
+    this.model.save();
   }
 });
 

@@ -74,3 +74,12 @@ describe('Story model', function() {
     });
   });
 });
+
+describe('Story model', function() {
+  describe('when new', function() {
+    it("doesn't have an id in the url", function() {
+      var story = new storybase.models.Story;
+      expect(story.url()).toEqual('/api/0.1/stories/');
+    });
+  });
+});

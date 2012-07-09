@@ -25,7 +25,7 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
     # Explicitly declare fields that are on the translation model
     title = fields.CharField(attribute='title', blank=True)
     summary = fields.CharField(attribute='summary', blank=True)
-    url = fields.CharField(attribute='get_absolute_url')
+    url = fields.CharField(attribute='get_absolute_url', readonly=True)
     sections = fields.ToManyField('storybase_story.api.SectionResource', 'sections', readonly=True)
     topics = fields.ListField(readonly=True)
     organizations = fields.ListField(readonly=True)
@@ -35,9 +35,10 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
     points = fields.ListField(readonly=True)
 
     class Meta:
+        always_return_data = True
         queryset = Story.objects.all()
         resource_name = 'stories'
-        allowed_methods = ['get', 'post', 'patch']
+        allowed_methods = ['get', 'post', 'patch', 'put']
         authentication = Authentication()
         authorization = LoggedInAuthorization()
         # Hide the underlying id
@@ -48,7 +49,7 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
 
         # Custom meta attributes
         # Methods that handle authorization later than normain in the flow
-        delayed_authorization_methods = ('patch_detail',)
+        delayed_authorization_methods = ('patch_detail', 'put_detail')
         # Filter arguments for custom explore endpoint
         explore_filter_fields = ['topics', 'projects', 'organizations', 'languages', 'places']
         explore_point_field = 'points'
