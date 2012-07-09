@@ -57,6 +57,7 @@ describe('Story model', function() {
 
   describe('when getting its sections', function() {
     it('should return a collection of sections to a callback', function() {
+      var that = this;
       var fetchSucceeded = false;
       var story = new storybase.models.Story({
         story_id: this.storyId 
@@ -65,7 +66,7 @@ describe('Story model', function() {
         success: function(sections) {
           fetchSucceeded = true;
           expect(sections.url()).toEqual('/api/0.1/stories/' + story.id + '/sections/');
-          expect(sections.length).toEqual(this.fixture.objects.length);
+          expect(sections.length).toEqual(that.fixture.objects.length);
         }
       });
       this.server.respond();
