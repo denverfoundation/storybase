@@ -19,7 +19,7 @@ describe('Section collection', function() {
       var story = new storybase.models.Story({
         story_id: this.storyId
       });
-      var sections = new storybase.collections.Sections({
+      var sections = new storybase.collections.Sections([], {
         story: story
       });
       expect(sections.url()).toEqual('/api/0.1/stories/' + story.id + '/sections/');
@@ -29,7 +29,7 @@ describe('Section collection', function() {
       var story = new storybase.models.Story({
         story_id: this.storyId
       });
-      var sections = new storybase.collections.Sections({
+      var sections = new storybase.collections.Sections([], {
         story: story
       });
       sections.fetch();

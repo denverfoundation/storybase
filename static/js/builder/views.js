@@ -247,7 +247,10 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.model = new storybase.models.Story({
       title: ""
     });
-    this.model.sections = new storybase.collections.Sections();
+    this.model.sections = new storybase.collections.Sections([], {
+      story: this.model
+    });
+    console.debug(this.model.sections.story);
     this.templateSections.each(function(section) {
       var sectionCopy = new storybase.models.Section();
       sectionCopy.set("title", section.get("title"));
@@ -258,7 +261,16 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
   save: function() {
     console.debug("Saving story");
-    this.model.save();
+    var that = this;
+    this.model.save(null, {
+      success: function(model, response) {
+        console.debug(that.model.sections.story);
+        that.model.sections.each(function(section) {
+          console.debug(section.collection);
+          section.save();
+        });
+      }
+    });
   }
 });
 

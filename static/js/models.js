@@ -23,7 +23,7 @@ storybase.models.Story = Backbone.Model.extend({
    */
   fetchSections: function(options) {
     if (_.isUndefined(this.sections)) {
-      this.sections = new storybase.collections.Sections({
+      this.sections = new storybase.collections.Sections([], {
         story: this
       });
     }
@@ -70,7 +70,7 @@ storybase.models.Section = Backbone.Model.extend({
 storybase.collections.Sections = Backbone.Collection.extend({
     model: storybase.models.Section,
 
-    initialize: function(options) {
+    initialize: function(models, options) {
       if (!_.isUndefined(options)) {
         if (!_.isUndefined(options.story)) {
           this.story = options.story;
