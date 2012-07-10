@@ -1,5 +1,7 @@
 Namespace('storybase.builder.views');
 
+storybase.builder.views.mixins = {};
+
 /**
  * Master view for the story builder
  *
@@ -180,12 +182,16 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   initialize: function() {
     var that = this;
 
+    this._thumbnailViews = [];
+
     this.dispatcher = this.options.dispatcher;
     this.dispatcher.on("select:template", this.setStoryTemplate, this);
     this.dispatcher.on("ready:templateSections", this.initializeStory, this);
     this.dispatcher.on("ready:story", this.render, this);
     this.dispatcher.on("save:story", this.save, this);
     this.dispatcher.on("select:section", this.selectSection, this);
+    this.dispatcher.on("select:storyinfo", this.showStoryInfo, this);
+    this.dispatcher.on("select:calltoaction", this.showCallToAction, this);
 
     _.bindAll(this, 'addSectionThumbnail', 'setTemplateStory', 'setTemplateSections');
 
@@ -209,11 +215,32 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.$(".sections").append(view.render().el);
   },
 
+  addStoryInfoThumbnail: function() {
+    var view = new storybase.builder.views.PseudoSectionThumbnailView({
+      dispatcher: this.dispatcher,
+      title: "Story Information",
+      id: "storyinfo"
+    });
+    this.$('.sections').append(view.render().el);
+  },
+
+  addCallToActionThumbnail: function() {
+    var view = new storybase.builder.views.PseudoSectionThumbnailView({
+      dispatcher: this.dispatcher,
+      title: "Call to Action",
+      id: "calltoaction"
+    });
+    this.$('.sections').append(view.render().el);
+  },
+
   render: function() {
     this.$el.html(this.template());
     if (!_.isUndefined(this.model)) {
+      this.addStoryInfoThumbnail();
       this.model.sections.each(this.addSectionThumbnail);
+      this.addCallToActionThumbnail();
     }
+    this.showStoryInfo();
     return this;
   },
 
@@ -282,7 +309,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
         model.saveSections();
       }
     });
-
   },
 
   /**
@@ -298,26 +324,130 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       story: this.model
     });
     this.$el.prepend(view.render().el);
+  },
+
+  showStoryInfo: function() {
+    this.$('.edit-section').remove();
+    var view = new storybase.builder.views.StoryInfoEditView({
+      dispatcher: this.dispatcher,
+      model: this.model
+    });
+    this.$el.prepend(view.render().el);
+  },
+
+  showCallToAction: function() {
+    this.$('.edit-section').remove();
+    var view = new storybase.builder.views.CallToActionEditView({
+      dispatcher: this.dispatcher,
+      model: this.model
+    });
+    this.$el.prepend(view.render().el);
   }
 });
 
-storybase.builder.views.SectionThumbnailView = Backbone.View.extend({
-  tagName: 'li',
+storybase.builder.views.mixins.ThumbnailHighlightMixin = {
+  highlightClass: 'selected',
 
-  className: 'section-thumbnail',
+  /**
+   * Highlight the thumbnail
+   *
+   * This method should be hooked up to a "select:thumbnail" event
+   */
+  highlight: function(view) {
+    if (view == this) {
+      this.$el.addClass(this.highlightClass);
+    }
+    else {
+      this.$el.removeClass(this.highlightClass);
+    }
+  }
+};
 
-  templateSource: $('#section-thumbnail-template').html(),
+storybase.builder.views.SectionThumbnailView = Backbone.View.extend(
+  _.extend({}, storybase.builder.views.mixins.ThumbnailHighlightMixin, {
+    tagName: 'li',
+
+    className: 'section-thumbnail',
+
+    templateSource: $('#section-thumbnail-template').html(),
+
+    events: {
+      "click": "select"
+    },
+
+    initialize: function() {
+      this.dispatcher = this.options.dispatcher;
+      this.template = Handlebars.compile(this.templateSource);
+
+      this.dispatcher.on("select:thumbnail", this.highlight, this);
+      this.model.on("change", this.render, this);
+    },
+
+    render: function() {
+      this.$el.html(this.template(this.model.toJSON()));
+      return this;
+    },
+
+    select: function() {
+      console.debug("Selecting section with id " + this.model.id);
+      this.dispatcher.trigger("select:section", this.model);
+      this.dispatcher.trigger("select:thumbnail", this);
+    }
+}));
+
+storybase.builder.views.PseudoSectionThumbnailView = Backbone.View.extend(
+  _.extend({}, storybase.builder.views.mixins.ThumbnailHighlightMixin, {
+    tagName: 'li',
+
+    className: 'section-thumbnail',
+
+    templateSource: $('#section-thumbnail-template').html(),
+
+    events: {
+      "click": "select"
+    },
+
+    initialize: function() {
+      this.dispatcher = this.options.dispatcher;
+      this.template = Handlebars.compile(this.templateSource);
+
+      this.title = this.options.title;
+      this.id = this.options.id;
+
+      this.dispatcher.on("select:thumbnail", this.highlight, this);
+    },
+
+    render: function() {
+      var context = {
+        title: this.title 
+      };
+      this.$el.html(this.template(context));
+      return this;
+    },
+
+    select: function() {
+      this.dispatcher.trigger("select:" + this.id);
+      this.dispatcher.trigger("select:thumbnail", this);
+    }
+}));
+
+/**
+ * View for editing story metadata
+ */
+storybase.builder.views.StoryInfoEditView = Backbone.View.extend({
+  tagName: 'div',
+
+  className: 'edit-story-info edit-section',
+
+  templateSource: $('#story-info-edit-template').html(),
 
   events: {
-    "click": "select"
+    "change input": 'change'
   },
 
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
     this.template = Handlebars.compile(this.templateSource);
-
-    this.dispatcher.on("select:section", this.highlight, this);
-    this.model.on("change", this.render, this);
   },
 
   render: function() {
@@ -325,22 +455,58 @@ storybase.builder.views.SectionThumbnailView = Backbone.View.extend({
     return this;
   },
 
-  select: function() {
-    console.debug("Selecting section with id " + this.model.id);
-    this.dispatcher.trigger("select:section", this.model);
+  change: function(e) {
+    var name = $(e.target).attr("name");
+    var value = $(e.target).val();
+    if (_.has(this.model.attributes, name)) {
+      this.model.set(name, value);
+      if (this.model.isNew()) {
+        this.dispatcher.trigger("save:story");
+      }
+      else {
+        this.model.save();
+      }
+      console.debug("Updated " + name + " to " + value);
+    }
+  }
+});
+
+/**
+ * View for editing story metadata
+ */
+storybase.builder.views.CallToActionEditView = Backbone.View.extend({
+  tagName: 'div',
+
+  className: 'edit-call-to-action edit-section',
+
+  templateSource: $('#story-call-to-action-edit-template').html(),
+
+  events: {
+    "change input": 'change'
   },
 
-  /**
-   * Highlight the section thumbnail
-   *
-   * This method should be hooked up to a "select:section" event
-   */
-  highlight: function(section) {
-    if (section == this.model) {
-      this.$el.addClass("selected");
-    }
-    else {
-      this.$el.removeClass("selected");
+  initialize: function() {
+    this.dispatcher = this.options.dispatcher;
+    this.template = Handlebars.compile(this.templateSource);
+  },
+
+  render: function() {
+    this.$el.html(this.template(this.model.toJSON()));
+    return this;
+  },
+
+  change: function(e) {
+    var name = $(e.target).attr("name");
+    var value = $(e.target).val();
+    if (_.has(this.model.attributes, name)) {
+      this.model.set(name, value);
+      if (this.model.isNew()) {
+        this.dispatcher.trigger("save:story");
+      }
+      else {
+        this.model.save();
+      }
+      console.debug("Updated " + name + " to " + value);
     }
   }
 });
@@ -375,7 +541,6 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     var value = $(e.target).val();
     if (_.has(this.model.attributes, name)) {
       this.model.set(name, value);
-      // Bookmark
       if (this.story.isNew()) {
         this.dispatcher.trigger("save:story");
       }
