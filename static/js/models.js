@@ -18,6 +18,18 @@ storybase.models.Story = Backbone.Model.extend({
     return url;
   },
 
+  initialize: function(options) {
+    this.sections = new storybase.collections.Sections;
+    this.setSectionsUrl();
+    this.on("change", this.setSectionsUrl, this);
+  },
+
+  setSectionsUrl: function() {
+    if (!this.isNew()) {
+      this.sections.url = this.url() + 'sections/';
+    }
+  },
+
   /**
    * Retrieve a collection of sections of the story
    */
@@ -41,6 +53,15 @@ storybase.models.Story = Backbone.Model.extend({
     });
     return this.sections;
   },
+
+  /**
+   * Save all the sections of the story
+   */
+  saveSections: function(options) {
+    this.sections.each(function(section) {
+      section.save();
+    });
+  }
 });
 
 storybase.collections.Stories = Backbone.Collection.extend({
@@ -70,22 +91,7 @@ storybase.models.Section = Backbone.Model.extend({
 storybase.collections.Sections = Backbone.Collection.extend({
     model: storybase.models.Section,
 
-    initialize: function(models, options) {
-      if (!_.isUndefined(options)) {
-        if (!_.isUndefined(options.story)) {
-          this.story = options.story;
-        }
-      }
-    },
-
-    url: function() {
-      if (!_.isUndefined(this.story)) {
-        return this.story.url() + 'sections/';
-      }
-      else {
-        return '/api/0.1/sections/';
-      }
-    },
+    url: '/api/0.1/sections/', 
 
     parse: function(response) {
       return response.objects;
