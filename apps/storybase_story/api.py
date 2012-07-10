@@ -26,7 +26,6 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
     title = fields.CharField(attribute='title', blank=True)
     summary = fields.CharField(attribute='summary', blank=True)
     url = fields.CharField(attribute='get_absolute_url', readonly=True)
-    sections = fields.ToManyField('storybase_story.api.SectionResource', 'sections', readonly=True)
     topics = fields.ListField(readonly=True)
     organizations = fields.ListField(readonly=True)
     projects = fields.ListField(readonly=True)

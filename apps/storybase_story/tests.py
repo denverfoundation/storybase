@@ -1229,7 +1229,6 @@ class StoryResourceTest(ResourceTestCase):
                                 'projects',
                                 'published',
                                 'resource_uri',
-                                'sections',
                                 'slug',
                                 'status',
                                 'story_id',
@@ -1253,13 +1252,6 @@ class StoryResourceTest(ResourceTestCase):
         self.assertEqual(self.deserialize(resp)['status'], "published")
         self.assertEqual(len(self.deserialize(resp)['languages']), 1)
         self.assertEqual(self.deserialize(resp)['languages'][0]['id'], "en")
-        self.assertEqual(len(self.deserialize(resp)['sections']), 2)
-        self.assertIn('/api/0.1/stories/%s/sections/%s/' % 
-                      (story.story_id, section1.section_id), 
-                      self.deserialize(resp)['sections'])
-        self.assertIn('/api/0.1/stories/%s/sections/%s/' % 
-                      (story.story_id, section2.section_id), 
-                      self.deserialize(resp)['sections'])
 
     def test_post_list_unauthorized(self):
         """Test that a user cannot create a story if they aren't logged in"""
