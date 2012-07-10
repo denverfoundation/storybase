@@ -85,6 +85,11 @@ storybase.models.Section = Backbone.Model.extend({
 
   title: function() {
     return this.get("title");
+  },
+
+  url: function() {
+    var url = Backbone.Model.prototype.url.call(this);
+    return url + '/';
   }
 });
 

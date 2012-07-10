@@ -93,17 +93,28 @@
     <script src="{{ STATIC_URL }}js/builder/application.js"></script>
     <script src="{{ STATIC_URL }}js/builder/models.js"></script>
     <script src="{{ STATIC_URL }}js/builder/views.js"></script>
+    <script src="{{ STATIC_URL }}js/builder/routes.js"></script>
 
     <script type="text/javascript">
     $(document).ready(function() {
-        var storyTemplatesData = {{ story_template_json }};
-        var storyTemplates = new storybase.builder.collections.StoryTemplates;
-        storyTemplates.reset(storyTemplatesData.objects);
-        storybase.builder.app = new storybase.builder.views.AppView({
+        var options = {
             el: $('#builder'),
-            dispatcher: storybase.builder.globals.dispatcher,
-            storyTemplates: storyTemplates
+            dispatcher: storybase.builder.globals.dispatcher
+        };
+        {% if story_json %}
+        options.model = new storybase.models.Story({{ story_json }});
+        {% endif %}
+        var storyTemplatesData = {{ story_template_json }};
+        options.storyTemplates = new storybase.builder.collections.StoryTemplates;
+        options.storyTemplates.reset(storyTemplatesData.objects);
+
+        storybase.builder.router = new storybase.builder.routers.Router({
+            dispatcher: storybase.builder.globals.dispatcher
         });
+        storybase.builder.app = new storybase.builder.views.AppView(
+            options
+        );
+        Backbone.history.start({pushState: true, root: '/build/'});
         storybase.builder.app.render();
     });
     </script>

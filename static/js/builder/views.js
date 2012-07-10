@@ -11,7 +11,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
 
     // The currently active step of the story building process
     // TODO: Define all the steps
-    this.activeStep = 'selectTemplate';
+    this.activeStep = this.model ? 'build' : 'selectTemplate';
 
     this.navView = new storybase.builder.views.NavigationView({
       el: this.$('#builder-nav'),
@@ -19,14 +19,18 @@ storybase.builder.views.AppView = Backbone.View.extend({
     });
 
     // Store subviews in an object keyed with values of this.activeStep
+    var buildViewOptions = {
+      dispatcher: this.dispatcher
+    };
+    if (this.model) {
+      buildViewOptions.model = this.model;
+    }
     this.subviews = {
       selectTemplate: new storybase.builder.views.SelectStoryTemplateView({
         dispatcher: this.dispatcher,
         collection: this.options.storyTemplates
       }),
-      build: new storybase.builder.views.BuilderView({
-        dispatcher: this.dispatcher
-      })
+      build: new storybase.builder.views.BuilderView(buildViewOptions)
     };
 
     this.initializeEvents();
@@ -45,6 +49,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
   setTemplate: function(template) {
     this.activeTemplate = template;
     this.updateStep('build');
+    this.dispatcher.trigger('navigate', 'story');
   },
 
   /**
@@ -172,14 +177,24 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   templateSource: $('#builder-template').html(),
 
   initialize: function() {
+    var that = this;
     this.dispatcher = this.options.dispatcher;
     this.dispatcher.on("select:template", this.setStoryTemplate, this);
     this.dispatcher.on("ready:templateSections", this.initializeStory, this);
+    this.dispatcher.on("ready:story", this.render, this);
     this.dispatcher.on("save:story", this.save, this);
 
     _.bindAll(this, 'addSectionThumbnail', 'setTemplateStory', 'setTemplateSections');
 
     this.template = Handlebars.compile(this.templateSource);
+
+    if (this.model) {
+      this.model.fetchSections({
+        success: function(sections) {
+          that.dispatcher.trigger("ready:story");
+        }
+      });
+    }
   },
 
   addSectionThumbnail: function(section) {
@@ -248,15 +263,12 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.model = new storybase.models.Story({
       title: ""
     });
-    this.model.sections = new storybase.collections.Sections([], {
-      story: this.model
-    });
     this.templateSections.each(function(section) {
       var sectionCopy = new storybase.models.Section();
       sectionCopy.set("title", section.get("title"));
       that.model.sections.push(sectionCopy);
     });
-    this.render();
+    this.dispatcher.trigger("ready:story");
   },
 
   save: function() {
@@ -264,7 +276,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     var that = this;
     this.model.save(null, {
       success: function(model, response) {
-        that.model.saveSections();
+        that.dispatcher.trigger('navigate', '/story/' + model.id + '/');
+        model.saveSections();
       }
     });
   }

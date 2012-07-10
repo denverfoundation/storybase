@@ -3,12 +3,14 @@
 import json
 
 from django.contrib.auth.decorators import login_required
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.http import Http404
 from django.utils.decorators import method_decorator
 from django.template import Context
 from django.template.loader import get_template
-from django.views.generic import TemplateView 
-from django.utils.decorators import method_decorator
+from django.views.generic import DetailView, TemplateView 
 from django.utils.safestring import mark_safe
+from django.utils.translation import ugettext as _
 
 from storybase.utils import simple_language_changer
 from storybase.views.generic import ModelIdDetailView
@@ -94,17 +96,47 @@ class StoryViewerView(ModelIdDetailView):
     template_name = 'storybase_story/story_viewer.html'
 
 
-class StoryBuilderView(TemplateView):
+class StoryBuilderView(DetailView):
     """
     Story builder view
 
     The heavy lifting is done by the REST API and client-side JavaScript
 
     """
+    queryset = Story.objects.all()
     template_name = "storybase_story/story_builder.html"
+
+    def get_object(self):
+        """Retrieve the object by it's model specific id instead of pk"""
+        queryset = self.get_queryset()
+        obj_id_name = 'story_id'
+        obj_id = self.kwargs.get(obj_id_name, None)
+        if obj_id is not None:
+            filter_args = {obj_id_name: obj_id}
+            queryset = queryset.filter(**filter_args)
+            try:
+                obj = queryset.get()
+            except ObjectDoesNotExist:
+                raise Http404(_(u"No %(verbose_name)s found matching the query") %
+                        {'verbose_name': queryset.model._meta.verbose_name})
+            if not obj.has_perm(self.request.user, 'change'):
+                raise PermissionDenied(_(u"You are not authorized to edit this story"))
+            return obj
+        else:
+            return None
 
     def get_context_data(self, **kwargs):
         """Provide Bootstrap data for Backbone models and collections"""
+        context = {}
+        if self.object:
+            resource = StoryResource()
+            bundle = resource.build_bundle(obj=self.object)
+            to_be_serialized = resource.full_dehydrate(bundle)
+            
+            context.update({
+                'story_json': mark_safe(resource.serialize(None, to_be_serialized, 'application/json')),
+            })
+
         to_be_serialized = {}
 
         # Use the Tastypie resource to retrieve a JSON list of story
@@ -116,9 +148,11 @@ class StoryBuilderView(TemplateView):
         bundles = [resource.build_bundle(obj=obj) for obj in objects]
         to_be_serialized['objects'] = [resource.full_dehydrate(bundle) for bundle in bundles]
 
-        return {
+        context.update({
             'story_template_json': mark_safe(resource.serialize(None, to_be_serialized, 'application/json')),
-        }
+        })
+
+        return context
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
