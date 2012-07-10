@@ -120,8 +120,8 @@ class StoryBuilderView(TemplateView):
             'story_template_json': mark_safe(resource.serialize(None, to_be_serialized, 'application/json')),
         }
 
-        @method_decorator(login_required)
-        def dispatch(self, *args, **kwargs):
-            # We override the view's dispatch method so we can decorate
-            # it to only allow access by logged-in users
-            return super(StoryBuilderView, self).dispatch(*args, **kwargs)
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        # We override the view's dispatch method so we can decorate
+        # it to only allow access by logged-in users
+        return super(StoryBuilderView, self).dispatch(*args, **kwargs)
