@@ -54,10 +54,21 @@ header h1 {
   padding: 2%;
 }
 
-.edit-section input.title {
+.edit-section input.title,
+.edit-story-info input {
+  display: block;
   width: 80%;
   padding: 0.5em;
   font-size: 2em;
+  margin-top: 0.5em;
+}
+
+.edit-story-info textarea.summary {
+  display: block;
+  width: 80%;
+  height: 8em;
+  margin-top: 1em;
+  padding: 1em;
 }
 
 .section-thumbnail {
@@ -74,14 +85,14 @@ header h1 {
 }
 
 .section-thumbnail.pseudo {
-  background-color: #C8C8C8; 
+  background-color: #C8C8C8;
   color: #fff;
 }
 
 .section-thumbnail.selected {
   box-shadow: 0 0 5px rgba(0, 0, 255, 1);
-  -webkit-box-shadow: 0 0 5px rgba(0, 0, 255, 1); 
-  -moz-box-shadow: 0 0 5px rgba(0, 0, 255, 1); 
+  -webkit-box-shadow: 0 0 5px rgba(0, 0, 255, 1);
+  -moz-box-shadow: 0 0 5px rgba(0, 0, 255, 1);
 }
 
 .section-thumbnail div {

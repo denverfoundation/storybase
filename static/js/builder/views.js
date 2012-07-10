@@ -261,6 +261,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     if (this._thumbnailViews.length) {
       _.each(this._thumbnailViews, function(view) {
         that.$(".sections").append(view.render().el);
+        that.$el.prepend(view.editView.render().el);
       });
       this.dispatcher.trigger("select:thumbnail", this._thumbnailViews[0]);
     }
@@ -335,8 +336,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   },
 
   showEditView: function(thumbnailView) {
-    this.$('.edit-section').remove();
-    this.$el.prepend(thumbnailView.editView.render().el);
+    this.$('.edit-section').hide();
+    thumbnailView.editView.render().$el.show();
   }
 });
 
@@ -436,7 +437,8 @@ storybase.builder.views.StoryInfoEditView = Backbone.View.extend({
   templateSource: $('#story-info-edit-template').html(),
 
   events: {
-    "change input": 'change'
+    "change input": 'change',
+    "change textarea": 'change'
   },
 
   initialize: function() {
@@ -523,6 +525,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     this.dispatcher = this.options.dispatcher;
     this.story = this.options.story;
     this.template = Handlebars.compile(this.templateSource);
+    console.debug('got here');
   },
 
   render: function() {
@@ -531,6 +534,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   },
 
   change: function(e) {
+    console.debug("Change event!");
     var name = $(e.target).attr("name");
     var value = $(e.target).val();
     if (_.has(this.model.attributes, name)) {
