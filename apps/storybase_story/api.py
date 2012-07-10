@@ -354,7 +354,8 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
             return http.HttpMultipleChoices("More than one resource is found at this URI.")
 
         section_resource = SectionResource()
-        return section_resource.dispatch_detail(request, story_id=obj.story_id,
+        return section_resource.dispatch_detail(request, 
+                                                story__story_id=obj.story_id,
                                                 section_id=section_id)
 
     def dispatch_section_list(self, request, **kwargs):
@@ -366,7 +367,7 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
             return http.HttpMultipleChoices("More than one resource is found at this URI.")
 
         section_resource = SectionResource()
-        return section_resource.dispatch_list(request, story_id=obj.story_id)
+        return section_resource.dispatch_list(request, story__story_id=obj.story_id)
 
     def dispatch_template_list(self, request, **kwargs):
         template_resource = StoryTemplateResource()
@@ -456,13 +457,11 @@ class SectionResource(DelayedAuthorizationResource, TranslatedModelResource):
             return ''
 
     def obj_create(self, bundle, request=None, **kwargs):
-        story_id = kwargs.pop('story_id')
+        story_id = kwargs.pop('story__story_id')
         kwargs['story'] = Story.objects.get(story_id=story_id)
         return super(SectionResource, self).obj_create(bundle, request, **kwargs)
 
     def obj_get(self, request=None, **kwargs):
-        story_id = kwargs.pop('story_id')
-        kwargs['story'] = Story.objects.get(story_id=story_id)
         return super(SectionResource, self).obj_get(request, **kwargs)
 
 
