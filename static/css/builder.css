@@ -73,8 +73,15 @@ header h1 {
   cursor: pointer;
 }
 
+.section-thumbnail.pseudo {
+  background-color: #C8C8C8; 
+  color: #fff;
+}
+
 .section-thumbnail.selected {
-  border-color: red;
+  box-shadow: 0 0 5px rgba(0, 0, 255, 1);
+  -webkit-box-shadow: 0 0 5px rgba(0, 0, 255, 1); 
+  -moz-box-shadow: 0 0 5px rgba(0, 0, 255, 1); 
 }
 
 .section-thumbnail div {
