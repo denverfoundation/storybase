@@ -89,7 +89,10 @@ storybase.models.Section = Backbone.Model.extend({
 
   url: function() {
     var url = Backbone.Model.prototype.url.call(this);
-    return url + '/';
+    if (url.charAt(url.length - 1) != '/') {
+      url = url + '/';
+    }
+    return url;
   }
 });
 

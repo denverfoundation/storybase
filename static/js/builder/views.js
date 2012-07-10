@@ -70,6 +70,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
   render: function() {
     var activeView = this.getActiveView();
     this.$('#app').html(activeView.render().$el);
+    this.$el.height($(window).height());
     this.navView.render();
     return this;
   }
@@ -178,11 +179,13 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
   initialize: function() {
     var that = this;
+
     this.dispatcher = this.options.dispatcher;
     this.dispatcher.on("select:template", this.setStoryTemplate, this);
     this.dispatcher.on("ready:templateSections", this.initializeStory, this);
     this.dispatcher.on("ready:story", this.render, this);
     this.dispatcher.on("save:story", this.save, this);
+    this.dispatcher.on("select:section", this.selectSection, this);
 
     _.bindAll(this, 'addSectionThumbnail', 'setTemplateStory', 'setTemplateSections');
 
@@ -198,7 +201,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   },
 
   addSectionThumbnail: function(section) {
-    console.debug("Adding section thumbnail"); 
+    console.debug("Adding section thumbnail");
     var view = new storybase.builder.views.SectionThumbnailView({
       dispatcher: this.dispatcher,
       model: section 
@@ -252,7 +255,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   setTemplateSections: function(sections) {
     console.debug("Setting template sections"); 
     this.templateSections = sections;
-    console.debug(this.templateSections);
     this.dispatcher.trigger("ready:templateSections");
   },
 
@@ -280,6 +282,22 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
         model.saveSections();
       }
     });
+
+  },
+
+  /**
+   * Select a section for editing
+   *
+   * This should be hooked up to a "select:section" event
+   */
+  selectSection: function(section) {
+    this.$('.edit-section').remove();
+    var view = new storybase.builder.views.SectionEditView({
+      dispatcher: this.dispatcher,
+      model: section,
+      story: this.model
+    });
+    this.$el.prepend(view.render().el);
   }
 });
 
@@ -290,13 +308,81 @@ storybase.builder.views.SectionThumbnailView = Backbone.View.extend({
 
   templateSource: $('#section-thumbnail-template').html(),
 
+  events: {
+    "click": "select"
+  },
+
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
+    this.template = Handlebars.compile(this.templateSource);
+
+    this.dispatcher.on("select:section", this.highlight, this);
+    this.model.on("change", this.render, this);
+  },
+
+  render: function() {
+    this.$el.html(this.template(this.model.toJSON()));
+    return this;
+  },
+
+  select: function() {
+    console.debug("Selecting section with id " + this.model.id);
+    this.dispatcher.trigger("select:section", this.model);
+  },
+
+  /**
+   * Highlight the section thumbnail
+   *
+   * This method should be hooked up to a "select:section" event
+   */
+  highlight: function(section) {
+    if (section == this.model) {
+      this.$el.addClass("selected");
+    }
+    else {
+      this.$el.removeClass("selected");
+    }
+  }
+});
+
+/**
+ * View for editing a section
+ */
+storybase.builder.views.SectionEditView = Backbone.View.extend({
+  tagName: 'div',
+
+  className: 'edit-section',
+
+  templateSource: $('#section-edit-template').html(),
+
+  events: {
+    "change input": 'change'
+  },
+
+  initialize: function() {
+    this.dispatcher = this.options.dispatcher;
+    this.story = this.options.story;
     this.template = Handlebars.compile(this.templateSource);
   },
 
   render: function() {
     this.$el.html(this.template(this.model.toJSON()));
     return this;
+  },
+
+  change: function(e) {
+    var name = $(e.target).attr("name");
+    var value = $(e.target).val();
+    if (_.has(this.model.attributes, name)) {
+      this.model.set(name, value);
+      // Bookmark
+      if (this.story.isNew()) {
+        this.dispatcher.trigger("save:story");
+      }
+      else {
+        this.model.save();
+      }
+      console.debug("Updated " + name + " to " + value);
+    }
   }
 });

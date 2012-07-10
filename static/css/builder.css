@@ -28,6 +28,10 @@ header h1 {
   display: inline-block;
 }
 
+#app {
+  height: 100%;
+}
+
 .story-templates {
   list-style: none
 }
@@ -37,6 +41,23 @@ header h1 {
   float: left;
   width: 30%;
   padding: 1%;
+}
+
+.builder {
+  position: relative;
+  height: 100%;
+}
+
+.edit-section {
+  position: relative;
+  height: 60%;
+  padding: 2%;
+}
+
+.edit-section input.title {
+  width: 80%;
+  padding: 0.5em;
+  font-size: 2em;
 }
 
 .section-thumbnail {
@@ -49,6 +70,11 @@ header h1 {
   padding: 1% 0;
   list-style: none;
   text-align: center;
+  cursor: pointer;
+}
+
+.section-thumbnail.selected {
+  border-color: red;
 }
 
 .section-thumbnail div {
