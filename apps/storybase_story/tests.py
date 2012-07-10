@@ -1607,6 +1607,46 @@ class StoryResourceTest(ResourceTestCase):
         section = story.sections.get(section_id=section_id)
         self.assertEqual(section.title, section_patch_data['title'])
 
+    def test_put_detail_sections(self):
+        """Test that a user can update the metadata of a section"""
+        story_post_data = {
+            'title': "Test Story",
+            'summary': "Test Summary",
+            'byline': "Test Byline",
+            'status': "draft",
+            'language': "en",
+        }
+        section_post_data = {
+            'title': "Test Section",
+            'language': "en",
+        }
+        section_put_data = {
+            'title': "New Test Section Title",
+            'language': "en",
+        }
+        self.api_client.client.login(username=self.username, password=self.password)
+        # Create a new story through the API
+        response = self.api_client.post('/api/0.1/stories/',
+                               format='json', data=story_post_data)
+        story_resource_uri = response['location']
+        story_id = story_resource_uri.split('/')[-2]
+        # Create a new section
+        sections_uri = "%ssections/" % (story_resource_uri)
+        response = self.api_client.post(sections_uri,
+                                        format='json', data=section_post_data)
+        self.assertHttpCreated(response)
+        section_uri = response['location']
+        section_id = section_uri.split('/')[-2]
+        # Update the section title
+        response = self.api_client.put(section_uri, format='json',
+                                         data=section_put_data)
+        self.assertHttpAccepted(response)
+        # Retrieve a model instance for the newly modified section
+        story = Story.objects.get(story_id=story_id)
+        self.assertEqual(len(story.sections.all()), 1)
+        section = story.sections.get(section_id=section_id)
+        self.assertEqual(section.title, section_put_data['title'])
+
 
 class SectionResourceTest(ResourceTestCase):
     def setUp(self):
