@@ -1561,10 +1561,7 @@ class StoryResourceTest(ResourceTestCase):
         section_post_data = {
             'title': "Test Section",
             'language': "en",
-            'layout': {
-                'layout_id': "26c81c9dd24c4aecab7ab4eb1cc9e2fb",
-                'name': "Side by Side"
-            }
+            'layout': "26c81c9dd24c4aecab7ab4eb1cc9e2fb"
         }
         self.assertEqual(Story.objects.count(), 0)
         self.api_client.client.login(username=self.username, password=self.password)
@@ -1590,7 +1587,7 @@ class StoryResourceTest(ResourceTestCase):
         self.assertEqual("%s%s/" % (sections_uri, section.section_id), 
                          section_resource_uri)
         self.assertEqual(section.title, section_post_data['title'])
-        self.assertEqual(section.layout.layout_id, section_post_data['layout']['layout_id'])
+        self.assertEqual(section.layout.layout_id, section_post_data['layout'])
 
     def test_post_list_sections_other_user(self):
         """Test that a user can't add a new section to another user's story"""
@@ -1604,10 +1601,7 @@ class StoryResourceTest(ResourceTestCase):
         section_post_data = {
             'title': "Test Section",
             'language': "en",
-            'layout': {
-                'layout_id': "26c81c9dd24c4aecab7ab4eb1cc9e2fb",
-                'name': "Side by Side"
-            }
+            'layout': "26c81c9dd24c4aecab7ab4eb1cc9e2fb"
         }
         user2 = User.objects.create(username="test2", email="test2@example.com",
                                     password="test2")
@@ -1637,14 +1631,12 @@ class StoryResourceTest(ResourceTestCase):
         section_post_data = {
             'title': "Test Section",
             'language': "en",
-            'layout': {
-                'layout_id': "26c81c9dd24c4aecab7ab4eb1cc9e2fb",
-                'name': "Side by Side"
-            }
+            'layout': "26c81c9dd24c4aecab7ab4eb1cc9e2fb"
         }
         section_patch_data = {
             'title': "New Test Section Title",
             'language': "en",
+            'layout': "26c81c9dd24c4aecab7ab4eb1cc9e2fb"
         }
         self.api_client.client.login(username=self.username, password=self.password)
         # Create a new story through the API
@@ -1681,18 +1673,12 @@ class StoryResourceTest(ResourceTestCase):
         section_post_data = {
             'title': "Test Section",
             'language': "en",
-            'layout': {
-                'layout_id': "26c81c9dd24c4aecab7ab4eb1cc9e2fb",
-                'name': "Side by Side"
-            }
+            'layout': "26c81c9dd24c4aecab7ab4eb1cc9e2fb"
         }
         section_put_data = {
             'title': "New Test Section Title",
             'language': "en",
-            'layout': {
-                'layout_id': "ccaea5bac5c7467eb014baf6f7476ccb",
-                'name': "1 Up"
-            }
+            'layout': "ccaea5bac5c7467eb014baf6f7476ccb"
         }
         self.api_client.client.login(username=self.username, password=self.password)
         # Create a new story through the API
@@ -1716,7 +1702,7 @@ class StoryResourceTest(ResourceTestCase):
         self.assertEqual(len(story.sections.all()), 1)
         section = story.sections.get(section_id=section_id)
         self.assertEqual(section.title, section_put_data['title'])
-        self.assertEqual(section.layout.layout_id, section_put_data['layout']['layout_id'])
+        self.assertEqual(section.layout.layout_id, section_put_data['layout'])
 
 
 class SectionResourceTest(ResourceTestCase):

@@ -467,14 +467,10 @@ class SectionResource(DelayedAuthorizationResource, TranslatedModelResource):
         return super(SectionResource, self).obj_get(request, **kwargs)
 
     def dehydrate_layout(self, bundle):
-        return {
-            'name': bundle.obj.layout.name,
-            'layout_id': bundle.obj.layout.layout_id
-        }
+        return bundle.obj.layout_id
 
     def hydrate_layout(self, bundle):
-        layout = SectionLayout.objects.get(layout_id=bundle.data['layout']['layout_id'])
-        bundle.data['layout'] = layout
+        bundle.data['layout'] = SectionLayout.objects.get(layout_id=bundle.data['layout'])
         return bundle
 
 
