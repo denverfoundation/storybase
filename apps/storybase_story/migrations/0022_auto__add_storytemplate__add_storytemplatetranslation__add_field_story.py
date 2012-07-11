@@ -28,6 +28,9 @@ class Migration(SchemaMigration):
         ))
         db.send_create_signal('storybase_story', ['StoryTemplateTranslation'])
 
+        # Adding field 'Story.is_template'
+        db.add_column('storybase_story_story', 'is_template', self.gf('django.db.models.fields.BooleanField')(default=False), keep_default=False)
+
 
     def backwards(self, orm):
         
@@ -36,6 +39,9 @@ class Migration(SchemaMigration):
 
         # Deleting model 'StoryTemplateTranslation'
         db.delete_table('storybase_story_storytemplatetranslation')
+
+        # Deleting field 'Story.is_template'
+        db.delete_column('storybase_story_story', 'is_template')
 
 
     models = {
@@ -187,6 +193,7 @@ class Migration(SchemaMigration):
             'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
             'featured_assets': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'featured_in_stories'", 'blank': 'True', 'to': "orm['storybase_asset.Asset']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
+            'is_template': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'last_edited': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
             'license': ('django.db.models.fields.CharField', [], {'default': "'CC BY-NC-SA'", 'max_length': '25'}),
             'locations': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'stories'", 'blank': 'True', 'to': "orm['storybase_geo.Location']"}),
@@ -224,7 +231,7 @@ class Migration(SchemaMigration):
             'language': ('django.db.models.fields.CharField', [], {'default': "'en'", 'max_length': '15'}),
             'story': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['storybase_story.Story']"}),
             'summary': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'title': ('storybase.fields.ShortTextField', [], {}),
+            'title': ('storybase.fields.ShortTextField', [], {'blank': 'True'}),
             'translation_id': ('uuidfield.fields.UUIDField', [], {'unique': 'True', 'max_length': '32', 'blank': 'True'})
         },
         'storybase_taxonomy.category': {

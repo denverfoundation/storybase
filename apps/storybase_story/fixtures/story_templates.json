@@ -22,6 +22,7 @@
             "last_edited": "2012-07-07 16:20:51", 
             "license": "CC BY-NC-SA", 
             "locations": [], 
+            "is_template": true,
             "on_homepage": false, 
             "organizations": [], 
             "places": [], 
@@ -40,30 +41,10 @@
         "fields": {
             "language": "en", 
             "section": 1, 
-            "title": "Title", 
-            "translation_id": "f1b729cf05b6461db8947589806fe193"
-        }, 
-        "model": "storybase_story.sectiontranslation", 
-        "pk": 1
-    }, 
-    {
-        "fields": {
-            "language": "en", 
-            "section": 2, 
             "title": "Image and Text", 
             "translation_id": "3c01df21d5ab4755a14e40bd59eb9c8f"
         }, 
         "model": "storybase_story.sectiontranslation", 
-        "pk": 2
-    }, 
-    {
-        "fields": {
-            "root": false, 
-            "section_id": "dc044f23e93649d6b1bd48625fc301cd", 
-            "story": 1, 
-            "weight": 0
-        }, 
-        "model": "storybase_story.section", 
         "pk": 1
     }, 
     {
@@ -74,7 +55,7 @@
             "weight": 1
         }, 
         "model": "storybase_story.section", 
-        "pk": 2
+        "pk": 1
     }, 
     {
         "fields": {

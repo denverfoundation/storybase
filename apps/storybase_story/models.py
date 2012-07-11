@@ -98,8 +98,10 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
                                            blank=True)
     projects = models.ManyToManyField(Project, related_name='stories',
                                       blank=True)
+    is_template = models.BooleanField(_("Story is a template"),
+                                      default=False)
     on_homepage = models.BooleanField(_("Featured on homepage"),
-		                      default=False)
+                                      default=False)
     contact_info = models.TextField(_("Contact Information"),
                                     blank=True)
     topics = models.ManyToManyField('storybase_taxonomy.Category',

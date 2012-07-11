@@ -53,7 +53,8 @@ class StoryIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
         return len(obj.points)
 
     def index_queryset(self):
-        return Story.objects.filter(status__exact='published')
+        return Story.objects.filter(status__exact='published',
+                                    is_template=False)
 
     def should_update(self, instance, **kwargs):
         """
@@ -72,6 +73,9 @@ class StoryIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
 
     def should_remove_on_update(self, instance, **kwargs):
         if instance.status != 'published':
+            return True
+
+        if instance.is_template == True:
             return True
 
         return False
