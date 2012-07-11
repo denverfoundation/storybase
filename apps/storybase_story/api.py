@@ -467,10 +467,15 @@ class SectionResource(DelayedAuthorizationResource, TranslatedModelResource):
         return super(SectionResource, self).obj_get(request, **kwargs)
 
     def dehydrate_layout(self, bundle):
-        return bundle.obj.layout_id
+        return bundle.obj.layout.layout_id
 
     def hydrate_layout(self, bundle):
-        bundle.data['layout'] = SectionLayout.objects.get(layout_id=bundle.data['layout'])
+        # HACK: This gets called twice, I'm thinking because I'm
+        # converting a ForeignKey field to text and back again
+        # Only update the bundle data if it hasn't already
+        # been converted to a SectionLayout object
+        if bundle.data['layout'].__class__ != SectionLayout:
+            bundle.data['layout'] = SectionLayout.objects.get(layout_id__exact=bundle.data['layout']) 
         return bundle
 
 

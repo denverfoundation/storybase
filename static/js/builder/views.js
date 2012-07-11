@@ -523,7 +523,8 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   templateSource: $('#section-edit-template').html(),
 
   events: {
-    "change input": 'change'
+    "change input": 'change',
+    "change select.layout": 'change'
   },
 
   initialize: function() {
@@ -533,13 +534,17 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     this.template = Handlebars.compile(this.templateSource);
   },
 
+  /**
+   * Get a list of available section layouts in a format that can be
+   * rendered in a template.
+   */
   getLayoutContext: function() {
     var that = this;
     return _.map(this.layouts, function(layout) {
       return {
         name: layout.name,
-        id: layout.id,
-        selected: that.model.get('layout').layout_id == layout.layout_id
+        layout_id: layout.layout_id,
+        selected: that.model.get('layout') == layout.layout_id
       };
     });
   },
@@ -565,5 +570,5 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
       }
       console.debug("Updated " + name + " to " + value);
     }
-  }
+  },
 });
