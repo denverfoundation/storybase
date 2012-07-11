@@ -8,7 +8,8 @@ from storybase.admin import (StorybaseModelAdmin, StorybaseStackedInline,
 from storybase_asset.models import Asset
 from storybase_story.models import (Story, StoryTranslation,
     Section, SectionTranslation, SectionAsset, SectionRelation,
-    StoryTemplate, StoryTemplateTranslation)
+    StoryTemplate, StoryTemplateTranslation,
+    SectionLayout, SectionLayoutTranslation, Container)
 from storybase_story.forms import (SectionRelationAdminForm,
 		                   StoryAdminForm, InlineSectionAdminForm,
 		                   StoryTranslationAdminForm)
@@ -130,7 +131,7 @@ class SectionRelationAdmin(admin.ModelAdmin):
 
 
 class StoryTemplateTranslationInline(StorybaseStackedInline):
-    """Inline for translated fields of a StoryTranslation"""
+    """Inline for translated fields of a StoryTemplate"""
     model = StoryTemplateTranslation
     extra = 1
 
@@ -141,7 +142,20 @@ class StoryTemplateAdmin(StorybaseModelAdmin):
     prefix_inline_classes = ['StoryTemplateTranslationInline']
 
 
+class SectionLayoutTranslationInline(StorybaseStackedInline):
+    """Inline for trsnalated fields of a SectionLayout"""
+    model = SectionLayoutTranslation
+    extra = 1
+
+
+class SectionLayoutAdmin(StorybaseModelAdmin):
+    inlines = [SectionLayoutTranslationInline]
+    prefix_inline_classes = ['SectionLayoutTranslationInline']
+
+
 admin.site.register(Story, StoryAdmin)
 admin.site.register(StoryTemplate, StoryTemplateAdmin)
 admin.site.register(Section, SectionAdmin)
 admin.site.register(SectionRelation, SectionRelationAdmin)
+admin.site.register(SectionLayout, SectionLayoutAdmin)
+admin.site.register(Container, StorybaseModelAdmin)

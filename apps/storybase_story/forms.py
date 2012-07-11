@@ -142,7 +142,7 @@ class InlineSectionAdminForm(forms.ModelForm):
 
     class Meta:
         model = Section
-        fields = ('title', 'root', 'weight')
+        fields = ('title', 'root', 'layout', 'weight')
 
     def __init__(self, *args, **kwargs):
         super(InlineSectionAdminForm, self).__init__(*args, **kwargs)

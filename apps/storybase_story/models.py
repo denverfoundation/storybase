@@ -399,6 +399,7 @@ class Section(node_factory('SectionRelation'), TranslatedModel, SectionPermissio
     # in a drill-down/"spider" structure.  Otherwise, False
     root = models.BooleanField(default=False)
     weight = models.IntegerField(default=0)
+    layout = models.ForeignKey('SectionLayout', null=True)
     """The ordering of top-level sections relative to each other"""
     assets = models.ManyToManyField(Asset, related_name='sections',
                                     blank=True, through='SectionAsset')
@@ -518,7 +519,8 @@ class SectionAsset(models.Model):
     """Through class for Asset to Section relations"""
     section = models.ForeignKey('Section')
     asset = models.ForeignKey('storybase_asset.Asset')
-    weight = models.IntegerField(default=0)
+    container = models.ForeignKey('Container', null=True)
+
 
 def add_section_asset_to_story(sender, instance, **kwargs):
     """When an asset is added to a Section, also add it to the Story
@@ -582,6 +584,40 @@ class StoryTemplate(TranslatedModel):
 
     def __unicode__(self):
         return self.title
+
+
+class SectionLayoutTranslation(TranslationModel):
+    """Translatable fields for the SectionLayout model"""
+    story_template = models.ForeignKey('SectionLayout')
+    name = ShortTextField()
+
+    def __unicode__(self):
+        return self.name
+
+
+class SectionLayout(TranslatedModel):
+    TEMPLATE_CHOICES = [(name, name) for name 
+                        in settings.STORYBASE_LAYOUT_TEMPLATES]
+
+    layout_id = UUIDField(auto=True)
+    template = models.CharField(_("template"), max_length=100, choices=TEMPLATE_CHOICES)
+    containers = models.ManyToManyField('Container', related_name='layouts',
+                                        blank=True)
+
+    # Class attributes to handle translation
+    translated_fields = ['name']
+    translation_set = 'sectionlayouttranslation_set'
+    translation_class = SectionLayoutTranslation
+
+    def __unicode__(self):
+        return self.name
+
+
+class Container(models.Model):
+    """
+    A space to put assets within a ``TemplateLayout`` 
+    """
+    name = models.SlugField(unique=True)
     
 
 # Internal API functions for creating model instances in a way that

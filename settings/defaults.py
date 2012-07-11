@@ -322,6 +322,10 @@ STORYBASE_SEARCH_DISTANCE = 1
 # Zoom level when zooming into a point
 STORYBASE_MAP_POINT_ZOOM_LEVEL = 14
 STORYBASE_CONTACT_EMAIL = ""
+# Layout templates
+STORYBASE_LAYOUT_TEMPLATES = (
+    'twoup.html',
+)
 
 # Pick one of the two
 # TODO: Choose a better redirect URL
