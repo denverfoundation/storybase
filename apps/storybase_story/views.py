@@ -15,7 +15,7 @@ from django.utils.translation import ugettext as _
 from storybase.utils import simple_language_changer
 from storybase.views.generic import ModelIdDetailView
 from storybase_story.api import StoryResource, StoryTemplateResource
-from storybase_story.models import Story
+from storybase_story.models import SectionLayout, Story
 
 def simple_story_list(stories):
     """Render a simple listing of stories
@@ -131,25 +131,28 @@ class StoryBuilderView(DetailView):
         if self.object:
             resource = StoryResource()
             bundle = resource.build_bundle(obj=self.object)
-            to_be_serialized = resource.full_dehydrate(bundle)
+            story_to_be_serialized = resource.full_dehydrate(bundle)
             
             context.update({
-                'story_json': mark_safe(resource.serialize(None, to_be_serialized, 'application/json')),
+                'story_json': mark_safe(resource.serialize(None, story_to_be_serialized, 'application/json')),
             })
 
-        to_be_serialized = {}
 
         # Use the Tastypie resource to retrieve a JSON list of story
         # templates.  
         # See http://django-tastypie.readthedocs.org/en/latest/cookbook.html#using-your-resource-in-regular-views
         # and ModelResource.get_list()
+        templates_to_be_serialized = {}
         resource = StoryTemplateResource()
         objects = resource.obj_get_list()
         bundles = [resource.build_bundle(obj=obj) for obj in objects]
-        to_be_serialized['objects'] = [resource.full_dehydrate(bundle) for bundle in bundles]
+        templates_to_be_serialized['objects'] = [resource.full_dehydrate(bundle) for bundle in bundles]
+
+        layouts_to_be_serialized = [{'name': layout.name, 'layout_id': layout.layout_id} for layout in SectionLayout.objects.all()]
 
         context.update({
-            'story_template_json': mark_safe(resource.serialize(None, to_be_serialized, 'application/json')),
+            'story_template_json': mark_safe(resource.serialize(None, templates_to_be_serialized, 'application/json')),
+            'layouts_json': mark_safe(resource.serialize(None, layouts_to_be_serialized, 'application/json')),
         })
 
         return context

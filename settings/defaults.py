@@ -324,7 +324,8 @@ STORYBASE_MAP_POINT_ZOOM_LEVEL = 14
 STORYBASE_CONTACT_EMAIL = ""
 # Layout templates
 STORYBASE_LAYOUT_TEMPLATES = (
-    'twoup.html',
+    'side_by_side.html',
+    '1_up.html',
 )
 
 # Pick one of the two

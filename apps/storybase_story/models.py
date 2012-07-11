@@ -618,6 +618,9 @@ class Container(models.Model):
     A space to put assets within a ``TemplateLayout`` 
     """
     name = models.SlugField(unique=True)
+
+    def __unicode__(self):
+        return self.name
     
 
 # Internal API functions for creating model instances in a way that
@@ -641,7 +644,7 @@ def create_story(title, structure_type=structure.DEFAULT_STRUCTURE,
     translation.save()
     return obj
 
-def create_section(title, story, language=settings.LANGUAGE_CODE,
+def create_section(title, story, layout, language=settings.LANGUAGE_CODE,
                    *args, **kwargs):
     """Convenience function for creating a Section
 
@@ -649,7 +652,7 @@ def create_section(title, story, language=settings.LANGUAGE_CODE,
     deal with the tranlsations.
 
     """
-    obj = Section(story=story, *args, **kwargs)
+    obj = Section(story=story, layout=layout, *args, **kwargs)
     obj.save()
     translation = SectionTranslation(section=obj, title=title, 
                                      language=language)

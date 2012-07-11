@@ -17,7 +17,8 @@ from storybase.api import (TranslatedModelResource,
     DelayedAuthorizationResource, LoggedInAuthorization)
 from storybase.utils import get_language_name
 from storybase_geo.models import Place
-from storybase_story.models import Story, Section, StoryTemplate
+from storybase_story.models import (Section, SectionLayout, 
+                                    Story, StoryTemplate)
 from storybase_taxonomy.models import Category
 from storybase_user.models import Organization, Project
 
@@ -383,6 +384,7 @@ class SectionResource(DelayedAuthorizationResource, TranslatedModelResource):
     # Explicitly declare fields that are on the translation model
     title = fields.CharField(attribute='title')
     story = fields.ToOneField(StoryResource, 'story')
+    layout = fields.CharField(attribute='layout')
 
     class Meta:
         queryset = Section.objects.all()
@@ -463,6 +465,17 @@ class SectionResource(DelayedAuthorizationResource, TranslatedModelResource):
 
     def obj_get(self, request=None, **kwargs):
         return super(SectionResource, self).obj_get(request, **kwargs)
+
+    def dehydrate_layout(self, bundle):
+        return {
+            'name': bundle.obj.layout.name,
+            'layout_id': bundle.obj.layout.layout_id
+        }
+
+    def hydrate_layout(self, bundle):
+        layout = SectionLayout.objects.get(layout_id=bundle.data['layout']['layout_id'])
+        bundle.data['layout'] = layout
+        return bundle
 
 
 class StoryTemplateResource(TranslatedModelResource):

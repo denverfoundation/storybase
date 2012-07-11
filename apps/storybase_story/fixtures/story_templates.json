@@ -49,6 +49,7 @@
     }, 
     {
         "fields": {
+            "layout": 1,
             "root": false, 
             "section_id": "4dc57c4bc7a44d97bd5d0ed4861b1401", 
             "story": 1, 

@@ -22,7 +22,8 @@ storybase.builder.views.AppView = Backbone.View.extend({
 
     // Store subviews in an object keyed with values of this.activeStep
     var buildViewOptions = {
-      dispatcher: this.dispatcher
+      dispatcher: this.dispatcher,
+      layouts: this.options.layouts
     };
     if (this.model) {
       buildViewOptions.model = this.model;
@@ -191,6 +192,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.dispatcher.on("save:story", this.save, this);
     this.dispatcher.on("select:thumbnail", this.showEditView, this);
 
+    this.layouts = this.options.layouts;
+
     _.bindAll(this, 'addSectionThumbnail', 'setTemplateStory', 'setTemplateSections');
 
     this.template = Handlebars.compile(this.templateSource);
@@ -212,7 +215,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       editView: new storybase.builder.views.SectionEditView({
         dispatcher: this.dispatcher,
         model: section,
-        story: this.model
+        story: this.model,
+        layouts: this.layouts
       })
     });
     this._thumbnailViews.splice(this._thumbnailViews.length - 1, 0, view);
@@ -319,6 +323,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.templateSections.each(function(section) {
       var sectionCopy = new storybase.models.Section();
       sectionCopy.set("title", section.get("title"));
+      sectionCopy.set("layout", section.get("layout"));
       that.model.sections.push(sectionCopy);
     });
     this.dispatcher.trigger("ready:story");
@@ -524,12 +529,25 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
     this.story = this.options.story;
+    this.layouts = this.options.layouts;
     this.template = Handlebars.compile(this.templateSource);
-    console.debug('got here');
+  },
+
+  getLayoutContext: function() {
+    var that = this;
+    return _.map(this.layouts, function(layout) {
+      return {
+        name: layout.name,
+        id: layout.id,
+        selected: that.model.get('layout').layout_id == layout.layout_id
+      };
+    });
   },
 
   render: function() {
-    this.$el.html(this.template(this.model.toJSON()));
+    var context = this.model.toJSON();
+    context.layouts = this.getLayoutContext();
+    this.$el.html(this.template(context));
     return this;
   },
 

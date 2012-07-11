@@ -1,0 +1,66 @@
+[
+    {
+        "fields": {
+            "language": "en", 
+            "name": "Side by Side", 
+            "story_template": 1, 
+            "translation_id": "6bc5da0836cc4b95bc03562a53c072c4"
+        }, 
+        "model": "storybase_story.sectionlayouttranslation", 
+        "pk": 1
+    }, 
+    {
+        "fields": {
+            "language": "en", 
+            "name": "1 Up", 
+            "story_template": 2, 
+            "translation_id": "b684361fc0b04d4ab241ac88b02fc9a5"
+        }, 
+        "model": "storybase_story.sectionlayouttranslation", 
+        "pk": 2
+    }, 
+    {
+        "fields": {
+            "containers": [
+                1, 
+                2
+            ], 
+            "layout_id": "26c81c9dd24c4aecab7ab4eb1cc9e2fb", 
+            "template": "side_by_side.html"
+        }, 
+        "model": "storybase_story.sectionlayout", 
+        "pk": 1
+    }, 
+    {
+        "fields": {
+            "containers": [
+                3
+            ], 
+            "layout_id": "ccaea5bac5c7467eb014baf6f7476ccb", 
+            "template": "1_up.html"
+        }, 
+        "model": "storybase_story.sectionlayout", 
+        "pk": 2
+    }, 
+    {
+        "fields": {
+            "name": "left"
+        }, 
+        "model": "storybase_story.container", 
+        "pk": 1
+    }, 
+    {
+        "fields": {
+            "name": "right"
+        }, 
+        "model": "storybase_story.container", 
+        "pk": 2
+    },
+    {
+        "fields": {
+            "name": "center"
+        }, 
+        "model": "storybase_story.container", 
+        "pk": 3
+    }
+]

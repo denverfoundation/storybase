@@ -17,19 +17,20 @@ from storybase_asset.models import HtmlAsset, HtmlAssetTranslation
 from storybase_geo.models import Location
 from storybase_story.api import SectionResource, StoryResource
 from storybase_story.forms import SectionRelationAdminForm
-from storybase_story.models import (Story, StoryTranslation, 
-    Section, SectionAsset, SectionRelation, StoryTemplate,
+from storybase_story.models import (Container, Story, StoryTranslation, 
+    Section, SectionAsset, SectionLayout, SectionRelation, StoryTemplate,
     create_story, create_section)
 
 
 class SectionRelationFormTest(TestCase):
     """Test custom forms for SectionRelations"""
+    fixtures = ['section_layouts.json']
 
     def test_select_label(self):
-	"""
-	Test that both Section title and its Story title appear in select
-	labels
-	"""
+        """
+        Test that both Section title and its Story title appear in select
+        labels
+        """
         title = ('Transportation Challenges Limit Education Choices for '
                  'Denver Parents')
         summary = """
@@ -42,8 +43,9 @@ class SectionRelationFormTest(TestCase):
             """
         byline = "Mile High Connects"
         story = create_story(title=title, summary=summary, byline=byline)
-        section1 = create_section(title="Test Section 1", story=story)
-        section2 = create_section(title="Test Section 2", story=story)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        section1 = create_section(title="Test Section 1", story=story, layout=layout)
+        section2 = create_section(title="Test Section 2", story=story, layout=layout)
         form = SectionRelationAdminForm()
         choices_list = list(form.fields['parent'].widget.choices)
         self.assertIn(story.title, choices_list[1][1])
@@ -52,7 +54,6 @@ class SectionRelationFormTest(TestCase):
 
 class StoryModelTest(TestCase, SloppyComparisonTestMixin):
     """Unit tests for Story Model"""
-
     def test_auto_slug(self):
         """Test slug field is set automatically"""
         title = ('Transportation Challenges Limit Education Choices for '
@@ -375,6 +376,7 @@ class ViewsTest(TestCase):
 
 class SectionModelTest(TestCase, SloppyComparisonTestMixin):
     """Test Case for Section model"""
+    fixtures = ['section_layouts.json']
 
     def test_update_story_timestamp(self):
         """
@@ -393,13 +395,16 @@ class SectionModelTest(TestCase, SloppyComparisonTestMixin):
             """
         byline = "Mile High Connects"
         story = create_story(title=title, summary=summary, byline=byline)
-        section = create_section(title="Test Section 1", story=story)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        section = create_section(title="Test Section 1", story=story, layout=layout)
         sleep(2)
         section.save()
         self.assertNowish(story.last_edited)
 
 
 class SectionRelationModelTest(TestCase):
+    fixtures = ['section_layouts.json']
+
     def test_force_unicode(self):
         """
         Test that the unicode representation of SectionRelation model instances
@@ -422,14 +427,16 @@ class SectionRelationModelTest(TestCase):
         byline = "Mile High Connects"
         unicode_section_title = u"What’s in this guide?"
         story = create_story(title=title, summary=summary, byline=byline)
-        section1 = create_section(title=unicode_section_title, story=story)
-        section2 = create_section(title="Understanding the School Performance Framework: A Guide for Parents", story=story)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        section1 = create_section(title=unicode_section_title, story=story, layout=layout)
+        section2 = create_section(title="Understanding the School Performance Framework: A Guide for Parents", story=story, layout=layout)
         relation = SectionRelation.objects.create(parent=section2, child=section1)
         self.assertEqual(force_unicode(relation), u"What’s in this guide? is child of Understanding the School Performance Framework: A Guide for Parents")
 
 
 class SectionApiTest(TestCase):
     """Test case for public Section creation API"""
+    fixtures = ['section_layouts.json']
 
     def test_create_section(self):
         """Test that create_section() function creates a new Section"""
@@ -448,15 +455,19 @@ class SectionApiTest(TestCase):
         section_title = "Test Section 1"
         with self.assertRaises(Section.DoesNotExist):
             Section.objects.get(sectiontranslation__title=section_title)
-        section = create_section(title=section_title, story=story)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        section = create_section(title=section_title, story=story, layout=layout)
         self.assertEqual(section.title, section_title)
         self.assertEqual(section.story, story)
+        self.assertEqual(section.layout, layout)
         retrieved_section = Section.objects.get(pk=section.pk)
         self.assertEqual(retrieved_section.title, section_title)
         self.assertEqual(retrieved_section.story, story)
+        self.assertEqual(retrieved_section.layout, layout)
 
 class SectionAssetModelTest(TestCase):
     """Test Case for Asset to Section relation through model"""
+    fixtures = ['section_layouts.json']
 
     def test_auto_add_assets_to_story(self):
         """
@@ -479,14 +490,16 @@ class SectionAssetModelTest(TestCase):
         # Confirm that the story has no assets
         self.assertEqual(story.assets.count(), 0)
         # create a Section
-        section = create_section(title="Test Section 1", story=story)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        section = create_section(title="Test Section 1", story=story, layout=layout)
         # create a HtmlAsset
         asset = HtmlAsset()
         asset.save()
         translation = HtmlAssetTranslation(title='Test Asset', asset=asset)
         translation.save()
         # Assign the asset to the section
-        section_asset = SectionAsset(section=section, asset=asset, weight=0)
+        container = Container.objects.get(name='left')
+        section_asset = SectionAsset(section=section, asset=asset, container=container)
         section_asset.save()
         # Confirm the asset is in the section's list
         self.assertTrue(asset in section.assets.select_subclasses())
@@ -522,9 +535,11 @@ class SectionAssetModelTest(TestCase):
         # confirm the asset is added to the story
         self.assertTrue(asset in story.assets.select_subclasses())
         # create a Section
-        section = create_section(title="Test Section 1", story=story)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        section = create_section(title="Test Section 1", story=story, layout=layout)
         # Assign the asset to the section
-        section_asset = SectionAsset(section=section, asset=asset, weight=0)
+        container = Container.objects.get(name='left')
+        section_asset = SectionAsset(section=section, asset=asset, container=container)
         section_asset.save()
         # Confirm the asset is in the section's list
         self.assertTrue(asset in section.assets.select_subclasses())
@@ -552,14 +567,16 @@ class SectionAssetModelTest(TestCase):
         # Confirm that the story has no assets
         self.assertEqual(story.assets.count(), 0)
         # create a Section
-        section = create_section(title="Test Section 1", story=story)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        section = create_section(title="Test Section 1", story=story, layout=layout)
         # create a HtmlAsset
         asset = HtmlAsset()
         asset.save()
         translation = HtmlAssetTranslation(title='Test Asset', asset=asset)
         translation.save()
         # Assign the asset to the section
-        section_asset = SectionAsset(section=section, asset=asset, weight=0)
+        container = Container.objects.get(name='left')
+        section_asset = SectionAsset(section=section, asset=asset, container=container)
         section_asset.save()
         # Confirm the asset is in the section's list
         self.assertTrue(asset in section.assets.select_subclasses())
@@ -575,6 +592,7 @@ class SectionAssetModelTest(TestCase):
 
 class StructureTest(TestCase):
     """Test rendering of different story structures"""
+    fixtures = ['section_layouts.json']
 
     def test_linear_toc_simple(self):
         """
@@ -604,9 +622,11 @@ class StructureTest(TestCase):
         ]
         story = create_story(title=title, structure='linear',
                              summary=summary, byline=byline)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
         for section_dict in section_data:
             create_section(title=section_dict['title'],
                            story=story,
+                           layout=layout,
                            weight=section_dict['weight'],
                            root=True)
         rendered_toc = story.structure.render_toc(format='html')
@@ -635,13 +655,16 @@ class StructureTest(TestCase):
             """
         byline = "Denver Public Works and CDOT"
         story = create_story(title=title, summary=summary, byline=byline)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
         section1 = create_section(title="Background and context",
                                   story=story,
+                                  layout=layout,
                                   root=True)
-        section2 = create_section(title="Decisions to be made", story=story)
+        section2 = create_section(title="Decisions to be made", story=story, layout=layout)
         section3 = create_section(title="Who has been involved", 
-                                  story=story)
-        section4 = create_section(title="Next steps", story=story)
+                                  story=story, layout=layout)
+        section4 = create_section(title="Next steps", story=story,
+                                  layout=layout)
         SectionRelation.objects.create(parent=section1, child=section2)
         SectionRelation.objects.create(parent=section2, child=section3)
         SectionRelation.objects.create(parent=section3, child=section4)
@@ -664,13 +687,15 @@ class StructureTest(TestCase):
             """
         byline = "Denver Public Works and CDOT"
         story = create_story(title=title, summary=summary, byline=byline)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
         section1 = create_section(title="Background and context",
                                   story=story,
+                                  layout=layout,
                                   root=True)
-        section2 = create_section(title="Decisions to be made", story=story)
+        section2 = create_section(title="Decisions to be made", story=story, layout=layout)
         section3 = create_section(title="Who has been involved", 
-                                  story=story)
-        section4 = create_section(title="Next steps", story=story)
+                                  story=story, layout=layout)
+        section4 = create_section(title="Next steps", story=story, layout=layout)
         SectionRelation.objects.create(parent=section1, child=section2,
                                        weight=0)
         SectionRelation.objects.create(parent=section1, child=section3,
@@ -696,14 +721,16 @@ class StructureTest(TestCase):
             """
         byline = "Denver Public Works and CDOT"
         story = create_story(title=title, summary=summary, byline=byline)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
         section1 = create_section(title="Background and context",
                                   story=story,
+                                  layout=layout,
                                   root=True)
-        section2 = create_section(title="Decisions to be made", story=story)
+        section2 = create_section(title="Decisions to be made", story=story, layout=layout)
         section3 = create_section(title="Who has been involved", 
-                                  story=story)
-        section4 = create_section(title="Next steps", story=story)
-        section5 = create_section(title="Last section", story=story)
+                                  story=story, layout=layout)
+        section4 = create_section(title="Next steps", story=story, layout=layout)
+        section5 = create_section(title="Last section", story=story, layout=layout)
         SectionRelation.objects.create(parent=section1, child=section2,
                                        weight=0)
         SectionRelation.objects.create(parent=section2, child=section3,
@@ -748,8 +775,10 @@ class StructureTest(TestCase):
             """
         byline = "Denver Public Works and CDOT"
         story = create_story(title=title, summary=summary, byline=byline)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
         section1 = create_section(title="Background and context",
                                   story=story,
+                                  layout=layout,
                                   root=True)
         self.assertEqual(story.structure.sections_flat, [section1])
 
@@ -768,8 +797,9 @@ class StructureTest(TestCase):
             """
         byline = "Denver Public Works and CDOT"
         story = create_story(title=title, summary=summary, byline=byline)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
         section1 = create_section(title="Background and context",
-                                  story=story,
+                                  story=story, layout=layout,
                                   root=False)
         self.assertEqual(story.structure.sections_flat, [])
 
@@ -790,13 +820,14 @@ class StructureTest(TestCase):
             """
         byline = "Denver Public Works and CDOT"
         story = create_story(title=title, summary=summary, byline=byline)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
         section1 = create_section(title="Background and context",
-                                  story=story,
+                                  story=story, layout=layout,
                                   root=True)
-        section2 = create_section(title="Decisions to be made", story=story)
+        section2 = create_section(title="Decisions to be made", story=story, layout=layout)
         section3 = create_section(title="Who has been involved", 
-                                  story=story)
-        section4 = create_section(title="Next steps", story=story)
+                                  story=story, layout=layout)
+        section4 = create_section(title="Next steps", story=story, layout=layout)
         SectionRelation.objects.create(parent=section1, child=section2)
         SectionRelation.objects.create(parent=section2, child=section3)
         SectionRelation.objects.create(parent=section3, child=section4)
@@ -826,13 +857,15 @@ class StructureTest(TestCase):
             """
         byline = "Denver Public Works and CDOT"
         story = create_story(title=title, summary=summary, byline=byline)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
         section1 = create_section(title="Background and context",
-                                  story=story,
+                                  story=story, layout=layout,
                                   root=True)
-        section2 = create_section(title="Decisions to be made", story=story)
+        section2 = create_section(title="Decisions to be made", story=story, layout=layout)
         section3 = create_section(title="Who has been involved", 
-                                  story=story)
-        section4 = create_section(title="Next steps", story=story)
+                                  story=story, layout=layout)
+        section4 = create_section(title="Next steps", story=story,
+                                  layout=layout)
         SectionRelation.objects.create(parent=section1, child=section2)
         SectionRelation.objects.create(parent=section2, child=section3)
         SectionRelation.objects.create(parent=section3, child=section4)
@@ -861,13 +894,16 @@ class StructureTest(TestCase):
             """
         byline = "Denver Public Works and CDOT"
         story = create_story(title=title, summary=summary, byline=byline)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
         section1 = create_section(title="Background and context",
-                                  story=story,
+                                  story=story, layout=layout,
                                   root=True)
-        section2 = create_section(title="Decisions to be made", story=story)
+        section2 = create_section(title="Decisions to be made", 
+                                  story=story, layout=layout)
         section3 = create_section(title="Who has been involved", 
-                                  story=story)
-        section4 = create_section(title="Next steps", story=story)
+                                  story=story, layout=layout)
+        section4 = create_section(title="Next steps",
+                                  story=story, layout=layout)
         SectionRelation.objects.create(parent=section1, child=section2,
                                        weight=0)
         SectionRelation.objects.create(parent=section1, child=section3,
@@ -899,13 +935,15 @@ class StructureTest(TestCase):
             """
         byline = "Denver Public Works and CDOT"
         story = create_story(title=title, summary=summary, byline=byline)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
         section1 = create_section(title="Background and context",
                                   story=story,
+                                  layout=layout,
                                   root=True)
-        section2 = create_section(title="Decisions to be made", story=story)
+        section2 = create_section(title="Decisions to be made", story=story, layout=layout)
         section3 = create_section(title="Who has been involved", 
-                                  story=story)
-        section4 = create_section(title="Next steps", story=story)
+                                  story=story, layout=layout)
+        section4 = create_section(title="Next steps", story=story, layout=layout)
         SectionRelation.objects.create(parent=section1, child=section2,
                                        weight=0)
         SectionRelation.objects.create(parent=section1, child=section3,
@@ -937,14 +975,16 @@ class StructureTest(TestCase):
             """
         byline = "Denver Public Works and CDOT"
         story = create_story(title=title, summary=summary, byline=byline)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
         section1 = create_section(title="Background and context",
                                   story=story,
+                                  layout=layout,
                                   root=True)
-        section2 = create_section(title="Decisions to be made", story=story)
+        section2 = create_section(title="Decisions to be made", story=story, layout=layout)
         section3 = create_section(title="Who has been involved", 
-                                  story=story)
-        section4 = create_section(title="Next steps", story=story)
-        section5 = create_section(title="Last section", story=story)
+                                  story=story, layout=layout)
+        section4 = create_section(title="Next steps", story=story, layout=layout)
+        section5 = create_section(title="Last section", story=story, layout=layout)
         SectionRelation.objects.create(parent=section1, child=section2,
                                        weight=0)
         SectionRelation.objects.create(parent=section2, child=section3,
@@ -980,14 +1020,16 @@ class StructureTest(TestCase):
             """
         byline = "Denver Public Works and CDOT"
         story = create_story(title=title, summary=summary, byline=byline)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
         section1 = create_section(title="Background and context",
                                   story=story,
+                                  layout=layout,
                                   root=True)
-        section2 = create_section(title="Decisions to be made", story=story)
+        section2 = create_section(title="Decisions to be made", story=story, layout=layout)
         section3 = create_section(title="Who has been involved", 
-                                  story=story)
-        section4 = create_section(title="Next steps", story=story)
-        section5 = create_section(title="Last section", story=story)
+                                  story=story, layout=layout)
+        section4 = create_section(title="Next steps", story=story, layout=layout)
+        section5 = create_section(title="Last section", story=story, layout=layout)
         SectionRelation.objects.create(parent=section1, child=section2,
                                        weight=0)
         SectionRelation.objects.create(parent=section2, child=section3,
@@ -1017,36 +1059,39 @@ class StructureTest(TestCase):
 	        return section
 
     def test_sections_json_spider_three_levels(self):
-	"""
-	Test that sections_json() returns the sections in the correct 
-	order and with the correct relationships
-	"""
+        """
+        Test that sections_json() returns the sections in the correct 
+        order and with the correct relationships
+        """
 
         title = ("Taking Action for the Social and Emotional Health of "
-	         "Young Children: A Report to the Community from the Denver "
-		 "Early Childhood Council")
-	summary = ("Now, Denver has a plan of action to make it easier for "
-	           "families to access early childhood mental health "
-		   "information, intervention and services.")
-	byline = "Denver Early Childhood Council"
+	             "Young Children: A Report to the Community from the "  
+                 "Denver Early Childhood Council")
+        summary = ("Now, Denver has a plan of action to make it easier "
+                   "for families to access early childhood mental health "
+                   "information, intervention and services.")
+        byline = "Denver Early Childhood Council"
         story = create_story(title=title, summary=summary, byline=byline)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
         section1 = create_section("We're ready to take action. Are you?",
-			          story=story, weight=7)
-	section2 = create_section("Ricardo's Story",
-			          story=story, weight=2)
-	section3 = create_section("Meeting the need for better child mental health services",
-			           story=story, root=True, weight=1)
-	section4 = create_section("Healthy Minds Support Strong Futures",
-			          story=story, weight=5) 
-	section5 = create_section("Community Voices",
-			          story=story, weight=3)
-	section6 = create_section("Our Vision: That All Children in Denver are Valued, Healthy and Thriving",
-			          story=story, weight=4)
-	section7 = create_section("Defining a \"Framework for Change\" with Actionable Goals and Strategies",
-			          story=story, weight=5) 
+                                   story=story, layout=layout, weight=7)
+        section2 = create_section("Ricardo's Story",
+			                      story=story, layout=layout, weight=2)
+        section3 = create_section("Meeting the need for better child mental health services",
+			                      story=story, layout=layout, root=True,
+                                  weight=1)
+        section4 = create_section("Healthy Minds Support Strong Futures",
+                                  story=story, layout=layout, weight=5) 
+        section5 = create_section("Community Voices",
+			                      story=story, layout=layout, weight=3)
+        section6 = create_section("Our Vision: That All Children in Denver are Valued, Healthy and Thriving",
+			                      story=story, layout=layout, weight=4)
+        section7 = create_section("Defining a \"Framework for Change\" with Actionable Goals and Strategies",
+			                      story=story, layout=layout, weight=5) 
         section8 = create_section("How Can the Plan Make a Difference?",
-			          story=story, weight=5)
-	section9 = create_section("Impact", story=story, weight=6)
+			                      story=story, layout=layout, weight=5)
+        section9 = create_section("Impact", story=story, layout=layout,
+                                  weight=6)
         SectionRelation.objects.create(parent=section6, child=section8,
                                        weight=0)
         SectionRelation.objects.create(parent=section7, child=section9,
@@ -1063,66 +1108,61 @@ class StructureTest(TestCase):
                                        weight=0)
         SectionRelation.objects.create(parent=section3, child=section2,
                                        weight=0)
-	json_sections = simplejson.loads(story.structure.sections_json(
-		include_summary=False, include_call_to_action=False))
-	self.assertIn(
-	  section8.section_id,
-	  self._get_section(json_sections, section6.section_id)['children'])
-	self.assertIn(
-	  section9.section_id,
-	  self._get_section(json_sections, section7.section_id)['children'])
-	self.assertIn(
-	  section7.section_id,
-	  self._get_section(json_sections, section6.section_id)['children'])
-	self.assertIn(
-	  section1.section_id,
-	  self._get_section(json_sections, section3.section_id)['children'])
-	self.assertIn(
-	  section6.section_id,
-	  self._get_section(json_sections, section3.section_id)['children'])
-	self.assertIn(
-	  section4.section_id,
-	  self._get_section(json_sections, section3.section_id)['children'])
-	self.assertIn(
-	  section5.section_id,
-	  self._get_section(json_sections, section3.section_id)['children'])
-	self.assertIn(
-	  section2.section_id,
-	  self._get_section(json_sections, section3.section_id)['children'])
+        json_sections = simplejson.loads(story.structure.sections_json(
+            include_summary=False, include_call_to_action=False))
+        self.assertIn(section8.section_id,
+            self._get_section(
+                json_sections, section6.section_id)['children'])
+        self.assertIn(section9.section_id,
+          self._get_section(json_sections, section7.section_id)['children'])
+        self.assertIn(section7.section_id,
+            self._get_section(json_sections, section6.section_id)['children'])
+        self.assertIn(section1.section_id,
+            self._get_section(json_sections, section3.section_id)['children'])
+        self.assertIn(section6.section_id,
+            self._get_section(json_sections, section3.section_id)['children'])
+        self.assertIn(section4.section_id,
+            self._get_section(json_sections, section3.section_id)['children'])
+        self.assertIn(section5.section_id,
+            self._get_section(json_sections, section3.section_id)['children'])
+        self.assertIn(section2.section_id,
+            self._get_section(json_sections, section3.section_id)['children'])
 
     def test_sections_json_spider_three_levels_with_summary_and_call(self):
-	"""
-	Test that sections_json() returns the sections in the correct 
-	order and with the correct relationships and also includes
-	the summary and call to action
-	"""
+        """
+        Test that sections_json() returns the sections in the correct 
+        order and with the correct relationships and also includes
+        the summary and call to action
+        """
         title = ("Taking Action for the Social and Emotional Health of "
-	         "Young Children: A Report to the Community from the Denver "
-		 "Early Childhood Council")
-	summary = ("Now, Denver has a plan of action to make it easier for "
-	           "families to access early childhood mental health "
-		   "information, intervention and services.")
-	call_to_action = ("Test call to action.")
-	byline = "Denver Early Childhood Council"
+                 "Young Children: A Report to the Community from the " 
+		         "Denver Early Childhood Council")
+        summary = ("Now, Denver has a plan of action to make it easier "
+                   "for families to access early childhood mental health "
+                   "information, intervention and services.")
+        call_to_action = ("Test call to action.")
+        byline = "Denver Early Childhood Council"
         story = create_story(title=title, summary=summary, byline=byline,
 			     call_to_action=call_to_action)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
         section1 = create_section("We're ready to take action. Are you?",
-			          story=story, weight=7)
-	section2 = create_section("Ricardo's Story",
-			          story=story, weight=2)
-	section3 = create_section("Meeting the need for better child mental health services",
-			           story=story, root=True, weight=1)
-	section4 = create_section("Healthy Minds Support Strong Futures",
-			          story=story, weight=5) 
-	section5 = create_section("Community Voices",
-			          story=story, weight=3)
-	section6 = create_section("Our Vision: That All Children in Denver are Valued, Healthy and Thriving",
-			          story=story, weight=4)
-	section7 = create_section("Defining a \"Framework for Change\" with Actionable Goals and Strategies",
-			          story=story, weight=5) 
+			          story=story, layout=layout, weight=7)
+        section2 = create_section("Ricardo's Story",
+			          story=story, layout=layout, weight=2)
+        section3 = create_section("Meeting the need for better child mental health services",
+			           story=story, layout=layout, root=True, weight=1)
+        section4 = create_section("Healthy Minds Support Strong Futures",
+			          story=story, layout=layout, weight=5) 
+        section5 = create_section("Community Voices",
+			          story=story, layout=layout, weight=3)
+        section6 = create_section("Our Vision: That All Children in Denver are Valued, Healthy and Thriving",
+			          story=story, layout=layout, weight=4)
+        section7 = create_section("Defining a \"Framework for Change\" with Actionable Goals and Strategies",
+			          story=story, layout=layout, weight=5) 
         section8 = create_section("How Can the Plan Make a Difference?",
-			          story=story, weight=5)
-	section9 = create_section("Impact", story=story, weight=6)
+			          story=story, layout=layout, weight=5)
+        section9 = create_section("Impact", 
+                                  story=story, layout=layout,  weight=6)
         SectionRelation.objects.create(parent=section6, child=section8,
                                        weight=0)
         SectionRelation.objects.create(parent=section7, child=section9,
@@ -1139,44 +1179,46 @@ class StructureTest(TestCase):
                                        weight=0)
         SectionRelation.objects.create(parent=section3, child=section2,
                                        weight=0)
-	json_sections = simplejson.loads(story.structure.sections_json(
-		include_summary=True, include_call_to_action=True))
-	self.assertIn(
-	  section8.section_id,
-	  self._get_section(json_sections, section6.section_id)['children'])
-	self.assertIn(
-	  section9.section_id,
-	  self._get_section(json_sections, section7.section_id)['children'])
-	self.assertIn(
-	  section7.section_id,
-	  self._get_section(json_sections, section6.section_id)['children'])
-	self.assertIn(
-	  section1.section_id,
-	  self._get_section(json_sections, section3.section_id)['children'])
-	self.assertIn(
-	  section6.section_id,
-	  self._get_section(json_sections, section3.section_id)['children'])
-	self.assertIn(
-	  section4.section_id,
-	  self._get_section(json_sections, section3.section_id)['children'])
-	self.assertIn(
-	  section5.section_id,
-	  self._get_section(json_sections, section3.section_id)['children'])
-	self.assertIn(
-	  section2.section_id,
-	  self._get_section(json_sections, section3.section_id)['children'])
-	self.assertEqual(json_sections[0]['section_id'], 'summary')
-	self.assertEqual(json_sections[0]['next_section_id'], 
-			 json_sections[1]['section_id'])
-	self.assertEqual(json_sections[1]['previous_section_id'], 'summary')
-	self.assertEqual(json_sections[-1]['section_id'], 'call-to-action')
-	self.assertEqual(json_sections[-1]['previous_section_id'], 
-			 json_sections[-2]['section_id'])
-	self.assertEqual(json_sections[-2]['next_section_id'], 'call-to-action')
+        json_sections = simplejson.loads(story.structure.sections_json(
+            include_summary=True, include_call_to_action=True))
+        self.assertIn(
+            section8.section_id,
+            self._get_section(json_sections, section6.section_id)['children'])
+        self.assertIn(
+          section9.section_id,
+          self._get_section(json_sections, section7.section_id)['children'])
+        self.assertIn(
+          section7.section_id,
+          self._get_section(json_sections, section6.section_id)['children'])
+        self.assertIn(
+          section1.section_id,
+          self._get_section(json_sections, section3.section_id)['children'])
+        self.assertIn(
+          section6.section_id,
+          self._get_section(json_sections, section3.section_id)['children'])
+        self.assertIn(
+          section4.section_id,
+          self._get_section(json_sections, section3.section_id)['children'])
+        self.assertIn(
+          section5.section_id,
+          self._get_section(json_sections, section3.section_id)['children'])
+        self.assertIn(
+          section2.section_id,
+          self._get_section(json_sections, section3.section_id)['children'])
+        self.assertEqual(json_sections[0]['section_id'], 'summary')
+        self.assertEqual(json_sections[0]['next_section_id'], 
+                 json_sections[1]['section_id'])
+        self.assertEqual(json_sections[1]['previous_section_id'], 'summary')
+        self.assertEqual(json_sections[-1]['section_id'], 'call-to-action')
+        self.assertEqual(json_sections[-1]['previous_section_id'], 
+                 json_sections[-2]['section_id'])
+        self.assertEqual(json_sections[-2]['next_section_id'], 'call-to-action')
 
 
 class StoryResourceTest(ResourceTestCase):
     """Tests for backend to Tastypie-driven REST endpoint"""
+    fixtures = ['section_layouts.json']
+
     def setUp(self):
         super(StoryResourceTest, self).setUp()
         # Use our fixed TestApiClient instead of the default
@@ -1241,8 +1283,11 @@ class StoryResourceTest(ResourceTestCase):
         story = create_story(title="Test Story", summary="Test Summary",
                              byline="Test Byline", status="published",
                              language="en")
-        section1 = create_section(title="Test Section 1", story=story)
-        section2 = create_section(title="Test Section 2", story=story)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        section1 = create_section(title="Test Section 1", story=story,
+                                  layout=layout)
+        section2 = create_section(title="Test Section 2", story=story,
+                                  layout=layout)
         resp = self.api_client.get('/api/0.1/stories/%s/' % story.story_id)
         self.assertValidJSONResponse(resp)
         self.assertKeys(self.deserialize(resp), story_attribute_keys)
@@ -1490,8 +1535,11 @@ class StoryResourceTest(ResourceTestCase):
         story = create_story(title="Test Story", summary="Test Summary",
                              byline="Test Byline", status="published",
                              language="en", author=self.user)
-        section1 = create_section(title="Test Section 1", story=story)
-        section2 = create_section(title="Test Section 2", story=story)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        section1 = create_section(title="Test Section 1", story=story,
+                                  layout=layout)
+        section2 = create_section(title="Test Section 2", story=story,
+                                  layout=layout)
         uri = '/api/0.1/stories/%s/sections/' % story.story_id
         resp = self.api_client.get(uri)
         self.assertValidJSONResponse(resp)
@@ -1512,6 +1560,10 @@ class StoryResourceTest(ResourceTestCase):
         section_post_data = {
             'title': "Test Section",
             'language': "en",
+            'layout': {
+                'layout_id': "26c81c9dd24c4aecab7ab4eb1cc9e2fb",
+                'name': "Side by Side"
+            }
         }
         self.assertEqual(Story.objects.count(), 0)
         self.api_client.client.login(username=self.username, password=self.password)
@@ -1537,6 +1589,7 @@ class StoryResourceTest(ResourceTestCase):
         self.assertEqual("%s%s/" % (sections_uri, section.section_id), 
                          section_resource_uri)
         self.assertEqual(section.title, section_post_data['title'])
+        self.assertEqual(section.layout.layout_id, section_post_data['layout']['layout_id'])
 
     def test_post_list_sections_other_user(self):
         """Test that a user can't add a new section to another user's story"""
@@ -1550,6 +1603,10 @@ class StoryResourceTest(ResourceTestCase):
         section_post_data = {
             'title': "Test Section",
             'language': "en",
+            'layout': {
+                'layout_id': "26c81c9dd24c4aecab7ab4eb1cc9e2fb",
+                'name': "Side by Side"
+            }
         }
         user2 = User.objects.create(username="test2", email="test2@example.com",
                                     password="test2")
@@ -1579,6 +1636,10 @@ class StoryResourceTest(ResourceTestCase):
         section_post_data = {
             'title': "Test Section",
             'language': "en",
+            'layout': {
+                'layout_id': "26c81c9dd24c4aecab7ab4eb1cc9e2fb",
+                'name': "Side by Side"
+            }
         }
         section_patch_data = {
             'title': "New Test Section Title",
@@ -1619,10 +1680,18 @@ class StoryResourceTest(ResourceTestCase):
         section_post_data = {
             'title': "Test Section",
             'language': "en",
+            'layout': {
+                'layout_id': "26c81c9dd24c4aecab7ab4eb1cc9e2fb",
+                'name': "Side by Side"
+            }
         }
         section_put_data = {
             'title': "New Test Section Title",
             'language': "en",
+            'layout': {
+                'layout_id': "ccaea5bac5c7467eb014baf6f7476ccb",
+                'name': "1 Up"
+            }
         }
         self.api_client.client.login(username=self.username, password=self.password)
         # Create a new story through the API
@@ -1646,9 +1715,12 @@ class StoryResourceTest(ResourceTestCase):
         self.assertEqual(len(story.sections.all()), 1)
         section = story.sections.get(section_id=section_id)
         self.assertEqual(section.title, section_put_data['title'])
+        self.assertEqual(section.layout.layout_id, section_put_data['layout']['layout_id'])
 
 
 class SectionResourceTest(ResourceTestCase):
+    fixtures = ['section_layouts.json']
+
     def setUp(self):
         self.resource = SectionResource(api_name='0.1')
 
@@ -1657,7 +1729,9 @@ class SectionResourceTest(ResourceTestCase):
         story = create_story(title="Test Story", summary="Test Summary",
                              byline="Test Byline", status="published",
                              language="en")
-        section = create_section(title="Test Section 1", story=story)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        section = create_section(title="Test Section 1", story=story,
+                                 layout=layout)
         uri = self.resource.get_resource_uri(bundle_or_obj=section)
         self.assertEqual(uri, "/api/0.1/stories/%s/sections/%s/" %
                         (story.story_id, section.section_id))
@@ -1721,7 +1795,7 @@ class StoryExploreResourceTest(ResourceTestCase):
 
 
 class StoryTemplateResourceTest(ResourceTestCase):
-    fixtures = ['story_templates.json']
+    fixtures = ['section_layouts.json', 'story_templates.json']
 
     def setUp(self):
         super(StoryTemplateResourceTest, self).setUp()
