@@ -1265,6 +1265,7 @@ class StoryResourceTest(ResourceTestCase):
                                 'languages', 
                                 'last_edited',
                                 'license',
+                                'is_template',
                                 'on_homepage',
                                 'organizations',
                                 'points',
