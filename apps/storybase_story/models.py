@@ -8,6 +8,7 @@ from django.contrib.sites.models import Site
 from django.core import urlresolvers
 from django.db import models
 from django.db.models.signals import post_save, pre_save, m2m_changed
+from django.template.loader import render_to_string
 from django.utils import simplejson
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
@@ -611,6 +612,10 @@ class SectionLayout(TranslatedModel):
 
     def __unicode__(self):
         return self.name
+
+    def get_template_contents(self):
+        template_file = "storybase_story/sectionlayouts/%s" % (self.template)
+        return render_to_string(template_file)
 
 
 class Container(models.Model):

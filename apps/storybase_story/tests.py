@@ -401,6 +401,13 @@ class SectionModelTest(TestCase, SloppyComparisonTestMixin):
         section.save()
         self.assertNowish(story.last_edited)
 
+class SectionLayoutModelTest(TestCase):
+    fixtures = ['section_layouts.json']
+
+    def test_get_template_contents(self):
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        print layout.get_template_contents()
+
 
 class SectionRelationModelTest(TestCase):
     fixtures = ['section_layouts.json']
