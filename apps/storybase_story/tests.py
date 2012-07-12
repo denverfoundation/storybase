@@ -406,7 +406,8 @@ class SectionLayoutModelTest(TestCase):
 
     def test_get_template_contents(self):
         layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
-        print layout.get_template_contents()
+        template_contents = layout.get_template_contents()
+        self.assertIn("class=\"section-layout\"", template_contents)
 
 
 class SectionRelationModelTest(TestCase):
@@ -1538,7 +1539,32 @@ class StoryResourceTest(ResourceTestCase):
         self.assertIn(story1.story_id, story_ids)
         self.assertIn(story2.story_id, story_ids)
 
-    def test_get_list_sections(self):
+
+class SectionResourceTest(ResourceTestCase):
+    fixtures = ['section_layouts.json']
+
+    def setUp(self):
+        super(SectionResourceTest, self).setUp()
+        # Use our fixed TestApiClient instead of the default
+        self.api_client = FixedTestApiClient()
+        self.resource = SectionResource(api_name='0.1')
+        self.username = 'test'
+        self.password = 'test'
+        self.user = User.objects.create_user(self.username, 'test@example.com', self.password)
+
+    def test_get_resource_uri_detail(self):
+        """Tests retrieving a URI for a specific section"""
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status="published",
+                             language="en")
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        section = create_section(title="Test Section 1", story=story,
+                                 layout=layout)
+        uri = self.resource.get_resource_uri(bundle_or_obj=section)
+        self.assertEqual(uri, "/api/0.1/stories/%s/sections/%s/" %
+                        (story.story_id, section.section_id))
+
+    def test_get_list(self):
         """Test that a user can get a list of story sections"""
         story = create_story(title="Test Story", summary="Test Summary",
                              byline="Test Byline", status="published",
@@ -1556,7 +1582,7 @@ class StoryResourceTest(ResourceTestCase):
         self.assertIn(section1.title, section_titles)
         self.assertIn(section2.title, section_titles)
 
-    def test_post_list_sections(self):
+    def test_post_list(self):
         """Test that a user can add a new section to a story"""
         story_post_data = {
             'title': "Test Story",
@@ -1596,7 +1622,7 @@ class StoryResourceTest(ResourceTestCase):
         self.assertEqual(section.title, section_post_data['title'])
         self.assertEqual(section.layout.layout_id, section_post_data['layout'])
 
-    def test_post_list_sections_other_user(self):
+    def test_post_list_other_user(self):
         """Test that a user can't add a new section to another user's story"""
         story_post_data = {
             'title': "Test Story",
@@ -1626,7 +1652,7 @@ class StoryResourceTest(ResourceTestCase):
         self.assertHttpUnauthorized(response)
         self.assertEqual(len(story.sections.all()), 0)
 
-    def test_patch_detail_sections(self):
+    def test_patch_detail(self):
         """Test that a user can update the metadata of a section"""
         story_post_data = {
             'title': "Test Story",
@@ -1668,7 +1694,7 @@ class StoryResourceTest(ResourceTestCase):
         section = story.sections.get(section_id=section_id)
         self.assertEqual(section.title, section_patch_data['title'])
 
-    def test_put_detail_sections(self):
+    def test_put_detail(self):
         """Test that a user can update the metadata of a section"""
         story_post_data = {
             'title': "Test Story",
@@ -1710,25 +1736,6 @@ class StoryResourceTest(ResourceTestCase):
         section = story.sections.get(section_id=section_id)
         self.assertEqual(section.title, section_put_data['title'])
         self.assertEqual(section.layout.layout_id, section_put_data['layout'])
-
-
-class SectionResourceTest(ResourceTestCase):
-    fixtures = ['section_layouts.json']
-
-    def setUp(self):
-        self.resource = SectionResource(api_name='0.1')
-
-    def test_get_resource_uri_detail(self):
-        """Tests retrieving a URI for a specific section"""
-        story = create_story(title="Test Story", summary="Test Summary",
-                             byline="Test Byline", status="published",
-                             language="en")
-        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
-        section = create_section(title="Test Section 1", story=story,
-                                 layout=layout)
-        uri = self.resource.get_resource_uri(bundle_or_obj=section)
-        self.assertEqual(uri, "/api/0.1/stories/%s/sections/%s/" %
-                        (story.story_id, section.section_id))
 
 
 class StoryExploreResourceTest(ResourceTestCase):
