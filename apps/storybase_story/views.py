@@ -14,6 +14,7 @@ from django.utils.translation import ugettext as _
 
 from storybase.utils import simple_language_changer
 from storybase.views.generic import ModelIdDetailView
+from storybase_asset.models import ASSET_TYPES
 from storybase_story.api import StoryResource, StoryTemplateResource
 from storybase_story.models import SectionLayout, Story
 
@@ -125,35 +126,35 @@ class StoryBuilderView(DetailView):
         else:
             return None
 
-    def get_context_data(self, **kwargs):
-        """Provide Bootstrap data for Backbone models and collections"""
-        context = {}
-        if self.object:
-            resource = StoryResource()
-            bundle = resource.build_bundle(obj=self.object)
-            story_to_be_serialized = resource.full_dehydrate(bundle)
-            
-            context.update({
-                'story_json': mark_safe(resource.serialize(None, story_to_be_serialized, 'application/json')),
-            })
+    def get_story_json(self):
+        resource = StoryResource()
+        bundle = resource.build_bundle(obj=self.object)
+        to_be_serialized = resource.full_dehydrate(bundle)
+        return resource.serialize(None, to_be_serialized, 'application/json')
 
-
-        # Use the Tastypie resource to retrieve a JSON list of story
-        # templates.  
-        # See http://django-tastypie.readthedocs.org/en/latest/cookbook.html#using-your-resource-in-regular-views
-        # and ModelResource.get_list()
-        templates_to_be_serialized = {}
+    def get_story_template_json(self):
+        to_be_serialized = {}
         resource = StoryTemplateResource()
         objects = resource.obj_get_list()
         bundles = [resource.build_bundle(obj=obj) for obj in objects]
-        templates_to_be_serialized['objects'] = [resource.full_dehydrate(bundle) for bundle in bundles]
+        to_be_serialized['objects'] = [resource.full_dehydrate(bundle) for bundle in bundles]
+        return resource.serialize(None, to_be_serialized, 'application/json')
 
-        layouts_to_be_serialized = [{'name': layout.name, 'layout_id': layout.layout_id} for layout in SectionLayout.objects.all()]
+    def get_layouts_json(self):
+        to_be_serialized = [{'name': layout.name, 'layout_id': layout.layout_id} for layout in SectionLayout.objects.all()]
+        return json.dumps(to_be_serialized)
 
-        context.update({
-            'story_template_json': mark_safe(resource.serialize(None, templates_to_be_serialized, 'application/json')),
-            'layouts_json': mark_safe(resource.serialize(None, layouts_to_be_serialized, 'application/json')),
-        })
+    def get_context_data(self, **kwargs):
+        """Provide Bootstrap data for Backbone models and collections"""
+        context = {
+            'layouts_json': mark_safe(self.get_layouts_json()),
+            'story_template_json': mark_safe(self.get_story_template_json()),
+        }
+
+        if self.object:
+            context.update({
+                'story_json': mark_safe(self.get_story_json()),
+            })
 
         return context
 
