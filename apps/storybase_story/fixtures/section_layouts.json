@@ -3,7 +3,7 @@
         "fields": {
             "language": "en", 
             "name": "Side by Side", 
-            "story_template": 1, 
+            "layout": 1, 
             "translation_id": "6bc5da0836cc4b95bc03562a53c072c4"
         }, 
         "model": "storybase_story.sectionlayouttranslation", 
@@ -13,7 +13,7 @@
         "fields": {
             "language": "en", 
             "name": "1 Up", 
-            "story_template": 2, 
+            "layout": 2, 
             "translation_id": "b684361fc0b04d4ab241ac88b02fc9a5"
         }, 
         "model": "storybase_story.sectionlayouttranslation", 

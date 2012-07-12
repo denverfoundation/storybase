@@ -588,7 +588,7 @@ class StoryTemplate(TranslatedModel):
 
 class SectionLayoutTranslation(TranslationModel):
     """Translatable fields for the SectionLayout model"""
-    story_template = models.ForeignKey('SectionLayout')
+    layout = models.ForeignKey('SectionLayout')
     name = ShortTextField()
 
     def __unicode__(self):

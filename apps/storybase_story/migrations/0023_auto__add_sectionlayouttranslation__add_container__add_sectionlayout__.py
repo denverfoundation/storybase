@@ -13,7 +13,7 @@ class Migration(SchemaMigration):
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
             ('translation_id', self.gf('uuidfield.fields.UUIDField')(unique=True, max_length=32, blank=True)),
             ('language', self.gf('django.db.models.fields.CharField')(default='en', max_length=15)),
-            ('story_template', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['storybase_story.SectionLayout'])),
+            ('layout', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['storybase_story.SectionLayout'])),
             ('name', self.gf('storybase.fields.ShortTextField')()),
         ))
         db.send_create_signal('storybase_story', ['SectionLayoutTranslation'])
