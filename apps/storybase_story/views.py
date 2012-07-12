@@ -144,11 +144,16 @@ class StoryBuilderView(DetailView):
         to_be_serialized = [{'name': layout.name, 'layout_id': layout.layout_id} for layout in SectionLayout.objects.all()]
         return json.dumps(to_be_serialized)
 
+    def get_asset_types_json(self):
+        to_be_serialized = [{'name': asset_type[1], 'type': asset_type[0]} for asset_type in ASSET_TYPES]
+        return json.dumps(to_be_serialized)
+
     def get_context_data(self, **kwargs):
         """Provide Bootstrap data for Backbone models and collections"""
         context = {
             'layouts_json': mark_safe(self.get_layouts_json()),
             'story_template_json': mark_safe(self.get_story_template_json()),
+            'asset_types_json': mark_safe(self.get_asset_types_json()),
         }
 
         if self.object:

@@ -71,6 +71,37 @@ header h1 {
   padding: 1em;
 }
 
+.section-edit-layout {
+  position: relative;
+  height: 100%;
+}
+
+/* Section layouts */
+/* TODO: Move these elsewere */
+
+.section-layout {
+  height: 100%;
+}
+
+.section-layout.side-by-side .left,
+.section-layout.side-by-side .right {
+  height: 100%;
+  width: 46%;
+  margin: 2%;
+  float: left;
+}
+
+.storybase-container-placeholder {
+  height: 100%;
+
+  padding: 2%;
+
+  background-color: #C8C8C8;
+  border-radius: 15px;
+}
+
+/* Table of contents thumbnails */
+
 .section-thumbnail {
   position: relative;
   display: inline-block;

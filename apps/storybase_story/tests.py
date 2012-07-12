@@ -1581,6 +1581,8 @@ class SectionResourceTest(ResourceTestCase):
         section_titles = [section['title'] for section in self.deserialize(resp)['objects']]
         self.assertIn(section1.title, section_titles)
         self.assertIn(section2.title, section_titles)
+        self.assertEqual(section1.layout.get_template_contents(),
+                         self.deserialize(resp)['objects'][0]['layout_template'])
 
     def test_post_list(self):
         """Test that a user can add a new section to a story"""

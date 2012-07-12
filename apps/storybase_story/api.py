@@ -384,7 +384,10 @@ class SectionResource(DelayedAuthorizationResource, TranslatedModelResource):
     # Explicitly declare fields that are on the translation model
     title = fields.CharField(attribute='title')
     story = fields.ToOneField(StoryResource, 'story')
+
     layout = fields.CharField(attribute='layout')
+    """layout_id of related ``SectionLayout`` object"""
+    layout_template = fields.CharField(readonly=True)
 
     class Meta:
         queryset = Section.objects.all()
@@ -477,6 +480,9 @@ class SectionResource(DelayedAuthorizationResource, TranslatedModelResource):
         if bundle.data['layout'].__class__ != SectionLayout:
             bundle.data['layout'] = SectionLayout.objects.get(layout_id__exact=bundle.data['layout']) 
         return bundle
+
+    def dehydrate_layout_template(self, bundle):
+        return bundle.obj.layout.get_template_contents()
 
 
 class StoryTemplateResource(TranslatedModelResource):

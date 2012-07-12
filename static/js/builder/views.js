@@ -23,7 +23,8 @@ storybase.builder.views.AppView = Backbone.View.extend({
     // Store subviews in an object keyed with values of this.activeStep
     var buildViewOptions = {
       dispatcher: this.dispatcher,
-      layouts: this.options.layouts
+      layouts: this.options.layouts,
+      assetTypes: this.options.assetTypes
     };
     if (this.model) {
       buildViewOptions.model = this.model;
@@ -187,12 +188,10 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
     this.dispatcher = this.options.dispatcher;
     this.dispatcher.on("select:template", this.setStoryTemplate, this);
-    this.dispatcher.on("ready:templateSections", this.initializeStory, this);
+    this.dispatcher.on("ready:templateSections", this.initializeStoryFromTemplate, this);
     this.dispatcher.on("ready:story", this.storyReady, this);
     this.dispatcher.on("save:story", this.save, this);
     this.dispatcher.on("select:thumbnail", this.showEditView, this);
-
-    this.layouts = this.options.layouts;
 
     _.bindAll(this, 'addSectionThumbnail', 'setTemplateStory', 'setTemplateSections');
 
@@ -216,7 +215,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
         dispatcher: this.dispatcher,
         model: section,
         story: this.model,
-        layouts: this.layouts
+        assetTypes: this.options.assetTypes,
+        layouts: this.options.layouts,
       })
     });
     this._thumbnailViews.splice(this._thumbnailViews.length - 1, 0, view);
@@ -313,7 +313,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.dispatcher.trigger("ready:templateSections");
   },
 
-  initializeStory: function() {
+  initializeStoryFromTemplate: function() {
     console.debug("Initializing sections");
     var that = this;
     // Create the story instance
@@ -324,6 +324,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       var sectionCopy = new storybase.models.Section();
       sectionCopy.set("title", section.get("title"));
       sectionCopy.set("layout", section.get("layout"));
+      sectionCopy.set("layout_template", section.get("layout_template"));
       that.model.sections.push(sectionCopy);
     });
     this.dispatcher.trigger("ready:story");
@@ -550,12 +551,25 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   },
 
   render: function() {
+    var that = this;
     var context = this.model.toJSON();
     context.layouts = this.getLayoutContext();
     this.$el.html(this.template(context));
+    this.$('.storybase-container-placeholder').each(function(index, el) {
+      console.debug($(el).attr('id'));
+      var sectionAssetView = new storybase.builder.views.SectionAssetEditView({
+        el: el,
+        dispatcher: that.dispatcher,
+        assetTypes: that.options.assetTypes
+      });
+      sectionAssetView.render();
+    });
     return this;
   },
 
+  /**
+   * Event handler for when form elements are changed
+   */
   change: function(e) {
     console.debug("Change event!");
     var name = $(e.target).attr("name");
@@ -571,4 +585,96 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
       console.debug("Updated " + name + " to " + value);
     }
   },
+});
+
+storybase.builder.views.SectionAssetEditView = Backbone.View.extend({
+  tagName: 'div',
+
+  className: 'edit-section-asset',
+
+  templateSource: function() {
+    if (!_.isUndefined(this.model)) {
+    }
+    else if (!_.isUndefined(this.type)) {
+      return $('#section-asset-edit-template').html();
+    }
+    else {
+      return $('#section-asset-select-type-template').html();
+    }
+  },
+
+  events: {
+    "click .asset-type": "selectType", 
+    'click input[type="reset"]': "cancel",
+    'click input[type="submit"]': "save"
+  },
+
+  showUrl: {
+    'image': true,
+    'audio': true,
+    'video': true,
+    'map': true,
+    'table': true,
+  },
+
+  showFile: {
+    'image': true,
+    'map': true
+  },
+
+  showBody: {
+    'text': true,
+    'quotation': true
+  },
+
+  initialize: function() {
+    this.dispatcher = this.options.dispatcher;
+    this.assetTypes = this.options.assetTypes;
+  },
+
+  render: function() {
+    this.template = Handlebars.compile(this.templateSource());
+    var context = {
+      assetTypes: this.assetTypes
+    };
+    if (!_.isUndefined(this.type)) {
+      context.showUrl = this.type in this.showUrl,
+      context.showFile = this.type in this.showFile, 
+      context.showBody = this.type in this.showBody 
+    }
+    if (!_.isUndefined(this.model)) {
+      context.model = this.model.toJSON()
+    }
+    this.$el.html(this.template(context));
+    return this;
+  },
+
+  /**
+   * Event handler for selecting asset type
+   */
+  selectType: function(e) {
+    e.preventDefault(); 
+    this.type = $(e.target).data('asset-type');
+    this.render();
+  },
+
+  /**
+   * Event handler for canceling form interaction
+   */
+  cancel: function(e) {
+    e.preventDefault();
+    if (_.isUndefined(this.model)) {
+      // No asset has been saved for this view, just forget the type
+      delete this.type;
+    }
+    this.render();
+  },
+
+  /**
+   * Event handler for saving form
+   */
+  save: function(e) {
+    e.preventDefault();
+    console.debug("Creating asset");
+  }
 });
