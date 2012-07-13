@@ -409,7 +409,7 @@ class SectionLayoutModelTest(TestCase):
     def test_get_template_contents(self):
         layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
         template_contents = layout.get_template_contents()
-        self.assertIn("class=\"section-layout\"", template_contents)
+        self.assertIn("class=\"section-layout", template_contents)
 
 
 class SectionRelationModelTest(TestCase):
