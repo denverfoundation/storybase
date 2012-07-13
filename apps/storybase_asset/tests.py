@@ -508,6 +508,7 @@ class AssetResourceTest(FileCleanupMixin, ResourceTestCase):
             self.assertEqual(self.deserialize(resp)['type'], asset_type)
             self.assertEqual(self.deserialize(resp)['title'], asset_title)
             self.assertEqual(self.deserialize(resp)['caption'], asset_caption)
+            self.assertIn('<img src', self.deserialize(resp)['content'])
 
     def test_post_list_image(self):
         """Test creating a asset with the data stored in an uploaded image"""
@@ -602,9 +603,20 @@ class AssetResourceTest(FileCleanupMixin, ResourceTestCase):
         }
         self.assertEqual(Asset.objects.count(), 0)
         self.api_client.client.login(username=self.username, password=self.password)
-        response = self.api_client.post('/api/0.1/assets/',
+        resp = self.api_client.post('/api/0.1/assets/',
                                format='json', data=post_data)
-        self.assertHttpCreated(response)
+        self.assertEqual(self.deserialize(resp)['title'], 
+                         post_data['title'])
+        self.assertEqual(self.deserialize(resp)['type'], 
+                         post_data['type'])
+        self.assertEqual(self.deserialize(resp)['caption'], 
+                         post_data['caption'])
+        self.assertEqual(self.deserialize(resp)['url'], 
+                         post_data['url'])
+        self.assertEqual(self.deserialize(resp)['attribution'], 
+                         post_data['attribution'])
+        self.assertIn("iframe", self.deserialize(resp)['content']) 
+        self.assertHttpCreated(resp)
         self.assertEqual(Asset.objects.count(), 1)
         created_asset = Asset.objects.get_subclass()
         self.assertEqual(created_asset.title, post_data['title'])

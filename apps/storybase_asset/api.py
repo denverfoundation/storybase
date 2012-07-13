@@ -26,11 +26,13 @@ class AssetResource(DelayedAuthorizationResource, TranslatedModelResource):
     body = fields.CharField(attribute='body', null=True)
     url = fields.CharField(attribute='url', null=True)
     image = fields.FileField(attribute='image', null=True)
+    content = fields.CharField(readonly=True)
     # A "write-only" field for specifying the filename when uploading images
     # This is removed from responses to GET requests
     filename = fields.CharField(null=True)
 
     class Meta:
+        always_return_data = True
         queryset = Asset.objects.select_subclasses()
         resource_name = 'assets'
         allowed_methods = ['get', 'post', 'patch']
@@ -132,3 +134,6 @@ class AssetResource(DelayedAuthorizationResource, TranslatedModelResource):
         # Exclude the filename field from the output
         del bundle.data['filename']
         return bundle
+    
+    def dehydrate_content(self, bundle):
+        return bundle.obj.render(format="html")
