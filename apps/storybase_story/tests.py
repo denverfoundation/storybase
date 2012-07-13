@@ -1753,6 +1753,8 @@ class SectionAssetResourceTest(ResourceTestCase):
         self.username = 'test'
         self.password = 'test'
         self.user = User.objects.create_user(self.username, 'test@example.com', self.password)
+        self.user2 = User.objects.create_user("test2", "test2@example.com",
+                                              "test2")
 
     def get_asset_uri(self, asset):
         return "/api/0.1/assets/%s/" % (asset.asset_id)
@@ -1833,6 +1835,118 @@ class SectionAssetResourceTest(ResourceTestCase):
         section_asset = SectionAsset.objects.get()
         self.assertEqual(section_asset.section, section)
         self.assertEqual(section_asset.container, container1)
+
+    def test_delete_detail(self):
+        """Tests that a user can remove an asset from a section"""
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status="published",
+                             language="en", author=self.user)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        container1 = Container.objects.get(name='left')
+        container2 = Container.objects.get(name='right')
+        section = create_section(title="Test Section 1", story=story,
+                                  layout=layout)
+        asset1 = create_html_asset(type='text', title='Test Asset',
+                                   body='Test content', owner=self.user)
+        asset2 = create_html_asset(type='text', title='Test Asset 2',
+                                   body='Test content 2', owner=self.user)
+        SectionAsset.objects.create(section=section, asset=asset1, container=container1)
+        SectionAsset.objects.create(section=section, asset=asset2, container=container2)
+        self.assertEqual(SectionAsset.objects.count(), 2)
+        self.api_client.client.login(username=self.username, password=self.password)
+        uri = '/api/0.1/stories/%s/sections/%s/assets/' % (story.story_id,
+            section.section_id)
+        resp = self.api_client.get(uri)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 2)
+        uri = '/api/0.1/stories/%s/sections/%s/assets/%s/' % (
+            story.story_id, section.section_id, asset1.asset_id)
+        resp = self.api_client.delete(uri)
+        self.assertHttpAccepted(resp)
+        self.assertEqual(SectionAsset.objects.count(), 1)
+
+    def test_delete_detail_unauthenticated(self):
+        """Test that an anonymous user cannot remove an asset from a section"""
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status="published",
+                             language="en", author=self.user)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        container1 = Container.objects.get(name='left')
+        container2 = Container.objects.get(name='right')
+        section = create_section(title="Test Section 1", story=story,
+                                  layout=layout)
+        asset1 = create_html_asset(type='text', title='Test Asset',
+                                   body='Test content', owner=self.user)
+        asset2 = create_html_asset(type='text', title='Test Asset 2',
+                                   body='Test content 2', owner=self.user)
+        SectionAsset.objects.create(section=section, asset=asset1, container=container1)
+        SectionAsset.objects.create(section=section, asset=asset2, container=container2)
+        self.assertEqual(SectionAsset.objects.count(), 2)
+        uri = '/api/0.1/stories/%s/sections/%s/assets/' % (story.story_id,
+            section.section_id)
+        resp = self.api_client.get(uri)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 2)
+        uri = '/api/0.1/stories/%s/sections/%s/assets/%s/' % (
+            story.story_id, section.section_id, asset1.asset_id)
+        resp = self.api_client.delete(uri)
+        self.assertHttpUnauthorized(resp)
+        self.assertEqual(SectionAsset.objects.count(), 2)
+
+    def test_delete_detail_other_user(self):
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status="published",
+                             language="en", author=self.user2)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        container1 = Container.objects.get(name='left')
+        container2 = Container.objects.get(name='right')
+        section = create_section(title="Test Section 1", story=story,
+                                  layout=layout)
+        asset1 = create_html_asset(type='text', title='Test Asset',
+                                   body='Test content', owner=self.user2)
+        asset2 = create_html_asset(type='text', title='Test Asset 2',
+                                   body='Test content 2', owner=self.user2)
+        SectionAsset.objects.create(section=section, asset=asset1, container=container1)
+        SectionAsset.objects.create(section=section, asset=asset2, container=container2)
+        self.assertEqual(SectionAsset.objects.count(), 2)
+        self.api_client.client.login(username=self.username, password=self.password)
+        uri = '/api/0.1/stories/%s/sections/%s/assets/' % (story.story_id,
+            section.section_id)
+        resp = self.api_client.get(uri)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 2)
+        uri = '/api/0.1/stories/%s/sections/%s/assets/%s/' % (
+            story.story_id, section.section_id, asset1.asset_id)
+        resp = self.api_client.delete(uri)
+        self.assertHttpUnauthorized(resp)
+        self.assertEqual(SectionAsset.objects.count(), 2)
+
+    def test_delete_list(self):
+        """Tests that a user can't remove all assets from a section"""
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status="published",
+                             language="en", author=self.user)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        container1 = Container.objects.get(name='left')
+        container2 = Container.objects.get(name='right')
+        section = create_section(title="Test Section 1", story=story,
+                                  layout=layout)
+        asset1 = create_html_asset(type='text', title='Test Asset',
+                                   body='Test content', owner=self.user)
+        asset2 = create_html_asset(type='text', title='Test Asset 2',
+                                   body='Test content 2', owner=self.user)
+        SectionAsset.objects.create(section=section, asset=asset1, container=container1)
+        SectionAsset.objects.create(section=section, asset=asset2, container=container2)
+        self.assertEqual(SectionAsset.objects.count(), 2)
+        self.api_client.client.login(username=self.username, password=self.password)
+        uri = '/api/0.1/stories/%s/sections/%s/assets/' % (story.story_id,
+            section.section_id)
+        resp = self.api_client.get(uri)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 2)
+        resp = self.api_client.delete(uri)
+        self.assertHttpUnauthorized(resp)
+        self.assertEqual(SectionAsset.objects.count(), 2)
 
 
 class StoryExploreResourceTest(ResourceTestCase):

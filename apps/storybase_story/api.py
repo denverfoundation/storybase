@@ -527,7 +527,7 @@ class SectionAssetResource(DelayedAuthorizationResource, HookedModelResource):
     class Meta:
         queryset = SectionAsset.objects.all()
         resource_name = 'sectionassets'
-        allowed_methods = ['get', 'post']
+        allowed_methods = ['get', 'post', 'delete']
         authentication = Authentication()
         authorization = LoggedInAuthorization()
         # Hide the underlying id
@@ -535,7 +535,7 @@ class SectionAssetResource(DelayedAuthorizationResource, HookedModelResource):
 
         # Custom meta attributes
         parent_resource = StoryResource
-        delayed_authorization_methods = []
+        delayed_authorization_methods = ['delete_detail']
 
     def detail_uri_kwargs(self, bundle_or_obj):
         kwargs = {}

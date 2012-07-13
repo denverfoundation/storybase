@@ -175,6 +175,25 @@ class HookedModelResource(ModelResource):
         self.save_m2m(m2m_bundle)
         return bundle
 
+    def obj_delete(self, request=None, **kwargs):
+        """
+        A ORM-specific implementation of ``obj_delete``.
+
+        Takes optional ``kwargs``, which are used to narrow the query to find
+        the instance.
+        """
+        obj = kwargs.pop('_obj', None)
+
+        if not hasattr(obj, 'delete'):
+            try:
+                obj = self.obj_get(request, **kwargs)
+                # Send a signal
+                post_obj_get.send(sender=self, request=request, obj=obj)
+            except ObjectDoesNotExist:
+                raise NotFound("A model instance matching the provided arguments could not be found.")
+
+        obj.delete()
+
     def patch_detail(self, request, **kwargs):
         """
         Updates a resource in-place.
