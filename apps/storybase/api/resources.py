@@ -307,8 +307,13 @@ class TranslatedModelResource(HookedModelResource):
 
         """
         object_class = sender.get_object_class(bundle, request, **kwargs)
-        translation_class = object_class.translation_class
-        bundle.translation_obj = translation_class()
+        # HACK: There might be a more elegant way to only receive this 
+        # singnal for subclasses of TranslatedModelResource
+        try:
+            translation_class = object_class.translation_class
+            bundle.translation_obj = translation_class()
+        except AttributeError:
+            pass
 
     @receiver(post_bundle_obj_save)
     def translation_obj_save(sender, bundle, request, **kwargs):
@@ -319,10 +324,15 @@ class TranslatedModelResource(HookedModelResource):
 
         """
         object_class = sender._meta.object_class
+        # HACK: There might be a more elegant way to only receive this 
+        # singnal for subclasses of TranslatedModelResource
         # Associate and save the translation
-        fk_field_name = object_class.get_translation_fk_field_name()
-        setattr(bundle.translation_obj, fk_field_name, bundle.obj)
-        bundle.translation_obj.save()
+        try:
+            fk_field_name = object_class.get_translation_fk_field_name()
+            setattr(bundle.translation_obj, fk_field_name, bundle.obj)
+            bundle.translation_obj.save()
+        except AttributeError:
+            pass
 
     @receiver(post_bundle_obj_hydrate)
     def translation_obj_get(sender, bundle, request, **kwargs):

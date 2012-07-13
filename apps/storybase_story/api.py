@@ -13,11 +13,13 @@ from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.utils import trailing_slash
 from tastypie.authentication import Authentication
 
-from storybase.api import (TranslatedModelResource, 
-    DelayedAuthorizationResource, LoggedInAuthorization)
+from storybase.api import (DelayedAuthorizationResource,
+    HookedModelResource, LoggedInAuthorization, TranslatedModelResource)
 from storybase.utils import get_language_name
+from storybase_asset.api import AssetResource
 from storybase_geo.models import Place
-from storybase_story.models import (Section, SectionLayout, 
+from storybase_story.models import (Container,
+                                    Section, SectionAsset, SectionLayout, 
                                     Story, StoryTemplate)
 from storybase_taxonomy.models import Category
 from storybase_user.models import Organization, Project
@@ -69,6 +71,8 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
             url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/$" % self._meta.resource_name, self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
             url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/sections/$" % self._meta.resource_name, self.wrap_view('dispatch_section_list'), name="api_dispatch_list_sections"),
             url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/sections/(?P<section_id>[0-9a-f]{32,32})/$" % self._meta.resource_name, self.wrap_view('dispatch_section_detail'), name="api_dispatch_detail_sections"),
+            url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/sections/(?P<section_id>[0-9a-f]{32,32})/assets/$" % self._meta.resource_name, self.wrap_view('dispatch_sectionasset_list'), name="api_dispatch_list_sectionassets"),
+            url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/sections/(?P<section_id>[0-9a-f]{32,32})/assets/(?P<asset_id>[0-9a-f]{32,32})/$" % self._meta.resource_name, self.wrap_view('dispatch_sectionasset_detail'), name="api_dispatch_detail_sectionassets"),
         ]
 
     def detail_uri_kwargs(self, bundle_or_obj):
@@ -370,6 +374,37 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
         section_resource = SectionResource()
         return section_resource.dispatch_list(request, story__story_id=obj.story_id)
 
+    def dispatch_sectionasset_list(self, request, **kwargs):
+        try:
+            section_id = kwargs.pop('section_id')
+            story = self.cached_obj_get(request=request, **self.remove_api_resource_names(kwargs))
+        except ObjectDoesNotExist:
+            return http.HttpNotFound()
+        except MultipleObjectsReturned:
+            return http.HttpMultipleChoices("More than one resource is found at this URI.")
+
+        resource = SectionAssetResource()
+        return resource.dispatch_list(request, 
+            section__section_id=section_id)
+
+    def dispatch_sectionasset_detail(self, request, **kwargs):
+        try:
+            # Remove the section id from the keyword arguments to lookup the
+            # the story, saving it to pass to SectionResource.dispatch_detail
+            # later
+            section_id = kwargs.pop('section_id')
+            asset_id = kwargs.pop('asset_id')
+            story = self.cached_obj_get(request=request, **self.remove_api_resource_names(kwargs))
+        except ObjectDoesNotExist:
+            return http.HttpNotFound()
+        except MultipleObjectsReturned:
+            return http.HttpMultipleChoices("More than one resource is found at this URI.")
+
+        resource = SectionAssetResource()
+        return resource.dispatch_detail(request, 
+            section__section_id=section_id,
+            asset__asset_id=asset_id)
+                                               
     def dispatch_template_list(self, request, **kwargs):
         template_resource = StoryTemplateResource()
         return template_resource.dispatch_list(request)
@@ -483,6 +518,83 @@ class SectionResource(DelayedAuthorizationResource, TranslatedModelResource):
 
     def dehydrate_layout_template(self, bundle):
         return bundle.obj.layout.get_template_contents()
+
+
+class SectionAssetResource(DelayedAuthorizationResource, HookedModelResource):
+    asset = fields.ToOneField(AssetResource, 'asset')
+    container = fields.CharField(attribute='container')
+
+    class Meta:
+        queryset = SectionAsset.objects.all()
+        resource_name = 'sectionassets'
+        allowed_methods = ['get', 'post']
+        authentication = Authentication()
+        authorization = LoggedInAuthorization()
+        # Hide the underlying id
+        excludes = ['id']
+
+        # Custom meta attributes
+        parent_resource = StoryResource
+        delayed_authorization_methods = []
+
+    def detail_uri_kwargs(self, bundle_or_obj):
+        kwargs = {}
+
+        if isinstance(bundle_or_obj, Bundle):
+            obj = bundle_or_obj.obj 
+        else:
+            obj = bundle_or_obj
+
+        kwargs['asset_id'] = obj.asset.asset_id
+        kwargs['section_id'] = obj.section.section_id
+        kwargs['story_id'] = obj.section.story.story_id
+
+        return kwargs
+
+    def resource_uri_kwargs(self, bundle_or_obj=None):
+        """
+        Builds a dictionary of kwargs to help generate URIs.
+
+        This retrieves the resource_name and api_name from the parent resource
+        as this resource is designed to be nested under ``StoryResource``
+
+        """
+        kwargs = super(SectionAssetResource, self).resource_uri_kwargs(bundle_or_obj)
+        kwargs['resource_name'] = self._meta.parent_resource._meta.resource_name 
+        if self._meta.parent_resource._meta.api_name is not None:
+            kwargs['api_name'] = self._meta.parent_resource._meta.api_name
+        return kwargs
+
+    def get_resource_uri(self, bundle_or_obj=None, url_name='api_dispatch_list'):
+        """
+        Handles generating a resource URI.
+
+        This version appends the resource name to the URL name so it can
+        be looked up in the URIs defined in ``StoryResource.prepend_urls``
+
+        """
+        if bundle_or_obj is not None:
+            url_name = 'api_dispatch_detail'
+
+        nested_url_name = url_name + "_%s" % (self._meta.resource_name)
+
+        try:
+            kwargs = self.resource_uri_kwargs(bundle_or_obj)
+            return self._build_reverse_url(nested_url_name, kwargs=kwargs)
+        except NoReverseMatch:
+            return ''
+
+    def dehydrate_container(self, bundle):
+        return bundle.obj.container.name
+
+    def hydrate_container(self, bundle):
+        bundle.data['container'] = Container.objects.get(name=bundle.data['container'])
+        return bundle
+
+    def obj_create(self, bundle, request=None, **kwargs):
+        section_id = kwargs.pop('section__section_id')
+        kwargs['section'] = Section.objects.get(section_id=section_id)
+        return super(SectionAssetResource, self).obj_create(bundle, request, **kwargs)
 
 
 class StoryTemplateResource(TranslatedModelResource):

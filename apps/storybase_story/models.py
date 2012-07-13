@@ -356,7 +356,7 @@ m2m_changed.connect(update_last_edited, sender=Story.projects.through)
 
 
 class SectionPermission(PermissionMixin):
-    """Permissions for the Story model"""
+    """Permissions for the Section model"""
     def user_can_change(self, user):
         from storybase_user.utils import is_admin
 
@@ -516,7 +516,30 @@ class SectionRelation(edge_factory(Section, concrete=False)):
         return u"%s is child of %s" % (self.child, self.parent)
 
 
-class SectionAsset(models.Model):
+class SectionAssetPermission(PermissionMixin):
+    """Permissions for the SectionAsset model"""
+    def user_can_change(self, user):
+        from storybase_user.utils import is_admin
+
+        if not user.is_active:
+            return False
+
+        if self.section.story.author == user:
+            return True
+
+        if is_admin(user):
+            return True
+
+        return False
+
+    def user_can_add(self, user):
+        return self.user_can_change(user)
+
+    def user_can_delete(self, user):
+        return self.user_can_change(user)
+
+
+class SectionAsset(models.Model, SectionAssetPermission):
     """Through class for Asset to Section relations"""
     section = models.ForeignKey('Section')
     asset = models.ForeignKey('storybase_asset.Asset')

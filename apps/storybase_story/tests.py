@@ -13,9 +13,11 @@ from tastypie.test import ResourceTestCase
 
 from storybase.tests.base import SloppyComparisonTestMixin, FixedTestApiClient
 from storybase.utils import slugify
-from storybase_asset.models import HtmlAsset, HtmlAssetTranslation
+from storybase_asset.models import (HtmlAsset, HtmlAssetTranslation,
+                                    create_html_asset)
 from storybase_geo.models import Location
-from storybase_story.api import SectionResource, StoryResource
+from storybase_story.api import (SectionAssetResource, SectionResource, 
+                                 StoryResource)
 from storybase_story.forms import SectionRelationAdminForm
 from storybase_story.models import (Container, Story, StoryTranslation, 
     Section, SectionAsset, SectionLayout, SectionRelation, StoryTemplate,
@@ -1738,6 +1740,99 @@ class SectionResourceTest(ResourceTestCase):
         section = story.sections.get(section_id=section_id)
         self.assertEqual(section.title, section_put_data['title'])
         self.assertEqual(section.layout.layout_id, section_put_data['layout'])
+
+
+class SectionAssetResourceTest(ResourceTestCase):
+    fixtures = ['section_layouts.json']
+
+    def setUp(self):
+        super(SectionAssetResourceTest, self).setUp()
+        # Use our fixed TestApiClient instead of the default
+        self.api_client = FixedTestApiClient()
+        self.resource = SectionAssetResource(api_name='0.1')
+        self.username = 'test'
+        self.password = 'test'
+        self.user = User.objects.create_user(self.username, 'test@example.com', self.password)
+
+    def get_asset_uri(self, asset):
+        return "/api/0.1/assets/%s/" % (asset.asset_id)
+
+    def test_get_list(self):
+        """Test that a user can get a list of section assets"""
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status="published",
+                             language="en", author=self.user)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        container1 = Container.objects.get(name='left')
+        container2 = Container.objects.get(name='right')
+        section = create_section(title="Test Section 1", story=story,
+                                  layout=layout)
+        asset1 = create_html_asset(type='text', title='Test Asset',
+                                   body='Test content')
+        asset2 = create_html_asset(type='text', title='Test Asset 2',
+                                   body='Test content 2')
+        SectionAsset.objects.create(section=section, asset=asset1, container=container1)
+        SectionAsset.objects.create(section=section, asset=asset2, container=container2)
+        uri = '/api/0.1/stories/%s/sections/%s/assets/' % (story.story_id,
+            section.section_id)
+        resp = self.api_client.get(uri)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 2)
+        self.assertEqual(self.deserialize(resp)['objects'][0]['container'],
+                         container1.name)
+        self.assertEqual(self.deserialize(resp)['objects'][1]['container'],
+                         container2.name)
+        self.assertEqual(self.deserialize(resp)['objects'][0]['asset'],
+                         self.get_asset_uri(asset1))
+        self.assertEqual(self.deserialize(resp)['objects'][1]['asset'],
+                         self.get_asset_uri(asset2))
+
+    def test_get_detail(self):
+        """Test that a user can get details of a single section asset"""
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status="published",
+                             language="en", author=self.user)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        container1 = Container.objects.get(name='left')
+        section = create_section(title="Test Section 1", story=story,
+                                  layout=layout)
+        asset = create_html_asset(type='text', title='Test Asset',
+                                   body='Test content')
+        SectionAsset.objects.create(section=section, asset=asset, container=container1)
+        uri = '/api/0.1/stories/%s/sections/%s/assets/%s/' % (
+            story.story_id, section.section_id, asset.asset_id)
+        resp = self.api_client.get(uri)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(self.deserialize(resp)['container'],
+                         container1.name)
+        self.assertEqual(self.deserialize(resp)['asset'],
+                         self.get_asset_uri(asset))
+
+    def test_post_list(self):
+        """Test that a user can associate an asset with a story"""
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status="published",
+                             language="en", author=self.user)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        container1 = Container.objects.get(name='left')
+        section = create_section(title="Test Section 1", story=story,
+                                  layout=layout)
+        asset = create_html_asset(type='text', title='Test Asset',
+                                   body='Test content', owner=self.user)
+        self.assertEqual(SectionAsset.objects.count(), 0)
+        post_data = {
+            'asset': self.get_asset_uri(asset),
+            'container': container1.name
+        }
+        uri = '/api/0.1/stories/%s/sections/%s/assets/' % (story.story_id,
+            section.section_id)
+        self.api_client.client.login(username=self.username, password=self.password)
+        resp = self.api_client.post(uri, format='json', data=post_data)
+        self.assertHttpCreated(resp)
+        self.assertEqual(SectionAsset.objects.count(), 1)
+        section_asset = SectionAsset.objects.get()
+        self.assertEqual(section_asset.section, section)
+        self.assertEqual(section_asset.container, container1)
 
 
 class StoryExploreResourceTest(ResourceTestCase):
