@@ -594,6 +594,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend({
 
   templateSource: function() {
     if (!_.isUndefined(this.model)) {
+      return $('#section-asset-display-template').html();
     }
     else if (!_.isUndefined(this.type)) {
       return $('#section-asset-edit-template').html();

@@ -5,84 +5,88 @@ Handlebars.js templates for story builder Backbone application
 {% load  verbatim %}
 {% verbatim %}
 <script type="text/x-handlebars-template" id="navigation-template">
-    <ul class="workflow">
-        <li>Build</li>
-        <li>Review</li>
-        <li>Share</li>
-    </ul>
-    <ul class="meta">
-        <li><a class="save" href="#">Save</a></li>
-        <li>Help</li>
-        <li>Settings</li>
-        <li>Preview</li>
-        <li>Exit</li>
-    </ul>
+<ul class="workflow">
+    <li>Build</li>
+    <li>Review</li>
+    <li>Share</li>
+</ul>
+<ul class="meta">
+    <li><a class="save" href="#">Save</a></li>
+    <li>Help</li>
+    <li>Settings</li>
+    <li>Preview</li>
+    <li>Exit</li>
+</ul>
 </script>
 
 <script type="text/x-handlebars-template" id="story-template-template">
-    <h3><a href="#">{{title}}</a></h3>
-    <p>{{description}}</p>
+<h3><a href="#">{{title}}</a></h3>
+<p>{{description}}</p>
 </script>
 
 <script type="text/x-handlebars-template" id="builder-template">
-    <ul class="sections"></ul>
+<ul class="sections"></ul>
 </script>
 
 <script type="text/x-handlebars-template" id="section-thumbnail-template">
-    <div>{{ title }}</div>
+<div>{{ title }}</div>
 </script>
 
 <script type="text/x-handlebars-template" id="story-info-edit-template">
-    <input name="title" class="title" type="text" placeholder="Title" value="{{title}}" />
-    <input name="byline" class="byline" type="text" placeholder="Byline" value="{{byline}}" />
-    <textarea name="summary" class="summary" placeholder="Summary">{{summary}}</textarea>
+<input name="title" class="title" type="text" placeholder="Title" value="{{title}}" />
+<input name="byline" class="byline" type="text" placeholder="Byline" value="{{byline}}" />
+<textarea name="summary" class="summary" placeholder="Summary">{{summary}}</textarea>
 </script>
 
 <script type="text/x-handlebars-template" id="story-call-to-action-edit-template">
-    TODO: Fill me in
+TODO: Fill me in
 </script>
 
 <script type="text/x-handlebars-template" id="section-edit-template">
-    <div class="section-controls">
-        <select name="layout" class="layout">
-        {{#each layouts}}
-        <option value="{{layout_id}}"{{#if selected}} selected="selected"{{/if}}>{{name}}</option>
-        {{/each}}
-        </select>
-    </div>
-    <input name="title" class="title" type="text" value="{{title}}" />
-    <div class="section-edit-layout">{{{layout_template}}}</div>
+<div class="section-controls">
+    <select name="layout" class="layout">
+    {{#each layouts}}
+    <option value="{{layout_id}}"{{#if selected}} selected="selected"{{/if}}>{{name}}</option>
+    {{/each}}
+    </select>
+</div>
+<input name="title" class="title" type="text" value="{{title}}" />
+<div class="section-edit-layout">{{{layout_template}}}</div>
 </script>
 
 <script type="text/x-handlebars-template" id="section-asset-select-type-template">
-    <h3>Select Asset Type</h3>
-    <ul class="asset-types">
-        {{#each assetTypes}}
-        <li><a href="#" class="asset-type" data-asset-type="{{type}}">{{name}}</a></li>
-        {{/each}}
-    </ul>
+<h3>Select Asset Type</h3>
+<ul class="asset-types">
+    {{#each assetTypes}}
+    <li><a href="#" class="asset-type" data-asset-type="{{type}}">{{name}}</a></li>
+    {{/each}}
+</ul>
 </script>
 
 <script type="text/x-handlebars-template" id="section-asset-edit-template">
-    <h3>{{type}}</h3>
-    <form>
-        {{#if showUrl}}
-        <p>
-        <label for="url">Enter a URL</label>
-        <input name="url" class="url" />
-        </p>
-        {{/if}}
-        {{#if showFile}}
-        <p>
-        <label for="file">Select a file</label>
-        <input name="file" class="file" type="file" /> 
-        </p>
-        {{/if}}
-        {{#if showBody}}
-        <textarea name="body" class="body"></textarea>
-        {{/if}}
-        <input type="reset" value="Cancel" />
-        <input type="submit" value="Save" />
-    </form>
+<h3>{{type}}</h3>
+<form>
+    {{#if showUrl}}
+    <p>
+    <label for="url">Enter a URL</label>
+    <input name="url" class="url" />
+    </p>
+    {{/if}}
+    {{#if showFile}}
+    <p>
+    <label for="file">Select a file</label>
+    <input name="file" class="file" type="file" /> 
+    </p>
+    {{/if}}
+    {{#if showBody}}
+    <textarea name="body" class="body"></textarea>
+    {{/if}}
+    <input type="reset" value="Cancel" />
+    <input type="submit" value="Save" />
+</form>
+</script>
+
+<script type="text/x-handlebars-template" id="section-asset-display-template">
+{{model.content}}
 </script>
 {% endverbatim %}
