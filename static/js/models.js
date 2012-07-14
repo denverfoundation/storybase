@@ -1,4 +1,5 @@
 /* Models shared across multiple storybase apps */
+Namespace('storybase.globals');
 Namespace('storybase.models');
 Namespace('storybase.collections');
 
@@ -6,7 +7,7 @@ storybase.models.Story = Backbone.Model.extend({
   idAttribute: "story_id",
 
   urlRoot: function() {
-    return '/api/0.1/stories';
+    return storybase.globals.API_ROOT + 'stories';
   },
 
   url: function() {
@@ -68,7 +69,7 @@ storybase.collections.Stories = Backbone.Collection.extend({
     model: storybase.models.Story,
 
     url: function() {
-      return '/api/0.1/stories';
+      return storybase.globals.API_ROOT + 'stories';
     }
 });
 
@@ -99,9 +100,17 @@ storybase.models.Section = Backbone.Model.extend({
 storybase.collections.Sections = Backbone.Collection.extend({
     model: storybase.models.Section,
 
-    url: '/api/0.1/sections/', 
+    url: storybase.globals.API_ROOT + 'sections/', 
 
     parse: function(response) {
       return response.objects;
     }
+});
+
+storybase.models.Asset = Backbone.Model.extend({
+  idAttribute: "asset_id",
+
+  urlRoot: function() {
+    return storybase.globals.API_ROOT + 'assets/'
+  }
 });

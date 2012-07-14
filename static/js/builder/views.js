@@ -675,7 +675,18 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend({
    * Event handler for saving form
    */
   save: function(e) {
-    e.preventDefault();
+    var that = this;
     console.debug("Creating asset");
+    e.preventDefault();
+    if (_.isUndefined(this.model)) {
+      this.model = new storybase.models.Asset({
+        type: this.type
+      });
+    }
+    this.model.save(null, {
+      success: function(model) {
+        that.render();
+      }
+    });
   }
 });
