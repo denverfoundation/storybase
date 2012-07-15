@@ -108,6 +108,50 @@ storybase.collections.Sections = Backbone.Collection.extend({
 });
 
 storybase.models.Asset = Backbone.Model.extend({
+  showUrl: {
+    'image': true,
+    'audio': true,
+    'video': true,
+    'map': true,
+    'table': true,
+  },
+
+  showImage: {
+    'image': true,
+    'map': true
+  },
+
+  showBody: {
+    'text': true,
+    'quotation': true
+  },
+
+  /**
+   * Build the schema for backbone-forms
+   *
+   * This is done witha function instead of declaring an object because
+   * the fields differ depending on the type of asset.
+   */
+  schema: function() {
+    var schema = {
+      body: 'TextArea',
+      url: 'Text',
+      image: storybase.forms.File
+    };
+    var type = this.get('type');
+    if (!(_.has(this.showBody, type))) {
+      delete schema.body;
+    }
+    if (!(_.has(this.showImage, type))) {
+      delete schema.image;
+    }
+    if (!(_.has(this.showUrl, type))) {
+      delete schema.url;
+    }
+
+    return schema;
+  },
+
   idAttribute: "asset_id",
 
   urlRoot: function() {

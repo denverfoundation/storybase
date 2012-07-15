@@ -66,21 +66,7 @@ TODO: Fill me in
 <script type="text/x-handlebars-template" id="section-asset-edit-template">
 <h3>{{type}}</h3>
 <form>
-    {{#if showUrl}}
-    <p>
-    <label for="url">Enter a URL</label>
-    <input name="url" class="url" />
-    </p>
-    {{/if}}
-    {{#if showFile}}
-    <p>
-    <label for="file">Select a file</label>
-    <input name="file" class="file" type="file" /> 
-    </p>
-    {{/if}}
-    {{#if showBody}}
-    <textarea name="body" class="body"></textarea>
-    {{/if}}
+    {{{form}}}
     <input type="reset" value="Cancel" />
     <input type="submit" value="Save" />
 </form>

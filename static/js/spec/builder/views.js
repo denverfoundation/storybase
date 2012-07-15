@@ -51,8 +51,12 @@ describe('SectionAssetEditView view', function() {
         this.selectedType = $typeLink.data('asset-type');
       });
 
-      it("should set the type property", function() {
-        expect(this.view.type).toEqual(this.selectedType);
+      it("should set the model property", function() {
+        expect(this.view.model).toBeDefined();
+      });
+
+      it("should set the type attribute of the model", function() {
+        expect(this.view.model.get('type')).toEqual(this.selectedType);
       });
 
       it('should provide a form for selecting an asset', function() {
@@ -61,11 +65,13 @@ describe('SectionAssetEditView view', function() {
     });
   });
 
-  describe('with the type property set', function() {
+  describe('with the model type attribute set', function() {
     beforeEach(function() {
       // Set the type property to a type that we don't really care
       // about to test for things that should happen regardless of type
-      this.view.type = 'faketype';
+      this.view.model = new storybase.models.Asset({
+        type: 'faketype'
+      });
     });
 
     describe('when rendering', function(){
@@ -104,9 +110,11 @@ describe('SectionAssetEditView view', function() {
     });
   });
 
-  describe('with the type property set to "text"', function() {
+  describe('with the model type attribute set to "text"', function() {
     beforeEach(function() {
-      this.view.type = 'text';
+      this.view.model = new storybase.models.Asset({
+        type: 'text'
+      });
     });
 
     describe('when rendering', function(){
@@ -139,17 +147,20 @@ describe('SectionAssetEditView view', function() {
         this.view.render();
         this.view.$('textarea').val(this.assetBody);
         this.view.$('input[type="submit"]').click();
-        this.server.respond();
       });
 
       afterEach(function() {
         this.server.restore();
       });
 
-      it('should set and save the model property', function() {
+      it('should set the model property', function() {
         expect(this.view.model).toBeDefined();
         expect(this.view.model.get('body')).toEqual(this.assetBody);
         expect(this.view.model.get('type')).toEqual('text');
+      });
+
+      it('should save the model', function() {
+        this.server.respond();
         expect(this.view.model.isNew()).toBeFalsy();
       });
 
@@ -159,9 +170,11 @@ describe('SectionAssetEditView view', function() {
     });
   });
 
-  describe('with the type property set to "image"', function() {
+  describe('with the model type attribute set to "image"', function() {
     beforeEach(function() {
-      this.view.type = 'image';
+      this.view.model = new storybase.models.Asset({
+        type: 'image'
+      });
     });
 
     describe('when rendering', function(){
@@ -171,7 +184,7 @@ describe('SectionAssetEditView view', function() {
 
       it('should provide a file and url input', function() {
         expect(this.view.$el).toContain('input[name="url"]');
-        expect(this.view.$el).toContain('input[name="file"]');
+        expect(this.view.$el).toContain('input[name="image"]');
       });
 
       it('should not include a textarea', function() {

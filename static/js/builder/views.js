@@ -593,13 +593,15 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend({
   className: 'edit-section-asset',
 
   templateSource: function() {
-    if (!_.isUndefined(this.model)) {
+    var state = this.getState(); 
+    if (state === 'display') {
       return $('#section-asset-display-template').html();
     }
-    else if (!_.isUndefined(this.type)) {
+    else if (state === 'edit') {
       return $('#section-asset-edit-template').html();
     }
     else {
+      // state === 'select'
       return $('#section-asset-select-type-template').html();
     }
   },
@@ -608,24 +610,6 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend({
     "click .asset-type": "selectType", 
     'click input[type="reset"]': "cancel",
     'click input[type="submit"]': "save"
-  },
-
-  showUrl: {
-    'image': true,
-    'audio': true,
-    'video': true,
-    'map': true,
-    'table': true,
-  },
-
-  showFile: {
-    'image': true,
-    'map': true
-  },
-
-  showBody: {
-    'text': true,
-    'quotation': true
   },
 
   initialize: function() {
@@ -638,16 +622,31 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend({
     var context = {
       assetTypes: this.assetTypes
     };
-    if (!_.isUndefined(this.type)) {
-      context.showUrl = this.type in this.showUrl,
-      context.showFile = this.type in this.showFile, 
-      context.showBody = this.type in this.showBody 
+    var state = this.getState();
+    if (state === 'edit') {
+      console.debug(this.model);
+      var form = new Backbone.Form({
+        model: this.model
+      });
+      context.form = form.render().$el.html(); 
     }
-    if (!_.isUndefined(this.model)) {
+    if (state === 'display') {
       context.model = this.model.toJSON()
     }
     this.$el.html(this.template(context));
     return this;
+  },
+
+  getState: function() {
+    if (!_.isUndefined(this.model) && this.model.hasChanged()) {
+      return 'display'; 
+    }
+    else if (!_.isUndefined(this.model) && !_.isUndefined(this.model.get('type'))) {
+      return 'edit';
+    }
+    else {
+      return 'select';
+    }
   },
 
   /**
@@ -655,7 +654,11 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend({
    */
   selectType: function(e) {
     e.preventDefault(); 
-    this.type = $(e.target).data('asset-type');
+    if (_.isUndefined(this.model)) {
+      this.model = new storybase.models.Asset({
+      });
+    }
+    this.model.set('type', $(e.target).data('asset-type'));
     this.render();
   },
 
@@ -664,9 +667,9 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend({
    */
   cancel: function(e) {
     e.preventDefault();
-    if (_.isUndefined(this.model)) {
-      // No asset has been saved for this view, just forget the type
-      delete this.type;
+    if (!this.model.hasChanged()) {
+      // No asset has been saved.  Delete the model.
+      delete this.model;
     }
     this.render();
   },
@@ -675,14 +678,10 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend({
    * Event handler for saving form
    */
   save: function(e) {
-    var that = this;
     console.debug("Creating asset");
+    var that = this;
     e.preventDefault();
-    if (_.isUndefined(this.model)) {
-      this.model = new storybase.models.Asset({
-        type: this.type
-      });
-    }
+    // TODO: Handle form invalidation
     this.model.save(null, {
       success: function(model) {
         that.render();

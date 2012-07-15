@@ -40,3 +40,59 @@ describe('Story model', function() {
     });
   });
 });
+
+describe('Asset model', function() {
+  describe('when initialized with a type of "text"', function() {
+    beforeEach(function() {
+      this.model = new storybase.models.Asset({
+        type: 'text'
+      });
+    });
+
+    describe('a form for the model', function() {
+      beforeEach(function() {
+        this.form = new Backbone.Form({
+          model: this.model
+        });
+        this.form.render();
+      });
+
+      it('should contain a text area for the body', function() {
+        expect($(this.form.el).find('textarea[name="body"]')).toExist();
+      });
+
+      it('should not contain an input for url', function() {
+        expect($(this.form.el).find('input[name="url"]')).not.toExist();
+      });
+    });
+  });
+
+  describe('when initialized with a type of "image"', function() {
+    beforeEach(function() {
+      this.model = new storybase.models.Asset({
+        type: 'image'
+      });
+    });
+
+    describe('a form for the model', function() {
+      beforeEach(function() {
+        this.form = new Backbone.Form({
+          model: this.model
+        });
+        this.form.render();
+      });
+
+      it('should not contain a text area for the body', function() {
+        expect($(this.form.el).find('textarea[name="body"]')).not.toExist();
+      });
+
+      it('should contain an input for url', function() {
+        expect($(this.form.el).find('input[name="url"]')).toExist();
+      });
+
+      it('should contain an input for image', function() {
+        expect($(this.form.el).find('input[name="image"]')).toExist();
+      });
+    });
+  });
+});
