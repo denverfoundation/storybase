@@ -116,7 +116,26 @@ class TranslatedModel(models.Model):
 
     def get_languages(self):
         """Get a list of translated languages for the model instance"""
-        translation_set = getattr(self, 'translation_set')
+        # TODO: Refactor this so it doesn't repeat the code in 
+        # __getattribute__
+        try:
+            translation_set = getattr(self, 'translation_set')
+        except AttributeError:
+            # Try the subclass
+            subclass_attrs = [rel.var_name 
+                              for rel 
+                              in self._meta.get_all_related_objects()
+                              if isinstance(rel.field, OneToOneField)
+                              and issubclass(rel.field.model,
+                                             self.__class__)]
+            for attr in subclass_attrs:
+                if hasattr(self, attr):
+                    subclass = getattr(self, attr)
+                    if subclass:
+                        translation_set = subclass.translation_set
+                        break
+            else:
+                raise
         translated_manager = getattr(self, translation_set)
         return [trans.language 
                 for trans in translated_manager.all()]

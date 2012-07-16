@@ -1784,10 +1784,24 @@ class SectionAssetResourceTest(ResourceTestCase):
                          container1.name)
         self.assertEqual(self.deserialize(resp)['objects'][1]['container'],
                          container2.name)
-        self.assertEqual(self.deserialize(resp)['objects'][0]['asset'],
-                         self.get_asset_uri(asset1))
-        self.assertEqual(self.deserialize(resp)['objects'][1]['asset'],
-                         self.get_asset_uri(asset2))
+        self.assertEqual(
+            self.deserialize(resp)['objects'][0]['asset']['asset_id'],
+            asset1.asset_id)
+        self.assertEqual(
+            self.deserialize(resp)['objects'][1]['asset']['asset_id'],
+            asset2.asset_id)
+        self.assertEqual(
+            self.deserialize(resp)['objects'][0]['asset']['type'],
+            asset1.type)
+        self.assertEqual(
+            self.deserialize(resp)['objects'][1]['asset']['type'],
+            asset2.type)
+        self.assertEqual(
+            self.deserialize(resp)['objects'][0]['asset']['title'],
+            asset1.title)
+        self.assertEqual(
+            self.deserialize(resp)['objects'][1]['asset']['title'],
+            asset2.title)
 
     def test_get_detail(self):
         """Test that a user can get details of a single section asset"""
@@ -1807,8 +1821,15 @@ class SectionAssetResourceTest(ResourceTestCase):
         self.assertValidJSONResponse(resp)
         self.assertEqual(self.deserialize(resp)['container'],
                          container1.name)
-        self.assertEqual(self.deserialize(resp)['asset'],
-                         self.get_asset_uri(asset))
+        self.assertEqual(
+            self.deserialize(resp)['asset']['asset_id'],
+            asset.asset_id)
+        self.assertEqual(
+            self.deserialize(resp)['asset']['type'],
+            asset.type)
+        self.assertEqual(
+            self.deserialize(resp)['asset']['title'],
+            asset.title)
 
     def test_post_list(self):
         """Test that a user can associate an asset with a story"""

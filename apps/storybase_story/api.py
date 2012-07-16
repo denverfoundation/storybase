@@ -522,7 +522,7 @@ class SectionResource(DelayedAuthorizationResource, TranslatedModelResource):
 
 
 class SectionAssetResource(DelayedAuthorizationResource, HookedModelResource):
-    asset = fields.ToOneField(AssetResource, 'asset')
+    asset = fields.ToOneField(AssetResource, 'asset', full=True)
     container = fields.CharField(attribute='container')
 
     class Meta:
