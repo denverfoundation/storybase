@@ -37,7 +37,7 @@
                 3
             ], 
             "layout_id": "ccaea5bac5c7467eb014baf6f7476ccb", 
-            "template": "1_up.html"
+            "template": "1up.html"
         }, 
         "model": "storybase_story.sectionlayout", 
         "pk": 2
