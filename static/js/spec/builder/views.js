@@ -1,3 +1,32 @@
+describe('SectionEditView view', function() {
+  beforeEach(function() {
+    this.dispatcher = _.clone(Backbone.Events);
+    this.view = new storybase.builder.views.SectionEditView({
+      dispatcher: this.dispatcher,
+      model: new Backbone.Model(),
+      story: new Backbone.Model()
+    });
+  });
+
+  describe('when receiving the "add:asset" event', function() {
+    beforeEach(function() {
+      this.asset = new Backbone.Model({
+         id: 'bef53407591f4fd8bd169f9cc02672f9',
+         type: 'text',
+         body: 'Test text asset body',
+         content: 'Test text asset body'
+      });
+      this.dispatcher.trigger('add:asset', this.asset); 
+    });
+
+    it('should add the asset to the assets collection', function() {
+      expect(this.view.assets.size()).toEqual(1);
+      expect(this.view.assets.at(0)).toEqual(this.asset);
+    });
+  
+  });
+});
+
 describe('SectionAssetEditView view', function() {
   beforeEach(function() {
     // Load Handlebars templates from a fixture file
@@ -17,18 +46,24 @@ describe('SectionAssetEditView view', function() {
         'type': 'text'
       }
     ];
+    this.dispatcher = _.clone(Backbone.Events);
     this.view = new storybase.builder.views.SectionAssetEditView({
+       dispatcher: this.dispatcher,
        assetTypes: this.assetTypes,
     });
   });
 
   describe('when initializing', function() {
-    it('should have an undefined model property', function() {
-      expect(this.view.model).toBeUndefined();
+    it('should have a model property', function() {
+      expect(this.view.model).toBeDefined();
     });
 
-    it('should have an undefined type property', function() {
-      expect(this.view.type).toBeUndefined();
+    it('should have a form property', function() {
+      expect(this.view.form).toBeDefined();
+    });
+
+    it('should have a state of "select"', function() {
+      expect(this.view.getState()).toEqual('select');
     });
   });
 
@@ -69,9 +104,7 @@ describe('SectionAssetEditView view', function() {
     beforeEach(function() {
       // Set the type property to a type that we don't really care
       // about to test for things that should happen regardless of type
-      this.view.model = new storybase.models.Asset({
-        type: 'faketype'
-      });
+      this.view.setType('faketype');
     });
 
     describe('when rendering', function(){
@@ -112,9 +145,7 @@ describe('SectionAssetEditView view', function() {
 
   describe('with the model type attribute set to "text"', function() {
     beforeEach(function() {
-      this.view.model = new storybase.models.Asset({
-        type: 'text'
-      });
+      this.view.setType('text');
     });
 
     describe('when rendering', function(){
@@ -144,8 +175,10 @@ describe('SectionAssetEditView view', function() {
           "/api/0.1/assets/",
           this.validResponse(this.fixture)
         );
+        this.spy = sinon.spy();
+        this.dispatcher.on("add:asset", this.spy);
         this.view.render();
-        this.view.$('textarea').val(this.assetBody);
+        this.view.$('textarea[name="body"]').val(this.assetBody);
         this.view.$('input[type="submit"]').click();
       });
 
@@ -165,16 +198,20 @@ describe('SectionAssetEditView view', function() {
       });
 
       it("should display the model's body", function() {
+        this.server.respond();
         expect(this.view.$el.text()).toContain(this.view.model.get('body'));
+      });
+
+      it('should send the "add:asset" event through the dispatcher', function() {
+        this.server.respond();
+        expect(this.spy.called).toBeTruthy();
       });
     });
   });
 
   describe('with the model type attribute set to "image"', function() {
     beforeEach(function() {
-      this.view.model = new storybase.models.Asset({
-        type: 'image'
-      });
+      this.view.setType('image');
     });
 
     describe('when rendering', function(){
@@ -193,7 +230,7 @@ describe('SectionAssetEditView view', function() {
     });
   });
 
-  describe('with the model property set to a text asset', function() {
+  describe('with the model property set to an existing text asset', function() {
     beforeEach(function() {
        this.view.model = new Backbone.Model({
          id: 'bef53407591f4fd8bd169f9cc02672f9',
@@ -201,16 +238,21 @@ describe('SectionAssetEditView view', function() {
          body: 'Test text asset body',
          content: 'Test text asset body'
        });
-       this.view.render();
     });
 
-    describe('when rendering', function() {
+    describe('when in the "display" state', function() {
       beforeEach(function() {
-        this.view.render();
+        this.view.setState('display');
       });
 
-      it("should display the model's body", function() {
-        expect(this.view.$el.text()).toContain(this.view.model.get('body'));
+      describe('when rendering', function() {
+        beforeEach(function() {
+          this.view.render();
+        });
+
+        it("should display the model's body", function() {
+          expect(this.view.$el.text()).toContain(this.view.model.get('body'));
+        });
       });
     });
   });

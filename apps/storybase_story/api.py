@@ -425,6 +425,7 @@ class SectionResource(DelayedAuthorizationResource, TranslatedModelResource):
     layout_template = fields.CharField(readonly=True)
 
     class Meta:
+        always_return_data = True
         queryset = Section.objects.all()
         resource_name = 'sections'
         allowed_methods = ['get', 'post', 'patch', 'put']

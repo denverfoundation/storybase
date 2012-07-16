@@ -155,6 +155,7 @@ storybase.builder.views.StoryTemplateView = Backbone.View.extend({
   },
 
   initialize: function() {
+    console.info('initializing form');
     this.dispatcher = this.options.dispatcher;
     this.template = Handlebars.compile(this.templateSource);
   },
@@ -207,7 +208,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   },
 
   addSectionThumbnail: function(section) {
-    console.debug("Adding section thumbnail");
+    console.info("Adding section thumbnail");
     var view = new storybase.builder.views.SectionThumbnailView({
       dispatcher: this.dispatcher,
       model: section,
@@ -284,7 +285,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   },
 
   setStoryTemplate: function(template) {
-    console.debug("Setting story template");
+    console.info("Setting story template");
     var that = this;
     this.storyTemplate = template;
     this.storyTemplate.getStory({
@@ -296,7 +297,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   },
 
   setTemplateStory: function(story) {
-    console.debug("Setting template story");
+    console.info("Setting template story");
     var that = this;
     this.templateStory = story;
     this.templateStory.fetchSections({
@@ -308,13 +309,13 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   },
 
   setTemplateSections: function(sections) {
-    console.debug("Setting template sections"); 
+    console.info("Setting template sections"); 
     this.templateSections = sections;
     this.dispatcher.trigger("ready:templateSections");
   },
 
   initializeStoryFromTemplate: function() {
-    console.debug("Initializing sections");
+    console.info("Initializing sections");
     var that = this;
     // Create the story instance
     this.model = new storybase.models.Story({
@@ -331,7 +332,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   },
 
   save: function() {
-    console.debug("Saving story");
+    console.info("Saving story");
     var that = this;
     this.model.save(null, {
       success: function(model, response) {
@@ -392,7 +393,7 @@ storybase.builder.views.SectionThumbnailView = Backbone.View.extend(
     },
 
     select: function() {
-      console.debug("Selecting section with id " + this.model.id);
+      console.info("Selecting section with id " + this.model.id);
       this.dispatcher.trigger("select:thumbnail", this);
     }
 }));
@@ -468,7 +469,7 @@ storybase.builder.views.StoryInfoEditView = Backbone.View.extend({
       else {
         this.model.save();
       }
-      console.debug("Updated " + name + " to " + value);
+      console.info("Updated " + name + " to " + value);
     }
   }
 });
@@ -508,7 +509,7 @@ storybase.builder.views.CallToActionEditView = Backbone.View.extend({
       else {
         this.model.save();
       }
-      console.debug("Updated " + name + " to " + value);
+      console.info("Updated " + name + " to " + value);
     }
   }
 });
@@ -533,6 +534,11 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     this.story = this.options.story;
     this.layouts = this.options.layouts;
     this.template = Handlebars.compile(this.templateSource);
+    this.assets = this.options.assets || new storybase.collections.Assets();
+    this._unsavedAssets = [];
+
+    this.dispatcher.on('add:asset', this.addAsset, this);
+    this.model.on("sync", this.saveSectionAssets, this);
   },
 
   /**
@@ -556,9 +562,9 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     context.layouts = this.getLayoutContext();
     this.$el.html(this.template(context));
     this.$('.storybase-container-placeholder').each(function(index, el) {
-      console.debug($(el).attr('id'));
       var sectionAssetView = new storybase.builder.views.SectionAssetEditView({
         el: el,
+        container: $(el).attr('id'),
         dispatcher: that.dispatcher,
         assetTypes: that.options.assetTypes
       });
@@ -571,7 +577,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
    * Event handler for when form elements are changed
    */
   change: function(e) {
-    console.debug("Change event!");
+    console.info("Change event!");
     var name = $(e.target).attr("name");
     var value = $(e.target).val();
     if (_.has(this.model.attributes, name)) {
@@ -582,9 +588,50 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
       else {
         this.model.save();
       }
-      console.debug("Updated " + name + " to " + value);
+      console.info("Updated " + name + " to " + value);
     }
   },
+
+  /**
+   * Event handler for when assets are added to the section
+   */
+  addAsset: function(asset, container) {
+    this.assets.add(asset);
+    if (this.story.isNew()) {
+      // We haven't saved the story or the section yet.
+      // Defer the saving of the asset relation 
+      this._unsavedAssets.push({
+        asset: asset,
+        container: container
+      });
+      // Trigger an event that will cause the story and section to be saved
+      this.dispatcher.trigger("save:story");
+    }
+    else {
+      this.saveSectionAsset(asset);
+    }
+  },
+
+  saveSectionAsset: function(asset, container) {
+    var SectionAsset = Backbone.Model.extend({
+      urlRoot: this.model.url() + 'assets/'
+    });
+    var sectionAsset = new SectionAsset({
+      asset: asset.url(),
+      container: container
+    });
+    sectionAsset.save();
+  },
+
+  saveSectionAssets: function() {
+    var that = this;
+    _.each(this._unsavedAssets, function(sectionAsset) {
+      console.debug(sectionAsset);
+      that.saveSectionAsset(sectionAsset.asset, sectionAsset.container); 
+    });
+    this._unsavedAssets = [];
+  },
+
 });
 
 storybase.builder.views.SectionAssetEditView = Backbone.View.extend({
@@ -613,8 +660,27 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend({
   },
 
   initialize: function() {
+    this.container = this.options.container;
     this.dispatcher = this.options.dispatcher;
     this.assetTypes = this.options.assetTypes;
+    if (_.isUndefined(this.model)) {
+      this.model = new storybase.models.Asset();
+    }
+    _.bindAll(this, 'initializeForm'); 
+    this.model.on("change", this.initializeForm);
+    this.initializeForm();
+    this.setInitialState();
+  },
+
+  /**
+   * Set the view's form property based on the current state of the model.
+   */
+  initializeForm: function() {
+    console.info('Initializing form');
+    this.form = new Backbone.Form({
+      model: this.model
+    });
+    this.form.render();
   },
 
   render: function() {
@@ -623,30 +689,35 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend({
       assetTypes: this.assetTypes
     };
     var state = this.getState();
-    if (state === 'edit') {
-      console.debug(this.model);
-      var form = new Backbone.Form({
-        model: this.model
-      });
-      context.form = form.render().$el.html(); 
-    }
     if (state === 'display') {
       context.model = this.model.toJSON()
     }
     this.$el.html(this.template(context));
+    if (state === 'edit') {
+      this.form.render().$el.append('<input type="reset" value="Cancel" />').append('<input type="submit" value="Save" />');
+      this.$el.append(this.form.el);
+    }
     return this;
   },
 
-  getState: function() {
-    if (!_.isUndefined(this.model) && this.model.hasChanged()) {
-      return 'display'; 
+  setInitialState: function() {
+    if (!this.model.isNew()) {
+      this._state = 'display';
     }
-    else if (!_.isUndefined(this.model) && !_.isUndefined(this.model.get('type'))) {
-      return 'edit';
+    else if (!_.isUndefined(this.model.type)) {
+      this._state = 'edit';
     }
     else {
-      return 'select';
+      this._state = 'select';
     }
+  },
+
+  getState: function() {
+    return this._state;
+  },
+
+  setState: function(state) {
+    this._state = state;
   },
 
   /**
@@ -654,11 +725,12 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend({
    */
   selectType: function(e) {
     e.preventDefault(); 
-    if (_.isUndefined(this.model)) {
-      this.model = new storybase.models.Asset({
-      });
-    }
-    this.model.set('type', $(e.target).data('asset-type'));
+    this.setType($(e.target).data('asset-type'));
+  },
+
+  setType: function(type) {
+    this.model.set('type', type);
+    this.setState('edit');
     this.render();
   },
 
@@ -671,6 +743,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend({
       // No asset has been saved.  Delete the model.
       delete this.model;
     }
+    this.setState('select');
     this.render();
   },
 
@@ -678,14 +751,32 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend({
    * Event handler for saving form
    */
   save: function(e) {
-    console.debug("Creating asset");
+    console.info("Creating asset");
     var that = this;
+    // Save the model's original new state to decide
+    // whether to send a signal later
+    var isNew = this.model.isNew();
+    var errors = this.form.commit();
     e.preventDefault();
-    // TODO: Handle form invalidation
-    this.model.save(null, {
-      success: function(model) {
-        that.render();
-      }
-    });
+    if (!errors) {
+      this.model.save(null, {
+        success: function(model) {
+          // TODO: Decide if it's better to listen to the model's
+          // "sync" event than to use this callback
+          that.setState('display');
+          that.render();
+          if (isNew) {
+            // Model was new before saving
+            that.dispatcher.trigger("add:asset", that.model, that.container);
+          }
+        },
+        error: function(model) {
+          console.error("error saving the asset");
+        }
+      });
+    }
+    else {
+      console.error('Error in asset form');
+    }
   }
 });

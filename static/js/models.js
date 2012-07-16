@@ -154,7 +154,19 @@ storybase.models.Asset = Backbone.Model.extend({
 
   idAttribute: "asset_id",
 
+  url: function() {
+    var url = Backbone.Model.prototype.url.call(this);
+    if (url.charAt(url.length - 1) != '/') {
+      url = url + '/';
+    }
+    return url;
+  },
+
   urlRoot: function() {
     return storybase.globals.API_ROOT + 'assets/'
   }
+});
+
+storybase.collections.Assets = Backbone.Collection.extend({
+    model: storybase.models.Asset
 });
