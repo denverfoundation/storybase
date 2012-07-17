@@ -35,19 +35,18 @@ class AssetResource(DelayedAuthorizationResource, TranslatedModelResource):
         always_return_data = True
         queryset = Asset.objects.select_subclasses()
         resource_name = 'assets'
-        allowed_methods = ['get', 'post', 'patch']
+        allowed_methods = ['get', 'post', 'put']
         authentication = Authentication()
         authorization = LoggedInAuthorization()
 
-        delayed_authorization_methods = []
+        delayed_authorization_methods = ['put_detail']
 
     def get_object_class(self, bundle=None, request=None, **kwargs):
-        bundle_data_keys = bundle.data.keys()
-        if 'image' in bundle_data_keys:
+        if bundle.data.get('image', None):
             return LocalImageAsset
-        elif 'body' in bundle_data_keys:
+        elif bundle.data.get('body', None): 
             return HtmlAsset
-        elif 'url' in bundle_data_keys:
+        elif bundle.data.get('url', None):
             return ExternalAsset
         else:
             raise AttributeError
@@ -108,7 +107,9 @@ class AssetResource(DelayedAuthorizationResource, TranslatedModelResource):
             f.seek(0, os.SEEK_END)
             return f.tell()
 
-        if 'image' in bundle.data.keys():
+        image = bundle.data.get('image', None)
+
+        if image:
             (content_type, encoding, data) = self.parse_data_uri(bundle.data['image'])
             filename = bundle.data.get('filename')
             f = StringIO()

@@ -624,3 +624,19 @@ class AssetResourceTest(FileCleanupMixin, ResourceTestCase):
         self.assertEqual(created_asset.caption, post_data['caption'])
         self.assertEqual(created_asset.attribution, post_data['attribution'])
         self.assertEqual(created_asset.url, post_data['url'])
+
+    def test_put_detail_html(self):
+        asset = create_html_asset(type='text', title='Test Html Asset',
+                                   body='<p>Test body</p>',
+                                   attribution="Jane Doe", 
+                                   status="published",
+                                   owner=self.user)
+        data = {
+            'body': 'New Body'
+        }
+        self.api_client.client.login(username=self.username, password=self.password)
+        response = self.api_client.put('/api/0.1/assets/%s/' % (asset.asset_id),
+                               format='json', data=data)
+        self.assertHttpAccepted(response)
+        modified_asset = Asset.objects.select_subclasses().get(asset_id=asset.asset_id)
+        self.assertEqual(modified_asset.body, data['body'])

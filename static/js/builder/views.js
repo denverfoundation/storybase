@@ -642,7 +642,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
    * Event handler for when assets are removed from the section
    */
   removeAsset: function(asset) {
-    console.debug('got here');
+    // TODO: Deal with asset library
     console.debug(this.getSectionAsset(asset));
     var sectionAsset = this.getSectionAsset(asset);
     sectionAsset.id = asset.id;
@@ -799,6 +799,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend({
     // Save the model's original new state to decide
     // whether to send a signal later
     var isNew = this.model.isNew();
+    console.debug(attributes);
     this.model.save(attributes, {
       success: function(model) {
         // TODO: Decide if it's better to listen to the model's
