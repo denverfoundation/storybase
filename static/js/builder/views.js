@@ -680,7 +680,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend({
   events: {
     "click .asset-type": "selectType", 
     'click input[type="reset"]': "cancel",
-    'click input[type="submit"]': "save"
+    'submit form': 'processForm'
   },
 
   initialize: function() {
@@ -767,36 +767,58 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend({
     this.render();
   },
 
-  /**
-   * Event handler for saving form
-   */
-  save: function(e) {
-    console.info("Creating asset");
+  saveModel: function(attributes) {
     var that = this;
     // Save the model's original new state to decide
     // whether to send a signal later
     var isNew = this.model.isNew();
-    var errors = this.form.commit();
-    e.preventDefault();
-    if (!errors) {
-      this.model.save(null, {
-        success: function(model) {
-          // TODO: Decide if it's better to listen to the model's
-          // "sync" event than to use this callback
-          that.setState('display');
-          that.render();
-          if (isNew) {
-            // Model was new before saving
-            that.dispatcher.trigger("add:asset", that.model, that.container);
-          }
-        },
-        error: function(model) {
-          that.dispatcher.trigger('error', 'error saving the asset');
+    this.model.save(attributes, {
+      success: function(model) {
+        // TODO: Decide if it's better to listen to the model's
+        // "sync" event than to use this callback
+        that.setState('display');
+        that.render();
+        if (isNew) {
+          // Model was new before saving
+          that.dispatcher.trigger("add:asset", that.model, that.container);
         }
-      });
+      },
+      error: function(model) {
+        that.dispatcher.trigger('error', 'error saving the asset');
+      }
+    });
+  },
+
+  /**
+   * Event handler for submitting form
+   */
+  processForm: function(e) {
+    e.preventDefault();
+    console.info("Creating asset");
+    var that = this;
+    var errors = this.form.validate();
+    if (!errors) {
+      var data = this.form.getValue();
+      if (data.image) {
+        data.filename = data.image;
+        this.form.fields.image.editor.getValueAsDataURL(function(dataURL) {
+          data.image = dataURL;
+          that.saveModel(data);
+        });
+      }
+      else {
+        this.saveModel(data);
+      }
     }
     else {
-      that.dispatcher.trigger('error', 'Error in asset form');
+      // Remove any previous error messages
+      this.form.$('.bbf-model-errors').remove();
+      if (!_.isUndefined(errors._others)) {
+        that.form.$el.prepend('<ul class="bbf-model-errors">');
+        _.each(errors._others, function(msg) {
+          that.form.$('.bbf-model-errors').append('<li>' + msg + '</li>');
+        });
+      }
     }
   }
 });

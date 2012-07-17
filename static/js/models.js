@@ -135,7 +135,7 @@ storybase.models.Asset = Backbone.Model.extend({
   schema: function() {
     var schema = {
       body: 'TextArea',
-      url: 'Text',
+      url: {type: 'Text', validators: ['url']},
       image: {type: storybase.forms.File}
     };
     var type = this.get('type');

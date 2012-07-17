@@ -261,7 +261,7 @@ describe('SectionAssetEditView view', function() {
         this.dispatcher.on("add:asset", this.spy);
         this.view.render();
         this.view.$('textarea[name="body"]').val(this.assetBody);
-        this.view.$('input[type="submit"]').click();
+        this.view.$('form').submit();
       });
 
       afterEach(function() {
