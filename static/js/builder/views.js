@@ -193,6 +193,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.dispatcher.on("ready:story", this.storyReady, this);
     this.dispatcher.on("save:story", this.save, this);
     this.dispatcher.on("select:thumbnail", this.showEditView, this);
+    this.dispatcher.on("error", this.error, this);
 
     _.bindAll(this, 'addSectionThumbnail', 'setTemplateStory', 'setTemplateSections');
 
@@ -794,12 +795,12 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend({
           }
         },
         error: function(model) {
-          console.error("error saving the asset");
+          that.dispatcher.trigger('error', 'error saving the asset');
         }
       });
     }
     else {
-      console.error('Error in asset form');
+      that.dispatcher.trigger('error', 'Error in asset form');
     }
   }
 });
