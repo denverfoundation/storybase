@@ -345,7 +345,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
   showEditView: function(thumbnailView) {
     this.$('.edit-section').hide();
-    thumbnailView.editView.render().$el.show();
+    thumbnailView.editView.$el.show();
   }
 });
 
@@ -633,7 +633,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
       this.dispatcher.trigger("save:story");
     }
     else {
-      this.saveSectionAsset(asset);
+      this.saveSectionAsset(asset, container);
     }
   },
 
