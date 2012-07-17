@@ -136,7 +136,7 @@ storybase.models.Asset = Backbone.Model.extend({
     var schema = {
       body: 'TextArea',
       url: 'Text',
-      image: storybase.forms.File
+      image: {type: storybase.forms.File}
     };
     var type = this.get('type');
     if (!(_.has(this.showBody, type))) {

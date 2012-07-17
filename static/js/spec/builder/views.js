@@ -302,8 +302,8 @@ describe('SectionAssetEditView view', function() {
       });
 
       it('should provide a file and url input', function() {
-        expect(this.view.$el).toContain('input[name="url"]');
-        expect(this.view.$el).toContain('input[name="image"]');
+        expect(this.view.$el).toContain('input[name="url"][type="text"]');
+        expect(this.view.$el).toContain('input[name="image"][type="file"]');
       });
 
       it('should not include a textarea', function() {
