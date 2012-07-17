@@ -763,10 +763,6 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend({
    */
   cancel: function(e) {
     e.preventDefault();
-    if (!this.model.hasChanged()) {
-      // No asset has been saved.  Delete the model.
-      delete this.model;
-    }
     this.setState('select');
     this.render();
   },
