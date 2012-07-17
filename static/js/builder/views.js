@@ -541,6 +541,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
 
     _.bindAll(this, 'renderAssetViews');
     this.dispatcher.on('add:asset', this.addAsset, this);
+    this.dispatcher.on('remove:asset', this.removeAsset, this);
     this.model.on("sync", this.saveSectionAssets, this);
 
   },
@@ -637,15 +638,33 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     }
   },
 
-  saveSectionAsset: function(asset, container) {
+  /**
+   * Event handler for when assets are removed from the section
+   */
+  removeAsset: function(asset) {
+    console.debug('got here');
+    console.debug(this.getSectionAsset(asset));
+    var sectionAsset = this.getSectionAsset(asset);
+    sectionAsset.id = asset.id;
+    sectionAsset.destroy();
+  },
+
+  getSectionAsset: function(asset, container) {
     var SectionAsset = Backbone.Model.extend({
-      urlRoot: this.model.url() + 'assets/'
+      urlRoot: this.model.url() + 'assets',
+      url: function() {
+        return Backbone.Model.prototype.url.call(this) + '/';
+      }
     });
     var sectionAsset = new SectionAsset({
       asset: asset.url(),
       container: container
     });
-    sectionAsset.save();
+    return sectionAsset;
+  },
+
+  saveSectionAsset: function(asset, container) {
+    this.getSectionAsset(asset, container).save();
   },
 
   saveSectionAssets: function() {
@@ -679,6 +698,8 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend({
 
   events: {
     "click .asset-type": "selectType", 
+    "click .remove": "remove",
+    "click .edit": "edit",
     'click input[type="reset"]': "cancel",
     'submit form': 'processForm'
   },
@@ -742,6 +763,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend({
 
   setState: function(state) {
     this._state = state;
+    return this;
   },
 
   /**
@@ -763,7 +785,12 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend({
    */
   cancel: function(e) {
     e.preventDefault();
-    this.setState('select');
+    if (this.model.isNew()) {
+      this.setState('select');
+    }
+    else {
+      this.setState('display');
+    }
     this.render();
   },
 
@@ -820,5 +847,17 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend({
         });
       }
     }
+  },
+
+  edit: function(evt) {
+    evt.preventDefault();
+    this.setState('edit').render();
+  },
+
+  remove: function(evt) {
+    evt.preventDefault();
+    this.dispatcher.trigger('remove:asset', this.model);
+    this.model = new storybase.models.Asset();
+    this.setState('select').render();
   }
 });

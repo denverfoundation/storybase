@@ -64,10 +64,14 @@ TODO: Fill me in
 </script>
 
 <script type="text/x-handlebars-template" id="section-asset-edit-template">
-<h3>{{type}}</h3>
+<h3>{{model.type}}</h3>
 </script>
 
 <script type="text/x-handlebars-template" id="section-asset-display-template">
+<ul>
+    </li><a href="#" class="edit">Edit</a></li>
+    <li><a href="#" class="remove">Remove</a></li>
+</ul>
 {{{model.content}}}
 </script>
 {% endverbatim %}
