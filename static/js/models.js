@@ -170,3 +170,15 @@ storybase.models.Asset = Backbone.Model.extend({
 storybase.collections.Assets = Backbone.Collection.extend({
     model: storybase.models.Asset
 });
+
+storybase.collections.SectionAssets = storybase.collections.Assets.extend({
+  parse: function(response) {
+    var models = [];
+    _.each(response.objects, function(sectionAsset) {
+      var asset = sectionAsset.asset;
+      asset.container = sectionAsset.container;
+      models.push(asset);
+    });
+    return models;
+  }
+});

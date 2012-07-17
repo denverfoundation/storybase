@@ -2,7 +2,7 @@ describe('Story model', function() {
   beforeEach(function() {
     this.server = sinon.fakeServer.create();
     this.storyId = '357c5885c4e844cb8a4cd4eebe912a1c';
-    this.fixture = this.fixtures.Sections.getDetail[this.storyId];
+    this.fixture = this.fixtures.Sections.getList[this.storyId];
     this.server.respondWith(
       "GET",
       "/api/0.1/stories/" + this.storyId + "/sections/",

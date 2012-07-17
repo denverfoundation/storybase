@@ -533,12 +533,15 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     this.dispatcher = this.options.dispatcher;
     this.story = this.options.story;
     this.layouts = this.options.layouts;
+    this.templateSource = this.options.templateSource || this.templateSource;
     this.template = Handlebars.compile(this.templateSource);
-    this.assets = this.options.assets || new storybase.collections.Assets();
+    this.assets = this.options.assets || new storybase.collections.SectionAssets();
     this._unsavedAssets = [];
 
+    _.bindAll(this, 'renderAssetViews');
     this.dispatcher.on('add:asset', this.addAsset, this);
     this.model.on("sync", this.saveSectionAssets, this);
+
   },
 
   /**
@@ -556,20 +559,41 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     });
   },
 
-  render: function() {
+  renderAssetViews: function() {
     var that = this;
-    var context = this.model.toJSON();
-    context.layouts = this.getLayoutContext();
-    this.$el.html(this.template(context));
     this.$('.storybase-container-placeholder').each(function(index, el) {
-      var sectionAssetView = new storybase.builder.views.SectionAssetEditView({
+      var options = {
         el: el,
         container: $(el).attr('id'),
         dispatcher: that.dispatcher,
         assetTypes: that.options.assetTypes
-      });
+      };
+      if (that.assets.length) {
+        // If there are assets, bind them to the view with the appropriate
+        // container
+        options.model = that.assets.where({container: $(el).attr('id')})[0];
+      }
+      var sectionAssetView = new storybase.builder.views.SectionAssetEditView(options);
       sectionAssetView.render();
     });
+  },
+
+  render: function() {
+    var context = this.model.toJSON();
+    context.layouts = this.getLayoutContext();
+    this.$el.html(this.template(context));
+    if (this.model.isNew()) {
+      this.renderAssetViews();
+    }
+    else {
+      this.assets.url = this.model.url() + 'assets/';
+      this.assets.fetch({
+        success: this.renderAssetViews, 
+        error: function(assets, response) {
+          // TODO: Handle this error
+        }
+      });
+    }
     return this;
   },
 
@@ -626,7 +650,6 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   saveSectionAssets: function() {
     var that = this;
     _.each(this._unsavedAssets, function(sectionAsset) {
-      console.debug(sectionAsset);
       that.saveSectionAsset(sectionAsset.asset, sectionAsset.container); 
     });
     this._unsavedAssets = [];
