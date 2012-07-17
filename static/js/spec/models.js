@@ -95,4 +95,20 @@ describe('Asset model', function() {
       });
     });
   });
+
+  describe('when the image and url attributes are set', function() {
+    beforeEach(function() {
+      this.model = new storybase.models.Asset({
+        type: 'text'
+      });
+      this.spy = jasmine.createSpy();
+      this.model.on("error", this.spy);
+    });
+
+    it('should fail validation', function() {
+      this.model.set('url', 'http://example.com/asset/url/');
+      this.model.set('image', '/home/example/image.png');
+      expect(this.spy).toHaveBeenCalled();
+    });
+  });
 });

@@ -164,6 +164,26 @@ storybase.models.Asset = Backbone.Model.extend({
 
   urlRoot: function() {
     return storybase.globals.API_ROOT + 'assets/'
+  },
+
+  /**
+   * Validate the model attributes
+   *
+   * Make sure that only one of the content attributes is set to a truthy
+   * value.
+   */
+  validate: function(attrs) {
+    var contentAttrNames = ['body', 'image', 'url'];
+    var found = [];
+    _.each(contentAttrNames, function(attrName) {
+      if (_.has(attrs, attrName) && attrs[attrName]) {
+        found.push(attrName);
+      }
+    });
+    if (found.length > 1) {
+      // TODO: Translate this
+      return "You must specify only one of the following values " + found.join(', ');
+    }
   }
 });
 
