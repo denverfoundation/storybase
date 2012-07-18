@@ -12,6 +12,7 @@ from django.test import TestCase
 from tastypie.test import ResourceTestCase
 
 from storybase.tests.base import FixedTestApiClient, FileCleanupMixin
+from storybase_story.models import create_story
 from models import (Asset, ExternalAsset, HtmlAsset, HtmlAssetTranslation,
     create_html_asset, create_external_asset, create_local_image_asset,
     create_external_dataset)
@@ -640,3 +641,34 @@ class AssetResourceTest(FileCleanupMixin, ResourceTestCase):
         self.assertHttpAccepted(response)
         modified_asset = Asset.objects.select_subclasses().get(asset_id=asset.asset_id)
         self.assertEqual(modified_asset.body, data['body'])
+
+    def test_get_list_for_story(self):
+        """Test getting only a single story's assets"""
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status="published",
+                             language="en", author=self.user)
+        asset1 = create_html_asset(type='text', title='Test Html Asset',
+                                   body='<p>Test body</p>',
+                                   attribution="Jane Doe", 
+                                   status="published",
+                                   owner=self.user)
+        asset2 = create_external_asset(type='image', 
+                                       title='Test External Asset',
+                                       url="http://example.com/image.jpg",
+                                       status="published", owner=self.user)
+        asset3 = create_html_asset(type='text', title='Test Html Asset 2',
+                                   body='<p>Test body 2</p>',
+                                   attribution="Jane Doe", 
+                                   status="published",
+                                   owner=self.user)
+        story.assets = [asset1, asset2]
+        self.assertEqual(story.assets.count(), 2)
+        uri = '/api/0.1/assets/stories/%s/' % (story.story_id)
+        resp = self.api_client.get(uri)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 2)
+        asset_ids = [asset['asset_id'] for asset 
+                     in self.deserialize(resp)['objects']]
+        self.assertIn(asset1.asset_id, asset_ids)
+        self.assertIn(asset2.asset_id, asset_ids)
+        self.assertNotIn(asset3.asset_id, asset_ids)

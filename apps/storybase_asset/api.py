@@ -10,6 +10,7 @@ from django.core.files.uploadedfile import InMemoryUploadedFile
 from tastypie import fields
 from tastypie.authentication import Authentication
 from tastypie.bundle import Bundle
+from tastypie.utils import trailing_slash
 
 from filer.models import Image
 
@@ -69,7 +70,14 @@ class AssetResource(DelayedAuthorizationResource, TranslatedModelResource):
 
     def prepend_urls(self):
         return [
-            url(r"^(?P<resource_name>%s)/(?P<asset_id>[0-9a-f]{32,32})/$" % self._meta.resource_name, self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
+            url(r"^(?P<resource_name>%s)/(?P<asset_id>[0-9a-f]{32,32})%s$" %
+                (self._meta.resource_name, trailing_slash()),
+                self.wrap_view('dispatch_detail'),
+                name="api_dispatch_detail"),
+            url(r"^(?P<resource_name>%s)/stories/(?P<story_id>[0-9a-f]{32,32})%s$" %
+                (self._meta.resource_name, trailing_slash()),
+                self.wrap_view('dispatch_list'),
+                name="api_dispatch_list"),
         ]
 
     def detail_uri_kwargs(self, bundle_or_obj):
@@ -140,6 +148,13 @@ class AssetResource(DelayedAuthorizationResource, TranslatedModelResource):
         if request.user:
             kwargs['owner'] = request.user
         return super(AssetResource, self).obj_create(bundle, request, **kwargs)
+
+    def apply_request_kwargs(self, obj_list, request=None, **kwargs):
+        story_id = kwargs.get('story_id')
+        if story_id:
+            return obj_list.filter(stories__story_id=story_id)
+        else:
+            return obj_list
 
     def dehydrate(self, bundle):
         # Exclude the filename field from the output
