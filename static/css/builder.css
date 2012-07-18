@@ -92,12 +92,27 @@ header h1 {
 }
 
 .storybase-container-placeholder {
+  position: relative;
   height: 100%;
 
   padding: 2%;
 
   background-color: #C8C8C8;
   border-radius: 15px;
+  overflow: hidden;
+}
+
+.section-asset-controls {
+  position: absolute;
+  right: 0;
+  padding: 0;
+  margin: 0 2%;
+  z-index: 999;
+  list-style: none;
+}
+
+.section-asset-controls li {
+  display: inline-block;
 }
 
 /* Table of contents thumbnails */
