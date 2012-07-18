@@ -12,7 +12,8 @@ from django.test import TestCase
 from tastypie.test import ResourceTestCase
 
 from storybase.tests.base import FixedTestApiClient, FileCleanupMixin
-from storybase_story.models import create_story
+from storybase_story.models import (create_section, create_story,
+                                    Container, SectionAsset, SectionLayout)
 from models import (Asset, ExternalAsset, HtmlAsset, HtmlAssetTranslation,
     create_html_asset, create_external_asset, create_local_image_asset,
     create_external_dataset)
@@ -402,6 +403,8 @@ class AssetPermissionTest(TestCase):
 
 
 class AssetResourceTest(FileCleanupMixin, ResourceTestCase):
+    fixtures = ['section_layouts.json']
+    
     def get_obj(self, objects, obj_id_field, obj_id):
         for obj in objects:
             if obj[obj_id_field] == obj_id:
@@ -672,3 +675,94 @@ class AssetResourceTest(FileCleanupMixin, ResourceTestCase):
         self.assertIn(asset1.asset_id, asset_ids)
         self.assertIn(asset2.asset_id, asset_ids)
         self.assertNotIn(asset3.asset_id, asset_ids)
+
+    def test_get_list_for_section(self):
+        """Test getting assets for a single section"""
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status="published",
+                             language="en", author=self.user)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        container1 = Container.objects.get(name='left')
+        container2 = Container.objects.get(name='right')
+        section = create_section(title="Test Section 1", story=story,
+                                  layout=layout)
+        asset1 = create_html_asset(type='text', title='Test Asset',
+                                   body='Test content',
+                                   owner=self.user, status='published')
+        asset2 = create_html_asset(type='text', title='Test Asset 2',
+                                   body='Test content 2',
+                                   owner=self.user, status='published')
+        asset3 = create_html_asset(type='text', title='Test Asset 3',
+                                   body='Test content 3',
+                                   owner=self.user, status='published')
+        story2 = create_story(title="Test Story 2", summary="Test Summary",
+                             byline="Test Byline", status="published",
+                             language="en", author=self.user)
+        section2 = create_section(title="Test Section 2", story=story2,
+                                  layout=layout)
+        SectionAsset.objects.create(section=section, asset=asset1, container=container1)
+        SectionAsset.objects.create(section=section, asset=asset2, container=container2)
+        SectionAsset.objects.create(section=section2, asset=asset3, container=container1)
+        uri = '/api/0.1/assets/sections/%s/' % (section.section_id)
+            
+        resp = self.api_client.get(uri)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 2)
+        self.assertEqual(
+            self.deserialize(resp)['objects'][0]['asset_id'],
+            asset1.asset_id)
+        self.assertEqual(
+            self.deserialize(resp)['objects'][1]['asset_id'],
+            asset2.asset_id)
+        self.assertEqual(
+            self.deserialize(resp)['objects'][0]['type'],
+            asset1.type)
+        self.assertEqual(
+            self.deserialize(resp)['objects'][1]['type'],
+            asset2.type)
+        self.assertEqual(
+            self.deserialize(resp)['objects'][0]['title'],
+            asset1.title)
+        self.assertEqual(
+            self.deserialize(resp)['objects'][1]['title'],
+            asset2.title)
+
+    def test_get_list_no_section(self):
+        """
+        Test getting assets for a story that are not associated with a section
+        """
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status="published",
+                             language="en", author=self.user)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        container1 = Container.objects.get(name='left')
+        container2 = Container.objects.get(name='right')
+        section = create_section(title="Test Section 1", story=story,
+                                  layout=layout)
+        asset1 = create_html_asset(type='text', title='Test Asset',
+                                   body='Test content',
+                                   owner=self.user, status='published')
+        asset2 = create_html_asset(type='text', title='Test Asset 2',
+                                   body='Test content 2',
+                                   owner=self.user, status='published')
+        asset3 = create_html_asset(type='text', title='Test Asset 3',
+                                   body='Test content 3',
+                                   owner=self.user, status='published')
+        SectionAsset.objects.create(section=section, asset=asset1, container=container1)
+        SectionAsset.objects.create(section=section, asset=asset2, container=container2)
+        story.assets.add(asset3)
+        story.save()
+        uri = '/api/0.1/assets/stories/%s/sections/none/' % (story.story_id)
+            
+        resp = self.api_client.get(uri)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 1)
+        self.assertEqual(
+            self.deserialize(resp)['objects'][0]['asset_id'],
+            asset3.asset_id)
+        self.assertEqual(
+            self.deserialize(resp)['objects'][0]['type'],
+            asset3.type)
+        self.assertEqual(
+            self.deserialize(resp)['objects'][0]['title'],
+            asset3.title)

@@ -78,6 +78,15 @@ class AssetResource(DelayedAuthorizationResource, TranslatedModelResource):
                 (self._meta.resource_name, trailing_slash()),
                 self.wrap_view('dispatch_list'),
                 name="api_dispatch_list"),
+            url(r"^(?P<resource_name>%s)/stories/(?P<story_id>[0-9a-f]{32,32})/sections/none%s$" %
+                (self._meta.resource_name, trailing_slash()),
+                self.wrap_view('dispatch_list'),
+                kwargs={'no_section': True},
+                name="api_dispatch_list"),
+            url(r"^(?P<resource_name>%s)/sections/(?P<section_id>[0-9a-f]{32,32})%s$" %
+                (self._meta.resource_name, trailing_slash()),
+                self.wrap_view('dispatch_list'),
+                name="api_dispatch_list"),
         ]
 
     def detail_uri_kwargs(self, bundle_or_obj):
@@ -150,11 +159,21 @@ class AssetResource(DelayedAuthorizationResource, TranslatedModelResource):
         return super(AssetResource, self).obj_create(bundle, request, **kwargs)
 
     def apply_request_kwargs(self, obj_list, request=None, **kwargs):
+        filters = {}
         story_id = kwargs.get('story_id')
+        section_id = kwargs.get('section_id')
+        no_section = kwargs.get('no_section')
         if story_id:
-            return obj_list.filter(stories__story_id=story_id)
-        else:
-            return obj_list
+            filters['stories__story_id'] = story_id
+        if section_id:
+            filters['sectionasset__section__section_id'] = section_id
+
+        new_obj_list = obj_list.filter(**filters)
+
+        if no_section and story_id:
+            new_obj_list = new_obj_list.exclude(sectionasset__section__story__story_id=story_id)
+
+        return new_obj_list
 
     def dehydrate(self, bundle):
         # Exclude the filename field from the output
