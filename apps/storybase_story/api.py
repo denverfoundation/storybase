@@ -597,8 +597,7 @@ class SectionAssetResource(DelayedAuthorizationResource, HookedModelResource):
         kwargs['section'] = Section.objects.get(section_id=section_id)
         return super(SectionAssetResource, self).obj_create(bundle, request, **kwargs)
 
-    def obj_get_list(self, request=None, **kwargs):
-        obj_list = super(SectionAssetResource, self).obj_get_list(request, **kwargs)
+    def apply_request_kwargs(self, obj_list, request=None, **kwargs):
         section_id = kwargs.get('section__section_id')
         if section_id:
             return obj_list.filter(section__section_id=section_id)

@@ -1773,8 +1773,16 @@ class SectionAssetResourceTest(ResourceTestCase):
                                    body='Test content')
         asset2 = create_html_asset(type='text', title='Test Asset 2',
                                    body='Test content 2')
+        asset3 = create_html_asset(type='text', title='Test Asset 3',
+                                   body='Test content 3')
+        story2 = create_story(title="Test Story 2", summary="Test Summary",
+                             byline="Test Byline", status="published",
+                             language="en", author=self.user)
+        section2 = create_section(title="Test Section 2", story=story2,
+                                  layout=layout)
         SectionAsset.objects.create(section=section, asset=asset1, container=container1)
         SectionAsset.objects.create(section=section, asset=asset2, container=container2)
+        SectionAsset.objects.create(section=section2, asset=asset3, container=container1)
         uri = '/api/0.1/stories/%s/sections/%s/assets/' % (story.story_id,
             section.section_id)
         resp = self.api_client.get(uri)

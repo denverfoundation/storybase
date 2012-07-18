@@ -239,6 +239,20 @@ class HookedModelResource(ModelResource):
             bundle = self.alter_detail_data_to_serialize(request, bundle)
             return self.create_response(request, bundle, response_class=http.HttpAccepted)
 
+    def apply_request_kwargs(self, obj_list, request, **kwargs):
+        """
+        Hook for altering the default object list based on keyword
+        arguments
+        """
+        return obj_list
+
+    def obj_get_list(self, request, **kwargs):
+        """
+        Modify the default queryset based on keyword arguments
+        """
+        obj_list = super(HookedModelResource, self).obj_get_list(request, **kwargs)
+        return self.apply_request_kwargs(obj_list, request, **kwargs)
+
 
 class DelayedAuthorizationResource(HookedModelResource):
     def dispatch(self, request_type, request, **kwargs):
