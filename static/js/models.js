@@ -35,11 +35,6 @@ storybase.models.Story = Backbone.Model.extend({
    * Retrieve a collection of sections of the story
    */
   fetchSections: function(options) {
-    if (_.isUndefined(this.sections)) {
-      this.sections = new storybase.collections.Sections([], {
-        story: this
-      });
-    }
     this.sections.fetch({
       success: function(collection, response) {
         if (_.isFunction(options.success)) {
