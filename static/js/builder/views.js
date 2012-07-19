@@ -87,6 +87,7 @@ storybase.builder.views.NavigationView = Backbone.View.extend({
   templateSource: $('#navigation-template').html(),
 
   events: {
+    'click .assets': 'toggleAssetList' 
   },
 
   initialize: function() {
@@ -98,6 +99,11 @@ storybase.builder.views.NavigationView = Backbone.View.extend({
     var context = {};
     this.$el.html(this.template(context));
     return this;
+  },
+
+  toggleAssetList: function(evt) {
+    evt.preventDefault();
+    this.dispatcher.trigger("toggle:assetlist");
   }
 
 });
@@ -167,6 +173,23 @@ storybase.builder.views.StoryTemplateView = Backbone.View.extend({
 
 });
 
+storybase.builder.views.AlertView = Backbone.View.extend({
+  tagName: 'div',
+
+  className: 'alert',
+
+  initialize: function() {
+    this.level = this.options.level;
+    this.message = this.options.message;
+  },
+
+  render: function() {
+    this.$el.addClass('alert-' + this.level);
+    this.$el.html(this.message);
+    return this;
+  }
+});
+
 storybase.builder.views.BuilderView = Backbone.View.extend({
   tagName: 'div',
 
@@ -195,9 +218,12 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.dispatcher.on("select:template", this.setStoryTemplate, this);
     this.dispatcher.on("ready:templateSections", this.initializeStoryFromTemplate, this);
     this.dispatcher.on("ready:story", this.storyReady, this);
-    this.dispatcher.on("save:story", this.save, this);
+    this.dispatcher.on("do:save:story", this.save, this);
     this.dispatcher.on("select:thumbnail", this.showEditView, this);
+    this.dispatcher.on("toggle:assetlist", this.toggleAssetList, this);
+    this.dispatcher.on("add:sectionasset", this.showSaved, this);
     this.dispatcher.on("error", this.error, this);
+    this.dispatcher.on("alert", this.showAlert, this);
 
     _.bindAll(this, 'addSectionThumbnail', 'setTemplateStory', 'setTemplateSections');
 
@@ -284,8 +310,23 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
    * up to the UI
    */
   error: function(msg) {
-    // TODO: More robust error handling
     console.error(msg);
+    this.showAlert('error', msg);
+  },
+
+  showAlert: function(level, msg) {
+    var view = new storybase.builder.views.AlertView({
+      level: level,
+      message: msg
+    });
+    this.$el.prepend(view.render().el);
+    view.$el.fadeOut(5000, function() {
+      $(this).remove();
+    });
+  },
+
+  showSaved: function() {
+    this.showAlert('success', "The story has been saved");
   },
 
   setStoryTemplate: function(template) {
@@ -341,6 +382,10 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   showEditView: function(thumbnailView) {
     this.$('.edit-section').hide();
     thumbnailView.editView.$el.show();
+  },
+
+  toggleAssetList: function() {
+    this.unusedAssetView.$el.toggle(); 
   }
 });
 
@@ -360,16 +405,24 @@ storybase.builder.views.UnusedAssetView = Backbone.View.extend({
     this.assets = this.options.assets;
 
     // When the assets are synced with the server, re-render this view
-    this.assets.on("reset sync", this.render, this);
+    this.assets.on("add reset sync", this.render, this);
+    // When an asset is removed from a section, add it to this view
+    this.dispatcher.on("remove:sectionasset", this.addAsset, this);
   },
 
   render: function() {
-    console.debug(this.assets);
     var context = {
       assets: this.assets.toJSON()
     };
     this.$el.html(this.template(context));
     return this;
+  },
+
+  /**
+   * Event callback for when assets are removed from a section
+   */
+  addAsset: function(asset) {
+    this.assets.push(asset);
   }
 });
 
@@ -489,7 +542,7 @@ storybase.builder.views.StoryInfoEditView = Backbone.View.extend({
     if (_.has(this.model.attributes, name)) {
       this.model.set(name, value);
       if (this.model.isNew()) {
-        this.dispatcher.trigger("save:story");
+        this.dispatcher.trigger("do:save:story");
       }
       else {
         this.model.save();
@@ -529,7 +582,7 @@ storybase.builder.views.CallToActionEditView = Backbone.View.extend({
     if (_.has(this.model.attributes, name)) {
       this.model.set(name, value);
       if (this.model.isNew()) {
-        this.dispatcher.trigger("save:story");
+        this.dispatcher.trigger("do:save:story");
       }
       else {
         this.model.save();
@@ -562,11 +615,15 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     this.template = Handlebars.compile(this.templateSource);
     this.assets = this.options.assets || new storybase.collections.SectionAssets();
     this._unsavedAssets = [];
+    this._doConditionalRender = false;
 
     _.bindAll(this, 'renderAssetViews');
-    this.dispatcher.on('add:asset', this.addAsset, this);
-    this.dispatcher.on('remove:asset', this.removeAsset, this);
+    this.dispatcher.on('do:add:sectionasset', this.addAsset, this);
+    this.dispatcher.on('do:remove:sectionasset', this.removeAsset, this);
+    this.model.on("change:layout", this.changeLayout, this);
     this.model.on("sync", this.saveSectionAssets, this);
+    this.model.on("sync", this.conditionalRender, this);
+    this.assets.on("reset sync", this.renderAssetViews, this);
   },
 
   /**
@@ -612,14 +669,20 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     }
     else {
       this.assets.url = this.model.url() + 'assets/';
-      this.assets.fetch({
-        success: this.renderAssetViews, 
-        error: function(assets, response) {
-          // TODO: Handle this error
-        }
-      });
+      this.assets.fetch();
     }
     return this;
+  },
+
+  setConditionalRender: function() {
+    this._doConditionalRender = true;
+  },
+
+  conditionalRender: function() {
+    if (this._doConditionalRender === true) {
+      this.render();
+    }
+    this._doConditionalRender = false;
   },
 
   /**
@@ -632,13 +695,28 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     if (_.has(this.model.attributes, name)) {
       this.model.set(name, value);
       if (this.story.isNew()) {
-        this.dispatcher.trigger("save:story");
+        this.dispatcher.trigger("do:save:story");
       }
       else {
         this.model.save();
       }
       console.info("Updated " + name + " to " + value);
     }
+  },
+
+  changeLayout: function(evt) {
+    this.setConditionalRender();
+    this.removeAssets();
+  },
+
+  /**
+   * Disassociate all assets with this section. 
+   */
+  removeAssets: function() {
+    var that = this;
+    this.assets.each(function(asset) {
+      that.removeAsset(asset);
+    });
   },
 
   /**
@@ -654,7 +732,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
         container: container
       });
       // Trigger an event that will cause the story and section to be saved
-      this.dispatcher.trigger("save:story");
+      this.dispatcher.trigger("do:save:story");
     }
     else {
       this.saveSectionAsset(asset, container);
@@ -665,11 +743,18 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
    * Event handler for when assets are removed from the section
    */
   removeAsset: function(asset) {
-    // TODO: Deal with asset library
-    console.debug(this.getSectionAsset(asset));
+    var that = this;
     var sectionAsset = this.getSectionAsset(asset);
     sectionAsset.id = asset.id;
-    sectionAsset.destroy();
+    sectionAsset.destroy({
+      success: function(model, response) {
+        that.dispatcher.trigger("remove:sectionasset", asset);
+        that.dispatcher.trigger("alert", "info", "You removed an asset, but it's not gone forever. You can re-add it to a section from the asset list");
+      },
+      error: function(model, response) {
+        that.dispatcher.trigger("error", "Error removing asset from section");
+      }
+    });
   },
 
   getSectionAsset: function(asset, container) {
@@ -683,6 +768,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
       asset: asset.url(),
       container: container
     });
+    sectionAsset.on("sync", this.sectionAssetAdded, this);
     return sectionAsset;
   },
 
@@ -697,6 +783,10 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     });
     this._unsavedAssets = [];
   },
+
+  sectionAssetAdded: function() {
+    this.dispatcher.trigger("add:sectionasset");
+  }
 
 });
 
@@ -822,7 +912,6 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend({
     // Save the model's original new state to decide
     // whether to send a signal later
     var isNew = this.model.isNew();
-    console.debug(attributes);
     this.model.save(attributes, {
       success: function(model) {
         // TODO: Decide if it's better to listen to the model's
@@ -831,7 +920,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend({
         that.render();
         if (isNew) {
           // Model was new before saving
-          that.dispatcher.trigger("add:asset", that.model, that.container);
+          that.dispatcher.trigger("do:add:sectionasset", that.model, that.container);
         }
       },
       error: function(model) {
@@ -880,7 +969,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend({
 
   remove: function(evt) {
     evt.preventDefault();
-    this.dispatcher.trigger('remove:asset', this.model);
+    this.dispatcher.trigger('do:remove:sectionasset', this.model);
     this.model = new storybase.models.Asset();
     this.setState('select').render();
   }

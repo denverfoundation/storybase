@@ -28,6 +28,11 @@ header h1 {
   display: inline-block;
 }
 
+#builder-nav a {
+  font-weight: bold;
+  color: #fff;
+}
+
 #app {
   height: 100%;
 }
@@ -46,6 +51,26 @@ header h1 {
 .builder {
   position: relative;
   height: 100%;
+}
+
+.unused-assets {
+  position: absolute;
+  top: 0;
+  right: 0;
+  width: 25%;
+  padding: 0 2%;
+  background-color: #000;
+  color: #fff;
+}
+
+.unused-assets a {
+  color: #fff;
+  font-weight: bold;
+}
+
+.unused-assets ul {
+  list-style: none;
+  padding: 0;
 }
 
 .edit-section {
