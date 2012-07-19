@@ -21,33 +21,22 @@ storybase.models.Story = Backbone.Model.extend({
 
   initialize: function(options) {
     this.sections = new storybase.collections.Sections;
-    this.setSectionsUrl();
-    this.on("change", this.setSectionsUrl, this);
-  },
-
-  setSectionsUrl: function() {
-    if (!this.isNew()) {
-      this.sections.url = this.url() + 'sections/';
-    }
+    this.unusedAssets = new storybase.collections.Assets;
+    this.setCollectionUrls();
+    this.on("change", this.setCollectionUrls, this);
   },
 
   /**
-   * Retrieve a collection of sections of the story
+   * Set the url property of collections.
+   *
+   * This is needed because the URL of the collections are often based
+   * on the model id.
    */
-  fetchSections: function(options) {
-    this.sections.fetch({
-      success: function(collection, response) {
-        if (_.isFunction(options.success)) {
-          options.success(collection);
-        }
-      },
-      error: function(collection, response) {
-        if (_.isFunction(options.error)) {
-          options.error(collection, response);
-        }
-      }
-    });
-    return this.sections;
+  setCollectionUrls: function() {
+    if (!this.isNew()) {
+      this.sections.url = this.url() + 'sections/';
+      this.unusedAssets.url = storybase.globals.API_ROOT + '/assets/stories/' + this.id + '/sections/none/'; 
+    }
   },
 
   /**

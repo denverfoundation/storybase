@@ -185,6 +185,13 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   initialize: function() {
     var that = this;
 
+    if (_.isUndefined(this.model)) {
+      // Create the story instance
+      this.model = new storybase.models.Story({
+        title: ""
+      });
+    }
+
     this._thumbnailViews = [];
 
     this.dispatcher = this.options.dispatcher;
@@ -199,12 +206,10 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
     this.template = Handlebars.compile(this.templateSource);
 
-    if (this.model) {
-      this.model.fetchSections({
-        success: function(sections) {
-          that.dispatcher.trigger("ready:story");
-        }
-      });
+    this.model.sections.on("all", function(en) { console.debug(en); }, this);
+    this.model.sections.on("reset", this.storyReady, this);
+    if (!this.model.isNew()) {
+      this.model.sections.fetch();
     }
   },
 
@@ -301,12 +306,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     console.info("Setting template story");
     var that = this;
     this.templateStory = story;
-    this.templateStory.fetchSections({
-      success: this.setTemplateSections, 
-      error: function(sections, response) {
-        that.error("Failed fetching template story sections");
-      }
-    });
+    this.templateStory.sections.on("reset", this.setTemplateSections, this);
+    this.templateStory.sections.fetch();
   },
 
   setTemplateSections: function(sections) {
@@ -318,10 +319,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   initializeStoryFromTemplate: function() {
     console.info("Initializing sections");
     var that = this;
-    // Create the story instance
-    this.model = new storybase.models.Story({
-      title: ""
-    });
     this.templateSections.each(function(section) {
       var sectionCopy = new storybase.models.Section();
       sectionCopy.set("title", section.get("title"));
@@ -346,6 +343,34 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   showEditView: function(thumbnailView) {
     this.$('.edit-section').hide();
     thumbnailView.editView.$el.show();
+  }
+});
+
+/** 
+ * A list of assets associated with the story but not used in any section.
+ */
+storybase.builder.views.UnusedAssetView = Backbone.View.extend({
+  tagName: 'div',
+
+  className: 'unused-assets',
+
+  templateSource: $('#unused-assets-template').html(),
+
+  initialize: function() {
+    this.dispatcher = this.options.dispatcher;
+    this.template = Handlebars.compile(this.templateSource);
+    this.assets = this.options.assets;
+
+    // When the assets are synced with the server, re-render this view
+    this.assets.on("sync", this.render, this);
+  },
+
+  render: function() {
+    var context = {
+      assets: this.assets.toJSON()
+    };
+    this.$el.html(this.template(context));
+    return this;
   }
 });
 
@@ -543,7 +568,6 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     this.dispatcher.on('add:asset', this.addAsset, this);
     this.dispatcher.on('remove:asset', this.removeAsset, this);
     this.model.on("sync", this.saveSectionAssets, this);
-
   },
 
   /**
