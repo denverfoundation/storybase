@@ -87,7 +87,6 @@ storybase.builder.views.NavigationView = Backbone.View.extend({
   templateSource: $('#navigation-template').html(),
 
   events: {
-    "click .save": "save"
   },
 
   initialize: function() {
@@ -99,15 +98,8 @@ storybase.builder.views.NavigationView = Backbone.View.extend({
     var context = {};
     this.$el.html(this.template(context));
     return this;
-  },
-
-  /**
-   * Event handler for clicking the save link
-   */
-  save: function(e) {
-    this.dispatcher.trigger("save:story");
-    e.preventDefault();
   }
+
 });
 
 /**
