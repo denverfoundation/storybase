@@ -409,23 +409,48 @@ storybase.builder.views.LastSavedView = Backbone.View.extend({
   className: 'last-saved',
 
   initialize: function() {
-    var lastSaved = new Date(this.options.lastSaved);
+    console.debug(this.options.lastSaved);
+    this.lastSaved = _.isDate(this.options.lastSaved) ? this.options.lastSaved : new Date(this.options.lastSaved);
     this.dispatcher = this.options.dispatcher;
-    this.lastSaved = lastSaved.toLocaleString();
 
     this.dispatcher.on('save:section', this.updateLastSaved, this);
     this.dispatcher.on('save:story', this.updateLastSaved, this);
   },
 
   updateLastSaved: function() {
-    var now = new Date();
-    this.lastSaved = now.toLocaleString(); 
+    this.lastSaved = new Date(); 
     this.render();
+  },
+
+  /**
+   * Ensure that an hour or minute value is 2 digits
+   *
+   * This is necesary because Date.getHours and Date.getDate return 
+   * integer values starting from 0
+   *
+   */
+  twoDigit: function(val) {
+    var newVal = val + "";
+    if (newVal.length == 1) {
+      newVal = "0" + newVal;
+    }
+    return newVal;
+  },
+
+  formatDate: function(date) {
+    var year = this.lastSaved.getFullYear();
+    var month = this.lastSaved.getMonth() + 1;
+    var day = this.lastSaved.getDate();
+    var hour = this.lastSaved.getHours();
+    var minute = this.lastSaved.getMinutes();
+
+    return month + "/" + day + "/" + year + " " + this.twoDigit(hour) +
+           ":" + this.twoDigit(minute);
   },
 
   render: function() {
     if (this.lastSaved) {
-      this.$el.html('Last Saved: ' + this.lastSaved);
+      this.$el.html('Last Saved: ' + this.formatDate(this.lastSaved));
     }
     return this;
   }

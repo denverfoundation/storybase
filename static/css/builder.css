@@ -57,6 +57,7 @@ header h1 {
   position: absolute;
   top: 0;
   right: 0;
+  padding: 1% 0;
 }
 
 .alert-success {
@@ -79,7 +80,7 @@ header h1 {
 
 .builder .alerts {
   position: relative;
-  top: 4%;
+  top: 5%;
   min-height: 2%;
 }
 
