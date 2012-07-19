@@ -246,7 +246,7 @@ class HookedModelResource(ModelResource):
         """
         return obj_list
 
-    def obj_get_list(self, request, **kwargs):
+    def obj_get_list(self, request=None, **kwargs):
         """
         Modify the default queryset based on keyword arguments
         """
