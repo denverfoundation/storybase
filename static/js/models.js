@@ -35,7 +35,7 @@ storybase.models.Story = Backbone.Model.extend({
   setCollectionUrls: function() {
     if (!this.isNew()) {
       this.sections.url = this.url() + 'sections/';
-      this.unusedAssets.url = storybase.globals.API_ROOT + '/assets/stories/' + this.id + '/sections/none/'; 
+      this.unusedAssets.url = storybase.globals.API_ROOT + 'assets/stories/' + this.id + '/sections/none/'; 
     }
   },
 
@@ -172,7 +172,11 @@ storybase.models.Asset = Backbone.Model.extend({
 });
 
 storybase.collections.Assets = Backbone.Collection.extend({
-    model: storybase.models.Asset
+    model: storybase.models.Asset,
+
+    parse: function(response) {
+      return response.objects;
+    }
 });
 
 storybase.collections.SectionAssets = storybase.collections.Assets.extend({

@@ -185,6 +185,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   initialize: function() {
     var that = this;
 
+    this.dispatcher = this.options.dispatcher;
+
     if (_.isUndefined(this.model)) {
       // Create the story instance
       this.model = new storybase.models.Story({
@@ -193,8 +195,11 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     }
 
     this._thumbnailViews = [];
+    this.unusedAssetView = new storybase.builder.views.UnusedAssetView({
+      dispatcher: this.dispatcher,
+      assets: this.model.unusedAssets
+    });
 
-    this.dispatcher = this.options.dispatcher;
     this.dispatcher.on("select:template", this.setStoryTemplate, this);
     this.dispatcher.on("ready:templateSections", this.initializeStoryFromTemplate, this);
     this.dispatcher.on("ready:story", this.storyReady, this);
@@ -206,10 +211,10 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
     this.template = Handlebars.compile(this.templateSource);
 
-    this.model.sections.on("all", function(en) { console.debug(en); }, this);
     this.model.sections.on("reset", this.storyReady, this);
     if (!this.model.isNew()) {
       this.model.sections.fetch();
+      this.model.unusedAssets.fetch();
     }
   },
 
@@ -269,6 +274,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   render: function() {
     var that = this;
     this.$el.html(this.template());
+    this.$el.prepend(this.unusedAssetView.render().$el.hide());
     if (this._thumbnailViews.length) {
       _.each(this._thumbnailViews, function(view) {
         that.$(".sections").append(view.render().el);
@@ -362,10 +368,11 @@ storybase.builder.views.UnusedAssetView = Backbone.View.extend({
     this.assets = this.options.assets;
 
     // When the assets are synced with the server, re-render this view
-    this.assets.on("sync", this.render, this);
+    this.assets.on("reset sync", this.render, this);
   },
 
   render: function() {
+    console.debug(this.assets);
     var context = {
       assets: this.assets.toJSON()
     };
