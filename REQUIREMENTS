@@ -46,3 +46,4 @@ django-registration
 # django-passwords is optional
 django-passwords
 django-notification
+pytz

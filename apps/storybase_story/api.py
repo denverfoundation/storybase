@@ -1,5 +1,6 @@
 """REST API for Stories"""
 
+from django.conf import settings
 from django.conf.urls.defaults import url
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.urlresolvers import NoReverseMatch
@@ -13,6 +14,7 @@ from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.utils import trailing_slash
 from tastypie.authentication import Authentication
 
+from storybase.utils import add_tzinfo
 from storybase.api import (DelayedAuthorizationResource,
     HookedModelResource, LoggedInAuthorization, TranslatedModelResource)
 from storybase.utils import get_language_name
@@ -142,6 +144,12 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
         Populate a list of geographic points in the response object
         """
         return [point for point in bundle.obj.points]
+
+    def dehydrate_last_edited(self, bundle):
+        """
+        Add time zone to last_edited date
+        """
+        return add_tzinfo(bundle.data['last_edited'])
 
     def _get_facet_field_name(self, field_name):
         """Convert public filter name to underlying Haystack index field"""

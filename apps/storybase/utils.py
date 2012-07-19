@@ -1,5 +1,7 @@
 """Shared utility functions"""
 
+import pytz
+
 from django.conf import settings
 from django.template.defaultfilters import slugify as django_slugify
 from django.utils.translation import ugettext_lazy as _
@@ -57,3 +59,17 @@ def import_class(import_path):
     module = __import__(module_name, globals(), locals(), [class_name], -1)
                         
     return getattr(module, class_name)
+
+def add_tzinfo(dt, tzname=settings.TIME_ZONE):
+    """
+    Return a timezone aware version of a datetime object, taking into
+    account daylight savings time
+
+    Arguments:
+    dt     -- A timezone naive datetime.datetime object
+    tzname -- A timezone name, e.g. 'America/Chicago'. Defaults to 
+              settings.TIME_ZONE
+    
+    """
+    tz = pytz.timezone(settings.TIME_ZONE).localize(dt).tzinfo
+    return dt.replace(tzinfo=tz)
