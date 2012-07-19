@@ -305,7 +305,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     if (this._thumbnailViews.length) {
       _.each(this._thumbnailViews, function(view) {
         that.$(".sections").append(view.render().el);
-        //that.$el.prepend(view.editView.render().el);
         that.$('.sections').before(view.editView.render().el);
       });
       this.dispatcher.trigger("select:thumbnail", this._thumbnailViews[0]);

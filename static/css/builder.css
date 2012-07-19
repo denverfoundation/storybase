@@ -113,13 +113,14 @@ header h1 {
   position: relative;
   height: 60%;
   padding: 2%;
+  margin-top: 2%;
 }
 
 .edit-section input.title,
 .edit-story-info input {
   display: block;
   width: 80%;
-  padding: 0.5em;
+  padding: 0.25em;
   font-size: 2em;
   margin-top: 0.5em;
 }
@@ -150,6 +151,13 @@ header h1 {
   width: 46%;
   margin: 2%;
   float: left;
+}
+
+.section-layout.one-up .center {
+  position: relative;
+  height: 100%;
+  width: 100%;
+  margin: 2%;
 }
 
 .storybase-container-placeholder {
