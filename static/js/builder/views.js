@@ -214,6 +214,13 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       dispatcher: this.dispatcher,
       assets: this.model.unusedAssets
     });
+    this.lastSavedView = new storybase.builder.views.LastSavedView({
+      dispatcher: this.dispatcher,
+      lastSaved: this.model.get('last_edited')
+    });
+
+    this.model.on("sync", this.triggerSaved, this);
+    this.model.on("sync", this.showSaved, this);
 
     this.dispatcher.on("select:template", this.setStoryTemplate, this);
     this.dispatcher.on("ready:templateSections", this.initializeStoryFromTemplate, this);
@@ -222,6 +229,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.dispatcher.on("select:thumbnail", this.showEditView, this);
     this.dispatcher.on("toggle:assetlist", this.toggleAssetList, this);
     this.dispatcher.on("add:sectionasset", this.showSaved, this);
+    this.dispatcher.on("save:section", this.showSaved, this);
     this.dispatcher.on("error", this.error, this);
     this.dispatcher.on("alert", this.showAlert, this);
 
@@ -293,10 +301,12 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     var that = this;
     this.$el.html(this.template());
     this.$el.prepend(this.unusedAssetView.render().$el.hide());
+    this.$el.prepend(this.lastSavedView.render().el);
     if (this._thumbnailViews.length) {
       _.each(this._thumbnailViews, function(view) {
         that.$(".sections").append(view.render().el);
-        that.$el.prepend(view.editView.render().el);
+        //that.$el.prepend(view.editView.render().el);
+        that.$('.sections').before(view.editView.render().el);
       });
       this.dispatcher.trigger("select:thumbnail", this._thumbnailViews[0]);
     }
@@ -319,7 +329,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       level: level,
       message: msg
     });
-    this.$el.prepend(view.render().el);
+    this.$('.alerts').prepend(view.render().el);
     view.$el.fadeOut(5000, function() {
       $(this).remove();
     });
@@ -327,6 +337,10 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
   showSaved: function() {
     this.showAlert('success', "The story has been saved");
+  },
+
+  triggerSaved: function() {
+    this.dispatcher.trigger('save:story', this.model);
   },
 
   setStoryTemplate: function(template) {
@@ -386,6 +400,34 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
   toggleAssetList: function() {
     this.unusedAssetView.$el.toggle(); 
+  }
+});
+
+storybase.builder.views.LastSavedView = Backbone.View.extend({
+  tagName: 'div',
+
+  className: 'last-saved',
+
+  initialize: function() {
+    var lastSaved = new Date(this.options.lastSaved);
+    this.dispatcher = this.options.dispatcher;
+    this.lastSaved = lastSaved.toLocaleString();
+
+    this.dispatcher.on('save:section', this.updateLastSaved, this);
+    this.dispatcher.on('save:story', this.updateLastSaved, this);
+  },
+
+  updateLastSaved: function() {
+    var now = new Date();
+    this.lastSaved = now.toLocaleString(); 
+    this.render();
+  },
+
+  render: function() {
+    if (this.lastSaved) {
+      this.$el.html('Last Saved: ' + this.lastSaved);
+    }
+    return this;
   }
 });
 
@@ -623,6 +665,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     this.model.on("change:layout", this.changeLayout, this);
     this.model.on("sync", this.saveSectionAssets, this);
     this.model.on("sync", this.conditionalRender, this);
+    this.model.on("sync", this.triggerSaved, this);
     this.assets.on("reset sync", this.renderAssetViews, this);
   },
 
@@ -786,7 +829,11 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
 
   sectionAssetAdded: function() {
     this.dispatcher.trigger("add:sectionasset");
-  }
+  },
+
+  triggerSaved: function() {
+    this.dispatcher.trigger('save:section', this.model);
+  },
 
 });
 

@@ -53,6 +53,40 @@ header h1 {
   height: 100%;
 }
 
+.last-saved {
+  position: absolute;
+  top: 0;
+  right: 0;
+}
+
+.alert-success {
+  background-color: #DFF0D8;
+  border-color: #D6E9C6;
+  color: #468847;
+}
+
+.alert-error {
+  background-color: #F2DEDE;
+  border-color: #EED3D7;
+  color: #B94A48;
+}
+
+.alert-info {
+  background-color: #D9EDF7;
+  border-color: #BCE8F1;
+  color: #3A87AD;
+}
+
+.builder .alerts {
+  position: relative;
+  top: 4%;
+  min-height: 2%;
+}
+
+.builder .alert {
+  padding: 1%;
+}
+
 .unused-assets {
   position: absolute;
   top: 0;
@@ -61,6 +95,7 @@ header h1 {
   padding: 0 2%;
   background-color: #000;
   color: #fff;
+  z-index: 9999;
 }
 
 .unused-assets a {
