@@ -133,7 +133,8 @@ storybase.builder.views.NavigationView = Backbone.View.extend({
     this.template = Handlebars.compile(this.templateSource);
 
     this.dispatcher.on('has:assetlist', this.toggleAssetsItem, this);
-    this.dispatcher.on('save:story', this.toggleWorkflowItems, this);
+    this.dispatcher.on('ready:story', this.showWorkflowItems, this);
+    this.dispatcher.on('save:story', this.showWorkflowItems, this);
   },
 
   getVisibleItems: function(itemList) {
@@ -162,23 +163,25 @@ storybase.builder.views.NavigationView = Backbone.View.extend({
     })[0];
   },
 
-  toggleItem: function(id, visible) {
+  setVisibility: function(id, visible) {
     var item = this.getItem(id);
     item.visible = visible;
   },
 
   toggleAssetsItem: function(visible) {
-    this.toggleItem('assets', visible);
+    this.setVisibility('assets', visible);
     this.render();
   },
 
   /**
    * Show the worfklow items that require a story.
    */
-  toggleWorkflowItems: function() {
-    this.toggleItem('review', true);
-    this.toggleItem('share', true);
-    this.render();
+  showWorkflowItems: function(story) {
+    if (!story.isNew()) {
+      this.setVisibility('review', true);
+      this.setVisibility('share', true);
+      this.render();
+    }
   },
 
   selectStage: function(evt) {
@@ -282,10 +285,16 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.dispatcher = this.options.dispatcher;
 
     if (_.isUndefined(this.model)) {
-      // Create the story instance
+      // Create a new story model instance
       this.model = new storybase.models.Story({
         title: ""
       });
+    }
+    else {
+      // The view was constructed with a model instance,
+      // which means it was a previously created story
+      // Tell other views about it
+      this.dispatcher.trigger('ready:story', this.model);
     }
 
     this._thumbnailViews = [];
@@ -458,7 +467,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       sectionCopy.set("layout_template", section.get("layout_template"));
       that.model.sections.push(sectionCopy);
     });
-    this.dispatcher.trigger("ready:story");
+    this.dispatcher.trigger("ready:story", this.model);
   },
 
   save: function() {

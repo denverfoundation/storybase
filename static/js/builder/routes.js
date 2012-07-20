@@ -2,6 +2,7 @@ Namespace('storybase.builder.routers');
 storybase.builder.routers.Router = Backbone.Router.extend({
   routes: {
     "story/:id": "story",
+    "story/:id/review": "review"
   },
 
   initialize: function(options) {
@@ -11,5 +12,7 @@ storybase.builder.routers.Router = Backbone.Router.extend({
 
   story: function(id) {
     this.dispatcher.trigger("select:story");
-  }
+  },
+
+   
 });
