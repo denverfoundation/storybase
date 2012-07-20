@@ -14,9 +14,13 @@ class StorybaseMenu(Menu):
     """
     def get_nodes(self, request): 
         nodes = []
+        build = NavigationNode(
+            title=_(plugin_settings.STORYBASE_BUILD_TITLE),
+            url=reverse('story_builder'), id='build')
+        nodes.append(build)
         explore = NavigationNode(
             title=_(plugin_settings.STORYBASE_EXPLORE_TITLE),
-            url="/explore/", id='explore')
+            url=reverse('explore_stories'), id='explore')
         nodes.append(explore)
         organizations = NavigationNode(
             title=_(plugin_settings.STORYBASE_ORGANIZATION_LIST_TITLE),
@@ -51,31 +55,40 @@ menu_pool.register_menu(StorybaseMenu)
 
 class OrderMenuNodes(Modifier):
     """Modifier that insert custom navigation nodes in a specified order"""
-    def modify(self, request, nodes, namespace, root_id, post_cut, breadcrumb):
-        if post_cut:
-            return nodes
-
+    def move_node(self, nodes, id, position):
         modified_nodes = []
-        explore_node = None
-        explore_nodes = []
-        insert_at = plugin_settings.STORYBASE_EXPLORE_MENU_POSITION
+        matched_node = None
+        matched_children = []
         # Check to make sure we're trying to insert the explore menu nodes
 	    # in a position that actually exists
-        insert_at = insert_at if insert_at < len(nodes) else len(nodes) - 1
+        insert_at = position if position < len(nodes) else len(nodes) - 1
+        print insert_at
         for node in nodes:
            # Discover nodes in the explore menu and separate them
-           if node.id == 'explore':
-               explore_node = node
-               explore_nodes.append(node)
-           elif explore_node in node.get_ancestors():
-	           explore_nodes.append(node)
+           if node.id == id:
+               matched_node = node
+               matched_children.append(node)
+           elif matched_node in node.get_ancestors():
+	           matched_children.append(node)
            else:
                modified_nodes.append(node)
 
         # Add the explore nodes back at the specified position
-        for node in explore_nodes:
+        for node in matched_children:
             modified_nodes.insert(insert_at, node)
             insert_at += 1
+
+        return modified_nodes
+
+    def modify(self, request, nodes, namespace, root_id, post_cut, breadcrumb):
+        if post_cut:
+            return nodes
+
+        modified_nodes = self.move_node(nodes, 'explore', 
+            plugin_settings.STORYBASE_EXPLORE_MENU_POSITION)
+        modified_nodes = self.move_node(modified_nodes, 'build',
+            plugin_settings.STORYBASE_BUILD_MENU_POSITION)
+
         return modified_nodes
 
 menu_pool.register_modifier(OrderMenuNodes)
