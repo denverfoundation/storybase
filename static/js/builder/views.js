@@ -960,8 +960,8 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend({
 
   setType: function(type) {
     this.model.set('type', type);
-    this.setState('edit');
-    this.render();
+    this.initializeForm();
+    this.setState('edit').render();
   },
 
   /**
