@@ -146,7 +146,7 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
         if self.title:
             return self.title
 
-        return self.story_id
+        return _("Untitled Story") + " " + self.story_id
 
     @models.permalink
     def get_absolute_url(self):
