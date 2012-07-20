@@ -88,13 +88,13 @@ storybase.builder.views.NavigationView = Backbone.View.extend({
 
   events: function() {
     var events = {};
-    _.each(this.items, function(item) {
+    _.each(this.storyItems.concat(this.workflowItems), function(item) {
       events["click ." + item.class] = item.callback;
     });
     return events;
   },
 
-  items: [
+  storyItems: [
       {
         id: 'assets',
         title: 'Assets',
@@ -104,22 +104,48 @@ storybase.builder.views.NavigationView = Backbone.View.extend({
       }
   ],
 
+  workflowItems: [
+    {
+      id: 'build',
+      title: 'Build',
+      class: 'build',
+      callback: 'selectStage',
+      visible: true
+    },
+    {
+      id: 'review',
+      title: 'Review',
+      class: 'review',
+      callback: 'selectStage',
+      visible: false 
+    },
+    {
+      id: 'share',
+      title: 'Share',
+      class: 'share',
+      callback: 'selectStage',
+      visible: false 
+    },
+  ],
+
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
     this.template = Handlebars.compile(this.templateSource);
 
     this.dispatcher.on('has:assetlist', this.toggleAssetsItem, this);
+    this.dispatcher.on('save:story', this.toggleWorkflowItems, this);
   },
 
-  getVisibleItems: function() {
-    return _.filter(this.items, function(item) {
+  getVisibleItems: function(itemList) {
+    return _.filter(itemList, function(item) {
       return item.visible == true;
     });
   },
 
   render: function() {
     var context = {
-      items: this.getVisibleItems()
+      storyItems: this.getVisibleItems(this.storyItems),
+      workflowItems: this.getVisibleItems(this.workflowItems)
     };
     this.$el.html(this.template(context));
     return this;
@@ -131,7 +157,7 @@ storybase.builder.views.NavigationView = Backbone.View.extend({
   },
 
   getItem: function(id) {
-    return _.filter(this.items, function(item) {
+    return _.filter(this.storyItems.concat(this.workflowItems), function(item) {
       return item.id === id;
     })[0];
   },
@@ -139,11 +165,24 @@ storybase.builder.views.NavigationView = Backbone.View.extend({
   toggleItem: function(id, visible) {
     var item = this.getItem(id);
     item.visible = visible;
-    this.render();
   },
 
   toggleAssetsItem: function(visible) {
     this.toggleItem('assets', visible);
+    this.render();
+  },
+
+  /**
+   * Show the worfklow items that require a story.
+   */
+  toggleWorkflowItems: function() {
+    this.toggleItem('review', true);
+    this.toggleItem('share', true);
+    this.render();
+  },
+
+  selectStage: function(evt) {
+    // TODO: Implement this
   }
 
 });
@@ -427,6 +466,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     var that = this;
     this.model.save(null, {
       success: function(model, response) {
+        that.dispatcher.trigger('save:story', model);
         that.dispatcher.trigger('navigate', '/story/' + model.id + '/');
         model.saveSections();
       }
