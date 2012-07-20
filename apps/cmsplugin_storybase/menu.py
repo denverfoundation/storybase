@@ -62,7 +62,6 @@ class OrderMenuNodes(Modifier):
         # Check to make sure we're trying to insert the explore menu nodes
 	    # in a position that actually exists
         insert_at = position if position < len(nodes) else len(nodes) - 1
-        print insert_at
         for node in nodes:
            # Discover nodes in the explore menu and separate them
            if node.id == id:
