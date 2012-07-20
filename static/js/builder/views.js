@@ -86,17 +86,41 @@ storybase.builder.views.AppView = Backbone.View.extend({
 storybase.builder.views.NavigationView = Backbone.View.extend({
   templateSource: $('#navigation-template').html(),
 
-  events: {
-    'click .assets': 'toggleAssetList' 
+  events: function() {
+    var events = {};
+    _.each(this.items, function(item) {
+      events["click ." + item.class] = item.callback;
+    });
+    return events;
   },
+
+  items: [
+      {
+        id: 'assets',
+        title: 'Assets',
+        class: 'assets',
+        callback: 'toggleAssetList',
+        visible: false
+      }
+  ],
 
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
     this.template = Handlebars.compile(this.templateSource);
+
+    this.dispatcher.on('has:assetlist', this.toggleAssetsItem, this);
+  },
+
+  getVisibleItems: function() {
+    return _.filter(this.items, function(item) {
+      return item.visible == true;
+    });
   },
 
   render: function() {
-    var context = {};
+    var context = {
+      items: this.getVisibleItems()
+    };
     this.$el.html(this.template(context));
     return this;
   },
@@ -104,6 +128,22 @@ storybase.builder.views.NavigationView = Backbone.View.extend({
   toggleAssetList: function(evt) {
     evt.preventDefault();
     this.dispatcher.trigger("toggle:assetlist");
+  },
+
+  getItem: function(id) {
+    return _.filter(this.items, function(item) {
+      return item.id === id;
+    })[0];
+  },
+
+  toggleItem: function(id, visible) {
+    var item = this.getItem(id);
+    item.visible = visible;
+    this.render();
+  },
+
+  toggleAssetsItem: function(visible) {
+    this.toggleItem('assets', visible);
   }
 
 });
@@ -221,6 +261,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
     this.model.on("sync", this.triggerSaved, this);
     this.model.on("sync", this.showSaved, this);
+    this.model.unusedAssets.on("sync reset add", this.hasAssetList, this);
 
     this.dispatcher.on("select:template", this.setStoryTemplate, this);
     this.dispatcher.on("ready:templateSections", this.initializeStoryFromTemplate, this);
@@ -399,6 +440,14 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
   toggleAssetList: function() {
     this.unusedAssetView.$el.toggle(); 
+  },
+
+  hasAssetList: function() {
+    var hasAssets = false;
+    if (this.model.unusedAssets.length) {
+      hasAssets = true; 
+    }
+    this.dispatcher.trigger('has:assetlist', hasAssets);
   }
 });
 

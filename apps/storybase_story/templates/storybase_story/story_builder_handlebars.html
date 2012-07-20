@@ -12,7 +12,9 @@ Handlebars.js templates for story builder Backbone application
 </ul>
 <ul class="meta">
     <li>Help</li>
-    <li><a class="assets" href="#">Assets</a></li>
+    {{#each items}}
+    <li><a class="{{class}}" href="#">{{title}}</a></li>
+    {{/each}}
     <!-- <li>Preview</li> -->
     <li><a class="exit" href="/">Exit</a></li>
 </ul>
