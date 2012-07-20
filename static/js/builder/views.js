@@ -457,7 +457,6 @@ storybase.builder.views.LastSavedView = Backbone.View.extend({
   className: 'last-saved',
 
   initialize: function() {
-    console.debug(this.options.lastSaved);
     this.lastSaved = _.isUndefined(this.options.lastSaved) ? undefined : (_.isDate(this.options.lastSaved) ? this.options.lastSaved : new Date(this.options.lastSaved));
     this.dispatcher = this.options.dispatcher;
 
