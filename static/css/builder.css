@@ -33,6 +33,17 @@ header h1 {
   color: #fff;
 }
 
+#builder-nav a {
+  font-weight: bold;
+  color: #fff;
+  text-decoration: none;
+}
+
+#builder-nav a.active {
+  color: blue;
+  font-style: italic;
+}
+
 #app {
   height: 100%;
 }

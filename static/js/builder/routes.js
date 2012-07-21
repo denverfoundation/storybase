@@ -1,8 +1,8 @@
 Namespace('storybase.builder.routers');
 storybase.builder.routers.Router = Backbone.Router.extend({
   routes: {
-    "story/:id": "story",
-    "story/:id/review": "review"
+    ":id/": "selectStage",
+    ":id/:stage/": "selectStage"
   },
 
   initialize: function(options) {
@@ -10,9 +10,11 @@ storybase.builder.routers.Router = Backbone.Router.extend({
     this.dispatcher.on("navigate", this.navigate, this);
   },
 
-  story: function(id) {
-    this.dispatcher.trigger("select:story");
-  },
-
+  selectStage: function(id, stage) {
+    if (_.isUndefined(stage)) {
+      stage = 'build';
+    }
+    this.dispatcher.trigger('select:workflowstage', stage);
+  }
    
 });

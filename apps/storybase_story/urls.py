@@ -2,22 +2,12 @@
 
 #import datetime
 from django.conf.urls.defaults import patterns, url
-from django.views.generic import RedirectView
 #from haystack.query import SearchQuerySet
 #from haystack.views import FacetedSearchView
 
 #from storybase_story.forms import StoryFacetedSearchForm
 from storybase_story.views import (ExploreStoriesView, 
     StoryBuilderView, StoryDetailView, StoryViewerView)
-
-# Use reverse_lazy from Django 1.4 if it's available, otherwise
-# define our own
-try:
-    from django.core.urlresolvers import reverse_lazy
-except ImportError:
-    from django.core.urlresolvers import reverse
-    from django.utils.functional import lazy
-    reverse_lazy = lazy(reverse, str)
 
 #sqs = SearchQuerySet().date_facet('pub_date', 
 #                                   start_date=datetime.date(2009, 1, 1),
@@ -30,9 +20,8 @@ urlpatterns = patterns('',
 #                                      searchqueryset=sqs),
 #        name='story_search'),
     url(r'build/$', StoryBuilderView.as_view(), name='story_builder'),
-    url(r'build/story/$',
-        RedirectView.as_view(url=reverse_lazy('story_builder'))),
-    url(r'build/story/(?P<story_id>[0-9a-f]{32,32})/$', StoryBuilderView.as_view(), name='story_builder'),
+    url(r'build/(?P<story_id>[0-9a-f]{32,32})/$', StoryBuilderView.as_view(), name='story_builder'),
+    url(r'build/(?P<story_id>[0-9a-f]{32,32})/(?P<stage>data|review|share)/$', StoryBuilderView.as_view(), name='story_builder'),
     url(r'explore/$', ExploreStoriesView.as_view(), name='explore_stories'),
     url(r'stories/(?P<story_id>[0-9a-f]{32,32})/$',
         StoryDetailView.as_view(), name='story_detail_by_id'), 

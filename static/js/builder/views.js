@@ -53,7 +53,6 @@ storybase.builder.views.AppView = Backbone.View.extend({
   setTemplate: function(template) {
     this.activeTemplate = template;
     this.updateStep('build');
-    this.dispatcher.trigger('navigate', 'story');
   },
 
   /**
@@ -95,46 +94,56 @@ storybase.builder.views.NavigationView = Backbone.View.extend({
   },
 
   storyItems: [
-      {
-        id: 'assets',
-        title: 'Assets',
-        class: 'assets',
-        callback: 'toggleAssetList',
-        visible: false
-      }
+    {
+      id: 'assets',
+      title: 'Assets',
+      callback: 'toggleAssetList',
+      visible: false
+    }
   ],
 
   workflowItems: [
     {
       id: 'build',
       title: 'Build',
-      class: 'build',
       callback: 'selectStage',
-      visible: true
+      visible: true,
+      path: ''
+    },
+    {
+      id: 'data',
+      title: 'Add Data',
+      callback: 'selectStage',
+      visible: false,
+      path: 'data/'
     },
     {
       id: 'review',
       title: 'Review',
-      class: 'review',
       callback: 'selectStage',
-      visible: false 
+      visible: false,
+      path: 'review/'
     },
     {
       id: 'share',
       title: 'Share',
-      class: 'share',
       callback: 'selectStage',
-      visible: false 
-    },
+      visible: false,
+      path: 'share/'
+    }
   ],
 
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
     this.template = Handlebars.compile(this.templateSource);
+    this.storyId = null;
 
     this.dispatcher.on('has:assetlist', this.toggleAssetsItem, this);
     this.dispatcher.on('ready:story', this.showWorkflowItems, this);
     this.dispatcher.on('save:story', this.showWorkflowItems, this);
+    this.dispatcher.on('ready:story', this.setStoryId, this);
+    this.dispatcher.on('save:story', this.setStoryId, this);
+    this.dispatcher.on('select:workflowstage', this.highlightActive, this);
   },
 
   getVisibleItems: function(itemList) {
@@ -145,6 +154,7 @@ storybase.builder.views.NavigationView = Backbone.View.extend({
 
   render: function() {
     var context = {
+      storyId: this.storyId,
       storyItems: this.getVisibleItems(this.storyItems),
       workflowItems: this.getVisibleItems(this.workflowItems)
     };
@@ -173,21 +183,43 @@ storybase.builder.views.NavigationView = Backbone.View.extend({
     this.render();
   },
 
+  setStoryId: function(story) {
+    if (!story.isNew()) {
+      this.storyId = story.id; 
+    }
+  },
+
   /**
    * Show the worfklow items that require a story.
    */
   showWorkflowItems: function(story) {
     if (!story.isNew()) {
+      this.setVisibility('data', true);
       this.setVisibility('review', true);
       this.setVisibility('share', true);
       this.render();
     }
+    return this;
   },
 
   selectStage: function(evt) {
-    // TODO: Implement this
-  }
+    evt.preventDefault();
+    var route = $(evt.target).attr("href");
+    this.dispatcher.trigger('navigate', route, 
+      {trigger: true, replace: true});
+  },
 
+  highlightActive: function(stage) {
+    _.each(this.storyItems.concat(this.workflowItems), function(item) {
+      if (item.id === stage) {
+        item.active = true;
+      }
+      else {
+        item.active = false;
+      }
+    });
+    return this.render();
+  }
 });
 
 /**
@@ -476,7 +508,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.model.save(null, {
       success: function(model, response) {
         that.dispatcher.trigger('save:story', model);
-        that.dispatcher.trigger('navigate', '/story/' + model.id + '/');
+        that.dispatcher.trigger('navigate', model.id + '/');
         model.saveSections();
       }
     });
