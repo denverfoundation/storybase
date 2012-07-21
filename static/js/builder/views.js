@@ -776,6 +776,7 @@ storybase.builder.views.PseudoSectionThumbnailView = Backbone.View.extend(
         title: this.title 
       };
       this.$el.html(this.template(context));
+      this.delegateEvents();
       return this;
     },
 
