@@ -15,10 +15,16 @@ storybase.builder.views.AppView = Backbone.View.extend({
     // TODO: Define all the steps
     this.activeStep = this.model ? 'build' : 'selectTemplate';
 
-    this.navView = new storybase.builder.views.NavigationView({
-      el: this.$('#builder-nav'),
+    this.workflowStepView = new storybase.builder.views.WorkflowStepView({
       dispatcher: this.dispatcher
     });
+    this.$('header').first().children().first().append(this.workflowStepView.el);
+    // Initialize a view for the tools
+    this.toolsView = new storybase.builder.views.ToolsView({
+      dispatcher: this.dispatcher
+    });
+    // TODO: Change the selector as the template changes
+    this.$('header').first().children().first().append(this.toolsView.el);
 
     // Store subviews in an object keyed with values of this.activeStep
     var commonOptions = {
@@ -74,35 +80,66 @@ storybase.builder.views.AppView = Backbone.View.extend({
     var activeView = this.getActiveView();
     this.$el.height($(window).height());
     this.$('#app').html(activeView.render().$el);
-    this.navView.render();
+    this.workflowStepView.render();
+    this.toolsView.render();
     return this;
   }
 });
 
 /**
- * Story builder navigation menu
+ * Base class for menu-like views
  */
-storybase.builder.views.NavigationView = Backbone.View.extend({
-  templateSource: $('#navigation-template').html(),
+storybase.builder.views.MenuView = Backbone.View.extend({
+  items: [],
+
+  itemTemplateSource: $('#menu-item-template').html(),
+
+  getItemTemplate: function() {
+    if (_.isUndefined(this.itemTemplate)) {
+      this.itemTemplate = Handlebars.compile(this.itemTemplateSource);
+    }
+    return this.itemTemplate; 
+  },
 
   events: function() {
     var events = {};
-    _.each(this.storyItems.concat(this.workflowItems), function(item) {
-      events["click ." + item.class] = item.callback;
+    _.each(this.items, function(item) {
+      if (item.callback) {
+        events["click ." + item.id] = item.callback;
+      }
     });
     return events;
   },
 
-  storyItems: [
-    {
-      id: 'assets',
-      title: 'Assets',
-      callback: 'toggleAssetList',
-      visible: false
-    }
-  ],
+  getItem: function(id) {
+    return _.filter(this.items, function(item) {
+      return item.id === id;
+    })[0];
+  },
 
-  workflowItems: [
+  setVisibility: function(id, visible) {
+    var item = this.getItem(id);
+    item.visible = visible;
+  },
+
+  getVisibleItems: function() {
+    return _.filter(this.items, function(item) {
+      return item.visible == true;
+    });
+  }
+});
+
+/**
+ * Shows current step of workflow 
+ */
+storybase.builder.views.WorkflowStepView = storybase.builder.views.MenuView.extend({
+  tagName: 'ul',
+
+  className: 'workflow',
+
+  itemTemplateSource: $('#workflow-item-template').html(),
+
+  items: [
     {
       id: 'build',
       title: 'Build',
@@ -138,7 +175,6 @@ storybase.builder.views.NavigationView = Backbone.View.extend({
     this.template = Handlebars.compile(this.templateSource);
     this.storyId = null;
 
-    this.dispatcher.on('has:assetlist', this.toggleAssetsItem, this);
     this.dispatcher.on('ready:story', this.showWorkflowItems, this);
     this.dispatcher.on('save:story', this.showWorkflowItems, this);
     this.dispatcher.on('ready:story', this.setStoryId, this);
@@ -146,42 +182,20 @@ storybase.builder.views.NavigationView = Backbone.View.extend({
     this.dispatcher.on('select:workflowstep', this.highlightActive, this);
   },
 
-  getVisibleItems: function(itemList) {
-    return _.filter(itemList, function(item) {
-      return item.visible == true;
-    });
-  },
 
   render: function() {
+    var that = this;
+    var template = this.getItemTemplate();
     var context = {
-      storyId: this.storyId,
-      storyItems: this.getVisibleItems(this.storyItems),
-      workflowItems: this.getVisibleItems(this.workflowItems)
+      storyId: this.storyId
     };
-    this.$el.html(this.template(context));
+    this.$el.empty();
+    _.each(this.getVisibleItems(), function(item) {
+      that.$el.append(template(_.extend(item, context)));
+    });
     return this;
   },
 
-  toggleAssetList: function(evt) {
-    evt.preventDefault();
-    this.dispatcher.trigger("toggle:assetlist");
-  },
-
-  getItem: function(id) {
-    return _.filter(this.storyItems.concat(this.workflowItems), function(item) {
-      return item.id === id;
-    })[0];
-  },
-
-  setVisibility: function(id, visible) {
-    var item = this.getItem(id);
-    item.visible = visible;
-  },
-
-  toggleAssetsItem: function(visible) {
-    this.setVisibility('assets', visible);
-    this.render();
-  },
 
   setStoryId: function(story) {
     if (!story.isNew()) {
@@ -210,7 +224,7 @@ storybase.builder.views.NavigationView = Backbone.View.extend({
   },
 
   highlightActive: function(step) {
-    _.each(this.storyItems.concat(this.workflowItems), function(item) {
+    _.each(this.items, function(item) {
       if (item.id === step) {
         item.active = true;
       }
@@ -220,6 +234,69 @@ storybase.builder.views.NavigationView = Backbone.View.extend({
     });
     return this.render();
   }
+});
+
+storybase.builder.views.ToolsView = storybase.builder.views.MenuView.extend({
+  tagName: 'ul',
+
+  className: 'tools',
+
+  items: [
+    {
+      id: 'help',
+      title: 'Help',
+      callback: null,
+      href: '#',
+      visible: false
+    },
+    {
+      id: 'assets',
+      title: 'Assets',
+      callback: 'toggleAssetList',
+      href: '#',
+      visible: false
+    },
+    {
+      id: 'preview',
+      title: 'Preview',
+      callback: null,
+      href: '#',
+      visible: false
+    },
+    {
+      id: 'exit',
+      title: 'Exit',
+      callback: null,
+      href: '/',
+      visible: true 
+    },
+  ],
+
+  initialize: function() {
+    this.dispatcher = this.options.dispatcher;
+
+    this.dispatcher.on('has:assetlist', this.toggleAssetsItem, this);
+  },
+
+  render: function() {
+    var that = this;
+    var template = this.getItemTemplate();
+    this.$el.empty();
+    _.each(this.getVisibleItems(), function(item) {
+      that.$el.append(template(item));
+    });
+    return this;
+  },
+
+  toggleAssetsItem: function(visible) {
+    this.setVisibility('assets', visible);
+    this.render();
+  },
+
+  toggleAssetList: function(evt) {
+    evt.preventDefault();
+    this.dispatcher.trigger("toggle:assetlist");
+  },
 });
 
 /**

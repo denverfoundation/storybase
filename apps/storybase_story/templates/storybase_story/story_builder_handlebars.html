@@ -4,20 +4,12 @@ Handlebars.js templates for story builder Backbone application
 
 {% load  verbatim %}
 {% verbatim %}
-<script type="text/x-handlebars-template" id="navigation-template">
-<ul class="workflow">
-    {{#each workflowItems}}
-    <li><a class="{{id}}{{#if active}} active{{/if}}" href="{{../storyId}}/{{path}}">{{title}}</a></li>
-    {{/each}}
-</ul>
-<ul class="meta">
-    <li>Help</li>
-    {{#each storyItems}}
-    <li><a class="{{class}}" href="#">{{title}}</a></li>
-    {{/each}}
-    <!-- <li>Preview</li> -->
-    <li><a class="exit" href="/">Exit</a></li>
-</ul>
+<script type="text/x-handlebars-template" id="menu-item-template">
+<li><a class="{{id}}" href="{{href}}">{{title}}</a></li>
+</script>
+
+<script type="text/x-handlebars-template" id="workflow-item-template">
+<li><a class="{{id}}{{#if active}} active{{/if}}" href="{{storyId}}/{{path}}">{{title}}</a></li>
 </script>
 
 <script type="text/x-handlebars-template" id="story-template-template">

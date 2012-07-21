@@ -19,27 +19,32 @@ header h1 {
   list-style: none;
 }
 
-#builder-nav .meta {
+.tools {
   position: absolute;
   right: 0;
 }
 
-#builder-nav ul li {
+.tools,
+.workflow {
+  float: left;
+  padding: 1.25%;
+  list-style: none;
+}
+
+.tools li,
+.workflow li {
   display: inline-block;
 }
 
-#builder-nav a {
-  font-weight: bold;
-  color: #fff;
-}
-
-#builder-nav a {
+.tools a,
+.workflow a {
   font-weight: bold;
   color: #fff;
   text-decoration: none;
 }
 
-#builder-nav a.active {
+.tools a.active,
+.workflow a.active {
   color: blue;
   font-style: italic;
 }
