@@ -9,7 +9,7 @@ Handlebars.js templates for story builder Backbone application
 </script>
 
 <script type="text/x-handlebars-template" id="workflow-item-template">
-<li><a class="{{id}}{{#if active}} active{{/if}}" href="{{storyId}}/{{path}}">{{title}}</a></li>
+<li class="{{#if active}}active{{/if}}"><a class="{{id}}" href="{{storyId}}/{{path}}">{{title}}</a></li>
 </script>
 
 <script type="text/x-handlebars-template" id="story-template-template">

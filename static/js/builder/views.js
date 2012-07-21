@@ -135,7 +135,7 @@ storybase.builder.views.MenuView = Backbone.View.extend({
 storybase.builder.views.WorkflowStepView = storybase.builder.views.MenuView.extend({
   tagName: 'ul',
 
-  className: 'workflow',
+  className: 'workflow nav',
 
   itemTemplateSource: $('#workflow-item-template').html(),
 
@@ -239,7 +239,7 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.MenuView.exte
 storybase.builder.views.ToolsView = storybase.builder.views.MenuView.extend({
   tagName: 'ul',
 
-  className: 'tools',
+  className: 'tools nav',
 
   items: [
     {
