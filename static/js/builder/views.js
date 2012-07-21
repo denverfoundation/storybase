@@ -11,15 +11,13 @@ storybase.builder.views.AppView = Backbone.View.extend({
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
 
-    // The currently active step of the story building process
-    // TODO: Define all the steps
-    this.activeStep = this.model ? 'build' : 'selectTemplate';
-
+    // Initialize the view for the workflow step indicator
     this.workflowStepView = new storybase.builder.views.WorkflowStepView({
       dispatcher: this.dispatcher
     });
+    // TODO: Change the selector as the template changes
     this.$('header').first().children().first().append(this.workflowStepView.el);
-    // Initialize a view for the tools
+    // Initialize a view for the tools menu
     this.toolsView = new storybase.builder.views.ToolsView({
       dispatcher: this.dispatcher
     });
@@ -47,6 +45,8 @@ storybase.builder.views.AppView = Backbone.View.extend({
       review: new storybase.builder.views.ReviewView(commonOptions),
       share: new storybase.builder.views.ShareView(commonOptions)
     };
+    // The currently active step of the story building process
+    this.activeStep = this.model ? 'build' : 'selectTemplate';
 
     // Bind callbacks for custom events
     this.dispatcher.on("select:template", this.setTemplate, this);
