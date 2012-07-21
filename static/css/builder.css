@@ -210,6 +210,11 @@
 
 /* Table of contents thumbnails */
 
+.sections {
+  width: 66%;
+  float: left;
+}
+
 .section-thumbnail {
   position: relative;
   display: inline-block;
@@ -236,4 +241,32 @@
 
 .section-thumbnail div {
   padding: 22% 0;
+}
+
+.workflow-nav {
+  position: absolute;
+  right: 0;
+  bottom: 50px;
+  width: 33%;
+}
+
+.btn {
+  border-radius: 4px;
+  font-size: 13px;
+  text-decoration: none;
+  line-height: 18px;
+  padding: 4px 10px;
+  vertical-align: middle;
+  text-align: center;
+  cursor: pointer;
+  background-color: #F5F5F5;
+  background-image: -moz-linear-gradient(center top , #FFFFFF, #E6E6E6);
+  background-repeat: repeat-x;
+  border-color: #E6E6E6 #E6E6E6 #B3B3B3;
+  display: inline-block;
+  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
+  border-style: solid;
+  border-width: 1px;
+  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
+  color: #333333;
 }

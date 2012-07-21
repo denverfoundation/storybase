@@ -23,10 +23,14 @@ storybase.builder.views.AppView = Backbone.View.extend({
     });
     // TODO: Change the selector as the template changes
     this.$('header').first().children().first().append(this.toolsView.el);
+    // Initialize view for moving back and forth through the workflow steps
+    this.workflowNavView = new storybase.builder.views.WorkflowNavView({
+      dispatcher: this.dispatcher
+    });
 
     // Store subviews in an object keyed with values of this.activeStep
     var commonOptions = {
-      dispatcher: this.dispatcher
+      dispatcher: this.dispatcher,
     };
     if (this.model) {
       commonOptions.model = this.model;
@@ -77,9 +81,11 @@ storybase.builder.views.AppView = Backbone.View.extend({
   },
 
   render: function() {
+    console.debug('Rendering main view');
     var activeView = this.getActiveView();
     this.$el.height($(window).height());
     this.$('#app').html(activeView.render().$el);
+    this.$('#app').append(this.workflowNavView.render().el);
     this.workflowStepView.render();
     this.toolsView.render();
     return this;
@@ -166,7 +172,7 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.MenuView.exte
       title: 'Share',
       callback: 'selectStage',
       visible: false,
-      path: 'share/'
+      path: 'share/legal/'
     }
   ],
 
@@ -296,6 +302,163 @@ storybase.builder.views.ToolsView = storybase.builder.views.MenuView.extend({
   toggleAssetList: function(evt) {
     evt.preventDefault();
     this.dispatcher.trigger("toggle:assetlist");
+  },
+});
+
+/**
+ * A pair of links that lets the user move forward and back through the
+ * different workflow steps.
+ */
+storybase.builder.views.WorkflowNavView = storybase.builder.views.MenuView.extend({
+  tagName: 'div',
+
+  className: 'workflow-nav',
+
+  itemTemplateSource: $('#workflow-nav-item-template').html(),
+
+  items: [
+    {
+      id: 'build',
+      backTitle: 'Continue Writing Story',
+      callback: 'selectStage',
+      path: ''
+    },
+    {
+      id: 'data',
+      fwdTitle: 'Add Data',
+      backTitle: 'Back to "Add Data"',
+      callback: 'selectStage',
+      path: 'data/'
+    },
+    {
+      id: 'review',
+      backTitle: 'Back to Review',
+      fwdTitle: 'Review',
+      callback: 'selectStage',
+      path: 'review/'
+    },
+    {
+      id: 'share-legal',
+      backTitle: 'Back to Legal Agreements',
+      fwdTitle: 'Share My Story',
+      callback: 'selectStage',
+      path: 'share/legal/'
+    },
+    {
+      id: 'share-tagging',
+      backTitle: 'Back to Tagging',
+      fwdTitle: 'Continue',
+      callback: 'selectStage',
+      path: 'share/tagging/'
+    },
+    {
+      id: 'share-publish',
+      fwdTitle: 'Continue',
+      callback: 'selectStage',
+      path: 'share/publish/'
+    },
+    {
+      id: 'new',
+      fwdTitle: 'Tell Another Story',
+      callback: null, 
+      href: '/build'
+    }
+  ],
+
+  visibility: {
+    'build': {
+      back: null,
+      forward: 'data'
+    },
+    'data': {
+      back: 'build',
+      forward: 'review'
+    },
+    'review': {
+      back: 'data',
+      forward: 'share-legal'
+    },
+    'share-legal': {
+      back: 'review',
+      forward: 'share-tagging'
+    },
+    'share-tagging': {
+      back: 'share-legal',
+      forward: 'share-publish'
+    },
+    'share-publish': {
+      back: 'share-tagging',
+      forward: 'new'
+    }
+  },
+
+  initialize: function() {
+    this.dispatcher = this.options.dispatcher;
+    this.forward = this.getItem('data');
+    this.back = null;
+
+    this.dispatcher.on('ready:story', this.setStoryId, this);
+    this.dispatcher.on('save:story', this.setStoryId, this);
+    this.dispatcher.on('select:workflowstep', this.selectVisible, this);
+  },
+
+  render: function() {
+    console.info('Rendering navigation view');
+    var that = this;
+    var template = this.getItemTemplate();
+    this.$el.empty();
+    if (this.storyId) {
+      if (this.back) {
+        this.$el.append(template({
+          id: this.back.id,
+          title: this.back.backTitle,
+          href: this.getHref(this.back) 
+        }));
+      }
+      if (this.forward) {
+        this.$el.append(template({
+          id: this.forward.id,
+          title: this.forward.fwdTitle,
+          href: this.getHref(this.forward)
+        }));
+      }
+    }
+    this.delegateEvents();
+    return this;
+  },
+
+  selectVisible: function(step, subStep) {
+    console.debug('Entering selectVisible');
+    var key = _.isUndefined(subStep) ? step : step + '-' + subStep;
+    this.forward = this.visibility[key].forward ? this.getItem(this.visibility[key].forward) : null;
+    this.back = this.visibility[key].back ? this.getItem(this.visibility[key].back) : null;
+    this.render();
+    return this;
+  },
+
+  selectStage: function(evt) {
+    evt.preventDefault();
+    var route = $(evt.target).attr("href");
+    this.dispatcher.trigger('navigate', route, 
+      {trigger: true, replace: true});
+  },
+
+  setStoryId: function(story) {
+    if (!story.isNew() && _.isUndefined(this.storyId)) {
+      this.storyId = story.id; 
+      this.render();
+    }
+  },
+
+  getHref: function(item) {
+    if (!_.isUndefined(item.href)) {
+      return item.href;
+    }
+    if (!_.isUndefined(item.path)) {
+      return this.storyId + '/' + item.path;
+    }
+
+    return '#';
   },
 });
 
@@ -496,6 +659,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   },
 
   render: function() {
+    console.info('Rendering builder view');
     var that = this;
     this.$el.html(this.template());
     this.$el.prepend(this.unusedAssetView.render().$el.hide());
@@ -1266,6 +1430,7 @@ storybase.builder.views.DataView = Backbone.View.extend({
   },
 
   render: function() {
+    console.info('Rendering data view');
     var context = {};
     this.$el.html(this.template(context));
     return this;
@@ -1284,6 +1449,7 @@ storybase.builder.views.ReviewView = Backbone.View.extend({
   },
 
   render: function() {
+    console.info('Rendering review view');
     var context = {};
     this.$el.html(this.template(context));
     return this;
@@ -1302,6 +1468,7 @@ storybase.builder.views.ShareView = Backbone.View.extend({
   },
 
   render: function() {
+    console.info('Rendering share view');
     var context = {};
     this.$el.html(this.template(context));
     return this;
