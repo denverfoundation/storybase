@@ -21,30 +21,30 @@ storybase.builder.views.AppView = Backbone.View.extend({
     });
 
     // Store subviews in an object keyed with values of this.activeStep
-    var buildViewOptions = {
-      dispatcher: this.dispatcher,
-      layouts: this.options.layouts,
-      assetTypes: this.options.assetTypes
+    var commonOptions = {
+      dispatcher: this.dispatcher
     };
     if (this.model) {
-      buildViewOptions.model = this.model;
+      commonOptions.model = this.model;
     }
+    var buildViewOptions = _.extend(commonOptions, {
+      layouts: this.options.layouts,
+      assetTypes: this.options.assetTypes
+    });
     this.subviews = {
       selectTemplate: new storybase.builder.views.SelectStoryTemplateView({
         dispatcher: this.dispatcher,
         collection: this.options.storyTemplates
       }),
-      build: new storybase.builder.views.BuilderView(buildViewOptions)
+      build: new storybase.builder.views.BuilderView(buildViewOptions),
+      data: new storybase.builder.views.DataView(commonOptions),
+      review: new storybase.builder.views.ReviewView(commonOptions),
+      share: new storybase.builder.views.ShareView(commonOptions)
     };
 
-    this.initializeEvents();
-  },
-
-  /**
-   * Bind callbacks for custom events
-   */
-  initializeEvents: function() {
+    // Bind callbacks for custom events
     this.dispatcher.on("select:template", this.setTemplate, this);
+    this.dispatcher.on("select:workflowstep", this.updateStep, this); 
   },
 
   /**
@@ -143,7 +143,7 @@ storybase.builder.views.NavigationView = Backbone.View.extend({
     this.dispatcher.on('save:story', this.showWorkflowItems, this);
     this.dispatcher.on('ready:story', this.setStoryId, this);
     this.dispatcher.on('save:story', this.setStoryId, this);
-    this.dispatcher.on('select:workflowstage', this.highlightActive, this);
+    this.dispatcher.on('select:workflowstep', this.highlightActive, this);
   },
 
   getVisibleItems: function(itemList) {
@@ -209,9 +209,9 @@ storybase.builder.views.NavigationView = Backbone.View.extend({
       {trigger: true, replace: true});
   },
 
-  highlightActive: function(stage) {
+  highlightActive: function(step) {
     _.each(this.storyItems.concat(this.workflowItems), function(item) {
-      if (item.id === stage) {
+      if (item.id === step) {
         item.active = true;
       }
       else {
@@ -1172,5 +1172,59 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend({
     this.dispatcher.trigger('do:remove:sectionasset', this.model);
     this.model = new storybase.models.Asset();
     this.setState('select').render();
+  }
+});
+
+storybase.builder.views.DataView = Backbone.View.extend({
+  templateSource: $('#data-template').html(),
+
+  events: {
+  },
+
+  initialize: function() {
+    this.dispatcher = this.options.dispatcher;
+    this.template = Handlebars.compile(this.templateSource);
+  },
+
+  render: function() {
+    var context = {};
+    this.$el.html(this.template(context));
+    return this;
+  }
+});
+
+storybase.builder.views.ReviewView = Backbone.View.extend({
+  templateSource: $('#review-template').html(),
+
+  events: {
+  },
+
+  initialize: function() {
+    this.dispatcher = this.options.dispatcher;
+    this.template = Handlebars.compile(this.templateSource);
+  },
+
+  render: function() {
+    var context = {};
+    this.$el.html(this.template(context));
+    return this;
+  }
+});
+
+storybase.builder.views.ShareView = Backbone.View.extend({
+  templateSource: $('#share-template').html(),
+
+  events: {
+  },
+
+  initialize: function() {
+    this.dispatcher = this.options.dispatcher;
+    this.template = Handlebars.compile(this.templateSource);
+  },
+
+  render: function() {
+    var context = {};
+    this.$el.html(this.template(context));
+    return this;
   }
 });
