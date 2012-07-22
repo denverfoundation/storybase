@@ -282,6 +282,8 @@ storybase.builder.views.ToolsView = storybase.builder.views.MenuView.extend({
     this.dispatcher = this.options.dispatcher;
 
     this.dispatcher.on('has:assetlist', this.toggleAssetsItem, this);
+    this.dispatcher.on('ready:story', this.setStoryId, this);
+    this.dispatcher.on('save:story', this.setStoryId, this);
   },
 
   render: function() {
@@ -303,6 +305,16 @@ storybase.builder.views.ToolsView = storybase.builder.views.MenuView.extend({
     evt.preventDefault();
     this.dispatcher.trigger("toggle:assetlist");
   },
+  
+  setStoryId: function(story) {
+    if (!story.isNew() && _.isUndefined(this.storyId)) {
+      var item = this.getItem('preview');
+      this.storyId = story.id; 
+      item.href = '/stories/' + this.storyId + '/viewer/';
+      item.visible = true;
+      this.render();
+    }
+  }
 });
 
 /**
@@ -733,6 +745,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   initializeStoryFromTemplate: function() {
     console.info("Initializing sections");
     var that = this;
+    this.model.set('structure_type', this.templateStory.get('structure_type'));
     this.templateSections.each(function(section) {
       var sectionCopy = new storybase.models.Section();
       sectionCopy.set("title", section.get("title"));
