@@ -105,6 +105,7 @@ class HelpTranslationInline(StorybaseStackedInline):
 class HelpAdmin(StorybaseModelAdmin):
     inlines = [HelpTranslationInline]
     prefix_inline_classes = ['HelpTranslationInline']
+    readonly_fields = ['help_id']
 
 admin.site.register(Help, HelpAdmin)
 
