@@ -9,7 +9,7 @@ class Migration(SchemaMigration):
     def forwards(self, orm):
         
         # Adding field 'Section.help'
-        db.add_column('storybase_story_section', 'help', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['storybase.Help'], null=True), keep_default=False)
+        db.add_column('storybase_story_section', 'help', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['storybase_help.Help'], null=True), keep_default=False)
 
 
     def backwards(self, orm):
@@ -55,7 +55,7 @@ class Migration(SchemaMigration):
             'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
             'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
         },
-        'storybase.help': {
+        'storybase_help.help': {
             'Meta': {'object_name': 'Help'},
             'help_id': ('uuidfield.fields.UUIDField', [], {'unique': 'True', 'max_length': '32', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
@@ -141,7 +141,7 @@ class Migration(SchemaMigration):
             'Meta': {'object_name': 'Section'},
             'assets': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'sections'", 'blank': 'True', 'through': "orm['storybase_story.SectionAsset']", 'to': "orm['storybase_asset.Asset']"}),
             'children': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'to': "orm['storybase_story.Section']", 'null': 'True', 'through': "orm['storybase_story.SectionRelation']", 'blank': 'True'}),
-            'help': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['storybase.Help']", 'null': 'True'}),
+            'help': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['storybase_help.Help']", 'null': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'layout': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['storybase_story.SectionLayout']", 'null': 'True'}),
             'root': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),

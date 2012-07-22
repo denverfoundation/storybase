@@ -1,10 +1,7 @@
 """Customized base ModelAdmin classes"""
 
-from django import forms
-from django.conf import settings
 from django.contrib import admin
 from storybase.fields import ShortTextField
-from storybase.models import Help, HelpTranslation
 from storybase.widgets import AdminLongTextInputWidget
 
 
@@ -81,33 +78,6 @@ class Select2StackedInline(admin.StackedInline):
         }
         js = ("js/admin/init.js", "js/libs/select2/select2.js",
               "js/admin/select_filters.js")
-
-
-class HelpTranslationAdminForm(forms.ModelForm):
-    class Meta:
-        model = HelpTranslation
-        if 'tinymce' in settings.INSTALLED_APPS:
-            from tinymce.widgets import TinyMCE
-            widgets = {
-               'body': TinyMCE(
-                    attrs={'cols': 80, 'rows': 30},
-                    mce_attrs={'theme': 'advanced', 'force_p_newlines': False, 'forced_root_block': '', 'theme_advanced_toolbar_location': 'top', 'plugins': 'table', 'theme_advanced_buttons3_add': 'tablecontrols', 'theme_advanced_statusbar_location': 'bottom', 'theme_advanced_resizing' : True},
-                ),
-            }
-
-
-class HelpTranslationInline(StorybaseStackedInline):
-    model = HelpTranslation
-    form = HelpTranslationAdminForm
-    extra = 1
-
-
-class HelpAdmin(StorybaseModelAdmin):
-    inlines = [HelpTranslationInline]
-    prefix_inline_classes = ['HelpTranslationInline']
-    readonly_fields = ['help_id']
-
-admin.site.register(Help, HelpAdmin)
 
 
 def obj_title(obj):

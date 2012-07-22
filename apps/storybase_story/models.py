@@ -22,6 +22,7 @@ from storybase.models import (LicensedModel, PermissionMixin,
     set_date_on_published)
 from storybase.utils import slugify
 from storybase_asset.models import Asset
+from storybase_help.models import Help
 from storybase_user.models import Organization, Project
 from storybase_story import structure
 from storybase_story.managers import StoryManager
@@ -401,7 +402,7 @@ class Section(node_factory('SectionRelation'), TranslatedModel, SectionPermissio
     root = models.BooleanField(default=False)
     weight = models.IntegerField(default=0)
     layout = models.ForeignKey('SectionLayout', null=True)
-    help = models.ForeignKey('storybase.Help', null=True)
+    help = models.ForeignKey(Help, null=True)
     """The ordering of top-level sections relative to each other"""
     assets = models.ManyToManyField(Asset, related_name='sections',
                                     blank=True, through='SectionAsset')

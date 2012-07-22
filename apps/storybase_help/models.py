@@ -12,9 +12,6 @@ class HelpTranslation(TranslationModel):
     title = ShortTextField(blank=True) 
     body = models.TextField(blank=True)
     
-    class Meta:
-        app_label = 'storybase'
-
 
 class Help(TranslatedModel):
     help_id = UUIDField(auto=True)
@@ -25,7 +22,6 @@ class Help(TranslatedModel):
     translation_class = HelpTranslation
 
     class Meta:
-        app_label = 'storybase'
         verbose_name_plural = "help items"
 
     def __unicode__(self):

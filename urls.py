@@ -12,6 +12,7 @@ from storybase_story.urls import urlpatterns as story_urlpatterns
 from storybase_asset.api import AssetResource
 from storybase_geo.api import (GeocoderResource, GeoLevelResource,
                                PlaceResource)
+from storybase_help.api import (HelpResource)
 from storybase_story.api import StoryResource
 
 admin.autodiscover()
@@ -25,6 +26,7 @@ v0_1_api.register(StoryResource())
 v0_1_api.register(GeocoderResource())
 v0_1_api.register(GeoLevelResource())
 v0_1_api.register(PlaceResource())
+v0_1_api.register(HelpResource())
 urlpatterns += patterns('', 
     # REST API
     (r'^api/', include(v0_1_api.urls)),
