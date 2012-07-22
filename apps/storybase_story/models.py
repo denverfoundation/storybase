@@ -683,8 +683,8 @@ def create_story(title, structure_type=structure.DEFAULT_STRUCTURE,
     translation.save()
     return obj
 
-def create_section(title, story, layout, language=settings.LANGUAGE_CODE,
-                   *args, **kwargs):
+def create_section(title, story, layout=None,
+                   language=settings.LANGUAGE_CODE, *args, **kwargs):
     """Convenience function for creating a Section
 
     Allows for the creation of a section without having to explicitly
