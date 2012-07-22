@@ -15,6 +15,7 @@ class Migration(SchemaMigration):
             ('language', self.gf('django.db.models.fields.CharField')(default='en', max_length=15)),
             ('help', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['storybase.Help'])),
             ('body', self.gf('django.db.models.fields.TextField')(blank=True)),
+            ('title', self.gf('storybase.fields.ShortTextField')(default='', blank=True)),
         ))
         db.send_create_signal('storybase', ['HelpTranslation'])
 
@@ -49,6 +50,7 @@ class Migration(SchemaMigration):
             'help': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['storybase.Help']"}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'language': ('django.db.models.fields.CharField', [], {'default': "'en'", 'max_length': '15'}),
+            'title': ('storybase.fields.ShortTextField', [], {'blank': 'True'}),
             'translation_id': ('uuidfield.fields.UUIDField', [], {'unique': 'True', 'max_length': '32', 'blank': 'True'})
         }
     }
