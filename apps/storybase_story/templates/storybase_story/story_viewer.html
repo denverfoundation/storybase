@@ -20,6 +20,7 @@
     
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/style.css">{% endaddtoblock %}
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/viewer.css">{% endaddtoblock %}
+    {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/layout.css">{% endaddtoblock %}
 
     {% render_block "css" %}
     <!-- end CSS-->
@@ -59,32 +60,34 @@
         </header>
 
         <div id="body">
+          {% if story.summary %}
           <section id="summary" class="section summary" style="display: none;">
-	    <h2>{%trans "Summary" %}</h2>
+            <h2>{%trans "Summary" %}</h2>
             {{ story.summary|safe|linebreaks }}
-	  </section>
+          </section>
+          {% endif %}
 
           {% for section in story.structure.sections_flat %}
-	  <section id="{{ section.section_id }}" class="section" style="display:none;">
-          {{ section.render }}
-	  </section>
+          <section id="{{ section.section_id }}" class="section" style="display:none;">
+              {{ section.render }}
+          </section>
           {% endfor %}
 
-	  {% if story.call_to_action %} 
-	  <section id="call-to-action" class="section call-to-action" style="display:none;">
-	    <h2>{% trans "How Can You Help?" %}</h2>
-	    {{ story.call_to_action|safe }}
-	  </section>
-	  {% endif %}
+          {% if story.call_to_action %} 
+          <section id="call-to-action" class="section call-to-action" style="display:none;">
+	        <h2>{% trans "How Can You Help?" %}</h2>
+	        {{ story.call_to_action|safe }}
+	      </section>
+	      {% endif %}
         </div>
 
         <nav id="toc">{{ story.structure.render_toc }}</nav>
 
         <footer>
           <a id="toggle-toc" href="#">Toggle Table of Contents</a>
-	  {% with addthis_url=story.get_full_url %}
+          {% with addthis_url=story.get_full_url %}
           {% include "addthis_widget_small.html" %}
-	  {% endwith %}
+          {% endwith %}
         </footer>
     </div>
 
@@ -101,11 +104,8 @@
     <script src="{{ STATIC_URL }}js/libs/d3.v2.min.js"></script>
     <script src="{{ STATIC_URL }}js/libs/jquery.condense.js"></script>
 
-
-
     <script src="{{ STATIC_URL }}js/models.js"></script>
     <script src="{{ STATIC_URL }}js/viewer/application.js"></script>
-    <script src="{{ STATIC_URL }}js/viewer/models.js"></script>
     <script src="{{ STATIC_URL }}js/viewer/views.js"></script>
     <script src="{{ STATIC_URL }}js/viewer/routes.js"></script>
 

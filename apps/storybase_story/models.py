@@ -483,11 +483,17 @@ class Section(node_factory('SectionRelation'), TranslatedModel, SectionPermissio
     def render_html(self):
         """Render a HTML representation of the section structure"""
         output = []
-	output.append("<h2 class='title'>%s</h2>" % self.title)
-        for asset in self.assets.select_subclasses() \
-                                .order_by('sectionasset__weight'):
-            output.append(asset.render_html())
+        context = {
+            'asset_content': {}
+        }
+        output.append("<h2 class='title'>%s</h2>" % self.title)
+        template_filename = self.layout.get_template_filename()
+        for asset in self.assets.select_subclasses():
+            print asset
+            section_asset = asset.sectionasset_set.get(section=self)
+            context['asset_content'][section_asset.container.name] = asset.render_html()
 
+        output.append(render_to_string(template_filename, context))
         return mark_safe(u'\n'.join(output))
 
     def change_link(self):
@@ -636,9 +642,12 @@ class SectionLayout(TranslatedModel):
     def __unicode__(self):
         return self.name
 
+    def get_template_filename(self):
+        return "storybase_story/sectionlayouts/%s" % (self.template)
+
     def get_template_contents(self):
-        template_file = "storybase_story/sectionlayouts/%s" % (self.template)
-        return render_to_string(template_file)
+        template_filename = self.get_template_filename() 
+        return render_to_string(template_filename)
 
 
 class Container(models.Model):

@@ -104,34 +104,34 @@ class BaseStructure(object):
     def sections_json(self, include_summary=True, include_call_to_action=True):
         """Return a JSON representation of the story sections
 
-	This representation doesn't include the content of sections, just
-	their titles, IDs and the relationship with other sections.
+        This representation doesn't include the content of sections, just
+        their titles, IDs and the relationship with other sections.
 
-	This is useful for calling from templates to bootstrap a Backbone
-	collection.
-	
-	Keyword arguments:
-	include_summary -- Include the story summary as the first section 
-	                   (default True)
-	include_call_to_action -- Include the call to action as the last
-	                          section (default True)
+        This is useful for calling from templates to bootstrap a Backbone
+        collection.
 
-	"""
+        Keyword arguments:
+        include_summary -- Include the story summary as the first section 
+                           (default True)
+        include_call_to_action -- Include the call to action as the last
+                                  section (default True)
+
+        """
         sections = [] 
         for section in self._sections_flat:
             sections.append(section.to_simple())
 
-	if include_summary and self.story.summary:
-	   summary_section = {
-               'section_id': 'summary',
-               'title': _("Summary"),
-               'children': [],
-               'next_section_id': (sections[0]['section_id'] if len(sections)
-		                   else None)
-           }
-	   if len(sections):
-	       sections[0]['previous_section_id'] = 'summary'
-	   sections.insert(0, summary_section)
+        if include_summary and self.story.summary:
+            summary_section = {
+                   'section_id': 'summary',
+                   'title': _("Summary"),
+                   'children': [],
+                   'next_section_id': (sections[0]['section_id']
+                                       if len(sections) else None)
+            }
+            if len(sections):
+               sections[0]['previous_section_id'] = 'summary'
+            sections.insert(0, summary_section)
 
         if include_call_to_action and self.story.call_to_action:
             call_to_action_section = {
@@ -139,11 +139,11 @@ class BaseStructure(object):
                 'title': _("How Can You Help?"),
                 'children': [],
                 'previous_section_id': (sections[-1]['section_id']
-			                if len(sections) else None)
+                                        if len(sections) else None)
             }
-	    if len(sections):
-	        sections[-1]['next_section_id'] = 'call-to-action'
-	    sections.append(call_to_action_section)
+            if len(sections):
+                sections[-1]['next_section_id'] = 'call-to-action'
+            sections.append(call_to_action_section)
 
         return mark_safe(simplejson.dumps(sections))
 
@@ -154,11 +154,11 @@ class BaseStructure(object):
         return self._previous_sections[section]
 
     def call_to_action_toc_link(self):
-	"""Return a link to the call to action section in the viewer"""
-	return "<a href=\"#sections/call-to-action\">%s</a>" % _("How Can You Help?")
+        """Return a link to the call to action section in the viewer"""
+        return "<a href=\"#sections/call-to-action\">%s</a>" % _("How Can You Help?")
 
     def summary_toc_link(self):
-	"""Return a link to the summary section in the viewer"""
+        """Return a link to the summary section in the viewer"""
         return "<a href=\"#sections/summary\">%s</a>" % _("Summary")
 
     def render_toc(self, format='html'):
@@ -195,13 +195,13 @@ class SpiderStructure(BaseStructure):
         if html_class is not None:
             html_class_str = " class='%s'" % html_class
         output.append("<ul%s>" % html_class_str)
-	if self.story.summary:
-	    output.append("<li>%s</li>" % self.summary_toc_link())
+        if self.story.summary:
+            output.append("<li>%s</li>" % self.summary_toc_link())
         for root_section in self.story.sections.filter(root=True) \
                                                .order_by('weight'):
             output.append(render_toc_section(root_section))
-	if self.story.call_to_action:
-	    output.append("<li>%s</li>" % self.call_to_action_toc_link())
+        if self.story.call_to_action:
+            output.append("<li>%s</li>" % self.call_to_action_toc_link())
         output.append("</ul>")
         return mark_safe(u'\n'.join(output))
 
@@ -229,13 +229,13 @@ class LinearStructure(BaseStructure):
         if html_class is not None:
             html_class_str = " class='%s'" % html_class
         output.append("<ul%s>" % html_class_str)
-	if self.story.summary:
-	    output.append("<li>%s</li>" % self.summary_toc_link())
+        if self.story.summary:
+            output.append("<li>%s</li>" % self.summary_toc_link())
         for root_section in self.story.sections.filter(root=True) \
                                                .order_by('weight'):
             output.append(render_toc_section(root_section))
-	if self.story.call_to_action:
-	    output.append("<li>%s</li>" % self.call_to_action_toc_link())
+        if self.story.call_to_action:
+            output.append("<li>%s</li>" % self.call_to_action_toc_link())
         output.append("</ul>")
         return mark_safe(u'\n'.join(output))
 

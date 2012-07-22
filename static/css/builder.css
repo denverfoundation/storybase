@@ -162,27 +162,6 @@
   height: 100%;
 }
 
-/* Section layouts */
-/* TODO: Move these elsewere */
-
-.section-layout {
-  height: 100%;
-}
-
-.section-layout.side-by-side .left,
-.section-layout.side-by-side .right {
-  height: 100%;
-  width: 46%;
-  margin: 2%;
-  float: left;
-}
-
-.section-layout.one-up .center {
-  position: relative;
-  height: 100%;
-  width: 100%;
-  margin: 2%;
-}
 
 .storybase-container-placeholder {
   position: relative;

@@ -453,28 +453,28 @@ storybase.viewer.views.LinearViewerApp = storybase.viewer.views.ViewerApp.extend
     var scrollTop = $(window).scrollTop();
     if (this._preventScrollEvent !== true) {
       if (scrollTop == 0) {
-	// At the top of the window.  Set the active section to the 
-	// first section
-	newSection = this.sections.first();
+        // At the top of the window.  Set the active section to the 
+        // first section
+        newSection = this.sections.first();
       }
       else {
-	if (scrollTop == $(document).height() - $(window).height()) {  
-	  // Reached the bottom of the window
-	  // Add enough padding so we can scroll the last section to the 
-	  // top of the window
-	  var $lastSection = this.getLastSection();
-	  var padding = $lastSection.offset().top - this.$('header').offset().top;
-	  if (padding > this.$('header').outerHeight()) {
-	    this.$('#body').css("padding-bottom", padding);
-	  }
-	}
-	var $firstVisibleSectionEl = this.getFirstVisibleSectionEl();
-	if ($firstVisibleSectionEl) {
-	  var firstVisibleSection = this.sections.get($firstVisibleSectionEl.attr('id'));
-	  if (firstVisibleSection != this.activeSection) {
-	    newSection = firstVisibleSection; 
-	  }
-	}
+        if (scrollTop == $(document).height() - $(window).height()) {  
+          // Reached the bottom of the window
+          // Add enough padding so we can scroll the last section to the 
+          // top of the window
+          var $lastSection = this.getLastSection();
+          var padding = $lastSection.offset().top - this.$('header').offset().top;
+          if (padding > this.$('header').outerHeight()) {
+            this.$('#body').css("padding-bottom", padding);
+          }
+        }
+        var $firstVisibleSectionEl = this.getFirstVisibleSectionEl();
+        if ($firstVisibleSectionEl) {
+          var firstVisibleSection = this.sections.get($firstVisibleSectionEl.attr('id'));
+          if (firstVisibleSection != this.activeSection) {
+            newSection = firstVisibleSection; 
+          }
+        }
       }
       this.setSection(newSection, {showActiveSection: false});
       storybase.viewer.router.navigate("sections/" + newSection.id,
