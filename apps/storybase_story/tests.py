@@ -16,6 +16,7 @@ from storybase.utils import slugify
 from storybase_asset.models import (HtmlAsset, HtmlAssetTranslation,
                                     create_html_asset)
 from storybase_geo.models import Location
+from storybase_help.models import create_help 
 from storybase_story.api import (SectionAssetResource, SectionResource, 
                                  StoryResource)
 from storybase_story.forms import SectionRelationAdminForm
@@ -1585,6 +1586,29 @@ class SectionResourceTest(ResourceTestCase):
         self.assertEqual(section1.layout.get_template_contents(),
                          self.deserialize(resp)['objects'][0]['layout_template'])
 
+    def test_get_list_with_help(self):
+        """Test that a section's help is included in the list response"""
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status="published",
+                             language="en", author=self.user)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        section_help = create_help(title="Test section help item",
+                                   body="Test section help item body")
+        section1 = create_section(title="Test Section 1", story=story,
+                                  layout=layout, help=section_help)
+        section2 = create_section(title="Test Section 2", story=story,
+                                  layout=layout)
+        uri = '/api/0.1/stories/%s/sections/' % story.story_id
+        resp = self.api_client.get(uri)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 2)
+        self.assertEqual(self.deserialize(resp)['objects'][0]['help']['help_id'],
+                         section_help.help_id)
+        self.assertEqual(self.deserialize(resp)['objects'][0]['help']['title'],
+                         section_help.title)
+        self.assertEqual(self.deserialize(resp)['objects'][0]['help']['body'],
+                         section_help.body)
+
     def test_post_list(self):
         """Test that a user can add a new section to a story"""
         story_post_data = {
@@ -1654,6 +1678,55 @@ class SectionResourceTest(ResourceTestCase):
                                         format='json', data=section_post_data)
         self.assertHttpUnauthorized(response)
         self.assertEqual(len(story.sections.all()), 0)
+
+    def test_post_list_with_help(self):
+        """
+        Test that a user can add a new section to a story including
+        help.
+        """
+        story_post_data = {
+            'title': "Test Story",
+            'summary': "Test Summary",
+            'byline': "Test Byline",
+            'status': "draft",
+            'language': "en",
+        }
+        section_help = create_help(title="Test section help item",
+                                   body="Test section help item body")
+        section_post_data = {
+            'title': "Test Section",
+            'language': "en",
+            'layout': "26c81c9dd24c4aecab7ab4eb1cc9e2fb",
+            'help': {
+                'help_id': section_help.help_id,
+            }
+        }
+        self.assertEqual(Story.objects.count(), 0)
+        self.api_client.client.login(username=self.username, password=self.password)
+        # Create a new story through the API
+        response = self.api_client.post('/api/0.1/stories/',
+                               format='json', data=story_post_data)
+        story_resource_uri = response['location']
+        # Retrieve a model instance for the created story
+        story_id = story_resource_uri.split('/')[-2]
+        story = Story.objects.get(story_id=story_id)
+        # Confirm there are no sections
+        self.assertEqual(len(story.sections.all()), 0)
+        # Create a new section
+        sections_uri = "%ssections/" % (story_resource_uri)
+        response = self.api_client.post(sections_uri,
+                                        format='json', data=section_post_data)
+        self.assertHttpCreated(response)
+        section_resource_uri = response['location']
+        # Retrieve a model instance for the newly created section
+        story = Story.objects.get(story_id=story_id)
+        self.assertEqual(len(story.sections.all()), 1)
+        section = story.sections.all()[0]
+        self.assertEqual("%s%s/" % (sections_uri, section.section_id), 
+                         section_resource_uri)
+        self.assertEqual(section.title, section_post_data['title'])
+        self.assertEqual(section.layout.layout_id, section_post_data['layout'])
+        self.assertEqual(section.help, section_help)
 
     def test_patch_detail(self):
         """Test that a user can update the metadata of a section"""
@@ -1739,6 +1812,50 @@ class SectionResourceTest(ResourceTestCase):
         section = story.sections.get(section_id=section_id)
         self.assertEqual(section.title, section_put_data['title'])
         self.assertEqual(section.layout.layout_id, section_put_data['layout'])
+
+    def test_put_detail_with_help(self):
+        """Test that a user can update the help of a section"""
+        section_help = create_help(title="Test section help item",
+                                   body="Test section help item body")
+        story_post_data = {
+            'title': "Test Story",
+            'summary': "Test Summary",
+            'byline': "Test Byline",
+            'status': "draft",
+            'language': "en",
+        }
+        section_post_data = {
+            'title': "Test Section",
+            'language': "en",
+            'layout': "26c81c9dd24c4aecab7ab4eb1cc9e2fb"
+        }
+        section_put_data = {
+            'help': {
+                'help_id': section_help.help_id,
+            }
+        }
+        self.api_client.client.login(username=self.username, password=self.password)
+        # Create a new story through the API
+        response = self.api_client.post('/api/0.1/stories/',
+                               format='json', data=story_post_data)
+        story_resource_uri = response['location']
+        story_id = story_resource_uri.split('/')[-2]
+        # Create a new section
+        sections_uri = "%ssections/" % (story_resource_uri)
+        response = self.api_client.post(sections_uri,
+            format='json', data=section_post_data)
+        self.assertHttpCreated(response)
+        section_uri = response['location']
+        section_id = section_uri.split('/')[-2]
+        # Update the section help 
+        response = self.api_client.put(section_uri, format='json',
+                                         data=section_put_data)
+        self.assertHttpAccepted(response)
+        # Retrieve a model instance for the newly modified section
+        story = Story.objects.get(story_id=story_id)
+        self.assertEqual(len(story.sections.all()), 1)
+        section = story.sections.get(section_id=section_id)
+        self.assertEqual(section.help, section_help) 
 
 
 class SectionAssetResourceTest(ResourceTestCase):

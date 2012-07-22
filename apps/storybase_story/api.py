@@ -20,6 +20,7 @@ from storybase.api import (DelayedAuthorizationResource,
 from storybase.utils import get_language_name
 from storybase_asset.api import AssetResource
 from storybase_geo.models import Place
+from storybase_help.models import Help
 from storybase_story.models import (Container,
                                     Section, SectionAsset, SectionLayout, 
                                     Story, StoryTemplate)
@@ -431,6 +432,7 @@ class SectionResource(DelayedAuthorizationResource, TranslatedModelResource):
     layout = fields.CharField(attribute='layout')
     """layout_id of related ``SectionLayout`` object"""
     layout_template = fields.CharField(readonly=True)
+    help = fields.CharField(attribute='help', null=True)
 
     class Meta:
         always_return_data = True
@@ -517,17 +519,33 @@ class SectionResource(DelayedAuthorizationResource, TranslatedModelResource):
         return bundle.obj.layout.layout_id
 
     def hydrate_layout(self, bundle):
+        layout = bundle.data.get('layout')
         # HACK: This gets called twice, I'm thinking because I'm
         # converting a ForeignKey field to text and back again
         # Only update the bundle data if it hasn't already
         # been converted to a SectionLayout object
-        if bundle.data['layout'].__class__ != SectionLayout:
-            bundle.data['layout'] = SectionLayout.objects.get(layout_id__exact=bundle.data['layout']) 
+        if layout and layout.__class__ != SectionLayout:
+            bundle.data['layout'] = SectionLayout.objects.get(layout_id__exact=layout)
         return bundle
 
     def dehydrate_layout_template(self, bundle):
         return bundle.obj.layout.get_template_contents()
 
+    def dehydrate_help(self, bundle):
+        if bundle.obj.help:
+            return {
+                'help_id': bundle.obj.help.help_id,
+                'title': bundle.obj.help.title,
+                'body': bundle.obj.help.body,
+            }
+        else:
+            return None
+
+    def hydrate_help(self, bundle):
+        help = bundle.data.get('help', None)
+        if help:
+            bundle.data['help'] = Help.objects.get(help_id=help['help_id'])
+        return bundle
 
 class SectionAssetResource(DelayedAuthorizationResource, HookedModelResource):
     asset = fields.ToOneField(AssetResource, 'asset', full=True)
