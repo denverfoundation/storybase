@@ -17,8 +17,8 @@ from django_dag.models import edge_factory, node_factory
 from uuidfield.fields import UUIDField
 
 from storybase.fields import ShortTextField
-from storybase.models import (LicensedModel, PermissionMixin, PublishedModel,
-    TimestampedModel, TranslatedModel, TranslationModel,
+from storybase.models import (LicensedModel, PermissionMixin, 
+    PublishedModel, TimestampedModel, TranslatedModel, TranslationModel,
     set_date_on_published)
 from storybase.utils import slugify
 from storybase_asset.models import Asset
@@ -401,6 +401,7 @@ class Section(node_factory('SectionRelation'), TranslatedModel, SectionPermissio
     root = models.BooleanField(default=False)
     weight = models.IntegerField(default=0)
     layout = models.ForeignKey('SectionLayout', null=True)
+    help = models.ForeignKey('storybase.Help', null=True)
     """The ordering of top-level sections relative to each other"""
     assets = models.ManyToManyField(Asset, related_name='sections',
                                     blank=True, through='SectionAsset')

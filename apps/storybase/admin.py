@@ -2,6 +2,7 @@
 
 from django.contrib import admin
 from storybase.fields import ShortTextField
+from storybase.models import Help, HelpTranslation
 from storybase.widgets import AdminLongTextInputWidget
 
 
@@ -78,6 +79,18 @@ class Select2StackedInline(admin.StackedInline):
         }
         js = ("js/admin/init.js", "js/libs/select2/select2.js",
               "js/admin/select_filters.js")
+
+
+class HelpTranslationInline(StorybaseStackedInline):
+    model = HelpTranslation
+    extra = 1
+
+
+class HelpAdmin(StorybaseModelAdmin):
+    inlines = [HelpTranslationInline]
+    prefix_inline_classes = ['HelpTranslationInline']
+
+admin.site.register(Help, HelpAdmin)
 
 
 def obj_title(obj):

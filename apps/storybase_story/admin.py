@@ -119,6 +119,7 @@ class SectionAdmin(StorybaseModelAdmin):
     list_filter = ('story__storytranslation__title', 'root')
     search_fields = ['sectiontranslation__title']
     readonly_fields = ['section_id']
+    raw_id_fields = ["help"]
 
 
 class SectionRelationAdmin(admin.ModelAdmin):
