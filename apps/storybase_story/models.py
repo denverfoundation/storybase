@@ -491,7 +491,6 @@ class Section(node_factory('SectionRelation'), TranslatedModel, SectionPermissio
         output.append("<h2 class='title'>%s</h2>" % self.title)
         template_filename = self.layout.get_template_filename()
         for asset in self.assets.select_subclasses():
-            print asset
             section_asset = asset.sectionasset_set.get(section=self)
             context['asset_content'][section_asset.container.name] = asset.render_html()
 
