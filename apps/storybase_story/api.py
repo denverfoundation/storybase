@@ -31,6 +31,7 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
     # Explicitly declare fields that are on the translation model
     title = fields.CharField(attribute='title', blank=True)
     summary = fields.CharField(attribute='summary', blank=True)
+    call_to_action = fields.CharField(attribute='call_to_action', blank=True)
     url = fields.CharField(attribute='get_absolute_url', readonly=True)
     topics = fields.ListField(readonly=True)
     organizations = fields.ListField(readonly=True)
