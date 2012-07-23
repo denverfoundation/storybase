@@ -170,7 +170,8 @@
   margin-top: 0.5em;
 }
 
-.edit-story-info textarea.summary {
+.edit-story-info textarea.summary,
+.edit-call-to-action textarea.call-to-action {
   display: block;
   width: 80%;
   height: 8em;

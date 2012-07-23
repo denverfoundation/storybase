@@ -1092,7 +1092,7 @@ storybase.builder.views.CallToActionEditView = Backbone.View.extend({
   templateSource: $('#story-call-to-action-edit-template').html(),
 
   events: {
-    "change input": 'change'
+    'change textarea[name="call_to_action"]': 'change'
   },
 
   initialize: function() {
