@@ -53,7 +53,8 @@
             "root": true, 
             "section_id": "4dc57c4bc7a44d97bd5d0ed4861b1401", 
             "story": 1, 
-            "weight": 1
+            "weight": 1,
+            "help": 1
         }, 
         "model": "storybase_story.section", 
         "pk": 1
@@ -97,5 +98,25 @@
         }, 
         "model": "storybase_story.storytemplate", 
         "pk": 2
+    },
+    {
+        "fields": {
+            "body": "Sample help text for the Image and Text section.", 
+            "help": 1, 
+            "language": "en", 
+            "title": "Image and Text", 
+            "translation_id": "dc13df604a4c4c54a13cef1f0c67519e"
+        }, 
+        "model": "storybase_help.helptranslation", 
+        "pk": 1
+    }, 
+    {
+        "fields": {
+            "help_id": "e296af8d957e423091759a3cd067c68c", 
+            "slug": ""
+        }, 
+        "model": "storybase_help.help", 
+        "pk": 1
     }
+
 ]
