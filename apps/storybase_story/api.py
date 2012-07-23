@@ -543,7 +543,7 @@ class SectionResource(DelayedAuthorizationResource, TranslatedModelResource):
 
     def hydrate_help(self, bundle):
         help = bundle.data.get('help', None)
-        if help:
+        if help and not isinstance(help, Help):
             bundle.data['help'] = Help.objects.get(help_id=help['help_id'])
         return bundle
 
