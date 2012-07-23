@@ -12,15 +12,26 @@ storybase.builder.routers.Router = Backbone.Router.extend({
   },
 
   selectStep: function(id, step, subStep) {
-    if (id == 'en' || id == 'es') {
+    // TODO: Figure out the best workaround for internationalized URLs
+    if (id === 'en' || id === 'es') {
       // Workaround for internationalized URLs
-      id = step;
-      step = undefined; 
-      subStep = undefined;
+      var chunks = [step, subStep];
+      if (chunks[0] === 'build') {
+        if (_.isUndefined(chunks[1])) {
+          // /en/build/
+          id = undefined;
+          step = undefined;
+        }
+        else {
+          // /en/build/357c5885c4e844cb8a4cd4eebe912a1c/
+          id = chunks[1];
+          step = chunks[0]; // build
+        }
+        subStep = undefined;
+      }
     }
-    if (_.isUndefined(step)) {
-      step = 'build';
+    if (!_.isUndefined(step)) {
+      this.dispatcher.trigger('select:workflowstep', step, subStep);
     }
-    this.dispatcher.trigger('select:workflowstep', step, subStep);
   }
 });

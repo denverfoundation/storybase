@@ -10,28 +10,28 @@ storybase.builder.views.mixins = {};
 storybase.builder.views.AppView = Backbone.View.extend({
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
-
-    // Initialize the view for the workflow step indicator
-    this.workflowStepView = new storybase.builder.views.WorkflowStepView({
-      dispatcher: this.dispatcher
-    });
-    // TODO: Change the selector as the template changes
-    this.$('header').first().children().first().append(this.workflowStepView.el);
-    // Initialize a view for the tools menu
-    this.toolsView = new storybase.builder.views.ToolsView({
-      dispatcher: this.dispatcher
-    });
-    // TODO: Change the selector as the template changes
-    this.$('header').first().children().first().append(this.toolsView.el);
-    // Initialize view for moving back and forth through the workflow steps
-    this.workflowNavView = new storybase.builder.views.WorkflowNavView({
-      dispatcher: this.dispatcher
-    });
-
-    // Store subviews in an object keyed with values of this.activeStep
     var commonOptions = {
       dispatcher: this.dispatcher,
     };
+
+    // Initialize the view for the workflow step indicator
+    this.workflowStepView = new storybase.builder.views.WorkflowStepView(
+      commonOptions
+    );
+    // TODO: Change the selector as the template changes
+    this.$('header').first().children().first().append(this.workflowStepView.el);
+    // Initialize a view for the tools menu
+    this.toolsView = new storybase.builder.views.ToolsView(commonOptions);
+    
+    // TODO: Change the selector as the template changes
+    this.$('header').first().children().first().append(this.toolsView.el);
+    // Initialize view for moving back and forth through the workflow steps
+    this.workflowNavView = new storybase.builder.views.WorkflowNavView(
+      commonOptions
+    );
+    this.helpView = new storybase.builder.views.HelpView(commonOptions);
+
+    // Store subviews in an object keyed with values of this.activeStep
     if (this.model) {
       commonOptions.model = this.model;
     }
@@ -88,6 +88,67 @@ storybase.builder.views.AppView = Backbone.View.extend({
     this.$('#app').append(this.workflowNavView.render().el);
     this.workflowStepView.render();
     this.toolsView.render();
+    return this;
+  }
+});
+
+storybase.builder.views.HelpView = Backbone.View.extend({
+  tagName: 'div',
+
+  className: 'help',
+
+  templateSource: $('#help-template').html(),
+
+  events: {
+    'change .auto-show-help': 'setAutoShow'
+  },
+
+  initialize: function() {
+    this.dispatcher = this.options.dispatcher;
+    this.help = null;
+    this.template = Handlebars.compile(this.templateSource);
+    // Always show help when switching to a new section
+    this.autoShow = true;
+
+    this.dispatcher.on('do:show:help', this.show, this);
+  },
+
+  setAutoShow: function(evt) {
+    this.autoShow = $(evt.target).prop('checked'); 
+  },
+
+  /**
+   * Show the help text via a modal window.
+   *
+   * @param boolean force Force showing the help in a modal, overriding
+   *     the value of this.autoShow.
+   * @help object help Updated help information.  The object should have
+   *     a body property and optionally a title property.
+   *
+   * @returns object This view.
+   */
+  show: function(force, help) {
+    var show = this.autoShow || force;
+    if (!_.isUndefined(help)) {
+      // A new help object was sent with the signal, update
+      // our internal value
+      this.help = help;
+    }
+    if (this.help) {
+      this.render();
+      if (show) {
+        this.delegateEvents();
+        this.$el.modal();
+      }
+    }
+    return this;
+  },
+
+  render: function() {
+    var context = _.extend(this.help, {
+      'autoShow': this.autoShow
+    });
+    this.$el.html(this.template(this.help));
     return this;
   }
 });
@@ -251,9 +312,9 @@ storybase.builder.views.ToolsView = storybase.builder.views.MenuView.extend({
     {
       id: 'help',
       title: 'Help',
-      callback: null,
+      callback: 'toggleHelp', 
       href: '#',
-      visible: false
+      visible: true 
     },
     {
       id: 'assets',
@@ -304,6 +365,11 @@ storybase.builder.views.ToolsView = storybase.builder.views.MenuView.extend({
   toggleAssetList: function(evt) {
     evt.preventDefault();
     this.dispatcher.trigger("toggle:assetlist");
+  },
+
+  toggleHelp: function(evt) {
+    evt.preventDefault();
+    this.dispatcher.trigger('do:show:help', true);
   },
   
   setStoryId: function(story) {
@@ -745,12 +811,14 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   initializeStoryFromTemplate: function() {
     console.info("Initializing sections");
     var that = this;
-    this.model.set('structure_type', this.templateStory.get('structure_type'));
+    this.model.set('structure_type',
+                   this.templateStory.get('structure_type'));
     this.templateSections.each(function(section) {
       var sectionCopy = new storybase.models.Section();
       sectionCopy.set("title", section.get("title"));
       sectionCopy.set("layout", section.get("layout"));
       sectionCopy.set("layout_template", section.get("layout_template"));
+      sectionCopy.set("help", section.get("help"));
       that.model.sections.push(sectionCopy);
     });
     this.dispatcher.trigger("ready:story", this.model);
@@ -770,7 +838,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
   showEditView: function(thumbnailView) {
     this.$('.edit-section').hide();
-    thumbnailView.editView.$el.show();
+    //thumbnailView.editView.$el.show();
+    thumbnailView.editView.show();
   },
 
   toggleAssetList: function() {
@@ -987,6 +1056,14 @@ storybase.builder.views.StoryInfoEditView = Backbone.View.extend({
     return this;
   },
 
+  show: function() {
+    this.$el.show();
+    // TODO: Pass some value other than null to the help signal 
+    // BOOKMARK
+    this.dispatcher.trigger('do:show:help', false, null); 
+    return this;
+  },
+
   change: function(e) {
     var name = $(e.target).attr("name");
     var value = $(e.target).val();
@@ -1024,6 +1101,14 @@ storybase.builder.views.CallToActionEditView = Backbone.View.extend({
 
   render: function() {
     this.$el.html(this.template(this.model.toJSON()));
+    return this;
+  },
+
+  show: function() {
+    this.$el.show();
+    // TODO: Pass some value other than null to the help signal 
+    // BOOKMARK
+    this.dispatcher.trigger('do:show:help', false, null); 
     return this;
   },
 
@@ -1123,6 +1208,15 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
       this.assets.url = this.model.url() + 'assets/';
       this.assets.fetch();
     }
+    return this;
+  },
+
+  show: function() {
+    this.$el.show();
+    // TODO: Figure out how to show help
+    // BOOKMARK
+    this.dispatcher.trigger('do:show:help', false, 
+                            this.model.get('help')); 
     return this;
   },
 

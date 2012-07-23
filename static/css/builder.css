@@ -112,6 +112,27 @@
   padding: 1%;
 }
 
+#simplemodal-container {
+  background-color: #fff;
+}
+
+#simplemodal-data.help {
+  width: 66% !important;
+  height: 66% !important;
+  padding: 10px;
+}
+
+.help .simplemodal-close {
+  position: absolute;
+  display: block;
+  right: 10px;
+}
+
+.help-modal-controls {
+  position: absolute;
+  bottom: 10px;
+}
+
 .unused-assets {
   position: absolute;
   top: 0;
@@ -161,7 +182,6 @@
   position: relative;
   height: 100%;
 }
-
 
 .storybase-container-placeholder {
   position: relative;
