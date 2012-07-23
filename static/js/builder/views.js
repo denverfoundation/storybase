@@ -36,8 +36,9 @@ storybase.builder.views.AppView = Backbone.View.extend({
       commonOptions.model = this.model;
     }
     var buildViewOptions = _.extend(commonOptions, {
+      assetTypes: this.options.assetTypes,
       layouts: this.options.layouts,
-      assetTypes: this.options.assetTypes
+      help: this.options.help
     });
     this.subviews = {
       selectTemplate: new storybase.builder.views.SelectStoryTemplateView({
@@ -633,7 +634,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     var that = this;
 
     this.dispatcher = this.options.dispatcher;
-
+    this.help = this.options.help;
+    
     if (_.isUndefined(this.model)) {
       // Create a new story model instance
       this.model = new storybase.models.Story({
@@ -705,6 +707,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       title: "Story Information",
       editView: new storybase.builder.views.StoryInfoEditView({
         dispatcher: this.dispatcher,
+        help: this.help.where({slug: 'story-information'})[0],
         model: this.model
       })
     });
@@ -717,6 +720,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       title: "Call to Action",
       editView: new storybase.builder.views.CallToActionEditView({
         dispatcher: this.dispatcher,
+        help: this.help.where({slug: 'call-to-action'})[0],
         model: this.model
       })
     });
@@ -1049,6 +1053,7 @@ storybase.builder.views.StoryInfoEditView = Backbone.View.extend({
 
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
+    this.help = this.options.help;
     this.template = Handlebars.compile(this.templateSource);
   },
 
@@ -1059,9 +1064,7 @@ storybase.builder.views.StoryInfoEditView = Backbone.View.extend({
 
   show: function() {
     this.$el.show();
-    // TODO: Pass some value other than null to the help signal 
-    // BOOKMARK
-    this.dispatcher.trigger('do:show:help', false, null); 
+    this.dispatcher.trigger('do:show:help', false, this.help.toJSON()); 
     return this;
   },
 
@@ -1097,6 +1100,7 @@ storybase.builder.views.CallToActionEditView = Backbone.View.extend({
 
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
+    this.help = this.options.help;
     this.template = Handlebars.compile(this.templateSource);
   },
 
@@ -1107,9 +1111,7 @@ storybase.builder.views.CallToActionEditView = Backbone.View.extend({
 
   show: function() {
     this.$el.show();
-    // TODO: Pass some value other than null to the help signal 
-    // BOOKMARK
-    this.dispatcher.trigger('do:show:help', false, null); 
+    this.dispatcher.trigger('do:show:help', false, this.help.toJSON()); 
     return this;
   },
 

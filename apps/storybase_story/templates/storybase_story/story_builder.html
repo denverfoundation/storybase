@@ -83,10 +83,13 @@
         options.model = new storybase.models.Story({{ story_json }});
         {% endif %}
         var storyTemplatesData = {{ story_template_json }};
+        var helpData = {{ help_json }};
         options.storyTemplates = new storybase.builder.collections.StoryTemplates;
         options.storyTemplates.reset(storyTemplatesData.objects);
         options.layouts = {{ layouts_json }};
         options.assetTypes = {{ asset_types_json }};
+        options.help = new Backbone.Collection;
+        options.help.reset(helpData.objects);
 
         storybase.builder.router = new storybase.builder.routers.Router({
             dispatcher: storybase.builder.globals.dispatcher

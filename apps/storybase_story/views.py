@@ -15,6 +15,7 @@ from django.utils.translation import ugettext as _
 from storybase.utils import simple_language_changer
 from storybase.views.generic import ModelIdDetailView
 from storybase_asset.models import ASSET_TYPES
+from storybase_help.api import HelpResource
 from storybase_story.api import StoryResource, StoryTemplateResource
 from storybase_story.models import SectionLayout, Story
 
@@ -148,12 +149,24 @@ class StoryBuilderView(DetailView):
         to_be_serialized = [{'name': asset_type[1], 'type': asset_type[0]} for asset_type in ASSET_TYPES]
         return json.dumps(to_be_serialized)
 
+    def get_help_json(self):
+        # Lookup keys to filter help items to include
+        help_slugs = ['story-information', 'call-to-action']
+        to_be_serialized = {}
+        resource = HelpResource()
+        objects = resource.obj_get_list().filter(slug__in=help_slugs)
+        print objects
+        bundles = [resource.build_bundle(obj=obj) for obj in objects]
+        to_be_serialized['objects'] = [resource.full_dehydrate(bundle) for bundle in bundles]
+        return resource.serialize(None, to_be_serialized, 'application/json')
+
     def get_context_data(self, **kwargs):
         """Provide Bootstrap data for Backbone models and collections"""
         context = {
             'layouts_json': mark_safe(self.get_layouts_json()),
             'story_template_json': mark_safe(self.get_story_template_json()),
             'asset_types_json': mark_safe(self.get_asset_types_json()),
+            'help_json': mark_safe(self.get_help_json()),
         }
 
         if self.object:

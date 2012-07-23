@@ -117,6 +117,43 @@
         }, 
         "model": "storybase_help.help", 
         "pk": 1
+    },
+    {
+        "fields": {
+            "body": "<h4 id=\"internal-source-marker_0.08408055606238196\" dir=\"ltr\">Title</h4>\r\n<p dir=\"ltr\">A good title should be concise, clear, informative or intriguing.</p>\r\n<p dir=\"ltr\">For example, <em>Colorado School Choice Guide: Finding the Best Education for Your Child</em></p>\r\n<h4 dir=\"ltr\">Summary </h4>\r\n<p dir=\"ltr\">Describe your story in a single sentence as if you were casually explaining it to a friend or relative. Make sure to include what your reader will be learning about and why they should care.</p>\r\n<p dir=\"ltr\">For example:</p>\r\n<p style=\"padding-left: 30px;\" dir=\"ltr\">In Colorado, your child can choose which public school to attend regardless of where you live, so this guide teaches you how to find the best fit.</p>", 
+            "help": 2, 
+            "language": "en", 
+            "title": "Story Information", 
+            "translation_id": "8c1c3baaaed74985b2affb521490efbf"
+        }, 
+        "model": "storybase_help.helptranslation", 
+        "pk": 2
+    }, 
+    {
+        "fields": {
+            "help_id": "55ec8540d8404ddb9e0d40e7c25333f9", 
+            "slug": "story-information"
+        }, 
+        "model": "storybase_help.help", 
+        "pk": 2
+    }, 
+    {
+        "fields": {
+            "body": "This section tells your reader how to follow up on this topic: where to find more information, how to contribute to the story, and what community actions to take. <br /><br />It could include:<br />\r\n<ul>\r\n<li>links to more information</li>\r\n<li>events to attend</li>\r\n<li>local organizations to connect with</li>\r\n<li>a way to contribute reader content</li>\r\n</ul>", 
+            "help": 3, 
+            "language": "en", 
+            "title": "Call to Action", 
+            "translation_id": "49fcebdadad3465f9b4b0bbfa78a4bed"
+        }, 
+        "model": "storybase_help.helptranslation", 
+        "pk": 3
+    }, 
+    {
+        "fields": {
+            "help_id": "65410f3d93dd4745869721f7424ef734", 
+            "slug": "call-to-action"
+        }, 
+        "model": "storybase_help.help", 
+        "pk": 3
     }
-
 ]
