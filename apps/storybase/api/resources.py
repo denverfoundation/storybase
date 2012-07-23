@@ -1,5 +1,11 @@
+from cStringIO import StringIO
+import base64
+import os
+import re
+
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
+from django.core.files.uploadedfile import InMemoryUploadedFile
 from django.dispatch import receiver, Signal
 from django.http import HttpResponse
 
@@ -448,3 +454,44 @@ class TranslatedModelResource(HookedModelResource):
             return super(TranslatedModelResource, self).put_detail(request, **kwargs)
         except ObjectDoesNotExist:
             return http.HttpNotFound()
+
+
+class DataUriResourceMixin(object):
+    def parse_data_uri(self, data_uri):
+        """
+        Parse a data URI string
+
+        Returns a tuple of (mime_type, encoding, data) represented in the URI
+        
+        See http://tools.ietf.org/html/rfc2397
+
+        """
+        pattern = r"data:(?P<mime>[\w/]+);(?P<encoding>\w+),(?P<data>.*)"
+        m = re.search(pattern, data_uri)
+        return (m.group('mime'), m.group('encoding'), m.group('data'))
+
+    def _hydrate_file(self, bundle, file_model_class, file_field, 
+        filename_field='filename'):
+        """Decode the base-64 encoded file"""
+        def file_size(f):
+            f.seek(0, os.SEEK_END)
+            return f.tell()
+
+        file_uri = bundle.data.get(file_field, None)
+
+        if file_uri:
+            (content_type, encoding, data) = self.parse_data_uri(
+                file_uri)
+            filename = bundle.data.get(filename_field)
+            f = StringIO()
+            f.write(base64.b64decode(data))
+            size = file_size(f)
+            file = InMemoryUploadedFile(file=f, field_name=None, 
+                                        name=filename,
+                                        content_type=content_type,
+                                        size=size, charset=None)
+            file_model = file_model_class.objects.create(file=file)
+            bundle.data[file_field] = file_model 
+            f.close()
+
+        return bundle

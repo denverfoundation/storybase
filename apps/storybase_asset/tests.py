@@ -9,15 +9,25 @@ from django.contrib.auth.models import User
 from django.template.defaultfilters import striptags, truncatewords
 from django.test import TestCase
 
-from tastypie.test import ResourceTestCase
+from tastypie.test import ResourceTestCase, TestApiClient
 
 from storybase.tests.base import FixedTestApiClient, FileCleanupMixin
 from storybase_story.models import (create_section, create_story,
                                     Container, SectionAsset, SectionLayout)
-from models import (Asset, ExternalAsset, HtmlAsset, HtmlAssetTranslation,
+from storybase_asset.models import (Asset, ExternalAsset, HtmlAsset,
+    HtmlAssetTranslation, DataSet,
     create_html_asset, create_external_asset, create_local_image_asset,
     create_external_dataset)
 from embedable_resource import EmbedableResource
+
+class DataUrlMixin(object):
+    """Mixin class for dealing with Data URLs"""
+    def read_as_data_url(self, filename):
+        """Read a file and return the file as a data URL"""
+        (type, encoding) = mimetypes.guess_type(filename)
+        with open(filename, "rb") as f:
+            return "data:%s;base64, %s" % (type, base64.b64encode(f.read()))
+
 
 class AssetModelTest(TestCase):
     def test_license_name(self):
@@ -329,6 +339,100 @@ class AssetApiTest(FileCleanupMixin, TestCase):
             self.assertEqual(asset.type, asset_type)
             self.assertEqual(asset.caption, asset_caption)
 
+
+class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
+    def setUp(self):
+        super(DataSetResourceTest, self).setUp()
+        self.api_client = TestApiClient()
+        self.username = 'test'
+        self.password = 'test'
+        self.user = User.objects.create_user(self.username, 
+            'test@example.com', self.password)
+
+    def test_post_list_file(self):
+        data_filename = "test_data.csv"
+        app_dir = os.path.dirname(os.path.abspath(__file__))
+        data_path = os.path.join(app_dir, "test_files", data_filename)
+        original_hash = hashlib.sha1(file(data_path, 'r').read()).digest()
+        encoded_file = self.read_as_data_url(data_path)
+
+        post_data = {
+            'title': "Test Dataset",
+            'description': "A test dataset",
+            'file': encoded_file,
+            'filename': data_filename,
+            'language': "en",
+        }
+        self.assertEqual(DataSet.objects.count(), 0)
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        uri = '/api/0.1/datasets/';
+        resp = self.api_client.post(uri, format='json', data=post_data)
+        self.assertHttpCreated(resp)
+        self.assertEqual(DataSet.objects.count(), 1)
+        # Compare the response data with the post data
+        self.assertEqual(self.deserialize(resp)['title'], 
+                         post_data['title'])
+        self.assertEqual(self.deserialize(resp)['description'], 
+                         post_data['description'])
+        # Compare the created model instance with the post data
+        created_dataset = DataSet.objects.get_subclass()
+        self.assertEqual(created_dataset.title, post_data['title'])
+        self.assertEqual(created_dataset.description, post_data['description'])
+        # Compare the uploaded file and the original 
+        created_hash = hashlib.sha1(
+            file(created_dataset.file.path, 'r').read()).digest()
+        self.assertEqual(original_hash, created_hash)
+        # Set our created file to be cleaned up
+        self.add_file_to_cleanup(created_dataset.file.file.path)
+
+    def test_post_list_url(self):
+        post_data = {
+            'title': "Test Dataset",
+            'description': "A test dataset",
+            'url': 'https://data.cityofchicago.org/Transportation/Chicago-Street-Names/i6bp-fvbx',
+            'links_to_file': False,
+            'language': "en",
+        }
+        self.assertEqual(DataSet.objects.count(), 0)
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        uri = '/api/0.1/datasets/';
+        resp = self.api_client.post(uri, format='json', data=post_data)
+        self.assertHttpCreated(resp)
+        self.assertEqual(DataSet.objects.count(), 1)
+        # Compare the response data with the post data
+        self.assertEqual(self.deserialize(resp)['title'], 
+                         post_data['title'])
+        self.assertEqual(self.deserialize(resp)['description'], 
+                         post_data['description'])
+        self.assertEqual(self.deserialize(resp)['url'], 
+                         post_data['url'])
+        self.assertEqual(self.deserialize(resp)['links_to_file'], 
+                         post_data['links_to_file'])
+        # Compare the created model instance with the post data
+        created_dataset = DataSet.objects.get_subclass()
+        self.assertEqual(created_dataset.title, post_data['title'])
+        self.assertEqual(created_dataset.description, post_data['description'])
+        self.assertEqual(created_dataset.url, post_data['url'])
+        self.assertEqual(created_dataset.links_to_file, post_data['links_to_file'])
+
+    def test_post_list_unauthorized(self):
+        """Test that an unauthenticated user can't create a dataset"""
+        post_data = {
+            'title': "Test Dataset",
+            'description': "A test dataset",
+            'url': 'https://data.cityofchicago.org/Transportation/Chicago-Street-Names/i6bp-fvbx',
+            'links_to_file': False,
+            'language': "en",
+        }
+        self.assertEqual(DataSet.objects.count(), 0)
+        uri = '/api/0.1/datasets/';
+        resp = self.api_client.post(uri, format='json', data=post_data)
+        self.assertHttpUnauthorized(resp)
+        self.assertEqual(DataSet.objects.count(), 0)
+
+
 class DataSetApiTest(TestCase):
     """ Test the public API for creating DataSets """
 
@@ -402,7 +506,7 @@ class AssetPermissionTest(TestCase):
         self.assertFalse(self.asset.user_can_change(self.user1))
 
 
-class AssetResourceTest(FileCleanupMixin, ResourceTestCase):
+class AssetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
     fixtures = ['section_layouts.json']
     
     def get_obj(self, objects, obj_id_field, obj_id):
@@ -423,11 +527,6 @@ class AssetResourceTest(FileCleanupMixin, ResourceTestCase):
         self.user = User.objects.create_user(self.username, 'test@example.com', self.password)
         self.user2 = User.objects.create_user("test2", "test2@example.com",
                                               "test2")
-
-    def read_as_data_url(self, filename):
-        (type, encoding) = mimetypes.guess_type(filename)
-        with open(filename, "rb") as f:
-            return "data:%s;base64, %s" % (type, base64.b64encode(f.read()))
 
     def test_get_list(self):
         """Test getting a list of assets in the system"""
@@ -532,7 +631,8 @@ class AssetResourceTest(FileCleanupMixin, ResourceTestCase):
             'language': "en",
         }
         self.assertEqual(Asset.objects.count(), 0)
-        self.api_client.client.login(username=self.username, password=self.password)
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
         resp = self.api_client.post('/api/0.1/assets/',
                                format='json', data=post_data)
         self.assertHttpCreated(resp)

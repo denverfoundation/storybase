@@ -43,7 +43,7 @@ an HTML snippet.
 """
 
 class AssetPermission(PermissionMixin):
-    """Permissions for the Story model"""
+    """Permissions for the Asset model"""
     def user_can_change(self, user):
         from storybase_user.utils import is_admin
 
@@ -460,7 +460,49 @@ pre_save.connect(set_date_on_published, sender=ExternalAsset)
 pre_save.connect(set_date_on_published, sender=HtmlAsset)
 pre_save.connect(set_date_on_published, sender=LocalImageAsset)
 
-class DataSet(TranslatedModel, PublishedModel, TimestampedModel):
+
+class DataSetPermission(PermissionMixin):
+    """Permissions for the DataSet model"""
+    def user_can_change(self, user):
+        from storybase_user.utils import is_admin
+
+        if not user.is_active:
+            return False
+
+        # Authenticated, active users can change their own dataset 
+        if self.owner == user:
+            return True
+
+        # Admins can change any asset
+        if is_admin(user):
+            return True
+
+        return False
+
+    def user_can_add(self, user):
+        # All authenticated, active users can add assets
+        if not user.is_active:
+            return False
+
+        return True
+
+    def user_can_delete(self, user):
+        return self.user_can_change(user)
+
+
+class DataSetTranslation(TranslationModel):
+    """Translatable fields for a DataSet model instance"""
+    dataset = models.ForeignKey('DataSet', 
+        related_name="%(app_label)s_%(class)s_related") 
+    title = ShortTextField() 
+    description = models.TextField(blank=True)
+
+    class Meta:
+        unique_together = (('dataset', 'language')) 
+
+
+class DataSet(TranslatedModel, PublishedModel, TimestampedModel,
+    DataSetPermission):
     """
     A set of data related to a story or used to produce a visualization
     included in a story
@@ -489,6 +531,7 @@ class DataSet(TranslatedModel, PublishedModel, TimestampedModel):
 
     translation_set = 'storybase_asset_datasettranslation_related'
     translated_fields = ['title', 'description']
+    translation_class = DataSetTranslation
 
     # Use InheritanceManager from django-model-utils to make
     # fetching of subclassed objects easier
@@ -499,21 +542,12 @@ class DataSet(TranslatedModel, PublishedModel, TimestampedModel):
 
     @models.permalink
     def get_absolute_url(self):
-        return ('dataset_detail', [str(self.asset_id)])
+        return ('dataset_detail', [str(self.dataset_id)])
 
     def download_url(self):
         """Returns the URL to the downloadable version of the data set"""
         raise NotImplemented
 
-class DataSetTranslation(TranslationModel):
-    """Translatable fields for a DataSet model instance"""
-    dataset = models.ForeignKey('DataSet', 
-        related_name="%(app_label)s_%(class)s_related") 
-    title = ShortTextField() 
-    description = models.TextField(blank=True)
-
-    class Meta:
-        unique_together = (('dataset', 'language')) 
 
 class ExternalDataSet(DataSet):
     """A data set stored on a different system from the application"""
@@ -522,6 +556,7 @@ class ExternalDataSet(DataSet):
     def download_url(self):
         """Returns the URL to the downloadable version of the data set"""
         return self.url 
+
 
 class LocalDataSet(DataSet):
     """

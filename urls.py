@@ -9,7 +9,7 @@ from storybase_asset.urls import urlpatterns as asset_urlpatterns
 from storybase_messaging.urls import urlpatterns as messaging_urlpatterns
 from storybase_user.urls import urlpatterns as user_urlpatterns
 from storybase_story.urls import urlpatterns as story_urlpatterns
-from storybase_asset.api import AssetResource
+from storybase_asset.api import AssetResource, DataSetResource
 from storybase_geo.api import (GeocoderResource, GeoLevelResource,
                                PlaceResource)
 from storybase_help.api import (HelpResource)
@@ -22,6 +22,7 @@ urlpatterns = patterns('')
 # Set up Tastypie API resources
 v0_1_api = Api(api_name='0.1')
 v0_1_api.register(AssetResource())
+v0_1_api.register(DataSetResource())
 v0_1_api.register(StoryResource())
 v0_1_api.register(GeocoderResource())
 v0_1_api.register(GeoLevelResource())
