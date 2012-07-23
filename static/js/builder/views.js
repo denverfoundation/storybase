@@ -3,6 +3,24 @@ Namespace('storybase.builder.views');
 storybase.builder.views.mixins = {};
 
 /**
+ * @name save:section
+ * @event
+ * @param Section section Event triggered when a section has successfully
+ *     been saved.
+ * @param Boolean showAlert Should an alert be displayed by a callback 
+ *     bound to this event.
+ */
+
+/**
+ * @name save:story
+ * @event
+ * @param Story story Event triggered when a story has successfully
+ *     been saved.
+ * @param Boolean showAlert Should an alert be displayed by a callback 
+ *     bound to this event.
+ */
+
+/**
  * Master view for the story builder
  *
  * Dispatches to sub-views.
@@ -660,7 +678,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     });
 
     this.model.on("sync", this.triggerSaved, this);
-    this.model.on("sync", this.showSaved, this);
+    
     this.model.unusedAssets.on("sync reset add", this.hasAssetList, this);
 
     this.dispatcher.on("select:template", this.setStoryTemplate, this);
@@ -671,6 +689,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.dispatcher.on("toggle:assetlist", this.toggleAssetList, this);
     this.dispatcher.on("add:sectionasset", this.showSaved, this);
     this.dispatcher.on("save:section", this.showSaved, this);
+    this.dispatcher.on("save:story", this.showSaved, this);
     this.dispatcher.on("error", this.error, this);
     this.dispatcher.on("alert", this.showAlert, this);
 
@@ -778,8 +797,15 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     });
   },
 
-  showSaved: function() {
-    this.showAlert('success', "The story has been saved");
+  /**
+   * Event callback that displays an alert indicating the story has been
+   * saved.
+   */
+  showSaved: function(model, showAlert) {
+    showAlert = _.isUndefined(showAlert) || showAlert;
+    if (showAlert) {
+      this.showAlert('success', "The story has been saved");
+    }
   },
 
   triggerSaved: function() {
@@ -1155,6 +1181,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     this.assets = this.options.assets || new storybase.collections.SectionAssets();
     this._unsavedAssets = [];
     this._doConditionalRender = false;
+    this._firstSave = this.model.isNew();
 
     _.bindAll(this, 'renderAssetViews');
     this.dispatcher.on('do:add:sectionasset', this.addAsset, this);
@@ -1216,8 +1243,6 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
 
   show: function() {
     this.$el.show();
-    // TODO: Figure out how to show help
-    // BOOKMARK
     this.dispatcher.trigger('do:show:help', false, 
                             this.model.get('help')); 
     return this;
@@ -1338,9 +1363,9 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   },
 
   triggerSaved: function() {
-    this.dispatcher.trigger('save:section', this.model);
-  },
-
+    this.dispatcher.trigger('save:section', this.model, !this._firstSave);
+    this._firstSave = false;
+  }
 });
 
 storybase.builder.views.SectionAssetEditView = Backbone.View.extend({
