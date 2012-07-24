@@ -1,8 +1,10 @@
 from django.conf.urls.defaults import url
+from django.core.exceptions import ObjectDoesNotExist
 
-from tastypie import fields
+from tastypie import fields, http
 from tastypie.authentication import Authentication
 from tastypie.bundle import Bundle
+from tastypie.exceptions import ImmediateHttpResponse
 from tastypie.utils import trailing_slash
 from tastypie.validation import Validation
 
@@ -13,6 +15,7 @@ from storybase.api import (DataUriResourceMixin,
    LoggedInAuthorization)
 from storybase_asset.models import (Asset, ExternalAsset, HtmlAsset, 
     LocalImageAsset, DataSet, ExternalDataSet, LocalDataSet)
+from storybase_story.models import Story
 
 class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource, 
                     TranslatedModelResource):
@@ -173,6 +176,7 @@ class DataSetResource(DataUriResourceMixin,DelayedAuthorizationResource,
         authentication = Authentication()
         authorization = LoggedInAuthorization()
         validation = DataSetValidation()
+        detail_uri_name = 'dataset_id'
 
         delayed_authorization_methods = []
 
@@ -183,6 +187,16 @@ class DataSetResource(DataUriResourceMixin,DelayedAuthorizationResource,
             return ExternalDataSet
         else:
             raise AttributeError
+
+    def apply_request_kwargs(self, obj_list, request=None, **kwargs):
+        filters = {}
+        story_id = kwargs.get('story_id')
+        if story_id:
+            filters['stories__story_id'] = story_id
+
+        new_obj_list = obj_list.filter(**filters)
+
+        return new_obj_list
 
     def get_object_list(self, request):
         """
@@ -200,36 +214,41 @@ class DataSetResource(DataUriResourceMixin,DelayedAuthorizationResource,
 
         return super(DataSetResource, self).get_object_list(request).filter(q)
 
-    def prepend_urls(self):
+    def base_urls(self):
+        """
+        The standard URLs this ``Resource`` should respond to.
+        """
         return [
-            url(r"^(?P<resource_name>%s)/(?P<dataset_id>[0-9a-f]{32,32})%s$" %
-                (self._meta.resource_name, trailing_slash()),
-                self.wrap_view('dispatch_detail'),
-                name="api_dispatch_detail")
+            # At the moment, we only allow datasets associated with
+            # stories
+            url(r"^(?P<resource_name>%s)/stories/(?P<story_id>[0-9a-f]{32,32})%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
+            url(r"^(?P<resource_name>%s)/schema%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_schema'), name="api_get_schema"),
+            # TODO: Uncomment this if we want to offer detail view
+            #url(r"^(?P<resource_name>%s)/(?P<%s>\w[\w/-]*)%s$" % (self._meta.resource_name, self._meta.detail_uri_name, trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
         ]
 
-    def detail_uri_kwargs(self, bundle_or_obj):
-        """
-        Given a ``Bundle`` or an object (typically a ``Model`` instance),
-        it returns the extra kwargs needed to generate a detail URI.
-
-        This version returns the asset_id field instead of the pk
-        """
-        kwargs = {}
-
-        if isinstance(bundle_or_obj, Bundle):
-            kwargs[self._meta.detail_uri_name] = bundle_or_obj.obj.dataset_id
-        else:
-            kwargs[self._meta.detail_uri_name] = bundle_or_obj.dataset_id
-
-        return kwargs
-
     def obj_create(self, bundle, request=None, **kwargs):
+        story_id = kwargs.get('story_id')
+        if story_id:
+            try:
+                story = Story.objects.get(story_id=story_id) 
+            except ObjectDoesNotExist:
+                raise ImmediateHttpResponse(response=http.HttpNotFound("A story matching the provided story ID could not be found"))
+
         # Set the asset's owner to the request's user
         if request.user:
             kwargs['owner'] = request.user
-        return super(DataSetResource, self).obj_create(
+
+        # Let the superclass create the object
+        bundle = super(DataSetResource, self).obj_create(
             bundle, request, **kwargs)
+
+        # Associate the newly created dataset with the story
+        story.datasets.add(bundle.obj)
+        story.save()
+
+        return bundle
+
 
     def hydrate_file(self, bundle):
         return self._hydrate_file(bundle, File, 'file', 'filename')
