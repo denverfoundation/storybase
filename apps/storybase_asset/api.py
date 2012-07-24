@@ -4,6 +4,7 @@ from tastypie import fields
 from tastypie.authentication import Authentication
 from tastypie.bundle import Bundle
 from tastypie.utils import trailing_slash
+from tastypie.validation import Validation
 
 from filer.models import File, Image
 
@@ -143,6 +144,13 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
     def dehydrate_content(self, bundle):
         return bundle.obj.render(format="html")
 
+class DataSetValidation(Validation):
+    def is_valid(self, bundle, request=None, **kwargs):
+        errors = {} 
+        if bundle.data.get('url') and bundle.data.get('file'):
+            errors['__all__'] = "You may specify either a URL or a file for the dataset, but not both"
+
+        return errors
 
 class DataSetResource(DataUriResourceMixin,DelayedAuthorizationResource, 
                       TranslatedModelResource):
@@ -164,6 +172,7 @@ class DataSetResource(DataUriResourceMixin,DelayedAuthorizationResource,
         list_allowed_methods = ['get', 'post']
         authentication = Authentication()
         authorization = LoggedInAuthorization()
+        validation = DataSetValidation()
 
         delayed_authorization_methods = []
 
@@ -196,11 +205,7 @@ class DataSetResource(DataUriResourceMixin,DelayedAuthorizationResource,
             url(r"^(?P<resource_name>%s)/(?P<dataset_id>[0-9a-f]{32,32})%s$" %
                 (self._meta.resource_name, trailing_slash()),
                 self.wrap_view('dispatch_detail'),
-                name="api_dispatch_detail"),
-            url(r"^(?P<resource_name>%s)/stories/(?P<story_id>[0-9a-f]{32,32})%s$" %
-                (self._meta.resource_name, trailing_slash()),
-                self.wrap_view('dispatch_list'),
-                name="api_dispatch_list"),
+                name="api_dispatch_detail")
         ]
 
     def detail_uri_kwargs(self, bundle_or_obj):
@@ -225,14 +230,6 @@ class DataSetResource(DataUriResourceMixin,DelayedAuthorizationResource,
             kwargs['owner'] = request.user
         return super(DataSetResource, self).obj_create(
             bundle, request, **kwargs)
-
-    def apply_request_kwargs(self, obj_list, request=None, **kwargs):
-        filters = {}
-        story_id = kwargs.get('story_id')
-        if story_id:
-            filters['stories__story_id'] = story_id
-
-        return obj_list.filter(**filters)
 
     def hydrate_file(self, bundle):
         return self._hydrate_file(bundle, File, 'file', 'filename')

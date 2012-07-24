@@ -631,6 +631,9 @@ class SectionAssetResource(DelayedAuthorizationResource, HookedModelResource):
         else:
             return obj_list
 
+class StoryDataSetResource(DelayedAuthorizationResource, HookedModelResource):
+    pass
+
 
 class StoryTemplateResource(TranslatedModelResource):
     # Explicitly declare fields that are on the translation model
