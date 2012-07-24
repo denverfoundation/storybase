@@ -6,7 +6,6 @@ import re
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.files.uploadedfile import InMemoryUploadedFile
-from django.dispatch import receiver, Signal
 from django.http import HttpResponse
 
 from tastypie import fields, http
@@ -15,36 +14,24 @@ from tastypie.exceptions import ImmediateHttpResponse, NotFound
 from tastypie.resources import (ModelResource, convert_post_to_put, 
                                 convert_post_to_patch, NOT_AVAILABLE)
 
-# Signals sent by HookedModelResource
-post_bundle_obj_construct = Signal(providing_args=["bundle", "request"])
-"""Signal sent after the object is constructed, but not saved"""
-pre_bundle_obj_hydrate = Signal(providing_args=["bundle", "request"])
-"""Signal sent before the bundle is hydrated"""
-post_bundle_obj_hydrate = Signal(providing_args=["bundle", "request"])
-"""Signal sent after the bundle is hydrated"""
-post_bundle_obj_save = Signal(providing_args=["bundle", "request"])
-"""Signal sent after the bundle is saved"""
-post_obj_get = Signal(providing_args=["request", "object"])
-"""Signal sent after the object is retrieved"""
-
 class HookedModelResource(ModelResource):
     """
-    A version of ModelResource with extra actions at various points in the pipeline
+    A version of ModelResource with extra actions at various points in 
+    the pipeline
     
     This allows for doing things like creating related translation model
     instances or doing row-level authorization checks in a DRY way since
     most of the logic for the core logic of the request/response cycle
     remains the same as ModelResource.
 
-    The hooks are implemented using Django's signal framework.  In this case
-    the resource is sending a signal to itself and the signal handlers
-    are defined as methods of the HookedModelResource subclass.  Because
-    of this, the signature for these methods has an initial argument of
-    sender instead of the conventional self, even though its referring
-    to the resource object.
-
     """
-    def _bundle_setattr(self, bundle, key, value):
+    def bundle_obj_setattr(self, bundle, key, value):
+        """Hook for setting attributes of the bundle's object
+
+        This is useful if additional bundle objects also need to be modified
+        in addition to the core object.
+
+        """
         setattr(bundle.obj, key, value)
 
     def get_object_class(self, bundle=None, request=None, **kwargs):
@@ -57,6 +44,29 @@ class HookedModelResource(ModelResource):
         """
         return self._meta.object_class
 
+    def post_bundle_obj_construct(self, bundle, request=None, **kwargs):
+        """Hook executed after the object is constructed, but not saved"""
+        pass
+
+    def pre_bundle_obj_hydrate(self, bundle, request=None, **kwargs):
+        """Hook executed before the bundle is hydrated"""
+        pass
+
+    def post_bundle_obj_hydrate(self, bundle, request=None):
+        """Hook executed after the bundle is hydrated"""
+        pass
+
+    def post_bundle_obj_save(self, bundle, request=None, **kwargs):
+        """Hook executed after the bundle is saved"""
+        pass
+
+    def post_bundle_obj_get(self, bundle, request=None):
+        """Hook executed after the object is retrieved"""
+        pass
+
+    def post_obj_get(self, obj, request=None, **kwargs):
+        pass
+
     def full_hydrate(self, bundle):
         """
         Given a populated bundle, distill it and turn it back into
@@ -64,9 +74,9 @@ class HookedModelResource(ModelResource):
         """
         if bundle.obj is None:
             bundle.obj = self._meta.object_class()
-            post_bundle_obj_construct.send(sender=self, bundle=bundle, request=None) 
+            self.post_bundle_obj_construct(bundle)
         bundle = self.hydrate(bundle)
-        post_bundle_obj_hydrate.send(sender=self, bundle=bundle, request=None)
+        self.post_bundle_obj_hydrate(bundle)
         for field_name, field_object in self.fields.items():
             if field_object.readonly is True:
                 continue
@@ -87,7 +97,7 @@ class HookedModelResource(ModelResource):
                     # We need to avoid populating M2M data here as that will
                     # cause things to blow up.
                     if not getattr(field_object, 'is_related', False):
-                        self._bundle_setattr(bundle, field_object.attribute, value)
+                        self.bundle_obj_setattr(bundle, field_object.attribute, value)
                     elif not getattr(field_object, 'is_m2m', False):
                         if value is not None:
                             setattr(bundle.obj, field_object.attribute, value.obj)
@@ -105,11 +115,11 @@ class HookedModelResource(ModelResource):
 
         object_class = self.get_object_class(bundle, request, **kwargs)
         bundle.obj = object_class()
-        post_bundle_obj_construct.send(sender=self, bundle=bundle, request=request, **kwargs)
+        self.post_bundle_obj_construct(bundle, request, **kwargs)
 
         for key, value in kwargs.items():
-            self._bundle_setattr(bundle, key, value)
-        pre_bundle_obj_hydrate.send(sender=self, bundle=bundle, request=request, **kwargs)
+            self.bundle_obj_setattr(bundle, key, value)
+        self.pre_bundle_obj_hydrate(bundle, request, **kwargs)
         bundle = self.full_hydrate(bundle)
         self.is_valid(bundle,request)
 
@@ -121,7 +131,7 @@ class HookedModelResource(ModelResource):
 
         # Save parent
         bundle.obj.save()
-        post_bundle_obj_save.send(sender=self, bundle=bundle, request=request, **kwargs)
+        self.post_bundle_obj_save(bundle, request, **kwargs)
 
         # Now pick up the M2M bits.
         m2m_bundle = self.hydrate_m2m(bundle)
@@ -137,7 +147,7 @@ class HookedModelResource(ModelResource):
             # This step is needed so certain values (like datetime) will pass model validation.
             try:
                 bundle.obj = self.get_object_list(bundle.request).model()
-                post_bundle_obj_construct.send(sender=self, bundle=bundle, request=request, **kwargs)
+                self.post_bundle_obj_construct(bundle, request, **kwargs)
                 bundle.data.update(kwargs)
                 bundle = self.full_hydrate(bundle)
                 lookup_kwargs = kwargs.copy()
@@ -157,9 +167,7 @@ class HookedModelResource(ModelResource):
 
             try:
                 bundle.obj = self.obj_get(bundle.request, **lookup_kwargs)
-                # Send a signal
-                post_obj_get.send(sender=self, request=request,
-                                  obj=bundle.obj)
+                self.post_obj_get(bundle.obj, request)
             except ObjectDoesNotExist:
                 raise NotFound("A model instance matching the provided arguments could not be found.")
 
@@ -174,7 +182,7 @@ class HookedModelResource(ModelResource):
 
         # Save the main object.
         bundle.obj.save()
-        post_bundle_obj_save.send(sender=self, bundle=bundle, request=request, **kwargs)
+        self.post_bundle_obj_save(bundle, request, **kwargs)
 
         # Now pick up the M2M bits.
         m2m_bundle = self.hydrate_m2m(bundle)
@@ -193,8 +201,7 @@ class HookedModelResource(ModelResource):
         if not hasattr(obj, 'delete'):
             try:
                 obj = self.obj_get(request, **kwargs)
-                # Send a signal
-                post_obj_get.send(sender=self, request=request, obj=obj)
+                self.post_obj_get(obj, request)
             except ObjectDoesNotExist:
                 raise NotFound("A model instance matching the provided arguments could not be found.")
 
@@ -224,8 +231,7 @@ class HookedModelResource(ModelResource):
         except MultipleObjectsReturned:
             return http.HttpMultipleChoices("More than one resource is found at this URI.")
 
-        # Send a signal
-        post_obj_get.send(sender=self, request=request, obj=obj)
+        self.post_obj_get(obj, request)
 
         bundle = self.build_bundle(obj=obj, request=request)
         bundle = self.full_dehydrate(bundle)
@@ -343,31 +349,21 @@ class DelayedAuthorizationResource(HookedModelResource):
 
         return response
 
-    @receiver(pre_bundle_obj_hydrate)
-    def check_bundle_obj_authorization(sender, bundle, request, **kwargs):
+    def pre_bundle_obj_hydrate(self, bundle, request=None, **kwargs):
         """
         Check authorization of the bundle's object
         
         Simply calls through to is_authorized.
-
-        This should be connected to the ``pre_bundle_obj_hydrate`` signal.
-
         """
-        if (isinstance(sender, DelayedAuthorizationResource)):
-            sender.is_authorized(request, bundle.obj, **kwargs)
+        self.is_authorized(request, bundle.obj, **kwargs)
 
-    @receiver(post_obj_get)
-    def check_obj_authorization(sender, request, obj, **kwargs):
+    def post_obj_get(self, obj, request=None, **kwargs):
         """
         Check authorization of an object based on the request
 
         Simply calls through to the is_authorized method of the resource
-
-        This should be connected to the ``post_obj_get`` signal.
-
         """
-        if (isinstance(sender, DelayedAuthorizationResource)):
-            sender.is_authorized(request, obj, **kwargs)
+        self.is_authorized(request, obj, **kwargs)
 
 
 class TranslatedModelResource(HookedModelResource):
@@ -386,53 +382,29 @@ class TranslatedModelResource(HookedModelResource):
     def dehydrate_languages(self, bundle):
         return bundle.obj.get_language_info()
 
-    @receiver(post_bundle_obj_construct)
-    def translation_obj_construct(sender, bundle, request, **kwargs):
+    def post_bundle_obj_construct(self, bundle, request=None, **kwargs):
         """
         Create a translation object and add it to the bundle
-        
-        This should be connected to the ``post_bundle_obj_construct`` signal
-
         """
-        object_class = sender.get_object_class(bundle, request, **kwargs)
-        # HACK: There might be a more elegant way to only receive this 
-        # singnal for subclasses of TranslatedModelResource
-        try:
-            translation_class = object_class.translation_class
-            bundle.translation_obj = translation_class()
-        except AttributeError:
-            pass
+        object_class = self.get_object_class(bundle, request, **kwargs)
+        translation_class = object_class.translation_class
+        bundle.translation_obj = translation_class()
 
-    @receiver(post_bundle_obj_save)
-    def translation_obj_save(sender, bundle, request, **kwargs):
+    def post_bundle_obj_save(self, bundle, request, **kwargs):
         """
         Associate the translation object with its parent and save
-
-        This should be connected to the ``post_bundle_obj_save`` signal
-
         """
-        object_class = sender._meta.object_class
-        # HACK: There might be a more elegant way to only receive this 
-        # singnal for subclasses of TranslatedModelResource
-        # Associate and save the translation
-        try:
-            fk_field_name = object_class.get_translation_fk_field_name()
-            setattr(bundle.translation_obj, fk_field_name, bundle.obj)
-            bundle.translation_obj.save()
-        except AttributeError:
-            pass
+        object_class = self._meta.object_class
+        fk_field_name = object_class.get_translation_fk_field_name()
+        setattr(bundle.translation_obj, fk_field_name, bundle.obj)
+        bundle.translation_obj.save()
 
-    @receiver(post_bundle_obj_hydrate)
-    def translation_obj_get(sender, bundle, request, **kwargs):
+    def post_bundle_obj_hydrate(self, bundle, request=None):
         """
         Get the associated translation model instance
-
-        This should be connected to the ``post_bundle_obj_hydrate``
-        signal.
-
         """
         if bundle.obj.pk:
-            language = bundle.data.get('language', sender.fields['language'].default)
+            language = bundle.data.get('language', self.fields['language'].default)
             translation_set = getattr(bundle.obj, bundle.obj.translation_set)
             bundle.translation_obj = translation_set.get(language=language)
 
@@ -440,7 +412,7 @@ class TranslatedModelResource(HookedModelResource):
         object_class = self.get_object_class(bundle)
         return object_class.translated_fields + ['language']
 
-    def _bundle_setattr(self, bundle, key, value):
+    def bundle_obj_setattr(self, bundle, key, value):
         if not hasattr(bundle, 'translation_fields'):
             bundle.translation_fields = self._get_translation_fields(bundle) 
 
