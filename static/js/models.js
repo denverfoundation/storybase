@@ -3,6 +3,52 @@ Namespace('storybase.globals');
 Namespace('storybase.models');
 Namespace('storybase.collections');
 
+/**
+ * Mixin that expects the model attributes to be within an objects attribute
+ * 
+ * This is the way Tastypie structures its response the objects.
+ */
+storybase.collections.TastypieMixin = {
+  parse: function(response) {
+    return response.objects;
+  }
+}
+
+storybase.models.DataSet = Backbone.Model.extend({
+  idAttribute: "dataset_id",
+
+  urlRoot: function() {
+    return storybase.globals.API_ROOT + 'datasets';
+  }
+});
+
+
+storybase.collections.DataSets = Backbone.Collection.extend( 
+  _.extend({}, storybase.collections.TastypieMixin, {
+    model: storybase.models.DataSet,
+
+    initialize: function() {
+      this._story = null;
+    },
+
+    url: function() {
+      var url = storybase.globals.API_ROOT + 'datasets/';
+      if (this._story !== null) {
+        url = url + 'stories/' + this._story.id + '/';
+      }
+      return url; 
+    },
+
+    /**
+     * Specify that this collection represent's a particular
+     * story's data sets
+     */
+    setStory: function(story) {
+      this._story = story;
+    }
+  })
+);
+
 storybase.models.Story = Backbone.Model.extend({
   idAttribute: "story_id",
 
@@ -49,6 +95,7 @@ storybase.models.Story = Backbone.Model.extend({
   }
 });
 
+
 storybase.collections.Stories = Backbone.Collection.extend({
     model: storybase.models.Story,
 
@@ -81,15 +128,13 @@ storybase.models.Section = Backbone.Model.extend({
   }
 });
 
-storybase.collections.Sections = Backbone.Collection.extend({
+storybase.collections.Sections = Backbone.Collection.extend(
+  _.extend({}, storybase.collections.TastypieMixin, {
     model: storybase.models.Section,
 
-    url: storybase.globals.API_ROOT + 'sections/', 
-
-    parse: function(response) {
-      return response.objects;
-    }
-});
+    url: storybase.globals.API_ROOT + 'sections/'
+  })
+);
 
 storybase.models.Asset = Backbone.Model.extend({
   showUrl: {
@@ -171,13 +216,11 @@ storybase.models.Asset = Backbone.Model.extend({
   }
 });
 
-storybase.collections.Assets = Backbone.Collection.extend({
-    model: storybase.models.Asset,
-
-    parse: function(response) {
-      return response.objects;
-    }
-});
+storybase.collections.Assets = Backbone.Collection.extend(
+  _.extend({}, storybase.collections.TastypieMixin, {
+    model: storybase.models.Asset
+  })
+);
 
 storybase.collections.SectionAssets = storybase.collections.Assets.extend({
   parse: function(response) {
