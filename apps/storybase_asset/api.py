@@ -189,7 +189,7 @@ class DataSetResource(DataUriResourceMixin,DelayedAuthorizationResource,
             # well
             q = q | Q(owner=request.user)
 
-        return super(AssetResource, self).get_object_list(request).filter(q)
+        return super(DataSetResource, self).get_object_list(request).filter(q)
 
     def prepend_urls(self):
         return [
