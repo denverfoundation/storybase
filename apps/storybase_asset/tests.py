@@ -342,7 +342,7 @@ class AssetApiTest(FileCleanupMixin, TestCase):
 
 
 class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
-    def get_dataset_attrs(self, seq, key, value):
+    def filter_dict(self, seq, key, value):
         def has_matching_value(item):
             v = item.get(key, None)
             if v and v == value:
@@ -359,6 +359,8 @@ class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         self.password = 'test'
         self.user = User.objects.create_user(self.username, 
             'test@example.com', self.password)
+        self.user2 = User.objects.create_user("test2", "test2@example.com",
+                                              "test2")
 
     def test_get_list(self):
         """
@@ -399,11 +401,110 @@ class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)['objects']), 3)
         for resp_obj in self.deserialize(resp)['objects']:
-            attrs = self.get_dataset_attrs(dataset_attrs, 'title',
+            attrs = self.filter_dict(dataset_attrs, 'title',
                                                    resp_obj['title'])[0]
             for key, value in attrs.items():
                 if key != 'owner':
                     self.assertEqual(resp_obj[key], value)
+
+    def test_get_list_published_only(self):
+        """
+        Test that an unauthenticated user only sees published datasets
+        """
+        dataset_attrs = [
+            {
+                'title': "Metro Denver Free and Reduced Lunch Trends by School District",
+                'url': 'http://www.box.com/s/erutk9kacq6akzlvqcdr',
+                'source': "Colorado Department of Education",
+                'attribution': "The Piton Foundation",
+                'links_to_file': False,
+                'owner': self.user,
+                'status': 'published',
+            },
+            {
+                'title': "Chicago Street Names",
+                'description': "List of all Chicago streets with suffixes and minimum and maximum address numbers.",
+                'url': 'https://data.cityofchicago.org/Transportation/Chicago-Street-Names/i6bp-fvbx',
+                'links_to_file': False,
+                'owner': self.user,
+                'status': 'published',
+            },
+            {
+                'title': "Illinois Neighborhood Boundaries",
+                'description': "Illinois Neighborhood shapes available below, zipped up in the Arc Shapefile format.",
+                'url': 'http://www.zillow.com/static/shp/ZillowNeighborhoods-IL.zip',
+                'links_to_file': True,
+                'source': "Zillow",
+                'owner': self.user,
+                'status': 'draft',
+            },
+        ]
+        for dataset_attr in dataset_attrs:
+            create_external_dataset(**dataset_attr)
+        uri = '/api/0.1/datasets/'
+        resp = self.api_client.get(uri)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 2)
+        for resp_obj in self.deserialize(resp)['objects']:
+            attrs = self.filter_dict(dataset_attrs, 'title',
+                                                   resp_obj['title'])[0]
+            for key, value in attrs.items():
+                if key != 'owner':
+                    self.assertEqual(resp_obj[key], value)
+        self.assertEqual(len(self.filter_dict(
+            self.deserialize(resp)['objects'],
+            'title', "Illinois Neighborhood Boundaries")), 0)
+
+    def test_get_list_own(self):
+        """
+        Test that a user can get a list of  both published and 
+        unpublished datasets that they own
+        """
+        dataset_attrs = [
+            {
+                'title': "Metro Denver Free and Reduced Lunch Trends by School District",
+                'url': 'http://www.box.com/s/erutk9kacq6akzlvqcdr',
+                'source': "Colorado Department of Education",
+                'attribution': "The Piton Foundation",
+                'links_to_file': False,
+                'owner': self.user,
+                'status': 'draft',
+            },
+            {
+                'title': "Chicago Street Names",
+                'description': "List of all Chicago streets with suffixes and minimum and maximum address numbers.",
+                'url': 'https://data.cityofchicago.org/Transportation/Chicago-Street-Names/i6bp-fvbx',
+                'links_to_file': False,
+                'owner': self.user,
+                'status': 'published',
+            },
+            {
+                'title': "Illinois Neighborhood Boundaries",
+                'description': "Illinois Neighborhood shapes available below, zipped up in the Arc Shapefile format.",
+                'url': 'http://www.zillow.com/static/shp/ZillowNeighborhoods-IL.zip',
+                'links_to_file': True,
+                'source': "Zillow",
+                'owner': self.user2,
+                'status': 'draft',
+            },
+        ]
+        for dataset_attr in dataset_attrs:
+            create_external_dataset(**dataset_attr)
+        uri = '/api/0.1/datasets/'
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        resp = self.api_client.get(uri)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 2)
+        for resp_obj in self.deserialize(resp)['objects']:
+            attrs = self.filter_dict(dataset_attrs, 'title',
+                                                   resp_obj['title'])[0]
+            for key, value in attrs.items():
+                if key != 'owner':
+                    self.assertEqual(resp_obj[key], value)
+        self.assertEqual(len(self.filter_dict(
+            self.deserialize(resp)['objects'],
+            'title', "Illinois Neighborhood Boundaries")), 0)
 
     def test_post_list_file(self):
         """
