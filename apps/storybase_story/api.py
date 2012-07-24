@@ -72,11 +72,11 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
             url(r'^(?P<resource_name>%s)/explore%s$'  % (self._meta.resource_name, trailing_slash()), self.wrap_view('explore_get_list'), name="api_explore_get_list"),
             url(r'^(?P<resource_name>%s)/templates%s$'  % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_template_list'), name="api_dispatch_list_templates"),
             url(r'^(?P<resource_name>%s)/templates/(?P<template_id>[0-9a-f]{32,32})%s$'  % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_template_detail'), name="api_dispatch_detail_templates"),
-            url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/$" % self._meta.resource_name, self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
-            url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/sections/$" % self._meta.resource_name, self.wrap_view('dispatch_section_list'), name="api_dispatch_list_sections"),
-            url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/sections/(?P<section_id>[0-9a-f]{32,32})/$" % self._meta.resource_name, self.wrap_view('dispatch_section_detail'), name="api_dispatch_detail_sections"),
-            url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/sections/(?P<section_id>[0-9a-f]{32,32})/assets/$" % self._meta.resource_name, self.wrap_view('dispatch_sectionasset_list'), name="api_dispatch_list_sectionassets"),
-            url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/sections/(?P<section_id>[0-9a-f]{32,32})/assets/(?P<asset_id>[0-9a-f]{32,32})/$" % self._meta.resource_name, self.wrap_view('dispatch_sectionasset_detail'), name="api_dispatch_detail_sectionassets"),
+            url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
+            url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/sections%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_section_list'), name="api_dispatch_list_sections"),
+            url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/sections/(?P<section_id>[0-9a-f]{32,32})%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_section_detail'), name="api_dispatch_detail_sections"),
+            url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/sections/(?P<section_id>[0-9a-f]{32,32})/assets%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_sectionasset_list'), name="api_dispatch_list_sectionassets"),
+            url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/sections/(?P<section_id>[0-9a-f]{32,32})/assets/(?P<asset_id>[0-9a-f]{32,32})%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_sectionasset_detail'), name="api_dispatch_detail_sectionassets"),
         ]
 
     def detail_uri_kwargs(self, bundle_or_obj):
@@ -630,9 +630,6 @@ class SectionAssetResource(DelayedAuthorizationResource, HookedModelResource):
             return obj_list.filter(section__section_id=section_id)
         else:
             return obj_list
-
-class StoryDataSetResource(DelayedAuthorizationResource, HookedModelResource):
-    pass
 
 
 class StoryTemplateResource(TranslatedModelResource):
