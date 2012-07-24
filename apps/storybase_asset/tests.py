@@ -1,6 +1,7 @@
 import base64
 from datetime import datetime
 import hashlib
+from itertools import ifilter
 import mimetypes
 import os
 
@@ -341,6 +342,16 @@ class AssetApiTest(FileCleanupMixin, TestCase):
 
 
 class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
+    def get_dataset_attrs(self, seq, key, value):
+        def has_matching_value(item):
+            v = item.get(key, None)
+            if v and v == value:
+                return True
+            else:
+                return False
+
+        return list(ifilter(has_matching_value, seq))
+
     def setUp(self):
         super(DataSetResourceTest, self).setUp()
         self.api_client = TestApiClient()
@@ -349,7 +360,55 @@ class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         self.user = User.objects.create_user(self.username, 
             'test@example.com', self.password)
 
+    def test_get_list(self):
+        """
+        Test that a user can get a list of datasets
+        """
+        dataset_attrs = [
+            {
+                'title': "Metro Denver Free and Reduced Lunch Trends by School District",
+                'url': 'http://www.box.com/s/erutk9kacq6akzlvqcdr',
+                'source': "Colorado Department of Education",
+                'attribution': "The Piton Foundation",
+                'links_to_file': False,
+                'owner': self.user,
+                'status': 'published',
+            },
+            {
+                'title': "Chicago Street Names",
+                'description': "List of all Chicago streets with suffixes and minimum and maximum address numbers.",
+                'url': 'https://data.cityofchicago.org/Transportation/Chicago-Street-Names/i6bp-fvbx',
+                'links_to_file': False,
+                'owner': self.user,
+                'status': 'published',
+            },
+            {
+                'title': "Illinois Neighborhood Boundaries",
+                'description': "Illinois Neighborhood shapes available below, zipped up in the Arc Shapefile format.",
+                'url': 'http://www.zillow.com/static/shp/ZillowNeighborhoods-IL.zip',
+                'links_to_file': True,
+                'source': "Zillow",
+                'owner': self.user,
+                'status': 'published',
+            },
+        ]
+        for dataset_attr in dataset_attrs:
+            create_external_dataset(**dataset_attr)
+        uri = '/api/0.1/datasets/'
+        resp = self.api_client.get(uri)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 3)
+        for resp_obj in self.deserialize(resp)['objects']:
+            attrs = self.get_dataset_attrs(dataset_attrs, 'title',
+                                                   resp_obj['title'])[0]
+            for key, value in attrs.items():
+                if key != 'owner':
+                    self.assertEqual(resp_obj[key], value)
+
     def test_post_list_file(self):
+        """
+        Test that a user can create a resource including uploading a file
+        """
         data_filename = "test_data.csv"
         app_dir = os.path.dirname(os.path.abspath(__file__))
         data_path = os.path.join(app_dir, "test_files", data_filename)
@@ -388,8 +447,8 @@ class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
 
     def test_post_list_url(self):
         post_data = {
-            'title': "Test Dataset",
-            'description': "A test dataset",
+            'title': "Chicago Street Names",
+            'description': "List of all Chicago streets with suffixes and minimum and maximum address numbers.",
             'url': 'https://data.cityofchicago.org/Transportation/Chicago-Street-Names/i6bp-fvbx',
             'links_to_file': False,
             'language': "en",
@@ -442,7 +501,7 @@ class DataSetApiTest(TestCase):
         url = 'http://www.box.com/s/erutk9kacq6akzlvqcdr'
         title = ("Metro Denver Free and Reduced Lunch Trends by School "
                  "District")
-        source = "Colorado Department of Education for Source"
+        source = "Colorado Department of Education"
         attribution = "The Piton Foundation"
         dataset = create_external_dataset(title=title, url=url, 
                                           source=source, 
