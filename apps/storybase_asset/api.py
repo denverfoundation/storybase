@@ -219,6 +219,21 @@ class DataSetResource(DataUriResourceMixin,DelayedAuthorizationResource,
 
         return kwargs
 
+    def obj_create(self, bundle, request=None, **kwargs):
+        # Set the asset's owner to the request's user
+        if request.user:
+            kwargs['owner'] = request.user
+        return super(DataSetResource, self).obj_create(
+            bundle, request, **kwargs)
+
+    def apply_request_kwargs(self, obj_list, request=None, **kwargs):
+        filters = {}
+        story_id = kwargs.get('story_id')
+        if story_id:
+            filters['stories__story_id'] = story_id
+
+        return obj_list.filter(**filters)
+
     def hydrate_file(self, bundle):
         return self._hydrate_file(bundle, File, 'file', 'filename')
 

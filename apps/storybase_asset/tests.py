@@ -506,6 +506,60 @@ class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
             self.deserialize(resp)['objects'],
             'title', "Illinois Neighborhood Boundaries")), 0)
 
+    def test_get_list_for_story(self):
+        """
+        Test that a user can get a list of datasets associated
+        with a story
+        """
+        dataset_attrs = [
+            {
+                'title': "Metro Denver Free and Reduced Lunch Trends by School District",
+                'url': 'http://www.box.com/s/erutk9kacq6akzlvqcdr',
+                'source': "Colorado Department of Education",
+                'attribution': "The Piton Foundation",
+                'links_to_file': False,
+                'owner': self.user,
+                'status': 'published',
+            },
+            {
+                'title': "Chicago Street Names",
+                'description': "List of all Chicago streets with suffixes and minimum and maximum address numbers.",
+                'url': 'https://data.cityofchicago.org/Transportation/Chicago-Street-Names/i6bp-fvbx',
+                'links_to_file': False,
+                'owner': self.user,
+                'status': 'published',
+            },
+            {
+                'title': "Illinois Neighborhood Boundaries",
+                'description': "Illinois Neighborhood shapes available below, zipped up in the Arc Shapefile format.",
+                'url': 'http://www.zillow.com/static/shp/ZillowNeighborhoods-IL.zip',
+                'links_to_file': True,
+                'source': "Zillow",
+                'owner': self.user,
+                'status': 'published',
+            },
+        ]
+        datasets = []
+        for dataset_attr in dataset_attrs:
+            datasets.append(create_external_dataset(**dataset_attr))
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status="published",
+                             language="en", author=self.user)
+        story.datasets.add(datasets[0], datasets[1])
+        story.save()
+        self.assertEqual(len(story.datasets.all()), 2)
+        uri = '/api/0.1/datasets/stories/%s/' % (story.story_id)
+        resp = self.api_client.get(uri)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 2)
+        for resp_obj in self.deserialize(resp)['objects']:
+            attrs = self.filter_dict(dataset_attrs, 'title',
+                                                   resp_obj['title'])[0]
+            for key, value in attrs.items():
+                if key != 'owner':
+                    self.assertEqual(resp_obj[key], value)
+        
+
     def test_post_list_file(self):
         """
         Test that a user can create a resource including uploading a file
@@ -545,6 +599,8 @@ class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         self.assertEqual(original_hash, created_hash)
         # Set our created file to be cleaned up
         self.add_file_to_cleanup(created_dataset.file.file.path)
+        # Test that the owner of the dataset is our logged-in user
+        self.assertEqual(created_dataset.owner, self.user)
 
     def test_post_list_url(self):
         post_data = {
@@ -576,6 +632,8 @@ class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         self.assertEqual(created_dataset.description, post_data['description'])
         self.assertEqual(created_dataset.url, post_data['url'])
         self.assertEqual(created_dataset.links_to_file, post_data['links_to_file'])
+        # Test that the owner of the dataset is our logged-in user
+        self.assertEqual(created_dataset.owner, self.user)
 
     def test_post_list_unauthorized(self):
         """Test that an unauthenticated user can't create a dataset"""
