@@ -21,7 +21,7 @@ from storybase.models import (LicensedModel, PermissionMixin,
     PublishedModel, TimestampedModel, TranslatedModel, TranslationModel,
     set_date_on_published)
 from storybase.utils import slugify
-from storybase_asset.models import Asset
+from storybase_asset.models import Asset, DataSet
 from storybase_help.models import Help
 from storybase_user.models import Organization, Project
 from storybase_story import structure
@@ -92,6 +92,8 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
                                null=True)
     assets = models.ManyToManyField(Asset, related_name='stories',
                                     blank=True)
+    datasets = models.ManyToManyField(DataSet, related_name='stories',
+                                      blank=True)
     featured_assets = models.ManyToManyField(Asset,
        related_name='featured_in_stories', blank=True,
        help_text=_("Assets to be displayed in teaser version of Story"))
