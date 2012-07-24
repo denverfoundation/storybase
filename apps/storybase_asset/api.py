@@ -214,17 +214,9 @@ class DataSetResource(DataUriResourceMixin,DelayedAuthorizationResource,
 
         return super(DataSetResource, self).get_object_list(request).filter(q)
 
-    def base_urls(self):
-        """
-        The standard URLs this ``Resource`` should respond to.
-        """
+    def prepend_urls(self):
         return [
-            # At the moment, we only allow datasets associated with
-            # stories
             url(r"^(?P<resource_name>%s)/stories/(?P<story_id>[0-9a-f]{32,32})%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
-            url(r"^(?P<resource_name>%s)/schema%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('get_schema'), name="api_get_schema"),
-            # TODO: Uncomment this if we want to offer detail view
-            #url(r"^(?P<resource_name>%s)/(?P<%s>\w[\w/-]*)%s$" % (self._meta.resource_name, self._meta.detail_uri_name, trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
         ]
 
     def obj_create(self, bundle, request=None, **kwargs):
@@ -232,6 +224,8 @@ class DataSetResource(DataUriResourceMixin,DelayedAuthorizationResource,
         if story_id:
             try:
                 story = Story.objects.get(story_id=story_id) 
+                if not story.has_perm(request.user, 'change'):
+                    raise ImmediateHttpResponse(response=http.HttpUnauthorized("You are not authorized to change the story matching the provided story ID"))
             except ObjectDoesNotExist:
                 raise ImmediateHttpResponse(response=http.HttpNotFound("A story matching the provided story ID could not be found"))
 
@@ -243,9 +237,10 @@ class DataSetResource(DataUriResourceMixin,DelayedAuthorizationResource,
         bundle = super(DataSetResource, self).obj_create(
             bundle, request, **kwargs)
 
-        # Associate the newly created dataset with the story
-        story.datasets.add(bundle.obj)
-        story.save()
+        if story_id:
+            # Associate the newly created dataset with the story
+            story.datasets.add(bundle.obj)
+            story.save()
 
         return bundle
 

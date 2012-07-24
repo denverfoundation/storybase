@@ -465,7 +465,41 @@ class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
             self.deserialize(resp)['objects'],
             'title', "Illinois Neighborhood Boundaries")), 0)
 
-    def test_post_list_file(self):
+    def test_post_list_url(self):
+        post_data = {
+            'title': "Chicago Street Names",
+            'description': "List of all Chicago streets with suffixes and minimum and maximum address numbers.",
+            'url': 'https://data.cityofchicago.org/Transportation/Chicago-Street-Names/i6bp-fvbx',
+            'links_to_file': False,
+            'language': "en",
+        }
+        self.assertEqual(DataSet.objects.count(), 0)
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        uri = '/api/0.1/datasets/'
+        resp = self.api_client.post(uri, format='json', data=post_data)
+        self.assertHttpCreated(resp)
+        self.assertEqual(DataSet.objects.count(), 1)
+        # Compare the response data with the post data
+        self.assertEqual(self.deserialize(resp)['title'], 
+                         post_data['title'])
+        self.assertEqual(self.deserialize(resp)['description'], 
+                         post_data['description'])
+        self.assertEqual(self.deserialize(resp)['url'], 
+                         post_data['url'])
+        self.assertEqual(self.deserialize(resp)['links_to_file'], 
+                         post_data['links_to_file'])
+        # Compare the created model instance with the post data
+        created_dataset = DataSet.objects.get_subclass()
+        self.assertEqual(created_dataset.title, post_data['title'])
+        self.assertEqual(created_dataset.description, post_data['description'])
+        self.assertEqual(created_dataset.url, post_data['url'])
+        self.assertEqual(created_dataset.links_to_file, post_data['links_to_file'])
+        # Test that the owner of the dataset is our logged-in user
+        self.assertEqual(created_dataset.owner, self.user)
+        # Test that the created dataset is associated with a story 
+
+    def test_post_list_with_story_file(self):
         """
         Test that a user can create a resource including uploading a file
         """
@@ -509,7 +543,7 @@ class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         # Test that the created dataset is associated with a story 
         self.assertIn(self.story, created_dataset.stories.all())
 
-    def test_post_list_url(self):
+    def test_post_list_with_story_url(self):
         post_data = {
             'title': "Chicago Street Names",
             'description': "List of all Chicago streets with suffixes and minimum and maximum address numbers.",
@@ -544,7 +578,7 @@ class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         # Test that the created dataset is associated with a story 
         self.assertIn(self.story, created_dataset.stories.all())
 
-    def test_post_list_unauthorized(self):
+    def test_post_list_with_story_unauthenticated(self):
         """Test that an unauthenticated user can't create a dataset"""
         post_data = {
             'title': "Test Dataset",
@@ -562,7 +596,29 @@ class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         self.assertHttpNotFound(resp)
         self.assertEqual(DataSet.objects.count(), 0)
 
-    def test_post_list_nonexistant_story(self):
+    def test_post_list_with_story_unauthorized(self):
+        """
+        Test that a user can't create a dataset associated with another
+        user's story
+        """
+        post_data = {
+            'title': "Test Dataset",
+            'description': "A test dataset",
+            'url': 'https://data.cityofchicago.org/Transportation/Chicago-Street-Names/i6bp-fvbx',
+            'links_to_file': False,
+            'language': "en",
+        }
+        self.story.author = self.user2
+        self.story.save()
+        self.assertEqual(DataSet.objects.count(), 0)
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        uri = '/api/0.1/datasets/stories/%s/' % (self.story.story_id)
+        resp = self.api_client.post(uri, format='json', data=post_data)
+        self.assertHttpUnauthorized(resp)
+        self.assertEqual(DataSet.objects.count(), 0)
+
+    def test_post_list_with_story_nonexistant_story(self):
         """Test that dataset creation fails when a story matching
         the specified story_id doesn't exist"""
         post_data = {
