@@ -848,6 +848,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       sectionCopy.set("title", section.get("title"));
       sectionCopy.set("layout", section.get("layout"));
       sectionCopy.set("root", section.get("root"));
+      sectionCopy.set("weight", section.get("weight"));
       sectionCopy.set("layout_template", section.get("layout_template"));
       sectionCopy.set("help", section.get("help"));
       that.model.sections.push(sectionCopy);
@@ -1694,6 +1695,7 @@ storybase.builder.views.ShareView = Backbone.View.extend({
   templateSource: $('#share-template').html(),
 
   events: {
+    'click .publish': 'handlePublish'
   },
 
   initialize: function() {
@@ -1705,6 +1707,23 @@ storybase.builder.views.ShareView = Backbone.View.extend({
     console.info('Rendering share view');
     var context = {};
     this.$el.html(this.template(context));
+    this.delegateEvents();
     return this;
+  },
+
+  handlePublish: function(evt) {
+    evt.preventDefault();
+    console.debug('Entering handlePublish');
+    var that = this;
+    var triggerPublished = function(model, response) {
+      that.dispatcher.trigger('publish:story', model);
+    };
+    var triggerError = function(model, response) {
+      that.dispatcher.trigger('error', "Error publishing story");
+    };
+    this.model.save({'status': 'published'}, {
+      success: triggerPublished, 
+      error: triggerError 
+    });
   }
 });
