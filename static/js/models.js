@@ -18,13 +18,31 @@ storybase.models.TastypieMixin = {
   url: function() {
     // Ensure data always ends in a '/', for Tastypie
     var url = Backbone.Model.prototype.url.call(this); 
-    return url + (url.charAt(url.length - 1) == '/' ? '' : '/'); 
+   url = url + (url.charAt(url.length - 1) == '/' ? '' : '/'); 
+   console.debug(url);
+   return url;
   }
 }
 
-storybase.models.DataSet = Backbone.Model.extend(
-  _.extend({}, storybase.models.TatypieMixin, {
+storybase.models.DataSet = Backbone.Model.extend({
     idAttribute: "dataset_id",
+
+    urlRoot: function() {
+      return storybase.globals.API_ROOT + 'datasets/';
+    },
+
+    /**
+     * Return the server URL for a model instance.
+     *
+     * This version always uses urlRoot instead of the collection's
+     * URL because sometimes a collection will have a URL set for a
+     * particular story
+     */
+    url: function() {
+      var base = this.urlRoot();
+      if (this.isNew()) return base;
+      return base + this.id + '/';
+    },
 
     /**
      * Schema for backbone-forms
@@ -55,8 +73,7 @@ storybase.models.DataSet = Backbone.Model.extend(
         return "You must specify only one of the following values " + found.join(', ');
       }
     }
-  })
-);
+});
 
 
 storybase.collections.DataSets = Backbone.Collection.extend( 
