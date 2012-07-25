@@ -634,6 +634,36 @@ class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         self.assertHttpUnauthorized(resp)
         self.assertEqual(DataSet.objects.count(), 0)
 
+    def test_delete_detail_file(self):
+        """
+        Test that a user can delete a dataset with an associated file 
+        """
+        data_filename = "test_data.csv"
+        app_dir = os.path.dirname(os.path.abspath(__file__))
+        data_path = os.path.join(app_dir, "test_files", data_filename)
+        encoded_file = self.read_as_data_url(data_path)
+
+        post_data = {
+            'title': "Test Dataset",
+            'description': "A test dataset",
+            'file': encoded_file,
+            'filename': data_filename,
+            'language': "en",
+        }
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        uri = '/api/0.1/datasets/stories/%s/' % (self.story.story_id)
+        resp = self.api_client.post(uri, format='json', data=post_data)
+        self.assertHttpCreated(resp)
+        self.assertEqual(DataSet.objects.count(), 1)
+        created_dataset = DataSet.objects.get_subclass()
+        file_path = created_dataset.file.path
+        resource_uri = self.deserialize(resp)['resource_uri']
+        resp = self.api_client.delete(resource_uri, format='json')
+        self.assertHttpAccepted(resp)
+        self.assertEqual(DataSet.objects.count(), 0)
+        self.assertFalse(os.path.exists(file_path))
+
     def test_delete_detail_url(self):
         post_data = {
             'title': "Chicago Street Names",

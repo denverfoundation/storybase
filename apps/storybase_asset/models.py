@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core.files import File
 from django.db import models
-from django.db.models.signals import pre_save
+from django.db.models.signals import pre_save, pre_delete, post_delete
 from django.utils.html import strip_tags
 from django.utils.text import truncate_words
 from django.utils.translation import ugettext_lazy as _
@@ -574,6 +574,21 @@ class LocalDataSet(DataSet):
     def download_url(self):
         """Returns the URL to the downloadable version of the data set"""
         return self.file.url 
+
+def delete_dataset_file(sender, instance, **kwargs):
+    """
+    Delete the filer object and the underlying file when the dataset
+    is deleted
+
+    This should be hooked up to the post_delete signal
+
+    """
+    storage, path = instance.file.file.storage, instance.file.file.path
+    instance.file.delete();
+    storage.delete(path)
+
+post_delete.connect(delete_dataset_file, sender=LocalDataSet)
+
 
 def create_html_asset(type, title='', caption='', body='', 
                       language=settings.LANGUAGE_CODE, *args, **kwargs):
