@@ -30,6 +30,11 @@ storybase.builder.routers.Router = Backbone.Router.extend({
         subStep = undefined;
       }
     }
+    else {
+      if (_.isUndefined(step) && !_.isUndefined(id)) {
+        step = 'build';
+      }
+    }
     if (!_.isUndefined(step)) {
       this.dispatcher.trigger('select:workflowstep', step, subStep);
     }
