@@ -94,7 +94,33 @@ Handlebars.js templates for story builder Backbone application
 </script>
 
 <script type="text/x-handlebars-template" id="data-template">
-TODO: Fill this in with data adding forms
+<h2>Data Sets</h2>
+{{#if datasets.length}}
+<table class="datasets">
+    <thead>
+        <tr>
+            <th>Data Set</th>
+            <th>Delete</th>
+        </tr>
+    </thead>
+    <tbody>
+        {{#each datasets}}
+        <tr class="dataset">
+            <td>
+                <span class="title">{{title}}</span>
+                <span class="source">{{source}}</span>
+                <span class="url"><a href="{{download_url}}">{{download_url}}</a></span>
+            </td>
+            <td><a class="delete-dataset" data-dataset-id="{{dataset_id}}" href="#">Delete</a></td>
+
+        </tr>
+        {{/each}}
+    </tbody>
+</table>
+{{else}}
+<p>There are no data sets for this story.</p>
+{{/if}}
+<div><a class="btn add-dataset" href="#">Add Data</a></div>
 </script>
 
 <script type="text/x-handlebars-template" id="review-template">

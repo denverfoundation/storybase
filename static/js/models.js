@@ -19,7 +19,6 @@ storybase.models.TastypieMixin = {
     // Ensure data always ends in a '/', for Tastypie
     var url = Backbone.Model.prototype.url.call(this); 
    url = url + (url.charAt(url.length - 1) == '/' ? '' : '/'); 
-   console.debug(url);
    return url;
   }
 }
