@@ -18,29 +18,32 @@ storybase.models.TastypieMixin = {
   url: function() {
     // Ensure data always ends in a '/', for Tastypie
     var url = Backbone.Model.prototype.url.call(this); 
-   url = url + (url.charAt(url.length - 1) == '/' ? '' : '/'); 
-   return url;
+    url = url + (url.charAt(url.length - 1) == '/' ? '' : '/'); 
+    return url;
   }
 }
 
 storybase.models.DataSet = Backbone.Model.extend({
     idAttribute: "dataset_id",
 
-    urlRoot: function() {
-      return storybase.globals.API_ROOT + 'datasets/';
-    },
-
     /**
      * Return the server URL for a model instance.
      *
-     * This version always uses urlRoot instead of the collection's
-     * URL because sometimes a collection will have a URL set for a
-     * particular story
+     * This version always uses the collection's URL if the instance is new,
+     * otherwise it uses the value returned by the API.  This is needed
+     * because sometimes a collection will have a URL set to fetch a
+     * particular story's data sets.  By default, Backbone uses the 
+     * collection's URL to build an individual model's URL.  We don't want
+     * to do this.
      */
     url: function() {
-      var base = this.urlRoot();
-      if (this.isNew()) return base;
-      return base + this.id + '/';
+      var url = Backbone.Model.prototype.url.call(this);
+      if (!this.isNew() && this.has('resource_uri')) {
+        url = this.get('resource_uri');
+      }
+      // Make sure the URL ends in a '/'
+      url = url + (url.charAt(url.length - 1) == '/' ? '' : '/');
+      return url; 
     },
 
     /**
@@ -88,6 +91,7 @@ storybase.collections.DataSets = Backbone.Collection.extend(
       if (this._story !== null) {
         url = url + 'stories/' + this._story.id + '/';
       }
+      console.debug(url);
       return url; 
     },
 
