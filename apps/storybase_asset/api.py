@@ -174,12 +174,13 @@ class DataSetResource(DataUriResourceMixin,DelayedAuthorizationResource,
         queryset = DataSet.objects.select_subclasses()
         resource_name = 'datasets'
         list_allowed_methods = ['get', 'post']
+        detail_allowed_methods = ['delete']
         authentication = Authentication()
         authorization = LoggedInAuthorization()
         validation = DataSetValidation()
         detail_uri_name = 'dataset_id'
 
-        delayed_authorization_methods = []
+        delayed_authorization_methods = ['delete_detail']
 
     def get_object_class(self, bundle=None, request=None, **kwargs):
         if bundle.data.get('file', None):

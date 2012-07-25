@@ -634,6 +634,46 @@ class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         self.assertHttpUnauthorized(resp)
         self.assertEqual(DataSet.objects.count(), 0)
 
+    def test_delete_detail_url(self):
+        post_data = {
+            'title': "Chicago Street Names",
+            'description': "List of all Chicago streets with suffixes and minimum and maximum address numbers.",
+            'url': 'https://data.cityofchicago.org/Transportation/Chicago-Street-Names/i6bp-fvbx',
+            'links_to_file': False,
+            'language': "en",
+        }
+        self.assertEqual(DataSet.objects.count(), 0)
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        uri = '/api/0.1/datasets/stories/%s/' % (self.story.story_id)
+        resp = self.api_client.post(uri, format='json', data=post_data)
+        self.assertHttpCreated(resp)
+        self.assertEqual(DataSet.objects.count(), 1)
+        resource_uri = self.deserialize(resp)['resource_uri']
+        resp = self.api_client.delete(resource_uri, format='json')
+        self.assertHttpAccepted(resp)
+        self.assertEqual(DataSet.objects.count(), 0)
+
+    def test_delete_detail_unauthenticated(self):
+        """Test that an unauthenticated user can't delete a dataset"""
+        dataset = create_external_dataset(**self.dataset_attrs[0])
+        self.assertEqual(DataSet.objects.count(), 1)
+        uri = '/api/0.1/datasets/%s/' % (dataset.dataset_id)
+        resp = self.api_client.delete(uri, format='json')
+        self.assertHttpUnauthorized(resp)
+        self.assertEqual(DataSet.objects.count(), 1)
+
+    def test_delete_detail_unauthorized(self):
+        self.dataset_attrs[0]['owner'] = self.user2
+        dataset = create_external_dataset(**self.dataset_attrs[0])
+        self.assertEqual(DataSet.objects.count(), 1)
+        uri = '/api/0.1/datasets/%s/' % (dataset.dataset_id)
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        resp = self.api_client.delete(uri, format='json')
+        self.assertHttpUnauthorized(resp)
+        self.assertEqual(DataSet.objects.count(), 1)
+
 
 class DataSetApiTest(TestCase):
     """ Test the public API for creating DataSets """
@@ -1067,3 +1107,4 @@ class AssetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         self.assertEqual(
             self.deserialize(resp)['objects'][0]['title'],
             asset3.title)
+
