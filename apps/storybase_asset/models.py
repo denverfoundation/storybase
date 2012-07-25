@@ -544,6 +544,7 @@ class DataSet(TranslatedModel, PublishedModel, TimestampedModel,
     def get_absolute_url(self):
         return ('dataset_detail', [str(self.dataset_id)])
 
+    @property
     def download_url(self):
         """Returns the URL to the downloadable version of the data set"""
         raise NotImplemented

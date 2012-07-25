@@ -164,6 +164,7 @@ class DataSetResource(DataUriResourceMixin,DelayedAuthorizationResource,
                                    default='')
     url = fields.CharField(attribute='url', null=True)
     file = fields.FileField(attribute='file', null=True)
+    download_url = fields.CharField(attribute='download_url', readonly=True)
     # A "write-only" field for specifying the filename when uploading images
     # This is removed from responses to GET requests
     filename = fields.CharField(null=True)
