@@ -74,6 +74,8 @@ storybase.builder.views.AppView = Backbone.View.extend({
     // Bind callbacks for custom events
     this.dispatcher.on("select:template", this.setTemplate, this);
     this.dispatcher.on("select:workflowstep", this.updateStep, this); 
+    this.dispatcher.on("error", this.error, this);
+    this.dispatcher.on("alert", this.showAlert, this);
   },
 
   /**
@@ -108,6 +110,28 @@ storybase.builder.views.AppView = Backbone.View.extend({
     this.workflowStepView.render();
     this.toolsView.render();
     return this;
+  },
+
+  /**
+   * Generic error handler
+   *
+   * This is basically a stub that can later propogate error messages
+   * up to the UI
+   */
+  error: function(msg) {
+    console.error(msg);
+    this.showAlert('error', msg);
+  },
+
+  showAlert: function(level, msg) {
+    var view = new storybase.builder.views.AlertView({
+      level: level,
+      message: msg
+    });
+    this.$('.alerts').prepend(view.render().el);
+    view.$el.fadeOut(5000, function() {
+      $(this).remove();
+    });
   }
 });
 
@@ -526,6 +550,7 @@ storybase.builder.views.WorkflowNavView = storybase.builder.views.MenuView.exten
 
   selectVisible: function(step, subStep) {
     console.debug('Entering selectVisible');
+    console.debug('Selecting step ' + step);
     var key = _.isUndefined(subStep) ? step : step + '-' + subStep;
     this.forward = this.visibility[key].forward ? this.getItem(this.visibility[key].forward) : null;
     this.back = this.visibility[key].back ? this.getItem(this.visibility[key].back) : null;
@@ -690,8 +715,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.dispatcher.on("add:sectionasset", this.showSaved, this);
     this.dispatcher.on("save:section", this.showSaved, this);
     this.dispatcher.on("save:story", this.showSaved, this);
-    this.dispatcher.on("error", this.error, this);
-    this.dispatcher.on("alert", this.showAlert, this);
 
     _.bindAll(this, 'addSectionThumbnail', 'setTemplateStory', 'setTemplateSections');
 
@@ -776,35 +799,13 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   },
 
   /**
-   * Generic error handler
-   *
-   * This is basically a stub that can later propogate error messages
-   * up to the UI
-   */
-  error: function(msg) {
-    console.error(msg);
-    this.showAlert('error', msg);
-  },
-
-  showAlert: function(level, msg) {
-    var view = new storybase.builder.views.AlertView({
-      level: level,
-      message: msg
-    });
-    this.$('.alerts').prepend(view.render().el);
-    view.$el.fadeOut(5000, function() {
-      $(this).remove();
-    });
-  },
-
-  /**
    * Event callback that displays an alert indicating the story has been
    * saved.
    */
   showSaved: function(model, showAlert) {
     showAlert = _.isUndefined(showAlert) || showAlert;
     if (showAlert) {
-      this.showAlert('success', "The story has been saved");
+      this.dispatcher.trigger('alert', 'success', "The story has been saved");
     }
   },
 
@@ -1647,6 +1648,7 @@ storybase.builder.views.DataView = Backbone.View.extend({
     this.collection.create(attrs, {
       success: function(model, response) {
         that.trigger('save:dataset', model);
+        that.dispatcher.trigger('alert', 'success', "Data set added");
         that.render();
       },
       error: function(model, response) {
@@ -1663,6 +1665,7 @@ storybase.builder.views.DataView = Backbone.View.extend({
     dataset.destroy({
       success: function(model, response) {
         that.dispatcher.trigger('delete:dataset', model);
+        that.dispatcher.trigger('alert', 'success', "Data set deleted");
         that.render();
       },
       error: function(model, response) {
@@ -1717,6 +1720,7 @@ storybase.builder.views.ShareView = Backbone.View.extend({
     var that = this;
     var triggerPublished = function(model, response) {
       that.dispatcher.trigger('publish:story', model);
+      that.dispatcher.trigger('alert', 'success', 'Story published');
     };
     var triggerError = function(model, response) {
       that.dispatcher.trigger('error', "Error publishing story");
