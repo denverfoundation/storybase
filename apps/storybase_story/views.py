@@ -155,7 +155,6 @@ class StoryBuilderView(DetailView):
         to_be_serialized = {}
         resource = HelpResource()
         objects = resource.obj_get_list().filter(slug__in=help_slugs)
-        print objects
         bundles = [resource.build_bundle(obj=obj) for obj in objects]
         to_be_serialized['objects'] = [resource.full_dehydrate(bundle) for bundle in bundles]
         return resource.serialize(None, to_be_serialized, 'application/json')
