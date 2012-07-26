@@ -232,7 +232,7 @@
 
   padding: 2%;
 
-  background-color: #C8C8C8;
+  border: solid 1px #c8c8c8;
   border-radius: 15px;
   overflow: hidden;
 }
