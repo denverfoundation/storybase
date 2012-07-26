@@ -437,7 +437,7 @@ class SectionResource(DelayedAuthorizationResource, TranslatedModelResource):
 
     class Meta:
         always_return_data = True
-        queryset = Section.objects.all()
+        queryset = Section.objects.all().order_by('weight')
         resource_name = 'sections'
         allowed_methods = ['get', 'post', 'patch', 'put']
         authentication = Authentication()
