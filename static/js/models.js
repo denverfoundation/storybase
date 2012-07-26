@@ -91,7 +91,6 @@ storybase.collections.DataSets = Backbone.Collection.extend(
       if (this._story !== null) {
         url = url + 'stories/' + this._story.id + '/';
       }
-      console.debug(url);
       return url; 
     },
 
