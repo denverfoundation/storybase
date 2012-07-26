@@ -27,12 +27,13 @@ storybase.builder.views.mixins = {};
  */
 storybase.builder.views.AppView = Backbone.View.extend({
   initialize: function() {
+    // Common options passed to sub-views
+    var commonOptions = {};
     this.dispatcher = this.options.dispatcher;
+    commonOptions.dispatcher = this.dispatcher;
     // The currently active step of the story building process
-    this.activeStep = this.options.step;
-    var commonOptions = {
-      dispatcher: this.dispatcher,
-    };
+    // This will get set by an event callback 
+    this.activeStep = null; 
 
     // Initialize the view for the workflow step indicator
     this.workflowStepView = new storybase.builder.views.WorkflowStepView(
@@ -61,7 +62,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
       help: this.options.help
     });
     this.subviews = {
-      selectTemplate: new storybase.builder.views.SelectStoryTemplateView({
+      selecttemplate: new storybase.builder.views.SelectStoryTemplateView({
         dispatcher: this.dispatcher,
         collection: this.options.storyTemplates
       }),
@@ -90,6 +91,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
    * Set the active step of the workflow and re-render the view
    */
   updateStep: function(step) {
+    console.debug('Updating active view to ' + step);
     this.activeStep = step;
     this.render();
   },
@@ -487,6 +489,11 @@ storybase.builder.views.WorkflowNavView = storybase.builder.views.MenuView.exten
   ],
 
   visibility: {
+    'selecttemplate': {
+      back: null,
+      forward: null
+    },
+
     'build': {
       back: null,
       forward: 'data'
@@ -549,8 +556,10 @@ storybase.builder.views.WorkflowNavView = storybase.builder.views.MenuView.exten
   },
 
   selectVisible: function(step, subStep) {
-    console.debug('Entering selectVisible');
     console.debug('Selecting step ' + step);
+    if (!_.isUndefined(subStep)) {
+      console.debug('Selecting sub-step ' + subStep);
+    }
     var key = _.isUndefined(subStep) ? step : step + '-' + subStep;
     this.forward = this.visibility[key].forward ? this.getItem(this.visibility[key].forward) : null;
     this.back = this.visibility[key].back ? this.getItem(this.visibility[key].back) : null;
@@ -863,7 +872,9 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.model.save(null, {
       success: function(model, response) {
         that.dispatcher.trigger('save:story', model);
-        that.dispatcher.trigger('navigate', model.id + '/');
+        that.dispatcher.trigger('navigate', model.id + '/', {
+          trigger: true
+        });
         model.saveSections();
       }
     });

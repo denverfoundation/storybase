@@ -168,17 +168,8 @@ class StoryBuilderView(DetailView):
             'help_json': mark_safe(self.get_help_json()),
         }
 
-        step = kwargs.get('step')
-
         if self.object:
             context['story_json'] = mark_safe(self.get_story_json())
-            if step is None:
-                step = 'build'
-
-        if step is None:
-            step = 'selectTemplate'
-
-        context['step'] = step
 
         return context
 

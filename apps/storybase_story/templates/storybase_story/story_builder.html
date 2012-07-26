@@ -75,8 +75,15 @@
 
     <script type="text/javascript">
     $(document).ready(function() {
+        var options;
+        var getRoot = function() {
+          var base = '/build/';
+          var pathParts = window.location.pathname.split('/');
+          // If the URL contains a language, add it to the root
+          return root = (pathParts[1] != 'build' ? '/' + pathParts[1] : '') + base; 
+        };
         storybase.globals.API_ROOT = '/api/0.1/';
-        var options = {
+        options = {
             el: $('#builder'),
             dispatcher: storybase.builder.globals.dispatcher
         };
@@ -85,7 +92,6 @@
         {% endif %}
         var storyTemplatesData = {{ story_template_json }};
         var helpData = {{ help_json }};
-        options.step = '{{ step }}';
         options.storyTemplates = new storybase.builder.collections.StoryTemplates;
         options.storyTemplates.reset(storyTemplatesData.objects);
         options.layouts = {{ layouts_json }};
@@ -99,8 +105,7 @@
         storybase.builder.app = new storybase.builder.views.AppView(
             options
         );
-        Backbone.history.start({pushState: true, root: '/build/'});
-        storybase.builder.app.render();
+        Backbone.history.start({pushState: true, root: getRoot()});
     });
     </script>
   </body>
