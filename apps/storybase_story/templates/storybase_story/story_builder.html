@@ -85,6 +85,7 @@
         {% endif %}
         var storyTemplatesData = {{ story_template_json }};
         var helpData = {{ help_json }};
+        options.step = '{{ step }}';
         options.storyTemplates = new storybase.builder.collections.StoryTemplates;
         options.storyTemplates.reset(storyTemplatesData.objects);
         options.layouts = {{ layouts_json }};

@@ -28,6 +28,8 @@ storybase.builder.views.mixins = {};
 storybase.builder.views.AppView = Backbone.View.extend({
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
+    // The currently active step of the story building process
+    this.activeStep = this.options.step;
     var commonOptions = {
       dispatcher: this.dispatcher,
     };
@@ -68,8 +70,6 @@ storybase.builder.views.AppView = Backbone.View.extend({
       review: new storybase.builder.views.ReviewView(commonOptions),
       share: new storybase.builder.views.ShareView(commonOptions)
     };
-    // The currently active step of the story building process
-    this.activeStep = this.model ? 'build' : 'selectTemplate';
 
     // Bind callbacks for custom events
     this.dispatcher.on("select:template", this.setTemplate, this);
@@ -253,28 +253,28 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.MenuView.exte
     {
       id: 'build',
       title: 'Build',
-      callback: 'selectStage',
+      callback: 'selectStep',
       visible: true,
       path: ''
     },
     {
       id: 'data',
       title: 'Add Data',
-      callback: 'selectStage',
+      callback: 'selectStep',
       visible: false,
       path: 'data/'
     },
     {
       id: 'review',
       title: 'Review',
-      callback: 'selectStage',
+      callback: 'selectStep',
       visible: false,
       path: 'review/'
     },
     {
       id: 'share',
       title: 'Share',
-      callback: 'selectStage',
+      callback: 'selectStep',
       visible: false,
       path: 'share/legal/'
     }
@@ -326,7 +326,7 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.MenuView.exte
     return this;
   },
 
-  selectStage: function(evt) {
+  selectStep: function(evt) {
     evt.preventDefault();
     var route = $(evt.target).attr("href");
     this.dispatcher.trigger('navigate', route, 
@@ -441,41 +441,41 @@ storybase.builder.views.WorkflowNavView = storybase.builder.views.MenuView.exten
     {
       id: 'build',
       backTitle: 'Continue Writing Story',
-      callback: 'selectStage',
+      callback: 'selectStep',
       path: ''
     },
     {
       id: 'data',
       fwdTitle: 'Add Data',
       backTitle: 'Back to "Add Data"',
-      callback: 'selectStage',
+      callback: 'selectStep',
       path: 'data/'
     },
     {
       id: 'review',
       backTitle: 'Back to Review',
       fwdTitle: 'Review',
-      callback: 'selectStage',
+      callback: 'selectStep',
       path: 'review/'
     },
     {
       id: 'share-legal',
       backTitle: 'Back to Legal Agreements',
       fwdTitle: 'Share My Story',
-      callback: 'selectStage',
+      callback: 'selectStep',
       path: 'share/legal/'
     },
     {
       id: 'share-tagging',
       backTitle: 'Back to Tagging',
       fwdTitle: 'Continue',
-      callback: 'selectStage',
+      callback: 'selectStep',
       path: 'share/tagging/'
     },
     {
       id: 'share-publish',
       fwdTitle: 'Continue',
-      callback: 'selectStage',
+      callback: 'selectStep',
       path: 'share/publish/'
     },
     {
@@ -558,7 +558,7 @@ storybase.builder.views.WorkflowNavView = storybase.builder.views.MenuView.exten
     return this;
   },
 
-  selectStage: function(evt) {
+  selectStep: function(evt) {
     evt.preventDefault();
     var route = $(evt.target).attr("href");
     this.dispatcher.trigger('navigate', route, 
@@ -776,10 +776,10 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
    * template or when it has been fetched from the server.
    */
   storyReady: function() {
-      this.addStoryInfoThumbnail();
-      this.addCallToActionThumbnail();
-      this.model.sections.each(this.addSectionThumbnail);
-      this.render();
+    this.addStoryInfoThumbnail();
+    this.addCallToActionThumbnail();
+    this.model.sections.each(this.addSectionThumbnail);
+    this.render();
   },
 
   render: function() {

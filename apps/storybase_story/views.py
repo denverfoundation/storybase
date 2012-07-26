@@ -168,15 +168,28 @@ class StoryBuilderView(DetailView):
             'help_json': mark_safe(self.get_help_json()),
         }
 
+        step = kwargs.get('step')
+
         if self.object:
-            context.update({
-                'story_json': mark_safe(self.get_story_json()),
-            })
+            context['story_json'] = mark_safe(self.get_story_json())
+            if step is None:
+                step = 'build'
+
+        if step is None:
+            step = 'selectTemplate'
+
+        context['step'] = step
 
         return context
+
+    def get(self, request, **kwargs):
+        self.object = self.get_object()
+        context = self.get_context_data(object=self.object, **kwargs)
+        return self.render_to_response(context)
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         # We override the view's dispatch method so we can decorate
         # it to only allow access by logged-in users
+        print kwargs
         return super(StoryBuilderView, self).dispatch(*args, **kwargs)
