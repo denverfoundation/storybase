@@ -222,6 +222,8 @@
 .section-edit-layout {
   position: relative;
   height: 100%;
+  padding-top: 2%;
+  padding-bottom: 2%;
 }
 
 .storybase-container-placeholder {
