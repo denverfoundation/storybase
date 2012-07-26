@@ -24,23 +24,27 @@
 
 #simplemodal-container {
   background-color: #fff;
+  width: 66%;
+  height: 66%;
 }
 
-#simplemodal-data.help {
-  width: 66% !important;
-  height: 66% !important;
+#simplemodal-wrap {
+  overflow-x: hidden;
+  overflow-y: scroll;
+}
+
+#simplemodal-data {
   padding: 10px;
 }
 
 .help .simplemodal-close {
   position: absolute;
   display: block;
-  right: 10px;
+  right: 20px;
 }
 
 .help-modal-controls {
-  position: absolute;
-  bottom: 10px;
+  margin-top: 10px;
 }
 
 /* Navigation Bar */
