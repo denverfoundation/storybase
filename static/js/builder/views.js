@@ -100,6 +100,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
    * Get the sub-view for the currently active step
    */
   getActiveView: function() {
+    console.debug('Getting active view for step ' + this.activeStep);
     return this.subviews[this.activeStep];
   },
 
@@ -687,6 +688,10 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
     this.dispatcher = this.options.dispatcher;
     this.help = this.options.help;
+
+    this._thumbnailViews = [];
+    this._sectionsFetched = false;
+    this._thumbnailsAdded = false;
     
     if (_.isUndefined(this.model)) {
       // Create a new story model instance
@@ -695,13 +700,10 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       });
     }
     else {
-      // The view was constructed with a model instance,
-      // which means it was a previously created story
-      // Tell other views about it
-      this.dispatcher.trigger('ready:story', this.model);
+      // The view was initialized with a model
+      this.dispatcher.trigger("ready:story", this.model);
     }
 
-    this._thumbnailViews = [];
     this.unusedAssetView = new storybase.builder.views.UnusedAssetView({
       dispatcher: this.dispatcher,
       assets: this.model.unusedAssets
@@ -712,12 +714,11 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     });
 
     this.model.on("sync", this.triggerSaved, this);
-    
     this.model.unusedAssets.on("sync reset add", this.hasAssetList, this);
+    this.model.sections.on("reset", this.setSectionsFetched, this);
 
     this.dispatcher.on("select:template", this.setStoryTemplate, this);
     this.dispatcher.on("ready:templateSections", this.initializeStoryFromTemplate, this);
-    this.dispatcher.on("ready:story", this.storyReady, this);
     this.dispatcher.on("do:save:story", this.save, this);
     this.dispatcher.on("select:thumbnail", this.showEditView, this);
     this.dispatcher.on("toggle:assetlist", this.toggleAssetList, this);
@@ -729,11 +730,14 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
     this.template = Handlebars.compile(this.templateSource);
 
-    this.model.sections.on("reset", this.storyReady, this);
     if (!this.model.isNew()) {
       this.model.sections.fetch();
       this.model.unusedAssets.fetch();
     }
+  },
+
+  setSectionsFetched: function() {
+    this._sectionsFetched = true;
   },
 
   addSectionThumbnail: function(section) {
@@ -779,21 +783,37 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   },
 
   /**
-   * Event handler for when the story model is ready.
+   * Event handler for when the story model and sections are ready.
    *
    * The story will either be ready when it has been cloned from the
    * template or when it has been fetched from the server.
    */
-  storyReady: function() {
+  addSectionThumbnails: function(options) {
+    options = _.isUndefined(options) ? {} : options;
+    _.defaults(options, {
+      render: true
+    });
+    console.debug('Entering addSectionThumbnails');
     this.addStoryInfoThumbnail();
     this.addCallToActionThumbnail();
     this.model.sections.each(this.addSectionThumbnail);
-    this.render();
+    this._thumbnailsAdded = true;
+    if (options.render) {
+      this.render();
+    }
   },
 
   render: function() {
     console.info('Rendering builder view');
     var that = this;
+    if (this._sectionsFetched) {
+      if (!this._thumbnailsAdded) {
+        this.addSectionThumbnails({render: false});
+      }
+    }
+    else {
+      this.model.sections.on("reset", this.addSectionThumbnails, this);
+    }
     this.$el.html(this.template());
     this.$el.prepend(this.unusedAssetView.render().$el.hide());
     this.$el.prepend(this.lastSavedView.render().el);
@@ -864,6 +884,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       that.model.sections.push(sectionCopy);
     });
     this.dispatcher.trigger("ready:story", this.model);
+    this.addSectionThumbnails();
   },
 
   save: function() {
@@ -883,6 +904,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   showEditView: function(thumbnailView) {
     this.$('.edit-section').hide();
     //thumbnailView.editView.$el.show();
+    console.debug('Showing edit view');
     thumbnailView.editView.show();
   },
 
