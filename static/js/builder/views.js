@@ -1603,13 +1603,23 @@ storybase.builder.views.DataView = Backbone.View.extend({
     this.template = Handlebars.compile(this.templateSource);
 
     this.collection = new storybase.collections.DataSets;
-    this.collection.setStory(this.model);
+    if (_.isUndefined(this.model)) {
+      this.dispatcher.on("ready:story", this.setStory, this);
+    }
+    else {
+      this.collection.setStory(this.model);
+    }
     this.collection.on('reset', this.render, this);
     this._collectionFetched = false;
 
     this.form = new Backbone.Form({
       schema: storybase.models.DataSet.prototype.schema
     }); 
+  },
+
+  setStory: function(story) {
+    this.model = story;
+    this.collection.setStory(this.model);
   },
 
   fetchCollection: function() {
