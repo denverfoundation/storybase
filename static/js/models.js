@@ -49,11 +49,16 @@ storybase.models.DataSet = Backbone.Model.extend({
     /**
      * Schema for backbone-forms
      */
-    schema: {
-      title: {type: 'Text', validators: ['required']},
-      source: {type: 'Text', validators: []},
-      url: {type: 'Text', validators: ['url']},
-      file: {type: storybase.forms.File}
+    schema: function() {
+      if (!_.isUndefined(storybase.forms)) {
+        var schema = {
+          title: {type: 'Text', validators: ['required']},
+          source: {type: 'Text', validators: []},
+          url: {type: 'Text', validators: ['url']},
+          file: {type: storybase.forms.File}
+        };
+        return schema;
+      }
     },
 
     /**
@@ -205,23 +210,25 @@ storybase.models.Asset = Backbone.Model.extend(
      * the fields differ depending on the type of asset.
      */
     schema: function() {
-      var schema = {
-        body: 'TextArea',
-        url: {type: 'Text', validators: ['url']},
-        image: {type: storybase.forms.File}
-      };
-      var type = this.get('type');
-      if (!(_.has(this.showBody, type))) {
-        delete schema.body;
-      }
-      if (!(_.has(this.showImage, type))) {
-        delete schema.image;
-      }
-      if (!(_.has(this.showUrl, type))) {
-        delete schema.url;
-      }
+      if (!_.isUndefined(storybase.forms)) {
+        var schema = {
+          body: 'TextArea',
+          url: {type: 'Text', validators: ['url']},
+          image: {type: storybase.forms.File}
+        };
+        var type = this.get('type');
+        if (!(_.has(this.showBody, type))) {
+          delete schema.body;
+        }
+        if (!(_.has(this.showImage, type))) {
+          delete schema.image;
+        }
+        if (!(_.has(this.showUrl, type))) {
+          delete schema.url;
+        }
 
-      return schema;
+        return schema;
+      }
     },
 
     idAttribute: "asset_id",
