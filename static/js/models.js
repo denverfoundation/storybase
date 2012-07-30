@@ -117,6 +117,12 @@ storybase.models.Story = Backbone.Model.extend(
       return storybase.globals.API_ROOT + 'stories';
     },
 
+    defaults: {
+      'title': '',
+      'byline': '',
+      'summary': ''
+    },
+
     initialize: function(options) {
       this.sections = new storybase.collections.Sections;
       this.unusedAssets = new storybase.collections.Assets;
