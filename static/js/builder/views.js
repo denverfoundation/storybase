@@ -894,7 +894,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       success: function(model, response) {
         that.dispatcher.trigger('save:story', model);
         that.dispatcher.trigger('navigate', model.id + '/', {
-          trigger: true
+          trigger: false 
         });
         model.saveSections();
       }
