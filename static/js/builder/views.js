@@ -1131,7 +1131,6 @@ storybase.builder.views.StoryInfoEditView = Backbone.View.extend(
     render: function() {
       console.debug('Rendering story information editor');
       var that = this;
-      var toolbarEl = this.getEditorToolbarEl();
       var handleChange = function () {
         // Trigger the change event on the underlying element 
         that.$(that.options.summaryEl).trigger('change');
@@ -1141,17 +1140,14 @@ storybase.builder.views.StoryInfoEditView = Backbone.View.extend(
         return value;
       };
       this.$el.html(this.template(this.model.toJSON()));
-      // Add the toolbar elemebt for the wysihtml5 editor
-      this.$(this.options.summaryEl).before(toolbarEl);
       // Initialize wysihmtl5 editor
-      this.summaryEditor = new wysihtml5.Editor(
+      this.summaryEditor = this.getEditor(
         this.$(this.options.summaryEl)[0],
         {
-          toolbar: toolbarEl, 
-          parserRules: wysihtml5ParserRules
+          change: handleChange
         }
       );
-      this.summaryEditor.on('change', handleChange);
+        
       this.$(this.options.titleEl).editable(editableCallback, {
         placeholder: gettext('Click to edit title'),
         tooltip: gettext('Click to edit title')
@@ -1223,23 +1219,19 @@ storybase.builder.views.CallToActionEditView = Backbone.View.extend(
 
     render: function() {
       var that = this;
-      var toolbarEl = this.getEditorToolbarEl();
       var handleChange = function () {
         // Trigger the change event on the underlying element 
         that.$(that.options.callToActionEl).trigger('change');
       };
       this.$el.html(this.template(this.model.toJSON()));
       // Add the toolbar elemebt for the wysihtml5 editor
-      this.$(this.options.callToActionEl).before(toolbarEl);
       // Initialize wysihmtl5 editor
-      this.summaryEditor = new wysihtml5.Editor(
+      this.callEditor = this.getEditor(
         this.$(this.options.callToActionEl)[0],
         {
-          toolbar: toolbarEl, 
-          parserRules: wysihtml5ParserRules
+          change: handleChange
         }
       );
-      this.summaryEditor.on('change', handleChange);
       return this;
     },
 
@@ -1555,7 +1547,6 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
         return value;
       };
       var state = this.getState();
-      var toolbarEl = this.getEditorToolbarEl();
       this.template = Handlebars.compile(this.templateSource());
       if (state === 'display') {
         context.model = this.model.toJSON()
@@ -1564,13 +1555,8 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       if (state === 'edit') {
         this.form.render().$el.append('<input type="reset" value="Cancel" />').append('<input type="submit" value="Save" />');
         if (_.has(this.form.fields, 'body')) {
-          this.form.fields.body.editor.$el.before(toolbarEl);
-          this.summaryEditor = new wysihtml5.Editor(
-            this.form.fields.body.editor.el,
-            {
-              toolbar: toolbarEl, 
-              parserRules: wysihtml5ParserRules
-            }
+          this.bodyEditor = this.getEditor(
+            this.form.fields.body.editor.el
           );
         }
         this.$el.append(this.form.el);

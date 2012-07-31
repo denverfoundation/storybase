@@ -58,13 +58,13 @@ Handlebars.js templates for story builder Backbone application
 <script type="text/x-handlebars-template" id="story-info-edit-template">
 <h2 class="title" data-input-name="title">{{title}}</h2>
 <p class="byline" data-input-name="byline">{{byline}}</p>
-<textarea name="summary" id="summary-textarea" class="summary" placeholder="Summary">{{summary}}</textarea>
+<textarea name="summary" id="summary-textarea" class="summary" placeholder='{{gettext message="Click to edit the summary"}}'>{{summary}}</textarea>
 </script>
 
 <script type="text/x-handlebars-template" id="story-call-to-action-edit-template">
 <h2>{{gettext message="Call to Action"}}</h2>
 <form>
-    <textarea class="call-to-action" name="call_to_action">{{call_to_action}}</textarea>
+    <textarea class="call-to-action" name="call_to_action" placeholder='{{gettext message="Click to edit the call to action"}}'>{{call_to_action}}</textarea>
 </form>
 </script>
 
