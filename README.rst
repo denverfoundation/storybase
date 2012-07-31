@@ -23,6 +23,7 @@ This project includes a number of excellent open-source libraries:
 * `HTML5 Boilerplate <http://html5boilerplate.com/>`_
 * `jQuery <http://jquery.org/>`_ by John Resig
 * `jQuery Condense Plugin <https://github.com/jsillitoe/jquery-condense-plugin>`_ by Joe Sillitoe
+* `jQuery Jeditable <http://www.appelsiini.net/projects/jeditable>`_ by Mika Tuupola
 * `jQuery Masonry <http://masonry.desandro.com/>`_ by David DeSandro
 * `json2.js <https://github.com/douglascrockford/JSON-js/>`_ by Douglas Crockford
 * `Formalize <http://formalize.me/>`_ by Nathan Smith
@@ -35,3 +36,4 @@ This project includes a number of excellent open-source libraries:
 * `SimpleModal <http://simplemodal.com>`_ by Eric Martin
 * `TinyMCE <http://tinymce.com/>`_ by Moxiecode Systems AB
 * `Underscore <http://documentcloud.github.com/underscore/>`_ by Jeremy Ashkenas, DocumentCloud
+* `WYSIHTML5 <http://xing.github.com/wysihtml5/>`_ by XING AG
