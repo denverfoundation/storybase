@@ -1111,15 +1111,13 @@ storybase.builder.views.StoryInfoEditView = Backbone.View.extend(
 
     events: function() {
       var events = {};
-      events['change ' + this.options.titleEl] = 'change';
-      events['change ' + this.options.bylineEl] = 'change';
       events['change ' + this.options.summaryEl] = 'change';
       return events;
     },
 
     defaults: {
-      titleEl: 'input[name="title"]',
-      bylineEl: 'input[name="byline"]',
+      titleEl: '.title',
+      bylineEl: '.byline',
       summaryEl: 'textarea[name="summary"]' 
     },
 
@@ -1138,6 +1136,10 @@ storybase.builder.views.StoryInfoEditView = Backbone.View.extend(
         // Trigger the change event on the underlying element 
         that.$(that.options.summaryEl).trigger('change');
       };
+      var editableCallback = function(value, settings) {
+        that.saveAttr($(this).data("input-name"), value);
+        return value;
+      };
       this.$el.html(this.template(this.model.toJSON()));
       // Add the toolbar elemebt for the wysihtml5 editor
       this.$(this.options.summaryEl).before(toolbarEl);
@@ -1150,6 +1152,14 @@ storybase.builder.views.StoryInfoEditView = Backbone.View.extend(
         }
       );
       this.summaryEditor.on('change', handleChange);
+      this.$(this.options.titleEl).editable(editableCallback, {
+        placeholder: gettext('Click to edit title'),
+        tooltip: gettext('Click to edit title')
+      });
+      this.$(this.options.bylineEl).editable(editableCallback, {
+        placeholder: gettext('Click to edit byline'),
+        tooltip: gettext('Click to edit byline')
+      });
       return this;
     },
 
@@ -1159,19 +1169,26 @@ storybase.builder.views.StoryInfoEditView = Backbone.View.extend(
       return this;
     },
 
-    change: function(e) {
-      var name = $(e.target).attr("name");
-      var value = $(e.target).val();
-      if (_.has(this.model.attributes, name)) {
-        this.model.set(name, value);
+    saveAttr: function(key, value) {
+      if (_.has(this.model.attributes, key)) {
+        this.model.set(key, value);
         if (this.model.isNew()) {
           this.dispatcher.trigger("do:save:story");
         }
         else {
           this.model.save();
         }
-        console.info("Updated " + name + " to " + value);
+        console.info("Updated " + key + " to " + value);
       }
+    },
+
+    /**
+     * Event handler for when form elements are changed
+     */
+    change: function(e) {
+      var key = $(e.target).attr("name");
+      var value = $(e.target).val();
+      this.saveAttr(key, value);
     }
   })
 );
@@ -1259,12 +1276,17 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
 
   templateSource: $('#section-edit-template').html(),
 
+  defaults: {
+    titleEl: '.title'
+  },
+
   events: {
     "change input": 'change',
     "change select.layout": 'change'
   },
 
   initialize: function() {
+    _.defaults(this.options, this.defaults);
     this.dispatcher = this.options.dispatcher;
     this.story = this.options.story;
     this.layouts = this.options.layouts;
@@ -1320,7 +1342,12 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   },
 
   render: function() {
+    var that = this;
     var context = this.model.toJSON();
+    var editableCallback = function(value, settings) {
+      that.saveAttr($(this).data("input-name"), value);
+      return value;
+    };
     context.layouts = this.getLayoutContext();
     this.$el.html(this.template(context));
     if (this.model.isNew()) {
@@ -1330,6 +1357,10 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
       this.assets.url = this.model.url() + 'assets/';
       this.assets.fetch();
     }
+    this.$(this.options.titleEl).editable(editableCallback, {
+      placeholder: gettext('Click to edit title'),
+      tooltip: gettext('Click to edit title')
+    });
     return this;
   },
 
@@ -1351,23 +1382,26 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     this._doConditionalRender = false;
   },
 
-  /**
-   * Event handler for when form elements are changed
-   */
-  change: function(e) {
-    console.info("Change event!");
-    var name = $(e.target).attr("name");
-    var value = $(e.target).val();
-    if (_.has(this.model.attributes, name)) {
-      this.model.set(name, value);
-      if (this.story.isNew()) {
+  saveAttr: function(key, value) {
+    if (_.has(this.model.attributes, key)) {
+      this.model.set(key, value);
+      if (this.model.isNew()) {
         this.dispatcher.trigger("do:save:story");
       }
       else {
         this.model.save();
       }
-      console.info("Updated " + name + " to " + value);
+      console.info("Updated " + key + " to " + value);
     }
+  },
+
+  /**
+   * Event handler for when form elements are changed
+   */
+  change: function(e) {
+    var key = $(e.target).attr("name");
+    var value = $(e.target).val();
+    this.saveAttr(key, value);
   },
 
   changeLayout: function(evt) {
@@ -1513,12 +1547,16 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
     },
 
     render: function() {
-      this.template = Handlebars.compile(this.templateSource());
       var context = {
         assetTypes: this.assetTypes
       };
+      var editableCallback = function(value, settings) {
+        that.saveAttr($(this).data("input-name"), value);
+        return value;
+      };
       var state = this.getState();
       var toolbarEl = this.getEditorToolbarEl();
+      this.template = Handlebars.compile(this.templateSource());
       if (state === 'display') {
         context.model = this.model.toJSON()
       }

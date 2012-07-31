@@ -56,14 +56,13 @@ Handlebars.js templates for story builder Backbone application
 </script>
 
 <script type="text/x-handlebars-template" id="story-info-edit-template">
-<form>
-    <input name="title" class="title" type="text" placeholder="Title" value="{{title}}" />
-    <input name="byline" class="byline" type="text" placeholder="Byline" value="{{byline}}" />
-    <textarea name="summary" id="summary-textarea" class="summary" placeholder="Summary">{{summary}}</textarea>
-</form>
+<h2 class="title" data-input-name="title">{{title}}</h2>
+<p class="byline" data-input-name="byline">{{byline}}</p>
+<textarea name="summary" id="summary-textarea" class="summary" placeholder="Summary">{{summary}}</textarea>
 </script>
 
 <script type="text/x-handlebars-template" id="story-call-to-action-edit-template">
+<h2>{{gettext message="Call to Action"}}</h2>
 <form>
     <textarea class="call-to-action" name="call_to_action">{{call_to_action}}</textarea>
 </form>
@@ -77,7 +76,7 @@ Handlebars.js templates for story builder Backbone application
     {{/each}}
     </select>
 </div>
-<input name="title" class="title" type="text" value="{{title}}" />
+<h2 class="title" data-input-name="title">{{title}}</h2>
 <div class="section-edit-layout">{{{layout_template}}}</div>
 </script>
 
