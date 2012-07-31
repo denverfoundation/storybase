@@ -1,7 +1,5 @@
 Namespace('storybase.builder.views');
 
-storybase.builder.views.mixins = {};
-
 /**
  * @name save:section
  * @event
@@ -1010,7 +1008,55 @@ storybase.builder.views.UnusedAssetView = Backbone.View.extend({
   }
 });
 
-storybase.builder.views.mixins.ThumbnailHighlightMixin = {
+storybase.builder.views.RichTextEditorMixin = {
+  toolbarTemplateSource: $('#editor-toolbar-template').html(),
+
+  getEditorToolbarHtml: function() {
+    return this.toolbarTemplateSource; 
+  },
+
+  getEditorToolbarEl: function() {
+    if (_.isUndefined(this._editorToolbarEl)) {
+      this._editorToolbarEl = $(this.getEditorToolbarHtml())[0];
+    }
+    return this._editorToolbarEl; 
+  },
+
+  getEditor: function(el, callbacks) {
+    var defaultCallbacks = {
+      focus: function() {
+        $(this.toolbar.container).show();
+      },
+
+      blur: function() {
+        $(this.toolbar.container).hide();
+      },
+
+      load: function() {
+        $(this.toolbar.container).hide();
+      }
+
+    };
+    var editor;
+    var toolbarEl = this.getEditorToolbarEl();
+    $(el).before(toolbarEl);
+    editor = new wysihtml5.Editor(
+      el,    
+      {
+        toolbar: toolbarEl, 
+        parserRules: wysihtml5ParserRules
+      }
+    );
+    callbacks = _.isUndefined(callbacks) ? {} : callbacks;
+    _.defaults(callbacks, defaultCallbacks);
+    _.each(callbacks, function(value, key, list) {
+      editor.on(key, value);
+    });
+    return editor;
+  }
+};
+
+storybase.builder.views.ThumbnailHighlightMixin = {
   highlightClass: 'selected',
 
   /**
@@ -1030,7 +1076,7 @@ storybase.builder.views.mixins.ThumbnailHighlightMixin = {
 
 
 storybase.builder.views.SectionThumbnailView = Backbone.View.extend(
-  _.extend({}, storybase.builder.views.mixins.ThumbnailHighlightMixin, {
+  _.extend({}, storybase.builder.views.ThumbnailHighlightMixin, {
     tagName: 'li',
 
     className: 'section-thumbnail',
@@ -1063,7 +1109,7 @@ storybase.builder.views.SectionThumbnailView = Backbone.View.extend(
 }));
 
 storybase.builder.views.PseudoSectionThumbnailView = Backbone.View.extend(
-  _.extend({}, storybase.builder.views.mixins.ThumbnailHighlightMixin, {
+  _.extend({}, storybase.builder.views.ThumbnailHighlightMixin, {
     tagName: 'li',
 
     className: 'section-thumbnail pseudo',
@@ -1102,7 +1148,7 @@ storybase.builder.views.PseudoSectionThumbnailView = Backbone.View.extend(
  * View for editing story metadata
  */
 storybase.builder.views.StoryInfoEditView = Backbone.View.extend(
-  _.extend({}, storybase.forms.RichTextEditorMixin, {
+  _.extend({}, storybase.builder.views.RichTextEditorMixin, {
     tagName: 'div',
 
     className: 'edit-story-info edit-section',
@@ -1193,7 +1239,7 @@ storybase.builder.views.StoryInfoEditView = Backbone.View.extend(
  * View for editing story metadata
  */
 storybase.builder.views.CallToActionEditView = Backbone.View.extend(
-  _.extend({}, storybase.forms.RichTextEditorMixin, {
+  _.extend({}, storybase.builder.views.RichTextEditorMixin, {
     tagName: 'div',
 
     className: 'edit-call-to-action edit-section',
@@ -1487,7 +1533,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
 });
 
 storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
-  _.extend({}, storybase.forms.RichTextEditorMixin, {
+  _.extend({}, storybase.builder.views.RichTextEditorMixin, {
     tagName: 'div',
 
     className: 'edit-section-asset',
