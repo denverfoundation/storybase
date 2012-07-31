@@ -218,7 +218,7 @@ storybase.models.Asset = Backbone.Model.extend(
     schema: function() {
       if (!_.isUndefined(storybase.forms)) {
         var schema = {
-          body: 'TextArea',
+          body: {type: 'TextArea', template: 'noLabelField'},
           url: {type: 'Text', validators: ['url']},
           image: {type: storybase.forms.File}
         };

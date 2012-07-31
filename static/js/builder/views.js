@@ -1028,6 +1028,7 @@ storybase.builder.views.mixins.ThumbnailHighlightMixin = {
   }
 };
 
+
 storybase.builder.views.SectionThumbnailView = Backbone.View.extend(
   _.extend({}, storybase.builder.views.mixins.ThumbnailHighlightMixin, {
     tagName: 'li',
@@ -1100,97 +1101,153 @@ storybase.builder.views.PseudoSectionThumbnailView = Backbone.View.extend(
 /**
  * View for editing story metadata
  */
-storybase.builder.views.StoryInfoEditView = Backbone.View.extend({
-  tagName: 'div',
+storybase.builder.views.StoryInfoEditView = Backbone.View.extend(
+  _.extend({}, storybase.forms.RichTextEditorMixin, {
+    tagName: 'div',
 
-  className: 'edit-story-info edit-section',
+    className: 'edit-story-info edit-section',
 
-  templateSource: $('#story-info-edit-template').html(),
+    templateSource: $('#story-info-edit-template').html(),
 
-  events: {
-    "change input": 'change',
-    "change textarea": 'change'
-  },
+    events: function() {
+      var events = {};
+      events['change ' + this.options.titleEl] = 'change';
+      events['change ' + this.options.bylineEl] = 'change';
+      events['change ' + this.options.summaryEl] = 'change';
+      return events;
+    },
 
-  initialize: function() {
-    this.dispatcher = this.options.dispatcher;
-    this.help = this.options.help;
-    this.template = Handlebars.compile(this.templateSource);
-  },
+    defaults: {
+      titleEl: 'input[name="title"]',
+      bylineEl: 'input[name="byline"]',
+      summaryEl: 'textarea[name="summary"]' 
+    },
 
-  render: function() {
-    this.$el.html(this.template(this.model.toJSON()));
-    return this;
-  },
+    initialize: function() {
+      _.defaults(this.options, this.defaults);
+      this.dispatcher = this.options.dispatcher;
+      this.help = this.options.help;
+      this.template = Handlebars.compile(this.templateSource);
+    },
 
-  show: function() {
-    this.$el.show();
-    this.dispatcher.trigger('do:show:help', false, this.help.toJSON()); 
-    return this;
-  },
+    render: function() {
+      console.debug('Rendering story information editor');
+      var that = this;
+      var toolbarEl = this.getEditorToolbarEl();
+      var handleChange = function () {
+        // Trigger the change event on the underlying element 
+        that.$(that.options.summaryEl).trigger('change');
+      };
+      this.$el.html(this.template(this.model.toJSON()));
+      // Add the toolbar elemebt for the wysihtml5 editor
+      this.$(this.options.summaryEl).before(toolbarEl);
+      // Initialize wysihmtl5 editor
+      this.summaryEditor = new wysihtml5.Editor(
+        this.$(this.options.summaryEl)[0],
+        {
+          toolbar: toolbarEl, 
+          parserRules: wysihtml5ParserRules
+        }
+      );
+      this.summaryEditor.on('change', handleChange);
+      return this;
+    },
 
-  change: function(e) {
-    var name = $(e.target).attr("name");
-    var value = $(e.target).val();
-    if (_.has(this.model.attributes, name)) {
-      this.model.set(name, value);
-      if (this.model.isNew()) {
-        this.dispatcher.trigger("do:save:story");
+    show: function() {
+      this.$el.show();
+      this.dispatcher.trigger('do:show:help', false, this.help.toJSON()); 
+      return this;
+    },
+
+    change: function(e) {
+      var name = $(e.target).attr("name");
+      var value = $(e.target).val();
+      if (_.has(this.model.attributes, name)) {
+        this.model.set(name, value);
+        if (this.model.isNew()) {
+          this.dispatcher.trigger("do:save:story");
+        }
+        else {
+          this.model.save();
+        }
+        console.info("Updated " + name + " to " + value);
       }
-      else {
-        this.model.save();
-      }
-      console.info("Updated " + name + " to " + value);
     }
-  }
-});
+  })
+);
 
 /**
  * View for editing story metadata
  */
-storybase.builder.views.CallToActionEditView = Backbone.View.extend({
-  tagName: 'div',
+storybase.builder.views.CallToActionEditView = Backbone.View.extend(
+  _.extend({}, storybase.forms.RichTextEditorMixin, {
+    tagName: 'div',
 
-  className: 'edit-call-to-action edit-section',
+    className: 'edit-call-to-action edit-section',
 
-  templateSource: $('#story-call-to-action-edit-template').html(),
+    defaults: {
+      callToActionEl: 'textarea[name="call_to_action"]'
+    },
 
-  events: {
-    'change textarea[name="call_to_action"]': 'change'
-  },
+    templateSource: $('#story-call-to-action-edit-template').html(),
 
-  initialize: function() {
-    this.dispatcher = this.options.dispatcher;
-    this.help = this.options.help;
-    this.template = Handlebars.compile(this.templateSource);
-  },
+    events: function() {
+      var events = {};
+      events['change ' + this.options.callToActionEl] = 'change';
+      return events;
+    },
 
-  render: function() {
-    this.$el.html(this.template(this.model.toJSON()));
-    return this;
-  },
+    initialize: function() {
+      _.defaults(this.options, this.defaults);
+      this.dispatcher = this.options.dispatcher;
+      this.help = this.options.help;
+      this.template = Handlebars.compile(this.templateSource);
+    },
 
-  show: function() {
-    this.$el.show();
-    this.dispatcher.trigger('do:show:help', false, this.help.toJSON()); 
-    return this;
-  },
+    render: function() {
+      var that = this;
+      var toolbarEl = this.getEditorToolbarEl();
+      var handleChange = function () {
+        // Trigger the change event on the underlying element 
+        that.$(that.options.callToActionEl).trigger('change');
+      };
+      this.$el.html(this.template(this.model.toJSON()));
+      // Add the toolbar elemebt for the wysihtml5 editor
+      this.$(this.options.callToActionEl).before(toolbarEl);
+      // Initialize wysihmtl5 editor
+      this.summaryEditor = new wysihtml5.Editor(
+        this.$(this.options.callToActionEl)[0],
+        {
+          toolbar: toolbarEl, 
+          parserRules: wysihtml5ParserRules
+        }
+      );
+      this.summaryEditor.on('change', handleChange);
+      return this;
+    },
 
-  change: function(e) {
-    var name = $(e.target).attr("name");
-    var value = $(e.target).val();
-    if (_.has(this.model.attributes, name)) {
-      this.model.set(name, value);
-      if (this.model.isNew()) {
-        this.dispatcher.trigger("do:save:story");
+    show: function() {
+      this.$el.show();
+      this.dispatcher.trigger('do:show:help', false, this.help.toJSON()); 
+      return this;
+    },
+
+    change: function(e) {
+      var name = $(e.target).attr("name");
+      var value = $(e.target).val();
+      if (_.has(this.model.attributes, name)) {
+        this.model.set(name, value);
+        if (this.model.isNew()) {
+          this.dispatcher.trigger("do:save:story");
+        }
+        else {
+          this.model.save();
+        }
+        console.info("Updated " + name + " to " + value);
       }
-      else {
-        this.model.save();
-      }
-      console.info("Updated " + name + " to " + value);
     }
-  }
-});
+  })
+);
 
 /**
  * View for editing a section
@@ -1403,190 +1460,203 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   }
 });
 
-storybase.builder.views.SectionAssetEditView = Backbone.View.extend({
-  tagName: 'div',
+storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
+  _.extend({}, storybase.forms.RichTextEditorMixin, {
+    tagName: 'div',
 
-  className: 'edit-section-asset',
+    className: 'edit-section-asset',
 
-  templateSource: function() {
-    var state = this.getState(); 
-    if (state === 'display') {
-      return $('#section-asset-display-template').html();
-    }
-    else if (state === 'edit') {
-      return $('#section-asset-edit-template').html();
-    }
-    else {
-      // state === 'select'
-      return $('#section-asset-select-type-template').html();
-    }
-  },
-
-  events: {
-    "click .asset-type": "selectType", 
-    "click .remove": "remove",
-    "click .edit": "edit",
-    'click input[type="reset"]': "cancel",
-    'submit form': 'processForm'
-  },
-
-  initialize: function() {
-    this.container = this.options.container;
-    this.dispatcher = this.options.dispatcher;
-    this.assetTypes = this.options.assetTypes;
-    if (_.isUndefined(this.model)) {
-      this.model = new storybase.models.Asset();
-    }
-    _.bindAll(this, 'initializeForm'); 
-    this.model.on("change", this.initializeForm);
-    this.initializeForm();
-    this.setInitialState();
-  },
-
-  /**
-   * Set the view's form property based on the current state of the model.
-   */
-  initializeForm: function() {
-    console.info('Initializing form');
-    this.form = new Backbone.Form({
-      model: this.model
-    });
-    this.form.render();
-  },
-
-  render: function() {
-    this.template = Handlebars.compile(this.templateSource());
-    var context = {
-      assetTypes: this.assetTypes
-    };
-    var state = this.getState();
-    if (state === 'display') {
-      context.model = this.model.toJSON()
-    }
-    this.$el.html(this.template(context));
-    if (state === 'edit') {
-      this.form.render().$el.append('<input type="reset" value="Cancel" />').append('<input type="submit" value="Save" />');
-      this.$el.append(this.form.el);
-    }
-    return this;
-  },
-
-  setInitialState: function() {
-    if (!this.model.isNew()) {
-      this._state = 'display';
-    }
-    else if (!_.isUndefined(this.model.type)) {
-      this._state = 'edit';
-    }
-    else {
-      this._state = 'select';
-    }
-  },
-
-  getState: function() {
-    return this._state;
-  },
-
-  setState: function(state) {
-    this._state = state;
-    return this;
-  },
-
-  /**
-   * Event handler for selecting asset type
-   */
-  selectType: function(e) {
-    e.preventDefault(); 
-    this.setType($(e.target).data('asset-type'));
-  },
-
-  setType: function(type) {
-    this.model.set('type', type);
-    this.initializeForm();
-    this.setState('edit').render();
-  },
-
-  /**
-   * Event handler for canceling form interaction
-   */
-  cancel: function(e) {
-    e.preventDefault();
-    if (this.model.isNew()) {
-      this.setState('select');
-    }
-    else {
-      this.setState('display');
-    }
-    this.render();
-  },
-
-  saveModel: function(attributes) {
-    var that = this;
-    // Save the model's original new state to decide
-    // whether to send a signal later
-    var isNew = this.model.isNew();
-    this.model.save(attributes, {
-      success: function(model) {
-        // TODO: Decide if it's better to listen to the model's
-        // "sync" event than to use this callback
-        that.setState('display');
-        that.render();
-        if (isNew) {
-          // Model was new before saving
-          that.dispatcher.trigger("do:add:sectionasset", that.model, that.container);
-        }
-      },
-      error: function(model) {
-        that.dispatcher.trigger('error', 'error saving the asset');
+    templateSource: function() {
+      var state = this.getState(); 
+      if (state === 'display') {
+        return $('#section-asset-display-template').html();
       }
-    });
-  },
-
-  /**
-   * Event handler for submitting form
-   */
-  processForm: function(e) {
-    e.preventDefault();
-    console.info("Creating asset");
-    var that = this;
-    var errors = this.form.validate();
-    if (!errors) {
-      var data = this.form.getValue();
-      if (data.image) {
-        data.filename = data.image;
-        this.form.fields.image.editor.getValueAsDataURL(function(dataURL) {
-          data.image = dataURL;
-          that.saveModel(data);
-        });
+      else if (state === 'edit') {
+        return $('#section-asset-edit-template').html();
       }
       else {
-        this.saveModel(data);
+        // state === 'select'
+        return $('#section-asset-select-type-template').html();
       }
-    }
-    else {
-      // Remove any previous error messages
-      this.form.$('.bbf-model-errors').remove();
-      if (!_.isUndefined(errors._others)) {
-        that.form.$el.prepend('<ul class="bbf-model-errors">');
-        _.each(errors._others, function(msg) {
-          that.form.$('.bbf-model-errors').append('<li>' + msg + '</li>');
-        });
+    },
+
+    events: {
+      "click .asset-type": "selectType", 
+      "click .remove": "remove",
+      "click .edit": "edit",
+      'click input[type="reset"]': "cancel",
+      'submit form': 'processForm'
+    },
+
+    initialize: function() {
+      this.container = this.options.container;
+      this.dispatcher = this.options.dispatcher;
+      this.assetTypes = this.options.assetTypes;
+      if (_.isUndefined(this.model)) {
+        this.model = new storybase.models.Asset();
       }
+      _.bindAll(this, 'initializeForm'); 
+      this.model.on("change", this.initializeForm);
+      this.initializeForm();
+      this.setInitialState();
+    },
+
+    /**
+     * Set the view's form property based on the current state of the model.
+     */
+    initializeForm: function() {
+      console.info('Initializing form');
+      this.form = new Backbone.Form({
+        model: this.model
+      });
+      this.form.render();
+    },
+
+    render: function() {
+      this.template = Handlebars.compile(this.templateSource());
+      var context = {
+        assetTypes: this.assetTypes
+      };
+      var state = this.getState();
+      var toolbarEl = this.getEditorToolbarEl();
+      if (state === 'display') {
+        context.model = this.model.toJSON()
+      }
+      this.$el.html(this.template(context));
+      if (state === 'edit') {
+        this.form.render().$el.append('<input type="reset" value="Cancel" />').append('<input type="submit" value="Save" />');
+        if (_.has(this.form.fields, 'body')) {
+          this.form.fields.body.editor.$el.before(toolbarEl);
+          this.summaryEditor = new wysihtml5.Editor(
+            this.form.fields.body.editor.el,
+            {
+              toolbar: toolbarEl, 
+              parserRules: wysihtml5ParserRules
+            }
+          );
+        }
+        this.$el.append(this.form.el);
+      }
+      return this;
+    },
+
+    setInitialState: function() {
+      if (!this.model.isNew()) {
+        this._state = 'display';
+      }
+      else if (!_.isUndefined(this.model.type)) {
+        this._state = 'edit';
+      }
+      else {
+        this._state = 'select';
+      }
+    },
+
+    getState: function() {
+      return this._state;
+    },
+
+    setState: function(state) {
+      this._state = state;
+      return this;
+    },
+
+    /**
+     * Event handler for selecting asset type
+     */
+    selectType: function(e) {
+      e.preventDefault(); 
+      this.setType($(e.target).data('asset-type'));
+    },
+
+    setType: function(type) {
+      this.model.set('type', type);
+      this.initializeForm();
+      this.setState('edit').render();
+    },
+
+    /**
+     * Event handler for canceling form interaction
+     */
+    cancel: function(e) {
+      e.preventDefault();
+      if (this.model.isNew()) {
+        this.setState('select');
+      }
+      else {
+        this.setState('display');
+      }
+      this.render();
+    },
+
+    saveModel: function(attributes) {
+      var that = this;
+      // Save the model's original new state to decide
+      // whether to send a signal later
+      var isNew = this.model.isNew();
+      this.model.save(attributes, {
+        success: function(model) {
+          // TODO: Decide if it's better to listen to the model's
+          // "sync" event than to use this callback
+          that.setState('display');
+          that.render();
+          if (isNew) {
+            // Model was new before saving
+            that.dispatcher.trigger("do:add:sectionasset", that.model, that.container);
+          }
+        },
+        error: function(model) {
+          that.dispatcher.trigger('error', 'error saving the asset');
+        }
+      });
+    },
+
+    /**
+     * Event handler for submitting form
+     */
+    processForm: function(e) {
+      e.preventDefault();
+      console.info("Creating asset");
+      var that = this;
+      var errors = this.form.validate();
+      if (!errors) {
+        var data = this.form.getValue();
+        if (data.image) {
+          data.filename = data.image;
+          this.form.fields.image.editor.getValueAsDataURL(function(dataURL) {
+            data.image = dataURL;
+            that.saveModel(data);
+          });
+        }
+        else {
+          this.saveModel(data);
+        }
+      }
+      else {
+        // Remove any previous error messages
+        this.form.$('.bbf-model-errors').remove();
+        if (!_.isUndefined(errors._others)) {
+          that.form.$el.prepend('<ul class="bbf-model-errors">');
+          _.each(errors._others, function(msg) {
+            that.form.$('.bbf-model-errors').append('<li>' + msg + '</li>');
+          });
+        }
+      }
+    },
+
+    edit: function(evt) {
+      evt.preventDefault();
+      this.setState('edit').render();
+    },
+
+    remove: function(evt) {
+      evt.preventDefault();
+      this.dispatcher.trigger('do:remove:sectionasset', this.model);
+      this.model = new storybase.models.Asset();
+      this.setState('select').render();
     }
-  },
-
-  edit: function(evt) {
-    evt.preventDefault();
-    this.setState('edit').render();
-  },
-
-  remove: function(evt) {
-    evt.preventDefault();
-    this.dispatcher.trigger('do:remove:sectionasset', this.model);
-    this.model = new storybase.models.Asset();
-    this.setState('select').render();
-  }
-});
+  })
+);
 
 storybase.builder.views.DataView = Backbone.View.extend({
   templateSource: $('#data-template').html(),

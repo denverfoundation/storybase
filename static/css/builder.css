@@ -66,6 +66,11 @@
   margin-top: 10px;
 }
 
+/* Rich Text Editor */
+.wysihtml5-sandbox {
+  border: none !important;
+}
+
 /* Navigation Bar */
 
 .navbar {
@@ -165,8 +170,6 @@
   padding: 1% 0;
 }
 
-
-
 /* Unused Assets List */
 
 .unused-assets {
@@ -245,6 +248,16 @@
 
 .section-asset-controls li {
   display: inline-block;
+}
+
+.bbf-form ul {
+  margin: 0;
+  padding: 0;
+}
+
+.field-body .bbf-editor {
+  margin-left: 0;
+  width: 100%;
 }
 
 /* Table of contents thumbnails */

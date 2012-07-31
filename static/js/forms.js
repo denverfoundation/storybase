@@ -4,6 +4,31 @@
 
 Namespace('storybase.forms');
 
+Backbone.Form.setTemplates({
+  noLabelField: '\
+    <li class="bbf-field field-{{key}}">\
+      <div class="bbf-editor">{{editor}}</div>\
+      <div class="bbf-help">{{help}}</div>\
+    </li>\
+  ',
+});
+
+storybase.forms.RichTextEditorMixin = {
+  toolbarTemplateSource: $('#editor-toolbar-template').html(),
+
+  getEditorToolbarHtml: function() {
+    return this.toolbarTemplateSource; 
+  },
+
+  getEditorToolbarEl: function() {
+    if (_.isUndefined(this._editorToolbarEl)) {
+      this._editorToolbarEl = $(this.getEditorToolbarHtml())[0];
+    }
+    return this._editorToolbarEl; 
+  }
+
+};
+
 storybase.forms.File = Backbone.Form.editors.Text.extend({
   initialize: function(options) {
     Backbone.Form.editors.Base.prototype.initialize.call(this, options);

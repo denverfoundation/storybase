@@ -19,6 +19,7 @@
     <title>{%trans "Story Builder" %}</title>
     
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/1140.css">{% endaddtoblock %}
+    {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/backbone-forms/templates/default.css">{% endaddtoblock %}
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/style.css">{% endaddtoblock %}
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/builder.css">{% endaddtoblock %}
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/layout.css">{% endaddtoblock %}
@@ -63,8 +64,12 @@
     <script src="{{ STATIC_URL }}js/libs/backbone-min.js"></script>
     <script src="{{ STATIC_URL }}js/libs/handlebars-1.0.0.beta.6.js"></script>
     <script src="{{ STATIC_URL }}js/libs/backbone-forms/backbone-forms.min.js"></script>
-    <link href="{{ STATIC_URL }}js/libs/backbone-forms/templates/default.css" rel="stylesheet">
+    <!-- Default styles for backbone forms templates are included above -->
     <script defer src="{{ STATIC_URL }}js/libs/jquery.simplemodal.1.4.2.min.js"></script>
+    <!-- TODO: Finalize editor matching views -->
+    <script src="{{ STATIC_URL}}js/libs/wysihtml5/advanced.js"></script>
+    <!-- TODO: Use minified version of WYSIHTML5 -->
+    <script src="{{ STATIC_URL}}js/libs/wysihtml5/wysihtml5-0.3.0.js"></script>
 
     <script src="{{ STATIC_URL }}js/forms.js"></script>
     <script src="{{ STATIC_URL }}js/models.js"></script>
