@@ -1024,16 +1024,26 @@ storybase.builder.views.RichTextEditorMixin = {
 
   getEditor: function(el, callbacks) {
     var defaultCallbacks = {
-      focus: function() {
+      'focus': function() {
         $(this.toolbar.container).show();
       },
 
-      blur: function() {
-        $(this.toolbar.container).hide();
+      'blur': function() {
+        if (this._okToHideToolbar) {
+          $(this.toolbar.container).hide();
+        }
       },
 
-      load: function() {
+      'load': function() {
+        var that = this;
+        this._okToHideToolbar = true;
         $(this.toolbar.container).hide();
+        $(this.toolbar.container).mouseover(function() {
+          that._okToHideToolbar = false;
+        });
+        $(this.toolbar.container).mouseout(function() {
+          that._okToHideToolbar = true;
+        });
       }
 
     };
