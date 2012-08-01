@@ -43,6 +43,7 @@ Handlebars.js templates for story builder Backbone application
 <div id="wysihtml5-toolbar" class="wysihtml5-toolbar" style="display: none;">
   <a data-wysihtml5-command="bold">bold</a>
   <a data-wysihtml5-command="italic">italic</a>
+  <a data-wysihtml5-command="underline">underline</a>
   <a data-wysihtml5-command="createLink">insert link</a>
   <div data-wysihtml5-dialog="createLink" style="display: none;">
     <label>
@@ -51,6 +52,12 @@ Handlebars.js templates for story builder Backbone application
       </label>
       <a data-wysihtml5-dialog-action="save">OK</a> <a data-wysihtml5-dialog-action="cancel">Cancel</a>
   </div>
+  <a data-wysihtml5-command="insertOrderedList">ordered list</a>
+  <a data-wysihtml5-command="insertUnorderedList">unordered list</a>
+  <a data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="blockquote">quote</a>
+  <a data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="p">paragraph</a>
+  <a data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h3">heading</a>
+
   <a data-wysihtml5-action="change_view">Edit HTML</a>
 </div>
 </script>
