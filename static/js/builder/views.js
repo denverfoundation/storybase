@@ -871,6 +871,10 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     var that = this;
     this.model.set('structure_type',
                    this.templateStory.get('structure_type'));
+    this.model.set('summary',
+                   this.templateStory.get('summary'));
+    this.model.set('call_to_action',
+                   this.templateStory.get('call_to_action'));
     this.templateSections.each(function(section) {
       var sectionCopy = new storybase.models.Section();
       sectionCopy.set("title", section.get("title"));
