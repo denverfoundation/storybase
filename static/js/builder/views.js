@@ -679,6 +679,10 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
   className: 'builder',
 
+  events: {
+    'click .spacer': 'clickSpacer'
+  },
+
   templateSource: $('#builder-template').html(),
 
   initialize: function() {
@@ -738,7 +742,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this._sectionsFetched = true;
   },
 
-  addSectionThumbnail: function(section) {
+  addSectionThumbnail: function(section, index) {
     console.info("Adding section thumbnail");
     var view = new storybase.builder.views.SectionThumbnailView({
       dispatcher: this.dispatcher,
@@ -751,7 +755,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
         layouts: this.options.layouts,
       })
     });
-    this._thumbnailViews.splice(this._thumbnailViews.length - 1, 0, view);
+    index = _.isUndefined(index) ? this._thumbnailViews.length - 1 : index + 1; 
+    this._thumbnailViews.splice(index, 0, view);
   },
 
   addStoryInfoThumbnail: function() {
@@ -803,6 +808,9 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
   render: function() {
     console.info('Rendering builder view');
+    var i = 0;
+    var numThumbnails;
+    var thumbnailView;
     var that = this;
     if (this._sectionsFetched) {
       if (!this._thumbnailsAdded) {
@@ -815,11 +823,16 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.$el.html(this.template());
     this.$el.prepend(this.unusedAssetView.render().$el.hide());
     this.$el.prepend(this.lastSavedView.render().el);
-    if (this._thumbnailViews.length) {
-      _.each(this._thumbnailViews, function(view) {
-        that.$(".sections").append(view.render().el);
-        that.$('.sections').before(view.editView.render().el);
-      });
+    numThumbnails = this._thumbnailViews.length;
+    if (numThumbnails) {
+      for (i = 0; i < numThumbnails; i++) {
+        thumbnailView = this._thumbnailViews[i];
+        this.$(".sections").append(thumbnailView.render().el);
+        if (i < numThumbnails - 1) {
+          that.$(".sections").append($('<li class="spacer" data-index="' + i + '"><div><span>'+gettext('Add a section') +'</span></div></li>'));
+        }
+        that.$('.sections').before(thumbnailView.editView.render().el);
+      }
       this.dispatcher.trigger("select:thumbnail", this._thumbnailViews[0]);
     }
     return this;
@@ -920,6 +933,34 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       hasAssets = true; 
     }
     this.dispatcher.trigger('has:assetlist', hasAssets);
+  },
+
+  /**
+   * Event callback for when a spacer between the section thumbnails is clicked.
+   *
+   * Initiates adding a section.
+   */
+  clickSpacer: function(evt) {
+    var index = $(evt.target).data('index');
+    this.addNewSection(index);
+  },
+
+  // BOOKMARK
+  addNewSection: function(index) {
+    var that = this;
+    // TODO: Default help for new section
+    var section = new storybase.models.Section({
+      title: gettext('New Section'),
+      layout: this.model.sections.at(0).get('layout')
+    });
+    var postSave = function(section) {
+      section.off('sync', this);
+      that.addSectionThumbnail(section, index);
+      that.render();
+    };
+    this.model.sections.add(section, {at: index});
+    section.on('sync', postSave);
+    this.model.saveSections();
   }
 });
 

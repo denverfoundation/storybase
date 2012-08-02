@@ -128,6 +128,7 @@ storybase.models.Story = Backbone.Model.extend(
       this.unusedAssets = new storybase.collections.Assets;
       this.setCollectionUrls();
       this.on("change", this.setCollectionUrls, this);
+      this.sections.on("add", this.resetSectionWeights, this);
     },
 
     /**
@@ -141,6 +142,15 @@ storybase.models.Story = Backbone.Model.extend(
         this.sections.url = this.url() + 'sections/';
         this.unusedAssets.url = storybase.globals.API_ROOT + 'assets/stories/' + this.id + '/sections/none/'; 
       }
+    },
+
+    /**
+     * Re-set the section weights based on their order in the collection 
+     */
+    resetSectionWeights: function() {
+      this.sections.each(function(section, index) {
+        section.set('weight', index);
+      });
     },
 
     /**
