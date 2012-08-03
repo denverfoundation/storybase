@@ -989,10 +989,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
    * Initiates adding a section.
    */
   clickSpacer: function(evt) {
-    var index = $(evt.target).data('index');
-    console.debug($(evt.target));
-    // BOOKMARK
-    // TODO: Correctly get the index when a child element is clicked
+    var index = $(evt.currentTarget).data('index');
     this.addNewSection(index);
   },
 
