@@ -830,9 +830,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       for (i = 0; i < numThumbnails; i++) {
         thumbnailView = this._thumbnailViews[i];
         this.$(".sections").append(thumbnailView.render().el);
-        if (i < numThumbnails - 1) {
-          that.$(".sections").append($('<li class="spacer" data-index="' + i + '"><div><span>'+gettext('Add a section') +'</span></div></li>'));
-        }
         that.$('.sections').before(thumbnailView.editView.render().el);
       }
       this.dispatcher.trigger("select:thumbnail", this._thumbnailViews[0]);
@@ -932,9 +929,9 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       // a different one before removing the elements.
       this.dispatcher.trigger('select:thumbnail', this._thumbnailViews[index - 1]);
     }
-    view.editView.remove();
-    view.remove();
+    view.close();
     this._thumbnailViews.splice(index, 1);
+    this.dispatcher.trigger('remove:thumbnail', view);
   },
 
   removeSection: function(section) {
@@ -1188,12 +1185,11 @@ storybase.builder.views.ThumbnailHighlightMixin = {
   }
 };
 
-
 storybase.builder.views.SectionThumbnailView = Backbone.View.extend(
   _.extend({}, storybase.builder.views.ThumbnailHighlightMixin, {
     tagName: 'li',
 
-    className: 'section-thumbnail',
+    className: 'section-thumbnail-container',
 
     templateSource: $('#section-thumbnail-template').html(),
 
@@ -1208,11 +1204,33 @@ storybase.builder.views.SectionThumbnailView = Backbone.View.extend(
       this.editView = this.options.editView;
 
       this.dispatcher.on("select:thumbnail", this.highlight, this);
+      this.dispatcher.on("remove:thumbnail", this.render, this);
       this.model.on("change", this.render, this);
     },
 
+    /**
+     * Cleanup the view.
+     */
+    close: function() {
+      this.editView.remove();
+      this.remove();
+      this.undelegateEvents();
+      this.unbind();
+      this.dispatcher.off("select:thumbnail", this.highlight, this);
+      this.dispatcher.off("remove:thumbnail", this.render, this);
+      this.model.off("change", this.render);
+    },
+
     render: function() {
-      var context = _.extend({id: this.model.id}, this.model.toJSON());
+      var index = this.model.collection.indexOf(this.model);
+      var nextIndex = (index == this.model.collection.length - 1) ? index + 1 : null;
+      var context = _.extend({
+          id: this.model.id,
+          index: index,
+          nextIndex: nextIndex
+        },
+        this.model.toJSON()
+      );
       this.$el.html(this.template(context));
       this.delegateEvents();
       return this;
@@ -1228,13 +1246,14 @@ storybase.builder.views.SectionThumbnailView = Backbone.View.extend(
       evt.stopPropagation();
       this.dispatcher.trigger("do:remove:section", this.model);
     }
+
 }));
 
 storybase.builder.views.PseudoSectionThumbnailView = Backbone.View.extend(
   _.extend({}, storybase.builder.views.ThumbnailHighlightMixin, {
     tagName: 'li',
 
-    className: 'section-thumbnail pseudo',
+    className: 'section-thumbnail-container pseudo',
 
     templateSource: $('#section-thumbnail-template').html(),
 

@@ -279,14 +279,19 @@
   float: left;
 }
 
-.section-thumbnail, .spacer {
+.section-thumbnail-container {
   position: relative;
   display: block;
+  float: left;
+  list-style: none;
+}
+
+.section-thumbnail, .spacer {
+  position: relative;
   float: left;
   height: 75px;
   margin: 10px 0;
   padding: 1% 0;
-  list-style: none;
   text-align: center;
   cursor: pointer;
 }
@@ -294,6 +299,10 @@
 .section-thumbnail {
   width: 120px;
   border: 1px solid #000;
+}
+
+.section-thumbnail .title {
+  padding: 22% 0;
 }
 
 .spacer {
@@ -314,28 +323,24 @@
   padding: 22% 0;
 }
 
-.section-thumbnail div {
-  padding: 22% 0;
-}
-
 .spacer:hover div {
-  display: block; 
+  display: block;
 }
 
 
-.section-thumbnail.pseudo {
+.section-thumbnail-container.pseudo .section-thumbnail {
   background-color: #C8C8C8;
   color: #fff;
 }
 
-.section-thumbnail.selected {
+.section-thumbnail-container.selected .section-thumbnail {
   box-shadow: 0 0 5px rgba(0, 0, 255, 1);
   -webkit-box-shadow: 0 0 5px rgba(0, 0, 255, 1);
   -moz-box-shadow: 0 0 5px rgba(0, 0, 255, 1);
 }
 
 .section-thumbnail .remove {
-  display: none; 
+  display: none;
   position: absolute;
   top: 2px;
   right: 4px;
