@@ -944,6 +944,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     // TODO: Move any assets to the unused assets list.
     var handleSuccess = function(section, response) {
       this.removeThumbnailView(view);
+      this.model.unusedAssets.fetch();
       console.debug('Removed section');
     };
     var handleError = function(section, response) {
@@ -1480,6 +1481,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
         el: el,
         container: $(el).attr('id'),
         dispatcher: that.dispatcher,
+        section: that.model, 
         assetTypes: that.options.assetTypes
       };
       if (that.assets.length) {
@@ -1573,20 +1575,22 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   /**
    * Event handler for when assets are added to the section
    */
-  addAsset: function(asset, container) {
-    this.assets.add(asset);
-    if (this.story.isNew()) {
-      // We haven't saved the story or the section yet.
-      // Defer the saving of the asset relation 
-      this._unsavedAssets.push({
-        asset: asset,
-        container: container
-      });
-      // Trigger an event that will cause the story and section to be saved
-      this.dispatcher.trigger("do:save:story");
-    }
-    else {
-      this.saveSectionAsset(asset, container);
+  addAsset: function(section, asset, container) {
+    if (section == this.model) {
+      this.assets.add(asset);
+      if (this.story.isNew()) {
+        // We haven't saved the story or the section yet.
+        // Defer the saving of the asset relation 
+        this._unsavedAssets.push({
+          asset: asset,
+          container: container
+        });
+        // Trigger an event that will cause the story and section to be saved
+        this.dispatcher.trigger("do:save:story");
+      }
+      else {
+        this.saveSectionAsset(asset, container);
+      }
     }
   },
 
@@ -1681,6 +1685,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       this.container = this.options.container;
       this.dispatcher = this.options.dispatcher;
       this.assetTypes = this.options.assetTypes;
+      this.section = this.options.section;
       if (_.isUndefined(this.model)) {
         this.model = new storybase.models.Asset();
       }
@@ -1789,7 +1794,9 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
           that.render();
           if (isNew) {
             // Model was new before saving
-            that.dispatcher.trigger("do:add:sectionasset", that.model, that.container);
+            that.dispatcher.trigger("do:add:sectionasset", that.section,
+              that.model, that.container
+            );
           }
         },
         error: function(model) {
