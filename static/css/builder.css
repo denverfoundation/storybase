@@ -334,6 +334,18 @@
   -moz-box-shadow: 0 0 5px rgba(0, 0, 255, 1);
 }
 
+.section-thumbnail .remove {
+  display: none; 
+  position: absolute;
+  top: 2px;
+  right: 4px;
+  text-decoration: none;
+}
+
+.section-thumbnail:hover .remove {
+  display: block;
+}
+
 
 /* Builder Navigation Buttons */
 

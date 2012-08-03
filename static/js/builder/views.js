@@ -722,6 +722,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.dispatcher.on("select:template", this.setStoryTemplate, this);
     this.dispatcher.on("ready:templateSections", this.initializeStoryFromTemplate, this);
     this.dispatcher.on("do:save:story", this.save, this);
+    this.dispatcher.on("do:remove:section", this.removeSection, this);
     this.dispatcher.on("select:thumbnail", this.showEditView, this);
     this.dispatcher.on("toggle:assetlist", this.toggleAssetList, this);
     this.dispatcher.on("add:sectionasset", this.showSaved, this);
@@ -916,6 +917,53 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     });
   },
 
+  getThumbnailView: function(section) {
+    var iterator = function(view) {
+      return view.model === section; 
+    };
+    return _.find(this._thumbnailViews, iterator);
+  },
+
+  removeThumbnailView: function(view) {
+    var index = _.indexOf(this._thumbnailViews, view);
+    if (view.editView.isVisible()) {
+      // Trying to remove the currently active view. Switch to
+      // a different one before removing the elements.
+      this.dispatcher.trigger('select:thumbnail', this._thumbnailViews[index - 1]);
+    }
+    view.editView.remove();
+    view.remove();
+    this._thumbnailViews.splice(index, 1);
+  },
+
+  removeSection: function(section) {
+    // BOOKMARK
+    console.debug("Removing section " + section.get("title"));
+    var view = this.getThumbnailView(section);
+    var assets = view.editView.assets;
+    // TODO: Move any assets to the unused assets list.
+    var handleSuccess = function(section, response) {
+      this.removeThumbnailView(view);
+      console.debug('Removed section');
+    };
+    var handleError = function(section, response) {
+      this.dispatcher.trigger('error', gettext("Error removing section"));
+    };
+    handleSuccess = _.bind(handleSuccess, this); 
+    handleError = _.bind(handleError, this); 
+    if (this.model.sections.length > 1) {
+      section.destroy({
+        success: handleSuccess,
+        error: handleError
+      });
+    }
+    else {
+      this.dispatcher.trigger('error', 
+        gettext("You must have at least one section")
+      );
+    }
+  },
+
   showEditView: function(thumbnailView) {
     this.$('.edit-section').hide();
     //thumbnailView.editView.$el.show();
@@ -942,6 +990,9 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
    */
   clickSpacer: function(evt) {
     var index = $(evt.target).data('index');
+    console.debug($(evt.target));
+    // BOOKMARK
+    // TODO: Correctly get the index when a child element is clicked
     this.addNewSection(index);
   },
 
@@ -949,6 +1000,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   addNewSection: function(index) {
     var that = this;
     // TODO: Default help for new section
+    // TODO: Better method of selecting layout for new section.  This one
+    // breaks if you remove all sections
     var section = new storybase.models.Section({
       title: gettext('New Section'),
       layout: this.model.sections.at(0).get('layout')
@@ -1139,7 +1192,8 @@ storybase.builder.views.SectionThumbnailView = Backbone.View.extend(
     templateSource: $('#section-thumbnail-template').html(),
 
     events: {
-      "click": "select"
+      "click": "select",
+      "click .remove": "clickRemove"
     },
 
     initialize: function() {
@@ -1152,7 +1206,8 @@ storybase.builder.views.SectionThumbnailView = Backbone.View.extend(
     },
 
     render: function() {
-      this.$el.html(this.template(this.model.toJSON()));
+      var context = _.extend({id: this.model.id}, this.model.toJSON());
+      this.$el.html(this.template(context));
       this.delegateEvents();
       return this;
     },
@@ -1160,6 +1215,12 @@ storybase.builder.views.SectionThumbnailView = Backbone.View.extend(
     select: function() {
       console.info("Selecting section with id " + this.model.id);
       this.dispatcher.trigger("select:thumbnail", this);
+    },
+
+    clickRemove: function(evt) {
+      evt.preventDefault();
+      evt.stopPropagation();
+      this.dispatcher.trigger("do:remove:section", this.model);
     }
 }));
 
@@ -1187,7 +1248,7 @@ storybase.builder.views.PseudoSectionThumbnailView = Backbone.View.extend(
 
     render: function() {
       var context = {
-        title: this.title 
+        title: this.title
       };
       this.$el.html(this.template(context));
       this.delegateEvents();
@@ -1584,6 +1645,10 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   triggerSaved: function() {
     this.dispatcher.trigger('save:section', this.model, !this._firstSave);
     this._firstSave = false;
+  },
+
+  isVisible: function() {
+    return this.$el.is(':visible');
   }
 });
 
