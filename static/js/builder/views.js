@@ -758,6 +758,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     });
     index = _.isUndefined(index) ? this._thumbnailViews.length - 1 : index + 1; 
     this._thumbnailViews.splice(index, 0, view);
+    return view;
   },
 
   addStoryInfoThumbnail: function() {
@@ -1001,7 +1002,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
   // BOOKMARK
   addNewSection: function(index) {
-    var that = this;
     // TODO: Default help for new section
     // TODO: Better method of selecting layout for new section.  This one
     // breaks if you remove all sections
@@ -1010,10 +1010,13 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       layout: this.model.sections.at(0).get('layout')
     });
     var postSave = function(section) {
-      section.off('sync', this);
-      that.addSectionThumbnail(section, index);
-      that.render();
+      var thumbnailView;
+      section.off('sync', postSave);
+      thumbnailView = this.addSectionThumbnail(section, index);
+      this.render();
+      this.dispatcher.trigger('select:thumbnail', thumbnailView);
     };
+    postSave = _.bind(postSave, this);
     this.model.sections.add(section, {at: index});
     section.on('sync', postSave);
     this.model.saveSections();
