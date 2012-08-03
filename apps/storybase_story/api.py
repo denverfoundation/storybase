@@ -439,7 +439,8 @@ class SectionResource(DelayedAuthorizationResource, TranslatedModelResource):
         always_return_data = True
         queryset = Section.objects.all().order_by('weight')
         resource_name = 'sections'
-        allowed_methods = ['get', 'post', 'patch', 'put']
+        list_allowed_methods = ['get', 'post']
+        detail_allowed_methods = ['get', 'patch', 'put', 'delete']
         authentication = Authentication()
         authorization = LoggedInAuthorization()
         # Hide the underlying id
@@ -452,7 +453,8 @@ class SectionResource(DelayedAuthorizationResource, TranslatedModelResource):
         # Class of the resource under which this is nested
         parent_resource = StoryResource
         # Methods that handle authorization later than normain in the flow
-        delayed_authorization_methods = ('patch_detail', 'put_detail')
+        delayed_authorization_methods = ('patch_detail', 'put_detail',
+                                         'delete_detail')
 
     def detail_uri_kwargs(self, bundle_or_obj):
         """

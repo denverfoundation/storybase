@@ -1554,6 +1554,8 @@ class SectionResourceTest(ResourceTestCase):
         self.username = 'test'
         self.password = 'test'
         self.user = User.objects.create_user(self.username, 'test@example.com', self.password)
+        self.user2 = User.objects.create_user("test2", "test2@example.com",
+                                              "test2")
 
     def test_get_resource_uri_detail(self):
         """Tests retrieving a URI for a specific section"""
@@ -1664,11 +1666,9 @@ class SectionResourceTest(ResourceTestCase):
             'language': "en",
             'layout': "26c81c9dd24c4aecab7ab4eb1cc9e2fb"
         }
-        user2 = User.objects.create(username="test2", email="test2@example.com",
-                                    password="test2")
         story = create_story(title="Test Story", summary="Test Summary",
                              byline="Test Byline", status='published',
-                             author=user2)
+                             author=self.user2)
         self.api_client.client.login(username=self.username, password=self.password)
         story_resource_uri = '/api/0.1/stories/%s/' % story.story_id 
         # Confirm there are no sections
@@ -1857,6 +1857,70 @@ class SectionResourceTest(ResourceTestCase):
         self.assertEqual(len(story.sections.all()), 1)
         section = story.sections.get(section_id=section_id)
         self.assertEqual(section.help, section_help) 
+
+    def test_delete_detail(self):
+        """Test that a user can delete a section"""
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status="published",
+                             language="en", author=self.user)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        container1 = Container.objects.get(name='left')
+        container2 = Container.objects.get(name='right')
+        section = create_section(title="Test Section 1", story=story,
+                                 layout=layout)
+        self.assertEqual(Section.objects.filter(story=story).count(), 1)
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        uri = '/api/0.1/stories/%s/sections/%s/' % (story.story_id,
+            section.section_id)
+        resp = self.api_client.delete(uri)
+        self.assertHttpAccepted(resp)
+        self.assertEqual(Section.objects.filter(story=story).count(), 0)
+        self.assertEqual(
+            Section.objects.filter(section_id=section.section_id).count(),
+            0)
+
+    def test_delete_detail_unauthenticated(self):
+        """Test that an unauthenticated user cannot delete a section"""
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status="published",
+                             language="en", author=self.user)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        container1 = Container.objects.get(name='left')
+        container2 = Container.objects.get(name='right')
+        section = create_section(title="Test Section 1", story=story,
+                                 layout=layout)
+        self.assertEqual(Section.objects.filter(story=story).count(), 1)
+        uri = '/api/0.1/stories/%s/sections/%s/' % (story.story_id,
+            section.section_id)
+        resp = self.api_client.delete(uri)
+        self.assertHttpUnauthorized(resp)
+        self.assertEqual(Section.objects.filter(story=story).count(), 1)
+        self.assertEqual(
+            Section.objects.filter(section_id=section.section_id).count(),
+            1)
+
+    def test_delete_detail_unauthorized(self):
+        """Test that a user cannot delete another user's section"""
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status="published",
+                             language="en", author=self.user2)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        container1 = Container.objects.get(name='left')
+        container2 = Container.objects.get(name='right')
+        section = create_section(title="Test Section 1", story=story,
+                                 layout=layout)
+        self.assertEqual(Section.objects.filter(story=story).count(), 1)
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        uri = '/api/0.1/stories/%s/sections/%s/' % (story.story_id,
+            section.section_id)
+        resp = self.api_client.delete(uri)
+        self.assertHttpUnauthorized(resp)
+        self.assertEqual(Section.objects.filter(story=story).count(), 1)
+        self.assertEqual(
+            Section.objects.filter(section_id=section.section_id).count(),
+            1)
 
 
 class SectionAssetResourceTest(ResourceTestCase):
