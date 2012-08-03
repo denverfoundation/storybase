@@ -941,15 +941,20 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     console.debug("Removing section " + section.get("title"));
     var view = this.getThumbnailView(section);
     var assets = view.editView.assets;
-    // TODO: Move any assets to the unused assets list.
+    var triggerUnused = function(asset) {
+      this.dispatcher.trigger("remove:sectionasset", asset);
+    };
     var handleSuccess = function(section, response) {
       this.removeThumbnailView(view);
-      this.model.unusedAssets.fetch();
-      console.debug('Removed section');
+      if (assets.length) {
+        assets.each(triggerUnused);
+        this.dispatcher.trigger('alert', 'info', gettext("The assets in the section you removed aren't gone forever.  You can re-add them from the asset list"));
+      }
     };
     var handleError = function(section, response) {
       this.dispatcher.trigger('error', gettext("Error removing section"));
     };
+    triggerUnused = _.bind(triggerUnused, this);
     handleSuccess = _.bind(handleSuccess, this); 
     handleError = _.bind(handleError, this); 
     if (this.model.sections.length > 1) {
