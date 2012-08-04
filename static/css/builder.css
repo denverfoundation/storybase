@@ -339,6 +339,10 @@
   -moz-box-shadow: 0 0 5px rgba(0, 0, 255, 1);
 }
 
+.section-thumbnail.new {
+  margin: 10px;
+}
+
 .section-thumbnail .remove {
   display: none;
   position: absolute;

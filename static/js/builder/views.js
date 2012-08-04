@@ -679,33 +679,23 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
   className: 'builder',
 
-  events: {
-    'click .spacer': 'clickSpacer'
-  },
-
-  templateSource: $('#builder-template').html(),
-
   initialize: function() {
     var that = this;
 
     this.dispatcher = this.options.dispatcher;
     this.help = this.options.help;
 
-    this._thumbnailViews = [];
-    this._sectionsFetched = false;
-    this._thumbnailsAdded = false;
-    
     if (_.isUndefined(this.model)) {
       // Create a new story model instance
       this.model = new storybase.models.Story({
         title: ""
       });
     }
-    else {
-      // The view was initialized with a model
-      this.dispatcher.trigger("ready:story", this.model);
-    }
 
+    this.sectionListView = new storybase.builder.views.SectionListView({
+      dispatcher: this.dispatcher,
+      model: this.model
+    });
     this.unusedAssetView = new storybase.builder.views.UnusedAssetView({
       dispatcher: this.dispatcher,
       assets: this.model.unusedAssets
@@ -716,22 +706,20 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     });
 
     this.model.on("sync", this.triggerSaved, this);
+    this.model.sections.on("reset", this.triggerReady, this);
     this.model.unusedAssets.on("sync reset add", this.hasAssetList, this);
-    this.model.sections.on("reset", this.setSectionsFetched, this);
 
     this.dispatcher.on("select:template", this.setStoryTemplate, this);
     this.dispatcher.on("ready:templateSections", this.initializeStoryFromTemplate, this);
     this.dispatcher.on("do:save:story", this.save, this);
-    this.dispatcher.on("do:remove:section", this.removeSection, this);
-    this.dispatcher.on("select:thumbnail", this.showEditView, this);
     this.dispatcher.on("toggle:assetlist", this.toggleAssetList, this);
     this.dispatcher.on("add:sectionasset", this.showSaved, this);
     this.dispatcher.on("save:section", this.showSaved, this);
     this.dispatcher.on("save:story", this.showSaved, this);
+    this.dispatcher.on("ready:story", this.createEditViews, this);
+    this.dispatcher.on("created:section", this.handleCreateSection, this);
 
-    _.bindAll(this, 'addSectionThumbnail', 'setTemplateStory', 'setTemplateSections');
-
-    this.template = Handlebars.compile(this.templateSource);
+    _.bindAll(this, 'setTemplateStory', 'setTemplateSections', 'createSectionEditView');
 
     if (!this.model.isNew()) {
       this.model.sections.fetch();
@@ -739,101 +727,53 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     }
   },
 
-  setSectionsFetched: function() {
-    this._sectionsFetched = true;
+  triggerReady: function() {
+    this.dispatcher.trigger('ready:story', this.model);
   },
 
-  addSectionThumbnail: function(section, index) {
-    console.info("Adding section thumbnail");
-    var view = new storybase.builder.views.SectionThumbnailView({
+  handleCreateSection: function(section) {
+    var view = this.createSectionEditView(section);
+    this.dispatcher.trigger('select:section', section);
+    // TODO: Figure out how to show editor for newly created 
+    // BOOKMARK
+  },
+
+  createSectionEditView: function(section) {
+    var view = new storybase.builder.views.SectionEditView({
       dispatcher: this.dispatcher,
       model: section,
-      editView: new storybase.builder.views.SectionEditView({
-        dispatcher: this.dispatcher,
-        model: section,
-        story: this.model,
-        assetTypes: this.options.assetTypes,
-        layouts: this.options.layouts,
-      })
-    });
-    index = _.isUndefined(index) ? this._thumbnailViews.length - 1 : index + 1; 
-    this._thumbnailViews.splice(index, 0, view);
+      story: this.model,
+      assetTypes: this.options.assetTypes,
+      layouts: this.options.layouts
+    }); 
+    this.sectionListView.$el.before(view.render().$el.hide());
     return view;
   },
 
-  addStoryInfoThumbnail: function() {
-    var view = new storybase.builder.views.PseudoSectionThumbnailView({
+  createEditViews: function() {
+    console.debug("Entering createEditViews");
+    var storyEditView = new storybase.builder.views.StoryInfoEditView({
       dispatcher: this.dispatcher,
-      title: "Story Information",
-      editView: new storybase.builder.views.StoryInfoEditView({
-        dispatcher: this.dispatcher,
-        help: this.help.where({slug: 'story-information'})[0],
-        model: this.model
-      })
+      help: this.help.where({slug: 'story-information'})[0],
+      model: this.model
     });
-    this._thumbnailViews.push(view);
-  },
-
-  addCallToActionThumbnail: function() {
-    var view = new storybase.builder.views.PseudoSectionThumbnailView({
+    var callEditView = new storybase.builder.views.CallToActionEditView({
       dispatcher: this.dispatcher,
-      title: "Call to Action",
-      editView: new storybase.builder.views.CallToActionEditView({
-        dispatcher: this.dispatcher,
-        help: this.help.where({slug: 'call-to-action'})[0],
-        model: this.model
-      })
+      help: this.help.where({slug: 'call-to-action'})[0],
+      model: this.model
     });
-    this._thumbnailViews.push(view);
-  },
-
-  /**
-   * Event handler for when the story model and sections are ready.
-   *
-   * The story will either be ready when it has been cloned from the
-   * template or when it has been fetched from the server.
-   */
-  addSectionThumbnails: function(options) {
-    options = _.isUndefined(options) ? {} : options;
-    _.defaults(options, {
-      render: true
-    });
-    console.debug('Entering addSectionThumbnails');
-    this.addStoryInfoThumbnail();
-    this.addCallToActionThumbnail();
-    this.model.sections.each(this.addSectionThumbnail);
-    this._thumbnailsAdded = true;
-    if (options.render) {
-      this.render();
-    }
+    this.sectionListView.$el.before(storyEditView.render().$el.hide());
+    this.model.sections.each(this.createSectionEditView); 
+    this.sectionListView.$el.before(callEditView.render().$el.hide());
+    storyEditView.show();
   },
 
   render: function() {
     console.info('Rendering builder view');
-    var i = 0;
-    var numThumbnails;
-    var thumbnailView;
     var that = this;
-    if (this._sectionsFetched) {
-      if (!this._thumbnailsAdded) {
-        this.addSectionThumbnails({render: false});
-      }
-    }
-    else {
-      this.model.sections.on("reset", this.addSectionThumbnails, this);
-    }
-    this.$el.html(this.template());
     this.$el.prepend(this.unusedAssetView.render().$el.hide());
     this.$el.prepend(this.lastSavedView.render().el);
-    numThumbnails = this._thumbnailViews.length;
-    if (numThumbnails) {
-      for (i = 0; i < numThumbnails; i++) {
-        thumbnailView = this._thumbnailViews[i];
-        this.$(".sections").append(thumbnailView.render().el);
-        that.$('.sections').before(thumbnailView.editView.render().el);
-      }
-      this.dispatcher.trigger("select:thumbnail", this._thumbnailViews[0]);
-    }
+    this.$el.append(this.sectionListView.render().el);
     return this;
   },
 
@@ -898,7 +838,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       that.model.sections.push(sectionCopy);
     });
     this.dispatcher.trigger("ready:story", this.model);
-    this.addSectionThumbnails();
   },
 
   save: function() {
@@ -915,66 +854,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     });
   },
 
-  getThumbnailView: function(section) {
-    var iterator = function(view) {
-      return view.model === section; 
-    };
-    return _.find(this._thumbnailViews, iterator);
-  },
-
-  removeThumbnailView: function(view) {
-    var index = _.indexOf(this._thumbnailViews, view);
-    if (view.editView.isVisible()) {
-      // Trying to remove the currently active view. Switch to
-      // a different one before removing the elements.
-      this.dispatcher.trigger('select:thumbnail', this._thumbnailViews[index - 1]);
-    }
-    view.close();
-    this._thumbnailViews.splice(index, 1);
-    this.dispatcher.trigger('remove:thumbnail', view);
-  },
-
-  removeSection: function(section) {
-    // BOOKMARK
-    console.debug("Removing section " + section.get("title"));
-    var view = this.getThumbnailView(section);
-    var assets = view.editView.assets;
-    var triggerUnused = function(asset) {
-      this.dispatcher.trigger("remove:sectionasset", asset);
-    };
-    var handleSuccess = function(section, response) {
-      this.removeThumbnailView(view);
-      if (assets.length) {
-        assets.each(triggerUnused);
-        this.dispatcher.trigger('alert', 'info', gettext("The assets in the section you removed aren't gone forever.  You can re-add them from the asset list"));
-      }
-    };
-    var handleError = function(section, response) {
-      this.dispatcher.trigger('error', gettext("Error removing section"));
-    };
-    triggerUnused = _.bind(triggerUnused, this);
-    handleSuccess = _.bind(handleSuccess, this); 
-    handleError = _.bind(handleError, this); 
-    if (this.model.sections.length > 1) {
-      section.destroy({
-        success: handleSuccess,
-        error: handleError
-      });
-    }
-    else {
-      this.dispatcher.trigger('error', 
-        gettext("You must have at least one section")
-      );
-    }
-  },
-
-  showEditView: function(thumbnailView) {
-    this.$('.edit-section').hide();
-    //thumbnailView.editView.$el.show();
-    console.debug('Showing edit view');
-    thumbnailView.editView.show();
-  },
-
   toggleAssetList: function() {
     this.unusedAssetView.$el.toggle(); 
   },
@@ -987,37 +866,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.dispatcher.trigger('has:assetlist', hasAssets);
   },
 
-  /**
-   * Event callback for when a spacer between the section thumbnails is clicked.
-   *
-   * Initiates adding a section.
-   */
-  clickSpacer: function(evt) {
-    var index = $(evt.currentTarget).data('index');
-    this.addNewSection(index);
-  },
-
-  // BOOKMARK
-  addNewSection: function(index) {
-    // TODO: Default help for new section
-    // TODO: Better method of selecting layout for new section.  This one
-    // breaks if you remove all sections
-    var section = new storybase.models.Section({
-      title: gettext('New Section'),
-      layout: this.model.sections.at(0).get('layout')
-    });
-    var postSave = function(section) {
-      var thumbnailView;
-      section.off('sync', postSave);
-      thumbnailView = this.addSectionThumbnail(section, index);
-      this.render();
-      this.dispatcher.trigger('select:thumbnail', thumbnailView);
-    };
-    postSave = _.bind(postSave, this);
-    this.model.sections.add(section, {at: index});
-    section.on('sync', postSave);
-    this.model.saveSections();
-  }
 });
 
 storybase.builder.views.LastSavedView = Backbone.View.extend({
@@ -1167,6 +1015,7 @@ storybase.builder.views.RichTextEditorMixin = {
   }
 };
 
+// TODO: Rename this ThumbnailSelectMixin
 storybase.builder.views.ThumbnailHighlightMixin = {
   highlightClass: 'selected',
 
@@ -1182,8 +1031,181 @@ storybase.builder.views.ThumbnailHighlightMixin = {
     else {
       this.$el.removeClass(this.highlightClass);
     }
+  },
+
+  isHighlighted: function() {
+    return this.$el.hasClass(this.highlightClass);
   }
 };
+
+storybase.builder.views.SectionListView = Backbone.View.extend({
+  tagName: 'ul',
+
+  className: 'sections',
+
+  events: {
+    'click .spacer': 'clickSpacer'
+  },
+
+  initialize: function() {
+    this.dispatcher = this.options.dispatcher;
+    this.model = this.options.model;
+    this._thumbnailViews = [];
+    this._sectionsFetched = false;
+    this._thumbnailsAdded = false;
+
+    this.dispatcher.on("do:remove:section", this.removeSection, this);
+    this.dispatcher.on("ready:story", this.addSectionThumbnails, this);
+
+    _.bindAll(this, 'addSectionThumbnail');
+  },
+
+  addSectionThumbnail: function(section, index) {
+    var view = new storybase.builder.views.SectionThumbnailView({
+      dispatcher: this.dispatcher,
+      model: section
+    });
+    index = _.isUndefined(index) ? this._thumbnailViews.length - 1 : index + 1; 
+    console.info("Adding section thumbnail at index " + index);
+    this._thumbnailViews.splice(index, 0, view);
+    return view;
+  },
+
+  addStoryInfoThumbnail: function() {
+    var view = new storybase.builder.views.PseudoSectionThumbnailView({
+      dispatcher: this.dispatcher,
+      title: "Story Information",
+      pseudoSectionId: 'story-info'
+    });
+    this._thumbnailViews.push(view);
+  },
+
+  addCallToActionThumbnail: function() {
+    var view = new storybase.builder.views.PseudoSectionThumbnailView({
+      dispatcher: this.dispatcher,
+      title: "Call to Action",
+      pseudoSectionId: 'call-to-action'
+    });
+    this._thumbnailViews.push(view);
+  },
+
+  /**
+   * Event handler for when the story model and sections are ready.
+   *
+   * The story will either be ready when it has been cloned from the
+   * template or when it has been fetched from the server.
+   */
+  addSectionThumbnails: function(options) {
+    options = _.isUndefined(options) ? {} : options;
+    _.defaults(options, {
+      render: true
+    });
+    console.debug('Entering addSectionThumbnails');
+    this.addStoryInfoThumbnail();
+    this.addCallToActionThumbnail();
+    this.model.sections.each(this.addSectionThumbnail);
+    this._thumbnailsAdded = true;
+    if (options.render) {
+      this.render();
+    }
+  },
+
+  render: function() {
+    var i = 0;
+    var numThumbnails;
+    var thumbnailView;
+    numThumbnails = this._thumbnailViews.length;
+    if (numThumbnails) {
+      for (i = 0; i < numThumbnails; i++) {
+        thumbnailView = this._thumbnailViews[i];
+        this.$el.append(thumbnailView.render().el);
+      }
+      this.dispatcher.trigger("select:thumbnail", this._thumbnailViews[0]);
+    }
+
+    return this;
+  },
+
+  getThumbnailView: function(section) {
+    var iterator = function(view) {
+      return view.model === section; 
+    };
+    return _.find(this._thumbnailViews, iterator);
+  },
+
+  removeThumbnailView: function(view) {
+    var index = _.indexOf(this._thumbnailViews, view);
+    if (view.isHighlighted()) {
+      // Trying to remove the currently active view. Switch to
+      // a different one before removing the elements.
+      this.dispatcher.trigger('select:thumbnail', this._thumbnailViews[index - 1]);
+    }
+    view.close();
+    this._thumbnailViews.splice(index, 1);
+    this.dispatcher.trigger('remove:thumbnail', view);
+  },
+
+  removeSection: function(section) {
+    // BOOKMARK
+    console.debug("Removing section " + section.get("title"));
+    var view = this.getThumbnailView(section);
+    var handleSuccess = function(section, response) {
+      section.deleted = true;
+      this.removeThumbnailView(view);
+    };
+    var handleError = function(section, response) {
+      this.dispatcher.trigger('error', gettext("Error removing section"));
+    };
+    handleSuccess = _.bind(handleSuccess, this); 
+    handleError = _.bind(handleError, this); 
+    if (this.model.sections.length > 1) {
+      section.destroy({
+        success: handleSuccess,
+        error: handleError
+      });
+    }
+    else {
+      this.dispatcher.trigger('error', 
+        gettext("You must have at least one section")
+      );
+    }
+  },
+
+  /**
+   * Event callback for when a spacer between the section thumbnails is clicked.
+   *
+   * Initiates adding a section.
+   */
+  clickSpacer: function(evt) {
+    evt.stopPropagation(); 
+    var index = $(evt.currentTarget).data('index');
+    this.addNewSection(index);
+  },
+
+  // BOOKMARK
+  addNewSection: function(index) {
+    // TODO: Default help for new section
+    // TODO: Better method of selecting layout for new section.  This one
+    // breaks if you remove all sections
+    var section = new storybase.models.Section({
+      title: gettext('New Section'),
+      layout: this.model.sections.at(0).get('layout')
+    });
+    var postSave = function(section) {
+      var thumbnailView;
+      section.off('sync', postSave);
+      this.dispatcher.trigger("created:section", section, index);
+      thumbnailView = this.addSectionThumbnail(section, index);
+      this.render();
+      this.dispatcher.trigger('select:thumbnail', thumbnailView);
+    };
+    postSave = _.bind(postSave, this);
+    this.model.sections.add(section, {at: index});
+    section.on('sync', postSave);
+    this.model.saveSections();
+  }
+
+});
 
 storybase.builder.views.SectionThumbnailView = Backbone.View.extend(
   _.extend({}, storybase.builder.views.ThumbnailHighlightMixin, {
@@ -1194,7 +1216,7 @@ storybase.builder.views.SectionThumbnailView = Backbone.View.extend(
     templateSource: $('#section-thumbnail-template').html(),
 
     events: {
-      "click": "select",
+      "click .section-thumbnail": "select",
       "click .remove": "clickRemove"
     },
 
@@ -1202,6 +1224,7 @@ storybase.builder.views.SectionThumbnailView = Backbone.View.extend(
       this.dispatcher = this.options.dispatcher;
       this.template = Handlebars.compile(this.templateSource);
       this.editView = this.options.editView;
+      this._selected = false;
 
       this.dispatcher.on("select:thumbnail", this.highlight, this);
       this.dispatcher.on("remove:thumbnail", this.render, this);
@@ -1212,7 +1235,6 @@ storybase.builder.views.SectionThumbnailView = Backbone.View.extend(
      * Cleanup the view.
      */
     close: function() {
-      this.editView.remove();
       this.remove();
       this.undelegateEvents();
       this.unbind();
@@ -1226,8 +1248,9 @@ storybase.builder.views.SectionThumbnailView = Backbone.View.extend(
       var nextIndex = (index == this.model.collection.length - 1) ? index + 1 : null;
       var context = _.extend({
           id: this.model.id,
-          index: index,
-          nextIndex: nextIndex
+          isNew: this.model.isNew(),
+          index: this.model.isNew() ? false : index.toString(),
+          nextIndex: this.model.isNew() ? false: nextIndex
         },
         this.model.toJSON()
       );
@@ -1237,8 +1260,9 @@ storybase.builder.views.SectionThumbnailView = Backbone.View.extend(
     },
 
     select: function() {
-      console.info("Selecting section with id " + this.model.id);
+      console.info("Clicked thumbnail for section " + this.model.get('title'));
       this.dispatcher.trigger("select:thumbnail", this);
+      this.dispatcher.trigger("select:section", this.model);
     },
 
     clickRemove: function(evt) {
@@ -1246,7 +1270,6 @@ storybase.builder.views.SectionThumbnailView = Backbone.View.extend(
       evt.stopPropagation();
       this.dispatcher.trigger("do:remove:section", this.model);
     }
-
 }));
 
 storybase.builder.views.PseudoSectionThumbnailView = Backbone.View.extend(
@@ -1263,11 +1286,9 @@ storybase.builder.views.PseudoSectionThumbnailView = Backbone.View.extend(
 
     initialize: function() {
       this.dispatcher = this.options.dispatcher;
-      this.template = Handlebars.compile(this.templateSource);
-      this.editView = this.options.editView;
-
+      this.pseudoSectionId = this.options.pseudoSectionId;
       this.title = this.options.title;
-
+      this.template = Handlebars.compile(this.templateSource);
       this.dispatcher.on("select:thumbnail", this.highlight, this);
     },
 
@@ -1282,73 +1303,37 @@ storybase.builder.views.PseudoSectionThumbnailView = Backbone.View.extend(
 
     select: function() {
       this.dispatcher.trigger("select:thumbnail", this);
+      this.dispatcher.trigger('select:section', this.pseudoSectionId);
     }
 }));
 
-/**
- * View for editing story metadata
- */
-storybase.builder.views.StoryInfoEditView = Backbone.View.extend(
+storybase.builder.views.PseudoSectionEditView = Backbone.View.extend(
   _.extend({}, storybase.builder.views.RichTextEditorMixin, {
     tagName: 'div',
 
-    className: 'edit-story-info edit-section',
-
-    templateSource: $('#story-info-edit-template').html(),
-
-    events: function() {
-      var events = {};
-      events['change ' + this.options.summaryEl] = 'change';
-      return events;
-    },
-
-    defaults: {
-      titleEl: '.title',
-      bylineEl: '.byline',
-      summaryEl: 'textarea[name="summary"]' 
-    },
+    defaults: {},
 
     initialize: function() {
       _.defaults(this.options, this.defaults);
       this.dispatcher = this.options.dispatcher;
       this.help = this.options.help;
       this.template = Handlebars.compile(this.templateSource);
+
+      this.dispatcher.on('select:section', this.show, this);
+      console.debug("Initializing edit view for " + this.pseudoSectionId);
     },
 
-    render: function() {
-      console.debug('Rendering story information editor');
-      var that = this;
-      var handleChange = function () {
-        // Trigger the change event on the underlying element 
-        that.$(that.options.summaryEl).trigger('change');
-      };
-      var editableCallback = function(value, settings) {
-        that.saveAttr($(this).data("input-name"), value);
-        return value;
-      };
-      this.$el.html(this.template(this.model.toJSON()));
-      // Initialize wysihmtl5 editor
-      this.summaryEditor = this.getEditor(
-        this.$(this.options.summaryEl)[0],
-        {
-          change: handleChange
-        }
-      );
-        
-      this.$(this.options.titleEl).editable(editableCallback, {
-        placeholder: gettext('Click to edit title'),
-        tooltip: gettext('Click to edit title')
-      });
-      this.$(this.options.bylineEl).editable(editableCallback, {
-        placeholder: gettext('Click to edit byline'),
-        tooltip: gettext('Click to edit byline')
-      });
-      return this;
-    },
-
-    show: function() {
-      this.$el.show();
-      this.dispatcher.trigger('do:show:help', false, this.help.toJSON()); 
+    show: function(id) {
+      id = _.isUndefined(id) ? this.pseudoSectionId : id;
+      if (id == this.pseudoSectionId) {
+        console.debug("Showing editor for pseduo-section " + this.pseudoSectionId);
+        this.$el.show();
+        this.dispatcher.trigger('do:show:help', false, this.help.toJSON()); 
+      }
+      else {
+        console.debug("Hiding editor for pseduo-section " + this.pseduoSectionId);
+        this.$el.hide();
+      }
       return this;
     },
 
@@ -1379,71 +1364,99 @@ storybase.builder.views.StoryInfoEditView = Backbone.View.extend(
 /**
  * View for editing story metadata
  */
-storybase.builder.views.CallToActionEditView = Backbone.View.extend(
-  _.extend({}, storybase.builder.views.RichTextEditorMixin, {
-    tagName: 'div',
+storybase.builder.views.StoryInfoEditView = storybase.builder.views.PseudoSectionEditView.extend({ 
 
-    className: 'edit-call-to-action edit-section',
+  className: 'edit-story-info edit-section',
 
-    defaults: {
-      callToActionEl: 'textarea[name="call_to_action"]'
-    },
+  pseudoSectionId: 'story-info',
 
-    templateSource: $('#story-call-to-action-edit-template').html(),
+  templateSource: $('#story-info-edit-template').html(),
 
-    events: function() {
-      var events = {};
-      events['change ' + this.options.callToActionEl] = 'change';
-      return events;
-    },
+  events: function() {
+    var events = {};
+    events['change ' + this.options.summaryEl] = 'change';
+    return events;
+  },
 
-    initialize: function() {
-      _.defaults(this.options, this.defaults);
-      this.dispatcher = this.options.dispatcher;
-      this.help = this.options.help;
-      this.template = Handlebars.compile(this.templateSource);
-    },
+  defaults: {
+    titleEl: '.title',
+    bylineEl: '.byline',
+    summaryEl: 'textarea[name="summary"]' 
+  },
 
-    render: function() {
-      var that = this;
-      var handleChange = function () {
-        // Trigger the change event on the underlying element 
-        that.$(that.options.callToActionEl).trigger('change');
-      };
-      this.$el.html(this.template(this.model.toJSON()));
-      // Add the toolbar elemebt for the wysihtml5 editor
-      // Initialize wysihmtl5 editor
-      this.callEditor = this.getEditor(
-        this.$(this.options.callToActionEl)[0],
-        {
-          change: handleChange
-        }
-      );
-      return this;
-    },
-
-    show: function() {
-      this.$el.show();
-      this.dispatcher.trigger('do:show:help', false, this.help.toJSON()); 
-      return this;
-    },
-
-    change: function(e) {
-      var name = $(e.target).attr("name");
-      var value = $(e.target).val();
-      if (_.has(this.model.attributes, name)) {
-        this.model.set(name, value);
-        if (this.model.isNew()) {
-          this.dispatcher.trigger("do:save:story");
-        }
-        else {
-          this.model.save();
-        }
-        console.info("Updated " + name + " to " + value);
+  render: function() {
+    console.debug('Rendering story information editor');
+    var that = this;
+    var handleChange = function () {
+      // Trigger the change event on the underlying element 
+      that.$(that.options.summaryEl).trigger('change');
+    };
+    var editableCallback = function(value, settings) {
+      that.saveAttr($(this).data("input-name"), value);
+      return value;
+    };
+    this.$el.html(this.template(this.model.toJSON()));
+    // Initialize wysihmtl5 editor
+    this.summaryEditor = this.getEditor(
+      this.$(this.options.summaryEl)[0],
+      {
+        change: handleChange
       }
-    }
-  })
-);
+    );
+      
+    this.$(this.options.titleEl).editable(editableCallback, {
+      placeholder: gettext('Click to edit title'),
+      tooltip: gettext('Click to edit title')
+    });
+    this.$(this.options.bylineEl).editable(editableCallback, {
+      placeholder: gettext('Click to edit byline'),
+      tooltip: gettext('Click to edit byline')
+    });
+    return this;
+  }
+});
+
+/**
+ * View for editing the story's call to action 
+ */
+storybase.builder.views.CallToActionEditView = storybase.builder.views.PseudoSectionEditView.extend({ 
+  className: 'edit-call-to-action edit-section',
+
+  // The section edit views can be identified by the ID of their
+  // sections, but these pseudo-section edit views need an
+  // explicit identifier
+  pseudoSectionId: 'call-to-action',
+
+  defaults: {
+    callToActionEl: 'textarea[name="call_to_action"]'
+  },
+
+  templateSource: $('#story-call-to-action-edit-template').html(),
+
+  events: function() {
+    var events = {};
+    events['change ' + this.options.callToActionEl] = 'change';
+    return events;
+  },
+
+  render: function() {
+    var that = this;
+    var handleChange = function () {
+      // Trigger the change event on the underlying element 
+      that.$(that.options.callToActionEl).trigger('change');
+    };
+    this.$el.html(this.template(this.model.toJSON()));
+    // Add the toolbar elemebt for the wysihtml5 editor
+    // Initialize wysihmtl5 editor
+    this.callEditor = this.getEditor(
+      this.$(this.options.callToActionEl)[0],
+      {
+        change: handleChange
+      }
+    );
+    return this;
+  }
+});
 
 /**
  * View for editing a section
@@ -1479,11 +1492,28 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     _.bindAll(this, 'renderAssetViews');
     this.dispatcher.on('do:add:sectionasset', this.addAsset, this);
     this.dispatcher.on('do:remove:sectionasset', this.removeAsset, this);
+    this.dispatcher.on('select:section', this.show, this);
     this.model.on("change:layout", this.changeLayout, this);
     this.model.on("sync", this.saveSectionAssets, this);
     this.model.on("sync", this.conditionalRender, this);
     this.model.on("sync", this.triggerSaved, this);
+    this.model.on("destroy", this.handleDestroy, this);
     this.assets.on("reset sync", this.renderAssetViews, this);
+  },
+
+  close: function() {
+    this.remove();
+    this.undelegateEvents();
+    this.unbind();
+    this.dispatcher.off('do:add:sectionasset', this.addAsset, this);
+    this.dispatcher.off('do:remove:sectionasset', this.removeAsset, this);
+    this.dispatcher.off('select:section', this.show, this);
+    this.model.off("change:layout", this.changeLayout, this);
+    this.model.off("sync", this.saveSectionAssets, this);
+    this.model.off("sync", this.conditionalRender, this);
+    this.model.off("sync", this.triggerSaved, this);
+    this.model.off("destroy", this.handleDestroy, this);
+    this.assets.off("reset sync", this.renderAssetViews, this);
   },
 
   /**
@@ -1544,10 +1574,23 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     return this;
   },
 
-  show: function() {
-    this.$el.show();
-    this.dispatcher.trigger('do:show:help', false, 
-                            this.model.get('help')); 
+  show: function(section) {
+    section = _.isUndefined(section) ? this.model : section;
+    if (section == this.model) {
+      console.debug('showing section ' + section.get('title'));
+      this.$el.show();
+      this.dispatcher.trigger('do:show:help', false, 
+                              this.model.get('help')); 
+    }
+    else {
+      if (_.isObject(section)) {
+        console.debug('hiding section ' + section.get('title'));
+      }
+      else {
+        console.debug("hiding pseudo-section " + section);
+      }
+      this.$el.hide();
+    }
     return this;
   },
 
@@ -1675,8 +1718,31 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     this._firstSave = false;
   },
 
-  isVisible: function() {
-    return this.$el.is(':visible');
+  handleDestroy: function() {
+    console.debug("Section is being destroyed!");
+    var triggerUnused = function(asset) {
+      this.dispatcher.trigger("remove:sectionasset", asset);
+    };
+    triggerUnused = _.bind(triggerUnused, this);
+    if (this.assets.length) {
+      this.assets.each(triggerUnused);
+      this.dispatcher.trigger('alert', 'info', gettext("The assets in the section you removed aren't gone forever.  You can re-add them from the asset list"));
+    }
+    if (this.$el.is(':visible')) {
+      // Destroying the currently active view
+      var index = this.model.collection.indexOf(this.model);
+      console.debug('Destroying active view with index ' + index);
+      if (index) {
+        // If this isn't the first section, make the previous section
+        // the active one
+        this.dispatcher.trigger('select:section', this.model.collection.at(index - 1));
+      }
+      else {
+        // Otherwise, show the story info section
+        this.dispatcher.trigger('select:section', 'story-info');
+      }
+    }
+    this.close();
   }
 });
 

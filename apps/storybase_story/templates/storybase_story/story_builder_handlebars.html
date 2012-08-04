@@ -31,15 +31,11 @@ Handlebars.js templates for story builder Backbone application
 <p>{{description}}</p>
 </script>
 
-<script type="text/x-handlebars-template" id="builder-template">
-<ul class="sections"></ul>
-</script>
-
 <script type="text/x-handlebars-template" id="section-thumbnail-template">
-{{#if id}}
+{{#if index}}
 <div class="spacer" data-index="{{index}}"><div><span>{{gettext message="Add a section"}}</span></div></div>
 {{/if}}
-<div class="section-thumbnail">
+<div class="section-thumbnail{{#if isNew}} new{{/if}}">
 {{#if id}}<a class="remove" href="#" title='{{gettext message="Remove section"}}'>x</a>{{/if}}
 <div class="title">{{ title }}</div>
 </div>
