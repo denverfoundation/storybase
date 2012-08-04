@@ -182,5 +182,4 @@ class StoryBuilderView(DetailView):
     def dispatch(self, *args, **kwargs):
         # We override the view's dispatch method so we can decorate
         # it to only allow access by logged-in users
-        print kwargs
         return super(StoryBuilderView, self).dispatch(*args, **kwargs)
