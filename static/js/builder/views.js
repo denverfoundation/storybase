@@ -129,6 +129,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
       level: level,
       message: msg
     });
+    this.$('.alerts').empty();
     this.$('.alerts').prepend(view.render().el);
     view.$el.fadeOut(5000, function() {
       $(this).remove();
@@ -1044,13 +1045,15 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
   className: 'sections',
 
   events: {
-    'click .spacer': 'clickSpacer'
+    'click .spacer': 'clickSpacer',
+    'sortupdate': 'handleSort'
   },
 
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
     this.model = this.options.model;
-    this._thumbnailViews = [];
+    this._thumbnailViews = {};
+    this._sortedThumbnailViews = [];
     this._sectionsFetched = false;
     this._thumbnailsAdded = false;
 
@@ -1065,9 +1068,10 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
       dispatcher: this.dispatcher,
       model: section
     });
-    index = _.isUndefined(index) ? this._thumbnailViews.length - 1 : index + 1; 
+    index = _.isUndefined(index) ? this._sortedThumbnailViews.length - 1 : index + 1; 
     console.info("Adding section thumbnail at index " + index);
-    this._thumbnailViews.splice(index, 0, view);
+    this._sortedThumbnailViews.splice(index, 0, view);
+    this._thumbnailViews[section.id] = view;
     return view;
   },
 
@@ -1077,7 +1081,8 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
       title: "Story Information",
       pseudoSectionId: 'story-info'
     });
-    this._thumbnailViews.push(view);
+    this._sortedThumbnailViews.push(view);
+    this._thumbnailViews[view.pseudoSectionId] = view;
   },
 
   addCallToActionThumbnail: function() {
@@ -1086,7 +1091,8 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
       title: "Call to Action",
       pseudoSectionId: 'call-to-action'
     });
-    this._thumbnailViews.push(view);
+    this._sortedThumbnailViews.push(view);
+    this._thumbnailViews[view.pseudoSectionId] = view;
   },
 
   /**
@@ -1114,34 +1120,40 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
     var i = 0;
     var numThumbnails;
     var thumbnailView;
-    numThumbnails = this._thumbnailViews.length;
+    numThumbnails = this._sortedThumbnailViews.length;
     if (numThumbnails) {
       for (i = 0; i < numThumbnails; i++) {
-        thumbnailView = this._thumbnailViews[i];
+        thumbnailView = this._sortedThumbnailViews[i];
         this.$el.append(thumbnailView.render().el);
       }
-      this.dispatcher.trigger("select:thumbnail", this._thumbnailViews[0]);
+      this.dispatcher.trigger("select:thumbnail", this._sortedThumbnailViews[0]);
+      this.$el.sortable({
+        items: 'li:not(.pseudo)'
+      });
     }
 
     return this;
   },
 
   getThumbnailView: function(section) {
-    var iterator = function(view) {
-      return view.model === section; 
-    };
-    return _.find(this._thumbnailViews, iterator);
+    return this._thumbnailViews[section.id];
   },
 
   removeThumbnailView: function(view) {
-    var index = _.indexOf(this._thumbnailViews, view);
+    var index = _.indexOf(this._sortedThumbnailViews, view);
     if (view.isHighlighted()) {
       // Trying to remove the currently active view. Switch to
       // a different one before removing the elements.
-      this.dispatcher.trigger('select:thumbnail', this._thumbnailViews[index - 1]);
+      this.dispatcher.trigger('select:thumbnail', this._sortedThumbnailViews[index - 1]);
     }
     view.close();
-    this._thumbnailViews.splice(index, 1);
+    this._sortedThumbnailViews.splice(index, 1);
+    if (_.isUndefined(view.pseudoSectionId)) {
+      delete this._thumbnailViews[view.model.id];
+    }
+    else {
+      delete this._thumbnailViews[view.pseudoSectionId];
+    }
     this.dispatcher.trigger('remove:thumbnail', view);
   },
 
@@ -1203,6 +1215,21 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
     this.model.sections.add(section, {at: index});
     section.on('sync', postSave);
     this.model.saveSections();
+  },
+
+  handleSort: function(evt, ui) {
+    console.debug('Handling sort');
+    var that = this;
+    var sortedIds = this.$el.sortable('toArray');
+    this._sortedThumbnailViews = [];
+    var addView = _.bind(function(id) {
+      this._sortedThumbnailViews.push(this._thumbnailViews[id]);
+    }, this);
+    this._sortedThumbnailViews.push(this._thumbnailViews['story-info']);
+    _.each(sortedIds, addView);
+    this._sortedThumbnailViews.push(this._thumbnailViews['call-to-action']);
+    this.model.sections.sortByIdList(sortedIds);
+    this.model.saveSections();
   }
 
 });
@@ -1226,9 +1253,11 @@ storybase.builder.views.SectionThumbnailView = Backbone.View.extend(
       this.editView = this.options.editView;
       this._selected = false;
 
+
       this.dispatcher.on("select:thumbnail", this.highlight, this);
       this.dispatcher.on("remove:thumbnail", this.render, this);
       this.model.on("change", this.render, this);
+      this.model.on("sync", this.render, this);
     },
 
     /**
@@ -1241,6 +1270,7 @@ storybase.builder.views.SectionThumbnailView = Backbone.View.extend(
       this.dispatcher.off("select:thumbnail", this.highlight, this);
       this.dispatcher.off("remove:thumbnail", this.render, this);
       this.model.off("change", this.render);
+      this.model.off("sync", this.render, this);
     },
 
     render: function() {
@@ -1254,6 +1284,7 @@ storybase.builder.views.SectionThumbnailView = Backbone.View.extend(
         },
         this.model.toJSON()
       );
+      this.$el.attr('id', this.model.id);
       this.$el.html(this.template(context));
       this.delegateEvents();
       return this;

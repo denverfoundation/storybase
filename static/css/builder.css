@@ -150,6 +150,11 @@
 
 /* Main Application Container */
 
+#builder .alerts {
+  position: fixed;
+  width: 100%;
+}
+
 #builder .alert {
   padding: 1%;
   text-align: center;

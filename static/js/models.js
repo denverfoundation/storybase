@@ -153,6 +153,7 @@ storybase.models.Story = Backbone.Model.extend(
       });
     },
 
+
     /**
      * Save all the sections of the story
      */
@@ -195,7 +196,19 @@ storybase.collections.Sections = Backbone.Collection.extend(
   _.extend({}, storybase.collections.TastypieMixin, {
     model: storybase.models.Section,
 
-    url: storybase.globals.API_ROOT + 'sections/'
+    url: storybase.globals.API_ROOT + 'sections/',
+
+    sortByIdList: function(idList) {
+      var that = this;
+      _.each(idList, function(id, index) {
+        var section = that.get(id);
+        section.set('weight', index);
+      });
+      this.models = this.sortBy(function(section) {
+        var weight = section.get('weight');
+        return weight;
+      });
+    },
   })
 );
 
