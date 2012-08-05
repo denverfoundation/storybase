@@ -754,6 +754,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   },
 
   triggerReady: function() {
+    console.info('Story sections initialized');
     this.dispatcher.trigger('ready:story', this.model);
   },
 
@@ -790,7 +791,9 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this._editViews.push(storyEditView);
     this.model.sections.each(this.createSectionEditView); 
     this._editViews.push(callEditView);
-    this.renderEditViews();
+    if (this.$el.is(':visible')) {
+      this.renderEditViews();
+    }
   },
 
   renderEditViews: function() {
