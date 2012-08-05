@@ -750,6 +750,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.dispatcher.on("save:section", this.showSaved, this);
     this.dispatcher.on("save:story", this.showSaved, this);
     this.dispatcher.on("ready:story", this.createEditViews, this);
+    this.dispatcher.on("save:story", this.setTitle, this);
+    this.dispatcher.on("ready:story", this.setTitle, this);
     this.dispatcher.on("created:section", this.handleCreateSection, this);
 
     _.bindAll(this, 'setTemplateStory', 'setTemplateSections', 'createSectionEditView');
@@ -930,6 +932,13 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     }
     this.dispatcher.trigger('has:assetlist', hasAssets);
   },
+
+  setTitle: function() {
+    var title = this.model.get('title');
+    if (title) {
+      document.title = title + " | " + gettext("Floodlight Story Builder");
+    }
+  }
 
 });
 
