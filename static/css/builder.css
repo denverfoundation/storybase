@@ -254,6 +254,11 @@
   overflow: hidden;
 }
 
+.storybase-container-placeholder [name=body] {
+  /* TODO: Figure out a better way to set height */
+  height: 150px;
+}
+
 .section-asset-controls {
   position: absolute;
   right: 0;
