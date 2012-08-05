@@ -1798,19 +1798,21 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   /**
    * Event handler for when assets are removed from the section
    */
-  removeAsset: function(asset) {
-    var that = this;
-    var sectionAsset = this.getSectionAsset(asset);
-    sectionAsset.id = asset.id;
-    sectionAsset.destroy({
-      success: function(model, response) {
-        that.dispatcher.trigger("remove:sectionasset", asset);
-        that.dispatcher.trigger("alert", "info", "You removed an asset, but it's not gone forever. You can re-add it to a section from the asset list");
-      },
-      error: function(model, response) {
-        that.dispatcher.trigger("error", "Error removing asset from section");
-      }
-    });
+  removeAsset: function(section, asset) {
+    if (section == this.model) {
+      var that = this;
+      var sectionAsset = this.getSectionAsset(asset);
+      sectionAsset.id = asset.id;
+      sectionAsset.destroy({
+        success: function(model, response) {
+          that.dispatcher.trigger("remove:sectionasset", asset);
+          that.dispatcher.trigger("alert", "info", "You removed an asset, but it's not gone forever. You can re-add it to a section from the asset list");
+        },
+        error: function(model, response) {
+          that.dispatcher.trigger("error", "Error removing asset from section");
+        }
+      });
+    }
   },
 
   getSectionAsset: function(asset, container) {
@@ -2077,7 +2079,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
 
     remove: function(evt) {
       evt.preventDefault();
-      this.dispatcher.trigger('do:remove:sectionasset', this.model);
+      this.dispatcher.trigger('do:remove:sectionasset', this.section, this.model);
       this.model = new storybase.models.Asset();
       this.setState('select').render();
     }
