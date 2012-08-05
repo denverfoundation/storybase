@@ -1,7 +1,7 @@
 Namespace('storybase.builder.routers');
 storybase.builder.routers.Router = Backbone.Router.extend({
   routes: {
-    "": "debug",
+    "": "selectInitialStep",
     ":id/": "selectStep",
     ":id/:step/": "selectStep",
     ":id/:step/:substep/": "selectStep",
@@ -12,8 +12,8 @@ storybase.builder.routers.Router = Backbone.Router.extend({
     this.dispatcher.on("navigate", this.navigate, this);
   },
 
-  debug: function() {
-    this.dispatcher.trigger('select:workflowstep', 'selecttemplate');
+  selectInitialStep: function() {
+    this.selectStep(undefined, 'selecttemplate');
   },
 
   selectStep: function(id, step, subStep) {
