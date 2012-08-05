@@ -767,7 +767,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
   handleCreateSection: function(section) {
     var view = this.createSectionEditView(section);
-    this.renderEditViews();
+    this.renderEditViews({showFirst: false});
     this.dispatcher.trigger('select:section', section);
   },
 
@@ -803,12 +803,20 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     }
   },
 
-  renderEditViews: function() {
+  renderEditViews: function(options) {
+    // TODO: Figure out if this is the best way to avoid showing the first
+    // section each time the edit views are rendered.  It might make more sense
+    // to put the call to ``this._editViews[0].show`` in an ``onShow`` event
+    // for this view and call it upstream
+    options = _.isUndefined(options) ? {} : options;
+    _.defaults(options, {
+      showFirst: true
+    });
     var that = this;
     _.each(this._editViews, function(view) {
       that.sectionListView.$el.before(view.render().$el.hide());
     });
-    if (this._editViews.length) {
+    if (this._editViews.length && options.showFirst) {
       this._editViews[0].show();
     }
   },
