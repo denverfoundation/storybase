@@ -1534,11 +1534,13 @@ storybase.builder.views.StoryInfoEditView = storybase.builder.views.PseudoSectio
       
     this.$(this.options.titleEl).editable(editableCallback, {
       placeholder: gettext('Click to edit title'),
-      tooltip: gettext('Click to edit title')
+      tooltip: gettext('Click to edit title'),
+      onblur: 'submit'
     });
     this.$(this.options.bylineEl).editable(editableCallback, {
       placeholder: gettext('Click to edit byline'),
-      tooltip: gettext('Click to edit byline')
+      tooltip: gettext('Click to edit byline'),
+      onblur: 'submit'
     });
     return this;
   }
@@ -1697,7 +1699,8 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     }
     this.$(this.options.titleEl).editable(editableCallback, {
       placeholder: gettext('Click to edit title'),
-      tooltip: gettext('Click to edit title')
+      tooltip: gettext('Click to edit title'),
+      onblur: 'submit'
     });
     return this;
   },
@@ -1947,6 +1950,14 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
           this.bodyEditor = this.getEditor(
             this.form.fields.body.editor.el
           );
+          // HACK: Get rid of the default event handlers
+          // They seem to prevent event bubbling, e.g. the editor's blur event
+          // handler gets callled and the "Save"/"Cancel" buttons' click 
+          // events never get called.  I think this is okay for now, since the
+          // toolbar showing/hiding doesn't make as much sense when editing the
+          // asset views.
+          this.bodyEditor.stopObserving('blur');
+          this.bodyEditor.stopObserving('load');
         }
         this.$el.append(this.form.el);
       }
