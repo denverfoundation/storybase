@@ -1049,8 +1049,6 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
   events: {
     'click .spacer': 'clickSpacer',
     'sortupdate': 'handleSort',
-    //'click .scroll-right': 'scrollRight',
-    //'click .scroll-left': 'scrollLeft',
     'mousedown .scroll-right': 'scrollRight',
     'mousedown .scroll-left': 'scrollLeft',
     'mouseup': 'stopScroll',
@@ -1227,7 +1225,8 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
     // breaks if you remove all sections
     var section = new storybase.models.Section({
       title: gettext('New Section'),
-      layout: this.model.sections.at(0).get('layout')
+      layout: this.model.sections.at(0).get('layout'),
+      root: true
     });
     var postSave = function(section) {
       var thumbnailView;
