@@ -89,9 +89,17 @@ storybase.builder.views.AppView = Backbone.View.extend({
    * Set the active step of the workflow and re-render the view
    */
   updateStep: function(step) {
-    console.debug('Updating active view to ' + step);
-    this.activeStep = step;
-    this.render();
+    // Checking that step is different from the active step is
+    // required for the initial saving of the story.  The active view
+    // has already been changed by ``this.setTemplate`` so we don't
+    // want to re-render.  In all other cases the changing of the 
+    // active view is initiated by the router triggering the ``select:
+    // workflowstep`` signal
+    if (this.activeStep != step) {
+      console.debug('Updating active view to ' + step);
+      this.activeStep = step;
+      this.render();
+    }
   },
 
   /**
@@ -289,8 +297,8 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.MenuView.exte
 
     this.dispatcher.on('ready:story', this.showWorkflowItems, this);
     this.dispatcher.on('save:story', this.showWorkflowItems, this);
-    this.dispatcher.on('ready:story', this.setStoryId, this);
-    this.dispatcher.on('save:story', this.setStoryId, this);
+    this.dispatcher.on('ready:story', this.handleStorySave, this);
+    this.dispatcher.on('save:story', this.handleStorySave, this);
     this.dispatcher.on('select:workflowstep', this.highlightActive, this);
   },
 
@@ -309,7 +317,7 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.MenuView.exte
   },
 
 
-  setStoryId: function(story) {
+  handleStorySave: function(story) {
     if (!story.isNew()) {
       this.storyId = story.id; 
     }
@@ -388,8 +396,8 @@ storybase.builder.views.ToolsView = storybase.builder.views.MenuView.extend({
     this.dispatcher = this.options.dispatcher;
 
     this.dispatcher.on('has:assetlist', this.toggleAssetsItem, this);
-    this.dispatcher.on('ready:story', this.setStoryId, this);
-    this.dispatcher.on('save:story', this.setStoryId, this);
+    this.dispatcher.on('ready:story', this.handleStorySave, this);
+    this.dispatcher.on('save:story', this.handleStorySave, this);
   },
 
   render: function() {
@@ -417,7 +425,7 @@ storybase.builder.views.ToolsView = storybase.builder.views.MenuView.extend({
     this.dispatcher.trigger('do:show:help', true);
   },
   
-  setStoryId: function(story) {
+  handleStorySave: function(story) {
     if (!story.isNew() && _.isUndefined(this.storyId)) {
       var item = this.getItem('preview');
       this.storyId = story.id; 
@@ -524,10 +532,12 @@ storybase.builder.views.WorkflowNavView = storybase.builder.views.MenuView.exten
     this.dispatcher = this.options.dispatcher;
     this.forward = this.getItem('data');
     this.back = null;
+    this.step = null;
+    this.subStep = null;
 
-    this.dispatcher.on('ready:story', this.setStoryId, this);
-    this.dispatcher.on('save:story', this.setStoryId, this);
-    this.dispatcher.on('select:workflowstep', this.selectVisible, this);
+    this.dispatcher.on('ready:story', this.handleStorySave, this);
+    this.dispatcher.on('save:story', this.handleStorySave, this);
+    this.dispatcher.on('select:workflowstep', this.setStep, this);
   },
 
   render: function() {
@@ -555,12 +565,21 @@ storybase.builder.views.WorkflowNavView = storybase.builder.views.MenuView.exten
     return this;
   },
 
-  selectVisible: function(step, subStep) {
-    console.debug('Selecting step ' + step);
-    if (!_.isUndefined(subStep)) {
-      console.debug('Selecting sub-step ' + subStep);
+  /**
+   * Set the active step
+   */
+  setStep: function(step, subStep) {
+    this.step = step;
+    this.subStep = subStep;
+    console.debug('Selecting step ' + this.step);
+    if (!_.isUndefined(this.subStep)) {
+      console.debug('Selecting sub-step ' + this.subStep);
     }
-    var key = _.isUndefined(subStep) ? step : step + '-' + subStep;
+    this.showVisible();
+  },
+
+  showVisible: function() {
+    var key = this.subStep ? this.step + '-' + this.subStep : this.step;
     this.forward = this.visibility[key].forward ? this.getItem(this.visibility[key].forward) : null;
     this.back = this.visibility[key].back ? this.getItem(this.visibility[key].back) : null;
     this.render();
@@ -574,10 +593,17 @@ storybase.builder.views.WorkflowNavView = storybase.builder.views.MenuView.exten
       {trigger: true, replace: true});
   },
 
-  setStoryId: function(story) {
+  /**
+   * Event callback for story saving.
+   */
+  handleStorySave: function(story) {
+    // Check that there is a saved story instance.  This will either
+    // happen when the story is firs saved or when the builder is loaded
+    // for an already-saved story.  Use the value of ``this.storyId`` to
+    // make sure this only happens once.
     if (!story.isNew() && _.isUndefined(this.storyId)) {
+      // Keep a copy of the story's id 
       this.storyId = story.id; 
-      this.render();
     }
   },
 
@@ -590,7 +616,7 @@ storybase.builder.views.WorkflowNavView = storybase.builder.views.MenuView.exten
     }
 
     return '#';
-  },
+  }
 });
 
 /**
@@ -862,7 +888,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       success: function(model, response) {
         that.dispatcher.trigger('save:story', model);
         that.dispatcher.trigger('navigate', model.id + '/', {
-          trigger: false 
+          trigger: true 
         });
         model.saveSections();
       }
