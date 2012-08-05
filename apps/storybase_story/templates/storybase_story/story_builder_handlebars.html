@@ -31,6 +31,14 @@ Handlebars.js templates for story builder Backbone application
 <p>{{description}}</p>
 </script>
 
+<script type="text/x-handlebars-template" id="section-list-template">
+<a class="scroll-left"><</a>
+<div class="sections-container">
+<ul class="sections"></ul>
+</div>
+<a class="scroll-right">></a>
+</script>
+
 <script type="text/x-handlebars-template" id="section-thumbnail-template">
 {{#if index}}
 <div class="spacer" data-index="{{index}}"><div><span>{{gettext message="Add a section"}}</span></div></div>

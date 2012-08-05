@@ -1040,13 +1040,20 @@ storybase.builder.views.ThumbnailHighlightMixin = {
 };
 
 storybase.builder.views.SectionListView = Backbone.View.extend({
-  tagName: 'ul',
+  tagName: 'div',
 
-  className: 'sections',
+  className: 'section-list',
+
+  templateSource: $('#section-list-template').html(),
 
   events: {
     'click .spacer': 'clickSpacer',
-    'sortupdate': 'handleSort'
+    'sortupdate': 'handleSort',
+    //'click .scroll-right': 'scrollRight',
+    //'click .scroll-left': 'scrollLeft',
+    'mousedown .scroll-right': 'scrollRight',
+    'mousedown .scroll-left': 'scrollLeft',
+    'mouseup': 'stopScroll',
   },
 
   initialize: function() {
@@ -1056,11 +1063,17 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
     this._sortedThumbnailViews = [];
     this._sectionsFetched = false;
     this._thumbnailsAdded = false;
+    this._doScroll = false;
+    this._thumbnailWidth = 0;
+
+    this.template = Handlebars.compile(this.templateSource);
 
     this.dispatcher.on("do:remove:section", this.removeSection, this);
     this.dispatcher.on("ready:story", this.addSectionThumbnails, this);
 
     _.bindAll(this, 'addSectionThumbnail');
+
+    this.$el.html(this.template());
   },
 
   addSectionThumbnail: function(section, index) {
@@ -1116,6 +1129,14 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
     }
   },
 
+  setWidth: function() {
+    var $thumbnails = this.$('.sections').children();
+    this._thumbnailWidth = this._thumbnailWidth ||  $thumbnails.eq(0).outerWidth(true);
+    var newWidth = ($thumbnails.length * this._thumbnailWidth) + (3 * this._thumbnailWidth);
+    console.debug(newWidth);
+    this.$('.sections').width(newWidth); 
+  },
+
   render: function() {
     var i = 0;
     var numThumbnails;
@@ -1124,13 +1145,17 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
     if (numThumbnails) {
       for (i = 0; i < numThumbnails; i++) {
         thumbnailView = this._sortedThumbnailViews[i];
-        this.$el.append(thumbnailView.render().el);
+        this.$('.sections').append(thumbnailView.render().el);
       }
       this.dispatcher.trigger("select:thumbnail", this._sortedThumbnailViews[0]);
-      this.$el.sortable({
+      this.$('.sections').sortable({
         items: 'li:not(.pseudo)'
       });
     }
+ 
+    this.setWidth();
+    this.$('.sections-container').css({overflow: 'hidden'});
+    this.delegateEvents();
 
     return this;
   },
@@ -1154,6 +1179,7 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
     else {
       delete this._thumbnailViews[view.pseudoSectionId];
     }
+    this.setWidth();
     this.dispatcher.trigger('remove:thumbnail', view);
   },
 
@@ -1220,7 +1246,7 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
   handleSort: function(evt, ui) {
     console.debug('Handling sort');
     var that = this;
-    var sortedIds = this.$el.sortable('toArray');
+    var sortedIds = this.$('.sections').sortable('toArray');
     this._sortedThumbnailViews = [];
     var addView = _.bind(function(id) {
       this._sortedThumbnailViews.push(this._thumbnailViews[id]);
@@ -1230,8 +1256,34 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
     this._sortedThumbnailViews.push(this._thumbnailViews['call-to-action']);
     this.model.sections.sortByIdList(sortedIds);
     this.model.saveSections();
-  }
+  },
 
+  startScroll: function(scrollVal) {
+    var that = this;
+    var $el = this.$('.sections-container');
+    $el.animate({scrollLeft: scrollVal}, 'fast', function() {
+      if (that._doScroll) {
+        that.startScroll(scrollVal);
+      }
+    });
+  },
+
+  scrollLeft: function(evt) {
+    evt.preventDefault();
+    this._doScroll = true;
+    this.startScroll('-=50');
+  },
+
+  scrollRight: function(evt) {
+    evt.preventDefault();
+    this._doScroll = true;
+    this.startScroll('+=50');
+  },
+
+  stopScroll: function(evt) {
+    evt.preventDefault();
+    this._doScroll = false;
+  }
 });
 
 storybase.builder.views.SectionThumbnailView = Backbone.View.extend(
