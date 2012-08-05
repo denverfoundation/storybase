@@ -705,6 +705,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       dispatcher: this.dispatcher,
       lastSaved: this.model.get('last_edited')
     });
+    this._editViews = [];
 
     this.model.on("sync", this.triggerSaved, this);
     this.model.sections.on("reset", this.triggerReady, this);
@@ -734,6 +735,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
   handleCreateSection: function(section) {
     var view = this.createSectionEditView(section);
+    this.renderEditViews();
     this.dispatcher.trigger('select:section', section);
     // TODO: Figure out how to show editor for newly created 
     // BOOKMARK
@@ -743,11 +745,12 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     var view = new storybase.builder.views.SectionEditView({
       dispatcher: this.dispatcher,
       model: section,
+      collection: this._editViews,
       story: this.model,
       assetTypes: this.options.assetTypes,
       layouts: this.options.layouts
     }); 
-    this.sectionListView.$el.before(view.render().$el.hide());
+    this._editViews.push(view);
     return view;
   },
 
@@ -763,10 +766,20 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       help: this.help.where({slug: 'call-to-action'})[0],
       model: this.model
     });
-    this.sectionListView.$el.before(storyEditView.render().$el.hide());
+    this._editViews.push(storyEditView);
     this.model.sections.each(this.createSectionEditView); 
-    this.sectionListView.$el.before(callEditView.render().$el.hide());
-    storyEditView.show();
+    this._editViews.push(callEditView);
+    this.renderEditViews();
+  },
+
+  renderEditViews: function() {
+    var that = this;
+    _.each(this._editViews, function(view) {
+      that.sectionListView.$el.before(view.render().$el.hide());
+    });
+    if (this._editViews.length) {
+      this._editViews[0].show();
+    }
   },
 
   render: function() {
@@ -775,6 +788,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.$el.prepend(this.unusedAssetView.render().$el.hide());
     this.$el.prepend(this.lastSavedView.render().el);
     this.$el.append(this.sectionListView.render().el);
+    this.renderEditViews();
     return this;
   },
 
@@ -1824,6 +1838,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
         this.dispatcher.trigger('select:section', 'story-info');
       }
     }
+    this.collection.splice(_.indexOf(this.collection, this), 1);
     this.close();
   }
 });
