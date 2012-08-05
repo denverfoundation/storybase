@@ -575,6 +575,7 @@ storybase.builder.views.WorkflowNavView = storybase.builder.views.MenuView.exten
   },
 
   showVisible: function() {
+    //console.debug('Showing navigation buttons for ' + this.step + (this.subStep ? ' ' + this.subStep : ''));
     var key = this.subStep ? this.step + '-' + this.subStep : this.step;
     this.forward = this.visibility[key].forward ? this.getItem(this.visibility[key].forward) : null;
     this.back = this.visibility[key].back ? this.getItem(this.visibility[key].back) : null;
@@ -600,6 +601,7 @@ storybase.builder.views.WorkflowNavView = storybase.builder.views.MenuView.exten
     if (!story.isNew() && _.isUndefined(this.storyId)) {
       // Keep a copy of the story's id 
       this.storyId = story.id; 
+      this.render();
     }
   },
 
