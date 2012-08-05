@@ -761,8 +761,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     var view = this.createSectionEditView(section);
     this.renderEditViews();
     this.dispatcher.trigger('select:section', section);
-    // TODO: Figure out how to show editor for newly created 
-    // BOOKMARK
   },
 
   createSectionEditView: function(section) {
@@ -1216,7 +1214,6 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
   },
 
   removeSection: function(section) {
-    // BOOKMARK
     console.debug("Removing section " + section.get("title"));
     var view = this.getThumbnailView(section);
     var handleSuccess = function(section, response) {
@@ -1252,7 +1249,6 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
     this.addNewSection(index);
   },
 
-  // BOOKMARK
   addNewSection: function(index) {
     // TODO: Default help for new section
     // TODO: Better method of selecting layout for new section.  This one
