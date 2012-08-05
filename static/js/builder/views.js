@@ -96,7 +96,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
     // active view is initiated by the router triggering the ``select:
     // workflowstep`` signal
     if (this.activeStep != step) {
-      console.debug('Updating active view to ' + step);
+      console.debug('Updating active step to ' + step);
       this.activeStep = step;
       this.render();
     }
@@ -571,10 +571,6 @@ storybase.builder.views.WorkflowNavView = storybase.builder.views.MenuView.exten
   setStep: function(step, subStep) {
     this.step = step;
     this.subStep = subStep;
-    console.debug('Selecting step ' + this.step);
-    if (!_.isUndefined(this.subStep)) {
-      console.debug('Selecting sub-step ' + this.subStep);
-    }
     this.showVisible();
   },
 
@@ -781,7 +777,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   },
 
   createEditViews: function() {
-    console.debug("Entering createEditViews");
     var storyEditView = new storybase.builder.views.StoryInfoEditView({
       dispatcher: this.dispatcher,
       help: this.help.where({slug: 'story-information'})[0],
@@ -1120,7 +1115,6 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
       model: section
     });
     index = _.isUndefined(index) ? this._sortedThumbnailViews.length - 1 : index + 1; 
-    console.info("Adding section thumbnail at index " + index);
     this._sortedThumbnailViews.splice(index, 0, view);
     this._thumbnailViews[section.id] = view;
     return view;
@@ -1157,7 +1151,6 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
     _.defaults(options, {
       render: true
     });
-    console.debug('Entering addSectionThumbnails');
     this.addStoryInfoThumbnail();
     this.addCallToActionThumbnail();
     this.model.sections.each(this.addSectionThumbnail);
@@ -1171,7 +1164,6 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
     var $thumbnails = this.$('.sections').children();
     this._thumbnailWidth = this._thumbnailWidth ||  $thumbnails.eq(0).outerWidth(true);
     var newWidth = ($thumbnails.length * this._thumbnailWidth) + (3 * this._thumbnailWidth);
-    console.debug(newWidth);
     this.$('.sections').width(newWidth); 
   },
 
@@ -1442,7 +1434,6 @@ storybase.builder.views.PseudoSectionEditView = Backbone.View.extend(
       this.template = Handlebars.compile(this.templateSource);
 
       this.dispatcher.on('select:section', this.show, this);
-      console.debug("Initializing edit view for " + this.pseudoSectionId);
     },
 
     show: function(id) {
@@ -1453,7 +1444,7 @@ storybase.builder.views.PseudoSectionEditView = Backbone.View.extend(
         this.dispatcher.trigger('do:show:help', false, this.help.toJSON()); 
       }
       else {
-        console.debug("Hiding editor for pseduo-section " + this.pseduoSectionId);
+        console.debug("Hiding editor for pseduo-section " + this.pseudoSectionId);
         this.$el.hide();
       }
       return this;
@@ -1507,7 +1498,6 @@ storybase.builder.views.StoryInfoEditView = storybase.builder.views.PseudoSectio
   },
 
   render: function() {
-    console.debug('Rendering story information editor');
     var that = this;
     var handleChange = function () {
       // Trigger the change event on the underlying element 
@@ -1915,7 +1905,6 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
      * Set the view's form property based on the current state of the model.
      */
     initializeForm: function() {
-      console.info('Initializing form');
       this.form = new Backbone.Form({
         model: this.model
       });
