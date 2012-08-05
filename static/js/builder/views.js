@@ -114,7 +114,14 @@ storybase.builder.views.AppView = Backbone.View.extend({
     console.debug('Rendering main view');
     var activeView = this.getActiveView();
     this.$el.height($(window).height());
-    this.$('#app').html(activeView.render().$el);
+    this.$('#app').empty();
+    this.$('#app').append(activeView.render().$el);
+    // Some views have things that only work when the element has been added
+    // to the DOM. The pattern for handling this comes courtesy of
+    // http://stackoverflow.com/questions/9350591/backbone-using-jquery-plugins-on-views
+    if (activeView.onShow) {
+      activeView.onShow();
+    }
     this.$('#app').append(this.workflowNavView.render().el);
     this.workflowStepView.render();
     this.toolsView.render();
@@ -817,6 +824,17 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   },
 
   /**
+   * Things that need to happen after the view's element has
+   * been added to the DOM.
+   *
+   * This is called from upstream views.
+   */
+  onShow: function() {
+    // Recalculate the width of the section list view.
+    this.sectionListView.setWidth();
+  },
+
+  /**
    * Event callback that displays an alert indicating the story has been
    * saved.
    */
@@ -1150,15 +1168,11 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
    * template or when it has been fetched from the server.
    */
   addSectionThumbnails: function(options) {
-    options = _.isUndefined(options) ? {} : options;
-    _.defaults(options, {
-      render: true
-    });
     this.addStoryInfoThumbnail();
     this.addCallToActionThumbnail();
     this.model.sections.each(this.addSectionThumbnail);
     this._thumbnailsAdded = true;
-    if (options.render) {
+    if (this.$el.is(':visible')) {
       this.render();
     }
   },
@@ -1171,6 +1185,7 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
   },
 
   render: function() {
+    console.info('Rendering the section list');
     var i = 0;
     var numThumbnails;
     var thumbnailView;
