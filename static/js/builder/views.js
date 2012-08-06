@@ -1953,7 +1953,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       if (_.isUndefined(this.model)) {
         this.model = new storybase.models.Asset();
       }
-      _.bindAll(this, 'initializeForm', 'doUpload', 'render'); 
+      _.bindAll(this, 'initializeForm', 'uploadFile', 'render'); 
       this.model.on("change", this.initializeForm);
       this.initializeForm();
       this.setInitialState();
@@ -2083,13 +2083,11 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
     },
 
     /**
-     * Event callback for uploading image
+     * Upload a file 
      */
-    doUpload: function(model) {
+    uploadFile: function(model, fileField, file) {
       var that = this;
-      var fileField = 'image';
       var url = model.url() + 'upload/';
-      var file = this.form.getValue(fileField);
       var formData = new FormData;
       var options;
       formData.append(fileField, file);
@@ -2100,7 +2098,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
         contentType: false,
         processData: false,
         success: function() {
-          that.model.fetch({
+          model.fetch({
             success: that.render 
           });
         }
@@ -2115,12 +2113,18 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       e.preventDefault();
       console.info("Creating asset");
       var errors = this.form.validate();
+      var data;
+      var file;
+      var that = this;
       if (!errors) {
         var data = this.form.getValue();
         if (data.image) {
+          file = data.image;
           delete data.image;
           this.saveModel(data, {
-            success: this.doUpload
+            success: function(model) {
+              that.uploadFile(model, 'image', file);
+            }
           });
         }
         else {
