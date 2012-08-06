@@ -189,7 +189,7 @@ class DataSetResource(DataUriResourceMixin,DelayedAuthorizationResource,
         queryset = DataSet.objects.select_subclasses()
         resource_name = 'datasets'
         list_allowed_methods = ['get', 'post']
-        detail_allowed_methods = ['delete']
+        detail_allowed_methods = ['get', 'delete']
         authentication = Authentication()
         authorization = LoggedInAuthorization()
         validation = DataSetValidation()
