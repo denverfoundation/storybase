@@ -1010,16 +1010,25 @@ storybase.builder.views.UnusedAssetView = Backbone.View.extend({
     this.assets = this.options.assets;
 
     // When the assets are synced with the server, re-render this view
-    this.assets.on("add reset sync", this.render, this);
+    this.assets.on("add reset sync remove", this.render, this);
     // When an asset is removed from a section, add it to this view
     this.dispatcher.on("remove:sectionasset", this.addAsset, this);
+    this.assets.on("remove", this.handleRemove, this);
   },
 
   render: function() {
+    var assetsJSON = this.assets.toJSON();
+    assetsJSON = _.map(assetsJSON, function(assetJSON) {
+      // TODO: Better shortened version of asset
+      return assetJSON;
+    });
     var context = {
-      assets: this.assets.toJSON()
+      assets: assetsJSON
     };
     this.$el.html(this.template(context));
+    this.$('.unused-asset').draggable({
+      revert: 'invalid' 
+    });
     return this;
   },
 
@@ -1028,6 +1037,13 @@ storybase.builder.views.UnusedAssetView = Backbone.View.extend({
    */
   addAsset: function(asset) {
     this.assets.push(asset);
+  },
+
+  handleRemove: function() {
+    // If the last asset was removed, hide the element
+    if (!this.assets.length) {
+      this.$el.hide(); 
+    }
   }
 });
 
@@ -1686,6 +1702,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
         container: $(el).attr('id'),
         dispatcher: that.dispatcher,
         section: that.model, 
+        story: that.story,
         assetTypes: that.options.assetTypes
       };
       if (that.assets.length) {
@@ -1848,6 +1865,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   },
 
   saveSectionAsset: function(asset, container) {
+    console.debug('Saving section asset');
     this.getSectionAsset(asset, container).save();
   },
 
@@ -1922,7 +1940,8 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       "click .remove": "remove",
       "click .edit": "edit",
       'click input[type="reset"]': "cancel",
-      'submit form': 'processForm'
+      'submit form': 'processForm',
+      'drop': 'handleDrop'
     },
 
     initialize: function() {
@@ -1930,6 +1949,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       this.dispatcher = this.options.dispatcher;
       this.assetTypes = this.options.assetTypes;
       this.section = this.options.section;
+      this.story = this.options.story;
       if (_.isUndefined(this.model)) {
         this.model = new storybase.models.Asset();
       }
@@ -1980,6 +2000,10 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
         }
         this.$el.append(this.form.el);
       }
+      if (state == 'select') {
+        this.$el.droppable();
+      }
+
       return this;
     },
 
@@ -2099,6 +2123,19 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       this.dispatcher.trigger('do:remove:sectionasset', this.section, this.model);
       this.model = new storybase.models.Asset();
       this.setState('select').render();
+    },
+
+    handleDrop: function(event, ui) {
+      console.debug("Asset dropped");
+      var id = ui.draggable.data('asset-id');
+      this.model = this.story.unusedAssets.get(id);
+      this.story.unusedAssets.remove(this.model);
+      if (!this.story.unusedAssets.length) {
+        this.dispatcher.trigger('has:assetlist', false);
+      }
+      this.setState('display');
+      this.dispatcher.trigger("do:add:sectionasset", this.section, this.model, this.container);
+      this.render();
     }
   })
 );

@@ -214,6 +214,10 @@
   padding: 0;
 }
 
+.unused-asset {
+  cursor: pointer;
+}
+
 /* Story information editor */
 
 .summary {
