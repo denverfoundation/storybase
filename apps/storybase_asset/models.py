@@ -587,9 +587,10 @@ def delete_dataset_file(sender, instance, **kwargs):
     This should be hooked up to the post_delete signal
 
     """
-    storage, path = instance.file.file.storage, instance.file.file.path
-    instance.file.delete();
-    storage.delete(path)
+    if instance.file:
+        storage, path = instance.file.file.storage, instance.file.file.path
+        instance.file.delete();
+        storage.delete(path)
 
 post_delete.connect(delete_dataset_file, sender=LocalDataSet)
 
