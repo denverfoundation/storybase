@@ -25,7 +25,7 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
     caption = fields.CharField(attribute='caption', blank=True, default='')
     body = fields.CharField(attribute='body', null=True)
     url = fields.CharField(attribute='url', null=True)
-    image = fields.FileField(attribute='image', null=True)
+    image = fields.FileField(attribute='image', blank=True, null=True)
     content = fields.CharField(readonly=True)
     # A "write-only" field for specifying the filename when uploading images
     # This is removed from responses to GET requests
@@ -44,7 +44,9 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
         delayed_authorization_methods = ['put_detail']
 
     def get_object_class(self, bundle=None, request=None, **kwargs):
-        if bundle.data.get('image', None):
+        if (bundle.data.get('image', None) or 
+                (bundle.data.get('type') == 'image' and
+                 bundle.data.get('url') is None)):
             return LocalImageAsset
         elif bundle.data.get('body', None): 
             return HtmlAsset

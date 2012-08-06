@@ -16,7 +16,7 @@ from storybase.tests.base import FixedTestApiClient, FileCleanupMixin
 from storybase_story.models import (create_section, create_story,
                                     Container, SectionAsset, SectionLayout)
 from storybase_asset.models import (Asset, ExternalAsset, HtmlAsset,
-    HtmlAssetTranslation, DataSet,
+    HtmlAssetTranslation, LocalImageAsset, DataSet,
     create_html_asset, create_external_asset, create_local_image_asset,
     create_external_dataset)
 from embedable_resource import EmbedableResource
@@ -927,6 +927,36 @@ class AssetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         self.assertEqual(original_hash, created_hash)
         # Set our created file to be cleaned up
         self.add_file_to_cleanup(created_asset.image.file.path)
+
+    def test_post_list_image_no_file(self):
+        """
+        Test that an image asset can be created without a file
+        so the file can be uploaded via the separate upload endpoint
+        """
+        post_data = {
+            'type': "image",
+            'title': "Test Image Asset",
+            'caption': "This is a test image",
+            'status': "published",
+            'language': "en",
+        }
+        self.assertEqual(Asset.objects.count(), 0)
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        resp = self.api_client.post('/api/0.1/assets/',
+                               format='json', data=post_data)
+        self.assertHttpCreated(resp)
+        # Check that asset was created in the system and has the correct
+        # metadata
+        self.assertEqual(LocalImageAsset.objects.count(), 1)
+        created_asset = LocalImageAsset.objects.get()
+        self.assertEqual(created_asset.type, post_data['type'])
+        self.assertEqual(created_asset.title, post_data['title'])
+        self.assertEqual(created_asset.caption, post_data['caption'])
+        self.assertEqual(created_asset.status, post_data['status'])
+        self.assertEqual(created_asset.get_languages(),
+                         [post_data['language']])
+        self.assertEqual(created_asset.owner, self.user)
 
     def test_post_list_html(self):
         """Test creating an HTML asset"""

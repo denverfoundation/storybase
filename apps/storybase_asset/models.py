@@ -389,7 +389,7 @@ class HtmlAsset(Asset):
 
 class LocalImageAssetTranslation(AssetTranslation):
     """Translatable fields for a LocalImageAsset model instance"""
-    image = FilerImageField()
+    image = FilerImageField(null=True)
 
 
 class LocalImageAsset(Asset):
