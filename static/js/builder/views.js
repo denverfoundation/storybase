@@ -1105,7 +1105,6 @@ storybase.builder.views.RichTextEditorMixin = {
   }
 };
 
-// TODO: Rename this ThumbnailSelectMixin
 storybase.builder.views.ThumbnailHighlightMixin = {
   highlightClass: 'selected',
 
@@ -1125,6 +1124,71 @@ storybase.builder.views.ThumbnailHighlightMixin = {
 
   isHighlighted: function() {
     return this.$el.hasClass(this.highlightClass);
+  }
+};
+
+/**
+ * Mixin object that provides a method for doing asynchronous file
+ * uploads.
+ */
+storybase.builder.views.FileUploadMixin = {
+  /**
+   * Upload a file associated with a model, then refresh the model
+   *
+   * The heavy lifting is done by jQuery.ajax()
+   * 
+   * @param object model Model instance that the file will be
+   *     associated with on the server side.
+   * @param string fileField Name of the file input for the file
+   * @param object file File object retrieved from a form's file input
+   * @options object Options to configure the AJAX request, especially
+   *     callbacks.  progressHandler is the callback for the updating
+   *     the upload's progress, beforeSend is the beforeSend callback
+   *     for the jQuery AJAX request, and success is the callback for
+   *     after the file has been uploaded AND the model's data has
+   *     been refreshed from the server.
+   *
+   * @returns object The jqXHR object returned by the call to 
+   *     jQuery.ajax()
+   */
+  uploadFile: function(model, fileField, file, options) {
+    console.debug(file);
+    options = _.isUndefined(options) ? {} : options;
+    var that = this;
+    var url = model.url() + 'upload/';
+    var formData = new FormData;
+    var settings;
+    formData.append(fileField, file);
+    settings = {
+      type: "POST",
+      data: formData,
+      cache: false,
+      contentType: false,
+      processData: false,
+      xhr: function() {
+        var newXhr = $.ajaxSettings.xhr();
+        if (newXhr.upload && options.progressHandler) {
+          newXhr.upload.addEventListener('progress', options.progressHandler, false);
+        }
+        return newXhr;
+      },
+      beforeSend: function() {
+        if (options.beforeSend) {
+          options.beforeSend();
+        }
+      },
+      success: function() {
+        model.fetch({
+          success: function(model, response) {
+            if (options.success) {
+              options.success(model, response);
+            }
+          }
+        });
+      }
+    };
+    var jqXHR = $.ajax(url, settings);
+    return jqXHR;
   }
 };
 
@@ -1916,7 +1980,8 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
 });
 
 storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
-  _.extend({}, storybase.builder.views.RichTextEditorMixin, {
+  _.extend({}, storybase.builder.views.FileUploadMixin, 
+           storybase.builder.views.RichTextEditorMixin, {
     tagName: 'div',
 
     className: 'edit-section-asset',
@@ -2086,42 +2151,6 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
     },
 
     /**
-     * Upload a file 
-     */
-    uploadFile: function(model, fileField, file, progressHandler) {
-      var that = this;
-      var url = model.url() + 'upload/';
-      var formData = new FormData;
-      var options;
-      formData.append(fileField, file);
-      options = {
-        type: "POST",
-        data: formData,
-        cache: false,
-        contentType: false,
-        processData: false,
-        xhr: function() {
-          var newXhr = $.ajaxSettings.xhr();
-          if (newXhr.upload && progressHandler) {
-            newXhr.upload.addEventListener('progress', progressHandler, false);
-          }
-          return newXhr;
-        },
-        success: function() {
-          model.fetch({
-            success: function() {
-              that.setState('display');
-              that.render();
-            }
-          });
-        }
-      };
-      that.setState('upload');
-      that.render();
-      var jqXHR = $.ajax(url, options);
-    },
-
-    /**
      * Event callback for updating the progress of an upload.
      */
     handleUploadProgress: function(evt) {
@@ -2148,7 +2177,17 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
           delete data.image;
           this.saveModel(data, {
             success: function(model) {
-              that.uploadFile(model, 'image', file, that.handleUploadProgress);
+              that.uploadFile(model, 'image', file, {
+                progressHandler: that.handleUploadProgress,
+                beforeSend: function() {
+                  that.setState('upload');
+                  that.render();
+                },
+                success: function(model, response) {
+                  that.setState('display');
+                  that.render();
+                }
+              });
             }
           });
         }
