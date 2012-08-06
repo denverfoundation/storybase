@@ -569,11 +569,15 @@ class LocalDataSet(DataSet):
     for working with files in the Django admin.  This is subject to change.
     
     """
-    file = FilerFileField()
+    file = FilerFileField(null=True)
 
     def download_url(self):
         """Returns the URL to the downloadable version of the data set"""
-        return self.file.url 
+        if self.file:
+            return self.file.url
+        else:
+            return None
+
 
 def delete_dataset_file(sender, instance, **kwargs):
     """

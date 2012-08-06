@@ -16,7 +16,7 @@ from storybase.tests.base import FixedTestApiClient, FileCleanupMixin
 from storybase_story.models import (create_section, create_story,
                                     Container, SectionAsset, SectionLayout)
 from storybase_asset.models import (Asset, ExternalAsset, HtmlAsset,
-    HtmlAssetTranslation, LocalImageAsset, DataSet,
+    HtmlAssetTranslation, LocalImageAsset, DataSet, LocalDataSet,
     create_html_asset, create_external_asset, create_local_image_asset,
     create_external_dataset)
 from embedable_resource import EmbedableResource
@@ -542,6 +542,66 @@ class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         self.assertEqual(created_dataset.owner, self.user)
         # Test that the created dataset is associated with a story 
         self.assertIn(self.story, created_dataset.stories.all())
+
+    def test_post_list_with_story_no_file(self):
+        """
+        Test that a user can create a resource that will later accept an uploaded file
+        """
+        post_data = {
+            'title': "Test Dataset",
+            'description': "A test dataset",
+            'language': "en",
+        }
+        self.assertEqual(DataSet.objects.count(), 0)
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        uri = '/api/0.1/datasets/stories/%s/' % (self.story.story_id)
+        resp = self.api_client.post(uri, format='json', data=post_data)
+        self.assertHttpCreated(resp)
+        self.assertEqual(LocalDataSet.objects.count(), 1)
+        # Compare the response data with the post data
+        self.assertEqual(self.deserialize(resp)['title'], 
+                         post_data['title'])
+        self.assertEqual(self.deserialize(resp)['description'], 
+                         post_data['description'])
+        # Compare the created model instance with the post data
+        created_dataset = LocalDataSet.objects.get()
+        self.assertEqual(created_dataset.title, post_data['title'])
+        self.assertEqual(created_dataset.description, post_data['description'])
+        # Test that the owner of the dataset is our logged-in user
+        self.assertEqual(created_dataset.owner, self.user)
+        # Test that the created dataset is associated with a story 
+        self.assertIn(self.story, created_dataset.stories.all())
+
+    def test_upload_file(self):
+        """Test that a user can upload a file for an existing dataset"""
+        data_filename = "test_data.csv"
+        app_dir = os.path.dirname(os.path.abspath(__file__))
+        data_path = os.path.join(app_dir, "test_files", data_filename)
+        original_hash = hashlib.sha1(file(data_path, 'r').read()).digest()
+        post_data = {
+            'title': "Test Dataset",
+            'description': "A test dataset",
+            'language': "en",
+        }
+        self.assertEqual(Asset.objects.count(), 0)
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        uri = '/api/0.1/datasets/stories/%s/' % (self.story.story_id)
+        resp = self.api_client.post(uri, format='json', data=post_data)
+        self.assertHttpCreated(resp)
+        with open(data_path) as fp:
+            post_data = {
+                'file': fp 
+            }
+            uri = resp['location'] + 'upload/'
+            resp = self.api_client.client.post(uri, post_data)
+            self.assertHttpOK(resp)
+            created_obj = DataSet.objects.get_subclass()
+            created_hash = hashlib.sha1(file(created_obj.file.path, 'r').read()).digest()
+            self.assertEqual(original_hash, created_hash)
+            # Set our created file to be cleaned up
+            self.add_file_to_cleanup(created_obj.file.path)
 
     def test_post_list_with_story_url(self):
         post_data = {
