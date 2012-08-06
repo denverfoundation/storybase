@@ -2128,7 +2128,6 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       if (evt.lengthComputable) {
         var percentage = Math.round((evt.loaded * 100) / evt.total);
         this.$('.uploadprogress').text(gettext('Uploading') + ': ' + percentage + '%');
-        console.debug(percentage);
       }
     },
 
@@ -2221,7 +2220,7 @@ storybase.builder.views.DataView = Backbone.View.extend({
     this._collectionFetched = false;
 
     this.form = new Backbone.Form({
-      schema: storybase.models.DataSet.prototype.schema
+      schema: storybase.models.DataSet.prototype.schema()
     }); 
   },
 
