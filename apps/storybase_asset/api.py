@@ -1,5 +1,10 @@
+from django import http as django_http
+from django.http import Http404
 from django.conf.urls.defaults import url
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.views.generic import View
+from django.views.generic.detail import SingleObjectMixin
+from django.utils.translation import ugettext as _
 
 from tastypie import fields, http
 from tastypie.authentication import Authentication
@@ -14,7 +19,8 @@ from storybase.api import (DataUriResourceMixin,
    DelayedAuthorizationResource, TranslatedModelResource,
    LoggedInAuthorization)
 from storybase_asset.models import (Asset, ExternalAsset, HtmlAsset, 
-    LocalImageAsset, DataSet, ExternalDataSet, LocalDataSet)
+    LocalImageAsset, LocalImageAssetTranslation,
+    DataSet, ExternalDataSet, LocalDataSet)
 from storybase_story.models import Story
 
 class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource, 
@@ -77,6 +83,10 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
                 (self._meta.resource_name, trailing_slash()),
                 self.wrap_view('dispatch_detail'),
                 name="api_dispatch_detail"),
+            url(r"^(?P<resource_name>%s)/(?P<asset_id>[0-9a-f]{32,32})/upload%s$" %
+                (self._meta.resource_name, trailing_slash()),
+                ImageUploadView.as_view(), 
+                name="api_dispatch_upload"),
             url(r"^(?P<resource_name>%s)/stories/(?P<story_id>[0-9a-f]{32,32})%s$" %
                 (self._meta.resource_name, trailing_slash()),
                 self.wrap_view('dispatch_list'),
@@ -258,3 +268,51 @@ class DataSetResource(DataUriResourceMixin,DelayedAuthorizationResource,
         # Exclude the filename field from the output
         del bundle.data['filename']
         return bundle
+
+class ImageUploadView(SingleObjectMixin, View):
+    queryset = LocalImageAsset.objects.all()
+    translation_queryset = LocalImageAssetTranslation.objects.all()
+    obj_id_name = 'asset_id' 
+    translation_fk_name = 'asset'
+    file_field_name = 'image'
+
+    def get_object(self):
+        """Retrieve the object by it's model specific id instead of pk"""
+        queryset = self.get_queryset()
+        obj_id = self.kwargs.get(self.obj_id_name, None)
+        if obj_id is not None:
+            filter_args = {self.obj_id_name: obj_id}
+            queryset = queryset.filter(**filter_args)
+            try:
+                obj = queryset.get()
+            except ObjectDoesNotExist:
+                raise Http404(_(u"No %(verbose_name)s found matching the query") %
+                        {'verbose_name': queryset.model._meta.verbose_name})
+            if not obj.has_perm(self.request.user, 'change'):
+                raise PermissionDenied(_(u"You are not authorized to edit this story"))
+            return obj
+        else:
+            return None
+
+    def get_translation_queryset(self):
+        return self.translation_queryset
+
+    def get_object_translation(self):
+        queryset = self.get_translation_queryset()
+        kwargs = {}
+        kwargs[self.translation_fk_name] = self.object
+        return queryset.get(**kwargs)
+
+    def post(self, request, *args, **kwargs):
+        self.object = self.get_object()
+        if not self.object.has_perm(request.user, 'change'):
+            return django_http.HttpResponsForbidden()
+        file_field = self.file_field_name
+        uploaded_file = request.FILES.get(file_field)
+        if not uploaded_file:
+            return django_http.HttpResponseBadRequest()
+        image = Image.objects.create(file=uploaded_file)
+        self.object_translation = self.get_object_translation()
+        setattr(self.object_translation, file_field, image)
+        self.object_translation.save()
+        return django_http.HttpResponse()

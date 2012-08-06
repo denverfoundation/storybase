@@ -1168,3 +1168,35 @@ class AssetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
             self.deserialize(resp)['objects'][0]['title'],
             asset3.title)
 
+    def test_upload_image(self):
+        """Test that a user can upload an image for an existing asset"""
+        image_filename = "test_image.jpg"
+
+        app_dir = os.path.dirname(os.path.abspath(__file__))
+        img_path = os.path.join(app_dir, "test_files", image_filename)
+        original_hash = hashlib.sha1(file(img_path, 'r').read()).digest()
+        post_data = {
+            'type': "image",
+            'title': "Test Image Asset",
+            'caption': "This is a test image",
+            'status': "published",
+            'language': "en",
+        }
+        self.assertEqual(Asset.objects.count(), 0)
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        resp = self.api_client.post('/api/0.1/assets/',
+                               format='json', data=post_data)
+        self.assertHttpCreated(resp)
+        with open(img_path) as fp:
+            post_data = {
+                'image': fp 
+            }
+            uri = resp['location'] + 'upload/'
+            resp = self.api_client.client.post(uri, post_data)
+            self.assertHttpOK(resp)
+            created_asset = Asset.objects.get_subclass()
+            created_hash = hashlib.sha1(file(created_asset.image.path, 'r').read()).digest()
+            self.assertEqual(original_hash, created_hash)
+            # Set our created file to be cleaned up
+            self.add_file_to_cleanup(created_asset.image.file.path)
