@@ -2090,6 +2090,12 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       var url = model.url() + 'upload/';
       var formData = new FormData;
       var options;
+      var handleProgress = function(evt) {
+        if (evt.lengthComputable) {
+          var percentage = Math.round((evt.loaded * 100) / evt.total);
+          console.debug(percentage);
+        }
+      };
       formData.append(fileField, file);
       options = {
         type: "POST",
@@ -2097,6 +2103,13 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
         cache: false,
         contentType: false,
         processData: false,
+        xhr: function() {
+          var newXhr = $.ajaxSettings.xhr();
+          if (newXhr.upload) {
+            newXhr.upload.addEventListener('progress', handleProgress, false);
+          }
+          return newXhr;
+        },
         success: function() {
           model.fetch({
             success: that.render 
