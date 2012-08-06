@@ -38,6 +38,8 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
         allowed_methods = ['get', 'post', 'put']
         authentication = Authentication()
         authorization = LoggedInAuthorization()
+        # Hide the underlying id
+        excludes = ['id']
 
         delayed_authorization_methods = ['put_detail']
 
