@@ -2,6 +2,7 @@ from django import http as django_http
 from django.http import Http404
 from django.conf.urls.defaults import url
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 from django.views.generic.detail import SingleObjectMixin
 from django.utils.translation import ugettext as _
@@ -52,7 +53,7 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
     def get_object_class(self, bundle=None, request=None, **kwargs):
         if (bundle.data.get('image', None) or 
                 (bundle.data.get('type') == 'image' and
-                 bundle.data.get('url') is None)):
+                 not bundle.data.get('url'))):
             return LocalImageAsset
         elif bundle.data.get('body', None): 
             return HtmlAsset
@@ -316,3 +317,7 @@ class ImageUploadView(SingleObjectMixin, View):
         setattr(self.object_translation, file_field, image)
         self.object_translation.save()
         return django_http.HttpResponse()
+
+    @csrf_exempt
+    def dispatch(self, *args, **kwargs):
+        return super(ImageUploadView, self).dispatch(*args, **kwargs)
