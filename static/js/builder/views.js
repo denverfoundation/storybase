@@ -1953,7 +1953,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       if (_.isUndefined(this.model)) {
         this.model = new storybase.models.Asset();
       }
-      _.bindAll(this, 'initializeForm'); 
+      _.bindAll(this, 'initializeForm', 'doUpload', 'render'); 
       this.model.on("change", this.initializeForm);
       this.initializeForm();
       this.setInitialState();
@@ -2056,15 +2056,14 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       this.render();
     },
 
-    saveModel: function(attributes) {
+    saveModel: function(attributes, options) {
+      options = _.isUndefined(options) ? {} : options;
       var that = this;
       // Save the model's original new state to decide
       // whether to send a signal later
       var isNew = this.model.isNew();
       this.model.save(attributes, {
         success: function(model) {
-          // TODO: Decide if it's better to listen to the model's
-          // "sync" event than to use this callback
           that.setState('display');
           that.render();
           if (isNew) {
@@ -2072,6 +2071,9 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
             that.dispatcher.trigger("do:add:sectionasset", that.section,
               that.model, that.container
             );
+          }
+          if (options.success) {
+            options.success(model);
           }
         },
         error: function(model) {
@@ -2081,20 +2083,44 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
     },
 
     /**
+     * Event callback for uploading image
+     */
+    doUpload: function(model) {
+      var that = this;
+      var fileField = 'image';
+      var url = model.url() + 'upload/';
+      var file = this.form.getValue(fileField);
+      var formData = new FormData;
+      var options;
+      formData.append(fileField, file);
+      options = {
+        type: "POST",
+        data: formData,
+        cache: false,
+        contentType: false,
+        processData: false,
+        success: function() {
+          that.model.fetch({
+            success: that.render 
+          });
+        }
+      };
+      var jqXHR = $.ajax(url, options);
+    },
+
+    /**
      * Event handler for submitting form
      */
     processForm: function(e) {
       e.preventDefault();
       console.info("Creating asset");
-      var that = this;
       var errors = this.form.validate();
       if (!errors) {
         var data = this.form.getValue();
         if (data.image) {
-          data.filename = data.image;
-          this.form.fields.image.editor.getValueAsDataURL(function(dataURL) {
-            data.image = dataURL;
-            that.saveModel(data);
+          delete data.image;
+          this.saveModel(data, {
+            success: this.doUpload
           });
         }
         else {

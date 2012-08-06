@@ -29,6 +29,10 @@ storybase.forms.File = Backbone.Form.editors.Text.extend({
    */
   setValue: function(value) {
   },
+
+  getValue: function() {
+    return this.el.files[0];
+  },
  
   /**
    * Retrieve the file selected in this input as a data URL
