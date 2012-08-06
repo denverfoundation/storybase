@@ -1929,6 +1929,9 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       else if (state === 'edit') {
         return $('#section-asset-edit-template').html();
       }
+      else if (state === 'upload') {
+        return $('#section-asset-uploadprogress-template').html();
+      }
       else {
         // state === 'select'
         return $('#section-asset-select-type-template').html();
@@ -1953,7 +1956,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       if (_.isUndefined(this.model)) {
         this.model = new storybase.models.Asset();
       }
-      _.bindAll(this, 'initializeForm', 'uploadFile', 'render'); 
+      _.bindAll(this, 'initializeForm', 'uploadFile', 'handleUploadProgress'); 
       this.model.on("change", this.initializeForm);
       this.initializeForm();
       this.setInitialState();
@@ -2085,17 +2088,11 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
     /**
      * Upload a file 
      */
-    uploadFile: function(model, fileField, file) {
+    uploadFile: function(model, fileField, file, progressHandler) {
       var that = this;
       var url = model.url() + 'upload/';
       var formData = new FormData;
       var options;
-      var handleProgress = function(evt) {
-        if (evt.lengthComputable) {
-          var percentage = Math.round((evt.loaded * 100) / evt.total);
-          console.debug(percentage);
-        }
-      };
       formData.append(fileField, file);
       options = {
         type: "POST",
@@ -2105,18 +2102,34 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
         processData: false,
         xhr: function() {
           var newXhr = $.ajaxSettings.xhr();
-          if (newXhr.upload) {
-            newXhr.upload.addEventListener('progress', handleProgress, false);
+          if (newXhr.upload && progressHandler) {
+            newXhr.upload.addEventListener('progress', progressHandler, false);
           }
           return newXhr;
         },
         success: function() {
           model.fetch({
-            success: that.render 
+            success: function() {
+              that.setState('display');
+              that.render();
+            }
           });
         }
       };
+      that.setState('upload');
+      that.render();
       var jqXHR = $.ajax(url, options);
+    },
+
+    /**
+     * Event callback for updating the progress of an upload.
+     */
+    handleUploadProgress: function(evt) {
+      if (evt.lengthComputable) {
+        var percentage = Math.round((evt.loaded * 100) / evt.total);
+        this.$('.uploadprogress').text(gettext('Uploading') + ': ' + percentage + '%');
+        console.debug(percentage);
+      }
     },
 
     /**
@@ -2136,7 +2149,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
           delete data.image;
           this.saveModel(data, {
             success: function(model) {
-              that.uploadFile(model, 'image', file);
+              that.uploadFile(model, 'image', file, that.handleUploadProgress);
             }
           });
         }
