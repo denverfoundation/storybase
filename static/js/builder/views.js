@@ -1152,7 +1152,6 @@ storybase.builder.views.FileUploadMixin = {
    *     jQuery.ajax()
    */
   uploadFile: function(model, fileField, file, options) {
-    console.debug(file);
     options = _.isUndefined(options) ? {} : options;
     var that = this;
     var url = model.url() + 'upload/';
@@ -2234,135 +2233,143 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
   })
 );
 
-storybase.builder.views.DataView = Backbone.View.extend({
-  templateSource: $('#data-template').html(),
+storybase.builder.views.DataView = Backbone.View.extend(
+  _.extend({}, storybase.builder.views.FileUploadMixin, {
+    templateSource: $('#data-template').html(),
 
-  events: {
-    'click .add-dataset': 'showForm',
-    'click .cancel': 'hideForm',
-    'click .delete-dataset': 'handleDelete',
-    'submit form': 'processForm'
-  },
+    events: {
+      'click .add-dataset': 'showForm',
+      'click .cancel': 'hideForm',
+      'click .delete-dataset': 'handleDelete',
+      'submit form': 'processForm'
+    },
 
-  initialize: function() {
-    this.dispatcher = this.options.dispatcher;
-    this.template = Handlebars.compile(this.templateSource);
+    initialize: function() {
+      this.dispatcher = this.options.dispatcher;
+      this.template = Handlebars.compile(this.templateSource);
 
-    this.collection = new storybase.collections.DataSets;
-    if (_.isUndefined(this.model)) {
-      this.dispatcher.on("ready:story", this.setStory, this);
-    }
-    else {
-      this.collection.setStory(this.model);
-    }
-    this.collection.on('reset', this.render, this);
-    this._collectionFetched = false;
-
-    this.form = new Backbone.Form({
-      schema: storybase.models.DataSet.prototype.schema()
-    }); 
-  },
-
-  setStory: function(story) {
-    this.model = story;
-    this.collection.setStory(this.model);
-  },
-
-  fetchCollection: function() {
-    var that = this;
-    this.collection.fetch({
-      success: function() {
-        that._collectionFetched = true;
-      }
-    });
-  },
-
-  render: function() {
-    console.info('Rendering data view');
-    if (!this._collectionFetched) {
-      this.fetchCollection();
-    }
-    var context = {
-      datasets: this.collection.toJSON()
-    };
-    this.$el.html(this.template(context));
-    this.$('.add-dataset').before(this.form.render().$el.append('<input class="cancel" type="reset" value="Cancel" />').append('<input type="submit" value="Save" />').hide());
-    this.delegateEvents();
-    return this;
-  },
-
-  showForm: function(evt) {
-    evt.preventDefault();
-    this.form.$el.show();
-    this.$('.add-dataset').hide();
-  },
-
-  hideForm: function(evt) {
-    evt.preventDefault();
-    this.form.$el.hide();
-    this.$('.add-dataset').show();
-  },
-
-  processForm: function(evt) {
-    evt.preventDefault();
-    var that = this;
-    var errors = this.form.validate();
-    if (!errors) {
-      var formData = this.form.getValue();
-      if (formData.file) {
-        formData.filename = formData.file;
-        this.form.fields.file.editor.getValueAsDataURL(function(dataURL) {
-          formData.file = dataURL;
-          that.addDataSet(formData);
-        });
+      this.collection = new storybase.collections.DataSets;
+      if (_.isUndefined(this.model)) {
+        this.dispatcher.on("ready:story", this.setStory, this);
       }
       else {
+        this.collection.setStory(this.model);
+      }
+      this.collection.on('reset', this.render, this);
+      this._collectionFetched = false;
+
+      this.form = new Backbone.Form({
+        schema: storybase.models.DataSet.prototype.schema()
+      }); 
+    },
+
+    setStory: function(story) {
+      this.model = story;
+      this.collection.setStory(this.model);
+    },
+
+    fetchCollection: function() {
+      var that = this;
+      this.collection.fetch({
+        success: function() {
+          that._collectionFetched = true;
+        }
+      });
+    },
+
+    render: function() {
+      console.info('Rendering data view');
+      if (!this._collectionFetched) {
+        this.fetchCollection();
+      }
+      var context = {
+        datasets: this.collection.toJSON()
+      };
+      this.$el.html(this.template(context));
+      this.$('.add-dataset').before(this.form.render().$el.append('<input class="cancel" type="reset" value="Cancel" />').append('<input type="submit" value="Save" />').hide());
+      this.delegateEvents();
+      return this;
+    },
+
+    showForm: function(evt) {
+      evt.preventDefault();
+      this.form.$el.show();
+      this.$('.add-dataset').hide();
+    },
+
+    hideForm: function(evt) {
+      evt.preventDefault();
+      this.form.$el.hide();
+      this.$('.add-dataset').show();
+    },
+
+    processForm: function(evt) {
+      evt.preventDefault();
+      var that = this;
+      var errors = this.form.validate();
+      if (!errors) {
+        var formData = this.form.getValue();
         this.addDataSet(formData);
       }
-    }
-    else {
-      // Remove any previous error messages
-      this.form.$('.bbf-model-errors').remove();
-      if (!_.isUndefined(errors._others)) {
-        that.form.$el.prepend('<ul class="bbf-model-errors">');
-        _.each(errors._others, function(msg) {
-          that.form.$('.bbf-model-errors').append('<li>' + msg + '</li>');
-        });
+      else {
+        // Remove any previous error messages
+        this.form.$('.bbf-model-errors').remove();
+        if (!_.isUndefined(errors._others)) {
+          that.form.$el.prepend('<ul class="bbf-model-errors">');
+          _.each(errors._others, function(msg) {
+            that.form.$('.bbf-model-errors').append('<li>' + msg + '</li>');
+          });
+        }
       }
-    }
-  },
+    },
 
-  addDataSet: function(attrs) {
-    var that = this;
-    this.collection.create(attrs, {
-      success: function(model, response) {
-        that.trigger('save:dataset', model);
-        that.dispatcher.trigger('alert', 'success', "Data set added");
-        that.render();
-      },
-      error: function(model, response) {
-        that.dispatcher.trigger('error', 'Error saving the data set');
+    addDataSet: function(attrs) {
+      var that = this;
+      var file = null;
+      if (attrs.file) {
+        file = attrs.file;
+        delete attrs.file;
       }
-    });
-  },
+      this.collection.create(attrs, {
+        success: function(model, response) {
+          that.trigger('save:dataset', model);
+          if (file) {
+            that.uploadFile(model, 'file', file, {
+              success: function(model, response) {
+                that.dispatcher.trigger('alert', 'success', "Data set added");
+                that.render();
+              }
+            });
+          }
+          else {
+            that.dispatcher.trigger('alert', 'success', "Data set added");
+            that.render();
+          }
+        },
+        error: function(model, response) {
+          that.dispatcher.trigger('error', 'Error saving the data set');
+        }
+      });
+    },
 
-  handleDelete: function(evt) {
-    evt.preventDefault();
-    var that = this;
-    var datasetId = $(evt.target).data('dataset-id');
-    var dataset = this.collection.get(datasetId);
-    dataset.destroy({
-      success: function(model, response) {
-        that.dispatcher.trigger('delete:dataset', model);
-        that.dispatcher.trigger('alert', 'success', "Data set deleted");
-        that.render();
-      },
-      error: function(model, response) {
-        that.dispatcher.trigger('error', 'Error removing the data set');
-      }
-    });
-  },
-});
+    handleDelete: function(evt) {
+      evt.preventDefault();
+      var that = this;
+      var datasetId = $(evt.target).data('dataset-id');
+      var dataset = this.collection.get(datasetId);
+      dataset.destroy({
+        success: function(model, response) {
+          that.dispatcher.trigger('delete:dataset', model);
+          that.dispatcher.trigger('alert', 'success', "Data set deleted");
+          that.render();
+        },
+        error: function(model, response) {
+          that.dispatcher.trigger('error', 'Error removing the data set');
+        }
+      });
+    },
+  })
+);
 
 storybase.builder.views.ReviewView = Backbone.View.extend({
   templateSource: $('#review-template').html(),
