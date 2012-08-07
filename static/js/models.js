@@ -248,6 +248,8 @@ storybase.models.Asset = Backbone.Model.extend(
           body: {type: 'TextArea'},
         };
         var type = this.get('type');
+        var self = this;
+        // Remove fields that aren't relevant for a particular type
         if (!(_.has(this.showBody, type))) {
           delete schema.body;
         }
@@ -256,6 +258,17 @@ storybase.models.Asset = Backbone.Model.extend(
         }
         if (!(_.has(this.showUrl, type))) {
           delete schema.url;
+        }
+        if (!this.isNew()) {
+          // For a saved model, only show the fields that have a value set.
+          _.each(schema, function(value, field) {
+            console.debug(field);
+            var value = self.get(field);
+            console.debug(value);
+            if (!value) {
+              delete schema[field];
+            }
+          });
         }
 
         return schema;
@@ -283,7 +296,6 @@ storybase.models.Asset = Backbone.Model.extend(
         }
       });
       if (found.length > 1) {
-        // TODO: Translate this
         return "You must specify only one of the following values " + found.join(', ');
       }
     }
