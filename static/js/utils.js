@@ -4,6 +4,11 @@
 
 Namespace('storybase.utils');
 
+storybase.utils.getValue = function(object, prop) {
+  if (!(object && object[prop])) return null;
+  return _.isFunction(object[prop]) ? object[prop]() : object[prop];
+};
+
 /**
  * Translate a string in a template using Django's gettext Javascript API.
  * @param {object} options Hash of options. Should contain one key,
