@@ -297,6 +297,17 @@
   width: 100%;
 }
 
+.bbf-field .bbf-editor {
+  margin-left: 0;
+  width: 100%;
+}
+
+.bbf-field label {
+  float: none;
+  width: 100%;
+  font-weight: bold;
+}
+
 /* Table of contents thumbnails */
 
 .section-list {

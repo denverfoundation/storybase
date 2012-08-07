@@ -2026,6 +2026,27 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       this.setInitialState();
     },
 
+    /** 
+     * Update the view's form labels based on the asset type.
+     */
+    updateFormLabels: function() {
+      var type = this.model.get('type');
+      if (this.form.schema.url) {
+        this.form.schema.url.title = gettext("Enter " + type + " URL");
+      }
+      if (this.form.schema.image) {
+        this.form.schema.image.title = gettext("Or, select an image from your own computer to be included in your story.");
+      }
+      if (this.form.schema.body) {
+        if (type === 'text') {
+          this.form.schema.body.template = 'noLabelField';
+        }
+        else {
+          this.form.schema.body.title = gettext("Or, paste the embed code for the " + type);
+        }
+      }
+    },
+
     /**
      * Set the view's form property based on the current state of the model.
      */
@@ -2033,6 +2054,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       this.form = new Backbone.Form({
         model: this.model
       });
+      this.updateFormLabels(); 
       this.form.render();
     },
 
@@ -2052,7 +2074,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       this.$el.html(this.template(context));
       if (state === 'edit') {
         this.form.render().$el.append('<input type="reset" value="Cancel" />').append('<input type="submit" value="Save" />');
-        if (_.has(this.form.fields, 'body')) {
+        if (_.has(this.form.fields, 'body') && this.model.get('type') == 'text') {
           this.bodyEditor = this.getEditor(
             this.form.fields.body.editor.el
           );

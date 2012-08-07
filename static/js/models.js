@@ -229,7 +229,9 @@ storybase.models.Asset = Backbone.Model.extend(
 
     showBody: {
       'text': true,
-      'quotation': true
+      'quotation': true,
+      'map': true,
+      'table': true,
     },
 
     /**
@@ -241,9 +243,9 @@ storybase.models.Asset = Backbone.Model.extend(
     schema: function() {
       if (!_.isUndefined(storybase.forms)) {
         var schema = {
-          body: {type: 'TextArea', template: 'noLabelField'},
           url: {type: 'Text', validators: ['url']},
-          image: {type: storybase.forms.File}
+          image: {type: storybase.forms.File},
+          body: {type: 'TextArea'},
         };
         var type = this.get('type');
         if (!(_.has(this.showBody, type))) {
