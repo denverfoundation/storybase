@@ -34,6 +34,8 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
     url = fields.CharField(attribute='url', null=True)
     image = fields.FileField(attribute='image', blank=True, null=True)
     content = fields.CharField(readonly=True)
+    thumbnail_url = fields.CharField(readonly=True)
+    display_title = fields.CharField(attribute='display_title', readonly=True)
     # A "write-only" field for specifying the filename when uploading images
     # This is removed from responses to GET requests
     filename = fields.CharField(null=True)
@@ -161,6 +163,9 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
     
     def dehydrate_content(self, bundle):
         return bundle.obj.render(format="html")
+
+    def dehydrate_thumbnail_url(self, bundle):
+        return bundle.obj.get_thumbnail_url(64, 64)
 
 class DataSetValidation(Validation):
     def is_valid(self, bundle, request=None, **kwargs):

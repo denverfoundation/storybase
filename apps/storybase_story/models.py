@@ -225,7 +225,7 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
         """
         try:
             featured_asset = self.featured_assets.select_subclasses()[0]
-            return featured_asset.get_thumbnail_url()
+            return featured_asset.get_thumbnail_url(include_host=True)
         except IndexError:
             # No featured assets
             return None

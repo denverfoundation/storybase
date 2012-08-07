@@ -216,6 +216,17 @@
 
 .unused-asset {
   cursor: pointer;
+  padding: 2px 0;
+}
+
+.unused-asset.ui-draggable-dragging {
+  color: #000;
+}
+
+.unused-asset .thumbnail {
+  margin: 2px;
+  width: 32px;
+  height: 32px;
 }
 
 /* Story information editor */

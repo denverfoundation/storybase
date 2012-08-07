@@ -189,9 +189,9 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
                 "style='height: %dpx; width: %dpx'>Asset Thumbnail</div>" %
                 (html_class, height, width))
 
-	def get_thumbnail_url(self, width=150, height=100):
-	    """Return the URL of the Asset's thumbnail"""
-	    return None
+    def get_thumbnail_url(self, width=150, height=100, **kwargs):
+        """Return the URL of the Asset's thumbnail"""
+        return None
 
     def dataset_html(self, label=_("Associated Datasets")):
         """Return an HTML list of associated datasets"""
@@ -323,7 +323,7 @@ class ExternalAsset(Asset):
             
         return mark_safe(output)
 
-    def get_thumbnail_url(self, width=150, height=100):
+    def get_thumbnail_url(self, width=150, height=100, **kwargs):
         """Return the URL of the Asset's thumbnail"""
         url = None
         try:
@@ -409,6 +409,8 @@ class LocalImageAsset(Asset):
     def __unicode__(self):
         if self.title:
             return self.title
+        elif self.image:
+            return os.path.basename(self.image.file.name)
         else:
             return "Asset %s" % self.asset_id
 
@@ -444,14 +446,18 @@ class LocalImageAsset(Asset):
             "src='%s' alt='%s' />" %
             (html_class, thumbnail.url, self.title))
 
-    def get_thumbnail_url(self, width=150, height=100):
+    def get_thumbnail_url(self, width=150, height=100, **kwargs):
         """Return the URL of the Asset's thumbnail"""
+        include_host = kwargs.get('include_host', False)
+        if not self.image:
+            return None
         thumbnailer = self.image.easy_thumbnails_thumbnailer
         thumbnail_options = {}
         thumbnail_options.update({'size': (width, height)})
         thumbnail = thumbnailer.get_thumbnail(thumbnail_options)
-        return "http://%s%s" % (Site.objects.get_current().domain,
-                               thumbnail.url)
+        host = "http://%s" % (Site.objects.get_current().domain) if include_host else ""
+        return "%s%s" % (host, thumbnail.url)
+                               
 
 
 # Hook up some signals so the publication date gets changed
