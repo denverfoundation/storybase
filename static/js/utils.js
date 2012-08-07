@@ -2,12 +2,16 @@
  * Utilities used throughout StoryBase JavaScript apps
  */
 
-Namespace('storybase.utils');
+Namespace('storybase.utils', {
+  getValue: function(object, prop) {
+    if (!(object && object[prop])) return null;
+    return _.isFunction(object[prop]) ? object[prop]() : object[prop];
+  },
 
-storybase.utils.getValue = function(object, prop) {
-  if (!(object && object[prop])) return null;
-  return _.isFunction(object[prop]) ? object[prop]() : object[prop];
-};
+  capfirst: function(string) {
+    return string.charAt(0).toUpperCase() + string.slice(1);
+  }
+});
 
 /**
  * Translate a string in a template using Django's gettext Javascript API.
