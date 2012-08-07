@@ -114,7 +114,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
   render: function() {
     console.debug('Rendering main view');
     var activeView = this.getActiveView();
-    this.$el.height($(window).height());
+    //this.$el.height($(window).height());
     this.$('#app').empty();
     this.$('#app').append(activeView.render().$el);
     // Some views have things that only work when the element has been added
