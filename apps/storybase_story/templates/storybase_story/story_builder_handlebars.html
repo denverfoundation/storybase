@@ -32,11 +32,16 @@ Handlebars.js templates for story builder Backbone application
 </script>
 
 <script type="text/x-handlebars-template" id="section-list-template">
-<a class="scroll-left"><</a>
+<a id="toggle-section-list" class="opened" href="#">{{gettext message="Story Sections"}}</a>
+<div class="sections-container-border">
 <div class="sections-container">
-<ul class="sections"></ul>
+    <a class="scroll-left"><</a>
+    <div class="sections-clip">
+    <ul class="sections"></ul>
+    </div>
+    <a class="scroll-right">></a>
 </div>
-<a class="scroll-right">></a>
+</div>
 </script>
 
 <script type="text/x-handlebars-template" id="section-thumbnail-template">

@@ -310,13 +310,47 @@
 
 /* Table of contents thumbnails */
 
-.section-list {
-  position: relative;
+#section-list {
+  position: fixed;
+  width: 100%;
+  left: 0;
+  bottom: 0;
+  z-index: 998;
+}
+
+#toggle-section-list {
+  padding: 4px;
+  margin-left: 8px;
+  font-weight: bold;
+  text-decoration: none;
+  border-radius: 4px 4px 0 0;
+  background-color: #666;
+  color: #fff;
+}
+
+#toggle-section-list.opened::after {
+  content: ' - ';
+}
+
+#toggle-section-list.closed::after {
+  content: ' + ';
+}
+
+.sections-container-border {
+  border-top: 4px solid #666;
 }
 
 .sections-container {
+  position: relative;
+  overflow: hidden;
+  background-color: #666;
+  padding: 0 10px;
+  text-align: center;
+}
+
+.sections-clip {
   float: left;
-  width: 66%;
+  width: 90%;
   margin: 0 20px;
   padding: 0 10px;
   overflow: auto;
@@ -324,16 +358,20 @@
 
 .scroll-left, .scroll-right {
   display: block;
+  float: left;
   line-height: 100px;
   cursor: pointer;
-  float: left;
+  color: #fff;
+  font-weight: bold;
 }
 
-.scroll-left {
+.scroll-left:hover, .scroll-right:hover {
+  color: #fff;
 }
 
 .scroll-right {
-  margin-right: 20px;
+  position: absolute;
+  right: 10px;
 }
 
 .sections {
@@ -363,6 +401,7 @@
 .section-thumbnail {
   width: 120px;
   border: 1px solid #000;
+  background-color: #fff;
 }
 
 .section-thumbnail .title {

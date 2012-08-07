@@ -1194,6 +1194,8 @@ storybase.builder.views.FileUploadMixin = {
 
 storybase.builder.views.SectionListView = Backbone.View.extend({
   tagName: 'div',
+  
+  id: 'section-list',
 
   className: 'section-list',
 
@@ -1201,6 +1203,7 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
 
   events: {
     'click .spacer': 'clickSpacer',
+    'click #toggle-section-list': 'toggleList',
     'sortupdate': 'handleSort',
     'mousedown .scroll-right': 'scrollRight',
     'mousedown .scroll-left': 'scrollLeft',
@@ -1299,7 +1302,7 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
     }
  
     this.setWidth();
-    this.$('.sections-container').css({overflow: 'hidden'});
+    this.$('.sections-clip').css({overflow: 'hidden'});
     this.delegateEvents();
 
     return this;
@@ -1404,7 +1407,7 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
 
   startScroll: function(scrollVal) {
     var that = this;
-    var $el = this.$('.sections-container');
+    var $el = this.$('.sections-clip');
     $el.animate({scrollLeft: scrollVal}, 'fast', function() {
       if (that._doScroll) {
         that.startScroll(scrollVal);
@@ -1427,6 +1430,14 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
   stopScroll: function(evt) {
     evt.preventDefault();
     this._doScroll = false;
+  },
+
+  toggleList: function(evt) {
+    evt.preventDefault();
+    // TODO: Use the 'blind' easing function to show/hide this
+    this.$('.sections-container').toggle();
+    $(evt.target).toggleClass('opened');
+    $(evt.target).toggleClass('closed');
   }
 });
 
