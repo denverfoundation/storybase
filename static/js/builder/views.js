@@ -1,4 +1,5 @@
 Namespace('storybase.builder.views');
+Namespace.use('storybase.utils.capfirst');
 
 /**
  * @name save:section
@@ -2031,18 +2032,19 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
      */
     updateFormLabels: function() {
       var type = this.model.get('type');
+      var prefix = _.size(this.form.schema) > 1 ? gettext("or") + ", " : "";
       if (this.form.schema.url) {
-        this.form.schema.url.title = gettext("Enter " + type + " URL");
+        this.form.schema.url.title = capfirst(gettext("enter") + " " + gettext(type) + " " + gettext("URL"));
       }
       if (this.form.schema.image) {
-        this.form.schema.image.title = gettext("Or, select an image from your own computer to be included in your story.");
+        this.form.schema.image.title = capfirst(prefix + gettext("select an image from your own computer to be included in your story."));
       }
       if (this.form.schema.body) {
         if (type === 'text') {
           this.form.schema.body.template = 'noLabelField';
         }
         else {
-          this.form.schema.body.title = gettext("Or, paste the embed code for the " + type);
+          this.form.schema.body.title = capfirst(prefix + gettext("paste the embed code for the") + " " + gettext(type));
         }
       }
     },
