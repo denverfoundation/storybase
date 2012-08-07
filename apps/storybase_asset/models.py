@@ -230,7 +230,7 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
 
 class ExternalAssetTranslation(AssetTranslation):
     """Translatable fields for an Asset model instance"""
-    url = models.URLField()
+    url = models.URLField(max_length=500)
 
 
 class ExternalAsset(Asset):
