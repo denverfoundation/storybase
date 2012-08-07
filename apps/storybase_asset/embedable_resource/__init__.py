@@ -28,12 +28,22 @@ class EmbedableResourceProvider(object):
     def get_html(self, url):
         raise UrlNotMatched
 
+
 class GoogleSpreadsheetProvider(EmbedableResourceProvider):
     url_pattern = r'^https://docs.google.com/spreadsheet/pub\?key=[0-9a-zA-Z]+'
-    def get_html(self, url):
+    def get_html(self, url, width=500, height=300):
         if not self.match(url):
             raise UrlNotMatched
 
         return "<iframe width='500' height='300' frameborder='0' src='%s&widget=true'></iframe>" % url
 
+
+class GoogleMapProvider(EmbedableResourceProvider):
+    def get_html(self, url, width=425, height=350):
+        if not self.match(url):
+            raise UrlNotMatched
+
+        return '<iframe width="%d" height="%d" frameborder="0" scrolling="no" marginheight="0" marginwidth="0" src="%s&amp;output=embed"></iframe><br /><small><a href="%s&amp;source=embed" style="color:#0000FF;text-align:left">View Larger Map</a></small>' % (width, height, url, url)
+
 EmbedableResource.register(GoogleSpreadsheetProvider)
+EmbedableResource.register(GoogleMapProvider)
