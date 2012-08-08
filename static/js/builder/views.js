@@ -2090,7 +2090,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       }
       this.$el.html(this.template(context));
       if (state === 'edit') {
-        this.form.render().$el.append('<input type="reset" value="Cancel" />').append('<input type="submit" value="Save" />');
+        this.form.render().$el.append('<input type="reset" value="' + gettext("Cancel") + '" />').append('<input type="submit" value="' + gettext("Save Changes") + '" />');
         if (_.has(this.form.fields, 'body') && this.model.get('type') == 'text') {
           this.bodyEditor = this.getEditor(
             this.form.fields.body.editor.el
