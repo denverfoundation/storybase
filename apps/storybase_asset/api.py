@@ -122,6 +122,15 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
         return kwargs
 
     def hydrate_image(self, bundle):
+        if bundle.obj.asset_id:
+            try:
+                image = Image.objects.get(localimageassettranslation__asset__asset_id=bundle.obj.asset_id)
+                if image.file.url == bundle.data['image']:
+                    print "success"
+                    bundle.data["image"] = image
+                    return bundle
+            except Exception:
+                pass
         return self._hydrate_file(bundle, Image, 'image', 'filename')
 
     def build_bundle(self, obj=None, data=None, request=None):

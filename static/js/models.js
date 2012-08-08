@@ -246,6 +246,7 @@ storybase.models.Asset = Backbone.Model.extend(
           url: {type: 'Text', validators: ['url']},
           image: {type: storybase.forms.File},
           body: {type: 'TextArea'},
+          caption: {type: 'TextArea'}
         };
         var type = this.get('type');
         var self = this;
@@ -261,10 +262,8 @@ storybase.models.Asset = Backbone.Model.extend(
         }
         if (!this.isNew()) {
           // For a saved model, only show the fields that have a value set.
-          _.each(schema, function(value, field) {
-            console.debug(field);
+          _.each(['image', 'url', 'body'], function(field) {
             var value = self.get(field);
-            console.debug(value);
             if (!value) {
               delete schema[field];
             }

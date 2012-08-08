@@ -2043,9 +2043,10 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
      */
     updateFormLabels: function() {
       var type = this.model.get('type');
+      console.debug(type);
       var prefix = _.size(this.form.schema) > 1 ? gettext("or") + ", " : "";
       if (this.form.schema.url) {
-        this.form.schema.url.title = capfirst(gettext("enter") + " " + gettext(type) + " " + gettext("URL"));
+        this.form.schema.url.title = capfirst(gettext("enter") + " " + type + " " + gettext("URL"));
       }
       if (this.form.schema.image) {
         this.form.schema.image.title = capfirst(prefix + gettext("select an image from your own computer to be included in your story."));
@@ -2055,7 +2056,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
           this.form.schema.body.template = 'noLabelField';
         }
         else {
-          this.form.schema.body.title = capfirst(prefix + gettext("paste the embed code for the") + " " + gettext(type));
+          this.form.schema.body.title = capfirst(prefix + gettext("paste the embed code for the") + " " + type);
         }
       }
     },
@@ -2203,31 +2204,34 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       var errors = this.form.validate();
       var data;
       var file;
+      var options = {};
       var that = this;
       if (!errors) {
         var data = this.form.getValue();
         if (data.image) {
           file = data.image;
-          delete data.image;
-          this.saveModel(data, {
-            success: function(model) {
-              that.uploadFile(model, 'image', file, {
-                progressHandler: that.handleUploadProgress,
-                beforeSend: function() {
-                  that.setState('upload');
-                  that.render();
-                },
-                success: function(model, response) {
-                  that.setState('display');
-                  that.render();
-                }
-              });
-            }
-          });
+          // Set a callback for saving the model that will upload the
+          // image.
+          options.success = function(model) {
+            that.uploadFile(model, 'image', file, {
+              progressHandler: that.handleUploadProgress,
+              beforeSend: function() {
+                that.setState('upload');
+                that.render();
+              },
+              success: function(model, response) {
+                that.setState('display');
+                that.render();
+              }
+            });
+          };
         }
-        else {
-          this.saveModel(data);
-        }
+
+        // Delete the image property.  We've either retrieved it for
+        // upload or it was empty (meaning we don't want to change the
+        // image.
+        delete data.image;
+        this.saveModel(data, options);
       }
       else {
         // Remove any previous error messages
