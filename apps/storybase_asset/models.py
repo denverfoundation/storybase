@@ -377,10 +377,14 @@ class HtmlAsset(Asset):
         if self.type == 'map':
             output.append('<figure>')
             output.append(self.body)
-	    full_caption_html = self.full_caption_html()
-	    if full_caption_html:
-	        output.append(full_caption_html)
+            full_caption_html = self.full_caption_html()
+            if full_caption_html:
+                output.append(full_caption_html)
             output.append('</figure>')
+        elif self.type == 'quotation':
+            output.append('<blockquote>')
+            output.append(self.body)
+            output.append('</blockquote>')
         else:
             output.append(self.body)
             

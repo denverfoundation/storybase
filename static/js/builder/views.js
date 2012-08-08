@@ -2043,8 +2043,8 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
      */
     updateFormLabels: function() {
       var type = this.model.get('type');
-      console.debug(type);
-      var prefix = _.size(this.form.schema) > 1 ? gettext("or") + ", " : "";
+      var num_elements = _.size(_.pick(this.form.schema, 'image', 'body', 'url')); 
+      var prefix = num_elements > 1 ? gettext("or") + ", " : "";
       if (this.form.schema.url) {
         this.form.schema.url.title = capfirst(gettext("enter") + " " + type + " " + gettext("URL"));
       }
@@ -2054,6 +2054,9 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       if (this.form.schema.body) {
         if (type === 'text') {
           this.form.schema.body.template = 'noLabelField';
+        }
+        else if (type === 'quotation') {
+          this.form.schema.body.title = capfirst(prefix + gettext("enter the quotation text"));
         }
         else {
           this.form.schema.body.title = capfirst(prefix + gettext("paste the embed code for the") + " " + type);
