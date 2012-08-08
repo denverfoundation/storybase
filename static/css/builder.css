@@ -242,7 +242,7 @@
 
 .summary {
   width: 100%;
-  height: 60%;
+  min-height: 400px;
 }
 
 /* Call to action editor */
