@@ -2301,8 +2301,22 @@ storybase.builder.views.DataView = Backbone.View.extend(
       this._collectionFetched = false;
 
       this.form = new Backbone.Form({
-        schema: storybase.models.DataSet.prototype.schema()
+        schema: this.getFormSchema() 
       }); 
+    },
+
+    /**
+     * Get the Backbone Forms schema for the data set addition form
+     */
+    getFormSchema: function() {
+      // Start with the schema defined in the model
+      var schema = storybase.models.DataSet.prototype.schema();
+      // Update some labels
+      schema.title.title = gettext("Data set name");
+      schema.source.title = gettext("Data source");
+      schema.url.title = gettext("Link to a data set");
+      schema.file.title = gettext("Or, upload a data file from your computer");
+      return schema;
     },
 
     setStory: function(story) {
