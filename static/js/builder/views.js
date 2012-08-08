@@ -1334,6 +1334,7 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
 
   removeSection: function(section) {
     console.debug("Removing section " + section.get("title"));
+    var doRemove = false;
     var view = this.getThumbnailView(section);
     var handleSuccess = function(section, response) {
       section.deleted = true;
@@ -1345,10 +1346,13 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
     handleSuccess = _.bind(handleSuccess, this); 
     handleError = _.bind(handleError, this); 
     if (this.model.sections.length > 1) {
-      section.destroy({
-        success: handleSuccess,
-        error: handleError
-      });
+      doRemove = confirm(gettext("Are you sure you want to delete the section"));
+      if (doRemove) {
+        section.destroy({
+          success: handleSuccess,
+          error: handleError
+        });
+      }
     }
     else {
       this.dispatcher.trigger('error', 
