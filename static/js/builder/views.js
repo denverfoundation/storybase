@@ -270,28 +270,28 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.MenuView.exte
   items: [
     {
       id: 'build',
-      title: 'Build',
+      title: gettext('Build'),
       callback: 'selectStep',
       visible: true,
       path: ''
     },
     {
       id: 'data',
-      title: 'Add Data',
+      title: gettext('Add Data'),
       callback: 'selectStep',
       visible: false,
       path: 'data/'
     },
     {
       id: 'review',
-      title: 'Review',
+      title: gettext('Review'),
       callback: 'selectStep',
       visible: false,
       path: 'review/'
     },
     {
       id: 'share',
-      title: 'Share',
+      title: gettext('Share'),
       callback: 'selectStep',
       visible: false,
       path: 'share/legal/'
@@ -458,47 +458,47 @@ storybase.builder.views.WorkflowNavView = storybase.builder.views.MenuView.exten
   items: [
     {
       id: 'build',
-      backTitle: 'Continue Writing Story',
+      backTitle: gettext('Continue Writing Story'),
       callback: 'selectStep',
       path: ''
     },
     {
       id: 'data',
-      fwdTitle: 'Add Data',
-      backTitle: 'Back to "Add Data"',
+      fwdTitle: gettext("Add Data to Your Story"),
+      backTitle: gettext('Back to "Add Data"'),
       callback: 'selectStep',
       path: 'data/'
     },
     {
       id: 'review',
-      backTitle: 'Back to Review',
-      fwdTitle: 'Review',
+      backTitle: gettext('Back to Review'),
+      fwdTitle: gettext('Review'),
       callback: 'selectStep',
       path: 'review/'
     },
     {
       id: 'share-legal',
-      backTitle: 'Back to Legal Agreements',
-      fwdTitle: 'Share My Story',
+      backTitle: gettext('Back to Legal Agreements'),
+      fwdTitle: gettext('Share My Story'),
       callback: 'selectStep',
       path: 'share/legal/'
     },
     {
       id: 'share-tagging',
-      backTitle: 'Back to Tagging',
-      fwdTitle: 'Continue',
+      backTitle: gettext('Back to Tagging'),
+      fwdTitle: gettext('Continue'),
       callback: 'selectStep',
       path: 'share/tagging/'
     },
     {
       id: 'share-publish',
-      fwdTitle: 'Continue',
+      fwdTitle: gettext('Continue'),
       callback: 'selectStep',
       path: 'share/publish/'
     },
     {
       id: 'new',
-      fwdTitle: 'Tell Another Story',
+      fwdTitle: gettext('Tell Another Story'),
       callback: null, 
       href: '/build'
     }
