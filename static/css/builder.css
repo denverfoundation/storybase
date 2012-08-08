@@ -56,13 +56,22 @@
   padding: 10px;
 }
 
-.help .simplemodal-close {
+.help .close {
   position: absolute;
   display: block;
   right: 20px;
 }
 
+.help .continue {
+  position: absolute;
+  display: block;
+  top: 0px;
+  right: 20px;
+  margin-top: -10px;
+}
+
 .help-modal-controls {
+  position: relative;
   margin-top: 10px;
 }
 
