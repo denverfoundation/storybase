@@ -153,9 +153,11 @@ Handlebars.js templates for story builder Backbone application
         {{#each datasets}}
         <tr class="dataset">
             <td>
-                <span class="title">{{title}}</span>
-                <span class="source">{{source}}</span>
-                <span class="url"><a href="{{download_url}}">{{download_url}}</a></span>
+                <p class="title">{{title}}</p>
+		{{#if source}}
+		<p class="source">{{gettext message="Source"}}: {{source}}</p>
+		{{/if}}
+		<p class="url"><a href="{{download_url}}">{{gettext message="Download data"}}</a></p>
             </td>
             <td><a class="delete-dataset" data-dataset-id="{{dataset_id}}" href="#">Delete</a></td>
 
