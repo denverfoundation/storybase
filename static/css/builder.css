@@ -284,12 +284,16 @@
 }
 
 .section-asset-controls {
+  display: none;
   padding: 0;
   margin: 0 2%;
-  z-index: 999;
   list-style: none;
   text-align: right;
 }
+
+.storybase-container-placeholder:hover .section-asset-controls {
+  display: block; 
+}	
 
 .section-asset-controls li {
   display: inline-block;
