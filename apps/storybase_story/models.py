@@ -590,6 +590,7 @@ class StoryTemplateTranslation(TranslationModel):
     """Translatable fields for the StoryTemplate model"""
     story_template = models.ForeignKey('StoryTemplate')
     title = ShortTextField()
+    tag_line = ShortTextField(blank=True)
     description = models.TextField(blank=True)
 
     def __unicode__(self):
@@ -611,7 +612,7 @@ class StoryTemplate(TranslatedModel):
                                    blank=True)
 
     # Class attributes to handle translation
-    translated_fields = ['title', 'description']
+    translated_fields = ['title', 'description', 'tag_line']
     translation_set = 'storytemplatetranslation_set'
     translation_class = StoryTemplateTranslation
 

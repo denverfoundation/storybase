@@ -638,6 +638,7 @@ class StoryTemplateResource(TranslatedModelResource):
     # Explicitly declare fields that are on the translation model
     title = fields.CharField(attribute='title')
     description = fields.CharField(attribute='description')
+    tag_line = fields.CharField(attribute='tag_line')
     story = fields.ToOneField(StoryResource, attribute='story', 
                                blank=True, null=True)
     

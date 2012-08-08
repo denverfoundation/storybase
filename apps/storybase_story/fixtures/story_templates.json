@@ -4,6 +4,7 @@
             "description": "Create a quick, simple story by adding context to a picture", 
             "language": "en", 
             "story_template": 1, 
+            "tag_line": "worth a thousand words",
             "title": "PhotoVoice", 
             "translation_id": "d14d071a80834addb2b48156ac6d5d77"
         }, 
@@ -104,6 +105,7 @@
             "description": "Explain a complex issue simply", 
             "language": "en", 
             "story_template": 2, 
+            "tag_line": "it doesn't have to be so complicated",
             "title": "Explainer", 
             "translation_id": "fae567631cfe4e1d8310fd0841f7c18a"
         }, 
