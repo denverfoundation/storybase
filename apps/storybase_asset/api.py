@@ -212,6 +212,22 @@ class DataSetResource(DataUriResourceMixin,DelayedAuthorizationResource,
 
         delayed_authorization_methods = ['delete_detail']
 
+    def detail_uri_kwargs(self, bundle_or_obj):
+        """
+        Given a ``Bundle`` or an object (typically a ``Model`` instance),
+        it returns the extra kwargs needed to generate a detail URI.
+
+        This version returns the dataset_id field instead of the pk
+        """
+        kwargs = {}
+
+        if isinstance(bundle_or_obj, Bundle):
+            kwargs[self._meta.detail_uri_name] = bundle_or_obj.obj.dataset_id
+        else:
+            kwargs[self._meta.detail_uri_name] = bundle_or_obj.dataset_id
+
+        return kwargs
+
     def get_object_class(self, bundle=None, request=None, **kwargs):
         if (bundle.data.get('file', None) or not bundle.data.get('url')):
             return LocalDataSet

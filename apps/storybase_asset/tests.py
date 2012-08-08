@@ -479,6 +479,7 @@ class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         uri = '/api/0.1/datasets/'
         resp = self.api_client.post(uri, format='json', data=post_data)
         self.assertHttpCreated(resp)
+        returned_id = resp['location'].split('/')[-2]
         self.assertEqual(DataSet.objects.count(), 1)
         # Compare the response data with the post data
         self.assertEqual(self.deserialize(resp)['title'], 
@@ -489,8 +490,10 @@ class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
                          post_data['url'])
         self.assertEqual(self.deserialize(resp)['links_to_file'], 
                          post_data['links_to_file'])
-        # Compare the created model instance with the post data
         created_dataset = DataSet.objects.get_subclass()
+        # Compare the id from the resource URI with the created dataset
+        self.assertEqual(created_dataset.dataset_id, returned_id)
+        # Compare the created model instance with the post data
         self.assertEqual(created_dataset.title, post_data['title'])
         self.assertEqual(created_dataset.description, post_data['description'])
         self.assertEqual(created_dataset.url, post_data['url'])
@@ -522,14 +525,17 @@ class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         uri = '/api/0.1/datasets/stories/%s/' % (self.story.story_id)
         resp = self.api_client.post(uri, format='json', data=post_data)
         self.assertHttpCreated(resp)
+        returned_id = resp['location'].split('/')[-2]
         self.assertEqual(DataSet.objects.count(), 1)
         # Compare the response data with the post data
         self.assertEqual(self.deserialize(resp)['title'], 
                          post_data['title'])
         self.assertEqual(self.deserialize(resp)['description'], 
                          post_data['description'])
-        # Compare the created model instance with the post data
         created_dataset = DataSet.objects.get_subclass()
+        # Compare the id from the resource URI with the created dataset
+        self.assertEqual(created_dataset.dataset_id, returned_id)
+        # Compare the created model instance with the post data
         self.assertEqual(created_dataset.title, post_data['title'])
         self.assertEqual(created_dataset.description, post_data['description'])
         # Compare the uploaded file and the original 
@@ -558,14 +564,17 @@ class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         uri = '/api/0.1/datasets/stories/%s/' % (self.story.story_id)
         resp = self.api_client.post(uri, format='json', data=post_data)
         self.assertHttpCreated(resp)
+        returned_id = resp['location'].split('/')[-2]
         self.assertEqual(LocalDataSet.objects.count(), 1)
         # Compare the response data with the post data
         self.assertEqual(self.deserialize(resp)['title'], 
                          post_data['title'])
         self.assertEqual(self.deserialize(resp)['description'], 
                          post_data['description'])
+        created_dataset = DataSet.objects.get_subclass()
+        # Compare the id from the resource URI with the created dataset
+        self.assertEqual(created_dataset.dataset_id, returned_id)
         # Compare the created model instance with the post data
-        created_dataset = LocalDataSet.objects.get()
         self.assertEqual(created_dataset.title, post_data['title'])
         self.assertEqual(created_dataset.description, post_data['description'])
         # Test that the owner of the dataset is our logged-in user
