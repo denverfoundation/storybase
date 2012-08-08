@@ -327,6 +327,7 @@ STORYBASE_CONTACT_EMAIL = ""
 STORYBASE_LAYOUT_TEMPLATES = (
     'side_by_side.html',
     '1_up.html',
+    'above_below.html'
 )
 
 # Pick one of the two

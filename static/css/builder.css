@@ -266,6 +266,7 @@
   padding-bottom: 2%;
 }
 
+
 .storybase-container-placeholder {
   position: relative;
   height: 100%;
@@ -276,6 +277,10 @@
   border: solid 1px #c8c8c8;
   border-radius: 15px;
   overflow: hidden;
+}
+
+.storybase-container-placeholder#top {
+  margin-bottom: 10px;
 }
 
 .storybase-container-placeholder [name=body] {

@@ -21,6 +21,16 @@
     }, 
     {
         "fields": {
+            "language": "en", 
+            "layout": 3, 
+            "name": "Above/Below", 
+            "translation_id": "fee7cf78143d44569567e5a8343fc438"
+        }, 
+        "model": "storybase_story.sectionlayouttranslation", 
+        "pk": 3
+    },
+    {
+        "fields": {
             "containers": [
                 1, 
                 2
@@ -44,6 +54,18 @@
     }, 
     {
         "fields": {
+            "containers": [
+                4,
+                5
+            ], 
+            "layout_id": "ccaea5bac5c7467eb014baf6f7476ccb", 
+            "template": "above_below.html"
+        }, 
+        "model": "storybase_story.sectionlayout", 
+        "pk": 3
+    },
+    {
+        "fields": {
             "name": "left"
         }, 
         "model": "storybase_story.container", 
@@ -62,5 +84,19 @@
         }, 
         "model": "storybase_story.container", 
         "pk": 3
+    }
+    {
+        "fields": {
+            "name": "top"
+        }, 
+        "model": "storybase_story.container", 
+        "pk": 4
+    }
+    {
+        "fields": {
+            "name": "bottom"
+        }, 
+        "model": "storybase_story.container", 
+        "pk": 5
     }
 ]
