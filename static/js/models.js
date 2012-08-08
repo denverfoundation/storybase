@@ -234,6 +234,14 @@ storybase.models.Asset = Backbone.Model.extend(
       'table': true,
     },
 
+    showCaption: {
+      'image': true,
+      'audio': true,
+      'video': true,
+      'map': true,
+      'table': true,
+    },
+
     /**
      * Build the schema for backbone-forms
      *
@@ -259,6 +267,9 @@ storybase.models.Asset = Backbone.Model.extend(
         }
         if (!(_.has(this.showUrl, type))) {
           delete schema.url;
+        }
+        if (!(_.has(this.showCaption, type))) {
+          delete schema.caption;
         }
         if (!this.isNew()) {
           // For a saved model, only show the fields that have a value set.
