@@ -58,7 +58,7 @@
                 4,
                 5
             ], 
-            "layout_id": "ccaea5bac5c7467eb014baf6f7476ccb", 
+            "layout_id": "f4fba003eecd4efa83fd45321537e24a", 
             "template": "above_below.html"
         }, 
         "model": "storybase_story.sectionlayout", 
@@ -84,14 +84,14 @@
         }, 
         "model": "storybase_story.container", 
         "pk": 3
-    }
+    },
     {
         "fields": {
             "name": "top"
         }, 
         "model": "storybase_story.container", 
         "pk": 4
-    }
+    },
     {
         "fields": {
             "name": "bottom"
