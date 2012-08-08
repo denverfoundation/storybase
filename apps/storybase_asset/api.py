@@ -207,6 +207,8 @@ class DataSetResource(DataUriResourceMixin,DelayedAuthorizationResource,
         authorization = LoggedInAuthorization()
         validation = DataSetValidation()
         detail_uri_name = 'dataset_id'
+        # Hide the underlying id
+        excludes = ['id']
 
         delayed_authorization_methods = ['delete_detail']
 
