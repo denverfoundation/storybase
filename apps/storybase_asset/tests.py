@@ -1018,6 +1018,49 @@ class AssetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
                          [post_data['language']])
         self.assertEqual(created_asset.owner, self.user)
 
+    def test_put_detail_image_relative_url(self):
+        """
+        Test that the image field is ignored if it is just put back
+        to the endpoint.
+        """
+        image_filename = "test_image.jpg"
+        app_dir = os.path.dirname(os.path.abspath(__file__))
+        img_path = os.path.join(app_dir, "test_files", image_filename)
+        post_data = {
+            'type': "image",
+            'title': "Test Image Asset",
+            'caption': "This is a test image",
+            'status': "published",
+            'language': "en",
+        }
+        self.assertEqual(Asset.objects.count(), 0)
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        resp = self.api_client.post('/api/0.1/assets/',
+                               format='json', data=post_data)
+        base_uri = resp['location']
+        self.assertHttpCreated(resp)
+        with open(img_path) as fp:
+            post_data = {
+                'image': fp 
+            }
+            uri = base_uri + 'upload/'
+            resp = self.api_client.client.post(uri, post_data)
+            self.assertHttpOK(resp)
+            created_asset = Asset.objects.get_subclass()
+            created_image = created_asset.image
+            # Set our created file to be cleaned up
+            self.add_file_to_cleanup(created_asset.image.file.path)
+            resp = self.api_client.get(base_uri)
+            self.assertValidJSONResponse(resp)
+            post_data = self.deserialize(resp)
+            resp = self.api_client.put(base_uri, format='json',
+                                       data=post_data)
+            self.assertHttpAccepted(resp)
+            created_asset = Asset.objects.get_subclass(
+                asset_id=self.deserialize(resp)['asset_id'])
+            self.assertEqual(created_asset.image, created_image)
+
     def test_post_list_html(self):
         """Test creating an HTML asset"""
         post_data = {
