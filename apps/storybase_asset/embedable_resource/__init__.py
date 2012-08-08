@@ -39,6 +39,7 @@ class GoogleSpreadsheetProvider(EmbedableResourceProvider):
 
 
 class GoogleMapProvider(EmbedableResourceProvider):
+    url_pattern = r'^https://maps.google.com/maps.+'
     def get_html(self, url, width=425, height=350):
         if not self.match(url):
             raise UrlNotMatched
