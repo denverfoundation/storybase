@@ -284,12 +284,11 @@
 }
 
 .section-asset-controls {
-  position: absolute;
-  right: 0;
   padding: 0;
   margin: 0 2%;
   z-index: 999;
   list-style: none;
+  text-align: right;
 }
 
 .section-asset-controls li {
