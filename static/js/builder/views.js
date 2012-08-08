@@ -1315,7 +1315,7 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
 
   removeThumbnailView: function(view) {
     var index = _.indexOf(this._sortedThumbnailViews, view);
-    if (view.isHighlighted()) {
+    if (view && view.isHighlighted()) {
       // Trying to remove the currently active view. Switch to
       // a different one before removing the elements.
       this.dispatcher.trigger('select:thumbnail', this._sortedThumbnailViews[index - 1]);
