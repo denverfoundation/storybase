@@ -4,6 +4,10 @@
   height: 70%;
 }
 
+.section-layout {
+  overflow: hidden;
+ }
+
 .section-layout.side-by-side .left,
 .section-layout.side-by-side .right {
   height: 100%;
