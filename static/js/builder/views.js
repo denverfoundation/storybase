@@ -781,7 +781,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       collection: this._editViews,
       story: this.model,
       assetTypes: this.options.assetTypes,
-      layouts: this.options.layouts
+      layouts: this.options.layouts,
+      defaultHelp: this.help.where({slug: 'new-section'})[0]
     }); 
     this._editViews.push(view);
     return view;
@@ -1720,6 +1721,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     this.dispatcher = this.options.dispatcher;
     this.story = this.options.story;
     this.layouts = this.options.layouts;
+    this.defaultHelp = this.options.defaultHelp;
     this.templateSource = this.options.templateSource || this.templateSource;
     this.template = Handlebars.compile(this.templateSource);
     this.assets = this.options.assets || new storybase.collections.SectionAssets();
@@ -1816,11 +1818,11 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
 
   show: function(section) {
     section = _.isUndefined(section) ? this.model : section;
+    var help = this.model.get('help') || this.defaultHelp.toJSON();
     if (section == this.model) {
       console.debug('showing section ' + section.get('title'));
       this.$el.show();
-      this.dispatcher.trigger('do:show:help', false, 
-                              this.model.get('help')); 
+      this.dispatcher.trigger('do:show:help', false, help); 
     }
     else {
       if (_.isObject(section)) {

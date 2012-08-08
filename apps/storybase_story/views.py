@@ -151,7 +151,7 @@ class StoryBuilderView(DetailView):
 
     def get_help_json(self):
         # Lookup keys to filter help items to include
-        help_slugs = ['story-information', 'call-to-action']
+        help_slugs = ['story-information', 'call-to-action', 'new-section']
         to_be_serialized = {}
         resource = HelpResource()
         objects = resource.obj_get_list().filter(slug__in=help_slugs)

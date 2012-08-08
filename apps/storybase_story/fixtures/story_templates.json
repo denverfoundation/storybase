@@ -425,5 +425,24 @@
         }, 
         "model": "storybase_help.help", 
         "pk": 3
+    },
+    {
+        "fields": {
+            "body": "<span id=\"internal-source-marker_0.34632859225539114\" style=\"font-size: 15px; font-family: Arial; color: #000000; background-color: transparent; font-weight: normal; font-variant: normal; text-decoration: none; vertical-align: baseline;\">Change the layout of this section with the menu in the top right</span>", 
+            "help": 8, 
+            "language": "en", 
+            "title": "New Section", 
+            "translation_id": "20868b27ce0c4de6b3817f6bf8bd1e6a"
+        }, 
+        "model": "storybase_help.helptranslation", 
+        "pk": 8
+    }, 
+    {
+        "fields": {
+            "help_id": "e131457a52c54c1ea787018015dd10a5", 
+            "slug": "new-section"
+        }, 
+        "model": "storybase_help.help", 
+        "pk": 8
     }
 ]
