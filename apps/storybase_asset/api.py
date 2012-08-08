@@ -123,11 +123,9 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
 
     def hydrate_image(self, bundle):
         if bundle.obj.asset_id and hasattr(bundle.obj, 'image'):
-            print "got here"
             try:
                 image = Image.objects.get(localimageassettranslation__asset__asset_id=bundle.obj.asset_id)
                 if image.file.url == bundle.data['image']:
-                    print "success"
                     bundle.data["image"] = image
                     return bundle
             except Exception:
