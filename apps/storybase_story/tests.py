@@ -1280,6 +1280,7 @@ class StoryResourceTest(ResourceTestCase):
                                 'is_template',
                                 'on_homepage',
                                 'organizations',
+                                'places',
                                 'points',
                                 'projects',
                                 'published',

@@ -37,6 +37,7 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
     topics = fields.ListField(readonly=True)
     organizations = fields.ListField(readonly=True)
     projects = fields.ListField(readonly=True)
+    places = fields.ListField(readonly=True)
     # A list of lat/lon values for related Location objects as well as
     # centroids of Place tags
     points = fields.ListField(readonly=True)
