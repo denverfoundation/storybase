@@ -110,14 +110,15 @@
         {% endif %}
         options.storyTemplates.reset(storyTemplatesData.objects);
         options.help.reset(helpData.objects);
-
+        
+        storybase.builder.globals.APP_ROOT = getRoot();
         storybase.builder.router = new storybase.builder.routers.Router({
             dispatcher: storybase.builder.globals.dispatcher
         });
         storybase.builder.app = new storybase.builder.views.AppView(
             options
         );
-        Backbone.history.start({pushState: true, root: getRoot()});
+        Backbone.history.start({pushState: true, root: storybase.builder.globals.APP_ROOT});
     });
     </script>
   </body>

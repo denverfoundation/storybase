@@ -47,10 +47,6 @@ storybase.builder.views.AppView = Backbone.View.extend({
     
     // TODO: Change the selector as the template changes
     this.$('header').first().children().first().append(this.toolsView.el);
-    // Initialize view for moving back and forth through the workflow steps
-    this.workflowNavView = new storybase.builder.views.WorkflowNavView(
-      commonOptions
-    );
     this.helpView = new storybase.builder.views.HelpView(commonOptions);
 
     if (this.model) {
@@ -129,7 +125,6 @@ storybase.builder.views.AppView = Backbone.View.extend({
     if (activeView.onShow) {
       activeView.onShow();
     }
-    this.$('#app').append(this.workflowNavView.render().el);
     this.workflowStepView.render();
     this.toolsView.render();
     return this;
@@ -316,7 +311,6 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.MenuView.exte
     this.dispatcher.on('select:workflowstep', this.highlightActive, this);
   },
 
-
   render: function() {
     var that = this;
     var template = this.getItemTemplate();
@@ -454,7 +448,7 @@ storybase.builder.views.ToolsView = storybase.builder.views.MenuView.extend({
  * A pair of links that lets the user move forward and back through the
  * different workflow steps.
  */
-storybase.builder.views.WorkflowNavView = storybase.builder.views.MenuView.extend({
+storybase.builder.views.OldWorkflowNavView = storybase.builder.views.MenuView.extend({
   tagName: 'div',
 
   className: 'workflow-nav',
@@ -632,6 +626,74 @@ storybase.builder.views.WorkflowNavView = storybase.builder.views.MenuView.exten
 });
 
 /**
+ * Next/forward buttons for each section
+ */
+storybase.builder.views.WorkflowNavView = Backbone.View.extend({ 
+  tagName: 'div',
+
+  className: 'workflow-nav',
+
+  itemTemplateSource: $('#workflow-nav-item-template').html(),
+
+  events: function() {
+    return {
+      'click a': this.navigate 
+    };
+  },
+
+  initialize: function() {
+    this.dispatcher = this.options.dispatcher;
+    this.forward = this.options.forward;
+    this.back = this.options.back;
+    this.itemTemplate = Handlebars.compile(this.itemTemplateSource);
+    if (_.isUndefined(this.model)) {
+      this.dispatcher.on("ready:story", this.setStory, this);
+    }
+  },
+
+  setStory: function(story) {
+    this.model = story;
+    this.render();
+  },
+
+  getHref: function(buttonContext) {
+    return storybase.builder.globals.APP_ROOT + this.model.id + '/' + buttonContext.path;
+  },
+
+  renderButton: function(buttonContext, direction) {
+    console.debug(buttonContext);
+    this.$el.append(this.itemTemplate({
+      class: direction,
+      title: buttonContext.title,
+      href: this.getHref(buttonContext) 
+    }));
+  },
+
+  render: function() {
+    this.$el.empty();
+    if (this.back) {
+      this.renderButton(this.back);
+    }
+    if (this.forward) {
+      this.renderButton(this.forward);
+    }
+    this.delegateEvents();
+
+    return this;
+  },
+
+  navigate: function(evt) {
+    console.debug('handling click of navigation button');
+    evt.preventDefault();
+    var href = $(evt.target).attr("href");
+    var route = href.substr(storybase.builder.globals.APP_ROOT.length);
+    this.dispatcher.trigger('navigate', route, 
+      {trigger: true, replace: true});
+  },
+});
+
+
+/**
  * Story template selector
  */
 storybase.builder.views.SelectStoryTemplateView = Backbone.View.extend({
@@ -743,6 +805,14 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       dispatcher: this.dispatcher,
       lastSaved: this.model.get('last_edited')
     });
+    this.navView = new storybase.builder.views.WorkflowNavView({
+      model: this.model,
+      dispatcher: this.dispatcher,
+      forward: {
+        title: gettext("Add Data to Your Story"),
+        path: 'data/'
+      }
+    });
     this._editViews = [];
 
     this.model.on("sync", this.triggerSaved, this);
@@ -838,6 +908,10 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.$el.prepend(this.lastSavedView.render().el);
     this.$el.append(this.sectionListView.render().el);
     this.renderEditViews();
+    // TOOD: properly place this
+    // BOOKMARK
+    this.$el.append(this.navView.render().el);
+    console.debug(this.navView.el);
     return this;
   },
 
@@ -2312,6 +2386,19 @@ storybase.builder.views.DataView = Backbone.View.extend(
       this.collection.on('reset', this.render, this);
       this._collectionFetched = false;
 
+      this.navView = new storybase.builder.views.WorkflowNavView({
+        model: this.model,
+        dispatcher: this.dispatcher,
+        forward: {
+          title: gettext("Review"),
+          path: 'review/'
+        },
+        back: {
+          title: gettext("Continue Writing Story"),
+          path: ''
+        }
+      });
+
       this.form = new Backbone.Form({
         schema: this.getFormSchema() 
       }); 
@@ -2346,16 +2433,19 @@ storybase.builder.views.DataView = Backbone.View.extend(
     },
 
     render: function() {
-      console.info('Rendering data view');
       if (!this._collectionFetched) {
         this.fetchCollection();
       }
-      var context = {
-        datasets: this.collection.toJSON()
-      };
-      this.$el.html(this.template(context));
-      this.$('.add-dataset').before(this.form.render().$el.append('<input class="cancel" type="reset" value="Cancel" />').append('<input type="submit" value="Save" />').hide());
-      this.delegateEvents();
+      else {
+        console.info('Rendering data view');
+        var context = {
+          datasets: this.collection.toJSON()
+        };
+        this.$el.html(this.template(context));
+        this.$('.add-dataset').before(this.form.render().$el.append('<input class="cancel" type="reset" value="Cancel" />').append('<input type="submit" value="Save" />').hide());
+        this.$el.append(this.navView.render().el);
+        this.delegateEvents();
+      }
       return this;
     },
 
@@ -2448,12 +2538,25 @@ storybase.builder.views.ReviewView = Backbone.View.extend({
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
     this.template = Handlebars.compile(this.templateSource);
+    this.navView = new storybase.builder.views.WorkflowNavView({
+      model: this.model,
+      dispatcher: this.dispatcher,
+      back: {
+        title: gettext("Back to Add Data"),
+        path: 'data/'
+      },
+      forward: {
+        title: gettext("Share My Story"),
+        path: 'share/legal/'
+      }
+    });
   },
 
   render: function() {
     console.info('Rendering review view');
     var context = {};
     this.$el.html(this.template(context));
+    this.$el.append(this.navView.render().el);
     return this;
   }
 });
@@ -2461,26 +2564,26 @@ storybase.builder.views.ReviewView = Backbone.View.extend({
 storybase.builder.views.ShareView = Backbone.View.extend({
   id: 'share',
 
-  templateSource: $('#share-template').html(),
-
-  events: {
-    'click .publish': 'handlePublish'
-  },
-
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
     this.template = Handlebars.compile(this.templateSource);
     this.activeStep = null;
 
     this.subviews = {
+      'legal': new storybase.builder.views.LegalView({
+        dispatcher: this.dispatcher,
+        model: this.model
+      }),
       'tagging': new storybase.builder.views.TaxonomyView({
+        dispatcher: this.dispatcher,
         model: this.model,
         places: this.options.places,
         topics: this.options.topics
       }),
-      'legal': new storybase.builder.views.LegalView({
+      'publish': new storybase.builder.views.PublishView({
+        dispatcher: this.dispatcher,
         model: this.model
-      })
+      }),
     };
 
     this.dispatcher.on('select:workflowstep', this.updateStep, this);
@@ -2496,33 +2599,14 @@ storybase.builder.views.ShareView = Backbone.View.extend({
   render: function() {
     console.info('Rendering share view');
     var context = {};
-    //this.$el.html(this.template(context));
-    subView = this.subviews[this.activeStep];
+    subView = this.activeStep ? this.subviews[this.activeStep] : this.subviews['legal'];
     _.each(this.subviews, function(view, subStep) {
       if (subStep != this.activeStep) {
         view.$el.remove();
       }
     }, this);
     this.$el.append(subView.render().el);
-    //this.delegateEvents();
     return this;
-  },
-
-  handlePublish: function(evt) {
-    evt.preventDefault();
-    console.debug('Entering handlePublish');
-    var that = this;
-    var triggerPublished = function(model, response) {
-      that.dispatcher.trigger('publish:story', model);
-      that.dispatcher.trigger('alert', 'success', 'Story published');
-    };
-    var triggerError = function(model, response) {
-      that.dispatcher.trigger('error', "Error publishing story");
-    };
-    this.model.save({'status': 'published'}, {
-      success: triggerPublished, 
-      error: triggerError 
-    });
   }
 });
 
@@ -2532,6 +2616,7 @@ storybase.builder.views.LegalView = Backbone.View.extend({
   templateSource: $('#share-legal-template').html(),
 
   initialize: function() {
+    this.dispatcher = this.options.dispatcher;
     this.template = Handlebars.compile(this.templateSource);
     this.form = new Backbone.Form({
       schema: {
@@ -2565,11 +2650,24 @@ storybase.builder.views.LegalView = Backbone.View.extend({
       console.debug(form.validate());
       console.debug(form.getValue());
     }, this);
+    this.navView = new storybase.builder.views.WorkflowNavView({
+      model: this.model,
+      dispatcher: this.dispatcher,
+      back: {
+        title: gettext("Back to Review"),
+        path: 'review/'
+      },
+      forward: {
+        title: gettext("Continue"),
+        path: 'share/tagging/'
+      }
+    });
   },
 
   render: function() {
     this.$el.html(this.template());
     this.$el.append(this.form.render().el);
+    this.$el.append(this.navView.render().el);
 
     return this;
   }
@@ -2581,10 +2679,32 @@ storybase.builder.views.TaxonomyView = Backbone.View.extend({
   templateSource: $('#share-taxonomy-template').html(),
 
   initialize: function() {
+    this.dispatcher = this.options.dispatcher;
+    this.template = Handlebars.compile(this.templateSource);
+    this.navView = new storybase.builder.views.WorkflowNavView({
+      model: this.model,
+      dispatcher: this.dispatcher,
+      back: {
+        title: gettext("Back to Legal Agreements"),
+        path: 'share/legal/'
+      },
+      forward: {
+        title: gettext("Continue"),
+        path: 'share/publish/'
+      }
+    });
+    if (this.model) {
+      this.initializeForm();
+    }
+    else {
+      this.dispatcher.on('ready:story', this.setStory, this);
+    }
+  },
+
+  initializeForm: function() {
     // Convert the JSON into the format for Backbone Forms
     var topicsOptions = this.getFormOptions(this.options.topics);
     var placesOptions = this.getFormOptions(this.options.places);
-    this.template = Handlebars.compile(this.templateSource);
     // Official taxonomies
     this.officialForm = new Backbone.Form({
       schema: {
@@ -2604,6 +2724,11 @@ storybase.builder.views.TaxonomyView = Backbone.View.extend({
     });
     this.officialForm.on('topics:change', this.changeTopics, this);
     this.officialForm.on('places:change', this.changePlaces, this);
+  },
+
+  setStory: function(story) {
+    this.model = story;
+    this.initializeForm();
   },
 
   getFormOptions: function(rawOptions) {
@@ -2646,7 +2771,59 @@ storybase.builder.views.TaxonomyView = Backbone.View.extend({
     // TODO: Custom editor that automatically does this?
     this.officialForm.fields.topics.editor.$el.select2();
     this.officialForm.fields.places.editor.$el.select2();
+    this.$el.append(this.navView.render().el);
 
+    return this;
+  }
+});
+
+storybase.builder.views.PublishView = Backbone.View.extend({
+  id: 'share-publish',
+
+  templateSource: $('#share-publish-template').html(),
+
+  events: {
+    'click .publish': 'handlePublish'
+  },
+
+  initialize: function() {
+    this.dispatcher = this.options.dispatcher;
+    this.template = Handlebars.compile(this.templateSource);
+    this.navView = new storybase.builder.views.WorkflowNavView({
+      model: this.model,
+      dispatcher: this.dispatcher,
+      back: {
+        title: gettext("Back to Tagging"),
+        path: 'share/tagging/'
+      },
+      // TODO: Make this the for link
+      forward: {
+        title: gettext("Tell Another Story"),
+        path: ''
+      }
+    });
+  },
+
+  handlePublish: function(evt) {
+    evt.preventDefault();
+    console.debug('Entering handlePublish');
+    var that = this;
+    var triggerPublished = function(model, response) {
+      that.dispatcher.trigger('publish:story', model);
+      that.dispatcher.trigger('alert', 'success', 'Story published');
+    };
+    var triggerError = function(model, response) {
+      that.dispatcher.trigger('error', "Error publishing story");
+    };
+    this.model.save({'status': 'published'}, {
+      success: triggerPublished, 
+      error: triggerError 
+    });
+  },
+
+  render: function() {
+    this.$el.html(this.template());
+    this.$el.append(this.navView.render().el);
     return this;
   }
 });
