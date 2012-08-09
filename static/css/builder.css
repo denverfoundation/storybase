@@ -513,3 +513,8 @@
 .dataset p {
   padding: 0;
 }
+
+/* Select taxonomy view */
+#share-taxonomy select {
+  width: 300px;
+}

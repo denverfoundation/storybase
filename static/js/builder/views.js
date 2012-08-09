@@ -28,6 +28,8 @@ storybase.builder.views.AppView = Backbone.View.extend({
   initialize: function() {
     // Common options passed to sub-views
     var commonOptions = {};
+    var buildViewOptions;
+    var shareViewOptions;
     this.dispatcher = this.options.dispatcher;
     commonOptions.dispatcher = this.dispatcher;
     // The currently active step of the story building process
@@ -51,15 +53,19 @@ storybase.builder.views.AppView = Backbone.View.extend({
     );
     this.helpView = new storybase.builder.views.HelpView(commonOptions);
 
-    // Store subviews in an object keyed with values of this.activeStep
     if (this.model) {
       commonOptions.model = this.model;
     }
-    var buildViewOptions = _.extend(commonOptions, {
+    buildViewOptions = _.extend(commonOptions, {
       assetTypes: this.options.assetTypes,
       layouts: this.options.layouts,
       help: this.options.help
     });
+    shareViewOptions = _.extend(commonOptions, {
+      places: this.options.places,
+      topics: this.options.topics
+    });
+    // Store subviews in an object keyed with values of this.activeStep
     this.subviews = {
       selecttemplate: new storybase.builder.views.SelectStoryTemplateView({
         dispatcher: this.dispatcher,
@@ -2453,6 +2459,8 @@ storybase.builder.views.ReviewView = Backbone.View.extend({
 });
 
 storybase.builder.views.ShareView = Backbone.View.extend({
+  id: 'share',
+
   templateSource: $('#share-template').html(),
 
   events: {
@@ -2462,13 +2470,39 @@ storybase.builder.views.ShareView = Backbone.View.extend({
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
     this.template = Handlebars.compile(this.templateSource);
+    this.activeStep = null;
+
+    this.subviews = {
+      'tagging': new storybase.builder.views.TaxonomyView({
+        places: this.options.places,
+        topics: this.options.topics
+      })
+    };
+
+    this.dispatcher.on('select:workflowstep', this.updateStep, this);
+  },
+
+  updateStep: function(step, subStep) {
+    var subView;
+      console.debug(_.keys(this.subviews));
+    // TODO: Implement this
+    if (step === 'share' && _.include(_.keys(this.subviews), subStep)) {
+      this.activeStep = subStep;
+    }
   },
 
   render: function() {
     console.info('Rendering share view');
     var context = {};
-    this.$el.html(this.template(context));
-    this.delegateEvents();
+    //this.$el.html(this.template(context));
+    subView = this.subviews[this.activeStep];
+    _.each(this.subviews, function(view, subStep) {
+      if (subStep != this.activeStep) {
+        view.$el.remove();
+      }
+    }, this);
+    this.$el.append(subView.render().el);
+    //this.delegateEvents();
     return this;
   },
 
@@ -2487,5 +2521,55 @@ storybase.builder.views.ShareView = Backbone.View.extend({
       success: triggerPublished, 
       error: triggerError 
     });
+  }
+});
+
+storybase.builder.views.TaxonomyView = Backbone.View.extend({
+  id: 'share-taxonomy',
+
+  templateSource: $('#share-taxonomy-template').html(),
+
+  initialize: function() {
+    // Convert the JSON into the format for Backbone Forms
+    var topicsOptions = _.map(this.options.topics, function(topic) {
+      return { val: topic.id, label: topic.name };
+    });
+    var placesOptions = _.map(this.options.places, function(place) {
+      return { val: place.id, label: place.name };
+    });
+    this.template = Handlebars.compile(this.templateSource);
+    this.selectCate
+    // Official taxonomies
+    this.officialForm = new Backbone.Form({
+      schema: {
+        topics: { 
+          type: 'Select', 
+          options: topicsOptions, 
+          editorAttrs: {multiple: "", placeholder: gettext("Click to select topics")}  
+        },
+        places: { 
+          type: 'Select', 
+          options: placesOptions, 
+          editorAttrs: {multiple: "", placeholder: gettext("Click to select places")}  
+        }
+      }
+    });
+    this.officialForm.on('topics:change', this.changeTopics, this);
+    this.officialForm.on('places:change', this.changePlaces, this);
+  },
+
+  changeTopics: function(form, editor) {
+  },
+
+
+  
+  render: function() {
+    var context = {};
+    this.$el.html(this.template(context));
+    this.$el.append(this.officialForm.render().el);
+    // TODO: Custom editor that automatically does this?
+    this.officialForm.fields.topics.editor.$el.select2();
+    this.officialForm.fields.places.editor.$el.select2();
+    return this;
   }
 });

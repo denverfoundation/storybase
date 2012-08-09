@@ -12,12 +12,14 @@ from django.views.generic import DetailView, TemplateView
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
-from storybase.utils import simple_language_changer
-from storybase.views.generic import ModelIdDetailView
 from storybase_asset.models import ASSET_TYPES
+from storybase_geo.models import Place
 from storybase_help.api import HelpResource
 from storybase_story.api import StoryResource, StoryTemplateResource
 from storybase_story.models import SectionLayout, Story
+from storybase_taxonomy.models import Category
+from storybase.utils import simple_language_changer
+from storybase.views.generic import ModelIdDetailView
 
 def simple_story_list(stories):
     """Render a simple listing of stories
@@ -159,13 +161,25 @@ class StoryBuilderView(DetailView):
         to_be_serialized['objects'] = [resource.full_dehydrate(bundle) for bundle in bundles]
         return resource.serialize(None, to_be_serialized, 'application/json')
 
+    def get_topics_json(self):
+        to_be_serialized =[{ 'id': obj.pk, 'name': obj.name } 
+                           for obj in Category.objects.order_by('categorytranslation__name')]
+        return json.dumps(to_be_serialized)
+
+    def get_places_json(self):
+        to_be_serialized = [{ 'id': place.place_id, 'name': place.name }
+                            for place in Place.objects.order_by('geolevel__name', 'name')]
+        return json.dumps(to_be_serialized)
+
     def get_context_data(self, **kwargs):
         """Provide Bootstrap data for Backbone models and collections"""
         context = {
-            'layouts_json': mark_safe(self.get_layouts_json()),
-            'story_template_json': mark_safe(self.get_story_template_json()),
             'asset_types_json': mark_safe(self.get_asset_types_json()),
             'help_json': mark_safe(self.get_help_json()),
+            'layouts_json': mark_safe(self.get_layouts_json()),
+            'places_json': mark_safe(self.get_places_json()),
+            'story_template_json': mark_safe(self.get_story_template_json()),
+            'topics_json': mark_safe(self.get_topics_json()),
         }
 
         if self.object:
