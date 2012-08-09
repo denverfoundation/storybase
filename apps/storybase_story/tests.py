@@ -15,7 +15,7 @@ from storybase.tests.base import SloppyComparisonTestMixin, FixedTestApiClient
 from storybase.utils import slugify
 from storybase_asset.models import (HtmlAsset, HtmlAssetTranslation,
                                     create_html_asset)
-from storybase_geo.models import Location
+from storybase_geo.models import Location, GeoLevel, Place
 from storybase_help.models import create_help 
 from storybase_story.api import (SectionAssetResource, SectionResource, 
                                  StoryResource)
@@ -23,6 +23,7 @@ from storybase_story.forms import SectionRelationAdminForm
 from storybase_story.models import (Container, Story, StoryTranslation, 
     Section, SectionAsset, SectionLayout, SectionRelation, StoryTemplate,
     create_story, create_section)
+from storybase_taxonomy.models import Category, create_category
 
 
 class SectionRelationFormTest(TestCase):
@@ -2243,3 +2244,115 @@ class StoryTemplateResourceTest(ResourceTestCase):
         self.assertEqual(self.deserialize(resp)['description'], story_template.description)
 
 
+class StoryCategoryResourceTest(ResourceTestCase):
+    def setUp(self):
+        super(StoryCategoryResourceTest, self).setUp()
+        # Use our fixed TestApiClient instead of the default
+        self.api_client = FixedTestApiClient()
+        self.resource = StoryResource()
+        self.username = 'test'
+        self.password = 'test'
+        self.user = User.objects.create_user(self.username, 'test@example.com', self.password)
+        title = ('Transportation Challenges Limit Education Choices for '
+                 'Denver Parents')
+        summary = """
+            Many families in the Denver metro area use public
+            transportation instead of a school bus because for them, a
+            quality education is worth hours of daily commuting. Colorado's
+            school choice program is meant to foster educational equity,
+            but the families who benefit most are those who have time and
+            money to travel. Low-income families are often left in a lurch.
+            """
+        byline = "Mile High Connects"
+        self.story = create_story(title=title, summary=summary, byline=byline,
+                                  status='published', author=self.user)
+        for cat_name in ('Schools', 'Violence', 'Food', 'Healthcare'):
+            create_category(cat_name)
+
+    def test_put_list_replace(self):
+        """Test that the categories can be replaced by a new set"""
+        self.story.topics.add(*list(Category.objects.filter(categorytranslation__name__in=('Schools', 'Violence'))))
+        self.story.save()
+        self.assertEqual(self.story.topics.count(), 2)
+        put_data = [cat.id for cat in
+                     Category.objects.filter(categorytranslation__name__in=('Food', 'Healthcare'))]
+        self.api_client.client.login(username=self.username, password=self.password)
+        uri = '/api/0.1/stories/%s/topics/' % (self.story.story_id)
+        response = self.api_client.put(uri, format='json', data=put_data)
+        self.assertHttpAccepted(response)
+        self.story = Story.objects.get(story_id=self.story.story_id)
+        self.assertEqual(self.story.topics.count(), 2)
+        topic_ids = [cat.id for cat in self.story.topics.all()]
+        self.assertEqual(topic_ids, put_data)
+
+    def test_put_list_new(self):
+        """Test that a story's categories can be set"""
+        put_data = [cat.id for cat in
+                     Category.objects.filter(categorytranslation__name__in=('Food', 'Healthcare'))]
+        self.api_client.client.login(username=self.username, password=self.password)
+        uri = '/api/0.1/stories/%s/topics/' % (self.story.story_id)
+        response = self.api_client.put(uri, format='json', data=put_data)
+        self.assertHttpAccepted(response)
+        self.story = Story.objects.get(story_id=self.story.story_id)
+        self.assertEqual(self.story.topics.count(), 2)
+        topic_ids = [cat.id for cat in self.story.topics.all()]
+        self.assertEqual(topic_ids, put_data)
+
+
+class StoryPlaceResourceTest(ResourceTestCase):
+    def setUp(self):
+        super(StoryPlaceResourceTest, self).setUp()
+        # Use our fixed TestApiClient instead of the default
+        self.api_client = FixedTestApiClient()
+        self.resource = StoryResource()
+        self.username = 'test'
+        self.password = 'test'
+        self.user = User.objects.create_user(self.username, 'test@example.com', self.password)
+        title = ('Transportation Challenges Limit Education Choices for '
+                 'Denver Parents')
+        summary = """
+            Many families in the Denver metro area use public
+            transportation instead of a school bus because for them, a
+            quality education is worth hours of daily commuting. Colorado's
+            school choice program is meant to foster educational equity,
+            but the families who benefit most are those who have time and
+            money to travel. Low-income families are often left in a lurch.
+            """
+        byline = "Mile High Connects"
+        self.story = create_story(title=title, summary=summary, byline=byline,
+                                  status='published', author=self.user)
+        neighborhood = GeoLevel.objects.create(name='Neighborhood',
+            slug='neighborhood')
+        for name in ("Humboldt Park", "Wicker Park", "Logan Square"):
+            Place.objects.create(name=name, geolevel=neighborhood)
+
+    def test_put_list_replace(self):
+        """Test that the places can be replaced by a new set"""
+        self.story.places.add(*list(Place.objects.filter(name__in=('Humboldt Park', 'Wicker Park'))))
+        self.story.save()
+        self.assertEqual(self.story.places.count(), 2)
+        put_data = [place.place_id for place in
+                    Place.objects.filter(name="Logan Square")]
+        self.api_client.client.login(username=self.username, password=self.password)
+        uri = '/api/0.1/stories/%s/places/' % (self.story.story_id)
+        response = self.api_client.put(uri, format='json', data=put_data)
+        self.assertHttpAccepted(response)
+        self.story = Story.objects.get(story_id=self.story.story_id)
+        self.assertEqual(self.story.places.count(), 1)
+        ids = [place.place_id for place in self.story.places.all()]
+        self.assertEqual(ids, put_data)
+
+    def test_put_list_new(self):
+        """Test that a story's categories can be set"""
+        self.story.save()
+        self.assertEqual(self.story.places.count(), 0)
+        put_data = [place.place_id for place in
+                    Place.objects.filter(name="Logan Square")]
+        self.api_client.client.login(username=self.username, password=self.password)
+        uri = '/api/0.1/stories/%s/places/' % (self.story.story_id)
+        response = self.api_client.put(uri, format='json', data=put_data)
+        self.assertHttpAccepted(response)
+        self.story = Story.objects.get(story_id=self.story.story_id)
+        self.assertEqual(self.story.places.count(), 1)
+        ids = [place.place_id for place in self.story.places.all()]
+        self.assertEqual(ids, put_data)

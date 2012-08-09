@@ -9,10 +9,11 @@ from haystack.query import SearchQuerySet
 from haystack.utils.geo import D, Point
 
 from tastypie import fields, http
+from tastypie.authentication import Authentication
 from tastypie.bundle import Bundle
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
+from tastypie.exceptions import BadRequest
 from tastypie.utils import trailing_slash
-from tastypie.authentication import Authentication
 
 from storybase.utils import add_tzinfo
 from storybase.api import (DelayedAuthorizationResource,
@@ -77,6 +78,8 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
             url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/sections/(?P<section_id>[0-9a-f]{32,32})%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_section_detail'), name="api_dispatch_detail_sections"),
             url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/sections/(?P<section_id>[0-9a-f]{32,32})/assets%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_sectionasset_list'), name="api_dispatch_list_sectionassets"),
             url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/sections/(?P<section_id>[0-9a-f]{32,32})/assets/(?P<asset_id>[0-9a-f]{32,32})%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_sectionasset_detail'), name="api_dispatch_detail_sectionassets"),
+            url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/topics%s" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_storycategory_list'), name="api_dispatch_list_storycategories"),
+            url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/places%s" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_storyplace_list'), name="api_dispatch_list_storyplaces"),
         ]
 
     def detail_uri_kwargs(self, bundle_or_obj):
@@ -397,6 +400,7 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
         return resource.dispatch_list(request, 
             section__section_id=section_id)
 
+
     def dispatch_sectionasset_detail(self, request, **kwargs):
         try:
             # Remove the section id from the keyword arguments to lookup the
@@ -423,6 +427,28 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
         template_id = kwargs.pop('template_id')
         template_resource = StoryTemplateResource()
         return template_resource.dispatch_detail(request, template_id=template_id)
+
+    def dispatch_storycategory_list(self, request, **kwargs):
+        try:
+            story = self.cached_obj_get(request=request, **self.remove_api_resource_names(kwargs))
+        except ObjectDoesNotExist:
+            return http.HttpNotFound()
+        except MultipleObjectsReturned:
+            return http.HttpMultipleChoices("More than one resource is found at this URI.")
+
+        resource = StoryCategoryResource()
+        return resource.dispatch_list(request, story_id=story.story_id)
+
+    def dispatch_storyplace_list(self, request, **kwargs):
+        try:
+            story = self.cached_obj_get(request=request, **self.remove_api_resource_names(kwargs))
+        except ObjectDoesNotExist:
+            return http.HttpNotFound()
+        except MultipleObjectsReturned:
+            return http.HttpMultipleChoices("More than one resource is found at this URI.")
+
+        resource = StoryPlaceResource()
+        return resource.dispatch_list(request, story_id=story.story_id)
 
 
 class SectionResource(DelayedAuthorizationResource, TranslatedModelResource):
@@ -707,3 +733,63 @@ class StoryTemplateResource(TranslatedModelResource):
             return self._build_reverse_url(nested_url_name, kwargs=kwargs)
         except NoReverseMatch:
             return ''
+
+class PutListSubResource(DelayedAuthorizationResource,HookedModelResource):
+    """Base resource class for replacing a Story's related models from a list of ids"""
+    class Meta:
+        list_allowed_methods = ['put']
+        authentication = Authentication()
+        authorization = LoggedInAuthorization()
+
+        # Custom meta attributes
+        parent_resource = StoryResource
+        delayed_authorization_methods = ['put_list']
+        related_id_name = 'pk'
+        related_queryset = None
+
+    def resource_uri_kwargs(self, bundle_or_obj=None):
+        """
+        Builds a dictionary of kwargs to help generate URIs.
+
+        This retrieves the resource_name and api_name from the parent resource
+        as this resource is designed to be nested under ``StoryResource``
+
+        """
+        kwargs = super(PutListSubResource, self).resource_uri_kwargs(bundle_or_obj)
+        kwargs['resource_name'] = self._meta.parent_resource._meta.resource_name 
+        if self._meta.parent_resource._meta.api_name is not None:
+            kwargs['api_name'] = self._meta.parent_resource._meta.api_name
+        return kwargs
+
+    def put_list(self, request, **kwargs):
+        story_id = kwargs.pop('story_id')
+        obj = Story.objects.get(story_id=story_id)
+        self.is_authorized(request, obj)
+        related_ids = self.deserialize(request, request.raw_post_data, format=request.META.get('CONTENT_TYPE', 'application/json'))
+        filter_kwargs = {}
+        filter_kwargs[self._meta.related_id_name + "__in"] = related_ids
+        related_objects = self._meta.related_queryset.filter(**filter_kwargs)
+        if len(related_objects) != len(related_ids):
+            raise BadRequest("Invalid category IDs")
+        related_manager = getattr(obj, self._meta.related_attr)
+        related_manager.clear()
+        related_manager.add(*list(related_objects))
+        obj.save()
+
+
+class StoryCategoryResource(PutListSubResource):
+    class Meta(PutListSubResource.Meta):
+        resource_name = 'storycategories'
+
+        # Custom meta attributes
+        related_attr = 'topics'
+        related_queryset = Category.objects.all()
+
+class StoryPlaceResource(PutListSubResource):
+    class Meta(PutListSubResource.Meta):
+        resource_name = 'storyplaces'
+
+        # Custom meta attributes
+        related_attr = 'places'
+        related_queryset = Place.objects.all()
+        related_id_name = 'place_id'
