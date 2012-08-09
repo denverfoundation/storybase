@@ -185,6 +185,38 @@ Handlebars.js templates for story builder Backbone application
 <div><a class="btn publish" href="#">Publish My Story</a></div>
 </script>
 
+<script type="text/x-handlebars-template" id="share-legal-template">
+<p>{{#blockgettext}}
+In order to publish and share your story, you need to double-check a few legal details.
+{{/blockgettext}}<a href="#">{{gettext message="Read the Floodlight Terms of Service"}}</a>.</p>
+</script>
+
+<script type="text/x-handlebars-template" id="share-permission-field-template">
+<input type="checkbox" name="permission" value="permission" /> {{gettext message="I have the necessary ownership/rights/permissions to legally distribute the content in this story."}}
+<ul>
+    <li>{{#blockgettext}}The content in this story doesn’t violate copyright law or infringe on a third party’s trademark, trade secret, proprietary data or patent{{/blockgettext}}.</li>
+    <li>{{#blockgettext}}I have properly cited or credited any content that I did not create myself.{{/blockgettext}}</li>
+    <li>{{#blockgettext}}If this story has any photos or videos of children (under 18), I have obtained the proper parent or guardian release forms (a sample release form is available here){{/blockgettext}}.</li>
+</ul>
+</script>
+
+<script type="text/x-handlebars-template" id="share-license-field-template">
+<input type="checkbox" name="license" value="license" /> {{#blockgettext}}I participate in Floodlight’s cooperative distribution by publishing my story under a Creative Commons license. This means that I remain the owner of this story, but that my content can be featured on the site and redistributed by others. Learn more about Creative Commons.{{/blockgettext}}    
+</script>
+
+<script type="text/x-handlebars-template" id="share-cc-allow-commercial-template">
+<label for="cc-allow-commercial">Allow commercial uses of your work?</label>
+<input type="radio" name="cc-allow-commercial" value="cc-allow-commercial-yes" /> {{gettext message="Yes"}} 
+<input type="radio" name="cc-allow-commercial" value="cc-allow-commercial-no" /> {{gettext message="No"}}
+</script>
+
+<script type="text/x-handlebars-template" id="share-cc-allow-modification-template">
+<label for="cc-allow-commercial">Allow modifications of your work?</label>
+<input type="radio" name="cc-allow-modification" value="cc-allow-modification-yes" /> {{gettext message="Yes"}} 
+<input type="radio" name="cc-allow-modification" value="cc-allow-modification-yes" /> {{gettext message="Yes, as long as others can share alike"}} 
+<input type="radio" name="cc-allow-modification" value="cc-allow-modification-no" /> {{gettext message="No"}}
+</script>
+
 <script type="text/x-handlebars-template" id="share-taxonomy-template">
 <p>{{#blockgettext}}
 Make sure readers can find your story. It will be easier for others to find, read and share your story if you include additional information, like a byline, topic tags, locations, or affiliated organizations.

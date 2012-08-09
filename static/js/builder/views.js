@@ -2477,6 +2477,9 @@ storybase.builder.views.ShareView = Backbone.View.extend({
         model: this.model,
         places: this.options.places,
         topics: this.options.topics
+      }),
+      'legal': new storybase.builder.views.LegalView({
+        model: this.model
       })
     };
 
@@ -2484,10 +2487,10 @@ storybase.builder.views.ShareView = Backbone.View.extend({
   },
 
   updateStep: function(step, subStep) {
-    // TODO: Implement this
     if (step === 'share' && _.include(_.keys(this.subviews), subStep)) {
       this.activeStep = subStep;
     }
+    this.render();
   },
 
   render: function() {
@@ -2520,6 +2523,55 @@ storybase.builder.views.ShareView = Backbone.View.extend({
       success: triggerPublished, 
       error: triggerError 
     });
+  }
+});
+
+storybase.builder.views.LegalView = Backbone.View.extend({
+  id: 'share-legal',
+
+  templateSource: $('#share-legal-template').html(),
+
+  initialize: function() {
+    this.template = Handlebars.compile(this.templateSource);
+    this.form = new Backbone.Form({
+      schema: {
+        permission: { 
+          type: 'Checkboxes',
+          title: '',
+          options: Handlebars.compile($('#share-permission-field-template').html())(),
+          validators: ['required']
+        },
+        license: {
+          type: 'Checkboxes',
+          title: '',
+          options: Handlebars.compile($('#share-license-field-template').html())(),
+          validators: ['required']
+        },
+        'cc-allow-commercial': {
+          type: 'Radio',
+          title: '',
+          options: Handlebars.compile($('#share-cc-allow-commercial-template').html())(),
+          validators: ['required']
+        },
+        'cc-allow-modification': {
+          type: 'Radio',
+          title: '',
+          options: Handlebars.compile($('#share-cc-allow-modification-template').html())(),
+          validators: ['required']
+        }
+      }
+    });
+    this.form.on("change", function(form) {
+      console.debug(form.validate());
+      console.debug(form.getValue());
+    }, this);
+  },
+
+  render: function() {
+    this.$el.html(this.template());
+    this.$el.append(this.form.render().el);
+
+    return this;
   }
 });
 
@@ -2585,10 +2637,8 @@ storybase.builder.views.TaxonomyView = Backbone.View.extend({
   },
 
   render: function() {
-    var context = {};
-    this.$el.html(this.template(context));
+    this.$el.html(this.template());
     this.$el.append(this.officialForm.render().el);
-    console.debug(this.model.get('places'), this.model.get('topics'));
     this.officialForm.setValue({
       'topics': _.pluck(this.model.get('topics'), 'id'),
       'places': _.pluck(this.model.get('places'), 'id')
