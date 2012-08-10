@@ -637,7 +637,7 @@ storybase.builder.views.WorkflowNavView = Backbone.View.extend({
 
   events: function() {
     return {
-      'click a': this.navigate 
+      'click a': this.handleClick
     };
   },
 
@@ -657,13 +657,15 @@ storybase.builder.views.WorkflowNavView = Backbone.View.extend({
   },
 
   getHref: function(buttonContext) {
+    console.debug(buttonContext);
     return storybase.builder.globals.APP_ROOT + this.model.id + '/' + buttonContext.path;
   },
 
   renderButton: function(buttonContext, direction) {
     console.debug(buttonContext);
+    var enabled = _.isFunction(buttonContext.enabled) ? buttonContext.enabled() : true;
     this.$el.append(this.itemTemplate({
-      class: direction,
+      class: direction + (enabled ? "" : " disabled"),
       title: buttonContext.title,
       href: this.getHref(buttonContext) 
     }));
@@ -682,13 +684,19 @@ storybase.builder.views.WorkflowNavView = Backbone.View.extend({
     return this;
   },
 
-  navigate: function(evt) {
+  handleClick: function(evt) {
     console.debug('handling click of navigation button');
     evt.preventDefault();
-    var href = $(evt.target).attr("href");
-    var route = href.substr(storybase.builder.globals.APP_ROOT.length);
-    this.dispatcher.trigger('navigate', route, 
-      {trigger: true, replace: true});
+    var $button = $(evt.target);
+    var href;
+    var route;
+    // BOOKMARK: Add logic for per-instance validation on click
+    if (!$button.hasClass("disabled")) { 
+      href = $(evt.target).attr("href");
+      route = href.substr(storybase.builder.globals.APP_ROOT.length);
+      this.dispatcher.trigger('navigate', route, 
+        {trigger: true, replace: true});
+    }
   },
 });
 
@@ -810,7 +818,10 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       dispatcher: this.dispatcher,
       forward: {
         title: gettext("Add Data to Your Story"),
-        path: 'data/'
+        path: 'data/',
+        enabled: _.bind(function() {
+          return !this.model.isNew();
+        }, this)
       }
     });
     this._editViews = [];
@@ -999,6 +1010,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
           trigger: true 
         });
         model.saveSections();
+        // Re-render the navigation view to enable the button
+        that.navView.render();
       }
     });
   },
@@ -2592,8 +2605,8 @@ storybase.builder.views.ShareView = Backbone.View.extend({
   updateStep: function(step, subStep) {
     if (step === 'share' && _.include(_.keys(this.subviews), subStep)) {
       this.activeStep = subStep;
+      this.render();
     }
-    this.render();
   },
 
   render: function() {
