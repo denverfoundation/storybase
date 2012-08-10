@@ -171,13 +171,28 @@ class StoryBuilderView(DetailView):
                             for place in Place.objects.order_by('geolevel__name', 'name')]
         return json.dumps(to_be_serialized)
 
+    def get_organizations_json(self):
+        to_be_serialized = [{'organization_id': org.organization_id,
+                             'name': org.name}
+                            for org in self.request.user.organizations.all()]
+        return json.dumps(to_be_serialized);
+
+    def get_projects_json(self):
+        # TODO: Update this to include "Open Projects"
+        to_be_serialized = [{'project_id': project.project_id,
+                             'name': project.name}
+                            for project in self.request.user.projects.all()]
+        return json.dumps(to_be_serialized);
+
     def get_context_data(self, **kwargs):
         """Provide Bootstrap data for Backbone models and collections"""
         context = {
             'asset_types_json': mark_safe(self.get_asset_types_json()),
             'help_json': mark_safe(self.get_help_json()),
             'layouts_json': mark_safe(self.get_layouts_json()),
+            'organizations_json': mark_safe(self.get_organizations_json()),
             'places_json': mark_safe(self.get_places_json()),
+            'projects_json': mark_safe(self.get_projects_json()),
             'story_template_json': mark_safe(self.get_story_template_json()),
             'topics_json': mark_safe(self.get_topics_json()),
         }
