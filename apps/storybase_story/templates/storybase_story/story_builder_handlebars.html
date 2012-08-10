@@ -24,7 +24,7 @@ Handlebars.js templates for story builder Backbone application
 </script>
 
 <script type="text/x-handlebars-template" id="workflow-nav-item-template">
-<a class="{{class}} btn" href="{{href}}">{{title}}</a>
+<a id="{{id}}" class="{{class}} btn" href="{{href}}">{{title}}</a>
 </script>
 
 <script type="text/x-handlebars-template" id="story-template-template">
@@ -206,15 +206,15 @@ In order to publish and share your story, you need to double-check a few legal d
 
 <script type="text/x-handlebars-template" id="share-cc-allow-commercial-template">
 <label for="cc-allow-commercial">Allow commercial uses of your work?</label>
-<input type="radio" name="cc-allow-commercial" value="cc-allow-commercial-yes" /> {{gettext message="Yes"}} 
-<input type="radio" name="cc-allow-commercial" value="cc-allow-commercial-no" /> {{gettext message="No"}}
+<input type="radio" name="cc-allow-commercial" value="yes" /> {{gettext message="Yes"}} 
+<input type="radio" name="cc-allow-commercial" value="no" /> {{gettext message="No"}}
 </script>
 
 <script type="text/x-handlebars-template" id="share-cc-allow-modification-template">
 <label for="cc-allow-commercial">Allow modifications of your work?</label>
-<input type="radio" name="cc-allow-modification" value="cc-allow-modification-yes" /> {{gettext message="Yes"}} 
-<input type="radio" name="cc-allow-modification" value="cc-allow-modification-yes" /> {{gettext message="Yes, as long as others can share alike"}} 
-<input type="radio" name="cc-allow-modification" value="cc-allow-modification-no" /> {{gettext message="No"}}
+<input type="radio" name="cc-allow-modification" value="yes" /> {{gettext message="Yes"}} 
+<input type="radio" name="cc-allow-modification" value="share-alike" /> {{gettext message="Yes, as long as others can share alike"}} 
+<input type="radio" name="cc-allow-modification" value="no" /> {{gettext message="No"}}
 </script>
 
 <script type="text/x-handlebars-template" id="share-taxonomy-template">

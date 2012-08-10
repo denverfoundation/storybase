@@ -1,5 +1,6 @@
 Namespace('storybase.builder.views');
 Namespace.use('storybase.utils.capfirst');
+Namespace.use('storybase.utils.getValue');
 
 /**
  * @name save:section
@@ -628,6 +629,7 @@ storybase.builder.views.OldWorkflowNavView = storybase.builder.views.MenuView.ex
 /**
  * Next/forward buttons for each section
  */
+// TODO: Merge this functionality with MenuView
 storybase.builder.views.WorkflowNavView = Backbone.View.extend({ 
   tagName: 'div',
 
@@ -635,16 +637,23 @@ storybase.builder.views.WorkflowNavView = Backbone.View.extend({
 
   itemTemplateSource: $('#workflow-nav-item-template').html(),
 
+  items: {},
+
   events: function() {
-    return {
-      'click a': this.handleClick
-    };
+    var events = {};
+    _.each(this.items, function(item) {
+      if (item.route !== false) {
+        events['click #' + item.id] = _.isUndefined(item.callback) ? this.handleClick : item.callback;
+      }
+    }, this);
+    return events;
   },
 
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
     this.forward = this.options.forward;
     this.back = this.options.back;
+    this.items = _.isUndefined(this.options.items) ? this.items : this.options.items;
     this.itemTemplate = Handlebars.compile(this.itemTemplateSource);
     if (_.isUndefined(this.model)) {
       this.dispatcher.on("ready:story", this.setStory, this);
@@ -656,29 +665,42 @@ storybase.builder.views.WorkflowNavView = Backbone.View.extend({
     this.render();
   },
 
-  getHref: function(buttonContext) {
-    console.debug(buttonContext);
-    return storybase.builder.globals.APP_ROOT + this.model.id + '/' + buttonContext.path;
+  getHref: function(itemOptions) {
+    if (itemOptions.route !== false) {
+      return storybase.builder.globals.APP_ROOT + this.model.id + '/' + itemOptions.path;
+    }
+    else {
+      return itemOptions.path;
+    }
   },
 
-  renderButton: function(buttonContext, direction) {
-    console.debug(buttonContext);
-    var enabled = _.isFunction(buttonContext.enabled) ? buttonContext.enabled() : true;
+  renderItem: function(itemOptions) {
+    var enabled = _.isFunction(itemOptions.enabled) ? itemOptions.enabled() : true;
     this.$el.append(this.itemTemplate({
-      class: direction + (enabled ? "" : " disabled"),
-      title: buttonContext.title,
-      href: this.getHref(buttonContext) 
+      id: itemOptions.id,
+      class: (enabled ? "" : " disabled"),
+      title: itemOptions.title,
+      href: this.getHref(itemOptions) 
     }));
+  },
+
+  getItem: function(id) {
+    return _.filter(this.items, function(item) {
+      return item.id === id;
+    })[0];
+  },
+
+  getVisibleItems: function() {
+    return _.filter(this.items, function(item) {
+      return _.isUndefined(item.visible) ? true : getValue(item.visible); 
+    });
   },
 
   render: function() {
     this.$el.empty();
-    if (this.back) {
-      this.renderButton(this.back);
-    }
-    if (this.forward) {
-      this.renderButton(this.forward);
-    }
+    _.each(this.getVisibleItems(), function(item) {
+      this.renderItem(item);
+    }, this);
     this.delegateEvents();
 
     return this;
@@ -688,11 +710,13 @@ storybase.builder.views.WorkflowNavView = Backbone.View.extend({
     console.debug('handling click of navigation button');
     evt.preventDefault();
     var $button = $(evt.target);
+    var item = this.getItem($button.attr('id'));
+    var valid = _.isFunction(item.validate) ? item.validate() : true;
     var href;
     var route;
-    // BOOKMARK: Add logic for per-instance validation on click
-    if (!$button.hasClass("disabled")) { 
-      href = $(evt.target).attr("href");
+    if (!$button.hasClass("disabled") && valid) { 
+      href = $button.attr("href");
+      // Strip the base path of this app
       route = href.substr(storybase.builder.globals.APP_ROOT.length);
       this.dispatcher.trigger('navigate', route, 
         {trigger: true, replace: true});
@@ -816,13 +840,16 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.navView = new storybase.builder.views.WorkflowNavView({
       model: this.model,
       dispatcher: this.dispatcher,
-      forward: {
-        title: gettext("Add Data to Your Story"),
-        path: 'data/',
-        enabled: _.bind(function() {
-          return !this.model.isNew();
-        }, this)
-      }
+      items: [
+        {
+          id: 'workflow-nav-data-fwd',
+          title: gettext("Add Data to Your Story"),
+          path: 'data/',
+          enabled: _.bind(function() {
+            return !this.model.isNew();
+          }, this)
+        }
+      ],
     });
     this._editViews = [];
 
@@ -1466,7 +1493,6 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
   },
 
   addNewSection: function(index) {
-    // TODO: Default help for new section
     // TODO: Better method of selecting layout for new section.  This one
     // breaks if you remove all sections
     var section = new storybase.models.Section({
@@ -2402,14 +2428,18 @@ storybase.builder.views.DataView = Backbone.View.extend(
       this.navView = new storybase.builder.views.WorkflowNavView({
         model: this.model,
         dispatcher: this.dispatcher,
-        forward: {
-          title: gettext("Review"),
-          path: 'review/'
-        },
-        back: {
-          title: gettext("Continue Writing Story"),
-          path: ''
-        }
+        items: [
+          {
+            id: 'workflow-nav-build-back',
+            title: gettext("Continue Writing Story"),
+            path: ''
+          },
+          {
+            id: 'workflow-nav-review-fwd',
+            title: gettext("Review"),
+            path: 'review/'
+          }
+        ]
       });
 
       this.form = new Backbone.Form({
@@ -2554,14 +2584,18 @@ storybase.builder.views.ReviewView = Backbone.View.extend({
     this.navView = new storybase.builder.views.WorkflowNavView({
       model: this.model,
       dispatcher: this.dispatcher,
-      back: {
-        title: gettext("Back to Add Data"),
-        path: 'data/'
-      },
-      forward: {
-        title: gettext("Share My Story"),
-        path: 'share/legal/'
-      }
+      items: [
+        {
+          id: 'workflow-nav-data-back',
+          title: gettext("Back to Add Data"),
+          path: 'data/'
+        },
+        {
+          id: 'workflow-nav-share-legal-fwd',
+          title: gettext("Share My Story"),
+          path: 'share/legal/'
+        }
+      ]
     });
   },
 
@@ -2629,21 +2663,34 @@ storybase.builder.views.LegalView = Backbone.View.extend({
   templateSource: $('#share-legal-template').html(),
 
   initialize: function() {
+    // Custom validator for checkboxes.  For whatever reason, 'required'
+    // didn't work
+    var isChecked = function(value, formValues) {
+      var err = {
+        type: 'checked',
+        message: gettext("You must check this checkbox")
+      };
+      if (!value.length) {
+        return err;
+      }
+    };
     this.dispatcher = this.options.dispatcher;
     this.template = Handlebars.compile(this.templateSource);
+    this.hasPermission = this.model && this.model.get('status') === 'published';
+    this.agreedLicense = !!this.model && !!this.model.get('license');
     this.form = new Backbone.Form({
       schema: {
         permission: { 
           type: 'Checkboxes',
           title: '',
           options: Handlebars.compile($('#share-permission-field-template').html())(),
-          validators: ['required']
+          validators: [isChecked]
         },
         license: {
           type: 'Checkboxes',
           title: '',
           options: Handlebars.compile($('#share-license-field-template').html())(),
-          validators: ['required']
+          validators: [isChecked]
         },
         'cc-allow-commercial': {
           type: 'Radio',
@@ -2659,27 +2706,112 @@ storybase.builder.views.LegalView = Backbone.View.extend({
         }
       }
     });
-    this.form.on("change", function(form) {
-      console.debug(form.validate());
-      console.debug(form.getValue());
-    }, this);
+    _.bindAll(this, 'validate');
     this.navView = new storybase.builder.views.WorkflowNavView({
       model: this.model,
       dispatcher: this.dispatcher,
-      back: {
-        title: gettext("Back to Review"),
-        path: 'review/'
-      },
-      forward: {
-        title: gettext("Continue"),
-        path: 'share/tagging/'
-      }
+      items: [
+        {
+          id: 'workflow-nav-review-back',
+          title: gettext("Back to Review"),
+          path: 'review/'
+        },
+        {
+          id: 'workflow-nav-share-tagging-fwd',
+          title: gettext("Continue"),
+          path: 'share/tagging/',
+          validate: this.validate
+        }
+      ]
     });
   },
 
+  getLicense: function() {
+    var ccLicenses = {
+      'CC BY': {
+        allowCommercial: 'yes',
+        allowModification: 'yes'
+      },
+      'CC BY-SA': {
+        allowCommercial: 'yes',
+        allowModification: 'share-alike'
+      },
+      'CC BY-ND': {
+        allowCommercial: 'yes',
+        allowModification: 'no'
+      },
+      'CC BY-NC': {
+        allowCommercial: 'no',
+        allowModification: 'yes'
+      },
+      'CC BY-NC-SA': {
+        allowCommercial: 'no',
+        allowModification: 'share-alike'
+      },
+      'CC BY-NC-ND': {
+        allowCommercial: 'no',
+        allowModification: 'no'
+      }
+    };
+    var license = this.model.get('license');
+    if (license) {
+      return ccLicenses[license];
+    }
+    else {
+      return ccLicenses['CC BY'];
+    }
+  },
+
+  setLicense: function(allowCommercial, allowModification) {
+    var ccLicenses = {
+      'yes': {
+        'yes': 'CC BY',
+        'share-alike': 'CC BY-SA', 
+        'no': 'CC BY-ND'
+      },
+      'no': {
+        'yes': 'CC BY-NC',
+        'share-alike': 'CC BY-NC-SA',
+        'no': 'CC BY-NC-ND'
+      }
+    }
+    this.model.set('license', ccLicenses[allowCommercial][allowModification]);
+    this.model.save();
+  },
+
+  validate: function() {
+    console.debug("In validate()");
+    var formValues = this.form.getValue();
+    console.debug(formValues);
+    var errors = this.form.validate();
+    if (!errors) {
+      this.setLicense(formValues['cc-allow-commercial'],
+        formValues['cc-allow-modification']
+      );
+      this.hasPermission = true;
+      this.agreedLicense = true;
+      return true;
+    }
+    else {
+      return false;
+    }
+  },
+
   render: function() {
+    var licenseFormVals = this.getLicense();
+    var formValues = {
+      permission: this.hasPermission,
+      license: this.agreedLicense,
+      'cc-allow-commercial': licenseFormVals.allowCommercial,
+      'cc-allow-modification': licenseFormVals.allowModification
+    };
     this.$el.html(this.template());
     this.$el.append(this.form.render().el);
+    this.form.setValue(formValues);
+    // HACK: Work around weird setValue implementation for checkbox
+    // type.  Maybe make a custom editor that does it right.
+    this.form.fields.permission.editor.$('input[type=checkbox]').prop('checked', this.hasPermission);
+    this.form.fields.license.$('input[type=checkbox]').prop('checked', this.agreedLicense);
     this.$el.append(this.navView.render().el);
 
     return this;
@@ -2697,14 +2829,18 @@ storybase.builder.views.TaxonomyView = Backbone.View.extend({
     this.navView = new storybase.builder.views.WorkflowNavView({
       model: this.model,
       dispatcher: this.dispatcher,
-      back: {
-        title: gettext("Back to Legal Agreements"),
-        path: 'share/legal/'
-      },
-      forward: {
-        title: gettext("Continue"),
-        path: 'share/publish/'
-      }
+      items: [
+        {
+          id: 'workflow-nav-share-legal-back',
+          title: gettext("Back to Legal Agreements"),
+          path: 'share/legal/'
+        },
+        {
+          id: 'workflow-nav-share-publish-fwd',
+          title: gettext("Continue"),
+          path: 'share/publish/'
+        }
+      ]
     });
     if (this.model) {
       this.initializeForm();
@@ -2805,15 +2941,19 @@ storybase.builder.views.PublishView = Backbone.View.extend({
     this.navView = new storybase.builder.views.WorkflowNavView({
       model: this.model,
       dispatcher: this.dispatcher,
-      back: {
-        title: gettext("Back to Tagging"),
-        path: 'share/tagging/'
-      },
-      // TODO: Make this the for link
-      forward: {
-        title: gettext("Tell Another Story"),
-        path: ''
-      }
+      items: [
+        {
+          id: 'workflow-nav-share-tagging-back',
+          title: gettext("Back to Tagging"),
+          path: 'share/tagging/'
+        },
+        {
+          id: 'workflow-nav-build-another-fwd',
+          title: gettext("Tell Another Story"),
+          path: '/build/',
+          route: false
+        }
+      ]
     });
   },
 
