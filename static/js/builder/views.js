@@ -2880,11 +2880,28 @@ storybase.builder.views.TaxonomyView = Backbone.View.extend({
     this.initializeForm();
   },
 
-  getFormOptions: function(rawOptions) {
+  /**
+   * Map the options from JSON provided from Django to the format needed
+   * by Backbone Forms for creating an HTML select element.
+   *
+   * See https://github.com/powmedia/backbone-forms#editor-select
+   *
+   * @param {Array} rawOptions Array of objects representing option
+   *     with attributes for keys and values.
+   * @param {String} [valAttr="id"] Name of property of the objects in
+   *     rawOptions that identifies the value of the option element.
+   * @param {String} [labelAttr="name"] Name of property of the objects in
+   *     rawOptions that identifies the text of the option element.
+   * @returns {Array} Array of objects with val and label properties.
+   */
+  getFormOptions: function(rawOptions, valAttr, labelAttr) {
+    // Set defaults for attributes for creating select options
+    valAttr = valAttr ? valAttr : 'id';
+    labelAttr = labelAttr ? labelAttr: 'name';
     return _.map(rawOptions, function(value) {
       return {
-        val: value.id, 
-        label: value.name,
+        val: value[valAttr], 
+        label: value[labelAttr],
       };
     });
   },
