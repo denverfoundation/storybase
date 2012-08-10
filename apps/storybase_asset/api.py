@@ -10,7 +10,7 @@ from django.utils.translation import ugettext as _
 from tastypie import fields, http
 from tastypie.authentication import Authentication
 from tastypie.bundle import Bundle
-from tastypie.exceptions import ImmediateHttpResponse
+from tastypie.exceptions import BadRequest, ImmediateHttpResponse
 from tastypie.utils import trailing_slash
 from tastypie.validation import Validation
 
@@ -53,16 +53,23 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
         delayed_authorization_methods = ['put_detail']
 
     def get_object_class(self, bundle=None, request=None, **kwargs):
-        if (bundle.data.get('image', None) or 
-                (bundle.data.get('type') == 'image' and
-                 not bundle.data.get('url'))):
-            return LocalImageAsset
-        elif bundle.data.get('body', None): 
+        content_fields = ('body', 'image', 'url')
+        num_content_fields = 0
+        delayed_upload_types = ('image', 'map') 
+        for name in content_fields:
+            if bundle.data.get(name):
+                num_content_fields = num_content_fields + 1
+        if num_content_fields > 1:
+            raise BadRequest("You must specify only one of the following fields: image, body, or url")
+        if bundle.data.get('body'):
             return HtmlAsset
-        elif bundle.data.get('url', None):
+        elif bundle.data.get('url'):
             return ExternalAsset
+        elif (bundle.data.get('image') or 
+              bundle.data.get('type') in delayed_upload_types):
+            return LocalImageAsset
         else:
-            raise AttributeError
+            raise BadRequest("You must specify an image, body, or url") 
 
     def get_object_list(self, request):
         """

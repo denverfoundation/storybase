@@ -1027,6 +1027,34 @@ class AssetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
                          [post_data['language']])
         self.assertEqual(created_asset.owner, self.user)
 
+    def test_post_list_map_no_file(self):
+        """
+        Test that a map can be created without a file
+        so the file can be uploaded via the separate upload endpoint
+        """
+        post_data = {
+            'type': "map",
+            'title': "Test Map Asset",
+            'status': "published",
+            'language': "en",
+        }
+        self.assertEqual(Asset.objects.count(), 0)
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        resp = self.api_client.post('/api/0.1/assets/',
+                               format='json', data=post_data)
+        self.assertHttpCreated(resp)
+        # Check that asset was created in the system and has the correct
+        # metadata
+        self.assertEqual(LocalImageAsset.objects.count(), 1)
+        created_asset = LocalImageAsset.objects.get()
+        self.assertEqual(created_asset.type, post_data['type'])
+        self.assertEqual(created_asset.title, post_data['title'])
+        self.assertEqual(created_asset.status, post_data['status'])
+        self.assertEqual(created_asset.get_languages(),
+                         [post_data['language']])
+        self.assertEqual(created_asset.owner, self.user)
+
     def test_put_detail_image_relative_url(self):
         """
         Test that the image field is ignored if it is just put back
@@ -1108,6 +1136,38 @@ class AssetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         self.assertEqual(created_asset.title, post_data['title'])
         self.assertEqual(created_asset.attribution, post_data['attribution'])
         self.assertEqual(created_asset.status, post_data['status'])
+
+    def test_post_list_no_content(self):
+        """Test that an error is returned when no image, body or url field is specified"""
+        post_data = {
+            'title' : "Success Express",
+            'type': "quotation",
+            'attribution': "Ed Brennan, EdNews Colorado",
+            'status': 'published',
+            'language': "en",
+        }
+        self.assertEqual(Asset.objects.count(), 0)
+        self.api_client.client.login(username=self.username, password=self.password)
+        response = self.api_client.post('/api/0.1/assets/',
+                               format='json', data=post_data)
+        self.assertHttpBadRequest(response)
+
+    def test_post_list_multiple_content(self):
+        """Test that an error is returned when more than one of these fields is specified: image, body, url"""
+        post_data = {
+            'title' : "Success Express",
+            'type': "quotation",
+            'attribution': "Ed Brennan, EdNews Colorado",
+            'body': "Test Body",
+            'url': "http://denverchildrenscorridor.org/",
+            'status': 'published',
+            'language': "en",
+        }
+        self.assertEqual(Asset.objects.count(), 0)
+        self.api_client.client.login(username=self.username, password=self.password)
+        response = self.api_client.post('/api/0.1/assets/',
+                               format='json', data=post_data)
+        self.assertHttpBadRequest(response)
 
     def test_post_list_url(self):
         """Test creating an asset for externally-hosted content"""
