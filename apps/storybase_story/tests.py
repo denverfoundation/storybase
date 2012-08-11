@@ -24,6 +24,8 @@ from storybase_story.models import (Container, Story, StoryTranslation,
     Section, SectionAsset, SectionLayout, SectionRelation, StoryTemplate,
     create_story, create_section)
 from storybase_taxonomy.models import Category, create_category
+from storybase_user.models import (Organization, Project,
+                                   create_organization, create_project)
 
 
 class SectionRelationFormTest(TestCase):
@@ -2357,3 +2359,153 @@ class StoryPlaceResourceTest(ResourceTestCase):
         self.assertEqual(self.story.places.count(), 1)
         ids = [place.place_id for place in self.story.places.all()]
         self.assertEqual(ids, put_data)
+
+
+class StoryOrganizationResourceTest(ResourceTestCase):
+    def setUp(self):
+        super(StoryOrganizationResourceTest, self).setUp()
+        # Use our fixed TestApiClient instead of the default
+        self.api_client = FixedTestApiClient()
+        self.resource = StoryResource()
+        self.username = 'test'
+        self.password = 'test'
+        self.user = User.objects.create_user(self.username, 'test@example.com', self.password)
+        title = ('Transportation Challenges Limit Education Choices for '
+                 'Denver Parents')
+        summary = """
+            Many families in the Denver metro area use public
+            transportation instead of a school bus because for them, a
+            quality education is worth hours of daily commuting. Colorado's
+            school choice program is meant to foster educational equity,
+            but the families who benefit most are those who have time and
+            money to travel. Low-income families are often left in a lurch.
+            """
+        byline = "Mile High Connects"
+        self.story = create_story(title=title, summary=summary, byline=byline,
+                                  status='published', author=self.user)
+        create_organization(name="Mile High Connects")
+        create_organization(name="Piton Foundation")
+        create_organization(name="Urban Land Conservancy")
+        create_organization(name="America Scores Denver")
+
+    def test_put_list_new(self):
+        """Test that a story's categories can be set"""
+        self.user.organizations.add(*list(Organization.objects.all()))
+        self.user.save()
+        self.story.save()
+        self.assertEqual(self.story.organizations.count(), 0)
+        put_data = [org.organization_id for org in
+                    Organization.objects.filter(organizationtranslation__name="Piton Foundation")]
+        self.api_client.client.login(username=self.username, password=self.password)
+        uri = '/api/0.1/stories/%s/organizations/' % (self.story.story_id)
+        response = self.api_client.put(uri, format='json', data=put_data)
+        self.assertHttpAccepted(response)
+        self.story = Story.objects.get(story_id=self.story.story_id)
+        self.assertEqual(self.story.organizations.count(), 1)
+        ids = [org.organization_id for org in self.story.organizations.all()]
+        self.assertEqual(ids, put_data)
+
+    def test_put_list_replace(self):
+        """Test that the organizations can be replaced by a new set"""
+        self.user.organizations.add(*list(Organization.objects.all()))
+        self.user.save()
+        self.story.organizations.add(*list(Organization.objects.filter(organizationtranslation__name__in=("Urban Land Conservancy", "America Scores Denver"))))
+        self.story.save()
+        self.assertEqual(self.story.organizations.count(), 2)
+        put_data = [organization.organization_id for organization in
+                    Organization.objects.filter(organizationtranslation__name__in=("Mile High Connects", "Piton Foundation"))]
+        self.api_client.client.login(username=self.username, password=self.password)
+        uri = '/api/0.1/stories/%s/organizations/' % (self.story.story_id)
+        response = self.api_client.put(uri, format='json', data=put_data)
+        self.assertHttpAccepted(response)
+        self.story = Story.objects.get(story_id=self.story.story_id)
+        self.assertEqual(self.story.organizations.count(), 2)
+        ids = [organization.organization_id for organization in self.story.organizations.all()]
+        self.assertEqual(ids, put_data)
+
+    def test_put_list_non_member(self):
+        """Test that a user cannot add organizations to a story unless they're a member of the organization"""
+        self.assertEqual(self.story.organizations.count(), 0)
+        put_data = [organization.organization_id for organization in
+                    Organization.objects.filter(organizationtranslation__name__in=("Mile High Connects", "Piton Foundation"))]
+        self.api_client.client.login(username=self.username, password=self.password)
+        uri = '/api/0.1/stories/%s/organizations/' % (self.story.story_id)
+        response = self.api_client.put(uri, format='json', data=put_data)
+        self.assertHttpBadRequest(response)
+        self.story = Story.objects.get(story_id=self.story.story_id)
+        self.assertEqual(self.story.organizations.count(), 0)
+
+
+class StoryProjectResourceTest(ResourceTestCase):
+    def setUp(self):
+        super(StoryProjectResourceTest, self).setUp()
+        # Use our fixed TestApiClient instead of the default
+        self.api_client = FixedTestApiClient()
+        self.resource = StoryResource()
+        self.username = 'test'
+        self.password = 'test'
+        self.user = User.objects.create_user(self.username, 'test@example.com', self.password)
+        title = ('Transportation Challenges Limit Education Choices for '
+                 'Denver Parents')
+        summary = """
+            Many families in the Denver metro area use public
+            transportation instead of a school bus because for them, a
+            quality education is worth hours of daily commuting. Colorado's
+            school choice program is meant to foster educational equity,
+            but the families who benefit most are those who have time and
+            money to travel. Low-income families are often left in a lurch.
+            """
+        byline = "Mile High Connects"
+        self.story = create_story(title=title, summary=summary, byline=byline,
+                                  status='published', author=self.user)
+        create_project(name="Finding a Bite: Food Access in the Children's Corridor")
+        create_project(name="Redeveloping The Holly: From Gang Violence to Hope")
+        create_project(name="Soccer in the Corridor")
+        create_project(name="Stories of Integration")
+
+    def test_put_list_new(self):
+        """Test that a story's categories can be set"""
+        self.user.projects.add(*list(Project.objects.all()))
+        self.user.save()
+        self.story.save()
+        self.assertEqual(self.story.projects.count(), 0)
+        put_data = [proj.project_id for proj in
+                    Project.objects.filter(projecttranslation__name="Soccer in the Corridor")]
+        self.api_client.client.login(username=self.username, password=self.password)
+        uri = '/api/0.1/stories/%s/projects/' % (self.story.story_id)
+        response = self.api_client.put(uri, format='json', data=put_data)
+        self.assertHttpAccepted(response)
+        self.story = Story.objects.get(story_id=self.story.story_id)
+        self.assertEqual(self.story.projects.count(), 1)
+        ids = [proj.project_id for proj in self.story.projects.all()]
+        self.assertEqual(ids, put_data)
+
+    def test_put_list_replace(self):
+        """Test that the projects can be replaced by a new set"""
+        self.user.projects.add(*list(Project.objects.all()))
+        self.user.save()
+        self.story.projects.add(*list(Project.objects.filter(projecttranslation__name__in=("Finding a Bite: Food Access in the Children's Corridor", "Redeveloping The Holly: From Gang Violence to Hope"))))
+        self.story.save()
+        self.assertEqual(self.story.projects.count(), 2)
+        put_data = [project.project_id for project in
+                    Project.objects.filter(projecttranslation__name__in=("Soccer in the Corridor", "Stories of Integration"))]
+        self.api_client.client.login(username=self.username, password=self.password)
+        uri = '/api/0.1/stories/%s/projects/' % (self.story.story_id)
+        response = self.api_client.put(uri, format='json', data=put_data)
+        self.assertHttpAccepted(response)
+        self.story = Story.objects.get(story_id=self.story.story_id)
+        self.assertEqual(self.story.projects.count(), 2)
+        ids = [project.project_id for project in self.story.projects.all()]
+        self.assertEqual(ids, put_data)
+
+    def test_put_list_non_member(self):
+        """Test that a user cannot add projects to a story unless they're a member of the project"""
+        self.assertEqual(self.story.projects.count(), 0)
+        put_data = [project.project_id for project in
+                    Project.objects.filter(projecttranslation__name__in=("Soccer in the Corridor", "Stories of Integration"))]
+        self.api_client.client.login(username=self.username, password=self.password)
+        uri = '/api/0.1/stories/%s/projects/' % (self.story.story_id)
+        response = self.api_client.put(uri, format='json', data=put_data)
+        self.assertHttpBadRequest(response)
+        self.story = Story.objects.get(story_id=self.story.story_id)
+        self.assertEqual(self.story.projects.count(), 0)

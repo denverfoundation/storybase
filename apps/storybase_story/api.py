@@ -81,6 +81,8 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
             url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/sections/(?P<section_id>[0-9a-f]{32,32})/assets/(?P<asset_id>[0-9a-f]{32,32})%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_sectionasset_detail'), name="api_dispatch_detail_sectionassets"),
             url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/topics%s" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_storycategory_list'), name="api_dispatch_list_storycategories"),
             url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/places%s" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_storyplace_list'), name="api_dispatch_list_storyplaces"),
+            url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/organizations%s" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_storyorganization_list'), name="api_dispatch_list_storyorganizations"),
+            url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/projects%s" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_storyproject_list'), name="api_dispatch_list_storyprojects"),
         ]
 
     def detail_uri_kwargs(self, bundle_or_obj):
@@ -429,7 +431,12 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
         template_resource = StoryTemplateResource()
         return template_resource.dispatch_detail(request, template_id=template_id)
 
-    def dispatch_storycategory_list(self, request, **kwargs):
+    def dispatch_metadata_list(self, request, resource, **kwargs):
+        """
+        Dispatcher for nested resources that allow setting/replacing 
+        story metadata
+
+        """
         try:
             story = self.cached_obj_get(request=request, **self.remove_api_resource_names(kwargs))
         except ObjectDoesNotExist:
@@ -437,19 +444,19 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
         except MultipleObjectsReturned:
             return http.HttpMultipleChoices("More than one resource is found at this URI.")
 
-        resource = StoryCategoryResource()
         return resource.dispatch_list(request, story_id=story.story_id)
+
+    def dispatch_storycategory_list(self, request, **kwargs):
+        return self.dispatch_metadata_list(request, StoryCategoryResource(), **kwargs)
 
     def dispatch_storyplace_list(self, request, **kwargs):
-        try:
-            story = self.cached_obj_get(request=request, **self.remove_api_resource_names(kwargs))
-        except ObjectDoesNotExist:
-            return http.HttpNotFound()
-        except MultipleObjectsReturned:
-            return http.HttpMultipleChoices("More than one resource is found at this URI.")
+        return self.dispatch_metadata_list(request, StoryPlaceResource(), **kwargs)
 
-        resource = StoryPlaceResource()
-        return resource.dispatch_list(request, story_id=story.story_id)
+    def dispatch_storyorganization_list(self, request, **kwargs):
+        return self.dispatch_metadata_list(request, StoryOrganizationResource(), **kwargs)
+
+    def dispatch_storyproject_list(self, request, **kwargs):
+        return self.dispatch_metadata_list(request, StoryProjectResource(), **kwargs)
 
 
 class SectionResource(DelayedAuthorizationResource, TranslatedModelResource):
@@ -762,16 +769,24 @@ class PutListSubResource(DelayedAuthorizationResource,HookedModelResource):
             kwargs['api_name'] = self._meta.parent_resource._meta.api_name
         return kwargs
 
+    def alter_hydrated_object_list(self, request, object_list):
+        """Hook to limit the list of objects that will be associated with the story"""
+        return object_list
+
     def put_list(self, request, **kwargs):
         story_id = kwargs.pop('story_id')
         obj = Story.objects.get(story_id=story_id)
         self.is_authorized(request, obj)
         related_ids = self.deserialize(request, request.raw_post_data, format=request.META.get('CONTENT_TYPE', 'application/json'))
+        related_ids = self.alter_deserialized_list_data(request, related_ids)
         filter_kwargs = {}
         filter_kwargs[self._meta.related_id_name + "__in"] = related_ids
         related_objects = self._meta.related_queryset.filter(**filter_kwargs)
+        related_objects = self.alter_hydrated_object_list(request, 
+            related_objects) 
+
         if len(related_objects) != len(related_ids):
-            raise BadRequest("Invalid category IDs")
+            raise BadRequest("Invalid IDs")
         related_manager = getattr(obj, self._meta.related_attr)
         related_manager.clear()
         related_manager.add(*list(related_objects))
@@ -786,6 +801,7 @@ class StoryCategoryResource(PutListSubResource):
         related_attr = 'topics'
         related_queryset = Category.objects.all()
 
+
 class StoryPlaceResource(PutListSubResource):
     class Meta(PutListSubResource.Meta):
         resource_name = 'storyplaces'
@@ -794,3 +810,34 @@ class StoryPlaceResource(PutListSubResource):
         related_attr = 'places'
         related_queryset = Place.objects.all()
         related_id_name = 'place_id'
+
+
+class StoryOrganizationResource(PutListSubResource):
+    class Meta(PutListSubResource.Meta):
+        resource_name = 'storyorganizations'
+
+        # Custom meta attributes
+        related_attr = 'organizations'
+        related_queryset = Organization.objects.all()
+        related_id_name = 'organization_id'
+
+    def alter_hydrated_object_list(self, request, object_list):
+        for obj in object_list:
+            if obj not in request.user.organizations.all():
+                raise BadRequest("User is not a member of organization with id %s" % obj.organization_id)
+        return object_list
+
+class StoryProjectResource(PutListSubResource):
+    class Meta(PutListSubResource.Meta):
+        resource_name = 'storyprojects'
+
+        # Custom meta attributes
+        related_attr = 'projects'
+        related_queryset = Project.objects.all()
+        related_id_name = 'project_id'
+
+    def alter_hydrated_object_list(self, request, object_list):
+        for obj in object_list:
+            if obj not in request.user.projects.all():
+                raise BadRequest("User is not a member of project with id %s" % obj.project_id)
+        return object_list
