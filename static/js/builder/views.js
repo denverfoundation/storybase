@@ -60,7 +60,9 @@ storybase.builder.views.AppView = Backbone.View.extend({
     });
     shareViewOptions = _.extend(commonOptions, {
       places: this.options.places,
-      topics: this.options.topics
+      topics: this.options.topics,
+      organizations: this.options.organizations,
+      projects: this.options.projects
     });
     // Store subviews in an object keyed with values of this.activeStep
     this.subviews = {
@@ -2625,7 +2627,9 @@ storybase.builder.views.ShareView = Backbone.View.extend({
         dispatcher: this.dispatcher,
         model: this.model,
         places: this.options.places,
-        topics: this.options.topics
+        topics: this.options.topics,
+        organizations: this.options.organizations,
+        projects: this.options.projects
       }),
       'publish': new storybase.builder.views.PublishView({
         dispatcher: this.dispatcher,
@@ -2854,25 +2858,44 @@ storybase.builder.views.TaxonomyView = Backbone.View.extend({
     // Convert the JSON into the format for Backbone Forms
     var topicsOptions = this.getFormOptions(this.options.topics);
     var placesOptions = this.getFormOptions(this.options.places);
+    var organizationsOptions = this.getFormOptions(this.options.organizations, 'organization_id');
+    var projectsOptions = this.getFormOptions(this.options.projects, 'project_id');
     // Official taxonomies
-    this.officialForm = new Backbone.Form({
-      schema: {
-        topics: { 
-          type: 'Select', 
-          options: topicsOptions, 
-          value: _.pluck(this.model.get('topics'), 'id'),
-          editorAttrs: {multiple: "", placeholder: gettext("Click to select topics")}  
-        },
-        places: { 
-          type: 'Select', 
-          options: placesOptions, 
-          value: _.pluck(this.model.get('places'), 'id'),
-          editorAttrs: {multiple: "", placeholder: gettext("Click to select places")}  
-        }
+    var schema = {
+      topics: { 
+        type: 'Select', 
+        options: topicsOptions, 
+        editorAttrs: {multiple: "", placeholder: gettext("Click to select topics")}
+      },
+      places: { 
+        type: 'Select', 
+        options: placesOptions, 
+        editorAttrs: {multiple: "", placeholder: gettext("Click to select places")}
+      },
+      organizations: {
+        type: 'Select',
+        options: organizationsOptions,
+        editorAttrs: {multiple: "", placeholder: gettext("Click to select organizations")}
+      },
+      projects: {
+        type: 'Select',
+        options: projectsOptions,
+        editorAttrs: {multiple: "", placeholder: gettext("Click to select projects")}
       }
+    };
+    if (!organizationsOptions.length) {
+      delete schema.organizations;
+    }
+    if (!projectsOptions.length) {
+      delete schema.projects;
+    }
+    this.officialForm = new Backbone.Form({
+      schema: schema 
     });
     this.officialForm.on('topics:change', this.changeTopics, this);
     this.officialForm.on('places:change', this.changePlaces, this);
+    this.officialForm.on('organizations:change', this.changeOrganizations, this);
+    this.officialForm.on('projects:change', this.changeProjects, this);
   },
 
   setStory: function(story) {
@@ -2908,7 +2931,6 @@ storybase.builder.views.TaxonomyView = Backbone.View.extend({
 
   replaceRelated: function(url, data) {
     data = data ? data : [];
-    console.debug('got here');
     $.ajax(url, {
       type: "PUT", 
       data: JSON.stringify(data),
@@ -2927,16 +2949,40 @@ storybase.builder.views.TaxonomyView = Backbone.View.extend({
     this.replaceRelated(url, editor.getValue());
   },
 
+  changeOrganizations: function(form, editor) {
+    var url = this.model.url() + 'organizations/'; 
+    this.replaceRelated(url, editor.getValue());
+  },
+
+  changeProjects: function(form, editor) {
+    var url = this.model.url() + 'projects/'; 
+    this.replaceRelated(url, editor.getValue());
+  },
+
   render: function() {
+    var initialValues = {
+      'topics': _.pluck(this.model.get('topics'), 'id'),
+      'places': _.pluck(this.model.get('places'), 'id'),
+    }
     this.$el.html(this.template());
     this.$el.append(this.officialForm.render().el);
-    this.officialForm.setValue({
-      'topics': _.pluck(this.model.get('topics'), 'id'),
-      'places': _.pluck(this.model.get('places'), 'id')
-    });
+    if (this.officialForm.fields.organizations) {
+      initialValues.organizations = _.pluck(this.model.get('organizations'), 'id');
+    }
+    if (this.officialForm.fields.projects) {
+      initialValues.projects = _.pluck(this.model.get('projects'), 'id');
+    }
+    this.officialForm.setValue(initialValues);
+    
     // TODO: Custom editor that automatically does this?
     this.officialForm.fields.topics.editor.$el.select2();
     this.officialForm.fields.places.editor.$el.select2();
+    if (this.officialForm.fields.organizations) {
+      this.officialForm.fields.organizations.editor.$el.select2();
+    }
+    if (this.officialForm.fields.projects) {
+      this.officialForm.fields.projects.editor.$el.select2();
+    }
     this.$el.append(this.navView.render().el);
 
     return this;
