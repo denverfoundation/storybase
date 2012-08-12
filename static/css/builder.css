@@ -523,3 +523,9 @@
 #share-taxonomy select {
   width: 300px;
 }
+
+/* Add location view */
+#map {
+  width: 200px;
+  height: 200px;
+}

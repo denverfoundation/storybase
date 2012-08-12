@@ -222,4 +222,15 @@ In order to publish and share your story, you need to double-check a few legal d
 Make sure readers can find your story. It will be easier for others to find, read and share your story if you include additional information, like a byline, topic tags, locations, or affiliated organizations.
 {{/blockgettext}}</p>
 </script>
+
+<script type="text/x-handlebars-template" id="add-location-template">
+<form>
+<input id="address" name="address" type="text" />
+<input id="search-address" name="search" type="button" value="{{gettext message="Search"}}"/>
+<div id="map"></div>
+<div id="found-address"></div>
+<input id="address-name" name="address-name" type="text" placeholder="{{gettext message="Enter a name for this address (optional)"}}"/>
+<input id="do-add-location" type="submit" value="{{gettext message="Add Address"}}"/>
+</form>
+</script>
 {% endverbatim %}

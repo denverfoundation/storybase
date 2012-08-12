@@ -10,7 +10,32 @@ Namespace('storybase.utils', {
 
   capfirst: function(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
-  }
+  },
+
+  /**
+   * Geocode using the local geocoder.
+   */
+  geocode: function(address, options) {
+    // TODO: Don't hardcode this URL
+    $.ajax('/api/0.1/geocode/', {
+      dataType: 'json',
+      data: {
+        q: address,
+      },
+      success: function(data, textStatus, jqXHR) {
+        if (data.meta.total_count > 0) {
+          // Found a point for the address
+          options.success({
+            'lat': data.objects[0].lat,
+            'lng': data.objects[0].lng
+          });
+        }
+        else {
+          options.failure(address);
+        }
+      }
+    });
+  },
 });
 
 /**

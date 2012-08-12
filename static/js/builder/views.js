@@ -1,6 +1,7 @@
 Namespace('storybase.builder.views');
 Namespace.use('storybase.utils.capfirst');
 Namespace.use('storybase.utils.getValue');
+Namespace.use('storybase.utils.geocode');
 
 /**
  * @name save:section
@@ -2846,6 +2847,10 @@ storybase.builder.views.TaxonomyView = Backbone.View.extend({
         }
       ]
     });
+    this.addLocationView = new storybase.builder.views.AddLocationView({
+      model: this.model,
+      dispatcher: this.dispatcher
+    });
     if (this.model) {
       this.initializeForm();
     }
@@ -2983,9 +2988,93 @@ storybase.builder.views.TaxonomyView = Backbone.View.extend({
     if (this.officialForm.fields.projects) {
       this.officialForm.fields.projects.editor.$el.select2();
     }
+    this.$el.append(this.addLocationView.render().el);
     this.$el.append(this.navView.render().el);
 
     return this;
+  }
+});
+
+storybase.builder.views.AddLocationView = Backbone.View.extend({
+  id: 'add-location',
+
+  mapId: 'map',
+
+  events: {
+    'click #search-address': 'searchAddress',
+    'submit': 'addLocation'
+  },
+
+  templateSource: $('#add-location-template').html(),
+
+  initialize: function() {
+    this.dispatcher = this.options.dispatcher;
+    this.template = Handlebars.compile(this.templateSource);
+    this.initialCenter = new L.LatLng(storybase.globals.MAP_CENTER[0],
+                                      storybase.globals.MAP_CENTER[1]);
+    this.initialZoom = storybase.globals.MAP_ZOOM_LEVEL;
+    this.pointZoom = storybase.globals.MAP_POINT_ZOOM_LEVEL;
+    this.latLng = null;
+  },
+
+  render: function() {
+    console.debug("Rendering add location view");
+    this.$el.html(this.template());
+    // Don't show the address name input until an address has been found
+    this.$('#address-name').hide();
+    // Disable the submission button until an address has been found
+    this.$('#do-add-location').prop('disabled', true);
+    this.map = new L.Map(this.$('#map')[0], {
+    });
+    this.map.setView(this.initialCenter, this.initialZoom);
+    var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
+        osmAttrib = 'Map data &copy; 2012 OpenStreetMap contributors',
+        osm = new L.TileLayer(osmUrl, {maxZoom: 18, attribution: osmAttrib});
+    this.map.addLayer(osm);
+    this.delegateEvents();
+    return this;
+  },
+
+  searchAddress: function(evt) {
+    evt.preventDefault();
+    console.debug("Entering searchAddress");
+    var address = this.$("#address").val();
+    var that = this;
+    this.$('#found-address').html(gettext("Searching ..."));
+    this.$('#address-name').val(null);
+    geocode(address, {
+      success: function(latLng) {
+        // TOOD: See if we can somehow use the address from the
+        // geocoder
+        that.geocodeSuccess(address, latLng);
+      },
+      failure: function(address) {
+        console.debug("Can't find address");
+        this.$('#found-address').val(gettext("No address found"));
+      }
+    });
+  },
+
+  geocodeSuccess: function(address, latLng) {
+    var center = new L.LatLng(latLng.lat, latLng.lng);
+    var marker = new L.Marker(center);
+    this.$('#found-address').html(address);
+    this.$('#address-name').show();
+    this.$('#do-add-location').prop('disabled', false);
+    this.map.addLayer(marker);
+    this.map.setView(center, this.pointZoom);
+    this.latLng = latLng; 
+    // TODO: Break out address pieces and save.
+  },
+
+  addLocation: function(evt) {
+    evt.preventDefault();
+    console.debug('Adding location');
+    // Make sure we found a point
+    if (this.latLng) {
+      // BOOKMARK
+      // TODO: Construct Location object and save
+    }
   }
 });
 
