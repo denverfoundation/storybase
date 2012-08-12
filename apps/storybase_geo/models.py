@@ -67,7 +67,13 @@ class Location(DirtyFieldsMixin, models.Model):
 def geocode(sender, instance, **kwargs):
     """Geocode a Location instance based on its address fields"""
     changed_fields = instance.get_dirty_fields().keys()
-    if ('address' in changed_fields or 'city' in changed_fields or
+    if ('lat' in changed_fields or 'lng' in changed_fields or
+          (instance.lat is not None and instance.lng is not None and
+           instance.point is None)):
+        # A latitude or longitude was explictly set or changed
+        # Set or update the point
+        instance.point = Point(instance.lng, instance.lat)
+    elif ('address' in changed_fields or 'city' in changed_fields or
             'state' in changed_fields or 'postcode' in changed_fields or
             instance.lat is None or instance.lng is None):
         point = instance._geocode("%s %s %s %s" % 
@@ -79,12 +85,6 @@ def geocode(sender, instance, **kwargs):
             instance.lng = lng
             instance.point = Point(lng, lat)
 
-    elif ('lat' in changed_fields or 'lng' in changed_fields or
-          (instance.lat is not None and instance.lng is not None and
-           instance.point is None)):
-        # A latitude or longitude was explictly set or changed
-        # Set or update the point
-        instance.point = Point(instance.lng, instance.lat)
 
 pre_save.connect(geocode, sender=Location)
 
