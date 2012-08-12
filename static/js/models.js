@@ -109,6 +109,54 @@ storybase.collections.DataSets = Backbone.Collection.extend(
   })
 );
 
+storybase.models.Location = Backbone.Model.extend({
+  idAttribute: 'location_id',
+
+  urlRoot: function() {
+    return storybase.globals.API_ROOT + 'locations';
+  },
+
+  /**
+   * Get the URL for the model.  
+   *
+   * Unlike the default version, for new models this uses the collection url
+   * first, instead of the urlRoot value.
+   */
+  url: function() {
+    var base = getValue(this, 'urlRoot') || getValue(this.collection, 'url') || urlError();
+    if (this.isNew()) {
+      base = getValue(this.collection, 'url') || getValue(this, 'urlRoot') || urlError();
+      return base;
+    }
+    else {
+      base = base + (base.charAt(base.length - 1) == '/' ? '' : '/') + encodeURIComponent(this.id);
+    }
+    return base + (base.charAt(base.length - 1) == '/' ? '' : '/');
+  }
+});
+
+storybase.collections.Locations = Backbone.Collection.extend(
+  _.extend({}, storybase.models.TastypieMixin, {
+    model: storybase.models.Location,
+
+    initialize: function(models, options) {
+      this._story = _.isUndefined(options.story) ? null : options.story;
+    },
+
+    url: function() {
+      var url = storybase.globals.API_ROOT + 'locations/';
+      if (this._story) {
+        url = url + 'stories/' + this._story.id + '/';
+      }
+      return url;
+    },
+
+    setStory: function(story) {
+      this._story = story;
+    }
+  })
+);
+
 storybase.models.Story = Backbone.Model.extend(
   _.extend({}, storybase.models.TastypieMixin, {
     idAttribute: "story_id",

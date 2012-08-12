@@ -3013,6 +3013,7 @@ storybase.builder.views.AddLocationView = Backbone.View.extend({
     this.initialCenter = new L.LatLng(storybase.globals.MAP_CENTER[0],
                                       storybase.globals.MAP_CENTER[1]);
     this.initialZoom = storybase.globals.MAP_ZOOM_LEVEL;
+    this.collection = new storybase.collections.Locations([], {story: this.model});
     this.pointZoom = storybase.globals.MAP_POINT_ZOOM_LEVEL;
     this.latLng = null;
   },
@@ -3070,8 +3071,19 @@ storybase.builder.views.AddLocationView = Backbone.View.extend({
   addLocation: function(evt) {
     evt.preventDefault();
     console.debug('Adding location');
+    var name = this.$('#address-name').val();
     // Make sure we found a point
     if (this.latLng) {
+      this.collection.create({
+        name: name ? name : '', 
+        lat: this.latLng.lat,
+        lng: this.latLng.lng
+      }, {
+        success: function(model, resp) {
+        },
+        failure: function(model, resp) {
+        }
+      });
       // BOOKMARK
       // TODO: Construct Location object and save
     }
