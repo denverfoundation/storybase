@@ -494,7 +494,8 @@
   position: absolute;
   right: 0;
   bottom: 50px;
-  width: 20%;
+  padding: 0 20px;
+  text-align: right;
 }
 
 /* Add Data View */
