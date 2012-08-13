@@ -182,14 +182,16 @@ storybase.builder.views.HelpView = Backbone.View.extend({
     this.dispatcher = this.options.dispatcher;
     this.help = null;
     this.template = Handlebars.compile(this.templateSource);
-    // Always show help when switching to a new section
-    this.autoShow = true;
+    // If the cookie is set, use the stored value.
+    // Otherwise, default to true.
+    this.autoShow = $.cookie('storybase_show_builder_help') === 'false' ? false : true;
 
     this.dispatcher.on('do:show:help', this.show, this);
   },
 
   setAutoShow: function(evt) {
     this.autoShow = $(evt.target).prop('checked'); 
+    $.cookie("storybase_show_builder_help", this.autoShow, {path: '/'});
   },
 
   /**
