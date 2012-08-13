@@ -164,6 +164,11 @@
 
 /* Main Application Container */
 
+#builder .navbar {
+  position: fixed;
+  z-index: 999;
+}
+
 #builder .alerts {
   position: fixed;
   width: 100%;
@@ -176,6 +181,8 @@
 
 #app {
   height: 100%;
+  /* Make space for the navbar */
+  padding-top: 40px;
 }
 
 /* Story Template List */
