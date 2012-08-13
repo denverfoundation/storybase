@@ -2003,10 +2003,9 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
    * Disassociate all assets with this section. 
    */
   removeAssets: function() {
-    var that = this;
     this.assets.each(function(asset) {
-      that.removeAsset(asset);
-    });
+      this.removeAsset(this.model, asset);
+    }, this);
   },
 
   /**
@@ -2032,7 +2031,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   },
 
   /**
-   * Event handler for when assets are removed from the section
+   * Callback for when an asset is removed from the section
    */
   removeAsset: function(section, asset) {
     if (section == this.model) {
@@ -2088,12 +2087,16 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     this._firstSave = false;
   },
 
+  /**
+   * Callback for the 'destroy' event on the view's model.
+   */
   handleDestroy: function() {
     console.debug("Section is being destroyed!");
     var triggerUnused = function(asset) {
       this.dispatcher.trigger("remove:sectionasset", asset);
     };
     triggerUnused = _.bind(triggerUnused, this);
+    console.debug("this.assets", this.assets);
     if (this.assets.length) {
       this.assets.each(triggerUnused);
       this.dispatcher.trigger('alert', 'info', gettext("The assets in the section you removed aren't gone forever.  You can re-add them from the asset list"));
