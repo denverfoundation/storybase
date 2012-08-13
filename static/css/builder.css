@@ -524,6 +524,12 @@
   width: 300px;
 }
 
+/* Tagging view */
+#tags {
+  display: none;
+  width: 300px;
+}
+
 /* Add location view */
 #add-location {
   width: 50%;

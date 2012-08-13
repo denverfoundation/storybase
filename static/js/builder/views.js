@@ -2851,6 +2851,10 @@ storybase.builder.views.TaxonomyView = Backbone.View.extend({
       model: this.model,
       dispatcher: this.dispatcher
     });
+    this.tagView = new storybase.builder.views.TagView({
+      model: this.model,
+      dispatcher: this.dispatcher
+    });
     if (this.model) {
       this.initializeForm();
     }
@@ -2988,6 +2992,7 @@ storybase.builder.views.TaxonomyView = Backbone.View.extend({
     if (this.officialForm.fields.projects) {
       this.officialForm.fields.projects.editor.$el.select2();
     }
+    this.$el.append(this.tagView.render().el);
     this.$el.append(this.addLocationView.render().el);
     this.$el.append(this.navView.render().el);
 
@@ -3122,6 +3127,23 @@ storybase.builder.views.AddLocationView = Backbone.View.extend({
     console.debug(id);
     var loc = this.collection.get(id);
     loc.destroy();
+  }
+});
+
+storybase.builder.views.TagView = Backbone.View.extend({
+  id: 'story-tags',
+
+  templateSource: $('#tags-template').html(),
+
+  initialize: function() {
+    this.dispatcher = this.options.dispatcher;
+    this.template = Handlebars.compile(this.templateSource);
+  },
+
+  render: function() {
+    this.$el.html(this.template());
+    this.$('#tags').select2({tags:['foo', 'bar']});
+    return this;
   }
 });
 
