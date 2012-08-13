@@ -28,14 +28,14 @@ Namespace('storybase.utils', {
           options.success({
             'lat': data.objects[0].lat,
             'lng': data.objects[0].lng
-          });
+          }, data.objects[0].place);
         }
         else {
           options.failure(address);
         }
       }
     });
-  },
+  }
 });
 
 /**

@@ -3061,6 +3061,7 @@ storybase.builder.views.AddLocationView = Backbone.View.extend({
     console.debug("Entering searchAddress");
     var address = this.$("#address").val();
     var that = this;
+    this.rawAddress = '';
     // Don't show the address name input until an address has been found
     this.$('#address-name').hide();
     // Disable the submission button until an address has been found
@@ -3068,28 +3069,28 @@ storybase.builder.views.AddLocationView = Backbone.View.extend({
     this.$('#found-address').html(gettext("Searching ..."));
     this.$('#address-name').val(null);
     geocode(address, {
-      success: function(latLng) {
-        // TOOD: See if we can somehow use the address from the
-        // geocoder
-        that.geocodeSuccess(address, latLng);
+      success: function(latLng, place) {
+        that.geocodeSuccess(latLng, place, address);
       },
       failure: function(address) {
-        console.debug("Can't find address");
         that.$('#found-address').val(gettext("No address found"));
       }
     });
   },
 
-  geocodeSuccess: function(address, latLng) {
+  /**
+   * Callback for a successful response from the geocoder.
+   */
+  geocodeSuccess: function(latLng, place, queryAddress) {
     var center = new L.LatLng(latLng.lat, latLng.lng);
     var marker = new L.Marker(center);
-    this.$('#found-address').html(address);
+    this.rawAddress = place || queryAddress || "";
+    this.$('#found-address').html(this.rawAddress);
     this.$('#address-name').show();
     this.$('#do-add-location').prop('disabled', false);
     this.map.addLayer(marker);
     this.map.setView(center, this.pointZoom);
     this.latLng = latLng; 
-    // TODO: Break out address pieces and save.
   },
 
   addLocation: function(evt) {
@@ -3101,7 +3102,8 @@ storybase.builder.views.AddLocationView = Backbone.View.extend({
       this.collection.create({
         name: name ? name : '', 
         lat: this.latLng.lat,
-        lng: this.latLng.lng
+        lng: this.latLng.lng,
+        raw: this.rawAddress
       }, {
         wait: true,
         success: function(model, resp) {
