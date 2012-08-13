@@ -223,7 +223,7 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
             output += dataset_html
 
         if output:
-            output = "<%s>%s</%s>" % (wrapper, output, wrapper)
+            output = '<%s class="caption">%s</%s>' % (wrapper, output, wrapper)
 
         return output
         

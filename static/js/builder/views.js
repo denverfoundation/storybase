@@ -2172,7 +2172,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       if (_.isUndefined(this.model)) {
         this.model = new storybase.models.Asset();
       }
-      _.bindAll(this, 'initializeForm', 'uploadFile', 'handleUploadProgress'); 
+      _.bindAll(this, 'initializeForm', 'uploadFile', 'handleUploadProgress', 'editCaption'); 
       this.model.on("change", this.initializeForm);
       this.initializeForm();
       this.setInitialState();
@@ -2229,6 +2229,21 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
         context.model = this.model.toJSON()
       }
       this.$el.html(this.template(context));
+      if (state == 'select') {
+        this.$el.droppable();
+      }
+      if (state == 'display') {
+        if (!this.$('.caption').length && this.model.formFieldVisible('caption', this.model.get('type'))) {
+          this.$el.append($('<div class="caption"></div>'));
+        }
+        this.$('.caption').editable(this.editCaption, {
+          type: 'textarea',
+          cancel: gettext("Cancel"),
+          submit: gettext("Save"),
+          tooltip: gettext("Click to edit"),
+          placeholder: gettext("Click to edit caption")
+        });
+      }
       if (state === 'edit') {
         this.form.render().$el.append('<input type="reset" value="' + gettext("Cancel") + '" />').append('<input type="submit" value="' + gettext("Save Changes") + '" />');
         if (_.has(this.form.fields, 'body') && this.model.get('type') == 'text') {
@@ -2246,11 +2261,16 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
         }
         this.$el.append(this.form.el);
       }
-      if (state == 'select') {
-        this.$el.droppable();
-      }
 
       return this;
+    },
+
+    /**
+     * Callback for Jeditable plugin applied to caption.
+     */
+    editCaption: function(value, settings) {
+      this.model.save({caption: value});
+      return value;
     },
 
     setInitialState: function() {

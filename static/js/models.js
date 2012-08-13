@@ -252,6 +252,10 @@ storybase.models.Asset = Backbone.Model.extend(
       }
     },
 
+    formFieldVisible: function(name, type) {
+      return _.has(this.showFormField[name], type);
+    },
+
     /**
      * Build the schema for backbone-forms
      *
@@ -264,7 +268,7 @@ storybase.models.Asset = Backbone.Model.extend(
           url: {title: gettext("URL"), type: 'Text', validators: ['url']},
           image: {title: gettext("Image file"), type: storybase.forms.File},
           body: {title: gettext("Body"), type: 'TextArea'},
-          caption: {title: gettext("Caption"), type: 'TextArea'},
+          //caption: {title: gettext("Caption"), type: 'TextArea'},
           attribution: {title: gettext("Attribution"), type: 'TextArea'},
           source_url: {title: gettext("Source URL"), type: 'Text', validators: ['url']}
         };
@@ -272,7 +276,7 @@ storybase.models.Asset = Backbone.Model.extend(
         var self = this;
         // Remove fields that aren't relevant for a particular type
         _.each(schema, function(field, name, schema) {
-          if (!_.has(this.showFormField[name], type)) {
+          if (!this.formFieldVisible(name, type)) {
             delete schema[name];
           }
         }, this);
