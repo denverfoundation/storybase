@@ -214,32 +214,42 @@ storybase.collections.Sections = Backbone.Collection.extend(
 
 storybase.models.Asset = Backbone.Model.extend(
   _.extend({}, storybase.models.TastypieMixin, {
-    showUrl: {
-      'image': true,
-      'audio': true,
-      'video': true,
-      'map': true,
-      'table': true,
-    },
+    showFormField: {
+      url: {
+        'image': true,
+        'audio': true,
+        'video': true,
+        'map': true,
+        'table': true,
+      },
 
-    showImage: {
-      'image': true,
-      'map': true
-    },
+      image: {
+        'image': true,
+        'map': true
+      },
 
-    showBody: {
-      'text': true,
-      'quotation': true,
-      'map': true,
-      'table': true,
-    },
+      body: {
+        'text': true,
+        'quotation': true,
+        'map': true,
+        'table': true,
+      },
 
-    showCaption: {
-      'image': true,
-      'audio': true,
-      'video': true,
-      'map': true,
-      'table': true,
+      caption: {
+        'image': true,
+        'audio': true,
+        'video': true,
+        'map': true,
+        'table': true,
+      },
+
+      attribution: {
+        'quotation': true
+      },
+
+      source_url: {
+        'quotation': true
+      }
     },
 
     /**
@@ -251,26 +261,21 @@ storybase.models.Asset = Backbone.Model.extend(
     schema: function() {
       if (!_.isUndefined(storybase.forms)) {
         var schema = {
-          url: {type: 'Text', validators: ['url']},
-          image: {type: storybase.forms.File},
-          body: {type: 'TextArea'},
-          caption: {type: 'TextArea'}
+          url: {title: gettext("URL"), type: 'Text', validators: ['url']},
+          image: {title: gettext("Image file"), type: storybase.forms.File},
+          body: {title: gettext("Body"), type: 'TextArea'},
+          caption: {title: gettext("Caption"), type: 'TextArea'},
+          attribution: {title: gettext("Attribution"), type: 'TextArea'},
+          source_url: {title: gettext("Source URL"), type: 'Text', validators: ['url']}
         };
         var type = this.get('type');
         var self = this;
         // Remove fields that aren't relevant for a particular type
-        if (!(_.has(this.showBody, type))) {
-          delete schema.body;
-        }
-        if (!(_.has(this.showImage, type))) {
-          delete schema.image;
-        }
-        if (!(_.has(this.showUrl, type))) {
-          delete schema.url;
-        }
-        if (!(_.has(this.showCaption, type))) {
-          delete schema.caption;
-        }
+        _.each(schema, function(field, name, schema) {
+          if (!_.has(this.showFormField[name], type)) {
+            delete schema[name];
+          }
+        }, this);
         if (!this.isNew()) {
           // For a saved model, only show the fields that have a value set.
           _.each(['image', 'url', 'body'], function(field) {

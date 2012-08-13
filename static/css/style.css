@@ -667,6 +667,16 @@ dl.story-attributes .languages li {
   display: inline-block;
 }
 
+/* Asset content */
+
+.attribution {
+  font-style: italic;
+}
+
+.attribution:before {
+  content: '-- ';
+}
+
 /* ==|== non-semantic helper classes ========================================
    Please define your styles before this section.
    ========================================================================== */
