@@ -172,12 +172,13 @@ Handlebars.js templates for story builder Backbone application
 {{else}}
 <p>There are no data sets for this story.</p>
 {{/if}}
-<div><a class="btn add-dataset" href="#">Add Data</a></div>
+<div><a class="btn add-dataset" href="#">{{gettext message="Add Data"}}</a></div>
 </script>
 
 <script type="text/x-handlebars-template" id="review-template">
 <h2>Story Checklist</h2>
-<p>This view will eventually host the flow for reviewing stories</p>
+<p>{{#blockgettext}}Congratulations on writing your story! We're going through your story right now, checking things out and making sure eveerything looks good from a content perspective, but why don't you also preview your story to see how it will look in the Floodlight story viewer.{{/blockgettext}}</p>
+<div class="preview-button-container"><a class="btn preview" href="#">{{gettext message="Preview Story"}}</a></div>
 </script>
 
 <script type="text/x-handlebars-template" id="share-publish-template">

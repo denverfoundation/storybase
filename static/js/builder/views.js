@@ -77,6 +77,11 @@ storybase.builder.views.AppView = Backbone.View.extend({
       share: new storybase.builder.views.ShareView(commonOptions)
     };
 
+    // Initialize the properties that store the last alert level
+    // and message.
+    this.lastLevel = null;
+    this.lastMessage = null;
+
     // Bind callbacks for custom events
     this.dispatcher.on("select:template", this.setTemplate, this);
     this.dispatcher.on("select:workflowstep", this.updateStep, this); 
@@ -150,11 +155,14 @@ storybase.builder.views.AppView = Backbone.View.extend({
       level: level,
       message: msg
     });
-    this.$('.alerts').empty();
-    this.$('.alerts').prepend(view.render().el);
-    view.$el.fadeOut(5000, function() {
-      $(this).remove();
-    });
+    // Check for duplicate messages and only show the message
+    // if it's different.
+    if (level != this.lastLevel && msg != this.lastMessage) {
+      this.$('.alerts').prepend(view.render().el);
+      view.$el.fadeOut(10000, function() {
+        $(this).remove();
+      });
+    }
   }
 });
 
@@ -949,10 +957,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.$el.prepend(this.lastSavedView.render().el);
     this.$el.append(this.sectionListView.render().el);
     this.renderEditViews();
-    // TOOD: properly place this
-    // BOOKMARK
+    // TODO: properly place this
     this.$el.append(this.navView.render().el);
-    console.debug(this.navView.el);
     return this;
   },
 
@@ -2004,10 +2010,9 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
    * Disassociate all assets with this section. 
    */
   removeAssets: function() {
-    var that = this;
     this.assets.each(function(asset) {
-      that.removeAsset(asset);
-    });
+      this.removeAsset(this.model, asset);
+    }, this);
   },
 
   /**
@@ -2033,7 +2038,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   },
 
   /**
-   * Event handler for when assets are removed from the section
+   * Callback for when an asset is removed from the section
    */
   removeAsset: function(section, asset) {
     if (section == this.model) {
@@ -2089,6 +2094,9 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     this._firstSave = false;
   },
 
+  /**
+   * Callback for the 'destroy' event on the view's model.
+   */
   handleDestroy: function() {
     console.debug("Section is being destroyed!");
     var triggerUnused = function(asset) {
@@ -2113,7 +2121,10 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
         this.dispatcher.trigger('select:section', 'story-info');
       }
     }
+    // Remove the section from the collection of all sections
     this.collection.splice(_.indexOf(this.collection, this), 1);
+    // Inform the user that the section has been deleted
+    this.dispatcher.trigger('alert', 'success', gettext('The section  "' + this.model.get('title') + '" has been deleted'));
     this.close();
   }
 });
@@ -2151,6 +2162,8 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       'drop': 'handleDrop'
     },
 
+    states: ['select', 'display', 'edit'],
+
     initialize: function() {
       this.container = this.options.container;
       this.dispatcher = this.options.dispatcher;
@@ -2160,7 +2173,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       if (_.isUndefined(this.model)) {
         this.model = new storybase.models.Asset();
       }
-      _.bindAll(this, 'initializeForm', 'uploadFile', 'handleUploadProgress'); 
+      _.bindAll(this, 'initializeForm', 'uploadFile', 'handleUploadProgress', 'editCaption'); 
       this.model.on("change", this.initializeForm);
       this.initializeForm();
       this.setInitialState();
@@ -2203,6 +2216,19 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       this.form.render();
     },
 
+    setClass: function() {
+      var activeState = this.getState();
+      _.each(this.states, function(state) {
+        if (state === activeState) {
+          this.$el.addClass(state);
+          console.debug(state);
+        }
+        else {
+          this.$el.removeClass(state);
+        }
+      }, this);
+    },
+
     render: function() {
       var context = {
         assetTypes: this.assetTypes
@@ -2217,6 +2243,22 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
         context.model = this.model.toJSON()
       }
       this.$el.html(this.template(context));
+      this.setClass();
+      if (state == 'select') {
+        this.$el.droppable();
+      }
+      if (state == 'display') {
+        if (!this.$('.caption').length && this.model.formFieldVisible('caption', this.model.get('type'))) {
+          this.$el.append($('<div class="caption"></div>'));
+        }
+        this.$('.caption').editable(this.editCaption, {
+          type: 'textarea',
+          cancel: gettext("Cancel"),
+          submit: gettext("Save"),
+          tooltip: gettext("Click to edit"),
+          placeholder: gettext("Click to edit caption")
+        });
+      }
       if (state === 'edit') {
         this.form.render().$el.append('<input type="reset" value="' + gettext("Cancel") + '" />').append('<input type="submit" value="' + gettext("Save Changes") + '" />');
         if (_.has(this.form.fields, 'body') && this.model.get('type') == 'text') {
@@ -2234,11 +2276,16 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
         }
         this.$el.append(this.form.el);
       }
-      if (state == 'select') {
-        this.$el.droppable();
-      }
 
       return this;
+    },
+
+    /**
+     * Callback for Jeditable plugin applied to caption.
+     */
+    editCaption: function(value, settings) {
+      this.model.save({caption: value});
+      return value;
     },
 
     setInitialState: function() {
@@ -2579,11 +2626,16 @@ storybase.builder.views.ReviewView = Backbone.View.extend({
   templateSource: $('#review-template').html(),
 
   events: {
+    'click .preview': 'previewStory'
   },
 
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
     this.template = Handlebars.compile(this.templateSource);
+    this.previewed = false;
+    // Need to bind validate to this before it's passed as a callback to
+    // the WorkflowNavView instance
+    _.bindAll(this, 'hasPreviewed');
     this.navView = new storybase.builder.views.WorkflowNavView({
       model: this.model,
       dispatcher: this.dispatcher,
@@ -2596,7 +2648,8 @@ storybase.builder.views.ReviewView = Backbone.View.extend({
         {
           id: 'workflow-nav-share-legal-fwd',
           title: gettext("Share My Story"),
-          path: 'share/legal/'
+          path: 'share/legal/',
+          validate: this.hasPreviewed
         }
       ]
     });
@@ -2608,6 +2661,17 @@ storybase.builder.views.ReviewView = Backbone.View.extend({
     this.$el.html(this.template(context));
     this.$el.append(this.navView.render().el);
     return this;
+  },
+
+  previewStory: function(evt) {
+    evt.preventDefault();
+    var url = '/stories/' + this.model.id + '/viewer/';
+    this.previewed = true;
+    window.open(url);
+  },
+
+  hasPreviewed: function() {
+    return this.previewed;
   }
 });
 
@@ -2785,9 +2849,7 @@ storybase.builder.views.LegalView = Backbone.View.extend({
   },
 
   validate: function() {
-    console.debug("In validate()");
     var formValues = this.form.getValue();
-    console.debug(formValues);
     var errors = this.form.validate();
     if (!errors) {
       this.setLicense(formValues['cc-allow-commercial'],
@@ -3198,6 +3260,7 @@ storybase.builder.views.PublishView = Backbone.View.extend({
   render: function() {
     this.$el.html(this.template());
     this.$el.append(this.navView.render().el);
+    this.delegateEvents();
     return this;
   }
 });

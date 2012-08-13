@@ -223,7 +223,7 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
             output += dataset_html
 
         if output:
-            output = "<%s>%s</%s>" % (wrapper, output, wrapper)
+            output = '<%s class="caption">%s</%s>' % (wrapper, output, wrapper)
 
         return output
         
@@ -384,6 +384,13 @@ class HtmlAsset(Asset):
         elif self.type == 'quotation':
             output.append('<blockquote>')
             output.append(self.body)
+            if self.attribution:
+                attribution = self.attribution
+                if self.source_url:
+                    attribution = ('<a href="%s">%s</a>' %
+                                   (self.source_url, attribution))
+                output.append('<p class="attribution">%s</p>' %
+                              (attribution))
             output.append('</blockquote>')
         else:
             output.append(self.body)
