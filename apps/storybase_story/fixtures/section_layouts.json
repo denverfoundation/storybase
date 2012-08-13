@@ -31,6 +31,16 @@
     },
     {
         "fields": {
+            "language": "en", 
+            "layout": 4, 
+            "name": "3 Stacked", 
+            "translation_id": "85747943a76943ce9ae7afa3ae69f9e5"
+        }, 
+        "model": "storybase_story.sectionlayouttranslation", 
+        "pk": 4
+    }, 
+    {
+        "fields": {
             "containers": [
                 1, 
                 2
@@ -66,6 +76,19 @@
     },
     {
         "fields": {
+            "containers": [
+                4, 
+                5, 
+                6
+            ], 
+            "layout_id": "f0317038b9ab41e6beeedea7b7fe178e", 
+            "template": "3_stacked.html"
+        }, 
+        "model": "storybase_story.sectionlayout", 
+        "pk": 4
+    }, 
+    {
+        "fields": {
             "name": "left"
         }, 
         "model": "storybase_story.container", 
@@ -98,5 +121,12 @@
         }, 
         "model": "storybase_story.container", 
         "pk": 5
+    },
+    {
+        "fields": {
+            "name": "middle"
+        }, 
+        "model": "storybase_story.container", 
+        "pk": 6
     }
 ]

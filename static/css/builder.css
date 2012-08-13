@@ -291,7 +291,9 @@
   overflow: hidden;
 }
 
-.storybase-container-placeholder#top {
+.storybase-container-placeholder#top,
+.storybase-container-placeholder#middle
+{
   margin-bottom: 10px;
 }
 
