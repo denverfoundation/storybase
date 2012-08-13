@@ -65,6 +65,14 @@ class Location(LocationPermission, DirtyFieldsMixin, models.Model):
     lat = models.FloatField(_("Latitude"), blank=True, null=True)
     lng = models.FloatField(_("Longitude"), blank=True, null=True)
     point = models.PointField(_("Point"), blank=True, null=True)
+    # I'm not sure what the best solution for parsing addresses is, or
+    # what the best geocoder is for our application, or how users are 
+    # going to use this feature. So rather than spending a bunch of time
+    # writing/testing an address parser (or picking a particular geocoder
+    # that breaks an address into pieces), just have a place to store
+    # the raw address provided by the user.  This will, at the very least,
+    # give us a domain-specific set of addresses to test against.
+    raw = models.TextField(_("Raw Address"), blank=True)
     owner = models.ForeignKey(User, related_name="locations", blank=True,
                               null=True)
     objects = models.GeoManager()
