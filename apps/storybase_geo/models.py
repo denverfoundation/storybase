@@ -1,5 +1,6 @@
 from geopy.geocoders.base import GeocoderError
 
+from django.contrib.auth.models import User
 from django.contrib.gis.db import models
 from django.contrib.gis.geos import Point
 from django.contrib.localflavor.us.us_states import STATE_CHOICES
@@ -9,7 +10,7 @@ from django_dag.models import edge_factory, node_factory
 from mptt.models import MPTTModel, TreeForeignKey
 from uuidfield.fields import UUIDField
 
-from storybase.models import DirtyFieldsMixin
+from storybase.models import DirtyFieldsMixin, PermissionMixin
 from storybase.fields import ShortTextField
 from storybase_geo.utils import get_geocoder
 
@@ -25,7 +26,33 @@ class GeoLevel(MPTTModel):
         return self.name
 
 
-class Location(DirtyFieldsMixin, models.Model):
+class LocationPermission(PermissionMixin):
+    """Permissions for the Story model"""
+    def user_can_change(self, user):
+        from storybase_user.utils import is_admin
+
+        if not user.is_active:
+            return False
+
+        if self.author == user:
+            return True
+
+        if is_admin(user):
+            return True
+
+        return False
+
+    def user_can_add(self, user):
+        if user.is_active:
+            return True
+
+        return False
+
+    def user_can_delete(self, user):
+        return self.user_can_change(user)
+
+
+class Location(LocationPermission, DirtyFieldsMixin, models.Model):
     """A location with a specific address or latitude and longitude"""
     location_id = UUIDField(auto=True, verbose_name=_("Location ID"))
     name = ShortTextField(_("Name"), blank=True)
@@ -38,6 +65,8 @@ class Location(DirtyFieldsMixin, models.Model):
     lat = models.FloatField(_("Latitude"), blank=True, null=True)
     lng = models.FloatField(_("Longitude"), blank=True, null=True)
     point = models.PointField(_("Point"), blank=True, null=True)
+    owner = models.ForeignKey(User, related_name="locations", blank=True,
+                              null=True)
     objects = models.GeoManager()
 
     def __unicode__(self):

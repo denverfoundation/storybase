@@ -19,6 +19,16 @@ class LocationAdmin(admin.OSMGeoAdmin):
     }
     list_filter = ['stories']
 
+    def save_model(self, request, obj, form, change):
+        """Perform pre-save operations and save the Location 
+
+        Sets the owner field to the current user if it wasn't already set
+
+        """
+        if obj.owner is None:
+            obj.owner = request.user
+        obj.save()
+
 
 class PlaceRelationAdminForm(forms.ModelForm):
     """
