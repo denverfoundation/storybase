@@ -1218,6 +1218,28 @@ class AssetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         modified_asset = Asset.objects.select_subclasses().get(asset_id=asset.asset_id)
         self.assertEqual(modified_asset.body, data['body'])
 
+    def test_put_detail_html_caption(self):
+        """Test updating an asset's caption"""
+        asset = create_html_asset(type='table', title='Test Html Asset',
+                                   body="<iframe width='500' height='300' frameborder='0' src='https://docs.google.com/spreadsheet/pub?key=0As2exFJJWyJqdDhBejVfN1RhdDg2b0QtYWR4X2FTZ3c&output=html&widget=true'></iframe>",
+                                   attribution="Jane Doe", 
+                                   status="published",
+                                   owner=self.user)
+        self.assertEqual(Asset.objects.count(), 1)
+        self.assertEqual(asset.caption, '')
+        self.api_client.client.login(username=self.username, password=self.password)
+        uri = '/api/0.1/assets/%s/' % (asset.asset_id)
+        resp = self.api_client.get(uri, format='json')
+        self.assertValidJSONResponse(resp)
+        # Copy the put data from the response
+        put_data = self.deserialize(resp)
+        put_data['caption'] = "New Caption"
+        resp = self.api_client.put(uri, format='json', data=put_data)
+        self.assertHttpAccepted(resp)
+        self.assertEqual(self.deserialize(resp)['caption'], put_data['caption'])
+        updated_asset = Asset.objects.get(asset_id=asset.asset_id)
+        self.assertEqual(updated_asset.caption, put_data['caption'])
+
     def test_get_list_for_story(self):
         """Test getting only a single story's assets"""
         story = create_story(title="Test Story", summary="Test Summary",
