@@ -2848,9 +2848,7 @@ storybase.builder.views.LegalView = Backbone.View.extend({
   },
 
   validate: function() {
-    console.debug("In validate()");
     var formValues = this.form.getValue();
-    console.debug(formValues);
     var errors = this.form.validate();
     if (!errors) {
       this.setLicense(formValues['cc-allow-commercial'],
