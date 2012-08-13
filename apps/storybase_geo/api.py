@@ -9,7 +9,7 @@ from tastypie.exceptions import BadRequest, ImmediateHttpResponse
 from tastypie.resources import Resource, ModelResource
 from tastypie.utils import trailing_slash
 
-from storybase.api import HookedModelResource, LoggedInAuthorization
+from storybase.api import DelayedAuthorizationResource, LoggedInAuthorization
 from storybase_geo import settings
 from storybase_geo.models import GeoLevel, Location, Place
 from storybase_geo.utils import get_geocoder
@@ -31,7 +31,7 @@ class GeoLevelResource(ModelResource):
         }
 
 
-class LocationResource(HookedModelResource):
+class LocationResource(DelayedAuthorizationResource):
     class Meta:
         always_return_data = True
         queryset = Location.objects.all()
@@ -43,6 +43,9 @@ class LocationResource(HookedModelResource):
         detail_uri_name = 'location_id'
         # Hide the underlying id
         excludes = ['id', 'point']
+
+        # Custom
+        delayed_authorization_methods = ['delete_detail']
 
     def prepend_urls(self):
         return [

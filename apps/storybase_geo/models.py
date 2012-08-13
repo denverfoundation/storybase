@@ -34,7 +34,7 @@ class LocationPermission(PermissionMixin):
         if not user.is_active:
             return False
 
-        if self.author == user:
+        if self.owner == user:
             return True
 
         if is_admin(user):

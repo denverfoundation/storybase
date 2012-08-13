@@ -195,9 +195,7 @@ class LocationResourceTest(ResourceTestCase):
         self.story = create_story(title="Test Story", summary="Test Summary",
             byline="Test Byline", status="published", language="en", 
             author=self.user)
-
-    def test_get_list_with_story(self):
-        location_attrs = [
+        self.location_attrs = [
             {
                 "name": "The Piton Foundation",
                 "address": "370 17th St",
@@ -221,7 +219,9 @@ class LocationResourceTest(ResourceTestCase):
                 'postcode': "60647",
             }
         ]
-        for attrs in location_attrs:
+
+    def test_get_list_with_story(self):
+        for attrs in self.location_attrs:
             Location.objects.create(**attrs)
         self.assertEqual(Location.objects.count(), 3)
         self.story.locations.add(*list(Location.objects.filter(name__in=("The Hull House", "The Piton Foundation"))))
@@ -305,3 +305,44 @@ class LocationResourceTest(ResourceTestCase):
         self.assertEqual(Location.objects.count(), 0)
         self.assertEqual(self.story.locations.count(), 0)
 
+    def test_delete_detail(self):
+        obj = Location.objects.create(**self.location_attrs[0])
+        obj.owner = self.user
+        obj.save()
+        self.assertEqual(Location.objects.count(), 1)
+        self.assertEqual(self.user.locations.count(), 1)
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        uri = '/api/0.1/locations/%s/' % (obj.location_id)
+        resp = self.api_client.delete(uri, format='json')
+        self.assertHttpAccepted(resp)
+        self.assertEqual(Location.objects.count(), 0)
+        self.assertEqual(self.user.locations.count(), 0)
+
+    def test_delete_detail_unauthenticated(self):
+        """Tests that an unauthenticated user cannot delete a location"""
+        obj = Location.objects.create(**self.location_attrs[0])
+        obj.owner = self.user
+        obj.save()
+        self.assertEqual(Location.objects.count(), 1)
+        self.assertEqual(self.user.locations.count(), 1)
+        uri = '/api/0.1/locations/%s/' % (obj.location_id)
+        resp = self.api_client.delete(uri, format='json')
+        self.assertHttpUnauthorized(resp)
+        self.assertEqual(Location.objects.count(), 1)
+        self.assertEqual(self.user.locations.count(), 1)
+
+    def test_delete_detail_unauthorized(self):
+        """Tests that an unauthorized user cannot delete a location"""
+        obj = Location.objects.create(**self.location_attrs[0])
+        obj.owner = self.user2
+        obj.save()
+        self.assertEqual(Location.objects.count(), 1)
+        self.assertEqual(self.user2.locations.count(), 1)
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        uri = '/api/0.1/locations/%s/' % (obj.location_id)
+        resp = self.api_client.delete(uri, format='json')
+        self.assertHttpUnauthorized(resp)
+        self.assertEqual(Location.objects.count(), 1)
+        self.assertEqual(self.user2.locations.count(), 1)

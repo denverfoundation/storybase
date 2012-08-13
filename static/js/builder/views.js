@@ -3061,6 +3061,10 @@ storybase.builder.views.AddLocationView = Backbone.View.extend({
     console.debug("Entering searchAddress");
     var address = this.$("#address").val();
     var that = this;
+    // Don't show the address name input until an address has been found
+    this.$('#address-name').hide();
+    // Disable the submission button until an address has been found
+    this.$('#do-add-location').prop('disabled', true);
     this.$('#found-address').html(gettext("Searching ..."));
     this.$('#address-name').val(null);
     geocode(address, {
@@ -3099,19 +3103,21 @@ storybase.builder.views.AddLocationView = Backbone.View.extend({
         lat: this.latLng.lat,
         lng: this.latLng.lng
       }, {
+        wait: true,
         success: function(model, resp) {
+          // TODO: Handle success in saving
         },
         failure: function(model, resp) {
+          // TODO: Handle failure in saving
         }
       });
-      // BOOKMARK
-      // TODO: Construct Location object and save
     }
   },
 
   deleteLocation: function(evt) {
-    evt.prevetnDefault();
-    var id = ($evt.target).data('location-id');
+    evt.preventDefault();
+    var id = $(evt.target).data('location-id');
+    console.debug(id);
     var loc = this.collection.get(id);
     loc.destroy();
   }
