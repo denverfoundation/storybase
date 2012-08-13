@@ -956,10 +956,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.$el.prepend(this.lastSavedView.render().el);
     this.$el.append(this.sectionListView.render().el);
     this.renderEditViews();
-    // TOOD: properly place this
-    // BOOKMARK
+    // TODO: properly place this
     this.$el.append(this.navView.render().el);
-    console.debug(this.navView.el);
     return this;
   },
 
@@ -2627,11 +2625,16 @@ storybase.builder.views.ReviewView = Backbone.View.extend({
   templateSource: $('#review-template').html(),
 
   events: {
+    'click .preview': 'previewStory'
   },
 
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
     this.template = Handlebars.compile(this.templateSource);
+    this.previewed = false;
+    // Need to bind validate to this before it's passed as a callback to
+    // the WorkflowNavView instance
+    _.bindAll(this, 'hasPreviewed');
     this.navView = new storybase.builder.views.WorkflowNavView({
       model: this.model,
       dispatcher: this.dispatcher,
@@ -2644,7 +2647,8 @@ storybase.builder.views.ReviewView = Backbone.View.extend({
         {
           id: 'workflow-nav-share-legal-fwd',
           title: gettext("Share My Story"),
-          path: 'share/legal/'
+          path: 'share/legal/',
+          validate: this.hasPreviewed
         }
       ]
     });
@@ -2656,6 +2660,17 @@ storybase.builder.views.ReviewView = Backbone.View.extend({
     this.$el.html(this.template(context));
     this.$el.append(this.navView.render().el);
     return this;
+  },
+
+  previewStory: function(evt) {
+    evt.preventDefault();
+    var url = '/stories/' + this.model.id + '/viewer/';
+    this.previewed = true;
+    window.open(url);
+  },
+
+  hasPreviewed: function() {
+    return this.previewed;
   }
 });
 
