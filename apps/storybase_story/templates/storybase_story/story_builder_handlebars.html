@@ -232,5 +232,11 @@ Make sure readers can find your story. It will be easier for others to find, rea
 <input id="address-name" name="address-name" type="text" placeholder="{{gettext message="Enter a name for this address (optional)"}}"/>
 <input id="do-add-location" type="submit" value="{{gettext message="Add Address"}}"/>
 </form>
+<ul id="locations">
+</ul>
+</script>
+
+<script type="text/x-handlebars-template" id="add-location-location-item-template">
+    <li>{{name}} <a data-location-id="{{id}}" class="delete" href="#">{{gettext message="delete"}}</li>
 </script>
 {% endverbatim %}

@@ -136,7 +136,7 @@ storybase.models.Location = Backbone.Model.extend({
 });
 
 storybase.collections.Locations = Backbone.Collection.extend(
-  _.extend({}, storybase.models.TastypieMixin, {
+  _.extend({}, storybase.collections.TastypieMixin, {
     model: storybase.models.Location,
 
     initialize: function(models, options) {

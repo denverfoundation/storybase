@@ -1,9 +1,13 @@
 from django.http import HttpRequest
+from django.contrib.auth.models import User
+
+from tastypie.test import ResourceTestCase, TestApiClient
 
 from storybase.tests.base import (SettingsChangingTestCase,
                                   SloppyComparisonTestMixin)
 from storybase_geo.api import GeocoderResource
 from storybase_geo.models import Location
+from storybase_story.models import create_story
 
 class YahooGeocoderTestMixin(object):
     """Mixin that sets gecoder to Yahoo
@@ -176,3 +180,128 @@ class GeocoderResourceTest(SettingsChangingTestCase, YahooGeocoderTestMixin,
         req.GET['q'] = "11zzzzzzzzzz1234asfdasdasgw"
         results = resource.obj_get_list(req)
         self.assertEqual(len(results), 0)
+
+
+class LocationResourceTest(ResourceTestCase):
+    def setUp(self):
+        super(LocationResourceTest, self).setUp()
+        self.ap_client = TestApiClient()
+        self.username = 'test'
+        self.password = 'test'
+        self.user = User.objects.create_user(self.username, 
+            'test@example.com', self.password)
+        self.user2 = User.objects.create_user("test2", "test2@example.com",
+                                              "test2")
+        self.story = create_story(title="Test Story", summary="Test Summary",
+            byline="Test Byline", status="published", language="en", 
+            author=self.user)
+
+    def test_get_list_with_story(self):
+        location_attrs = [
+            {
+                "name": "The Piton Foundation",
+                "address": "370 17th St",
+                "address2": "#5300",
+                "city": "Denver",
+                "state": "CO",
+                "postcode": "80202",
+            },
+            {
+                'name': "The Hull House",
+                'address': "800 S. Halsted St.",
+                "city": "Chicago",
+                "state": "IL",
+                "postcode": "60607",
+            },
+            {
+                'name': "Bucktown-Wicker Park Library",
+                'address': "1701 North Milwaukee Ave.",
+                'city': "Chicago",
+                'state': "IL",
+                'postcode': "60647",
+            }
+        ]
+        for attrs in location_attrs:
+            Location.objects.create(**attrs)
+        self.assertEqual(Location.objects.count(), 3)
+        self.story.locations.add(*list(Location.objects.filter(name__in=("The Hull House", "The Piton Foundation"))))
+        self.story.save()
+        self.assertEqual(self.story.locations.count(), 2)
+        uri = '/api/0.1/locations/stories/%s/' % (self.story.story_id)
+        resp = self.api_client.get(uri)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 2)
+        for retrieved_attrs in self.deserialize(resp)['objects']:
+            self.assertIn(retrieved_attrs['name'], ("The Hull House", "The Piton Foundation"))
+
+    def test_post_list_with_story(self):
+        post_data = {
+            'name': "Mo Betta Green Market",
+            'lat': 39.7533324751841,
+            'lng': -104.979961178185
+        }
+        self.assertEqual(Location.objects.count(), 0)
+        self.assertEqual(self.story.locations.count(), 0)
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        uri = '/api/0.1/locations/stories/%s/' % (self.story.story_id)
+        resp = self.api_client.post(uri, format='json', data=post_data)
+        self.assertHttpCreated(resp)
+        returned_id = resp['location'].split('/')[-2]
+        # Confirm that a location object was created
+        self.assertEqual(Location.objects.count(), 1)
+        # Compare the response data with the post_data
+        self.assertEqual(self.deserialize(resp)['name'],
+                         post_data['name'])
+        self.assertEqual(self.deserialize(resp)['lat'],
+                         post_data['lat'])
+        self.assertEqual(self.deserialize(resp)['lng'],
+                         post_data['lng'])
+        created_obj = Location.objects.get()
+        # Compare the id from the resource URI with the created object
+        self.assertEqual(created_obj.location_id, returned_id)
+        # Compare the created model instance with the post data
+        self.assertEqual(created_obj.name, post_data['name'])
+        self.assertEqual(created_obj.lat, post_data['lat'])
+        self.assertEqual(created_obj.lng, post_data['lng'])
+        # Test that the created object is associated with the story
+        self.assertEqual(self.story.locations.count(), 1)
+        self.assertIn(created_obj, self.story.locations.all())
+
+    def test_post_list_with_story_unauthenticated(self):
+        """Test that an unauthenticated user can't create a location"""
+        post_data = {
+            'name': "Mo Betta Green Market",
+            'lat': 39.7533324751841,
+            'lng': -104.979961178185
+        }
+        self.assertEqual(Location.objects.count(), 0)
+        self.assertEqual(self.story.locations.count(), 0)
+        uri = '/api/0.1/locations/stories/%s/' % (self.story.story_id)
+        resp = self.api_client.post(uri, format='json', data=post_data)
+        self.assertHttpUnauthorized(resp)
+        self.assertEqual(Location.objects.count(), 0)
+        self.assertEqual(self.story.locations.count(), 0)
+
+    def test_post_list_with_story_unauthorized(self):
+        """
+        Test that an authenticated user can't create a location
+        associated with another user's story
+        """
+        self.story.author = self.user2
+        self.story.save()
+        post_data = {
+            'name': "Mo Betta Green Market",
+            'lat': 39.7533324751841,
+            'lng': -104.979961178185
+        }
+        self.assertEqual(Location.objects.count(), 0)
+        self.assertEqual(self.story.locations.count(), 0)
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        uri = '/api/0.1/locations/stories/%s/' % (self.story.story_id)
+        resp = self.api_client.post(uri, format='json', data=post_data)
+        self.assertHttpUnauthorized(resp)
+        self.assertEqual(Location.objects.count(), 0)
+        self.assertEqual(self.story.locations.count(), 0)
+

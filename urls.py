@@ -11,7 +11,7 @@ from storybase_user.urls import urlpatterns as user_urlpatterns
 from storybase_story.urls import urlpatterns as story_urlpatterns
 from storybase_asset.api import AssetResource, DataSetResource
 from storybase_geo.api import (GeocoderResource, GeoLevelResource,
-                               PlaceResource)
+                               LocationResource, PlaceResource)
 from storybase_help.api import (HelpResource)
 from storybase_story.api import StoryResource
 
@@ -26,6 +26,7 @@ v0_1_api.register(DataSetResource())
 v0_1_api.register(StoryResource())
 v0_1_api.register(GeocoderResource())
 v0_1_api.register(GeoLevelResource())
+v0_1_api.register(LocationResource())
 v0_1_api.register(PlaceResource())
 v0_1_api.register(HelpResource())
 urlpatterns += patterns('', 

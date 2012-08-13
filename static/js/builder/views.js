@@ -3002,25 +3002,37 @@ storybase.builder.views.AddLocationView = Backbone.View.extend({
 
   events: {
     'click #search-address': 'searchAddress',
+    'click .delete': 'deleteLocation',
     'submit': 'addLocation'
   },
 
   templateSource: $('#add-location-template').html(),
 
+  locationTemplateSource: $('#add-location-location-item-template').html(),
+
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
     this.template = Handlebars.compile(this.templateSource);
+    this.locationTemplate = Handlebars.compile(this.locationTemplateSource);
     this.initialCenter = new L.LatLng(storybase.globals.MAP_CENTER[0],
                                       storybase.globals.MAP_CENTER[1]);
     this.initialZoom = storybase.globals.MAP_ZOOM_LEVEL;
     this.collection = new storybase.collections.Locations([], {story: this.model});
     this.pointZoom = storybase.globals.MAP_POINT_ZOOM_LEVEL;
     this.latLng = null;
+    this._collectionFetched = false;
+    this.collection.on("reset", this.renderLocationList, this);
+    this.collection.on("add", this.renderLocationList, this);
+    this.collection.on("remove", this.renderLocationList, this);
   },
 
   render: function() {
     console.debug("Rendering add location view");
+    if (!this._collectionFetched) {
+      this.collection.fetch();
+    }
     this.$el.html(this.template());
+    this.renderLocationList();
     // Don't show the address name input until an address has been found
     this.$('#address-name').hide();
     // Disable the submission button until an address has been found
@@ -3034,6 +3046,14 @@ storybase.builder.views.AddLocationView = Backbone.View.extend({
     this.map.addLayer(osm);
     this.delegateEvents();
     return this;
+  },
+
+  renderLocationList: function(collection) {
+    console.debug("In renderLocationList()");
+    this.$('#locations').empty(); 
+    this.collection.each(function(loc) {
+      this.$('#locations').append($(this.locationTemplate(loc.toJSON())));
+    }, this);
   },
 
   searchAddress: function(evt) {
@@ -3051,7 +3071,7 @@ storybase.builder.views.AddLocationView = Backbone.View.extend({
       },
       failure: function(address) {
         console.debug("Can't find address");
-        this.$('#found-address').val(gettext("No address found"));
+        that.$('#found-address').val(gettext("No address found"));
       }
     });
   },
@@ -3087,6 +3107,13 @@ storybase.builder.views.AddLocationView = Backbone.View.extend({
       // BOOKMARK
       // TODO: Construct Location object and save
     }
+  },
+
+  deleteLocation: function(evt) {
+    evt.prevetnDefault();
+    var id = ($evt.target).data('location-id');
+    var loc = this.collection.get(id);
+    loc.destroy();
   }
 });
 
