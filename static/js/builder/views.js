@@ -2048,6 +2048,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
       sectionAsset.id = asset.id;
       sectionAsset.destroy({
         success: function(model, response) {
+          that.assets.remove(asset);
           that.dispatcher.trigger("remove:sectionasset", asset);
           that.dispatcher.trigger("alert", "info", "You removed an asset, but it's not gone forever. You can re-add it to a section from the asset list");
         },
@@ -2174,10 +2175,28 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       if (_.isUndefined(this.model)) {
         this.model = new storybase.models.Asset();
       }
-      _.bindAll(this, 'initializeForm', 'uploadFile', 'handleUploadProgress', 'editCaption'); 
-      this.model.on("change", this.initializeForm);
+      _.bindAll(this, 'uploadFile', 'handleUploadProgress', 'editCaption'); 
+      this.bindModelEvents();
       this.initializeForm();
       this.setInitialState();
+    },
+
+    bindModelEvents: function() {
+      this.model.on("change", this.initializeForm, this);
+    },
+
+    unbindModelEvents: function() {
+      this.model.off("change", this.initializeForm, this);
+    },
+
+    /**
+     * Cleanup the view.
+     */
+    close: function() {
+      this.remove();
+      this.undelegateEvents();
+      this.unbind();
+      this.unbindModelEvents();
     },
 
     /** 
@@ -2430,8 +2449,12 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
 
     remove: function(evt) {
       evt.preventDefault();
+      // This view should no longer listen to events on this model
+      this.unbindModelEvents();
       this.dispatcher.trigger('do:remove:sectionasset', this.section, this.model);
       this.model = new storybase.models.Asset();
+      // Listen to events on the new model
+      this.bindModelEvents();
       this.setState('select').render();
     },
 
