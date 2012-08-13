@@ -291,6 +291,11 @@
   overflow: hidden;
 }
 
+.storybase-container-placeholder.display {
+  height: auto;
+  min-height: 20px;
+}
+
 .storybase-container-placeholder#top,
 .storybase-container-placeholder#middle
 {

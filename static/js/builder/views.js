@@ -2163,6 +2163,8 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       'drop': 'handleDrop'
     },
 
+    states: ['select', 'display', 'edit'],
+
     initialize: function() {
       this.container = this.options.container;
       this.dispatcher = this.options.dispatcher;
@@ -2215,6 +2217,19 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       this.form.render();
     },
 
+    setClass: function() {
+      var activeState = this.getState();
+      _.each(this.states, function(state) {
+        if (state === activeState) {
+          this.$el.addClass(state);
+          console.debug(state);
+        }
+        else {
+          this.$el.removeClass(state);
+        }
+      }, this);
+    },
+
     render: function() {
       var context = {
         assetTypes: this.assetTypes
@@ -2229,6 +2244,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
         context.model = this.model.toJSON()
       }
       this.$el.html(this.template(context));
+      this.setClass();
       if (state == 'select') {
         this.$el.droppable();
       }
