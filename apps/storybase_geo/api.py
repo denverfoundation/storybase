@@ -90,8 +90,6 @@ class LocationResource(DelayedAuthorizationResource):
 
         return bundle
         
-    # BOOKMARK
-
 
 class PlaceResource(ModelResource):
     geolevel = fields.ToOneField(GeoLevelResource, 'geolevel')
