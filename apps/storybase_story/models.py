@@ -14,6 +14,8 @@ from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext_lazy as _
 from django_dag.models import edge_factory, node_factory
 
+from taggit.managers import TaggableManager
+
 from uuidfield.fields import UUIDField
 
 from storybase.fields import ShortTextField
@@ -26,6 +28,7 @@ from storybase_help.models import Help
 from storybase_user.models import Organization, Project
 from storybase_story import structure
 from storybase_story.managers import StoryManager
+from storybase_taxonomy.models import TaggedItem
 
 
 class StoryPermission(PermissionMixin):
@@ -120,6 +123,7 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
                                        verbose_name=_("Places"),
                                        related_name='stories',
                                        blank=True)
+    tags = TaggableManager(through=TaggedItem)
 
     objects = StoryManager()
 

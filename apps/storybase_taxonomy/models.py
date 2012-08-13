@@ -10,6 +10,10 @@ from mptt.managers import TreeManager
 from categories.base import CategoryManager
 from categories.settings import SLUG_TRANSLITERATOR
 
+from taggit.models import TagBase, GenericTaggedItemBase
+
+from uuidfield.fields import UUIDField
+
 from storybase.models import TranslatedModel, TranslationModel
 from storybase.utils import slugify
 
@@ -88,6 +92,18 @@ class Category(TranslatedCategoryBase):
 
     class Meta:
         verbose_name_plural = "categories"
+
+
+class Tag(TagBase):
+    tag_id = UUIDField(auto=True)
+
+    class Meta:
+        verbose_name = _("Tag")
+        verbose_name_plural = _("Tags")
+
+
+class TaggedItem(GenericTaggedItemBase):
+    tag = models.ForeignKey(Tag, related_name='items')
 
 
 def create_category(name, slug='', language=settings.LANGUAGE_CODE, 
