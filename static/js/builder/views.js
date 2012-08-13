@@ -76,6 +76,11 @@ storybase.builder.views.AppView = Backbone.View.extend({
       share: new storybase.builder.views.ShareView(commonOptions)
     };
 
+    // Initialize the properties that store the last alert level
+    // and message.
+    this.lastLevel = null;
+    this.lastMessage = null;
+
     // Bind callbacks for custom events
     this.dispatcher.on("select:template", this.setTemplate, this);
     this.dispatcher.on("select:workflowstep", this.updateStep, this); 
@@ -149,11 +154,14 @@ storybase.builder.views.AppView = Backbone.View.extend({
       level: level,
       message: msg
     });
-    this.$('.alerts').empty();
-    this.$('.alerts').prepend(view.render().el);
-    view.$el.fadeOut(5000, function() {
-      $(this).remove();
-    });
+    // Check for duplicate messages and only show the message
+    // if it's different.
+    if (level != this.lastLevel && msg != this.lastMessage) {
+      this.$('.alerts').prepend(view.render().el);
+      view.$el.fadeOut(10000, function() {
+        $(this).remove();
+      });
+    }
   }
 });
 
