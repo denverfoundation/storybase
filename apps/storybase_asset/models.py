@@ -374,7 +374,7 @@ class HtmlAsset(Asset):
     def render_html(self):
         """Render the asset as HTML"""
         output = []
-        if self.type == 'map':
+        if self.type in ('map', 'table'):
             output.append('<figure>')
             output.append(self.body)
             full_caption_html = self.full_caption_html()
