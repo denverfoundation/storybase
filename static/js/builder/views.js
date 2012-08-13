@@ -1905,6 +1905,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   },
 
   renderAssetViews: function() {
+    console.debug('Rendering asset views');
     var that = this;
     this.$('.storybase-container-placeholder').each(function(index, el) {
       var options = {
@@ -1958,12 +1959,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
       this.dispatcher.trigger('do:show:help', false, help); 
     }
     else {
-      if (_.isObject(section)) {
-        console.debug('hiding section ' + section.get('title'));
-      }
-      else {
-        console.debug("hiding pseudo-section " + section);
-      }
+      console.debug('hiding section ' + this.model.get('title'));
       this.$el.hide();
     }
     return this;
@@ -2160,7 +2156,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       "click .remove": "remove",
       "click .edit": "edit",
       'click input[type="reset"]': "cancel",
-      'submit form': 'processForm',
+      'submit form.bbf-form': 'processForm',
       'drop': 'handleDrop'
     },
 
@@ -2229,6 +2225,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
      * Set the view's form property based on the current state of the model.
      */
     initializeForm: function() {
+      console.debug("Initializing asset edit form");
       this.form = new Backbone.Form({
         model: this.model
       });
@@ -2249,6 +2246,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
     },
 
     render: function() {
+      console.debug("Rendering section asset edit view");
       var context = {
         assetTypes: this.assetTypes
       };
@@ -2357,6 +2355,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
     },
 
     saveModel: function(attributes, options) {
+      console.debug("Saving asset");
       options = _.isUndefined(options) ? {} : options;
       var that = this;
       // Save the model's original new state to decide
@@ -2397,7 +2396,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
      */
     processForm: function(e) {
       e.preventDefault();
-      console.info("Creating asset");
+      console.info("Editing asset");
       var errors = this.form.validate();
       var data;
       var file;
