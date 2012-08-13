@@ -3102,6 +3102,7 @@ storybase.builder.views.PublishView = Backbone.View.extend({
   render: function() {
     this.$el.html(this.template());
     this.$el.append(this.navView.render().el);
+    this.delegateEvents();
     return this;
   }
 });
