@@ -170,6 +170,8 @@
 }
 
 #builder .alerts {
+  /* Make sure alerts are shown below the navbar */
+  top: 40px;
   position: fixed;
   width: 100%;
 }

@@ -162,6 +162,8 @@ storybase.builder.views.AppView = Backbone.View.extend({
         $(this).remove();
       });
     }
+    this.lastLevel = level;
+    this.lastMessage = msg;
   }
 });
 
@@ -2220,7 +2222,6 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       _.each(this.states, function(state) {
         if (state === activeState) {
           this.$el.addClass(state);
-          console.debug(state);
         }
         else {
           this.$el.removeClass(state);
