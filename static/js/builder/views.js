@@ -2096,7 +2096,6 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
       this.dispatcher.trigger("remove:sectionasset", asset);
     };
     triggerUnused = _.bind(triggerUnused, this);
-    console.debug("this.assets", this.assets);
     if (this.assets.length) {
       this.assets.each(triggerUnused);
       this.dispatcher.trigger('alert', 'info', gettext("The assets in the section you removed aren't gone forever.  You can re-add them from the asset list"));
@@ -2115,7 +2114,10 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
         this.dispatcher.trigger('select:section', 'story-info');
       }
     }
+    // Remove the section from the collection of all sections
     this.collection.splice(_.indexOf(this.collection, this), 1);
+    // Inform the user that the section has been deleted
+    this.dispatcher.trigger('alert', 'success', gettext('The section  "' + this.model.get('title') + '" has been deleted'));
     this.close();
   }
 });
