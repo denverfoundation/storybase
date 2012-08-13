@@ -525,7 +525,45 @@
 }
 
 /* Add location view */
+#add-location {
+  width: 50%;
+}
+
+#add-location label {
+  font-weight: bold;
+}
+
+#add-location form {
+  display: block;
+  margin-bottom: 10px;
+  overflow: hidden;
+}
+
 #map {
-  width: 200px;
+  float: left;
+  position: relative;
   height: 200px;
+  width: 200px;
+  margin: 0 10px 0 0;
+  overflow: hidden;
+}
+
+#found-address {
+  width: 200px;
+  margin: 0 0 10px 210px;
+}
+
+input[name=address] {
+  width: 250px;
+  margin-bottom: 10px;
+}
+
+#address-name-container {
+  margin-bottom: 10px;
+}
+
+#locations {
+  margin: 10px 0 0 0;
+  padding: 0;
+  list-style: none;
 }

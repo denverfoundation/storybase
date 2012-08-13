@@ -3034,7 +3034,7 @@ storybase.builder.views.AddLocationView = Backbone.View.extend({
     this.$el.html(this.template());
     this.renderLocationList();
     // Don't show the address name input until an address has been found
-    this.$('#address-name').hide();
+    this.$('#address-name-container').hide();
     // Disable the submission button until an address has been found
     this.$('#do-add-location').prop('disabled', true);
     this.map = new L.Map(this.$('#map')[0], {
@@ -3063,7 +3063,7 @@ storybase.builder.views.AddLocationView = Backbone.View.extend({
     var that = this;
     this.rawAddress = '';
     // Don't show the address name input until an address has been found
-    this.$('#address-name').hide();
+    this.$('#address-name-container').hide();
     // Disable the submission button until an address has been found
     this.$('#do-add-location').prop('disabled', true);
     this.$('#found-address').html(gettext("Searching ..."));
@@ -3086,10 +3086,10 @@ storybase.builder.views.AddLocationView = Backbone.View.extend({
     var marker = new L.Marker(center);
     this.rawAddress = place || queryAddress || "";
     this.$('#found-address').html(this.rawAddress);
-    this.$('#address-name').show();
+    this.$('#address-name-container').show();
     this.$('#do-add-location').prop('disabled', false);
     this.map.addLayer(marker);
-    this.map.setView(center, this.pointZoom);
+    this.map.setView(marker.getLatLng(), this.pointZoom, true);
     this.latLng = latLng; 
   },
 

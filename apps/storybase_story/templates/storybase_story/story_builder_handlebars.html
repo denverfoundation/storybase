@@ -225,18 +225,26 @@ Make sure readers can find your story. It will be easier for others to find, rea
 
 <script type="text/x-handlebars-template" id="add-location-template">
 <form>
-<input id="address" name="address" type="text" />
-<input id="search-address" name="search" type="button" value="{{gettext message="Search"}}"/>
-<div id="map"></div>
-<div id="found-address"></div>
-<input id="address-name" name="address-name" type="text" placeholder="{{gettext message="Enter a name for this address (optional)"}}"/>
-<input id="do-add-location" type="submit" value="{{gettext message="Add Address"}}"/>
+    <div id="address-search-container">
+        <input id="address" name="address" type="text" placeholder="{{gettext message="Enter an address"}}"/>
+        <input id="search-address" name="search" type="button" value="{{gettext message="Search"}}"/>
+    </div>
+    <div id="map"></div>
+    <div id="found-address"></div>
+    <div id="address-name-container">
+        <label for="address-name">{{gettext message="Name this Address"}} ({{gettext message="optional"}})</label><br />
+    <input id="address-name" name="address-name" type="text" placeholder="{{gettext message="Enter a name for this address (optional)"}}"/>
+    </div>
+    <input id="do-add-location" type="submit" value="{{gettext message="Add Address"}}"/>
 </form>
-<ul id="locations">
-</ul>
+<ul id="locations"></ul>
 </script>
 
 <script type="text/x-handlebars-template" id="add-location-location-item-template">
-    <li>{{name}} {{raw}}<a data-location-id="{{location_id}}" class="delete" href="#">{{gettext message="delete"}}</li>
+    <li>
+      {{#if name}}{{name}}<br />{{/if}}
+      {{raw}}
+      <a data-location-id="{{location_id}}" class="delete" href="#">{{gettext message="delete"}}
+    </li>
 </script>
 {% endverbatim %}
