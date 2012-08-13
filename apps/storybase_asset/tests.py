@@ -1239,6 +1239,8 @@ class AssetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         self.assertEqual(self.deserialize(resp)['caption'], put_data['caption'])
         updated_asset = Asset.objects.get(asset_id=asset.asset_id)
         self.assertEqual(updated_asset.caption, put_data['caption'])
+        self.assertEqual(Asset.objects.count(), 1)
+        self.assertEqual(HtmlAssetTranslation.objects.count(), 1)
 
     def test_get_list_for_story(self):
         """Test getting only a single story's assets"""
