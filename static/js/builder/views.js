@@ -514,7 +514,7 @@ storybase.builder.views.WorkflowNavView = Backbone.View.extend({
       id: itemOptions.id,
       class: (enabled ? "" : " disabled"),
       title: itemOptions.title,
-      href: this.getHref(itemOptions) 
+      href: this.getHref(itemOptions)
     }));
   },
 
@@ -2502,6 +2502,7 @@ storybase.builder.views.ReviewView = Backbone.View.extend({
           id: 'workflow-nav-share-legal-fwd',
           title: gettext("Share My Story"),
           path: 'share/legal/',
+          enabled: this.hasPreviewed,
           validate: this.hasPreviewed
         }
       ]
@@ -2528,6 +2529,8 @@ storybase.builder.views.ReviewView = Backbone.View.extend({
     evt.preventDefault();
     var url = '/stories/' + this.model.id + '/viewer/';
     this.previewed = true;
+    // Re-render the nav view to reflect the newly enabled button
+    this.navView.render();
     window.open(url);
   },
 
