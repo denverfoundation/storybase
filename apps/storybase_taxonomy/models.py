@@ -14,7 +14,7 @@ from taggit.models import TagBase, GenericTaggedItemBase
 
 from uuidfield.fields import UUIDField
 
-from storybase.models import TranslatedModel, TranslationModel
+from storybase.models import TranslatedModel, TranslationModel, PermissionMixin
 from storybase.utils import slugify
 
 class CategoryTranslationBase(TranslationModel):
@@ -94,7 +94,21 @@ class Category(TranslatedCategoryBase):
         verbose_name_plural = "categories"
 
 
-class Tag(TagBase):
+class TagPermission(PermissionMixin):
+    def user_can_change(self, user):
+        return False
+
+    def user_can_add(self, user):
+        if user.is_active:
+            return True
+
+        return False
+
+    def user_can_delete(self, user):
+        return self.user_can_change(user)
+
+
+class Tag(TagPermission, TagBase):
     tag_id = UUIDField(auto=True)
 
     class Meta:

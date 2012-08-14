@@ -1,13 +1,17 @@
 from django.conf.urls.defaults import url
+from django.core.exceptions import ObjectDoesNotExist
 
+from tastypie import fields, http
 from tastypie.authentication import Authentication
+from tastypie.exceptions import BadRequest, ImmediateHttpResponse, NotFound
 #from tastypie.resources import ModelResource
 from tastypie.utils import trailing_slash
 
-from storybase.api import HookedModelResource, LoggedInAuthorization
+from storybase.api import DelayedAuthorizationResource, LoggedInAuthorization
+from storybase_story.models import Story
 from storybase_taxonomy.models import Tag
 
-class TagResource(HookedModelResource):
+class TagResource(DelayedAuthorizationResource):
     class Meta:
         always_return_data = True
         queryset = Tag.objects.all()
@@ -19,6 +23,11 @@ class TagResource(HookedModelResource):
         detail_uri_name = 'tag_id'
         # Hide the underlying id
         excludes = ['id']
+        filtering = {
+            'name': ('exact', 'startswith', 'istartswith'), 
+        }
+
+        delayed_authorization_methods = ['delete_detail']
 
     def prepend_urls(self):
         return [
@@ -26,10 +35,15 @@ class TagResource(HookedModelResource):
                 (self._meta.resource_name, trailing_slash()),
                 self.wrap_view('dispatch_list'),
                 name="api_dispatch_list"),
+            url(r"^(?P<resource_name>%s)/(?P<tag_id>[0-9a-f]{32,32})/stories/(?P<story_id>[0-9a-f]{32,32})%s$" %
+                (self._meta.resource_name, trailing_slash()),
+                self.wrap_view('dispatch_detail'),
+                name="api_dispatch_detail"),
         ]
 
-    def get_related_object(self, id):
+    def get_related_object(self, request, **kwargs):
         try:
+            story_id = kwargs.get('story_id')
             story = Story.objects.get(story_id=story_id) 
             if not story.has_perm(request.user, 'change'):
                 raise ImmediateHttpResponse(response=http.HttpUnauthorized("You are not authorized to change the story matching the provided story ID"))
@@ -41,7 +55,7 @@ class TagResource(HookedModelResource):
     def apply_request_kwargs(self, obj_list, request=None, **kwargs):
         story_id = kwargs.get('story_id')
         if story_id:
-            story = self.get_related_object(story_id)
+            story = self.get_related_object(request, **kwargs)
             return story.tags.all() 
         else:
             return obj_list
@@ -49,19 +63,40 @@ class TagResource(HookedModelResource):
     def obj_create(self, bundle, request=None, **kwargs):
         story_id = kwargs.get('story_id')
         if story_id:
-            story = self.get_related_obj(story_id)
-            
-        # Set the asset's owner to the request's user
-        if request.user:
-            kwargs['owner'] = request.user
-
-        # Let the superclass create the object
-        bundle = super(TagResource, self).obj_create(
-            bundle, request, **kwargs)
+            story = self.get_related_object(request, **kwargs)
+       
+        tag_id = bundle.data.get('tag_id')
+        if tag_id:
+            # Existing tag, don't create it, just retrieve it
+            try:
+                bundle.obj = self.obj_get(bundle.request, tag_id=tag_id)
+            except ObjectDoesNotExist:
+                pass
+        else:
+            # Let the superclass create the object
+            bundle = super(TagResource, self).obj_create(bundle, request, **kwargs)
 
         if story_id:
-            # Associate the newly created object with the story
-            story.locations.add(bundle.obj)
+            # Associate the retrieved or newly created object with the story
+            story.tags.add(bundle.obj)
             story.save()
 
         return bundle
+
+    def obj_delete(self, request=None, **kwargs):
+        obj = kwargs.pop('_obj', None)
+
+        story_id = kwargs.get('story_id')
+        if story_id:
+            story = self.get_related_object(request, **kwargs)
+            kwargs.pop('story_id')
+
+            if not hasattr(obj, 'delete'):
+                try:
+                    obj = self.obj_get(request, **kwargs)
+                except ObjectDoesNotExist:
+                    raise NotFound("A model instance matching the provided arguments could not be found.")
+            story.tags.remove(obj)
+            story.save()
+        else:
+            raise ImmediateHttpResponse(response=http.HttpUnauthorized("You are not authorized to delete a tag, only to remove them from a story"))

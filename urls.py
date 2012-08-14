@@ -14,6 +14,7 @@ from storybase_geo.api import (GeocoderResource, GeoLevelResource,
                                LocationResource, PlaceResource)
 from storybase_help.api import (HelpResource)
 from storybase_story.api import StoryResource
+from storybase_taxonomy.api import TagResource
 
 admin.autodiscover()
 
@@ -29,6 +30,7 @@ v0_1_api.register(GeoLevelResource())
 v0_1_api.register(LocationResource())
 v0_1_api.register(PlaceResource())
 v0_1_api.register(HelpResource())
+v0_1_api.register(TagResource())
 urlpatterns += patterns('', 
     # REST API
     (r'^api/', include(v0_1_api.urls)),

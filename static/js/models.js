@@ -394,3 +394,29 @@ storybase.collections.SectionAssets = storybase.collections.Assets.extend({
     return models;
   }
 });
+
+storybase.models.Tag = Backbone.Model.extend({
+  idAttribute: "tag_id"
+});
+
+storybase.collections.Tags = Backbone.Collection.extend(
+  _.extend({}, storybase.collections.TastypieMixin, {
+    model: storybase.models.Tag,
+
+    initialize: function(models, options) {
+      this._story = _.isUndefined(options.story) ? null : options.story;
+    },
+
+    url: function() {
+      var url = storybase.globals.API_ROOT + 'tags/';
+      if (this._story) {
+        url = url + 'stories/' + this._story.id + '/';
+      }
+      return url;
+    },
+
+    setStory: function(story) {
+      this._story = story;
+    }
+  })
+);

@@ -3080,13 +3080,13 @@ storybase.builder.views.TaxonomyView = Backbone.View.extend({
     this.officialForm.setValue(initialValues);
     
     // TODO: Custom editor that automatically does this?
-    this.officialForm.fields.topics.editor.$el.select2();
-    this.officialForm.fields.places.editor.$el.select2();
+    this.officialForm.fields.topics.editor.$el.select2({width: 'resolve'});
+    this.officialForm.fields.places.editor.$el.select2({width: 'resolve'});
     if (this.officialForm.fields.organizations) {
-      this.officialForm.fields.organizations.editor.$el.select2();
+      this.officialForm.fields.organizations.editor.$el.select2({width: 'resolve'});
     }
     if (this.officialForm.fields.projects) {
-      this.officialForm.fields.projects.editor.$el.select2();
+      this.officialForm.fields.projects.editor.$el.select2({width: 'resolve'});
     }
     this.$el.append(this.tagView.render().el);
     this.$el.append(this.addLocationView.render().el);
@@ -3231,15 +3231,101 @@ storybase.builder.views.TagView = Backbone.View.extend({
 
   templateSource: $('#tags-template').html(),
 
+  events: {
+    'change #tags': 'tagsChanged'
+  },
+
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
     this.template = Handlebars.compile(this.templateSource);
+    this.collection = new storybase.collections.Tags(null, {
+      story: this.model
+    });
+    this.collection.on("reset", this.setTags, this);
   },
 
   render: function() {
+    var s2opts = {
+      ajax: {
+        url: storybase.globals.API_ROOT + 'tags/',
+        data: function(term, page) {
+          return {
+            'name__istartswith': term
+          };
+        },
+        results: function(data, page) {
+          var result = {
+            results: []  
+          };
+          _.each(data.objects, function(tag) {
+            result.results.push({
+              id: tag.tag_id,
+              text: tag.name,
+              tagId: tag.tag_id
+            });
+          });
+          return result;
+        }
+      },
+      createSearchChoice: function(term, data) {
+        return {id: term, text: term};
+      },
+      multiple: true,
+      width: 'resolve'
+    };
+    this.collection.fetch();
     this.$el.html(this.template());
-    this.$('#tags').select2({tags:['foo', 'bar']});
+    this.$('#tags').select2(s2opts);
+    this.delegateEvents();
     return this;
+  },
+
+  setTags: function() {
+    var data = this.collection.map(function(tag) {
+      return {
+        id: tag.get('tag_id'),
+        text: tag.get('name')
+      };
+    });
+    this.$('#tags').select2('data', data);
+  },
+
+  tagsChanged: function(evt) {
+    var data = {};
+    var id;
+    var model;
+    console.debug(evt);
+    if (evt.added) {
+      if (evt.added.tagId) {
+        // Existing tag
+        data.tag_id = evt.added.tagId;
+      }
+      else {
+        data.name = evt.added.text;
+      }
+      this.collection.create(data, {
+        success: function(model) {
+          evt.added.model = model;
+        }
+      });
+    }
+    if (evt.removed) {
+      if (evt.removed.model) {
+        model = evt.removed.model;
+        id = evt.removed.model.id;
+      }
+      else if (evt.removed.tag_id) {
+        model = this.collection.get(evt.removed.tag_id);
+        id = evt.removed.tag_id;
+      }
+      else if (evt.removed.id) {
+        model = this.collection.get(evt.removed.id);
+        id = evt.removed.id;
+      }
+      console.debug(model);
+      model.url = storybase.globals.API_ROOT + 'tags/' + id + '/stories/' + this.model.id + '/';
+      model.destroy();
+    }
   }
 });
 

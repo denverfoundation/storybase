@@ -5,7 +5,7 @@ from categories.base import CategoryBaseAdmin
 
 from storybase_taxonomy.forms import (CategoryAdminForm, 
 		                      CategoryTranslationAdminForm)
-from storybase_taxonomy.models import Category, CategoryTranslation
+from storybase_taxonomy.models import Category, CategoryTranslation, Tag
 
 
 class CategoryTranslationInline(admin.StackedInline):
@@ -42,5 +42,11 @@ class CategoryAdmin(CategoryBaseAdmin):
         """
         return obj.name
     obj_name.short_description = _('Name')
+
+
+class TagAdmin(admin.ModelAdmin):
+    pass
+
 	
 admin.site.register(Category, CategoryAdmin)
+admin.site.register(Tag, TagAdmin)
