@@ -44,6 +44,10 @@
   color: #3A87AD;
 }
 
+.introduction {
+  margin-top: 1em;
+}
+
 /* Help Modal */
 
 #simplemodal-container {
@@ -546,10 +550,13 @@
   text-align: center;
 }
 
-/* Select taxonomy view */
-#share-taxonomy .introduction {
-  margin-top: 1em;
+/* Legal agreement view */
+#share-legal #permission ul {
+  margin: 1em 0;
+  padding: 0 0 0 40px;
 }
+
+/* Select taxonomy view */
 
 #share-taxonomy select {
   width: 300px;
