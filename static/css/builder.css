@@ -311,15 +311,19 @@
 
 .section-asset-controls {
   display: none;
-  padding: 0;
-  margin: 0 2%;
-  list-style: none;
+  top: 0;
+  right: 0;
+  position: absolute;
+  margin: 0;
+  padding: 10px 10px 0 0;
   text-align: right;
+  list-style: none outside none;
+  z-index: 999;
 }
 
 .storybase-container-placeholder:hover .section-asset-controls {
-  display: block; 
-}	
+  display: block;
+}
 
 .section-asset-controls li {
   display: inline-block;
