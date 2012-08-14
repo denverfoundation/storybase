@@ -1,10 +1,10 @@
-{% extends "base.html" %}
+{% extends "storybase_user/account_base.html" %}
 
 {% load cms_tags sekizai_tags menu_tags i18n %}
 
 {% block head_title %}{% trans "Account Information" %}{% endblock %}
 
-{% block base_content %}
+{% block primary_content %}
 <h1>{% trans "Account information for" %} {{ user.email }}</h1>
 
 <h2>{% trans "Connected accounts" %}</h2>
@@ -13,18 +13,4 @@
   <li>{{ name|capfirst }} {% if value %}<a href="{% url socialauth_disconnect backend=name %}">{% trans "disconnect" %}</a>{% else %}<a href="{% url socialauth_begin backend=name %}">{% trans "connect" %}</a>{% endif %}</li>
   {% endfor %}
 </ul>
-
-{% if user.stories %}
-<h2>Stories</h2>
-<ul>
-    {% for story in user.stories.all %}
-    <li>{{ story }}
-    {% if story.status == "published" %}
-    <a class="view" href="{{ story.get_absolute_url }}">{% trans "View" %}</a>
-    {% endif %}
-    <a class="build" href="{% url story_builder story_id=story.story_id %}">{% trans "Build" %}</a>
-    </li>
-    {% endfor %}
-</ul>
-{% endif %}
 {% endblock %}

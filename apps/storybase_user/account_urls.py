@@ -11,12 +11,12 @@ from django.conf.urls.defaults import *
 from storybase_user.auth.forms import (EmailAuthenticationForm,
                                        CustomContextPasswordResetForm,
                                        StrongSetPasswordForm)
-from storybase_user.views import AccountSummaryView
+from storybase_user.views import AccountSummaryView, AccountStoriesView
 from storybase_user.social_auth.views import GetExtraAccountDetailsView 
 
 urlpatterns = patterns('',
-    url(r'^$', AccountSummaryView.as_view(),
-	name='account_summary'),
+    url(r'^$', AccountSummaryView.as_view(), name='account_summary'),
+    url(r'^stories/$', AccountStoriesView.as_view(), name='account_stories'),
     url(r'^extradetails/$', GetExtraAccountDetailsView.as_view(), name='account_extra_details'),
     url(r'^password/change/$', 'django.contrib.auth.views.password_change',
         {'password_change_form': StrongSetPasswordForm},

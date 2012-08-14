@@ -18,6 +18,13 @@ class AccountSummaryView(TemplateView):
     def dispatch(self, *args, **kwargs):
         return super(AccountSummaryView, self).dispatch(*args, **kwargs)
 
+class AccountStoriesView(TemplateView):
+    template_name = "storybase_user/account_stories.html"
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(AccountStoriesView, self).dispatch(*args, **kwargs)
+
 
 class OrganizationDetailView(ModelIdDetailView):
     """Display details about an Organization"""

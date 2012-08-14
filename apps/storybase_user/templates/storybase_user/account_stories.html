@@ -1,0 +1,32 @@
+{% extends "storybase_user/account_base.html" %}
+
+{% load cms_tags sekizai_tags menu_tags i18n %}
+
+{% block head_title %}{% trans "My Account" %}{% endblock %}
+
+{% block primary_content %}
+<h1>{%trans "My Stories" %}</h1>
+{% if user.stories %}
+<table>
+    <thead>
+        <tr>
+            <th>{% trans "Title" %}</th>
+            <th>{% trans "Last Edited" %}</th>
+            <th>{% trans "Status" %}</th>
+            <th></th>
+        </tr>
+    </thead>
+    <tbody>
+    {% for story in user.stories.all %}
+        <tr>
+            <td><a class="view"  href="{{ story.get_absolute_url }}">{{ story }}</a></td>
+            <td>{{ story.last_edited }}</td>
+            <td>{{ story.status|capfirst }}</td>
+            <td><a class="build" href="{% url story_builder story_id=story.story_id %}">{% trans "Build" %}</a></td>
+    </tbody>
+    {% endfor %}
+</table>
+{% else %}
+<p>{% trans "You have no stories" %}</p>
+{% endif %}
+{% endblock %}

@@ -1,0 +1,18 @@
+{% extends "twocol.html" %}
+
+{% load cms_tags sekizai_tags menu_tags i18n %}
+
+{% block col_left %}
+<div class="threecol sidebar-left">
+  <nav id="subnav">
+      <ul class="navroot">
+          <li class="selected has_children">
+          <a href="{% url account_summary %}">{% trans "My Account" %}</a>
+              <ul>
+                  <li><a href="{% url account_stories %}">{% trans "My Stories" %}</a></li>
+              </ul>
+          </li>
+      </ul>
+  </nav>
+</div>
+{% endblock %}
