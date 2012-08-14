@@ -78,6 +78,12 @@ class TranslatedModel(models.Model):
 
         return get(name)
 
+    def clear_translation_cache(self):
+        self._translation_cache = {}
+
+    def set_translation_cache_item(self, code, obj):
+        self._translation_cache[code] = obj
+
     def get_languages(self):
         """Get a list of translated languages for the model instance"""
         # TODO: Refactor this so it doesn't repeat the code in 

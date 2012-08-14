@@ -163,6 +163,8 @@ storybase.builder.views.AppView = Backbone.View.extend({
         $(this).remove();
       });
     }
+    this.lastLevel = level;
+    this.lastMessage = msg;
   }
 });
 
@@ -181,14 +183,16 @@ storybase.builder.views.HelpView = Backbone.View.extend({
     this.dispatcher = this.options.dispatcher;
     this.help = null;
     this.template = Handlebars.compile(this.templateSource);
-    // Always show help when switching to a new section
-    this.autoShow = true;
+    // If the cookie is set, use the stored value.
+    // Otherwise, default to true.
+    this.autoShow = $.cookie('storybase_show_builder_help') === 'false' ? false : true;
 
     this.dispatcher.on('do:show:help', this.show, this);
   },
 
   setAutoShow: function(evt) {
     this.autoShow = $(evt.target).prop('checked'); 
+    $.cookie("storybase_show_builder_help", this.autoShow, {path: '/'});
   },
 
   /**
@@ -1844,7 +1848,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   },
 
   events: {
-    "change input": 'change',
+    "change .title input": 'change',
     "change select.layout": 'change'
   },
 
@@ -1904,6 +1908,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   },
 
   renderAssetViews: function() {
+    console.debug('Rendering asset views');
     var that = this;
     this.$('.storybase-container-placeholder').each(function(index, el) {
       var options = {
@@ -1957,12 +1962,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
       this.dispatcher.trigger('do:show:help', false, help); 
     }
     else {
-      if (_.isObject(section)) {
-        console.debug('hiding section ' + section.get('title'));
-      }
-      else {
-        console.debug("hiding pseudo-section " + section);
-      }
+      console.debug('hiding section ' + this.model.get('title'));
       this.$el.hide();
     }
     return this;
@@ -2020,6 +2020,10 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
    */
   addAsset: function(section, asset, container) {
     if (section == this.model) {
+      // Artifically set the container attribute of the asset.
+      // For assets retrieved from the server, this is handled by
+      // SectionAssets.parse()
+      asset.set('container', container);
       this.assets.add(asset);
       if (this.story.isNew()) {
         // We haven't saved the story or the section yet.
@@ -2047,6 +2051,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
       sectionAsset.id = asset.id;
       sectionAsset.destroy({
         success: function(model, response) {
+          that.assets.remove(asset);
           that.dispatcher.trigger("remove:sectionasset", asset);
           that.dispatcher.trigger("alert", "info", "You removed an asset, but it's not gone forever. You can re-add it to a section from the asset list");
         },
@@ -2158,13 +2163,14 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       "click .remove": "remove",
       "click .edit": "edit",
       'click input[type="reset"]': "cancel",
-      'submit form': 'processForm',
+      'submit form.bbf-form': 'processForm',
       'drop': 'handleDrop'
     },
 
     states: ['select', 'display', 'edit'],
 
     initialize: function() {
+      console.debug("Initializing new section asset edit view");
       this.container = this.options.container;
       this.dispatcher = this.options.dispatcher;
       this.assetTypes = this.options.assetTypes;
@@ -2173,10 +2179,28 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       if (_.isUndefined(this.model)) {
         this.model = new storybase.models.Asset();
       }
-      _.bindAll(this, 'initializeForm', 'uploadFile', 'handleUploadProgress', 'editCaption'); 
-      this.model.on("change", this.initializeForm);
+      _.bindAll(this, 'uploadFile', 'handleUploadProgress', 'editCaption'); 
+      this.bindModelEvents();
       this.initializeForm();
       this.setInitialState();
+    },
+
+    bindModelEvents: function() {
+      this.model.on("change", this.initializeForm, this);
+    },
+
+    unbindModelEvents: function() {
+      this.model.off("change", this.initializeForm, this);
+    },
+
+    /**
+     * Cleanup the view.
+     */
+    close: function() {
+      this.remove();
+      this.undelegateEvents();
+      this.unbind();
+      this.unbindModelEvents();
     },
 
     /** 
@@ -2209,6 +2233,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
      * Set the view's form property based on the current state of the model.
      */
     initializeForm: function() {
+      console.debug("Initializing asset edit form");
       this.form = new Backbone.Form({
         model: this.model
       });
@@ -2221,7 +2246,6 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       _.each(this.states, function(state) {
         if (state === activeState) {
           this.$el.addClass(state);
-          console.debug(state);
         }
         else {
           this.$el.removeClass(state);
@@ -2230,6 +2254,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
     },
 
     render: function() {
+      console.debug("Rendering section asset edit view");
       var context = {
         assetTypes: this.assetTypes
       };
@@ -2284,7 +2309,11 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
      * Callback for Jeditable plugin applied to caption.
      */
     editCaption: function(value, settings) {
-      this.model.save({caption: value});
+      // Call this.saveModel instead of this.model.save() mostly
+      // because calling this.model.save() without a callback causes
+      // the "sync" event to bubble up to the collection, which we don't
+      // want.
+      this.saveModel({caption: value});
       return value;
     },
 
@@ -2338,6 +2367,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
     },
 
     saveModel: function(attributes, options) {
+      console.debug("Saving asset");
       options = _.isUndefined(options) ? {} : options;
       var that = this;
       // Save the model's original new state to decide
@@ -2378,7 +2408,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
      */
     processForm: function(e) {
       e.preventDefault();
-      console.info("Creating asset");
+      console.info("Editing asset");
       var errors = this.form.validate();
       var data;
       var file;
@@ -2430,8 +2460,12 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
 
     remove: function(evt) {
       evt.preventDefault();
+      // This view should no longer listen to events on this model
+      this.unbindModelEvents();
       this.dispatcher.trigger('do:remove:sectionasset', this.section, this.model);
       this.model = new storybase.models.Asset();
+      // Listen to events on the new model
+      this.bindModelEvents();
       this.setState('select').render();
     },
 

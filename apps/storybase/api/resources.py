@@ -398,6 +398,9 @@ class TranslatedModelResource(HookedModelResource):
         fk_field_name = object_class.get_translation_fk_field_name()
         setattr(bundle.translation_obj, fk_field_name, bundle.obj)
         bundle.translation_obj.save()
+        # Update the translation object cache in the bundle object
+        # so further steps will get our fresh data
+        bundle.obj.set_translation_cache_item(bundle.translation_obj.language, bundle.translation_obj)
 
     def post_bundle_obj_hydrate(self, bundle, request=None):
         """
