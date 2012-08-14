@@ -2724,7 +2724,7 @@ storybase.builder.views.LegalView = Backbone.View.extend({
         allowModification: 'no'
       }
     };
-    var license = this.model.get('license');
+    var license = this.model ? this.model.get('license') : false;
     if (license) {
       return ccLicenses[license];
     }
