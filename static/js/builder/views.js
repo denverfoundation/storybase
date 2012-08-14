@@ -3161,6 +3161,8 @@ storybase.builder.views.AddLocationView = Backbone.View.extend({
         osmAttrib = 'Map data &copy; 2012 OpenStreetMap contributors',
         osm = new L.TileLayer(osmUrl, {maxZoom: 18, attribution: osmAttrib});
     this.map.addLayer(osm);
+    this.markers = new L.LayerGroup();
+    this.map.addLayer(this.markers);
     this.delegateEvents();
     return this;
   },
@@ -3185,6 +3187,7 @@ storybase.builder.views.AddLocationView = Backbone.View.extend({
     this.$('#do-add-location').prop('disabled', true);
     this.$('#found-address').html(gettext("Searching ..."));
     this.$('#address-name').val(null);
+    this.markers.clearLayers();
     geocode(address, {
       success: function(latLng, place) {
         that.geocodeSuccess(latLng, place, address);
@@ -3205,7 +3208,7 @@ storybase.builder.views.AddLocationView = Backbone.View.extend({
     this.$('#found-address').html(this.rawAddress);
     this.$('#address-name-container').show();
     this.$('#do-add-location').prop('disabled', false);
-    this.map.addLayer(marker);
+    this.markers.addLayer(marker);
     this.map.setView(marker.getLatLng(), this.pointZoom, true);
     this.latLng = latLng; 
   },
