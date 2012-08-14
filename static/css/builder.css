@@ -48,6 +48,10 @@
   margin-top: 1em;
 }
 
+.centered {
+  text-align: center;
+}
+
 /* Help Modal */
 
 #simplemodal-container {
@@ -543,11 +547,6 @@
 
 .dataset p {
   padding: 0;
-}
-
-/* Review view */
-.preview-button-container {
-  text-align: center;
 }
 
 /* Legal agreement view */

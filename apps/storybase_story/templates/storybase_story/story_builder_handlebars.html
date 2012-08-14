@@ -178,12 +178,13 @@ Handlebars.js templates for story builder Backbone application
 <script type="text/x-handlebars-template" id="review-template">
 <h2>Story Checklist</h2>
 <p>{{#blockgettext}}Congratulations on writing your story! We're going through your story right now, checking things out and making sure eveerything looks good from a content perspective, but why don't you also preview your story to see how it will look in the Floodlight story viewer.{{/blockgettext}}</p>
-<div class="preview-button-container"><a class="btn preview" href="#">{{gettext message="Preview Story"}}</a></div>
+<div class="centered"><a class="btn preview" href="#">{{gettext message="Preview Story"}}</a></div>
 </script>
 
 <script type="text/x-handlebars-template" id="share-publish-template">
 <h2>Share Your Story</h2>
-<div><a class="btn publish" href="#">Publish My Story</a></div>
+<p>{{#blockgettext}}Looks like you're all set. When you're ready click the "Publish My Story" button.{{/blockgettext}}</p>
+<div class="centered"><a class="btn publish" href="#">Publish My Story</a></div>
 </script>
 
 <script type="text/x-handlebars-template" id="share-legal-template">
