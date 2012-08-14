@@ -1847,7 +1847,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   },
 
   events: {
-    "change input": 'change',
+    "change .title input": 'change',
     "change select.layout": 'change'
   },
 

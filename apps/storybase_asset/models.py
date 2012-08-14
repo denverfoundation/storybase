@@ -213,17 +213,22 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
 
     def full_caption_html(self, wrapper='figcaption'):
         """Return the caption and attribution text together"""
-        output = self.caption
+        output = ""
+        if self.caption:
+            output += "<div class='caption'>%s</div>" % (self.caption)
         if self.attribution:
-            output += "<div class='attribution'>%s: %s</div>" % (
-			    _("Attribution"), self.attribution)
+            attribution = self.attribution
+            if self.source_url:
+                attribution = "<a href='%s'>%s</a>" % (self.source_url,
+                    attribution)
+            output += "<div class='attribution'>%s</div>" % (self.attribution)
 
         dataset_html = self.dataset_html()
         if dataset_html:
             output += dataset_html
 
         if output:
-            output = '<%s class="caption">%s</%s>' % (wrapper, output, wrapper)
+            output = '<%s>%s</%s>' % (wrapper, output, wrapper)
 
         return output
         
@@ -374,6 +379,8 @@ class HtmlAsset(Asset):
     def render_html(self):
         """Render the asset as HTML"""
         output = []
+        if self.title:
+            output.append('<h3>%s</h3>' % (self.title))
         if self.type in ('map', 'table'):
             output.append('<figure>')
             output.append(self.body)

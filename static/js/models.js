@@ -244,11 +244,18 @@ storybase.models.Asset = Backbone.Model.extend(
       },
 
       attribution: {
-        'quotation': true
+        'quotation': true,
+        'table': true
       },
 
+
       source_url: {
-        'quotation': true
+        'quotation': true,
+        'table': true
+      },
+
+      title: {
+        'table': true
       }
     },
 
@@ -265,6 +272,7 @@ storybase.models.Asset = Backbone.Model.extend(
     schema: function() {
       if (!_.isUndefined(storybase.forms)) {
         var schema = {
+          title: {title: gettext("Title"), type: 'Text'},
           url: {title: gettext("URL"), type: 'Text', validators: ['url']},
           image: {title: gettext("Image file"), type: storybase.forms.File},
           body: {title: gettext("Body"), type: 'TextArea'},
