@@ -2694,6 +2694,7 @@ storybase.builder.views.ReviewView = Backbone.View.extend({
     var context = {};
     this.$el.html(this.template(context));
     this.$el.append(this.navView.render().el);
+    this.delegateEvents();
     return this;
   },
 
