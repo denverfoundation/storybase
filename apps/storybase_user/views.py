@@ -10,13 +10,12 @@ from django.views.generic.list import ListView
 from storybase.views.generic import ModelIdDetailView
 from storybase_user.models import Organization, Project
 
-class AccountSummaryView(TemplateView):
-    """Display user account information"""
-    template_name = "storybase_user/account_summary.html"
+class AccountNotificationsView(TemplateView):
+    template_name = "storybase_user/account_notifications.html"
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(AccountSummaryView, self).dispatch(*args, **kwargs)
+        return super(AccountNotificationsView, self).dispatch(*args, **kwargs)
 
 class AccountStoriesView(TemplateView):
     template_name = "storybase_user/account_stories.html"
@@ -24,6 +23,15 @@ class AccountStoriesView(TemplateView):
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(AccountStoriesView, self).dispatch(*args, **kwargs)
+
+
+class AccountSummaryView(TemplateView):
+    """Display user account information"""
+    template_name = "storybase_user/account_summary.html"
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(AccountSummaryView, self).dispatch(*args, **kwargs)
 
 
 class OrganizationDetailView(ModelIdDetailView):
