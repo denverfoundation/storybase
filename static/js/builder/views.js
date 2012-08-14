@@ -157,7 +157,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
     });
     // Check for duplicate messages and only show the message
     // if it's different.
-    if (level != this.lastLevel && msg != this.lastMessage) {
+    if (!(level === this.lastLevel && msg === this.lastMessage)) {
       this.$('.alerts').prepend(view.render().el);
       view.$el.fadeOut(10000, function() {
         $(this).remove();
