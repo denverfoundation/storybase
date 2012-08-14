@@ -201,6 +201,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'storybase.context_processors.conf',
 )
 
+LOGIN_REDIRECT_URL = '/accounts/'
+
 AUTHENTICATION_BACKENDS = (
     'social_auth.backends.twitter.TwitterBackend',
     'social_auth.backends.facebook.FacebookBackend',
@@ -332,7 +334,3 @@ STORYBASE_LAYOUT_TEMPLATES = (
     '3_stacked.html',
 )
 
-# Pick one of the two
-# TODO: Choose a better redirect URL
-LOGIN_REDIRECT_URL = '/'
-#LOGIN_REDIRECT_URLNAME = ''
