@@ -159,7 +159,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
     // if it's different.
     if (!(level === this.lastLevel && msg === this.lastMessage)) {
       this.$('.alerts').prepend(view.render().el);
-      view.$el.fadeOut(10000, function() {
+      view.$el.fadeOut(15000, function() {
         $(this).remove();
       });
     }
