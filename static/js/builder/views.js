@@ -2751,13 +2751,18 @@ storybase.builder.views.ShareView = Backbone.View.extend({
     if (step === 'share' && _.include(_.keys(this.subviews), subStep)) {
       this.activeStep = subStep;
       this.render();
+      this.onShow();
     }
+  },
+
+  getActiveView: function() {
+    return this.activeStep ? this.subviews[this.activeStep] : this.subviews['legal'];
   },
 
   render: function() {
     console.info('Rendering share view');
     var context = {};
-    subView = this.activeStep ? this.subviews[this.activeStep] : this.subviews['legal'];
+    var subView = this.getActiveView(); 
     _.each(this.subviews, function(view, subStep) {
       if (subStep != this.activeStep) {
         view.$el.remove();
@@ -2765,6 +2770,13 @@ storybase.builder.views.ShareView = Backbone.View.extend({
     }, this);
     this.$el.append(subView.render().el);
     return this;
+  },
+
+  onShow: function() {
+    var view = this.getActiveView();
+    if (view.onShow) {
+      view.onShow();
+    }
   }
 });
 
@@ -3109,6 +3121,10 @@ storybase.builder.views.TaxonomyView = Backbone.View.extend({
     this.$el.append(this.navView.render().el);
 
     return this;
+  },
+
+  onShow: function() {
+    this.addLocationView.onShow();
   }
 });
 
@@ -3154,6 +3170,11 @@ storybase.builder.views.AddLocationView = Backbone.View.extend({
     this.$('#address-name-container').hide();
     // Disable the submission button until an address has been found
     this.$('#do-add-location').prop('disabled', true);
+    this.delegateEvents();
+    return this;
+  },
+
+  onShow: function() {
     this.map = new L.Map(this.$('#map')[0], {
     });
     this.map.setView(this.initialCenter, this.initialZoom);
@@ -3163,8 +3184,6 @@ storybase.builder.views.AddLocationView = Backbone.View.extend({
     this.map.addLayer(osm);
     this.markers = new L.LayerGroup();
     this.map.addLayer(this.markers);
-    this.delegateEvents();
-    return this;
   },
 
   renderLocationList: function(collection) {
