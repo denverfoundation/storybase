@@ -2687,6 +2687,13 @@ storybase.builder.views.ReviewView = Backbone.View.extend({
         }
       ]
     });
+    if (_.isUndefined(this.model)) {
+      this.dispatcher.on("ready:story", this.setStory, this);
+    }
+  },
+
+  setStory: function(story) {
+    this.model = story;
   },
 
   render: function() {
@@ -2828,6 +2835,13 @@ storybase.builder.views.LegalView = Backbone.View.extend({
         }
       ]
     });
+    if (_.isUndefined(this.model)) {
+      this.dispatcher.on("ready:story", this.setStory, this);
+    }
+  },
+
+  setStory: function(story) {
+    this.model = story;
   },
 
   getLicense: function() {
