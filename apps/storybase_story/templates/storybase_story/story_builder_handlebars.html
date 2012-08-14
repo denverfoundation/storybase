@@ -219,12 +219,16 @@ In order to publish and share your story, you need to double-check a few legal d
 </script>
 
 <script type="text/x-handlebars-template" id="share-taxonomy-template">
-<p>{{#blockgettext}}
+<p class="introduction">{{#blockgettext}}
 Make sure readers can find your story. It will be easier for others to find, read and share your story if you include additional information, like a byline, topic tags, locations, or affiliated organizations.
 {{/blockgettext}}</p>
+<div id="taxonomy">
+    <h3>{{gettext message="Tags"}}</h3> 
+</div>
 </script>
 
 <script type="text/x-handlebars-template" id="add-location-template">
+<h3>{{gettext message="Mapping"}}</h3>
 <form>
     <div id="address-search-container">
         <input id="address" name="address" type="text" placeholder="{{gettext message="Enter an address"}}"/>
@@ -250,6 +254,9 @@ Make sure readers can find your story. It will be easier for others to find, rea
 </script>
 
 <script type="text/x-handlebars-template" id="tags-template">
-<input id="tags" name="tags" type="hidden" />
+<h3>{{gettext message="Search Keywords"}}</h3>
+<form>
+    <input id="tags" name="tags" type="hidden" />
+</form>
 </script>
 {% endverbatim %}

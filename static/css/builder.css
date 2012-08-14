@@ -546,8 +546,28 @@
 }
 
 /* Select taxonomy view */
+#share-taxonomy .introduction {
+  margin-top: 1em;
+}
+
 #share-taxonomy select {
   width: 300px;
+}
+
+#taxonomy {
+  width: 50%;
+  float: left;
+}
+
+#story-tags {
+  width: 50%;
+  overflow: hidden;
+}
+
+#story-tags form,
+#add-location form {
+  margin-top: 1em;
+  margin-bottom: 1em;
 }
 
 /* Tagging view */
@@ -559,6 +579,7 @@
 /* Add location view */
 #add-location {
   width: 50%;
+  overflow: hidden;
 }
 
 #add-location label {
@@ -593,6 +614,7 @@ input[name=address] {
 #address-name-container {
   margin-bottom: 10px;
 }
+
 
 #locations {
   margin: 10px 0 0 0;

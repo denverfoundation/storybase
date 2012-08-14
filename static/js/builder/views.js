@@ -2951,6 +2951,7 @@ storybase.builder.views.TaxonomyView = Backbone.View.extend({
       model: this.model,
       dispatcher: this.dispatcher
     });
+
     if (this.model) {
       this.initializeForm();
     }
@@ -2995,7 +2996,7 @@ storybase.builder.views.TaxonomyView = Backbone.View.extend({
       delete schema.projects;
     }
     this.officialForm = new Backbone.Form({
-      schema: schema 
+      schema: schema
     });
     this.officialForm.on('topics:change', this.changeTopics, this);
     this.officialForm.on('places:change', this.changePlaces, this);
@@ -3070,7 +3071,7 @@ storybase.builder.views.TaxonomyView = Backbone.View.extend({
       'places': _.pluck(this.model.get('places'), 'id'),
     }
     this.$el.html(this.template());
-    this.$el.append(this.officialForm.render().el);
+    this.$('#taxonomy').append(this.officialForm.render().el);
     if (this.officialForm.fields.organizations) {
       initialValues.organizations = _.pluck(this.model.get('organizations'), 'id');
     }
