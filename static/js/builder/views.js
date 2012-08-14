@@ -2607,7 +2607,8 @@ storybase.builder.views.LegalView = Backbone.View.extend({
 
   templateSource: $('#share-legal-template').html(),
 
-  initialize: function() {
+  // Schema for form
+  schema: function (){
     // Custom validator for checkboxes.  For whatever reason, 'required'
     // didn't work
     var isChecked = function(value, formValues) {
@@ -2619,39 +2620,50 @@ storybase.builder.views.LegalView = Backbone.View.extend({
         return err;
       }
     };
+    return {
+      permission: { 
+        type: 'Checkboxes',
+        title: '',
+        options: Handlebars.compile($('#share-permission-field-template').html())(),
+        validators: [isChecked]
+      },
+      license: {
+        type: 'Checkboxes',
+        title: '',
+        options: Handlebars.compile($('#share-license-field-template').html())(),
+        validators: [isChecked]
+      },
+      'cc-allow-commercial': {
+        type: 'Radio',
+        title: '',
+        options: Handlebars.compile($('#share-cc-allow-commercial-template').html())(),
+        validators: ['required']
+      },
+      'cc-allow-modification': {
+        type: 'Radio',
+        title: '',
+        options: Handlebars.compile($('#share-cc-allow-modification-template').html())(),
+        validators: ['required']
+      }
+    };
+  },
+
+  initialize: function() {
+    var licenseFormVals = this.getLicense();
+    var formValues = {
+      permission: this.hasPermission,
+      license: this.agreedLicense,
+      'cc-allow-commercial': licenseFormVals.allowCommercial,
+      'cc-allow-modification': licenseFormVals.allowModification
+    };
     this.dispatcher = this.options.dispatcher;
     this.template = Handlebars.compile(this.templateSource);
     this.hasPermission = this.model && this.model.get('status') === 'published';
     this.agreedLicense = this.model && this.model.get('status') === 'published';
     this.form = new Backbone.Form({
-      schema: {
-        permission: { 
-          type: 'Checkboxes',
-          title: '',
-          options: Handlebars.compile($('#share-permission-field-template').html())(),
-          validators: [isChecked]
-        },
-        license: {
-          type: 'Checkboxes',
-          title: '',
-          options: Handlebars.compile($('#share-license-field-template').html())(),
-          validators: [isChecked]
-        },
-        'cc-allow-commercial': {
-          type: 'Radio',
-          title: '',
-          options: Handlebars.compile($('#share-cc-allow-commercial-template').html())(),
-          validators: ['required']
-        },
-        'cc-allow-modification': {
-          type: 'Radio',
-          title: '',
-          options: Handlebars.compile($('#share-cc-allow-modification-template').html())(),
-          validators: ['required']
-        }
-      }
+      schema: this.schema(),
+      data: formValues
     });
-    _.bindAll(this, 'validate');
     this.navView = new storybase.builder.views.WorkflowNavView({
       model: this.model,
       dispatcher: this.dispatcher,
@@ -2669,6 +2681,7 @@ storybase.builder.views.LegalView = Backbone.View.extend({
         }
       ]
     });
+    _.bindAll(this, 'validate');
     if (_.isUndefined(this.model)) {
       this.dispatcher.on("ready:story", this.setStory, this);
     }
@@ -2748,16 +2761,8 @@ storybase.builder.views.LegalView = Backbone.View.extend({
   },
 
   render: function() {
-    var licenseFormVals = this.getLicense();
-    var formValues = {
-      permission: this.hasPermission,
-      license: this.agreedLicense,
-      'cc-allow-commercial': licenseFormVals.allowCommercial,
-      'cc-allow-modification': licenseFormVals.allowModification
-    };
     this.$el.html(this.template());
     this.$el.append(this.form.render().el);
-    this.form.setValue(formValues);
     // HACK: Work around weird setValue implementation for checkbox
     // type.  Maybe make a custom editor that does it right.
     this.form.fields.permission.editor.$('input[type=checkbox]').prop('checked', this.hasPermission);
