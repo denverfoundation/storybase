@@ -221,7 +221,7 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
             if self.source_url:
                 attribution = "<a href='%s'>%s</a>" % (self.source_url,
                     attribution)
-            output += "<div class='attribution'>%s</div>" % (self.attribution)
+            output += "<div class='attribution'>%s</div>" % (attribution)
 
         dataset_html = self.dataset_html()
         if dataset_html:
