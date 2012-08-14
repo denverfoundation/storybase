@@ -2607,6 +2607,10 @@ storybase.builder.views.LegalView = Backbone.View.extend({
 
   templateSource: $('#share-legal-template').html(),
 
+  events: {
+    'change input[name=license]': 'changeLicenseAgreement'
+  },
+
   // Schema for form
   schema: function (){
     // Custom validator for checkboxes.  For whatever reason, 'required'
@@ -2664,6 +2668,9 @@ storybase.builder.views.LegalView = Backbone.View.extend({
       schema: this.schema(),
       data: formValues
     });
+    // IMPORTANT: Need to bind validate to this view before passing
+    // it as a callback to the WorkflowNavView instance
+    _.bindAll(this, 'validate');
     this.navView = new storybase.builder.views.WorkflowNavView({
       model: this.model,
       dispatcher: this.dispatcher,
@@ -2681,7 +2688,6 @@ storybase.builder.views.LegalView = Backbone.View.extend({
         }
       ]
     });
-    _.bindAll(this, 'validate');
     if (_.isUndefined(this.model)) {
       this.dispatcher.on("ready:story", this.setStory, this);
     }
@@ -2760,16 +2766,35 @@ storybase.builder.views.LegalView = Backbone.View.extend({
     }
   },
 
-  render: function() {
-    this.$el.html(this.template());
-    this.$el.append(this.form.render().el);
+  setRadioEnabled: function() {
+    this.form.fields['cc-allow-commercial'].$('input').prop('disabled', !this.agreedLicense);
+    this.form.fields['cc-allow-modification'].$('input').prop('disabled', !this.agreedLicense);
+  },
+
+  /**
+   * Workaround for limitations of form initial value setting.
+   */
+  updateFormDefaults: function() {
     // HACK: Work around weird setValue implementation for checkbox
     // type.  Maybe make a custom editor that does it right.
     this.form.fields.permission.editor.$('input[type=checkbox]').prop('checked', this.hasPermission);
     this.form.fields.license.$('input[type=checkbox]').prop('checked', this.agreedLicense);
+    this.setRadioEnabled();
+  },
+
+  render: function() {
+    this.$el.html(this.template());
+    this.$el.append(this.form.render().el);
+    this.updateFormDefaults();
     this.$el.append(this.navView.render().el);
+    this.delegateEvents();
 
     return this;
+  },
+
+  changeLicenseAgreement: function(evt) {
+    this.agreedLicense = $(evt.target).prop('checked');
+    this.setRadioEnabled();
   }
 });
 
