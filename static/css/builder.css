@@ -318,6 +318,7 @@
   padding: 10px 10px 0 0;
   text-align: right;
   list-style: none outside none;
+  background-color: #fff;
   z-index: 999;
 }
 
