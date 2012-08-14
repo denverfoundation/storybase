@@ -3225,7 +3225,8 @@ storybase.builder.views.PublishView = Backbone.View.extend({
   templateSource: $('#share-publish-template').html(),
 
   events: {
-    'click .publish': 'handlePublish'
+    'click .publish': 'handlePublish',
+    'click .unpublish': 'handleUnpublish'
   },
 
   initialize: function() {
@@ -3250,6 +3251,18 @@ storybase.builder.views.PublishView = Backbone.View.extend({
     });
   },
 
+  togglePublished: function() {
+    var published = this.model ? (this.model.get('status') === "published") : false;
+    if (published) {
+      this.$('.status-published').show();
+      this.$('.status-unpublished').hide();
+    }
+    else {
+      this.$('.status-published').hide();
+      this.$('.status-unpublished').show();
+    }
+  },
+
   handlePublish: function(evt) {
     evt.preventDefault();
     console.debug('Entering handlePublish');
@@ -3257,6 +3270,7 @@ storybase.builder.views.PublishView = Backbone.View.extend({
     var triggerPublished = function(model, response) {
       that.dispatcher.trigger('publish:story', model);
       that.dispatcher.trigger('alert', 'success', 'Story published');
+      that.togglePublished();
     };
     var triggerError = function(model, response) {
       that.dispatcher.trigger('error', "Error publishing story");
@@ -3267,8 +3281,39 @@ storybase.builder.views.PublishView = Backbone.View.extend({
     });
   },
 
+  handleUnpublish: function(evt) {
+    evt.preventDefault();
+    var that = this;
+    var success = function(model, response) {
+      that.dispatcher.trigger('alert', 'success', 'Story unpublished');
+      that.togglePublished();
+    };
+    var triggerError = function(model, response) {
+      that.dispatcher.trigger('error', "Error unpublishing story");
+    };
+    this.model.save({'status': 'draft'}, {
+      success: success, 
+      error: triggerError 
+    });
+  },
+
+  getStoryUrl: function() {
+    var url = this.model ? this.model.get('url') : '';
+    var loc = window.location;
+    if (url) {
+      url = loc.protocol + "//" + loc.host + url;
+    }
+    return url;
+  },
+
   render: function() {
-    this.$el.html(this.template());
+    var context = {
+      url: this.getStoryUrl(),
+      title: this.model.get('title')
+    };
+    this.$el.html(this.template(context));
+    addthis.init();
+    this.togglePublished();
     this.$el.append(this.navView.render().el);
     this.delegateEvents();
     return this;

@@ -26,6 +26,10 @@
   opacity: 0.65;
 }
 
+.btn-container {
+  padding: 2em 0;
+}
+
 .alert-success {
   background-color: #DFF0D8;
   border-color: #D6E9C6;
@@ -622,9 +626,28 @@ input[name=address] {
   margin-bottom: 10px;
 }
 
-
 #locations {
   margin: 10px 0 0 0;
   padding: 0;
   list-style: none;
+}
+
+#share-link {
+  display: table;
+  width: 50%;
+  margin: 2em auto;
+}
+
+#share-link div {
+  display: table-cell;
+  vertical-align: middle;
+}
+
+#story-url {
+  width: 300px;
+}
+
+.addthis_toolbox {
+  display: inline-block;
+  padding: 0;
 }

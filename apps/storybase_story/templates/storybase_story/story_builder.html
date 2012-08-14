@@ -128,7 +128,15 @@
             options
         );
         Backbone.history.start({pushState: true, root: storybase.builder.globals.APP_ROOT});
+
     });
     </script>
+    <script type="text/javascript">
+    // Disable tracking fragments in AddThis links
+    var addthis_config = {
+         data_track_clickback: false
+    }; 
+    </script>
+    <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js#async=1"></script>
   </body>
 </html>
