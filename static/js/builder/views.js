@@ -2019,6 +2019,10 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
    */
   addAsset: function(section, asset, container) {
     if (section == this.model) {
+      // Artifically set the container attribute of the asset.
+      // For assets retrieved from the server, this is handled by
+      // SectionAssets.parse()
+      asset.set('container', container);
       this.assets.add(asset);
       if (this.story.isNew()) {
         // We haven't saved the story or the section yet.
@@ -2165,6 +2169,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
     states: ['select', 'display', 'edit'],
 
     initialize: function() {
+      console.debug("Initializing new section asset edit view");
       this.container = this.options.container;
       this.dispatcher = this.options.dispatcher;
       this.assetTypes = this.options.assetTypes;
@@ -2303,7 +2308,11 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
      * Callback for Jeditable plugin applied to caption.
      */
     editCaption: function(value, settings) {
-      this.model.save({caption: value});
+      // Call this.saveModel instead of this.model.save() mostly
+      // because calling this.model.save() without a callback causes
+      // the "sync" event to bubble up to the collection, which we don't
+      // want.
+      this.saveModel({caption: value});
       return value;
     },
 
