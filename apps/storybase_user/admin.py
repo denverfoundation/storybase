@@ -9,8 +9,9 @@ from django.utils.translation import ugettext_lazy as _
 from storybase.admin import StorybaseModelAdmin, StorybaseStackedInline
 from storybase_story.models import Story
 from storybase_user.models import (Organization, OrganizationTranslation, 
-                                   Project, ProjectStory, 
-                                   ProjectTranslation)
+                                   Project, ProjectStory,  ProjectTranslation,
+                                   UserProfile)
+                                  
 
 if 'social_auth' in settings.INSTALLED_APPS:
     import social_auth
@@ -151,4 +152,10 @@ class ProjectAdmin(StorybaseModelAdmin):
     inlines = [ProjectStoryInline, ProjectTranslationInline]
     prefix_inline_classes = ['ProjectTranslationInline']
 
+
 admin.site.register(Project, ProjectAdmin)
+
+class UserProfileAdmin(admin.ModelAdmin):
+    pass
+
+admin.site.register(UserProfile, UserProfileAdmin)

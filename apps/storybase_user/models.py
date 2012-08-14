@@ -201,6 +201,41 @@ def add_story_to_project(sender, instance, **kwargs):
             story.save()
 
 
+class UserProfile(models.Model):
+    user = models.OneToOneField(User)
+
+    profile_id = UUIDField(auto=True)
+
+    # Notification preferences
+    # Right now these represent e-mail contact
+    # Floodlight updates
+    notify_updates = models.BooleanField("Floodlight Updates", default=True,
+        help_text="Updates about new Floodlight features, events and storytelling tips")
+    notify_admin = models.BooleanField("Administrative Updates",
+        default=True,
+        help_text="Administrative account updates")
+    notify_digest = models.BooleanField("Monthly Digest", default=True,
+        help_text="A monthly digest of featured Floodlight stories")
+    # Notifications about my stories
+    notify_story_featured = models.BooleanField("Homepage Notification",
+        default=True,
+        help_text="One of my stories is featured on the Floodlight homepage or newsletter")
+    notify_story_comment = models.BooleanField("Comment Notification",
+        default=True,
+        help_text="Someone comments on one of my stories")
+
+    def __unicode__(self):
+        return unicode(self.user)
+
+
+def create_user_profile(sender, instance, created, **kwargs):
+    """Signal handler for creating a profile on user account creation"""
+    if created:
+        UserProfile.objects.create(user=instance)
+
+post_save.connect(create_user_profile, sender=User)
+
+
 def create_project(name, description='', website_url='', language=settings.LANGUAGE_CODE):
     """ Convenience function for creating a Project 
     
