@@ -2622,7 +2622,7 @@ storybase.builder.views.LegalView = Backbone.View.extend({
     this.dispatcher = this.options.dispatcher;
     this.template = Handlebars.compile(this.templateSource);
     this.hasPermission = this.model && this.model.get('status') === 'published';
-    this.agreedLicense = !!this.model && !!this.model.get('license');
+    this.agreedLicense = this.model && this.model.get('status') === 'published';
     this.form = new Backbone.Form({
       schema: {
         permission: { 
