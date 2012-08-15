@@ -201,6 +201,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'storybase.context_processors.conf',
 )
 
+AUTH_PROFILE_MODULE = 'storybase_user.UserProfile'
+
 LOGIN_REDIRECT_URL = '/accounts/'
 
 AUTHENTICATION_BACKENDS = (
