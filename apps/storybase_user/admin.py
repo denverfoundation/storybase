@@ -37,6 +37,22 @@ class StoryUserAdminForm(UserChangeForm):
         required=False)
 
 
+
+class UserProfileInline(admin.StackedInline):
+    model = UserProfile
+    max_num = 1
+    can_delete = False
+    fieldsets = (
+        (
+             _('Notifications'), 
+             {
+                 'fields': ('notify_updates', 'notify_admin', 'notify_digest', 'notify_story_featured', 'notify_story_comment'),
+                 'description': _("Users will receive emails about these kind of events"),
+             }
+        ),
+    )
+    
+
 class StoryUserAdmin(UserAdmin):
     """
     Custom admin for Users
@@ -58,6 +74,8 @@ class StoryUserAdmin(UserAdmin):
         (_('Projects'), {'fields': ('projects',)}),
         (_('Stories'), {'fields': ('stories',)}),
     )
+
+    inlines = [UserProfileInline]
 
     list_filter = UserAdmin.list_filter + ('groups__name',)
     list_display = UserAdmin.list_display + ('is_active',)
@@ -154,8 +172,3 @@ class ProjectAdmin(StorybaseModelAdmin):
 
 
 admin.site.register(Project, ProjectAdmin)
-
-class UserProfileAdmin(admin.ModelAdmin):
-    pass
-
-admin.site.register(UserProfile, UserProfileAdmin)
