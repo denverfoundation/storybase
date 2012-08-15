@@ -2,10 +2,15 @@
 
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
-from django.template import Context
+from django.contrib.auth.forms import PasswordChangeForm
+from django.http import HttpResponseRedirect
+from django.core.urlresolvers import reverse
+from django.shortcuts import render_to_response
+from django.template import Context, RequestContext
 from django.template.loader import get_template
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
+from django.views.decorators.csrf import csrf_protect
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView 
 from django.views.generic.list import ListView
@@ -72,6 +77,38 @@ class ProjectListView(ListView):
     """Display a list of all Projects"""
     context_object_name = "projects"
     queryset = Project.objects.all().order_by('-last_edited')
+
+
+@csrf_protect
+@login_required
+def password_change(request,
+                    template_name='storybase_user/password_change_form.html',
+                    post_change_redirect=None,
+                    password_change_form=PasswordChangeForm,
+                    current_app=None, extra_context=None):
+    """
+    Modified version of the default Django password change view
+    
+    This version defaults to this app's custom template, redirects back to the
+    same view, and flashes a success message.
+
+    """
+    if post_change_redirect is None:
+        post_change_redirect = reverse('storybase_user.views.password_change')
+    if request.method == "POST":
+        form = password_change_form(user=request.user, data=request.POST)
+        if form.is_valid():
+            messages.success(request, _("Password changed")) 
+            form.save()
+            return HttpResponseRedirect(post_change_redirect)
+    else:
+        form = password_change_form(user=request.user)
+    context = {
+        'form': form,
+    }
+    context.update(extra_context or {})
+    return render_to_response(template_name, context,
+                              context_instance=RequestContext(request, current_app=current_app))
 
 
 def simple_list(objects):

@@ -6,7 +6,7 @@
 
 {% block primary_content %}
 <h1>{%trans "My Stories" %}</h1>
-{% if user.stories %}
+{% if user.stories.count %}
 <table>
     <thead>
         <tr>
