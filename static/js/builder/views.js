@@ -3249,6 +3249,13 @@ storybase.builder.views.PublishView = Backbone.View.extend({
         }
       ]
     });
+    if (_.isUndefined(this.model)) {
+      this.dispatcher.on("ready:story", this.setStory, this);
+    }
+  },
+
+  setStory: function(story) {
+    this.model = story;
   },
 
   togglePublished: function() {
