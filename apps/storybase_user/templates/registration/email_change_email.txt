@@ -1,0 +1,11 @@
+{% load i18n %}
+{% trans "Dear" %} {% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %},
+
+{% blocktrans %}The email address of your Floodlight account has been updated to{% endblocktrans %} {{ user.email }}.
+
+{% blocktrans %}If you did not change your settings or you think there has been an error, please contact us at{% endblocktrans %} {{ site_contact_email }}.
+
+{% blocktrans %}
+Thanks,
+The {{ site_name }} Team
+{% endblocktrans %}

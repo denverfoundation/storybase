@@ -63,3 +63,21 @@ def send_account_deactivate_email(user,
     context.update(extra_context)
     send_mail(subject, template.render(Context(context)), 
               from_email, [user.email])
+
+def send_email_change_email(user, email,
+            email_template_name="registration/email_change_email.txt", 
+            subject=None,
+            from_email=None, request=None, extra_context={}):
+    site_name = get_site_name(request)
+    if subject is None:
+        subject = _("Your %s account information has been updated") % site_name
+
+    template = loader.get_template(email_template_name)
+    context = {
+        'user': user,
+        'site_name': site_name,
+        'site_contact_email': settings.STORYBASE_CONTACT_EMAIL 
+    }
+    context.update(extra_context)
+    send_mail(subject, template.render(Context(context)), 
+              from_email, [email])

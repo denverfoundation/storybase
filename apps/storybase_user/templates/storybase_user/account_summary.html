@@ -7,6 +7,16 @@
 {% block primary_content %}
 <h1>{% trans "Account information for" %} {{ user.email }}</h1>
 
+{% include "messages.html" %}
+
+<h2>{% trans "Email Address" %}</h2>
+
+<form method="post">{% csrf_token %}
+{{ change_email_form.as_p }}
+<input type="hidden" name="form_id" value="change_email" />
+<input type="submit" value="{% trans "Change Email Address" %}" />
+</form>
+
 <h2>{% trans "Connected accounts" %}</h2>
 <ul>
   {% for name, value in social_auth.items %}

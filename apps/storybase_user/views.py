@@ -17,6 +17,8 @@ from django.views.generic.list import ListView
 
 from storybase.views.generic import ModelIdDetailView
 from storybase_user.forms import UserNotificationsForm
+from storybase_user.auth.forms import ChangeUsernameEmailForm
+from storybase_user.auth.utils import send_email_change_email
 from storybase_user.models import Organization, Project, UserProfile
 
 class AccountNotificationsView(UpdateView):
@@ -53,6 +55,40 @@ class AccountSummaryView(TemplateView):
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(AccountSummaryView, self).dispatch(*args, **kwargs)
+
+    def get_context_data(self, change_email_form=None, **kwargs):
+        context = super(AccountSummaryView, self).get_context_data(**kwargs)
+        if change_email_form is None:
+            change_email_form = ChangeUsernameEmailForm(self.request.user)
+        context['change_email_form'] = change_email_form 
+        return context
+    
+    def post_change_email(self, request, *args, **kwargs):
+        """Handle a POST request with the email change form submitted"""
+        form = ChangeUsernameEmailForm(self.request.user, request.POST)
+        if form.is_valid():
+            messages.success(request, _("Your email address has been changed")) 
+            user = form.save()
+            # Send an email notification to the new email 
+            send_email_change_email(user, user.email, request=self.request)
+            # Send an email notification to the previous email
+            send_email_change_email(user, form.previous_data['email'], request=self.request)
+            return self.render_to_response(self.get_context_data())
+        else:
+            return self.render_to_response(self.get_context_data(change_email_form=form))
+
+    def post(self, request, *args, **kwargs):
+        """Handle a POST request
+        
+        This dispatches to different methods by checking a hidden
+        input of the forms named ``form_id``.  You need to add this
+        in the template for this view.
+        
+        """
+        if 'form_id' in request.POST:
+            if request.POST['form_id'] == 'change_email':
+                return self.post_change_email(request, *args, **kwargs)
+        return self.render_to_response(self.get_context_data())
 
 
 class OrganizationDetailView(ModelIdDetailView):

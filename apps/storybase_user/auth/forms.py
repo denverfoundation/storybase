@@ -2,8 +2,10 @@ from django import forms
 from django.conf import settings
 from django.contrib.auth.forms import (AuthenticationForm, PasswordResetForm,
                                        SetPasswordForm)
+from django.contrib.auth.models import User
 from django.contrib.auth.tokens import default_token_generator
-from django.template import Context, Template, loader
+from django.db.models import Q
+from django.template import Context, loader
 from django.utils.translation import ugettext_lazy as _
 
 from storybase.utils import get_site_name
@@ -93,3 +95,54 @@ class CustomContextPasswordResetForm(PasswordResetForm):
                 from_email=from_email,
                 request=request,
                 extra_context=self.get_custom_context(request))
+
+class ChangeUsernameEmailForm(forms.Form):
+    """Form for changing the username/email
+
+    This works under the current scheme where username and email address are
+    the same
+
+    """
+    password = forms.CharField(label=_("Password"), widget=forms.PasswordInput,
+            help_text=_("For your security, you must enter your password to change your email address"))
+    new_email1 = forms.CharField(label=_("New email address"))
+    new_email2 = forms.CharField(label=_("New email address confirmation"))
+
+    def __init__(self, user, *args, **kwargs):
+        self.user = user
+        self.previous_data = {}
+        super(ChangeUsernameEmailForm, self).__init__(*args, **kwargs)
+
+    def user_exists(self, email):
+        q = Q(username=email) | Q(email=email)
+        try:
+            User.objects.get(q)
+            return True
+        except User.DoesNotExist:
+            return False
+
+    def clean_password(self):
+        """
+        Validates that the password field is correct.
+        """
+        password = self.cleaned_data["password"]
+        if not self.user.check_password(password):
+            raise forms.ValidationError(_("Your password was entered incorrectly. Please enter it again."))
+        return password
+
+    def clean_new_email2(self):
+        new_email1 = self.cleaned_data.get('new_email1')
+        new_email2 = self.cleaned_data.get('new_email2')
+        if new_email1 and new_email2:
+            if new_email1 != new_email2:
+                raise forms.ValidationError(_("The two email fields didn't match."))
+            if self.user_exists(new_email2):
+                raise forms.ValidationError(_("A user with this email address already exists."))
+        return new_email2
+
+    def save(self, commit=True):
+        self.previous_data['email'] = self.user.email
+        self.user.username = self.user.email = self.cleaned_data['new_email1']
+        if commit:
+            self.user.save()
+        return self.user
