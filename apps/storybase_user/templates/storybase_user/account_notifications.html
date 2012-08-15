@@ -7,13 +7,7 @@
 {% block primary_content %}
 <h1>{% trans "Notifications and Subscriptions" %}</h1>
 
-{% if messages %}
-<ul class="messages">
-    {% for message in messages %}
-    <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
-    {% endfor %}
-</ul>
-{% endif %} 
+{% include "messages.html" %}
         
 <form method="post">
     {% csrf_token %}
