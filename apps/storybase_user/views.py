@@ -5,13 +5,23 @@ from django.template import Context
 from django.template.loader import get_template
 from django.utils.decorators import method_decorator
 from django.views.generic.base import TemplateView
+from django.views.generic.edit import UpdateView 
 from django.views.generic.list import ListView
 
 from storybase.views.generic import ModelIdDetailView
-from storybase_user.models import Organization, Project
+from storybase_user.forms import UserNotificationsForm
+from storybase_user.models import Organization, Project, UserProfile
 
-class AccountNotificationsView(TemplateView):
+class AccountNotificationsView(UpdateView):
+    model = UserProfile
     template_name = "storybase_user/account_notifications.html"
+    form_class = UserNotificationsForm
+    # TODO: When switching to Django 1.4 use reverse_lazy to 
+    # get the URL of this view itself
+    success_url = "/accounts/notifications/"
+
+    def get_object(self, queryset=None):
+        return self.request.user.get_profile()
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
