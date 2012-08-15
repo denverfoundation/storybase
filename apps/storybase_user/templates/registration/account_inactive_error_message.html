@@ -1,0 +1,14 @@
+{% load i18n %}
+<p>{% trans "Hi"%} {{ name }},</p>
+
+<p>
+{% blocktrans %}
+Your Floodlight account has been deactivated by the {{ site_name }} administrators. If you would like to reactivate your account, please contact us at {{ site_contact_email }}.
+{% endblocktrans %}
+</p>
+
+<p>
+{% trans "Thanks" %},<br />
+
+{% blocktrans %}The {{ site_name }} Team{% endblocktrans %}
+</p>

@@ -1,8 +1,12 @@
 from django import forms
+from django.conf import settings
 from django.contrib.auth.forms import (AuthenticationForm, PasswordResetForm,
                                        SetPasswordForm)
 from django.contrib.auth.tokens import default_token_generator
+from django.template import Context, Template, loader
 from django.utils.translation import ugettext_lazy as _
+
+from storybase.utils import get_site_name
 
 class EmailAuthenticationForm(AuthenticationForm):
     def __init__(self, request=None, *args, **kwargs):
@@ -11,17 +15,41 @@ class EmailAuthenticationForm(AuthenticationForm):
         # to reflect our use of e-mail addresses
         self.fields['username'].max_length = 254
         self.fields['username'].label = _("Email")
+        # Set the template to use for the error message
+        self.inactive_error_template = kwargs.get('inactive_error_template',
+            "registration/account_inactive_error_message.html")
+        self.extra_context = kwargs.get('extra_context', {})
+
+    def get_inactive_error_message(self):
+        """Return an error message for when the account is inactive
+
+        Uses a template to generate the message.
+
+        """
+        user = self.user_cache
+        template = loader.get_template(self.inactive_error_template)
+        context = {
+            'name': user if user.first_name else user.username,
+            'site_name': get_site_name(),
+            'site_contact_email': settings.STORYBASE_CONTACT_EMAIL 
+        }
+        context.update(self.extra_context)
+        return template.render(Context(context))
 
     def clean(self):
         """Override the default validation error message
         
-        Reference the email address field instead of username
+        Reference the email address field instead of username and provides a
+        more verbose, templated error message for inactive users.
 
         """
         try:
             return super(EmailAuthenticationForm, self).clean()
         except forms.ValidationError:
-            raise forms.ValidationError(_("Please enter a correct email address and password. Note that both fields are case-sensitive."))
+            if self.user_cache is None:
+                raise forms.ValidationError(_("Please enter a correct email address and password. Note that both fields are case-sensitive."))
+            elif not self.user_cache.is_active:
+                raise forms.ValidationError(self.get_inactive_error_message())
 
 
 class StrongSetPasswordForm(SetPasswordForm):
