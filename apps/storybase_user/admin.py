@@ -14,6 +14,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from storybase.admin import StorybaseModelAdmin, StorybaseStackedInline
 from storybase_story.models import Story
+from storybase_user.auth.utils import send_account_deactivate_email
 from storybase_user.models import (Organization, OrganizationTranslation, 
                                    Project, ProjectStory,  ProjectTranslation,
                                    UserProfile)
@@ -124,6 +125,8 @@ class StoryUserAdmin(UserAdmin):
         
         This is an admin action.
         """
+        # TODO: Figure out if there's any good reason why I imported
+        # these locallly
         from storybase.context_processors import conf
         from storybase_user.auth.utils import send_password_reset_email
         
@@ -137,6 +140,8 @@ class StoryUserAdmin(UserAdmin):
     def set_inactive(self, request, queryset):
         """Set a user account to be inactive"""
         queryset.update(is_active=False)
+        for user in queryset:
+            send_account_deactivate_email(user, request=request)
         self.message_user(request, "Deactivated user(s)")
     set_inactive.short_description = "Deactivate user"
 

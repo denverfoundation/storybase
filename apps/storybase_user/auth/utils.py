@@ -1,5 +1,11 @@
+from django.conf import settings
 from django.contrib.auth.tokens import default_token_generator
+from django.contrib.sites.models import get_current_site
+from django.core.mail import send_mail
+from django.template import Context, loader
 from django.utils.translation import ugettext_lazy as _
+
+from storybase.utils import get_site_name
 
 def send_password_reset_email(user, domain_override=None, 
                               email_template_name='registration/password_reset_email.html',
@@ -14,9 +20,6 @@ def send_password_reset_email(user, domain_override=None,
 
     """
     import logging
-    from django.core.mail import send_mail
-    from django.contrib.sites.models import get_current_site
-    from django.template import Context, loader
     from django.utils.http import int_to_base36
 
     logger = logging.getLogger('storybase_user.admin')
@@ -41,3 +44,22 @@ def send_password_reset_email(user, domain_override=None,
     send_mail(_("Password reset on %s") % site_name,
         t.render(Context(c)), from_email, [user.email])
     logger.info("Password reset email sent to %s" % (user.email))
+
+
+def send_account_deactivate_email(user, 
+            email_template_name="registration/account_deactivate_email.html", 
+            subject=None,
+            from_email=None, request=None, extra_context={}):
+    site_name = get_site_name(request)
+    if subject is None:
+        subject = _("Your %s account has been deactivated") % site_name
+
+    template = loader.get_template(email_template_name)
+    context = {
+        'user': user,
+        'site_name': site_name,
+        'site_contact_email': settings.STORYBASE_CONTACT_EMAIL 
+    }
+    context.update(extra_context)
+    send_mail(subject, template.render(Context(context)), 
+              from_email, [user.email])

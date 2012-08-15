@@ -3,6 +3,7 @@
 import pytz
 
 from django.conf import settings
+from django.contrib.sites.models import get_current_site
 from django.template.defaultfilters import slugify as django_slugify
 from django.utils.translation import ugettext_lazy as _
 
@@ -60,6 +61,7 @@ def import_class(import_path):
                         
     return getattr(module, class_name)
 
+
 def add_tzinfo(dt, tzname=settings.TIME_ZONE):
     """
     Return a timezone aware version of a datetime object, taking into
@@ -73,3 +75,16 @@ def add_tzinfo(dt, tzname=settings.TIME_ZONE):
     """
     tz = pytz.timezone(settings.TIME_ZONE).localize(dt).tzinfo
     return dt.replace(tzinfo=tz)
+
+def get_site_name(request):
+    """
+    Get the site name
+    
+    Try the setting first, if not try the sites framework.
+    
+    """
+    site_name = getattr(settings, 'STORYBASE_SITE_NAME', None)
+    if not site_name:
+        current_site = get_current_site(request)
+        site_name = current_site.name
+    return site_name

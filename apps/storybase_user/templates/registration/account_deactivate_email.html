@@ -1,0 +1,9 @@
+{% load i18n %}
+{% blocktrans with first_name=user.first_name email=user.email %}
+Dear {{ first_name }},
+
+Your {{ site_name }} account has been deactivated by the {{ site_name }} administrators. If you would like to reactivate your account, please contact us at {{ site_contact_email }}.
+
+Thanks,
+The {{ site_name }} Team
+{% endblocktrans %}
