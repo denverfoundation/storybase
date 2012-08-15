@@ -1,9 +1,15 @@
+import csv
+import datetime
+
 from django import forms
 from django.conf import settings
+from django.conf.urls.defaults import patterns
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserChangeForm
 from django.contrib.auth.models import User
+from django.http import HttpResponse
+from django.utils.text import capfirst
 from django.utils.translation import ugettext_lazy as _
 
 from storybase.admin import StorybaseModelAdmin, StorybaseStackedInline
@@ -133,6 +139,42 @@ class StoryUserAdmin(UserAdmin):
         queryset.update(is_active=False)
         self.message_user(request, "Deactivated user(s)")
     set_inactive.short_description = "Deactivate user"
+
+    def get_urls(self):
+        urls = super(StoryUserAdmin, self).get_urls()
+        my_urls = patterns('',
+            (r'^csv/$', self.csv_view)
+        )
+        return my_urls + urls
+
+    def csv_view(self, request):
+        def encode(obj, field_name):
+            return unicode(getattr(obj, field_name)).encode("utf-8","replace")
+
+        def encode_field_verbose_name(klass, field_name):
+            return capfirst(unicode(klass._meta.get_field(field_name).verbose_name).encode("utf-8","replace"))
+
+        def header_row(user_field_names, profile_field_names):
+            row = [encode_field_verbose_name(User, field_name) for field_name in user_field_names]
+            row.extend([encode_field_verbose_name(UserProfile, field_name) for field_name in profile_field_names])
+            return row
+
+        queryset = self.queryset(request)
+        filename = "userinfo_%s.csv" % (datetime.date.today().strftime("%Y%m%d"))
+        response = HttpResponse(mimetype='text/csv')
+        response['Content-Disposition'] = 'attachment; filename=%s' % (filename)
+        user_field_names = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active')
+        # TODO: See if I can use methods of the modeladmin as fields
+        profile_field_names = ('notify_updates', 'notify_admin', 'notify_digest', 'notify_story_featured', 'notify_story_comment')
+        writer = csv.writer(response)
+        writer.writerow(header_row(user_field_names, profile_field_names))
+        for obj in queryset:
+            profile = obj.get_profile()
+            row = [encode(obj, field_name) for field_name in user_field_names]
+            row.extend([encode(profile, field_name) for field_name in profile_field_names])
+            writer.writerow(row)
+        return response
+
 
 admin.site.unregister(User)
 admin.site.register(User, StoryUserAdmin)
