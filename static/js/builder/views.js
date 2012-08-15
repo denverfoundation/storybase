@@ -3319,8 +3319,16 @@ storybase.builder.views.PublishView = Backbone.View.extend({
       title: this.model.get('title')
     };
     this.$el.html(this.template(context));
-    addthis.init();
     this.togglePublished();
+    if (window.addthis) {
+      // Render the addthis toolbox.  We have to do this explictly
+      // since it wasn't in the DOM when the page was loaded.
+      addthis.toolbox(this.$('.addthis_toolbox')[0], {
+        // Don't append clickback URL fragment so users get a clean
+        // URL when clicking the permalink button
+        data_track_clickback: false
+      });
+    }
     this.$el.append(this.navView.render().el);
     this.delegateEvents();
     return this;
