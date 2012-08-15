@@ -1,9 +1,11 @@
 """Views"""
 
+from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.template import Context
 from django.template.loader import get_template
 from django.utils.decorators import method_decorator
+from django.utils.translation import ugettext as _
 from django.views.generic.base import TemplateView
 from django.views.generic.edit import UpdateView 
 from django.views.generic.list import ListView
@@ -22,6 +24,10 @@ class AccountNotificationsView(UpdateView):
 
     def get_object(self, queryset=None):
         return self.request.user.get_profile()
+
+    def form_valid(self, form):
+        messages.success(self.request, _("Updated notification settings")) 
+        return super(AccountNotificationsView, self).form_valid(form)
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
