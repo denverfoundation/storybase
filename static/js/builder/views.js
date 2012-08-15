@@ -2845,27 +2845,32 @@ storybase.builder.views.TaxonomyView = Backbone.View.extend({
     var placesOptions = this.getFormOptions(this.options.places);
     var organizationsOptions = this.getFormOptions(this.options.organizations, 'organization_id');
     var projectsOptions = this.getFormOptions(this.options.projects, 'project_id');
+    // Default editor attributes for the Backbone Form
+    var editorAttrs = {
+      multiple: "",
+      style: "width: 300px"
+    };
     // Official taxonomies
     var schema = {
       topics: { 
         type: 'Select', 
         options: topicsOptions, 
-        editorAttrs: {multiple: "", placeholder: gettext("Click to select topics")}
+        editorAttrs: _.extend(editorAttrs, {placeholder: gettext("Click to select topics")})
       },
       places: { 
         type: 'Select', 
         options: placesOptions, 
-        editorAttrs: {multiple: "", placeholder: gettext("Click to select places")}
+        editorAttrs: _.extend(editorAttrs, {placeholder: gettext("Click to select places")})
       },
       organizations: {
         type: 'Select',
         options: organizationsOptions,
-        editorAttrs: {multiple: "", placeholder: gettext("Click to select organizations")}
+        editorAttrs: _.extend(editorAttrs, {placeholder: gettext("Click to select organizations")})
       },
       projects: {
         type: 'Select',
         options: projectsOptions,
-        editorAttrs: {multiple: "", placeholder: gettext("Click to select projects")}
+        editorAttrs: _.extend(editorAttrs, {placeholder: gettext("Click to select projects")})
       }
     };
     if (!organizationsOptions.length) {
