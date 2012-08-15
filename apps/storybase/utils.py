@@ -76,7 +76,7 @@ def add_tzinfo(dt, tzname=settings.TIME_ZONE):
     tz = pytz.timezone(settings.TIME_ZONE).localize(dt).tzinfo
     return dt.replace(tzinfo=tz)
 
-def get_site_name(request):
+def get_site_name(request=None):
     """
     Get the site name
     
