@@ -47,7 +47,7 @@ def send_password_reset_email(user, domain_override=None,
 
 
 def send_account_deactivate_email(user, 
-            email_template_name="registration/account_deactivate_email.html", 
+            email_template_name="registration/account_deactivate_email.txt", 
             subject=None,
             from_email=None, request=None, extra_context={}):
     site_name = get_site_name(request)
