@@ -32,7 +32,8 @@ def get_data_from_user(request, *args, **kwargs):
     # session, otherwise, the user will bypass entering the additional
     # account information if their account is deleted and they recreate
     # the account.  See issue #136
-    del request.session['new_account_extra_details']
+    if 'new_account_extra_details' in request.session:
+        del request.session['new_account_extra_details']
 
     return out 
 
