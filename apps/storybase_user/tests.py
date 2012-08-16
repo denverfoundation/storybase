@@ -8,11 +8,137 @@ from django.utils import translation
 
 from storybase.utils import slugify
 from storybase_story.models import create_story
+from storybase_user.auth.forms import ChangeUsernameEmailForm
 from storybase_user.models import (create_organization, create_project,
     Organization, OrganizationStory, OrganizationTranslation,
     Project, ProjectStory, ProjectTranslation,
     ADMIN_GROUP_NAME)
 from storybase_user.utils import is_admin, get_admin_emails
+
+class ChangeUsernameEmailFormTest(TestCase):
+    """Tests for the change username/email form"""
+    def setUp(self):
+        self.username = 'test'
+        self.password = 'test'
+        self.user = User.objects.create_user(self.username, 
+            'test@example.com', self.password)
+        self.user2 = User.objects.create_user('test3',
+            'test3@example.com', 'test3')
+        # Valid form data.  Delete/alter keys in this
+        self.form_data = {
+            'password': self.password,
+            'new_email1': 'test2@example.com',
+            'new_email2': 'test2@example.com',
+        }
+
+    def test_password_required(self):
+        data = {
+            'password': '',
+            'new_email1': 'test2@example.com',
+            'new_email2': 'test2@example.com',
+        }
+        form = ChangeUsernameEmailForm(self.user, data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('password', form._errors)
+
+    def test_new_email1_required(self):
+        data = {
+            'password': 'test',
+            'new_email1': '',
+            'new_email2': 'test2@example.com',
+        }
+        form = ChangeUsernameEmailForm(self.user, data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('new_email1', form._errors)
+
+    def test_new_email2_required(self):
+        data = {
+            'password': 'test',
+            'new_email1': 'test2@example.com',
+            'new_email2': '',
+        }
+        form = ChangeUsernameEmailForm(self.user, data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('new_email2', form._errors)
+
+    def test_emails_must_match(self):
+        data = {
+            'password': 'test',
+            'new_email1': 'test2@example.com',
+            'new_email2': 'testwrong@example.com',
+        }
+        form = ChangeUsernameEmailForm(self.user, data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('new_email2', form._errors)
+
+    def test_new_email_already_used(self):
+        """
+        Test that the new email is not already associated with a user
+        """
+        data = {
+            'password': 'test',
+            'new_email1': 'test3@example.com',
+            'new_email2': 'test3@example.com',
+        }
+        form = ChangeUsernameEmailForm(self.user, data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('new_email2', form._errors)
+
+    def test_incorrect_password(self):
+        """
+        Test that the form is invalid if the password field doesn't match
+        the user's password.
+        """
+        data = {
+            'password': 'testwrong',
+            'new_email1': 'test2@example.com',
+            'new_email2': 'test2@example.com',
+        }
+        form = ChangeUsernameEmailForm(self.user, data)
+        self.assertFalse(form.is_valid())
+        self.assertIn('password', form._errors)
+
+    def test_form_valid(self):
+        data = {
+            'password': 'test',
+            'new_email1': 'test2@example.com',
+            'new_email2': 'test2@example.com',
+        }
+        form = ChangeUsernameEmailForm(self.user, data)
+        self.assertTrue(form.is_valid())
+
+    def test_save(self):
+        """
+        Test that the user object is updated when the form is saved.
+        """
+        data = {
+            'password': 'test',
+            'new_email1': 'test2@example.com',
+            'new_email2': 'test2@example.com',
+        }
+        form = ChangeUsernameEmailForm(self.user, data)
+        self.assertTrue(form.is_valid())
+        form.save()
+        user = User.objects.get(pk=self.user.pk)
+        self.assertEqual(user.email, data['new_email1'])
+        self.assertEqual(user.username, data['new_email1'])
+
+    def test_original_email_saved(self):
+        """
+        Test that the original email is saved in an attribute of the 
+        form after the form is saved.
+        """
+        old_email = self.user.email
+        data = {
+            'password': 'test',
+            'new_email1': 'test2@example.com',
+            'new_email2': 'test2@example.com',
+        }
+        form = ChangeUsernameEmailForm(self.user, data)
+        self.assertTrue(form.is_valid())
+        form.save()
+        self.assertEqual(form.previous_data['email'], old_email)
+
 
 class OrganizationModelTest(TestCase):
     def _create_organization(self, name, language):
