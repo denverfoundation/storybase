@@ -159,7 +159,8 @@ class Migration(SchemaMigration):
             'asset': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['storybase_asset.Asset']"}),
             'container': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['storybase_story.Container']", 'null': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'section': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['storybase_story.Section']"})
+            'section': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['storybase_story.Section']"}),
+            'weight': ('django.db.models.fields.IntegerField', [], {'default': '0'})
         },
         'storybase_story.sectionlayout': {
             'Meta': {'object_name': 'SectionLayout'},

@@ -557,6 +557,10 @@ class SectionAsset(models.Model, SectionAssetPermission):
     section = models.ForeignKey('Section')
     asset = models.ForeignKey('storybase_asset.Asset')
     container = models.ForeignKey('Container', null=True)
+    # This won't really get used moving forward, but needs to stay to
+    # support backward compatibility for the initial set of stories on
+    # staging during the development process.
+    weight = models.IntegerField(default=0)
 
 
 def add_section_asset_to_story(sender, instance, **kwargs):
