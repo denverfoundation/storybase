@@ -80,7 +80,10 @@ if 'south' in settings.INSTALLED_APPS:
     # We have to wait until the user profile model is created before
     # creating the initial superuser.  Otherwise, the post_save handler
     # that creates the profile fails
-    from south.signals import post_migrate
+    #from south.signals import post_migrate
     post_syncdb.disconnect(default_create_superuser, sender=auth_app,
             dispatch_uid = "django.contrib.auth.management.create_superuser")
-    post_migrate.connect(create_superuser)
+    # TODO: Figure out if there's a way to successfully connect this.
+    # Unfortunately, it's being called during unit tests, so I'm just 
+    # disabling the new user creation prompt altogether.
+    #post_migrate.connect(create_superuser)
