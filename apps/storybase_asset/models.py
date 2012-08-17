@@ -381,7 +381,7 @@ class HtmlAsset(Asset):
         output = []
         if self.title:
             output.append('<h3>%s</h3>' % (self.title))
-        if self.type in ('map', 'table'):
+        if self.type in ('image', 'map', 'table'):
             output.append('<figure>')
             output.append(self.body)
             full_caption_html = self.full_caption_html()
