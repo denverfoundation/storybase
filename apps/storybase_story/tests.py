@@ -13,7 +13,7 @@ from tastypie.test import ResourceTestCase
 
 from storybase.tests.base import SloppyComparisonTestMixin, FixedTestApiClient
 from storybase.utils import slugify
-from storybase_asset.models import (HtmlAsset, HtmlAssetTranslation,
+from storybase_asset.models import (Asset, HtmlAsset, HtmlAssetTranslation,
                                     create_html_asset)
 from storybase_geo.models import Location, GeoLevel, Place
 from storybase_help.models import create_help 
@@ -23,6 +23,7 @@ from storybase_story.forms import SectionRelationAdminForm
 from storybase_story.models import (Container, Story, StoryTranslation, 
     Section, SectionAsset, SectionLayout, SectionRelation, StoryTemplate,
     create_story, create_section)
+from storybase_story.templatetags.story import container
 from storybase_taxonomy.models import Category, create_category
 from storybase_user.models import (Organization, Project,
                                    create_organization, create_project)
@@ -405,6 +406,165 @@ class SectionModelTest(TestCase, SloppyComparisonTestMixin):
         sleep(2)
         section.save()
         self.assertNowish(story.last_edited)
+
+
+class TemplateTagTest(TestCase):
+    """Test case for custom template tags"""
+    fixtures = ['section_layouts.json']
+
+    def setUp(self):
+        title = ('Transportation Challenges Limit Education Choices for '
+                 'Denver Parents')
+        summary = """
+            Many families in the Denver metro area use public
+            transportation instead of a school bus because for them, a
+            quality education is worth hours of daily commuting. Colorado's
+            school choice program is meant to foster educational equity,
+            but the families who benefit most are those who have time and
+            money to travel. Low-income families are often left in a lurch.
+            """
+        byline = "Mile High Connects"
+        self.story = create_story(title=title, summary=summary,
+            byline=byline)
+        create_html_asset(type='text', title='Test Asset', 
+            body='Test content')
+        create_html_asset(type='text', title='Test Asset 2',
+            body='Test content 2')
+        create_html_asset(type='text', title='Test Asset 3',
+            body='Test content 3')
+        layout = SectionLayout.objects.get(
+                sectionlayouttranslation__name="Side by Side")
+        self.section = create_section(title="Test Section1", story=self.story,
+                layout=layout)
+
+    def test_container_no_assets(self):
+        """
+        Test that the container tag returns a placeholder when no 
+        assets are provided in the context 
+        """
+        context = {}
+        container_name = "left"
+        html = container(context, container_name)
+        self.assertIn("storybase-container-placeholder", html)
+        self.assertIn(container_name, html)
+
+    def test_container_empty_assets(self):
+        """
+        Test that the container tag returns a placeholder when no 
+        assets are associated with a section.
+
+        """
+        context = {
+            'assets': self.section.sectionasset_set.order_by('weight')
+        }
+        container_name = "left"
+        html = container(context, container_name)
+        self.assertIn("storybase-container-placeholder", html)
+        self.assertIn(container_name, html)
+
+    def test_container_no_asset_for_container(self):
+        """
+        Test that the container tag returns a placeholder when there
+        are no assets associated with a particular section container.
+        """
+        assets = Asset.objects.select_subclasses()
+        right = Container.objects.get(name='right')
+        SectionAsset.objects.create(section=self.section, asset=assets[0],
+            container=right)
+        # Refresh the section object to get new relations
+        self.section = Section.objects.get(pk=self.section.pk)
+        context = {
+            'assets': self.section.sectionasset_set.order_by('weight')
+        }
+        container_name = "left"
+        html = container(context, container_name)
+        self.assertIn("storybase-container-placeholder", html)
+        self.assertIn(container_name, html)
+
+    def test_container_with_assets(self):
+        """
+        Test that the container tag returns the asset's content when
+        there are assets associated with a particular section container
+        """
+        assets = Asset.objects.select_subclasses()
+        left = Container.objects.get(name='left')
+        right = Container.objects.get(name='right')
+        SectionAsset.objects.create(section=self.section, asset=assets[0],
+            container=left)
+        SectionAsset.objects.create(section=self.section, asset=assets[1],
+            container=right)
+        # Refresh the section object to get new relations
+        self.section = Section.objects.get(pk=self.section.pk)
+        context = {
+            'assets': self.section.sectionasset_set.order_by('weight')
+        }
+        html = container(context, "left")
+        self.assertEqual(html, assets[0].render_html())
+        html = container(context, "right")
+        self.assertEqual(html, assets[1].render_html())
+
+
+class SectionRenderTest(TestCase):
+    """Test Case for rendering section assets"""
+    fixtures = ['section_layouts.json']
+
+    def setUp(self):
+        title = ('Transportation Challenges Limit Education Choices for '
+                 'Denver Parents')
+        summary = """
+            Many families in the Denver metro area use public
+            transportation instead of a school bus because for them, a
+            quality education is worth hours of daily commuting. Colorado's
+            school choice program is meant to foster educational equity,
+            but the families who benefit most are those who have time and
+            money to travel. Low-income families are often left in a lurch.
+            """
+        byline = "Mile High Connects"
+        self.story = create_story(title=title, summary=summary,
+            byline=byline)
+        create_html_asset(type='text', title='Test Asset', 
+            body='Test content')
+        create_html_asset(type='text', title='Test Asset 2',
+            body='Test content 2')
+        create_html_asset(type='text', title='Test Asset 3',
+            body='Test content 3')
+
+    def test_render_html_side_by_side(self):
+        """Test rendering assets with the "Side by Side" layout"""
+        assets = Asset.objects.select_subclasses()
+        layout = SectionLayout.objects.get(
+                sectionlayouttranslation__name="Side by Side")
+        section = create_section(title="Test Section1", story=self.story,
+                layout=layout)
+        left = Container.objects.get(name='left')
+        right = Container.objects.get(name='right')
+        SectionAsset.objects.create(section=section, asset=assets[0], container=left)
+        SectionAsset.objects.create(section=section, asset=assets[1], container=right)
+        html = section.render_html()
+        self.assertIn('class="left"', html)
+        self.assertIn('class="right"', html)
+        self.assertIn(assets[0].title, html)
+        self.assertIn(assets[1].title, html)
+
+    def test_render_html_no_layout(self):
+        """
+        Test rendering a section when no section layout is specified and when
+        there are no containers associated with section assets.
+        
+        This is the case for stories created with the Django backend in early
+        versions of the software, when there wasn't the concept of 
+        layouts/containers, just weights.
+        """
+        assets = Asset.objects.select_subclasses()
+        # Create a section without specifying layout 
+        section = create_section(title="Test Section1", story=self.story)
+        # Associate assets with the section without specifying a container
+        SectionAsset.objects.create(section=section, asset=assets[0])
+        SectionAsset.objects.create(section=section, asset=assets[1])
+        html = section.render_html()
+        self.assertIn(assets[0].title, html)
+        self.assertIn(assets[1].title, html)
+                
 
 class SectionLayoutModelTest(TestCase):
     fixtures = ['section_layouts.json']

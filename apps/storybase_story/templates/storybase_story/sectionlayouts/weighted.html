@@ -1,0 +1,12 @@
+{% load story %}
+{% comment %}
+This template is the default section layout template used when a layout
+isn't explicitly specified. It assumes that the 
+{% endcomment %}
+<div class="section-layout weighted">
+    {% for asset in assets %}
+    <div class="weighted">
+    {% container asset %}
+    </div>
+    {% endfor %}
+</div>

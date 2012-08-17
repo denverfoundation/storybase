@@ -490,16 +490,18 @@ class Section(node_factory('SectionRelation'), TranslatedModel, SectionPermissio
 
     def render_html(self):
         """Render a HTML representation of the section structure"""
+        default_template = "storybase_story/sectionlayouts/weighted.html"
+        assets = self.sectionasset_set.order_by('weight')
         output = []
         context = {
-            'asset_content': {}
+            'assets': assets,
         }
         output.append("<h2 class='title'>%s</h2>" % self.title)
-        template_filename = self.layout.get_template_filename()
-        for asset in self.assets.select_subclasses():
-            section_asset = asset.sectionasset_set.get(section=self)
-            context['asset_content'][section_asset.container.name] = asset.render_html()
-
+        # If there isn't a layout specified, default to the one that just
+        # orders the section's assets by their weight.
+        template_filename = (self.layout.get_template_filename()
+            if self.layout is not None else default_template)
+                
         output.append(render_to_string(template_filename, context))
         return mark_safe(u'\n'.join(output))
 
