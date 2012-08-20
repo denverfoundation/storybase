@@ -1,450 +1,542 @@
 [
     {
-        "fields": {
-            "description": "Create a quick, simple story by adding context to a picture", 
-            "language": "en", 
-            "story_template": 1, 
-            "tag_line": "worth a thousand words",
-            "title": "PhotoVoice", 
-            "translation_id": "d14d071a80834addb2b48156ac6d5d77"
-        }, 
-        "model": "storybase_story.storytemplatetranslation", 
-        "pk": 1
-    }, 
-    {
-        "fields": {
-            "story": 1, 
-            "template_id": "eda79b901fd543debb9fa1a757f1d2de", 
-            "time_needed": "5 minutes"
-        }, 
-        "model": "storybase_story.storytemplate", 
-        "pk": 1
-    }, 
-    {
-        "fields": {
-            "call_to_action": "", 
-            "language": "en", 
-            "story": 1, 
-            "summary": "", 
-            "title": "PhotoVoice Story", 
-            "translation_id": "082e7631a02c4d3e85ae9e1486e43e19"
-        }, 
-        "model": "storybase_story.storytranslation", 
-        "pk": 1
-    }, 
-    {
-        "fields": {
-            "assets": [], 
-            "author": 1, 
-            "byline": "Byline goes here", 
-            "contact_info": "", 
-            "created": "2012-07-07 16:15:44", 
-            "featured_assets": [], 
-            "last_edited": "2012-07-07 16:20:51", 
-            "license": "CC BY-NC-SA", 
-            "locations": [], 
-            "is_template": true,
-            "on_homepage": false, 
-            "organizations": [], 
-            "places": [], 
-            "projects": [], 
-            "published": "2012-07-07 16:15:44", 
-            "slug": "photovoice-story", 
-            "status": "published", 
-            "story_id": "357c5885c4e844cb8a4cd4eebe912a1c", 
-            "structure_type": "linear", 
-            "topics": []
-        }, 
-        "model": "storybase_story.story", 
-        "pk": 1
-    }, 
-    {
-        "fields": {
-            "language": "en", 
-            "section": 1, 
-            "title": "Image and Text", 
-            "translation_id": "3c01df21d5ab4755a14e40bd59eb9c8f"
-        }, 
-        "model": "storybase_story.sectiontranslation", 
-        "pk": 1
-    }, 
-    {
-        "fields": {
-            "layout": 1,
-            "root": true, 
-            "section_id": "4dc57c4bc7a44d97bd5d0ed4861b1401", 
-            "story": 1, 
-            "weight": 1,
-            "help": 1
-        }, 
-        "model": "storybase_story.section", 
-        "pk": 1
-    }, 
-    {
-        "fields": {
-            "body": "Sample help text for the Image and Text section.", 
-            "help": 1, 
-            "language": "en", 
-            "title": "Image and Text", 
-            "translation_id": "dc13df604a4c4c54a13cef1f0c67519e"
-        }, 
-        "model": "storybase_help.helptranslation", 
-        "pk": 1
-    }, 
-    {
+        "pk": null, 
+        "model": "storybase_help.help", 
         "fields": {
             "help_id": "e296af8d957e423091759a3cd067c68c", 
             "slug": ""
-        }, 
+        }
+    }, 
+    {
+        "pk": null, 
         "model": "storybase_help.help", 
-        "pk": 1
-    },
-
-    {
-        "fields": {
-            "description": "Explain a complex issue simply", 
-            "language": "en", 
-            "story_template": 2, 
-            "tag_line": "it doesn't have to be so complicated",
-            "title": "Explainer", 
-            "translation_id": "fae567631cfe4e1d8310fd0841f7c18a"
-        }, 
-        "model": "storybase_story.storytemplatetranslation", 
-        "pk": 2
-    }, 
-    {
-        "fields": {
-            "story": 2, 
-            "template_id": "5586de9ad3674c7e926ca4f4f04da27b", 
-            "time_needed": "30 minutes"
-        }, 
-        "model": "storybase_story.storytemplate", 
-        "pk": 2
-    },
-    {
-        "fields": {
-            "call_to_action": "", 
-            "language": "en", 
-            "story": 2, 
-            "summary": "", 
-            "title": "Explainer Story", 
-            "translation_id": "5d563836ba0f4d409734ad9d737bb28c"
-        }, 
-        "model": "storybase_story.storytranslation", 
-        "pk": 2
-    }, 
-    {
-        "fields": {
-            "assets": [], 
-            "author": 1, 
-            "byline": "Your name here", 
-            "contact_info": "", 
-            "created": "2012-07-23 11:40:56", 
-            "featured_assets": [], 
-            "is_template": true, 
-            "last_edited": "2012-07-23 11:58:44", 
-            "license": "CC BY-NC-SA", 
-            "locations": [], 
-            "on_homepage": false, 
-            "organizations": [], 
-            "places": [], 
-            "projects": [], 
-            "published": "2012-07-23 11:46:10", 
-            "slug": "explainer-story", 
-            "status": "published", 
-            "story_id": "0b2b9e3f38e3422ea3899ee66d1e334b", 
-            "structure_type": "linear", 
-            "topics": []
-        }, 
-        "model": "storybase_story.story", 
-        "pk": 2
-    }, 
-    {
-        "fields": {
-            "language": "en", 
-            "section": 2, 
-            "title": "Introduction", 
-            "translation_id": "34bfc2ace01a4ebeab16bb1700c8e72a"
-        }, 
-        "model": "storybase_story.sectiontranslation", 
-        "pk": 2
-    }, 
-    {
-        "fields": {
-            "help": 4, 
-            "layout": 1, 
-            "root": true, 
-            "section_id": "9cd532d3f93c4ba59fb93694dbaf7b04", 
-            "story": 2, 
-            "weight": 1
-        }, 
-        "model": "storybase_story.section", 
-        "pk": 2
-    }, 
-    {
-        "fields": {
-            "body": "<p>Your introduction gives a general overview of the topic and summarizes what your can expect from this story, including what he or she will learn and what sections will follow.</p>\r\n<p>It could include:</p>\r\n<ul>\r\n<li>a picture or visual asset</li>\r\n<li>a paragraph describing the system and the sections in this story (like an abstract or outline)</li>\r\n</ul>", 
-            "help": 4, 
-            "language": "en", 
-            "title": "Introduction", 
-            "translation_id": "25e6357df2c54bb0a4f5f4503a382aee"
-        }, 
-        "model": "storybase_help.helptranslation", 
-        "pk": 4
-    }, 
-    {
         "fields": {
             "help_id": "aa734ce35077482c946b5821470b6da1", 
             "slug": ""
-        }, 
+        }
+    }, 
+    {
+        "pk": null, 
         "model": "storybase_help.help", 
-        "pk": 4
-    }, 
-    {
-        "fields": {
-            "language": "en", 
-            "section": 3,
-            "title": "Definition", 
-            "translation_id": "dbe5a47f12ad4cbb8e4e6bdca48dcb87"
-        }, 
-        "model": "storybase_story.sectiontranslation", 
-        "pk": 3
-    }, 
-    {
-        "fields": {
-            "help": 5, 
-            "layout": 2, 
-            "root": true, 
-            "section_id": "28f1ed62877c42cb9cc6ad317b410ae8", 
-            "story": 2, 
-            "weight": 2
-        }, 
-        "model": "storybase_story.section", 
-        "pk": 3
-    }, 
-    {
-        "fields": {
-            "body": "<p>Don&rsquo;t forget to define what it is you are trying to explain. Before you answer &ldquo;how does it work?&rdquo; you need to answer &ldquo;what is it?&rdquo; This is a simple step, but one that many people overlook.</p>\r\n<p>It could include:</p>\r\n<ul>\r\n<li>a two to three sentence definition of your system</li>\r\n<li>a diagram (sketch, chart, etc.)</li>\r\n</ul>", 
-            "help": 5, 
-            "language": "en", 
-            "title": "Definition", 
-            "translation_id": "14014d79bdeb44999eb16c58fe48f519"
-        }, 
-        "model": "storybase_help.helptranslation", 
-        "pk": 5
-    }, 
-    {
         "fields": {
             "help_id": "c3c74143479d4f968b88664d86e074ff", 
             "slug": ""
-        }, 
+        }
+    }, 
+    {
+        "pk": null, 
         "model": "storybase_help.help", 
-        "pk": 5
-    }, 
-    {
-        "fields": {
-            "language": "en", 
-            "section": 4, 
-            "title": "Element 1", 
-            "translation_id": "10676c3f14d54917b129323e3f1ae97a"
-        }, 
-        "model": "storybase_story.sectiontranslation", 
-        "pk": 4
-    }, 
-    {
-        "fields": {
-            "help": 6, 
-            "layout": 2, 
-            "root": true, 
-            "section_id": "72a8215649054734a0d316063e69eb5a", 
-            "story": 2, 
-            "weight": 3
-        }, 
-        "model": "storybase_story.section", 
-        "pk": 4
-    }, 
-    {
-        "fields": {
-            "body": "<p>Break down your system into simpler parts or sub-components and describe how each part works in its own section. These could be a series of frequently asked questions, a list of programs, or a step-by-step guide to completing a task.</p>\r\n<p>Shoot for two to six sections. Try to use a variety of content. You could use:</p>\r\n<ul>\r\n<li>visual assets (a photo or diagram)</li>\r\n<li>data assets (a graph, chart or table)</li>\r\n<li>geo assets (a map)</li>\r\n<li>audio or video assets (video or audio recording)</li>\r\n</ul>\r\n<p>Some tips:</p>\r\n<ul>\r\n<li>Sections work best if you only have one or two points of visual focus. </li>\r\n<li>Combine text and visual elements. If you use a picture, include a caption. If you use a graph, describe the most interesting piece of information the graph reveals. </li>\r\n<li>Don&rsquo;t try to squeeze too much into any one section &ndash; if it barely fits, break it up into two.</li>\r\n</ul>", 
-            "help": 6, 
-            "language": "en", 
-            "title": "Elements", 
-            "translation_id": "b70f1ae43e8c4f2da2019b1bf46d0edb"
-        }, 
-        "model": "storybase_help.helptranslation", 
-        "pk": 6
-    }, 
-    {
         "fields": {
             "help_id": "13272f58fd164e59bf7bc7c3c8b8397d", 
             "slug": ""
-        }, 
+        }
+    }, 
+    {
+        "pk": null, 
         "model": "storybase_help.help", 
-        "pk": 6
-    },
-    {
-        "fields": {
-            "language": "en", 
-            "section": 5, 
-            "title": "Element 2", 
-            "translation_id": "9ba44076b0c947c6b027b66fa52d08c3"
-        }, 
-        "model": "storybase_story.sectiontranslation", 
-        "pk": 5
-    }, 
-    {
-        "fields": {
-            "help": 6, 
-            "layout": 2, 
-            "root": true, 
-            "section_id": "97ffc13f50bc4a6b9f52b5895355b75e", 
-            "story": 2, 
-            "weight": 4
-        }, 
-        "model": "storybase_story.section", 
-        "pk": 5
-    }, 
-    {
-        "fields": {
-            "language": "en", 
-            "section": 6, 
-            "title": "Element 3", 
-            "translation_id": "f8dfcc492f3d49adb202ee0e0700f4af"
-        }, 
-        "model": "storybase_story.sectiontranslation", 
-        "pk": 6
-    }, 
-    {
-        "fields": {
-            "help": 6, 
-            "layout": 2, 
-            "root": true, 
-            "section_id": "9a8125bf78b04ef6b7de22eb0576011b", 
-            "story": 2, 
-            "weight": 5
-        }, 
-        "model": "storybase_story.section", 
-        "pk": 6
-    }, 
-    {
-        "fields": {
-            "language": "en", 
-            "section": 7, 
-            "title": "Element 4", 
-            "translation_id": "e8947585d5c14e2c9fba8fd26cc892f2"
-        }, 
-        "model": "storybase_story.sectiontranslation", 
-        "pk": 7
-    }, 
-    {
-        "fields": {
-            "help": 6, 
-            "layout": 2, 
-            "root": true, 
-            "section_id": "78313edffa8343b3b1cfa96d6de94557", 
-            "story": 2, 
-            "weight": 6
-        }, 
-        "model": "storybase_story.section", 
-        "pk": 7
-    }, 
-    {
-        "fields": {
-            "language": "en", 
-            "section": 8, 
-            "title": "Synthesis", 
-            "translation_id": "f7582f67ff7d403f9f5b741dc03683b4"
-        }, 
-        "model": "storybase_story.sectiontranslation", 
-        "pk": 8
-    }, 
-    {
-        "fields": {
-            "help": 7, 
-            "layout": 2, 
-            "root": true, 
-            "section_id": "72b60c39caee4d9293b29fa574deb361", 
-            "story": 2, 
-            "weight": 7
-        }, 
-        "model": "storybase_story.section", 
-        "pk": 8
-    },
-    {
-        "fields": {
-            "body": "<p>This is where you put the pieces back together. This section summarizes the information you&rsquo;ve presented so far and explains how it relates to your reader. Give your reader some takeaway points/conclusions.</p>\r\n<p>It could include:</p>\r\n<ul>\r\n<li>&nbsp;three main takeaway points (one sentence each)</li>\r\n</ul>", 
-            "help": 7, 
-            "language": "en", 
-            "title": "Synthesis", 
-            "translation_id": "d3955d97169b404191bf1d2a2fb33596"
-        }, 
-        "model": "storybase_help.helptranslation", 
-        "pk": 7
-    }, 
-    {
         "fields": {
             "help_id": "5ca21eeea12b4a66b31b709d81e7a93e", 
             "slug": ""
-        }, 
+        }
+    }, 
+    {
+        "pk": null, 
         "model": "storybase_help.help", 
-        "pk": 7
-    }, 
-
-    {
-        "fields": {
-            "body": "<h4 id=\"internal-source-marker_0.08408055606238196\" dir=\"ltr\">Title</h4>\r\n<p dir=\"ltr\">A good title should be concise, clear, informative or intriguing.</p>\r\n<p dir=\"ltr\">For example, <em>Colorado School Choice Guide: Finding the Best Education for Your Child</em></p>\r\n<h4 dir=\"ltr\">Summary </h4>\r\n<p dir=\"ltr\">Describe your story in a single sentence as if you were casually explaining it to a friend or relative. Make sure to include what your reader will be learning about and why they should care.</p>\r\n<p dir=\"ltr\">For example:</p>\r\n<p style=\"padding-left: 30px;\" dir=\"ltr\">In Colorado, your child can choose which public school to attend regardless of where you live, so this guide teaches you how to find the best fit.</p>", 
-            "help": 2, 
-            "language": "en", 
-            "title": "Story Information", 
-            "translation_id": "8c1c3baaaed74985b2affb521490efbf"
-        }, 
-        "model": "storybase_help.helptranslation", 
-        "pk": 2
-    }, 
-    {
         "fields": {
             "help_id": "55ec8540d8404ddb9e0d40e7c25333f9", 
             "slug": "story-information"
-        }, 
+        }
+    }, 
+    {
+        "pk": null, 
         "model": "storybase_help.help", 
-        "pk": 2
-    }, 
-    {
-        "fields": {
-            "body": "This section tells your reader how to follow up on this topic: where to find more information, how to contribute to the story, and what community actions to take. <br /><br />It could include:<br />\r\n<ul>\r\n<li>links to more information</li>\r\n<li>events to attend</li>\r\n<li>local organizations to connect with</li>\r\n<li>a way to contribute reader content</li>\r\n</ul>", 
-            "help": 3, 
-            "language": "en", 
-            "title": "Call to Action", 
-            "translation_id": "49fcebdadad3465f9b4b0bbfa78a4bed"
-        }, 
-        "model": "storybase_help.helptranslation", 
-        "pk": 3
-    }, 
-    {
         "fields": {
             "help_id": "65410f3d93dd4745869721f7424ef734", 
             "slug": "call-to-action"
-        }, 
-        "model": "storybase_help.help", 
-        "pk": 3
-    },
-    {
-        "fields": {
-            "body": "<span id=\"internal-source-marker_0.34632859225539114\" style=\"font-size: 15px; font-family: Arial; color: #000000; background-color: transparent; font-weight: normal; font-variant: normal; text-decoration: none; vertical-align: baseline;\">Change the layout of this section with the menu in the top right</span>", 
-            "help": 8, 
-            "language": "en", 
-            "title": "New Section", 
-            "translation_id": "20868b27ce0c4de6b3817f6bf8bd1e6a"
-        }, 
-        "model": "storybase_help.helptranslation", 
-        "pk": 8
+        }
     }, 
     {
+        "pk": null, 
+        "model": "storybase_help.help", 
         "fields": {
             "help_id": "e131457a52c54c1ea787018015dd10a5", 
             "slug": "new-section"
-        }, 
-        "model": "storybase_help.help", 
-        "pk": 8
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_help.helptranslation", 
+        "fields": {
+            "body": "Sample help text for the Image and Text section.", 
+            "title": "Image and Text", 
+            "translation_id": "dc13df604a4c4c54a13cef1f0c67519e", 
+            "language": "en", 
+            "help": [
+                "e296af8d957e423091759a3cd067c68c"
+            ]
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_help.helptranslation", 
+        "fields": {
+            "body": "<p>Your introduction gives a general overview of the topic and summarizes what your can expect from this story, including what he or she will learn and what sections will follow.</p>\r\n<p>It could include:</p>\r\n<ul>\r\n<li>a picture or visual asset</li>\r\n<li>a paragraph describing the system and the sections in this story (like an abstract or outline)</li>\r\n</ul>", 
+            "title": "Introduction", 
+            "translation_id": "25e6357df2c54bb0a4f5f4503a382aee", 
+            "language": "en", 
+            "help": [
+                "aa734ce35077482c946b5821470b6da1"
+            ]
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_help.helptranslation", 
+        "fields": {
+            "body": "<p>Don&rsquo;t forget to define what it is you are trying to explain. Before you answer &ldquo;how does it work?&rdquo; you need to answer &ldquo;what is it?&rdquo; This is a simple step, but one that many people overlook.</p>\r\n<p>It could include:</p>\r\n<ul>\r\n<li>a two to three sentence definition of your system</li>\r\n<li>a diagram (sketch, chart, etc.)</li>\r\n</ul>", 
+            "title": "Definition", 
+            "translation_id": "14014d79bdeb44999eb16c58fe48f519", 
+            "language": "en", 
+            "help": [
+                "c3c74143479d4f968b88664d86e074ff"
+            ]
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_help.helptranslation", 
+        "fields": {
+            "body": "<p>Break down your system into simpler parts or sub-components and describe how each part works in its own section. These could be a series of frequently asked questions, a list of programs, or a step-by-step guide to completing a task.</p>\r\n<p>Shoot for two to six sections. Try to use a variety of content. You could use:</p>\r\n<ul>\r\n<li>visual assets (a photo or diagram)</li>\r\n<li>data assets (a graph, chart or table)</li>\r\n<li>geo assets (a map)</li>\r\n<li>audio or video assets (video or audio recording)</li>\r\n</ul>\r\n<p>Some tips:</p>\r\n<ul>\r\n<li>Sections work best if you only have one or two points of visual focus. </li>\r\n<li>Combine text and visual elements. If you use a picture, include a caption. If you use a graph, describe the most interesting piece of information the graph reveals. </li>\r\n<li>Don&rsquo;t try to squeeze too much into any one section &ndash; if it barely fits, break it up into two.</li>\r\n</ul>", 
+            "title": "Elements", 
+            "translation_id": "b70f1ae43e8c4f2da2019b1bf46d0edb", 
+            "language": "en", 
+            "help": [
+                "13272f58fd164e59bf7bc7c3c8b8397d"
+            ]
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_help.helptranslation", 
+        "fields": {
+            "body": "<p>This is where you put the pieces back together. This section summarizes the information you&rsquo;ve presented so far and explains how it relates to your reader. Give your reader some takeaway points/conclusions.</p>\r\n<p>It could include:</p>\r\n<ul>\r\n<li>&nbsp;three main takeaway points (one sentence each)</li>\r\n</ul>", 
+            "title": "Synthesis", 
+            "translation_id": "d3955d97169b404191bf1d2a2fb33596", 
+            "language": "en", 
+            "help": [
+                "5ca21eeea12b4a66b31b709d81e7a93e"
+            ]
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_help.helptranslation", 
+        "fields": {
+            "body": "<h4 id=\"internal-source-marker_0.08408055606238196\" dir=\"ltr\">Title</h4>\r\n<p dir=\"ltr\">A good title should be concise, clear, informative or intriguing.</p>\r\n<p dir=\"ltr\">For example, <em>Colorado School Choice Guide: Finding the Best Education for Your Child</em></p>\r\n<h4 dir=\"ltr\">Summary </h4>\r\n<p dir=\"ltr\">Describe your story in a single sentence as if you were casually explaining it to a friend or relative. Make sure to include what your reader will be learning about and why they should care.</p>\r\n<p dir=\"ltr\">For example:</p>\r\n<p style=\"padding-left: 30px;\" dir=\"ltr\">In Colorado, your child can choose which public school to attend regardless of where you live, so this guide teaches you how to find the best fit.</p>", 
+            "title": "Story Information", 
+            "translation_id": "8c1c3baaaed74985b2affb521490efbf", 
+            "language": "en", 
+            "help": [
+                "55ec8540d8404ddb9e0d40e7c25333f9"
+            ]
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_help.helptranslation", 
+        "fields": {
+            "body": "This section tells your reader how to follow up on this topic: where to find more information, how to contribute to the story, and what community actions to take. <br /><br />It could include:<br />\r\n<ul>\r\n<li>links to more information</li>\r\n<li>events to attend</li>\r\n<li>local organizations to connect with</li>\r\n<li>a way to contribute reader content</li>\r\n</ul>", 
+            "title": "Call to Action", 
+            "translation_id": "49fcebdadad3465f9b4b0bbfa78a4bed", 
+            "language": "en", 
+            "help": [
+                "65410f3d93dd4745869721f7424ef734"
+            ]
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_help.helptranslation", 
+        "fields": {
+            "body": "<span id=\"internal-source-marker_0.34632859225539114\" style=\"font-size: 15px; font-family: Arial; color: #000000; background-color: transparent; font-weight: normal; font-variant: normal; text-decoration: none; vertical-align: baseline;\">Change the layout of this section with the menu in the top right</span>", 
+            "title": "New Section", 
+            "translation_id": "20868b27ce0c4de6b3817f6bf8bd1e6a", 
+            "language": "en", 
+            "help": [
+                "e131457a52c54c1ea787018015dd10a5"
+            ]
+        }
+    },
+    {
+        "pk": null, 
+        "model": "storybase_story.story", 
+        "fields": {
+            "status": "published", 
+            "organizations": [], 
+            "byline": "Byline goes here", 
+            "assets": [], 
+            "license": "CC BY-NC-SA", 
+            "created": "2012-07-07 16:15:44", 
+            "story_id": "357c5885c4e844cb8a4cd4eebe912a1c", 
+            "topics": [], 
+            "author": 1, 
+            "locations": [], 
+            "on_homepage": false, 
+            "is_template": true, 
+            "datasets": [], 
+            "structure_type": "linear", 
+            "places": [], 
+            "published": "2012-08-20 09:51:32", 
+            "contact_info": "", 
+            "last_edited": "2012-08-20 09:51:32", 
+            "slug": "photovoice-story", 
+            "projects": [], 
+            "featured_assets": []
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_story.story", 
+        "fields": {
+            "status": "published", 
+            "organizations": [], 
+            "byline": "Your name here", 
+            "assets": [], 
+            "license": "CC BY-NC-SA", 
+            "created": "2012-07-23 11:40:56", 
+            "story_id": "0b2b9e3f38e3422ea3899ee66d1e334b", 
+            "topics": [], 
+            "author": 1, 
+            "locations": [], 
+            "on_homepage": false, 
+            "is_template": true, 
+            "datasets": [], 
+            "structure_type": "linear", 
+            "places": [], 
+            "published": "2012-08-20 09:51:32", 
+            "contact_info": "", 
+            "last_edited": "2012-08-20 09:51:33", 
+            "slug": "explainer-story", 
+            "projects": [], 
+            "featured_assets": []
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_story.storytemplate", 
+        "fields": {
+            "story": [
+                "357c5885c4e844cb8a4cd4eebe912a1c"
+            ], 
+            "template_id": "eda79b901fd543debb9fa1a757f1d2de", 
+            "time_needed": "5 minutes"
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_story.storytemplate", 
+        "fields": {
+            "story": [
+                "0b2b9e3f38e3422ea3899ee66d1e334b"
+            ], 
+            "template_id": "5586de9ad3674c7e926ca4f4f04da27b", 
+            "time_needed": "30 minutes"
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_story.storytemplatetranslation", 
+        "fields": {
+            "description": "Create a quick, simple story by adding context to a picture", 
+            "language": "en", 
+            "title": "PhotoVoice", 
+            "translation_id": "d14d071a80834addb2b48156ac6d5d77", 
+            "story_template": [
+                "eda79b901fd543debb9fa1a757f1d2de"
+            ], 
+            "tag_line": "worth a thousand words"
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_story.storytemplatetranslation", 
+        "fields": {
+            "description": "Explain a complex issue simply", 
+            "language": "en", 
+            "title": "Explainer", 
+            "translation_id": "fae567631cfe4e1d8310fd0841f7c18a", 
+            "story_template": [
+                "5586de9ad3674c7e926ca4f4f04da27b"
+            ], 
+            "tag_line": "it doesn't have to be so complicated"
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_story.section", 
+        "fields": {
+            "story": [
+                "357c5885c4e844cb8a4cd4eebe912a1c"
+            ], 
+            "layout": [
+                "26c81c9dd24c4aecab7ab4eb1cc9e2fb"
+            ], 
+            "help": [
+                "e296af8d957e423091759a3cd067c68c"
+            ], 
+            "weight": 1, 
+            "section_id": "4dc57c4bc7a44d97bd5d0ed4861b1401", 
+            "root": true
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_story.section", 
+        "fields": {
+            "story": [
+                "0b2b9e3f38e3422ea3899ee66d1e334b"
+            ], 
+            "layout": [
+                "26c81c9dd24c4aecab7ab4eb1cc9e2fb"
+            ], 
+            "help": [
+                "aa734ce35077482c946b5821470b6da1"
+            ], 
+            "weight": 1, 
+            "section_id": "9cd532d3f93c4ba59fb93694dbaf7b04", 
+            "root": true
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_story.section", 
+        "fields": {
+            "story": [
+                "0b2b9e3f38e3422ea3899ee66d1e334b"
+            ], 
+            "layout": [
+                "ccaea5bac5c7467eb014baf6f7476ccb"
+            ], 
+            "help": [
+                "c3c74143479d4f968b88664d86e074ff"
+            ], 
+            "weight": 2, 
+            "section_id": "28f1ed62877c42cb9cc6ad317b410ae8", 
+            "root": true
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_story.section", 
+        "fields": {
+            "story": [
+                "0b2b9e3f38e3422ea3899ee66d1e334b"
+            ], 
+            "layout": [
+                "ccaea5bac5c7467eb014baf6f7476ccb"
+            ], 
+            "help": [
+                "13272f58fd164e59bf7bc7c3c8b8397d"
+            ], 
+            "weight": 3, 
+            "section_id": "72a8215649054734a0d316063e69eb5a", 
+            "root": true
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_story.section", 
+        "fields": {
+            "story": [
+                "0b2b9e3f38e3422ea3899ee66d1e334b"
+            ], 
+            "layout": [
+                "ccaea5bac5c7467eb014baf6f7476ccb"
+            ], 
+            "help": [
+                "13272f58fd164e59bf7bc7c3c8b8397d"
+            ], 
+            "weight": 4, 
+            "section_id": "97ffc13f50bc4a6b9f52b5895355b75e", 
+            "root": true
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_story.section", 
+        "fields": {
+            "story": [
+                "0b2b9e3f38e3422ea3899ee66d1e334b"
+            ], 
+            "layout": [
+                "ccaea5bac5c7467eb014baf6f7476ccb"
+            ], 
+            "help": [
+                "13272f58fd164e59bf7bc7c3c8b8397d"
+            ], 
+            "weight": 5, 
+            "section_id": "9a8125bf78b04ef6b7de22eb0576011b", 
+            "root": true
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_story.section", 
+        "fields": {
+            "story": [
+                "0b2b9e3f38e3422ea3899ee66d1e334b"
+            ], 
+            "layout": [
+                "ccaea5bac5c7467eb014baf6f7476ccb"
+            ], 
+            "help": [
+                "13272f58fd164e59bf7bc7c3c8b8397d"
+            ], 
+            "weight": 6, 
+            "section_id": "78313edffa8343b3b1cfa96d6de94557", 
+            "root": true
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_story.section", 
+        "fields": {
+            "story": [
+                "0b2b9e3f38e3422ea3899ee66d1e334b"
+            ], 
+            "layout": [
+                "ccaea5bac5c7467eb014baf6f7476ccb"
+            ], 
+            "help": [
+                "5ca21eeea12b4a66b31b709d81e7a93e"
+            ], 
+            "weight": 7, 
+            "section_id": "72b60c39caee4d9293b29fa574deb361", 
+            "root": true
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_story.sectiontranslation", 
+        "fields": {
+            "section": [
+                "4dc57c4bc7a44d97bd5d0ed4861b1401"
+            ], 
+            "translation_id": "3c01df21d5ab4755a14e40bd59eb9c8f", 
+            "language": "en", 
+            "title": "Image and Text"
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_story.sectiontranslation", 
+        "fields": {
+            "section": [
+                "9cd532d3f93c4ba59fb93694dbaf7b04"
+            ], 
+            "translation_id": "34bfc2ace01a4ebeab16bb1700c8e72a", 
+            "language": "en", 
+            "title": "Introduction"
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_story.sectiontranslation", 
+        "fields": {
+            "section": [
+                "28f1ed62877c42cb9cc6ad317b410ae8"
+            ], 
+            "translation_id": "dbe5a47f12ad4cbb8e4e6bdca48dcb87", 
+            "language": "en", 
+            "title": "Definition"
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_story.sectiontranslation", 
+        "fields": {
+            "section": [
+                "72a8215649054734a0d316063e69eb5a"
+            ], 
+            "translation_id": "10676c3f14d54917b129323e3f1ae97a", 
+            "language": "en", 
+            "title": "Element 1"
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_story.sectiontranslation", 
+        "fields": {
+            "section": [
+                "97ffc13f50bc4a6b9f52b5895355b75e"
+            ], 
+            "translation_id": "9ba44076b0c947c6b027b66fa52d08c3", 
+            "language": "en", 
+            "title": "Element 2"
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_story.sectiontranslation", 
+        "fields": {
+            "section": [
+                "9a8125bf78b04ef6b7de22eb0576011b"
+            ], 
+            "translation_id": "f8dfcc492f3d49adb202ee0e0700f4af", 
+            "language": "en", 
+            "title": "Element 3"
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_story.sectiontranslation", 
+        "fields": {
+            "section": [
+                "78313edffa8343b3b1cfa96d6de94557"
+            ], 
+            "translation_id": "e8947585d5c14e2c9fba8fd26cc892f2", 
+            "language": "en", 
+            "title": "Element 4"
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_story.sectiontranslation", 
+        "fields": {
+            "section": [
+                "72b60c39caee4d9293b29fa574deb361"
+            ], 
+            "translation_id": "f7582f67ff7d403f9f5b741dc03683b4", 
+            "language": "en", 
+            "title": "Synthesis"
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_story.storytranslation", 
+        "fields": {
+            "story": [
+                "357c5885c4e844cb8a4cd4eebe912a1c"
+            ], 
+            "language": "en", 
+            "call_to_action": "", 
+            "title": "PhotoVoice Story", 
+            "translation_id": "082e7631a02c4d3e85ae9e1486e43e19", 
+            "summary": ""
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_story.storytranslation", 
+        "fields": {
+            "story": [
+                "0b2b9e3f38e3422ea3899ee66d1e334b"
+            ], 
+            "language": "en", 
+            "call_to_action": "", 
+            "title": "Explainer Story", 
+            "translation_id": "5d563836ba0f4d409734ad9d737bb28c", 
+            "summary": ""
+        }
     }
 ]

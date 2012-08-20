@@ -27,7 +27,8 @@ from storybase_asset.models import Asset, DataSet
 from storybase_help.models import Help
 from storybase_user.models import Organization, Project
 from storybase_story import structure
-from storybase_story.managers import StoryManager
+from storybase_story.managers import (ContainerManager, SectionLayoutManager,
+    SectionManager, StoryManager, StoryTemplateManager)
 from storybase_taxonomy.models import TaggedItem
 
 
@@ -321,6 +322,8 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
 
         return points
 
+    def natural_key(self):
+        return (self.story_id,)
 
 
 def set_story_slug(sender, instance, **kwargs):
@@ -398,7 +401,8 @@ class SectionTranslation(TranslationModel):
         return self.title
 
 
-class Section(node_factory('SectionRelation'), TranslatedModel, SectionPermission):
+class Section(node_factory('SectionRelation'), TranslatedModel, 
+              SectionPermission):
     """ Section of a story """
     section_id = UUIDField(auto=True)
     story = models.ForeignKey('Story', related_name='sections')
@@ -412,6 +416,8 @@ class Section(node_factory('SectionRelation'), TranslatedModel, SectionPermissio
     """The ordering of top-level sections relative to each other"""
     assets = models.ManyToManyField(Asset, related_name='sections',
                                     blank=True, through='SectionAsset')
+
+    objects = SectionManager()
 
     translated_fields = ['title']
     translation_set = 'sectiontranslation_set'
@@ -521,6 +527,9 @@ class Section(node_factory('SectionRelation'), TranslatedModel, SectionPermissio
     change_link.short_description = 'Change' 
     change_link.allow_tags = True
 
+    def natural_key(self):
+        return (self.section_id,)
+    natural_key.dependencies = ['storybase_help.help', 'storybase_story.story']
 
 
 class SectionRelation(edge_factory(Section, concrete=False)):
@@ -621,6 +630,8 @@ class StoryTemplate(TranslatedModel):
     time_needed = models.CharField(max_length=140, choices=TIME_NEEDED_CHOICES,
                                    blank=True)
 
+    objects = StoryTemplateManager()
+
     # Class attributes to handle translation
     translated_fields = ['title', 'description', 'tag_line']
     translation_set = 'storytemplatetranslation_set'
@@ -628,6 +639,9 @@ class StoryTemplate(TranslatedModel):
 
     def __unicode__(self):
         return self.title
+
+    def natural_key(self):
+        return (self.template_id,)
 
 
 class SectionLayoutTranslation(TranslationModel):
@@ -648,10 +662,13 @@ class SectionLayout(TranslatedModel):
     containers = models.ManyToManyField('Container', related_name='layouts',
                                         blank=True)
 
+    objects = SectionLayoutManager()
+
     # Class attributes to handle translation
     translated_fields = ['name']
     translation_set = 'sectionlayouttranslation_set'
     translation_class = SectionLayoutTranslation
+
 
     def __unicode__(self):
         return self.name
@@ -663,6 +680,9 @@ class SectionLayout(TranslatedModel):
         template_filename = self.get_template_filename() 
         return render_to_string(template_filename)
 
+    def natural_key(self):
+        return (self.layout_id,)
+
 
 class Container(models.Model):
     """
@@ -670,8 +690,13 @@ class Container(models.Model):
     """
     name = models.SlugField(unique=True)
 
+    objects = ContainerManager()
+
     def __unicode__(self):
         return self.name
+
+    def natural_key(self):
+        return (self.name,)
     
 
 # Internal API functions for creating model instances in a way that
