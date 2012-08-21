@@ -116,6 +116,42 @@ describe('SectionEditView view', function() {
   });
 });
 
+describe('BuilderView view', function() {
+  beforeEach(function() {
+    this.dispatcher = _.clone(Backbone.Events);
+    this.view = new storybase.builder.views.BuilderView({
+      dispatcher: this.dispatcher
+    });
+  });
+
+  describe('when receiving the select:storytemplate signal via the dispatcher', function() {
+    beforeEach(function() {
+      // Mock a story template
+      var StoryTemplate = Backbone.Model.extend({
+        getStory: function(options) {
+        }
+      });
+      this.storyTemplate = new StoryTemplate({
+        "description": "Explain a complex issue simply",
+        "story": "/api/0.1/stories/0b2b9e3f38e3422ea3899ee66d1e334b/",
+        "tag_line": "it doesn't have to be so complicated",
+        "template_id": "5586de9ad3674c7e926ca4f4f04da27b",
+        "time_needed": "30 minutes", 
+        "title": "Explainer"
+      });
+      spyOn(storybase.builder.views.BuilderView.prototype, 'setStoryTemplate');
+      this.view = new storybase.builder.views.BuilderView({
+        dispatcher: this.dispatcher
+      });
+    });
+
+    it('calls the setStoryTemplate method', function() {
+      this.dispatcher.trigger("select:template", this.storyTemplate);
+      expect(this.view.setStoryTemplate).toHaveBeenCalledWith(this.storyTemplate);
+    });
+  });
+});
+
 describe('SectionAssetEditView view', function() {
   beforeEach(function() {
     this.assetTypes = [
