@@ -1663,7 +1663,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   templateSource: $('#section-edit-template').html(),
 
   defaults: {
-    titleEl: '.title'
+    titleEl: '.section-title'
   },
 
   events: {
