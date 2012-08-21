@@ -1,7 +1,15 @@
-describe('BuilderView', function() {
+var initializeGlobals = function() {
+  storybase.globals.API_ROOT = '/api/0.1/';
+  storybase.globals.MAP_CENTER = [39.74151, -104.98672];
+  storybase.globals.MAP_ZOOM_LEVEL = 11;
+  storybase.globals.MAP_POINT_ZOOM_LEVEL = 14; 
+};
+
+describe('AppView', function() {
   beforeEach(function() {
+    initializeGlobals();
     this.dispatcher = _.clone(Backbone.Events);
-    this.view = new storybase.builder.views.BuilderView({
+    this.view = new storybase.builder.views.AppView({
       dispatcher: this.dispatcher
     });
   });
@@ -11,8 +19,8 @@ describe('BuilderView', function() {
       // Binding event handlers to the dispatcher happens in the view's
       // initialize method, so we have to spy on the prototype so the
       // spied method will get bound.
-      spyOn(storybase.builder.views.BuilderView.prototype, 'error');
-      this.view = new storybase.builder.views.BuilderView({
+      spyOn(storybase.builder.views.AppView.prototype, 'error');
+      this.view = new storybase.builder.views.AppView({
         dispatcher: this.dispatcher
       });
     });
@@ -55,12 +63,13 @@ describe('SectionEditView view', function() {
           return '/api/0.1/stories/357c5885c4e844cb8a4cd4eebe912a1c/';
         }
       });
+      this.section = new Section({
+        id: "dc044f23e93649d6b1bd48625fc301cd",
+        layout_template: "<div class=\"section-layout side-by-side\">\n    <div class=\"left\">\n        <div class=\"storybase-container-placeholder\" id=\"left\"></div>\n    </div>\n    <div class=\"right\">\n        <div class=\"storybase-container-placeholder\" id=\"right\"></div>\n    </div>\n</div>\n",
+      }); 
       this.view = new storybase.builder.views.SectionEditView({
         dispatcher: this.dispatcher,
-        model: new Section({
-          id: "dc044f23e93649d6b1bd48625fc301cd",
-          layout_template: "<div class=\"section-layout side-by-side\">\n    <div class=\"left\">\n        <div class=\"storybase-container-placeholder\" id=\"left\"></div>\n    </div>\n    <div class=\"right\">\n        <div class=\"storybase-container-placeholder\" id=\"right\"></div>\n    </div>\n</div>\n",
-        }), 
+        model: this.section,
         story: new Story(), 
         templateSource: $('#section-edit-template').html()
       });
@@ -88,24 +97,24 @@ describe('SectionEditView view', function() {
         expect(this.view.$el.html()).toContain(this.fixture.objects[1].asset.content);
       });
     });
-  });
 
-  describe('when receiving the "add:asset" event', function() {
-    beforeEach(function() {
-      this.asset = new Backbone.Model({
-         id: 'bef53407591f4fd8bd169f9cc02672f9',
-         type: 'text',
-         body: 'Test text asset body',
-         content: 'Test text asset body'
+    describe('when receiving the "do:add:sectionasset" event', function() {
+      beforeEach(function() {
+        var container = 'left';
+        this.asset = new Backbone.Model({
+           id: 'bef53407591f4fd8bd169f9cc02672f9',
+           type: 'text',
+           body: 'Test text asset body',
+           content: 'Test text asset body'
+        });
+        this.dispatcher.trigger('do:add:sectionasset', this.section, this.asset, container); 
       });
-      this.dispatcher.trigger('add:asset', this.asset); 
-    });
 
-    it('should add the asset to the assets collection', function() {
-      expect(this.view.assets.size()).toEqual(1);
-      expect(this.view.assets.at(0)).toEqual(this.asset);
+      it('should add the asset to the assets collection', function() {
+        expect(this.view.assets.size()).toEqual(1);
+        expect(this.view.assets.at(0)).toEqual(this.asset);
+      });
     });
-  
   });
 });
 
@@ -156,7 +165,7 @@ describe('SectionAssetEditView view', function() {
       });
 
       it('should provide a list of available asset types', function() {
-        expect(_.size(this.view.$('.asset-type'))).toEqual(_.size(this.assetTypes));
+        expect(this.view.$('.asset-type').length).toEqual(_.size(this.assetTypes));
       });
     });
 
@@ -215,7 +224,7 @@ describe('SectionAssetEditView view', function() {
 
       it('should re-render the view with a list of available asset types',
          function() {
-           expect(_.size(this.view.$('.asset-type'))).toEqual(_.size(this.assetTypes));
+           expect(this.view.$('.asset-type').length).toEqual(_.size(this.assetTypes));
          }
       );
 
@@ -258,7 +267,7 @@ describe('SectionAssetEditView view', function() {
           this.validResponse(this.fixture)
         );
         this.spy = sinon.spy();
-        this.dispatcher.on("add:asset", this.spy);
+        this.dispatcher.on("do:add:sectionasset", this.spy);
         this.view.render();
         this.view.$('textarea[name="body"]').val(this.assetBody);
         this.view.$('form').submit();
@@ -284,7 +293,7 @@ describe('SectionAssetEditView view', function() {
         expect(this.view.$el.text()).toContain(this.view.model.get('body'));
       });
 
-      it('should send the "add:asset" event through the dispatcher', function() {
+      it('should send the "do:add:sectionasset" event through the dispatcher', function() {
         this.server.respond();
         expect(this.spy.called).toBeTruthy();
       });
@@ -320,6 +329,10 @@ describe('SectionAssetEditView view', function() {
          body: 'Test text asset body',
          content: 'Test text asset body'
        });
+       // Mock Story.formFieldVisible
+       this.view.model.formFieldVisible = function(name, type) {
+         return true;
+       };
     });
 
     describe('when in the "display" state', function() {

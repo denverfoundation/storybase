@@ -65,25 +65,6 @@ describe('Story model', function() {
     this.server.restore();
   });
 
-  describe('when getting its sections', function() {
-    it('should return a collection of sections to a callback', function() {
-      var that = this;
-      var fetchSucceeded = false;
-      var story = new storybase.models.Story({
-        story_id: this.storyId 
-      });
-      story.fetchSections({
-        success: function(sections) {
-          fetchSucceeded = true;
-          expect(sections.url).toEqual('/api/0.1/stories/' + story.id + '/sections/');
-          expect(sections.length).toEqual(that.fixture.objects.length);
-        }
-      });
-      this.server.respond();
-      expect(fetchSucceeded).toEqual(true);
-    });
-  });
-
   describe('when new', function() {
     it("doesn't have an id in the url", function() {
       var story = new storybase.models.Story;
