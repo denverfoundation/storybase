@@ -2288,17 +2288,19 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       this.setState('select').render();
     },
 
-    handleDrop: function(event, ui) {
+    handleDrop: function(evt, ui) {
       console.debug("Asset dropped");
       var id = ui.draggable.data('asset-id');
-      this.model = this.story.unusedAssets.get(id);
-      this.story.unusedAssets.remove(this.model);
-      if (!this.story.unusedAssets.length) {
-        this.dispatcher.trigger('has:assetlist', false);
+      if (id) {
+        this.model = this.story.unusedAssets.get(id);
+        this.story.unusedAssets.remove(this.model);
+        if (!this.story.unusedAssets.length) {
+          this.dispatcher.trigger('has:assetlist', false);
+        }
+        this.setState('display');
+        this.dispatcher.trigger("do:add:sectionasset", this.section, this.model, this.container);
+        this.render();
       }
-      this.setState('display');
-      this.dispatcher.trigger("do:add:sectionasset", this.section, this.model, this.container);
-      this.render();
     }
   })
 );
