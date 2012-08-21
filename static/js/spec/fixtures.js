@@ -67,6 +67,165 @@ beforeEach(function() {
                   "weight": 1
               }
           ]
+        },
+        // Explainer template sections
+        "0b2b9e3f38e3422ea3899ee66d1e334b": {
+          "meta": {
+            "limit": 20,
+            "next": null,
+            "offset": 0,
+            "previous": null,
+            "total_count": 7
+          },
+          "objects": [
+            {
+              "help": {
+                "body": "<p>Your introduction gives a general overview of the topic and summarizes what your can expect from this story, including what he or she will learn and what sections will follow.<\/p>\r\n<p>It could include:<\/p>\r\n<ul>\r\n<li>a picture or visual asset<\/li>\r\n<li>a paragraph describing the system and the sections in this story (like an abstract or outline)<\/li>\r\n<\/ul>",
+                "help_id": "aa734ce35077482c946b5821470b6da1",
+                "title": "Introduction"
+              },
+              "languages": [
+                {
+                  "id": "en",
+                  "name": "English"
+                }
+              ],
+              "layout": "26c81c9dd24c4aecab7ab4eb1cc9e2fb",
+              "layout_template": "\n<div class=\"section-layout side-by-side\">\n    <div class=\"left\">\n        <div class=\"storybase-container-placeholder\" id=\"left\"><\/div>\n    <\/div>\n    <div class=\"right\">\n        <div class=\"storybase-container-placeholder\" id=\"right\"><\/div>\n    <\/div>\n<\/div>\n",
+              "resource_uri": "\/api\/0.1\/stories\/0b2b9e3f38e3422ea3899ee66d1e334b\/sections\/9cd532d3f93c4ba59fb93694dbaf7b04\/",
+              "root": true,
+              "section_id": "9cd532d3f93c4ba59fb93694dbaf7b04",
+              "story": "\/api\/0.1\/stories\/0b2b9e3f38e3422ea3899ee66d1e334b\/",
+              "title": "Introduction",
+              "weight": 1
+            },
+            {
+              "help": {
+                "body": "<p>Don&rsquo;t forget to define what it is you are trying to explain. Before you answer &ldquo;how does it work?&rdquo; you need to answer &ldquo;what is it?&rdquo; This is a simple step, but one that many people overlook.<\/p>\r\n<p>It could include:<\/p>\r\n<ul>\r\n<li>a two to three sentence definition of your system<\/li>\r\n<li>a diagram (sketch, chart, etc.)<\/li>\r\n<\/ul>",
+                "help_id": "c3c74143479d4f968b88664d86e074ff",
+                "title": "Definition"
+              },
+              "languages": [
+                {
+                  "id": "en",
+                  "name": "English"
+                }
+              ],
+              "layout": "ccaea5bac5c7467eb014baf6f7476ccb",
+              "layout_template": "\n<div class=\"section-layout one-up\">\n    <div class=\"center\">\n        <div class=\"storybase-container-placeholder\" id=\"center\"><\/div>\n    <\/div>\n<\/div>\n",
+              "resource_uri": "\/api\/0.1\/stories\/0b2b9e3f38e3422ea3899ee66d1e334b\/sections\/28f1ed62877c42cb9cc6ad317b410ae8\/",
+              "root": true,
+              "section_id": "28f1ed62877c42cb9cc6ad317b410ae8",
+              "story": "\/api\/0.1\/stories\/0b2b9e3f38e3422ea3899ee66d1e334b\/",
+              "title": "Definition",
+              "weight": 2
+            },
+            {
+              "help": {
+                "body": "<p>Break down your system into simpler parts or sub-components and describe how each part works in its own section. These could be a series of frequently asked questions, a list of programs, or a step-by-step guide to completing a task.<\/p>\r\n<p>Shoot for two to six sections. Try to use a variety of content. You could use:<\/p>\r\n<ul>\r\n<li>visual assets (a photo or diagram)<\/li>\r\n<li>data assets (a graph, chart or table)<\/li>\r\n<li>geo assets (a map)<\/li>\r\n<li>audio or video assets (video or audio recording)<\/li>\r\n<\/ul>\r\n<p>Some tips:<\/p>\r\n<ul>\r\n<li>Sections work best if you only have one or two points of visual focus. <\/li>\r\n<li>Combine text and visual elements. If you use a picture, include a caption. If you use a graph, describe the most interesting piece of information the graph reveals. <\/li>\r\n<li>Don&rsquo;t try to squeeze too much into any one section &ndash; if it barely fits, break it up into two.<\/li>\r\n<\/ul>",
+                "help_id": "13272f58fd164e59bf7bc7c3c8b8397d",
+                "title": "Elements"
+              },
+              "languages": [
+                {
+                  "id": "en",
+                  "name": "English"
+                }
+              ],
+              "layout": "ccaea5bac5c7467eb014baf6f7476ccb",
+              "layout_template": "\n<div class=\"section-layout one-up\">\n    <div class=\"center\">\n        <div class=\"storybase-container-placeholder\" id=\"center\"><\/div>\n    <\/div>\n<\/div>\n",
+              "resource_uri": "\/api\/0.1\/stories\/0b2b9e3f38e3422ea3899ee66d1e334b\/sections\/72a8215649054734a0d316063e69eb5a\/",
+              "root": true,
+              "section_id": "72a8215649054734a0d316063e69eb5a",
+              "story": "\/api\/0.1\/stories\/0b2b9e3f38e3422ea3899ee66d1e334b\/",
+              "title": "Element 1",
+              "weight": 3
+            },
+            {
+              "help": {
+                "body": "<p>Break down your system into simpler parts or sub-components and describe how each part works in its own section. These could be a series of frequently asked questions, a list of programs, or a step-by-step guide to completing a task.<\/p>\r\n<p>Shoot for two to six sections. Try to use a variety of content. You could use:<\/p>\r\n<ul>\r\n<li>visual assets (a photo or diagram)<\/li>\r\n<li>data assets (a graph, chart or table)<\/li>\r\n<li>geo assets (a map)<\/li>\r\n<li>audio or video assets (video or audio recording)<\/li>\r\n<\/ul>\r\n<p>Some tips:<\/p>\r\n<ul>\r\n<li>Sections work best if you only have one or two points of visual focus. <\/li>\r\n<li>Combine text and visual elements. If you use a picture, include a caption. If you use a graph, describe the most interesting piece of information the graph reveals. <\/li>\r\n<li>Don&rsquo;t try to squeeze too much into any one section &ndash; if it barely fits, break it up into two.<\/li>\r\n<\/ul>",
+                "help_id": "13272f58fd164e59bf7bc7c3c8b8397d",
+                "title": "Elements"
+              },
+              "languages": [
+                {
+                  "id": "en",
+                  "name": "English"
+                }
+              ],
+              "layout": "ccaea5bac5c7467eb014baf6f7476ccb",
+              "layout_template": "\n<div class=\"section-layout one-up\">\n    <div class=\"center\">\n        <div class=\"storybase-container-placeholder\" id=\"center\"><\/div>\n    <\/div>\n<\/div>\n",
+              "resource_uri": "\/api\/0.1\/stories\/0b2b9e3f38e3422ea3899ee66d1e334b\/sections\/97ffc13f50bc4a6b9f52b5895355b75e\/",
+              "root": true,
+              "section_id": "97ffc13f50bc4a6b9f52b5895355b75e",
+              "story": "\/api\/0.1\/stories\/0b2b9e3f38e3422ea3899ee66d1e334b\/",
+              "title": "Element 2",
+              "weight": 4
+            },
+            {
+              "help": {
+                "body": "<p>Break down your system into simpler parts or sub-components and describe how each part works in its own section. These could be a series of frequently asked questions, a list of programs, or a step-by-step guide to completing a task.<\/p>\r\n<p>Shoot for two to six sections. Try to use a variety of content. You could use:<\/p>\r\n<ul>\r\n<li>visual assets (a photo or diagram)<\/li>\r\n<li>data assets (a graph, chart or table)<\/li>\r\n<li>geo assets (a map)<\/li>\r\n<li>audio or video assets (video or audio recording)<\/li>\r\n<\/ul>\r\n<p>Some tips:<\/p>\r\n<ul>\r\n<li>Sections work best if you only have one or two points of visual focus. <\/li>\r\n<li>Combine text and visual elements. If you use a picture, include a caption. If you use a graph, describe the most interesting piece of information the graph reveals. <\/li>\r\n<li>Don&rsquo;t try to squeeze too much into any one section &ndash; if it barely fits, break it up into two.<\/li>\r\n<\/ul>",
+                "help_id": "13272f58fd164e59bf7bc7c3c8b8397d",
+                "title": "Elements"
+              },
+              "languages": [
+                {
+                  "id": "en",
+                  "name": "English"
+                }
+              ],
+              "layout": "ccaea5bac5c7467eb014baf6f7476ccb",
+              "layout_template": "\n<div class=\"section-layout one-up\">\n    <div class=\"center\">\n        <div class=\"storybase-container-placeholder\" id=\"center\"><\/div>\n    <\/div>\n<\/div>\n",
+              "resource_uri": "\/api\/0.1\/stories\/0b2b9e3f38e3422ea3899ee66d1e334b\/sections\/9a8125bf78b04ef6b7de22eb0576011b\/",
+              "root": true,
+              "section_id": "9a8125bf78b04ef6b7de22eb0576011b",
+              "story": "\/api\/0.1\/stories\/0b2b9e3f38e3422ea3899ee66d1e334b\/",
+              "title": "Element 3",
+              "weight": 5
+            },
+            {
+              "help": {
+                "body": "<p>Break down your system into simpler parts or sub-components and describe how each part works in its own section. These could be a series of frequently asked questions, a list of programs, or a step-by-step guide to completing a task.<\/p>\r\n<p>Shoot for two to six sections. Try to use a variety of content. You could use:<\/p>\r\n<ul>\r\n<li>visual assets (a photo or diagram)<\/li>\r\n<li>data assets (a graph, chart or table)<\/li>\r\n<li>geo assets (a map)<\/li>\r\n<li>audio or video assets (video or audio recording)<\/li>\r\n<\/ul>\r\n<p>Some tips:<\/p>\r\n<ul>\r\n<li>Sections work best if you only have one or two points of visual focus. <\/li>\r\n<li>Combine text and visual elements. If you use a picture, include a caption. If you use a graph, describe the most interesting piece of information the graph reveals. <\/li>\r\n<li>Don&rsquo;t try to squeeze too much into any one section &ndash; if it barely fits, break it up into two.<\/li>\r\n<\/ul>",
+                "help_id": "13272f58fd164e59bf7bc7c3c8b8397d",
+                "title": "Elements"
+              },
+              "languages": [
+                {
+                  "id": "en",
+                  "name": "English"
+                }
+              ],
+              "layout": "ccaea5bac5c7467eb014baf6f7476ccb",
+              "layout_template": "\n<div class=\"section-layout one-up\">\n    <div class=\"center\">\n        <div class=\"storybase-container-placeholder\" id=\"center\"><\/div>\n    <\/div>\n<\/div>\n",
+              "resource_uri": "\/api\/0.1\/stories\/0b2b9e3f38e3422ea3899ee66d1e334b\/sections\/78313edffa8343b3b1cfa96d6de94557\/",
+              "root": true,
+              "section_id": "78313edffa8343b3b1cfa96d6de94557",
+              "story": "\/api\/0.1\/stories\/0b2b9e3f38e3422ea3899ee66d1e334b\/",
+              "title": "Element 4",
+              "weight": 6
+            },
+            {
+              "help": {
+                "body": "<p>This is where you put the pieces back together. This section summarizes the information you&rsquo;ve presented so far and explains how it relates to your reader. Give your reader some takeaway points\/conclusions.<\/p>\r\n<p>It could include:<\/p>\r\n<ul>\r\n<li>&nbsp;three main takeaway points (one sentence each)<\/li>\r\n<\/ul>",
+                "help_id": "5ca21eeea12b4a66b31b709d81e7a93e",
+                "title": "Synthesis"
+              },
+              "languages": [
+                {
+                  "id": "en",
+                  "name": "English"
+                }
+              ],
+              "layout": "ccaea5bac5c7467eb014baf6f7476ccb",
+              "layout_template": "\n<div class=\"section-layout one-up\">\n    <div class=\"center\">\n        <div class=\"storybase-container-placeholder\" id=\"center\"><\/div>\n    <\/div>\n<\/div>\n",
+              "resource_uri": "\/api\/0.1\/stories\/0b2b9e3f38e3422ea3899ee66d1e334b\/sections\/72b60c39caee4d9293b29fa574deb361\/",
+              "root": true,
+              "section_id": "72b60c39caee4d9293b29fa574deb361",
+              "story": "\/api\/0.1\/stories\/0b2b9e3f38e3422ea3899ee66d1e334b\/",
+              "title": "Synthesis",
+              "weight": 7
+            }
+          ]
         }
       }
     },
@@ -148,6 +307,34 @@ beforeEach(function() {
                   "resource_uri": "/api/0.1/stories/e4514b8ae56a4ac5985527018686e2bf/sections/ae4813c6f3b94e78a6d6d467324531cc/assets/cc238d3b02204b3988818be166da33f2/"
               }
           ]
+      }
+    },
+
+    Stories : {
+      explainerTemplate: {
+        "byline": "Your name here",
+        "call_to_action": "", 
+        "contact_info": "", 
+        "created": "2012-07-23T11:40:56", 
+        "is_template": true, 
+        "languages": [{"id": "en", "name": "English", "url": "/en/stories/explainer-story/"}], 
+        "last_edited": "2012-08-20T10:11:46.927765-05:00", 
+        "license": "CC BY-NC-SA", 
+        "on_homepage": false, 
+        "organizations": [], 
+        "places": [], 
+        "points": [], 
+        "projects": [], 
+        "published": "2012-08-20T10:11:46.653452", 
+        "resource_uri": "/api/0.1/stories/0b2b9e3f38e3422ea3899ee66d1e334b/", 
+        "slug": "explainer-story", 
+        "status": "published", 
+        "story_id": "0b2b9e3f38e3422ea3899ee66d1e334b",
+        "structure_type": "linear", 
+        "summary": "", 
+        "title": "Explainer Story", 
+        "topics": [], 
+        "url": "/stories/explainer-story/"
       }
     }
   };

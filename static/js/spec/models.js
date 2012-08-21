@@ -66,9 +66,47 @@ describe('Story model', function() {
   });
 
   describe('when new', function() {
+    beforeEach(function() {
+      this.story = new storybase.models.Story;
+    });
+
     it("doesn't have an id in the url", function() {
+      expect(this.story.url()).toEqual('/api/0.1/stories/');
+    });
+
+    it("has a sections property", function() {
+      expect(this.story.sections).toBeDefined();
+      expect(this.story.sections.length).toEqual(0);
+    });
+  });
+
+  describe('fromTemplate method', function() {
+    it("copies selected attributes from another story", function() {
+      var templateFixture = this.fixtures.Stories.explainerTemplate;
+      var templateSectionsFixture = this.fixtures.Sections.getList[templateFixture['story_id']];
+      var templateStory = new storybase.models.Story(templateFixture);
       var story = new storybase.models.Story;
-      expect(story.url()).toEqual('/api/0.1/stories/');
+      var storyProps = ['structure_type', 'summary', 'call_to_action'];
+      var sectionProps = ['title', 'layout', 'root', 'layout_template', 'help'];
+      templateStory.sections.reset(templateSectionsFixture.objects);
+
+      expect(story.id == templateStory.id).toBe(false);
+      story.fromTemplate(templateStory);
+      _.each(storyProps, function(prop) {
+        expect(story.get(prop)).toEqual(templateStory.get(prop));
+      });
+      expect(story.sections.length).toBeTruthy();
+      expect(story.sections.length).toEqual(templateStory.sections.length);
+      templateStory.sections.each(function(section) {
+        var sectionCopy = story.sections.where({
+          title: section.get('title')
+        })[0];
+        expect(sectionCopy).toBeDefined();
+        _.each(sectionProps, function(prop) {
+          expect(sectionCopy.get(prop)).toEqual(section.get(prop));
+        });
+        expect(sectionCopy.get('weight')).toEqual(section.get('weight') - 1);
+      });
     });
   });
 });

@@ -209,7 +209,27 @@ storybase.models.Story = Backbone.Model.extend(
       this.sections.each(function(section) {
         section.save();
       });
-    }
+    },
+
+    /**
+     * Copy selected properties from another story.
+     */
+    fromTemplate: function(story) {
+      this.set('structure_type', story.get('structure_type'));
+      this.set('summary', story.get('summary'));
+      this.set('call_to_action', story.get('call_to_action'));
+                    
+      story.sections.each(function(section) {
+        var sectionCopy = new storybase.models.Section();
+        sectionCopy.set("title", section.get("title"));
+        sectionCopy.set("layout", section.get("layout"));
+        sectionCopy.set("root", section.get("root"));
+        sectionCopy.set("weight", section.get("weight"));
+        sectionCopy.set("layout_template", section.get("layout_template"));
+        sectionCopy.set("help", section.get("help"));
+        this.sections.push(sectionCopy);
+      }, this);
+    },
   })
 );
 
