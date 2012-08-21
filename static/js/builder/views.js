@@ -692,7 +692,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.model.unusedAssets.on("sync reset add", this.hasAssetList, this);
 
     this.dispatcher.on("select:template", this.setStoryTemplate, this);
-    this.dispatcher.on("ready:templateSections", this.initializeStoryFromTemplate, this);
     this.dispatcher.on("do:save:story", this.save, this);
     this.dispatcher.on("toggle:assetlist", this.toggleAssetList, this);
     this.dispatcher.on("add:sectionasset", this.showSaved, this);
@@ -703,7 +702,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.dispatcher.on("ready:story", this.setTitle, this);
     this.dispatcher.on("created:section", this.handleCreateSection, this);
 
-    _.bindAll(this, 'setTemplateStory', 'setTemplateSections', 'createSectionEditView');
+    _.bindAll(this, 'setTemplateStory', 'createSectionEditView');
 
     if (!this.model.isNew()) {
       this.model.sections.fetch();
@@ -827,13 +826,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     console.info("Setting template story");
     var that = this;
     this.templateStory = story;
-    this.templateStory.sections.on("reset", this.setTemplateSections, this);
+    this.templateStory.sections.on("reset", this.initializeStoryFromTemplate, this);
     this.templateStory.sections.fetch();
-  },
-
-  setTemplateSections: function(sections) {
-    console.info("Setting template sections"); 
-    this.dispatcher.trigger("ready:templateSections");
   },
 
   initializeStoryFromTemplate: function() {
