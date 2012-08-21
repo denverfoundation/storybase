@@ -833,7 +833,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
   setTemplateSections: function(sections) {
     console.info("Setting template sections"); 
-    this.templateSections = sections;
     this.dispatcher.trigger("ready:templateSections");
   },
 
@@ -846,7 +845,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
                    this.templateStory.get('summary'));
     this.model.set('call_to_action',
                    this.templateStory.get('call_to_action'));
-    this.templateSections.each(function(section) {
+    this.templateStory.sections.each(function(section) {
       var sectionCopy = new storybase.models.Section();
       sectionCopy.set("title", section.get("title"));
       sectionCopy.set("layout", section.get("layout"));
