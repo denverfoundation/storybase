@@ -35,8 +35,6 @@ describe('AppView', function() {
 
 describe('SectionEditView view', function() {
   beforeEach(function() {
-    jasmine.getFixtures().fixturesPath = 'spec/fixtures';
-    loadFixtures('story_builder_handlebars.html');
     this.dispatcher = _.clone(Backbone.Events);
     this.view = new storybase.builder.views.SectionEditView({
       dispatcher: this.dispatcher,
@@ -120,13 +118,6 @@ describe('SectionEditView view', function() {
 
 describe('SectionAssetEditView view', function() {
   beforeEach(function() {
-    // Load Handlebars templates from a fixture file
-    // You need to run ./manage.py collectjstemplates to copy the Handlebars
-    // templates from the Django template directory to a place where
-    // the jasmine-jquery file can find them.  Not awesome, but the most
-    // DRY way I could think of that wasn't too much work.
-    jasmine.getFixtures().fixturesPath = 'spec/fixtures';
-    loadFixtures('story_builder_handlebars.html');
     this.assetTypes = [
       {
         'name': 'image',

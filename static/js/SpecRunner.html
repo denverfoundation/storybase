@@ -38,9 +38,16 @@
   // Mock the jquery-cookie plugin
   $.cookie = function() {};
 
-  // Add Handlebars Templates to the DOM.  This is needed because the 
-  // Backbone views expect them to be there when the JavaScript files are
-  // parsed.
+  // Add Handlebars Templates to the DOM from a fixture file. While the
+  // typical way to load DOM elements seems to be to load them in a
+  // spec's beforeEach method, they need to be loaded in the SpecRunner
+  // because the Backbone views expect them to be there when the
+  // JavaScript files are parsed.
+  //
+  // You need to run ./manage.py collectjstemplates to copy the Handlebars
+  // templates from the Django template directory to a place where
+  // the jasmine-jquery file can find them.  Not awesome, but the most
+  // DRY way I could think of that wasn't too much work.
   jasmine.getFixtures().fixturesPath = 'spec/fixtures';
   $('head').append(readFixtures('story_builder_handlebars.html'));
   </script>
