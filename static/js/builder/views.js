@@ -2089,7 +2089,9 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       this.$el.html(this.template(context));
       this.setClass();
       if (state == 'select') {
-        this.$el.droppable();
+        // The accept option needs to match the class on the items in
+        // the UnusedAssetView list
+        this.$el.droppable({ accept: ".unused-asset" });
       }
       if (state == 'display') {
         if (!this.$('.caption').length && this.model.formFieldVisible('caption', this.model.get('type'))) {
