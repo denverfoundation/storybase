@@ -1838,7 +1838,6 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
    * Event handler for when assets are added to the section
    */
   addAsset: function(section, asset, container) {
-    console.debug(section);
     if (section == this.model) {
       // Artifically set the container attribute of the asset.
       // For assets retrieved from the server, this is handled by
