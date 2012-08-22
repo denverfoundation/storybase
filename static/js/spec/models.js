@@ -204,3 +204,43 @@ describe('Asset model', function() {
     });
   });
 });
+
+describe('Tag model', function() {
+  describe('isNew method', function() {
+    it('should return true for a model constructed with no attributes', function() {
+      this.model = new storybase.models.Tag;
+      expect(this.model.isNew()).toBe(true);
+    });
+
+    it('should return true for a model constructed with a tag_id', function() {
+      this.model = new storybase.models.Tag({
+        "tag_id": "0644b72fc1eb46dba8ed68daff0228d3"
+      });
+      expect(this.model.isNew()).toBe(true);
+    });
+
+    it('should return false for a model with a resource_uri attribute', function() {
+      this.model = new storybase.models.Tag({
+        "tag_id": "0644b72fc1eb46dba8ed68daff0228d3"
+      });
+      this.model.set('resource_uri', '/api/0.1/tags/0644b72fc1eb46dba8ed68daff0228d3/stories/472d5039b37748ba8d78d685aa898475'); 
+      expect(this.model.isNew()).toBe(false);
+    });
+  });
+
+  describe('url method', function() {
+    describe('when the model instance is new', function() {
+      beforeEach(function() {
+        this.model = new storybase.models.Tag({
+          "tag_id": "0644b72fc1eb46dba8ed68daff0228d3"
+        });
+      });
+      it('should return the collection url', function() {
+        this.collection = new Backbone.Collection;
+        this.collection.url = '/api/0.1/tags/stories/472d5039b37748ba8d78d685aa898475/';
+        this.collection.add(this.model);
+        expect(this.model.url()).toEqual(this.collection.url);
+      });
+    });
+  });
+});
