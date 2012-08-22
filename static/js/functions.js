@@ -74,21 +74,22 @@
 		});
 
 
-		$('.flexslider').flexslider({
-			animation: 'slide',
-			slideshow: false,
-			start: function(){
-				$('#slideShim,#slideShim2, #slideShim3, #slideShim4, #slideShim5, #slideShim6, #slideShim7, #slideShim8').cycle({ 
-					fx:     'scrollLeft',
-					speed:  1500,
-					timeout: 0,
-					prev:   '.back',
-					next:   '.forward'
-
-				});
-			}
+		$('.flexslider').each(function() {
+			var jqThis = $(this);
+			jqThis.flexslider({
+				animation: 'slide',
+				slideshow: false,
+				start: function() {
+					jqThis.find('.slide-shim').cycle({
+						fx:     'scrollLeft',
+						speed:  1500,
+						timeout: 0,
+						prev:   '.back',
+						next:   '.forward'
+					});
+				}
+			});
 		});
-
 
 
 		mySlider()
