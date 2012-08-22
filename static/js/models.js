@@ -305,6 +305,10 @@ storybase.collections.Sections = Backbone.Collection.extend(
 
     url: storybase.globals.API_ROOT + 'sections/',
 
+    initialize: function() {
+      _.bindAll(this, '_assetsFetchedSuccess', '_assetsFetchedError');
+    },
+
     sortByIdList: function(idList) {
       var that = this;
       _.each(idList, function(id, index) {
@@ -316,6 +320,63 @@ storybase.collections.Sections = Backbone.Collection.extend(
         return weight;
       });
     },
+
+    /**
+     * Callback for when an individual section's asset is fetched.
+     */
+    _assetsFetchedSuccess: function(section, assets, response) {
+      var callback = this._fetchAssetsSuccess ? this._fetchAssetsSuccess : null;
+      this._assetsFetched.push(section.id);  
+      if (this._assetsFetched.length == this.length) {
+        // All the sections have been fetched!
+        this._fetchAssetsCleanup();
+        if (callback) {
+          callback(this);
+        }
+      }
+    },
+
+    /**
+     * Callback for when an individual section's assets failed to be 
+     * fetched
+     */
+    _assetsFetchedError: function(section, assets, response) {
+      var callback = this._fetchAssetsError ? this._fetchAssetsError : null;
+      this._fetchAssetsCleanup();
+      if (callback) {
+        callback(this);
+      }
+    },
+
+    _fetchAssetsCleanup: function() {
+      this._assetsFetched = [];
+      this._fetchAssetsSuccess = null; 
+      this._fetchAssetsError = null; 
+    },
+
+    /**
+     * Fetch the assets for each section in the collection.
+     */
+    fetchAssets: function(options) {
+      options = options ? options : {};
+      this._assetsFetched = [];
+      if (options.success) {
+        this._fetchAssetsSuccess = options.success;
+      }
+      this.each(function(section) {
+        var coll = this;
+        var success = function(assets, response) {
+          coll._assetsFetchedSuccess(section, assets, response);
+        };
+        var error = function(assets, response) {
+          coll._assetsFetchedError(section, assets, response);
+        };
+        section.assets.fetch({
+          success: success,
+          error: error 
+        });
+      }, this);
+    }
   })
 );
 

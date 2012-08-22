@@ -71,6 +71,60 @@ describe("Section model", function() {
   });
 });
 
+describe("Sections collection", function() {
+  describe("fetchAssets method", function() {
+    beforeEach(function() {
+      var collectionUrl = "/api/0.1/stories/6c8bfeaa6bb145e791b410e3ca5e9053/sections/";
+      this.server = sinon.fakeServer.create();
+      this.sectionsFixture = this.fixtures.Sections.getList["6c8bfeaa6bb145e791b410e3ca5e9053"];
+      this.collection = new storybase.collections.Sections;
+      this.collection.url = collectionUrl; 
+      this.collection.reset(this.sectionsFixture.objects);
+      this.server.respondWith(
+        "GET",
+        collectionUrl,
+        this.validResponse(this.sectionsFixture)
+      );
+      _.each(this.sectionsFixture.objects, function(section) {
+        var sectionId = section["section_id"]; 
+        var url = collectionUrl + sectionId + "/assets/";
+        this.server.respondWith(
+          "GET",
+          url, 
+          this.validResponse(this.fixtures.SectionAssets.getList[sectionId])
+        );
+      }, this);
+    });
+
+    afterEach(function() {
+      this.server.restore();
+    });
+
+    it("Should populate each section's assets collection", function() {
+      var spec = this;
+      var checkAssertions = function() {
+        spec.collection.each(function(section) {
+          var fixture = spec.fixtures.SectionAssets.getList[section.id];
+          expect(section.assets.length).toEqual(fixture.objects.length);
+          _.each(fixture.objects, function(assetJSON) {
+            var asset = section.assets.get(assetJSON["asset"]["asset_id"]);
+            expect(asset).toBeDefined();
+          });
+        });
+      };
+      var callback = sinon.spy(checkAssertions);
+      this.collection.fetchAssets({
+        success: callback 
+      });
+      this.server.respond();
+      expect(callback.called).toBe(true);
+    });
+
+    // BOOKMARK
+    // TODO: Test error behavior
+  });
+});
+
 describe('Story model', function() {
   beforeEach(function() {
     this.server = sinon.fakeServer.create();
@@ -104,7 +158,7 @@ describe('Story model', function() {
 
   describe('fromTemplate method', function() {
     it("copies selected attributes from another story", function() {
-      var templateFixture = this.fixtures.Stories.explainerTemplate;
+      var templateFixture = this.fixtures.Stories.getDetail["0b2b9e3f38e3422ea3899ee66d1e334b"];
       var templateSectionsFixture = this.fixtures.Sections.getList[templateFixture['story_id']];
       var templateStory = new storybase.models.Story(templateFixture);
       var story = new storybase.models.Story;

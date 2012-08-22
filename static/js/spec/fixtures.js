@@ -226,6 +226,56 @@ beforeEach(function() {
               "weight": 7
             }
           ]
+        },
+        // A simple story with 2 sections and 4 assets
+        "6c8bfeaa6bb145e791b410e3ca5e9053": {
+          "meta": {
+            "limit": 20,
+            "next": null,
+            "offset": 0,
+            "previous": null,
+            "total_count": 2
+          },
+          "objects": [
+            {
+              "help": {
+                "body": "Sample help text for the Image and Text section.",
+                "help_id": "e296af8d957e423091759a3cd067c68c",
+                "title": "Image and Text"
+              },
+              "languages": [
+                {
+                  "id": "en",
+                  "name": "English"
+                }
+              ],
+              "layout": "26c81c9dd24c4aecab7ab4eb1cc9e2fb",
+              "layout_template": "\n<div class=\"section-layout side-by-side\">\n    <div class=\"left\">\n        <div class=\"storybase-container-placeholder\" id=\"left\"><\/div>\n    <\/div>\n    <div class=\"right\">\n        <div class=\"storybase-container-placeholder\" id=\"right\"><\/div>\n    <\/div>\n<\/div>\n",
+              "resource_uri": "\/api\/0.1\/stories\/6c8bfeaa6bb145e791b410e3ca5e9053\/sections\/bba19cd38f0d4d789143e74f2a5a3acd\/",
+              "root": true,
+              "section_id": "bba19cd38f0d4d789143e74f2a5a3acd",
+              "story": "\/api\/0.1\/stories\/6c8bfeaa6bb145e791b410e3ca5e9053\/",
+              "title": "Section 1",
+              "weight": 0
+            },
+            {
+              "help": null,
+              "languages": [
+                {
+                  "id": "en",
+                  "name": "English"
+                }
+              ],
+              "layout": "26c81c9dd24c4aecab7ab4eb1cc9e2fb",
+              "layout_template": "\n<div class=\"section-layout side-by-side\">\n    <div class=\"left\">\n        <div class=\"storybase-container-placeholder\" id=\"left\"><\/div>\n    <\/div>\n    <div class=\"right\">\n        <div class=\"storybase-container-placeholder\" id=\"right\"><\/div>\n    <\/div>\n<\/div>\n",
+              "resource_uri": "\/api\/0.1\/stories\/6c8bfeaa6bb145e791b410e3ca5e9053\/sections\/f7294fa28fbc4e9d85a87b4b79d32137\/",
+              "root": true,
+              "section_id": "f7294fa28fbc4e9d85a87b4b79d32137",
+              "story": "\/api\/0.1\/stories\/6c8bfeaa6bb145e791b410e3ca5e9053\/",
+              "title": "Section 2",
+              "weight": 1
+            }
+          ]
         }
       }
     },
@@ -308,35 +358,243 @@ beforeEach(function() {
                     "resource_uri": "/api/0.1/stories/e4514b8ae56a4ac5985527018686e2bf/sections/ae4813c6f3b94e78a6d6d467324531cc/assets/cc238d3b02204b3988818be166da33f2/"
                 }
             ]
+        },
+        // A simple story with 2 sections and 4 assets
+        "bba19cd38f0d4d789143e74f2a5a3acd": {
+          "meta": {
+            "limit": 20,
+            "next": null,
+            "offset": 0,
+            "previous": null,
+            "total_count": 2
+          },
+          "objects": [
+            {
+              "asset": {
+                "asset_created": null,
+                "asset_id": "624e3120e4a54b5589ee3cb4b3b77600",
+                "attribution": "",
+                "body": "Asset 1<br>",
+                "caption": "",
+                "content": "Asset 1<br>",
+                "created": "2012-08-22T15:45:39.790800",
+                "display_title": "Asset 1",
+                "image": null,
+                "language": "en",
+                "languages": [
+                  {
+                    "id": "en",
+                    "name": "English",
+                    "url": "\/en\/assets\/624e3120e4a54b5589ee3cb4b3b77600\/"
+                  }
+                ],
+                "last_edited": "2012-08-22T15:45:39.936538",
+                "license": "CC BY-NC-SA",
+                "published": null,
+                "resource_uri": "\/api\/0.1\/assets\/624e3120e4a54b5589ee3cb4b3b77600\/",
+                "section_specific": false,
+                "source_url": "",
+                "status": "draft",
+                "thumbnail_url": null,
+                "title": "",
+                "type": "text",
+                "url": null
+              },
+              "container": "left",
+              "resource_uri": "\/api\/0.1\/stories\/6c8bfeaa6bb145e791b410e3ca5e9053\/sections\/bba19cd38f0d4d789143e74f2a5a3acd\/assets\/624e3120e4a54b5589ee3cb4b3b77600\/",
+              "weight": 0
+            },
+            {
+              "asset": {
+                "asset_created": null,
+                "asset_id": "3e2c04fe47cd45d6bdd13bfb64fdcd47",
+                "attribution": "",
+                "body": "Asset 2<br>",
+                "caption": "",
+                "content": "Asset 2<br>",
+                "created": "2012-08-22T15:45:45.462269",
+                "display_title": "Asset 2",
+                "image": null,
+                "language": "en",
+                "languages": [
+                  {
+                    "id": "en",
+                    "name": "English",
+                    "url": "\/en\/assets\/3e2c04fe47cd45d6bdd13bfb64fdcd47\/"
+                  }
+                ],
+                "last_edited": "2012-08-22T15:45:45.625038",
+                "license": "CC BY-NC-SA",
+                "published": null,
+                "resource_uri": "\/api\/0.1\/assets\/3e2c04fe47cd45d6bdd13bfb64fdcd47\/",
+                "section_specific": false,
+                "source_url": "",
+                "status": "draft",
+                "thumbnail_url": null,
+                "title": "",
+                "type": "text",
+                "url": null
+              },
+              "container": "right",
+              "resource_uri": "\/api\/0.1\/stories\/6c8bfeaa6bb145e791b410e3ca5e9053\/sections\/bba19cd38f0d4d789143e74f2a5a3acd\/assets\/3e2c04fe47cd45d6bdd13bfb64fdcd47\/",
+              "weight": 0
+            }
+          ]
+        },
+        "f7294fa28fbc4e9d85a87b4b79d32137": {
+          "meta": {
+            "limit": 20,
+            "next": null,
+            "offset": 0,
+            "previous": null,
+            "total_count": 2
+          },
+          "objects": [
+            {
+              "asset": {
+                "asset_created": null,
+                "asset_id": "2cfc227004d647dfa5dbeca417d68750",
+                "attribution": "",
+                "body": "Asset 3<br>",
+                "caption": "",
+                "content": "Asset 3<br>",
+                "created": "2012-08-22T15:45:51.882536",
+                "display_title": "Asset 3",
+                "image": null,
+                "language": "en",
+                "languages": [
+                  {
+                    "id": "en",
+                    "name": "English",
+                    "url": "\/en\/assets\/2cfc227004d647dfa5dbeca417d68750\/"
+                  }
+                ],
+                "last_edited": "2012-08-22T15:45:52.033701",
+                "license": "CC BY-NC-SA",
+                "published": null,
+                "resource_uri": "\/api\/0.1\/assets\/2cfc227004d647dfa5dbeca417d68750\/",
+                "section_specific": false,
+                "source_url": "",
+                "status": "draft",
+                "thumbnail_url": null,
+                "title": "",
+                "type": "text",
+                "url": null
+              },
+              "container": "left",
+              "resource_uri": "\/api\/0.1\/stories\/6c8bfeaa6bb145e791b410e3ca5e9053\/sections\/f7294fa28fbc4e9d85a87b4b79d32137\/assets\/2cfc227004d647dfa5dbeca417d68750\/",
+              "weight": 0
+            },
+            {
+              "asset": {
+                "asset_created": null,
+                "asset_id": "e6f1d21977924b7b83320510609b853b",
+                "attribution": "",
+                "body": "Asset 4<br>",
+                "caption": "",
+                "content": "Asset 4<br>",
+                "created": "2012-08-22T15:45:57.631099",
+                "display_title": "Asset 4",
+                "image": null,
+                "language": "en",
+                "languages": [
+                  {
+                    "id": "en",
+                    "name": "English",
+                    "url": "\/en\/assets\/e6f1d21977924b7b83320510609b853b\/"
+                  }
+                ],
+                "last_edited": "2012-08-22T15:45:57.816346",
+                "license": "CC BY-NC-SA",
+                "published": null,
+                "resource_uri": "\/api\/0.1\/assets\/e6f1d21977924b7b83320510609b853b\/",
+                "section_specific": false,
+                "source_url": "",
+                "status": "draft",
+                "thumbnail_url": null,
+                "title": "",
+                "type": "text",
+                "url": null
+              },
+              "container": "right",
+              "resource_uri": "\/api\/0.1\/stories\/6c8bfeaa6bb145e791b410e3ca5e9053\/sections\/f7294fa28fbc4e9d85a87b4b79d32137\/assets\/e6f1d21977924b7b83320510609b853b\/",
+              "weight": 0
+            }
+          ]
         }
       }
     },
 
     Stories : {
-      explainerTemplate: {
-        "byline": "Your name here",
-        "call_to_action": "", 
-        "contact_info": "", 
-        "created": "2012-07-23T11:40:56", 
-        "is_template": true, 
-        "languages": [{"id": "en", "name": "English", "url": "/en/stories/explainer-story/"}], 
-        "last_edited": "2012-08-20T10:11:46.927765-05:00", 
-        "license": "CC BY-NC-SA", 
-        "on_homepage": false, 
-        "organizations": [], 
-        "places": [], 
-        "points": [], 
-        "projects": [], 
-        "published": "2012-08-20T10:11:46.653452", 
-        "resource_uri": "/api/0.1/stories/0b2b9e3f38e3422ea3899ee66d1e334b/", 
-        "slug": "explainer-story", 
-        "status": "published", 
-        "story_id": "0b2b9e3f38e3422ea3899ee66d1e334b",
-        "structure_type": "linear", 
-        "summary": "", 
-        "title": "Explainer Story", 
-        "topics": [], 
-        "url": "/stories/explainer-story/"
+      getDetail: {
+        // Explorer template
+        "0b2b9e3f38e3422ea3899ee66d1e334b": {
+          "byline": "Your name here",
+          "call_to_action": "", 
+          "contact_info": "", 
+          "created": "2012-07-23T11:40:56", 
+          "is_template": true, 
+          "languages": [{"id": "en", "name": "English", "url": "/en/stories/explainer-story/"}], 
+          "last_edited": "2012-08-20T10:11:46.927765-05:00", 
+          "license": "CC BY-NC-SA", 
+          "on_homepage": false, 
+          "organizations": [], 
+          "places": [], 
+          "points": [], 
+          "projects": [], 
+          "published": "2012-08-20T10:11:46.653452", 
+          "resource_uri": "/api/0.1/stories/0b2b9e3f38e3422ea3899ee66d1e334b/", 
+          "slug": "explainer-story", 
+          "status": "published", 
+          "story_id": "0b2b9e3f38e3422ea3899ee66d1e334b",
+          "structure_type": "linear", 
+          "summary": "", 
+          "title": "Explainer Story", 
+          "topics": [], 
+          "url": "/stories/explainer-story/"
+        },
+        // A simple story with 2 sections and 4 assets
+        "6c8bfeaa6bb145e791b410e3ca5e9053": {
+          "byline": "",
+          "call_to_action": "",
+          "contact_info": "",
+          "created": "2012-08-22T15:45:03.091171",
+          "is_template": false,
+          "languages": [
+            {
+              "id": "en",
+              "name": "English",
+              "url": "\/en\/stories\/test-story-2-sections\/"
+            }
+          ],
+          "last_edited": "2012-08-22T15:45:57.856019-05:00",
+          "license": "CC BY-NC-SA",
+          "on_homepage": false,
+          "organizations": [
+            
+          ],
+          "places": [
+            
+          ],
+          "points": [
+            
+          ],
+          "projects": [
+            
+          ],
+          "published": null,
+          "resource_uri": "\/api\/0.1\/stories\/6c8bfeaa6bb145e791b410e3ca5e9053\/",
+          "slug": "test-story-2-sections",
+          "status": "draft",
+          "story_id": "6c8bfeaa6bb145e791b410e3ca5e9053",
+          "structure_type": "linear",
+          "summary": "",
+          "title": "Test Story - 2 Sections",
+          "topics": [
+            
+          ],
+          "url": "\/stories\/test-story-2-sections\/"
+        }
       }
     }
   };
