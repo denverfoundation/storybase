@@ -28,12 +28,12 @@
     production, assume they've been pre-compiled/collected.
     {% endcomment %}
     {% if debug %}
-    {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/builder.css">{% endaddtoblock %}
-    {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/layout.css">{% endaddtoblock %}
-    {% else %}
     {% addtoblock "css" %}<link rel="stylesheet/less" href="{{ STATIC_URL }}less/builder.less">{% endaddtoblock %}
     {% addtoblock "css" %}<link rel="stylesheet/less" href="{{ STATIC_URL }}less/layout.less">{% endaddtoblock %}
     {% addtoblock "css" %}<script src="{{ STATIC_URL }}js/libs/less-1.3.0.min.js"></script>{% endaddtoblock %}
+    {% else %}
+    {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/builder.css">{% endaddtoblock %}
+    {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/layout.css">{% endaddtoblock %}
     {% endif %}
 
     {% render_block "css" %}
