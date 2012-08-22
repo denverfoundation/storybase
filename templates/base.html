@@ -34,11 +34,16 @@
   <!-- 1140px Grid styles for IE -->
   {% addtoblock "css" %}<!--[if lte IE 9]><link rel="stylesheet" href="{{ STATIC_URL }}css/ie.css" type="text/css" media="screen" /><![endif]-->{% endaddtoblock %}
 
+{% comment %}
   <!-- The 1140px Grid - http://cssgrid.net/ -->
   {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/1140.css">{% endaddtoblock %}
   <!-- Formalize - http://formalize.me/ -->
   {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/formalize.css">{% endaddtoblock %}
   {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/style.css">{% endaddtoblock %}
+{% endcomment %}
+
+  {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/style-new.css">{% endaddtoblock %}
+  {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/flexslider.css">{% endaddtoblock %}
 
   {% render_block "css" %}
   <!-- end CSS-->
@@ -54,30 +59,149 @@
 
 <body>
   {% cms_toolbar %}
-  <header class="container pagetop">
-    <nav class="help row">
-      <ul>
-        <li>{% language_chooser %}</li>
-        <li><a href="{% url contact %}">{% trans "Contact Us" %}</a></li>
-	{% if user.is_authenticated %}
-        <li><a href="{% url auth_logout %}">{% trans "Sign Out" %}</a>
-	<li>{% trans "Welcome" %}, <a href="{% url account_summary %}">{{ user.first_name }}</a></li>
-	{% else %}
-	<li><a href="{% url auth_login %}">{% trans "Sign In" %}</a></li>
-	{% endif %}
-      </ul>
-    </nav>
-    <h1 class="row"><a href="/">{{ storybase_site_name }}</a></h1>
-    {% if storybase_site_tagline %}
-    <p class="tagline row">{{ storybase_site_tagline }}</p>
-    {% endif %}
-    <nav id="sitenav" class="row">
-      <ul class="navroot">
-        {% show_menu 0 1 2 %}
-	{% include "account_menu.html" %}
-      </ul>
-    </nav>
-  </header>
+	<div id="header">
+		<div class="shell">
+			<div class="header-right">
+				<ul class="top-nav">
+					{% include "account_menu.html" %}
+					<li>{% language_chooser %}</li>
+					<li><a href="#">Contact Us</a></li>
+					<li><a href="#">Help</a></li>
+				</ul>
+				<div class="cl">&nbsp;</div>
+				<form id="search" action="" method="post">
+					<input type="text" class="field" value="" />
+					<input type="submit" class="submit" value="" />
+					<div class="cl">&nbsp;</div>
+				</form>
+			</div>
+			<div class="cl">&nbsp;</div>
+			<!-- Navigation -->
+			<div id="navigation">
+				<ul> 
+					<li class="nodd"><a class="active" href="#">HOME</a></li>
+					<li><a href="#">BUILD A STORY<em></em></a>
+						<div class="dd">
+							<div class="dd-col col1">
+								<h6><a href="#">Browse by Tags</a></h6>
+							</div>
+							<div class="dd-col col2">
+								<h6><a href="#">Contributing Organizations</a></h6>
+								<ul>
+									<li><a href="#">The Piton Foundation</a></li>
+									<li><a href="#">The Denver Foundation</a></li>
+									<li><a href="#">Colorado Center for <br />Community Development</a></li>
+								</ul>
+							</div>
+							<div class="dd-col col3">
+								<h6><a href="#">Special Projects</a></h6>
+								<ul>
+									<li><a href="#">The Children’s Corridor</a></li>
+									<li><a href="#">Hinkley High School</a></li>
+								</ul>
+							</div>
+							<div class="cl">&nbsp;</div>
+						</div>
+					</li>
+					<li><a href="#">EXPLORE FLOODLIGHT<em></em></a>
+						<div class="dd">
+							<div class="dd-col col1">
+								<h6><a href="#">Browse by Tags</a></h6>
+							</div>
+							<div class="dd-col col2">
+								<h6><a href="#">Contributing Organizations</a></h6>
+								<ul>
+									<li><a href="#">The Piton Foundation</a></li>
+									<li><a href="#">The Denver Foundation</a></li>
+									<li><a href="#">Colorado Center for <br />Community Development</a></li>
+								</ul>
+							</div>
+							<div class="dd-col col3">
+								<h6><a href="#">Special Projects</a></h6>
+								<ul>
+									<li><a href="#">The Children’s Corridor</a></li>
+									<li><a href="#">Hinkley High School</a></li>
+								</ul>
+							</div>
+							<div class="cl">&nbsp;</div>
+						</div>
+					</li>
+					<li><a href="#">ABOUT<em></em></a>
+						<div class="dd">
+							<div class="dd-col col1">
+								<h6><a href="#">Browse by Tags</a></h6>
+							</div>
+							<div class="dd-col col2">
+								<h6><a href="#">Contributing Organizations</a></h6>
+								<ul>
+									<li><a href="#">The Piton Foundation</a></li>
+									<li><a href="#">The Denver Foundation</a></li>
+									<li><a href="#">Colorado Center for <br />Community Development</a></li>
+								</ul>
+							</div>
+							<div class="dd-col col3">
+								<h6><a href="#">Special Projects</a></h6>
+								<ul>
+									<li><a href="#">The Children’s Corridor</a></li>
+									<li><a href="#">Hinkley High School</a></li>
+								</ul>
+							</div>
+							<div class="cl">&nbsp;</div>
+						</div>
+					</li>
+					<li><a href="#">GET INVOLVED<em></em></a>
+						<div class="dd">
+							<div class="dd-col col1">
+								<h6><a href="#">Browse by Tags</a></h6>
+							</div>
+							<div class="dd-col col2">
+								<h6><a href="#">Contributing Organizations</a></h6>
+								<ul>
+									<li><a href="#">The Piton Foundation</a></li>
+									<li><a href="#">The Denver Foundation</a></li>
+									<li><a href="#">Colorado Center for <br />Community Development</a></li>
+								</ul>
+							</div>
+							<div class="dd-col col3">
+								<h6><a href="#">Special Projects</a></h6>
+								<ul>
+									<li><a href="#">The Children’s Corridor</a></li>
+									<li><a href="#">Hinkley High School</a></li>
+								</ul>
+							</div>
+							<div class="cl">&nbsp;</div>
+						</div>
+					</li>
+					<li class="last"><a href="#">NEWS &amp; UPDATES<em></em></a>
+						<div class="dd">
+							<div class="dd-col col1">
+								<h6><a href="#">Browse by Tags</a></h6>
+							</div>
+							<div class="dd-col col2">
+								<h6><a href="#">Contributing Organizations</a></h6>
+								<ul>
+									<li><a href="#">The Piton Foundation</a></li>
+									<li><a href="#">The Denver Foundation</a></li>
+									<li><a href="#">Colorado Center for <br />Community Development</a></li>
+								</ul>
+							</div>
+							<div class="dd-col col3">
+								<h6><a href="#">Special Projects</a></h6>
+								<ul>
+									<li><a href="#">The Children’s Corridor</a></li>
+									<li><a href="#">Hinkley High School</a></li>
+								</ul>
+							</div>
+							<div class="cl">&nbsp;</div>
+						</div>
+					</li>
+				</ul>
+			</div>
+			<!-- end Navigation -->
+		</div>
+		<div class="cl">&nbsp;</div>
+	</div>
+	<!-- end Header -->
   <div id="container" class="container">
     {% block above_content %}
     {% endblock %}    
@@ -91,21 +215,32 @@
     </div>
     {% block below_content %}{% endblock %}
   </div> <!--! end of #container -->
-  <footer class="container social">
-  </footer>
-  <footer class="container nav">
-    <nav class="row">
-      <ul>
-          {% comment %}
-          <li><a href="{% page_url "home" %}">Home</a></li>
-          <li><a href="{% page_url "about" %}">About</a></li>
-          {% endcomment %}
-      </ul>
-    </nav>
-    <div class="row">
-      <small class="copyright eightcol">Copyright Information. dead trees Tim Carmody community Knight Foundation totally blowing up on Twitter newsroom cafe experiment Gardening & War section Neil Postman newsroom cafe</small>
-    </div>
-  </footer>
+
+	<div class="footer">
+		<div class="shell">
+			<div class="left">
+				<p>Copyright 2012 The Floodlight Project. All rights reserved.</p>
+				<ul class="social">
+					<li class="icon1"><a href="#">rss</a></li>
+					<li class="icon2"><a href="#">twitter</a></li>
+					<li class="icon3"><a href="#">facebook</a></li>
+				</ul>
+			</div>
+			<div class="right">
+				<ul>
+					<li><a href="#"></a>{% trans "Home" %}</li>
+					<li><a href="#">{% trans "About" %}</a></li>
+					<li><a href="#">{% trans "Explore Floodlight" %}</a></li>
+					<li><a href="#">{% trans "Get Involved" %}</a></li>
+					<li class="middle"><a href="#">{% trans "News &amp; Updates" %}</a></li>
+					<li class="last"><a href="#">{% trans "Privacy Policy" %}</a></li>
+					<li class="last"><a href="#">{% trans "Licensing Information" %}</a></li>
+				</ul>
+			</div>
+			<div class="cl">&nbsp;</div>
+		</div>
+	</div><!-- #footer -->
+	
 
   {% block bodyend %}{% endblock bodyend %}
 
@@ -121,6 +256,7 @@
   </script>
 
   {% addtoblock "js" %}<script src="{{ STATIC_URL }}js/libs/jquery.formalize.min.js"></script>{% endaddtoblock %}
+  {% addtoblock "js" %}<script src="{{ STATIC_URL }}js/libs/jquery.cycle.all.min.js"></script>{% endaddtoblock %}
   {% addtoblock "js" %}<script defer src="{{ STATIC_URL }}js/plugins.js"></script>{% endaddtoblock %}
   {% block extrajs %}{% endblock %}
   {% render_block "js" %}
