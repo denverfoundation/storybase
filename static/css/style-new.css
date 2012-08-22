@@ -189,7 +189,7 @@ ul.social li.icon3 a { background-position:-67px 0; }
 .breadcrumbs ul li:first-child { padding-left:0;   }
 .breadcrumbs ul li.last {background:none;  }
 .breadcrumbs ul li.first a {color:#fe9703 ;  }
-.breadcrumbs ul li a { font-size:14px; color:#3b3b3b;font-family: 'MuseoSlab500Regular'; line-height:37px;   }
+.breadcrumbs ul li, .breadcrumbs ul li a { font-size:14px; color:#3b3b3b;font-family: 'MuseoSlab500Regular'; line-height:37px;   }
 
 #main.inner { overflow-x:visible !important; }
 

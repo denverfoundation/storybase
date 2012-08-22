@@ -28,11 +28,9 @@
 			slideshow: false,
 			start: function(slider){
 				$('.right-nav').click(function  () {
-
 					slider.flexAnimate(slider.getTarget("next"), true)
 				});
 				$('.left-nav').click(function  () {
-
 					slider.flexAnimate(slider.getTarget("prev"), true)
 				});
 			}
@@ -138,11 +136,7 @@
 			});
 		});
 
-
 		$('.list-view .box ').append('<div class="cl"/>')
-
-
-
 
 	});
 
@@ -167,9 +161,7 @@
 	}
 
 	$(window).load(function() {
-
 		$('.images').fadeIn();
-
 	});
 
 	function mySlider() {
