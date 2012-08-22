@@ -3119,7 +3119,6 @@ storybase.builder.views.AddLocationView = Backbone.View.extend({
   deleteLocation: function(evt) {
     evt.preventDefault();
     var id = $(evt.target).data('location-id');
-    console.debug(id);
     var loc = this.collection.get(id);
     loc.destroy();
   }
@@ -3141,6 +3140,14 @@ storybase.builder.views.TagView = Backbone.View.extend({
       story: this.model
     });
     this.collection.on("reset", this.setTags, this);
+    if (_.isUndefined(this.model)) {
+      this.dispatcher.on("ready:story", this.setStory, this);
+    }
+  },
+
+  setStory: function(story) {
+    this.model = story;
+    this.collection.setStory(story);
   },
 
   render: function() {
@@ -3193,7 +3200,6 @@ storybase.builder.views.TagView = Backbone.View.extend({
     var data = {};
     var id;
     var model;
-    console.debug(evt);
     if (evt.added) {
       if (evt.added.tagId) {
         // Existing tag
@@ -3221,7 +3227,6 @@ storybase.builder.views.TagView = Backbone.View.extend({
         model = this.collection.get(evt.removed.id);
         id = evt.removed.id;
       }
-      console.debug(model);
       model.url = storybase.globals.API_ROOT + 'tags/' + id + '/stories/' + this.model.id + '/';
       model.destroy();
     }
