@@ -246,6 +246,12 @@ storybase.models.Section = Backbone.Model.extend(
   _.extend({}, storybase.models.TastypieMixin, {
     idAttribute: "section_id",
 
+    initialize: function() {
+      this.assets = new storybase.collections.SectionAssets;
+      this.setCollectionUrls();
+      this.on("change", this.setCollectionUrls, this);
+    },
+
     populateChildren: function() {
       var $this = this;
       this.children = this.get('children').map(function(childId) {
@@ -254,8 +260,41 @@ storybase.models.Section = Backbone.Model.extend(
       return this;
     },
 
+    /**
+     * Set the url property of collections.
+     *
+     * This is needed because the URL of the collections are often based
+     * on the model id.
+     */
+    setCollectionUrls: function() {
+      if (!this.isNew()) {
+        this.assets.url = this.url() + 'assets/';
+      }
+    },
+
     title: function() {
       return this.get("title");
+    },
+
+    urlRoot: function() {
+      return storybase.globals.API_ROOT + 'sections';
+    },
+
+    /**
+     * Return the server URL for a model instance.
+     *
+     * This version always tries to use the model instance's collection
+     * URL first.
+     */
+    url: function() {
+      var base = getValue(this.collection, 'url') || getValue(this, 'urlRoot') || urlError();
+      if (this.isNew()) {
+        return base;
+      }
+      else {
+        base = base + (base.charAt(base.length - 1) == '/' ? '' : '/') + encodeURIComponent(this.id);
+      }
+      return base + (base.charAt(base.length - 1) == '/' ? '' : '/');
     }
   })
 );

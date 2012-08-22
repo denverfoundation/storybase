@@ -49,6 +49,28 @@ describe('DataSets collection', function() {
   });
 });
 
+describe("Section model", function() {
+  describe("when new", function() {
+    it("should have an assets collection", function() {
+      this.section = new storybase.models.Section;
+      expect(this.section.assets).toBeDefined();
+      expect(this.section.assets.length).toEqual(0);
+    });
+  });
+
+  describe("when initialized with attributes", function() {
+    beforeEach(function() {
+      var storyId = "0b2b9e3f38e3422ea3899ee66d1e334b";
+      this.fixture = this.fixtures.Sections.getList[storyId].objects[0];
+      this.section = new storybase.models.Section(this.fixture);
+    });
+
+    it('should have the asset collection URL initialized', function() {
+      expect(this.section.assets.url).toEqual(this.section.url() + 'assets/');
+    });
+  });
+});
+
 describe('Story model', function() {
   beforeEach(function() {
     this.server = sinon.fakeServer.create();

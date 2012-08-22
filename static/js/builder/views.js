@@ -1930,6 +1930,8 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   }
 });
 
+// BOOKMARK
+// TODO: Use this.model.assets instead of a separate view property.
 storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
   _.extend({}, storybase.builder.views.FileUploadMixin, 
            storybase.builder.views.RichTextEditorMixin, {
