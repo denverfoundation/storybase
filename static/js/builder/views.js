@@ -1656,7 +1656,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     this.defaultHelp = this.options.defaultHelp;
     this.templateSource = this.options.templateSource || this.templateSource;
     this.template = Handlebars.compile(this.templateSource);
-    this.assets = this.options.assets || new storybase.collections.SectionAssets();
+    this.assets = this.model.assets;
     this._unsavedAssets = [];
     this._doConditionalRender = false;
     this._firstSave = this.model.isNew();
@@ -1738,7 +1738,6 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
       this.renderAssetViews();
     }
     else {
-      this.assets.url = this.model.url() + 'assets/';
       this.assets.fetch();
     }
     this.$(this.options.titleEl).editable(editableCallback, {
@@ -1930,8 +1929,6 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   }
 });
 
-// BOOKMARK
-// TODO: Use this.model.assets instead of a separate view property.
 storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
   _.extend({}, storybase.builder.views.FileUploadMixin, 
            storybase.builder.views.RichTextEditorMixin, {
