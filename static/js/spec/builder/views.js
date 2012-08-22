@@ -76,7 +76,7 @@ describe('SectionEditView view', function() {
     describe('when rendering', function() {
       beforeEach(function() {
         this.server = sinon.fakeServer.create();
-        this.fixture = this.fixtures.SectionAssets.getList;
+        this.fixture = this.fixtures.SectionAssets.getList["dc044f23e93649d6b1bd48625fc301cd"];
         this.server.respondWith(
           "GET",
           '/api/0.1/stories/357c5885c4e844cb8a4cd4eebe912a1c/sections/dc044f23e93649d6b1bd48625fc301cd/assets/',
