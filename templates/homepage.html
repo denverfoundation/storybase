@@ -11,63 +11,11 @@
 <meta property="og:description" content="{% trans "The Citizen Atlas is a powerful story-building website that enables community change makers to inspire action and advance their issues through more substantive, engaging and persuasive data-driven storytelling." %}" />
 {% endblock %}
 
+{% block above_content %}
+{% placeholder above_content %}
+{% endblock %}
+
 {% block base_content %}
-<div id="intro">
-	<div class="images">
-		<a href="#">
-			<span class="overlay"></span>
-			<img src="{{ STATIC_URL }}css/images/image1.jpg" alt="" />
-			<span class="title"><em>Title of the story could go here in this spot and be long.</em></span>
-		</a>
-		<a href="#">
-			<span class="overlay"></span>
-			<img src="{{ STATIC_URL }}css/images/image2.jpg" alt="" />
-			<span class="title"><em>Title of the story could go here in this spot and be long.</em></span>
-		</a>
-		<a href="#">
-			<span class="overlay"></span>
-			<img src="{{ STATIC_URL }}css/images/image3.jpg" alt="" />
-			<span class="title"><em>Title of the story could go here in this spot and be long.</em></span>
-		</a>
-		<a href="#">
-			<span class="overlay"></span>
-			<img src="{{ STATIC_URL }}css/images/image4.jpg" alt="" />
-			<span class="title"><em>Title of the story could go here in this spot and be long.</em></span>
-		</a>
-		<a href="#">
-			<span class="overlay"></span>
-			<img src="{{ STATIC_URL }}css/images/image5.jpg" alt="" />
-			<span class="title"><em>Title of the story could go here in this spot and be long.</em></span>
-		</a>
-		<div class="cl">&nbsp;</div>
-		<a href="#">
-			<span class="overlay"></span>
-			<img src="{{ STATIC_URL }}css/images/image6.jpg" alt="" />
-			<span class="title"><em>Title of the story could go here in this spot and be long.</em></span>
-		</a>
-		<a href="#">
-			<span class="overlay"></span>
-			<img src="{{ STATIC_URL }}css/images/image7.jpg" alt="" />
-			<span class="title"><em>Title of the story could go here in this spot and be long.</em></span>
-		</a>
-		<a href="#">
-			<span class="overlay"></span>
-			<img src="{{ STATIC_URL }}css/images/image8.jpg" alt="" />
-			<span class="title"><em>Title of the story could go here in this spot and be long.</em></span>
-		</a>
-		<a href="#">
-			<span class="overlay"></span>
-			<img src="{{ STATIC_URL }}css/images/image1.jpg" alt="" />
-			<span class="title"><em>Title of the story could go here in this spot and be long.</em></span>
-		</a>
-		<a href="#">
-			<span class="overlay"></span>
-			<img src="{{ STATIC_URL }}css/images/image9.jpg" alt="" />
-			<span class="title"><em>Title of the story could go here in this spot and be long.</em></span>
-		</a>
-		<div class="cl">&nbsp;</div>
-	</div>
-</div>
 <div id="main">
 	<div class="shell">
 		<div class="title">
@@ -368,6 +316,7 @@ data and more. Tell better stories by leveraging public data in creative ways.  
 	</div>
 </div><!-- main -->
 
+{% comment %}
 <!--
   <div class="sixcol">
     {% placeholder column_one %}
@@ -377,6 +326,7 @@ data and more. Tell better stories by leveraging public data in creative ways.  
     {#{% include "addthis_widget_small.html" %}#}
   </div>
 -->
+{% endcomment %} 
 {% endblock %}
 
 {% block below_content %}
