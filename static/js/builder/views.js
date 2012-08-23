@@ -701,7 +701,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.dispatcher.on("ready:story", this.setTitle, this);
     this.dispatcher.on("created:section", this.handleCreateSection, this);
 
-    _.bindAll(this, 'setTemplateStory', 'createSectionEditView');
+    _.bindAll(this, 'createSectionEditView', 'setTemplateStory', 'initializeStoryFromTemplate');
 
     if (!this.model.isNew()) {
       this.model.sections.fetch();
@@ -825,8 +825,18 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     console.info("Setting template story");
     var that = this;
     this.templateStory = story;
-    this.templateStory.sections.on("reset", this.initializeStoryFromTemplate, this);
+    this.templateStory.sections.on("reset", this.getSectionAssets, this);
     this.templateStory.sections.fetch();
+  },
+
+  getSectionAssets: function() {
+    var that = this;
+    this.templateStory.sections.fetchAssets({
+      success: this.initializeStoryFromTemplate,
+      error: function() {
+        that.error(gettext("Failed fetching section assets"));
+      }
+    });
   },
 
   initializeStoryFromTemplate: function() {
