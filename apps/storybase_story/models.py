@@ -410,10 +410,12 @@ class Section(node_factory('SectionRelation'), TranslatedModel,
     # the first section in a linear story, or the central node
     # in a drill-down/"spider" structure.  Otherwise, False
     root = models.BooleanField(default=False)
-    weight = models.IntegerField(default=0)
+    weight = models.IntegerField(default=0, help_text=_("The ordering of top-level sections relative to each other. Sections with lower weight values are shown before ones with higher weight values in lists."))
     layout = models.ForeignKey('SectionLayout', null=True)
     help = models.ForeignKey(Help, null=True)
-    """The ordering of top-level sections relative to each other"""
+    section_template = models.ForeignKey('Section', blank=True, null=True,
+        related_name='template_for',
+        help_text=_("A section that provides default values for layout, asset types and help for this section."))
     assets = models.ManyToManyField(Asset, related_name='sections',
                                     blank=True, through='SectionAsset')
 

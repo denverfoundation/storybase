@@ -1893,6 +1893,58 @@ class SectionResourceTest(ResourceTestCase):
         self.assertEqual(section.layout.layout_id, section_post_data['layout'])
         self.assertEqual(section.help, section_help)
 
+    def test_post_list_with_section_template(self):
+        """
+        Test that a user can add a new section to a story including
+        a reference to the section that was used to provide defaults
+        for the new section.
+        """
+        template_story = create_story(title="Test Template Story",
+            summary="Test Template Story Summary", byline="",
+            status="published", language="en")
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        template_section = create_section(title="Test Template Section",
+            story=template_story, layout=layout)
+        story_post_data = {
+            'title': "Test Story",
+            'summary': "Test Summary",
+            'byline': "Test Byline",
+            'status': "draft",
+            'language': "en",
+        }
+        section_post_data = {
+            'title': "Test Section",
+            'language': "en",
+            'layout': "26c81c9dd24c4aecab7ab4eb1cc9e2fb",
+            'section_template': template_section.section_id
+        }
+        self.assertEqual(Story.objects.count(), 1)
+        self.api_client.client.login(username=self.username, password=self.password)
+        # Create a new story through the API
+        response = self.api_client.post('/api/0.1/stories/',
+                               format='json', data=story_post_data)
+        story_resource_uri = response['location']
+        # Retrieve a model instance for the created story
+        story_id = story_resource_uri.split('/')[-2]
+        story = Story.objects.get(story_id=story_id)
+        # Confirm there are no sections
+        self.assertEqual(len(story.sections.all()), 0)
+        # Create a new section
+        sections_uri = "%ssections/" % (story_resource_uri)
+        response = self.api_client.post(sections_uri,
+                                        format='json', data=section_post_data)
+        self.assertHttpCreated(response)
+        section_resource_uri = response['location']
+        # Retrieve a model instance for the newly created section
+        story = Story.objects.get(story_id=story_id)
+        self.assertEqual(len(story.sections.all()), 1)
+        section = story.sections.all()[0]
+        self.assertEqual("%s%s/" % (sections_uri, section.section_id), 
+                         section_resource_uri)
+        self.assertEqual(section.title, section_post_data['title'])
+        self.assertEqual(section.layout.layout_id, section_post_data['layout'])
+        self.assertEqual(section.section_template, template_section)
+
     def test_patch_detail(self):
         """Test that a user can update the metadata of a section"""
         story_post_data = {

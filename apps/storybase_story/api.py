@@ -468,6 +468,8 @@ class SectionResource(DelayedAuthorizationResource, TranslatedModelResource):
     """layout_id of related ``SectionLayout`` object"""
     layout_template = fields.CharField(readonly=True)
     help = fields.CharField(attribute='help', null=True)
+    section_template = fields.CharField(attribute='section_template',
+        null=True)
 
     class Meta:
         always_return_data = True
@@ -583,6 +585,19 @@ class SectionResource(DelayedAuthorizationResource, TranslatedModelResource):
         if help and not isinstance(help, Help):
             bundle.data['help'] = Help.objects.get(help_id=help['help_id'])
         return bundle
+
+    def dehydrate_section_template(self, bundle):
+        if bundle.obj.section_template:
+            return bundle.obj.section_template.section_id
+        else:
+            return None
+
+    def hydrate_section_template(self, bundle):
+        section_template = bundle.data.get('section_template', None)
+        if section_template and not isinstance(section_template, Section):
+            bundle.data['section_template'] = Section.objects.get(section_id=section_template)
+        return bundle
+
 
 class SectionAssetResource(DelayedAuthorizationResource, HookedModelResource):
     asset = fields.ToOneField(AssetResource, 'asset', full=True)
