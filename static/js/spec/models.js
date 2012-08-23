@@ -210,6 +210,7 @@ describe('Story model', function() {
         _.each(sectionProps, function(prop) {
           expect(sectionCopy.get(prop)).toEqual(section.get(prop));
         });
+        expect(sectionCopy.get('section_template')).toEqual(section.get('section_id'));
         expect(sectionCopy.get('weight')).toEqual(section.get('weight') - 1);
       });
     });

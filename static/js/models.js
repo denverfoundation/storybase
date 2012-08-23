@@ -226,6 +226,7 @@ storybase.models.Story = Backbone.Model.extend(
         sectionCopy.set("root", section.get("root"));
         sectionCopy.set("weight", section.get("weight"));
         sectionCopy.set("layout_template", section.get("layout_template"));
+        sectionCopy.set("section_template", section.get("section_id"));
         sectionCopy.set("help", section.get("help"));
         this.sections.push(sectionCopy);
       }, this);
