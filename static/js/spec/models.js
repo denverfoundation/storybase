@@ -74,54 +74,83 @@ describe("Section model", function() {
 describe("Sections collection", function() {
   describe("fetchAssets method", function() {
     beforeEach(function() {
-      var collectionUrl = "/api/0.1/stories/6c8bfeaa6bb145e791b410e3ca5e9053/sections/";
       this.server = sinon.fakeServer.create();
       this.sectionsFixture = this.fixtures.Sections.getList["6c8bfeaa6bb145e791b410e3ca5e9053"];
       this.collection = new storybase.collections.Sections;
-      this.collection.url = collectionUrl; 
+      this.collection.url = "/api/0.1/stories/6c8bfeaa6bb145e791b410e3ca5e9053/sections/";
       this.collection.reset(this.sectionsFixture.objects);
-      this.server.respondWith(
-        "GET",
-        collectionUrl,
-        this.validResponse(this.sectionsFixture)
-      );
-      _.each(this.sectionsFixture.objects, function(section) {
-        var sectionId = section["section_id"]; 
-        var url = collectionUrl + sectionId + "/assets/";
-        this.server.respondWith(
-          "GET",
-          url, 
-          this.validResponse(this.fixtures.SectionAssets.getList[sectionId])
-        );
-      }, this);
     });
 
     afterEach(function() {
       this.server.restore();
     });
-
-    it("Should populate each section's assets collection", function() {
-      var spec = this;
-      var checkAssertions = function() {
-        spec.collection.each(function(section) {
-          var fixture = spec.fixtures.SectionAssets.getList[section.id];
-          expect(section.assets.length).toEqual(fixture.objects.length);
-          _.each(fixture.objects, function(assetJSON) {
-            var asset = section.assets.get(assetJSON["asset"]["asset_id"]);
-            expect(asset).toBeDefined();
-          });
-        });
-      };
-      var callback = sinon.spy(checkAssertions);
-      this.collection.fetchAssets({
-        success: callback 
+    
+    describe("when the server returns a valid response", function() {
+      beforeEach(function() {
+        this.server.respondWith(
+          "GET",
+          this.collection.url,
+          this.validResponse(this.sectionsFixture)
+        );
+        _.each(this.sectionsFixture.objects, function(section) {
+          var sectionId = section["section_id"]; 
+          var url = this.collection.url + sectionId + "/assets/";
+          this.server.respondWith(
+            "GET",
+            url, 
+            this.validResponse(this.fixtures.SectionAssets.getList[sectionId])
+          );
+        }, this);
       });
-      this.server.respond();
-      expect(callback.called).toBe(true);
+
+      it("should populate each section's assets collection", function() {
+        var spec = this;
+        var checkAssertions = function() {
+          spec.collection.each(function(section) {
+            var fixture = spec.fixtures.SectionAssets.getList[section.id];
+            expect(section.assets.length).toEqual(fixture.objects.length);
+            _.each(fixture.objects, function(assetJSON) {
+              var asset = section.assets.get(assetJSON["asset"]["asset_id"]);
+              expect(asset).toBeDefined();
+            });
+          });
+        };
+        var callback = sinon.spy(checkAssertions);
+        this.collection.fetchAssets({
+          success: callback 
+        });
+        this.server.respond();
+        expect(callback.called).toBe(true);
+      });
     });
 
-    // BOOKMARK
-    // TODO: Test error behavior
+    describe("when the server doesn't respond", function() {
+      it("should execute an error callback", function() {
+        var errorCallback = sinon.spy();
+        var successCallback = sinon.spy();
+        this.collection.fetchAssets({
+          success: successCallback,
+          error: errorCallback
+        });
+        this.server.respond();
+        expect(errorCallback.called).toBe(true);
+        expect(successCallback.called).toBe(false);
+      });
+
+      it("should have empty asset collections", function() {
+        var spec = this;
+        var errorCallback = sinon.spy(function() {
+          spec.collection.each(function(section) {
+            expect(section.assets.length).toEqual(0);
+          });
+        });
+        this.collection.fetchAssets({
+          error: errorCallback
+        });
+        this.server.respond();
+        expect(errorCallback.called).toBe(true);
+      });
+    });
   });
 });
 

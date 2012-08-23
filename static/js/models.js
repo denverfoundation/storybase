@@ -363,6 +363,9 @@ storybase.collections.Sections = Backbone.Collection.extend(
       if (options.success) {
         this._fetchAssetsSuccess = options.success;
       }
+      if (options.error) {
+        this._fetchAssetsError = options.error;
+      }
       this.each(function(section) {
         var coll = this;
         var success = function(assets, response) {
