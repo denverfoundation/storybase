@@ -3,11 +3,6 @@
  */
 
 Namespace('storybase.utils', {
-  getValue: function(object, prop) {
-    if (!(object && object[prop])) return null;
-    return _.isFunction(object[prop]) ? object[prop]() : object[prop];
-  },
-
   capfirst: function(string) {
     return string.charAt(0).toUpperCase() + string.slice(1);
   },
