@@ -1,6 +1,5 @@
 Namespace('storybase.builder.views');
 Namespace.use('storybase.utils.capfirst');
-Namespace.use('storybase.utils.getValue');
 Namespace.use('storybase.utils.geocode');
 
 /**
@@ -526,7 +525,7 @@ storybase.builder.views.WorkflowNavView = Backbone.View.extend({
 
   getVisibleItems: function() {
     return _.filter(this.items, function(item) {
-      return _.isUndefined(item.visible) ? true : getValue(item.visible); 
+      return _.isUndefined(item.visible) ? true : _.result(item.visible); 
     });
   },
 

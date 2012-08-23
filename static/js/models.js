@@ -123,9 +123,9 @@ storybase.models.Location = Backbone.Model.extend({
    * first, instead of the urlRoot value.
    */
   url: function() {
-    var base = getValue(this, 'urlRoot') || getValue(this.collection, 'url') || urlError();
+    var base = _.result(this, 'urlRoot') || _.result(this.collection, 'url') || urlError();
     if (this.isNew()) {
-      base = getValue(this.collection, 'url') || getValue(this, 'urlRoot') || urlError();
+      base = _.result(this.collection, 'url') || _.result(this, 'urlRoot') || urlError();
       return base;
     }
     else {
