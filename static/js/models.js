@@ -287,7 +287,7 @@ storybase.models.Section = Backbone.Model.extend(
      * URL first.
      */
     url: function() {
-      var base = getValue(this.collection, 'url') || getValue(this, 'urlRoot') || urlError();
+      var base = _.result(this.collection, 'url') || _.result(this, 'urlRoot') || urlError();
       if (this.isNew()) {
         return base;
       }
