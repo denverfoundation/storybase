@@ -218,6 +218,7 @@ storybase.models.Story = Backbone.Model.extend(
       this.set('structure_type', story.get('structure_type'));
       this.set('summary', story.get('summary'));
       this.set('call_to_action', story.get('call_to_action'));
+      this.set('template_story', story.get('story_id'));
                     
       story.sections.each(function(section) {
         var sectionCopy = new storybase.models.Section();

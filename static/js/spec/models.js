@@ -200,6 +200,7 @@ describe('Story model', function() {
       _.each(storyProps, function(prop) {
         expect(story.get(prop)).toEqual(templateStory.get(prop));
       });
+      expect(story.get('template_story')).toEqual(templateStory.get('story_id'));
       expect(story.sections.length).toBeTruthy();
       expect(story.sections.length).toEqual(templateStory.sections.length);
       templateStory.sections.each(function(section) {
