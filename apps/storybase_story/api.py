@@ -41,6 +41,8 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
     # A list of lat/lon values for related Location objects as well as
     # centroids of Place tags
     points = fields.ListField(readonly=True)
+    template_story = fields.CharField(attribute='template_story',
+        null=True)
 
     class Meta:
         always_return_data = True
@@ -120,6 +122,18 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
         if request.user:
             kwargs['author'] = request.user
         return super(StoryResource, self).obj_create(bundle, request, **kwargs)
+
+    def dehydrate_template_story(self, bundle):
+        if bundle.obj.template_story:
+            return bundle.obj.template_story.story_id
+        else:
+            return None
+
+    def hydrate_template_story(self, bundle):
+        template_story = bundle.data.get('template_story', None)
+        if template_story and not isinstance(template_story, Story):
+            bundle.data['template_story'] = Story.objects.get(story_id=template_story)
+        return bundle
 
     def dehydrate_topics(self, bundle):
         """Populate a list of topic ids and names in the response objects"""

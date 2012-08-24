@@ -1452,6 +1452,7 @@ class StoryResourceTest(ResourceTestCase):
                                 'story_id',
                                 'structure_type',
                                 'summary',
+                                'template_story',
                                 'title',
                                 'topics',
                                 'url']
@@ -1529,6 +1530,39 @@ class StoryResourceTest(ResourceTestCase):
         # Check that the story id is returned by the endpoint
         returned_story_id = response['location'].split('/')[-2]
         self.assertEqual(created_story.story_id, returned_story_id)
+
+    def test_post_list_with_template(self):
+        """
+        Test that a user can create a story specifying the story that
+        provides the structure for this story.
+        """
+        template_story = create_story(title="Test Template Story",
+            summary="Test Template Story Summary", 
+            byline="Test Template Story Byline",  status="published",
+            language="en")
+        post_data = {
+            'title': "Test Story",
+            'summary': "Test Summary",
+            'byline': "Test Byline",
+            'status': "draft",
+            'language': "en",
+            'template_story': template_story.story_id
+        }
+        self.assertEqual(Story.objects.count(), 1)
+        self.api_client.client.login(username=self.username, password=self.password)
+        response = self.api_client.post('/api/0.1/stories/',
+                               format='json', data=post_data)
+        self.assertHttpCreated(response)
+        self.assertEqual(Story.objects.count(), 2)
+        returned_story_id = response['location'].split('/')[-2]
+        created_story = Story.objects.get(story_id=returned_story_id)
+        self.assertEqual(created_story.title, post_data['title'])
+        self.assertEqual(created_story.summary, post_data['summary'])
+        self.assertEqual(created_story.byline, post_data['byline'])
+        self.assertEqual(created_story.status, post_data['status'])
+        self.assertEqual(created_story.get_languages(), [post_data['language']])
+        self.assertEqual(created_story.author, self.user)
+        self.assertEqual(created_story.template_story, template_story)
 
     def test_patch_detail_unauthorized_unauthenticated(self):
         """Test that anonymouse users cannot update a story"""

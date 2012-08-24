@@ -108,6 +108,9 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
                                       blank=True)
     is_template = models.BooleanField(_("Story is a template"),
                                       default=False)
+    template_story = models.ForeignKey('Story',
+        related_name='template_for', blank=True, null=True,
+        help_text=_("Story whose structure was used to create this story"))
     on_homepage = models.BooleanField(_("Featured on homepage"),
                                       default=False)
     contact_info = models.TextField(_("Contact Information"),
