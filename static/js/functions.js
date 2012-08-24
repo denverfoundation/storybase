@@ -150,7 +150,7 @@
 	function intro_resize(){
 
 		var window_width = $(window).width();
-		var images_num = ($('#intro .images a').size())/2;
+		var images_num = ($('#banner .images a').size())/2;
 
 		var image_width = window_width / images_num
 		$('.images a, .images a img').css({
