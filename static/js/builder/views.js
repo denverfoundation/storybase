@@ -825,11 +825,11 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     console.info("Setting template story");
     var that = this;
     this.templateStory = story;
-    this.templateStory.sections.on("reset", this.getSectionAssets, this);
+    this.templateStory.sections.on("reset", this.getTemplateAssets, this);
     this.templateStory.sections.fetch();
   },
 
-  getSectionAssets: function() {
+  getTemplateAssets: function() {
     var that = this;
     this.templateStory.sections.fetchAssets({
       success: this.initializeStoryFromTemplate,
