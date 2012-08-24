@@ -721,7 +721,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   },
 
   createSectionEditView: function(section) {
-    var view = new storybase.builder.views.SectionEditView({
+    var options = {
       dispatcher: this.dispatcher,
       model: section,
       collection: this._editViews,
@@ -729,7 +729,12 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       assetTypes: this.options.assetTypes,
       layouts: this.options.layouts,
       defaultHelp: this.help.where({slug: 'new-section'})[0]
-    }); 
+    };
+    var view;
+    if (this.templateStory) {
+      options.templateSection = this.templateStory.sections.get(section.get('template_section'));
+    }
+    view = new storybase.builder.views.SectionEditView(options);
     this._editViews.push(view);
     return view;
   },
@@ -1664,6 +1669,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     this.layouts = this.options.layouts;
     this.defaultHelp = this.options.defaultHelp;
     this.templateSource = this.options.templateSource || this.templateSource;
+    this.templateSection = this.options.templateSection;
     this.template = Handlebars.compile(this.templateSource);
     this.assets = this.model.assets;
     this._unsavedAssets = [];
@@ -1715,6 +1721,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   renderAssetViews: function() {
     console.debug('Rendering asset views');
     var that = this;
+    var templateAsset;
     this.$('.storybase-container-placeholder').each(function(index, el) {
       var options = {
         el: el,
@@ -1728,6 +1735,14 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
         // If there are assets, bind them to the view with the appropriate
         // container
         options.model = that.assets.where({container: $(el).attr('id')})[0];
+      }
+      else if (that.templateSection && that.templateSection.assets.length) {
+        // This section came from a template.  Check the template's
+        // assets to get a suggested asset type.
+        templateAsset = that.templateSection.assets.where({container: $(el).attr('id')})[0];
+        if (templateAsset) {
+          options.suggestedType = templateAsset.get('type');
+        }
       }
       var sectionAssetView = new storybase.builder.views.SectionAssetEditView(options);
       sectionAssetView.render();
@@ -1975,13 +1990,17 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
 
     initialize: function() {
       console.debug("Initializing new section asset edit view");
+      var modelOptions = {};
       this.container = this.options.container;
       this.dispatcher = this.options.dispatcher;
       this.assetTypes = this.options.assetTypes;
       this.section = this.options.section;
       this.story = this.options.story;
       if (_.isUndefined(this.model)) {
-        this.model = new storybase.models.Asset();
+        if (this.options.suggestedType) {
+          modelOptions.type = this.options.suggestedType;
+        }
+        this.model = new storybase.models.Asset(modelOptions);
       }
       _.bindAll(this, 'uploadFile', 'handleUploadProgress', 'editCaption'); 
       this.bindModelEvents();
@@ -2127,7 +2146,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       if (!this.model.isNew()) {
         this._state = 'display';
       }
-      else if (!_.isUndefined(this.model.type)) {
+      else if (!_.isUndefined(this.model.get('type'))) {
         this._state = 'edit';
       }
       else {
