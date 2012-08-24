@@ -468,7 +468,7 @@ class SectionResource(DelayedAuthorizationResource, TranslatedModelResource):
     """layout_id of related ``SectionLayout`` object"""
     layout_template = fields.CharField(readonly=True)
     help = fields.CharField(attribute='help', null=True)
-    section_template = fields.CharField(attribute='section_template',
+    template_section = fields.CharField(attribute='template_section',
         null=True)
 
     class Meta:
@@ -586,16 +586,16 @@ class SectionResource(DelayedAuthorizationResource, TranslatedModelResource):
             bundle.data['help'] = Help.objects.get(help_id=help['help_id'])
         return bundle
 
-    def dehydrate_section_template(self, bundle):
-        if bundle.obj.section_template:
-            return bundle.obj.section_template.section_id
+    def dehydrate_template_section(self, bundle):
+        if bundle.obj.template_section:
+            return bundle.obj.template_section.section_id
         else:
             return None
 
-    def hydrate_section_template(self, bundle):
-        section_template = bundle.data.get('section_template', None)
-        if section_template and not isinstance(section_template, Section):
-            bundle.data['section_template'] = Section.objects.get(section_id=section_template)
+    def hydrate_template_section(self, bundle):
+        template_section = bundle.data.get('template_section', None)
+        if template_section and not isinstance(template_section, Section):
+            bundle.data['template_section'] = Section.objects.get(section_id=template_section)
         return bundle
 
 

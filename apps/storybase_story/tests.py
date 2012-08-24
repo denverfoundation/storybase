@@ -1893,7 +1893,7 @@ class SectionResourceTest(ResourceTestCase):
         self.assertEqual(section.layout.layout_id, section_post_data['layout'])
         self.assertEqual(section.help, section_help)
 
-    def test_post_list_with_section_template(self):
+    def test_post_list_with_template_section(self):
         """
         Test that a user can add a new section to a story including
         a reference to the section that was used to provide defaults
@@ -1916,7 +1916,7 @@ class SectionResourceTest(ResourceTestCase):
             'title': "Test Section",
             'language': "en",
             'layout': "26c81c9dd24c4aecab7ab4eb1cc9e2fb",
-            'section_template': template_section.section_id
+            'template_section': template_section.section_id
         }
         self.assertEqual(Story.objects.count(), 1)
         self.api_client.client.login(username=self.username, password=self.password)
@@ -1943,7 +1943,7 @@ class SectionResourceTest(ResourceTestCase):
                          section_resource_uri)
         self.assertEqual(section.title, section_post_data['title'])
         self.assertEqual(section.layout.layout_id, section_post_data['layout'])
-        self.assertEqual(section.section_template, template_section)
+        self.assertEqual(section.template_section, template_section)
 
     def test_patch_detail(self):
         """Test that a user can update the metadata of a section"""
