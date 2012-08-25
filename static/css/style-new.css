@@ -134,6 +134,8 @@ textarea { overflow: auto; }
 #main .text p span { font-size:12px; color:#5a5a5a; font-style:italic; display:block; padding-bottom:10px;  }
 #main .text p.more a { font-size:14px; color:#fe9703;  font-family: 'MuseoSlab500Regular'; display:block; margin-top:15px;  }
 
+p.byline span.author, p.byline span.date { float: left; padding-right:15px; }
+p.byline { overflow: hidden; }
 
 #main .col { width:486px; padding-bottom:55px;  }
 #main .col h4 {  background:url('images/h3-line.png') repeat-x 0 8px; margin-bottom:20px;  }

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load cms_tags i18n %}
+{% load cms_tags i18n story %}
 
 {% block extrameta %}
 <meta name="author" content="The Piton Foundation">
@@ -18,247 +18,21 @@
 {% block base_content %}
 <div id="main">
 	<div class="shell">
-		<div class="title">
-			<div class="flexslider">
-				<ul class="slides">
-					<li>
-						<h2>Tell Your Story. Transform Community.</h2>
-						<p>Your story matters. Without it, nothing happens. Floodlight will help you build, tell and share
-powerful stories that will make community change possible.    <a href="#"><em>Learn how.</em></a></p>
-						<div class="page-nav">
-							<ul>
-								<li><a class="left-nav" rel="2" href="#">Build a Story</a></li>
-								<li><span class="sep"></span><a class="right-nav" rel="2" href="#">Explore Stories</a></li>
-							</ul>
-							<div class="cl">&nbsp;</div>
-						</div>
-					</li>
-					<li>
-						<h2>Build a breakthrough story.</h2>
-						<p>Take your storytelling to the next level. Create visually compelling stories with photos, videos,
-data and more. Tell better stories by leveraging public data in creative ways.  <a href="#"><em>Learn how.</em></a></p>
-						<div class="page-nav">
-							<ul>
-								<li><a class="left-nav" rel="2" href="#">Empower</a></li>
-								<li><span class="sep"></span><a class="right-nav" rel="2" href="#">Tell Your Story</a></li>
-							</ul>
-							<div class="cl">&nbsp;</div>
-						</div>
-					</li>
-					<li>
-						<h2>Build a breakthrough story.</h2>
-						<p>Take your storytelling to the next level. Create visually compelling stories with photos, videos,
-data and more. Tell better stories by leveraging public data in creative ways.  <a href="#"><em>Learn how.</em></a></p>
-						<div class="page-nav">
-							<ul>
-								<li><a class="left-nav" rel="2" href="#">Empower</a></li>
-								<li><span class="sep"></span><a class="right-nav" rel="2" href="#">Tell Your Story</a></li>
-							</ul>
-							<div class="cl">&nbsp;</div>
-						</div>
-					</li>
-				</ul>
-			</div>
-			
-		</div>
+		{% placeholder intro %}
 		<h3><span>Special Content</span></h3>
 		<div class="flexslider-holder">
 			<div class="flexslider full-width">
-				<ul class="slides">
-					<li>
-						<div id="slideContainer" class="image ">
-							<div class="slide-shim">
-								<img src="{{ STATIC_URL }}css/images/image.jpg" alt="" />
-								<img src="{{ STATIC_URL }}css/images/image22.jpg" alt="" />
-								<img src="{{ STATIC_URL }}css/images/image.jpg" alt="" />
-								<img src="{{ STATIC_URL }}css/images/image22.jpg" alt="" />
-								<img src="{{ STATIC_URL }}css/images/image.jpg" alt="" />
-								<img src="{{ STATIC_URL }}css/images/image22.jpg" alt="" />
-								<img src="{{ STATIC_URL }}css/images/image.jpg" alt="" />
-								<img src="{{ STATIC_URL }}css/images/image22.jpg" alt="" />
-							</div>
-							<a class="back" href="#"></a>
-							<a class="forward" href="#"></a>
-						</div>
-						<div class="text">
-							<h5>Project Name Goes Here</h5>
-							<p><span>Person’s Name Here or Date</span></p>
-							<p>Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit.</p>
-							<p class="more"><a href="#">View Projects</a></p>
-						</div>
-						<div class="cl">&nbsp;</div>
-					</li>
-					<li>
-						<div id="slideContainer" class="image ">
-							<div class="slide-shim">
-								<img src="{{ STATIC_URL }}css/images/image.jpg" alt="" />
-								<img src="{{ STATIC_URL }}css/images/image22.jpg" alt="" />
-								<img src="{{ STATIC_URL }}css/images/image.jpg" alt="" />
-								<img src="{{ STATIC_URL }}css/images/image22.jpg" alt="" />
-								<img src="{{ STATIC_URL }}css/images/image.jpg" alt="" />
-								<img src="{{ STATIC_URL }}css/images/image22.jpg" alt="" />
-								<img src="{{ STATIC_URL }}css/images/image.jpg" alt="" />
-								<img src="{{ STATIC_URL }}css/images/image22.jpg" alt="" />
-							</div>
-							<a class="back" href="#"></a>
-							<a class="forward" href="#"></a>
-						</div>
-						<div class="text">
-							<h5>Project Name Goes Here</h5>
-							<p><span>Person’s Name Here or Date</span></p>
-							<p>Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit.</p>
-							<p class="more"><a href="#">View Projects</a></p>
-						</div>
-						<div class="cl">&nbsp;</div>
-					</li>
-					<li>
-						<div id="slideContainer" class="image ">
-							<div class="slide-shim">
-								<img src="{{ STATIC_URL }}css/images/image.jpg" alt="" />
-								<img src="{{ STATIC_URL }}css/images/image22.jpg" alt="" />
-								<img src="{{ STATIC_URL }}css/images/image.jpg" alt="" />
-								<img src="{{ STATIC_URL }}css/images/image22.jpg" alt="" />
-								<img src="{{ STATIC_URL }}css/images/image.jpg" alt="" />
-								<img src="{{ STATIC_URL }}css/images/image22.jpg" alt="" />
-								<img src="{{ STATIC_URL }}css/images/image.jpg" alt="" />
-								<img src="{{ STATIC_URL }}css/images/image22.jpg" alt="" />
-							</div>
-							<a class="back" href="#"></a>
-							<a class="forward" href="#"></a>
-						</div>
-						<div class="text">
-							<h5>Project Name Goes Here</h5>
-							<p><span>Person’s Name Here or Date</span></p>
-							<p>Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit.</p>
-							<p class="more"><a href="#">View Projects</a></p>
-						</div>
-						<div class="cl">&nbsp;</div>
-					</li>
-					<li>
-						<div id="slideContainer" class="image ">
-							<div class="slide-shim">
-								<img src="{{ STATIC_URL }}css/images/image.jpg" alt="" />
-								<img src="{{ STATIC_URL }}css/images/image22.jpg" alt="" />
-								<img src="{{ STATIC_URL }}css/images/image.jpg" alt="" />
-								<img src="{{ STATIC_URL }}css/images/image22.jpg" alt="" />
-								<img src="{{ STATIC_URL }}css/images/image.jpg" alt="" />
-								<img src="{{ STATIC_URL }}css/images/image22.jpg" alt="" />
-								<img src="{{ STATIC_URL }}css/images/image.jpg" alt="" />
-								<img src="{{ STATIC_URL }}css/images/image22.jpg" alt="" />
-							</div>
-							<a class="back" href="#"></a>
-							<a class="forward" href="#"></a>
-						</div>
-						<div class="text">
-							<h5>Project Name Goes Here</h5>
-							<p><span>Person’s Name Here or Date</span></p>
-							<p>Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit.</p>
-							<p class="more"><a href="#">View Projects</a></p>
-						</div>
-						<div class="cl">&nbsp;</div>
-					</li>
-				</ul>
+				{% placeholder special-content %}
 			</div>
 		</div>
 		<div class="cols">
 			<div class="flexslider col left">
 				<h4><span>Featured Projects</span></h4>
-				<ul class="slides">
-					<li>
-						<div class="image">
-							<img src="{{ STATIC_URL }}css/images/image.jpg" alt="" />
-						</div>
-						<div class="text">
-							<h5>Project Name Goes Here</h5>
-							<p><span>Person’s Name Here or Date</span></p>
-							<p>Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter.</p>
-							<p class="more"><a href="#">View Projects</a></p>
-						</div>
-					</li>
-					<li>
-						<div class="image">
-							<img src="{{ STATIC_URL }}css/images/image.jpg" alt="" />
-						</div>
-						<div class="text">
-							<h5>Project Name Goes Here</h5>
-							<p><span>Person’s Name Here or Date</span></p>
-							<p>Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter.</p>
-							<p class="more"><a href="#">View Projects</a></p>
-						</div>
-					</li>
-					<li>
-						<div class="image">
-							<img src="{{ STATIC_URL }}css/images/image.jpg" alt="" />
-						</div>
-						<div class="text">
-							<h5>Project Name Goes Here</h5>
-							<p><span>Person’s Name Here or Date</span></p>
-							<p>Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter.</p>
-							<p class="more"><a href="#">View Projects</a></p>
-						</div>
-					</li>
-					<li>
-						<div class="image">
-							<img src="{{ STATIC_URL }}css/images/image.jpg" alt="" />
-						</div>
-						<div class="text">
-							<h5>Project Name Goes Here</h5>
-							<p><span>Person’s Name Here or Date</span></p>
-							<p>Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter.</p>
-							<p class="more"><a href="#">View Projects</a></p>
-						</div>
-					</li>
-				</ul>
+				{% featured_projects %}
 			</div>
 			<div class="flexslider col right">
 				<h4><span>Featured Stories</span></h4>
-
-				<ul class="slides">
-					<li>
-						<div class="image">
-							<img src="{{ STATIC_URL }}css/images/image.jpg" alt="" />
-						</div>
-						<div class="text">
-							<h5>Project Name Goes Here</h5>
-							<p><span>Person’s Name Here or Date</span></p>
-							<p>Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter.</p>
-							<p class="more"><a href="#">View Projects</a></p>
-						</div>
-					</li>
-					<li>
-						<div class="image">
-							<img src="{{ STATIC_URL }}css/images/image.jpg" alt="" />
-						</div>
-						<div class="text">
-							<h5>Project Name Goes Here</h5>
-							<p><span>Person’s Name Here or Date</span></p>
-							<p>Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter.</p>
-							<p class="more"><a href="#">View Projects</a></p>
-						</div>
-					</li>
-					<li>
-						<div class="image">
-							<img src="{{ STATIC_URL }}css/images/image.jpg" alt="" />
-						</div>
-						<div class="text">
-							<h5>Project Name Goes Here</h5>
-							<p><span>Person’s Name Here or Date</span></p>
-							<p>Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter.</p>
-							<p class="more"><a href="#">View Projects</a></p>
-						</div>
-					</li>
-					<li>
-						<div class="image">
-							<img src="{{ STATIC_URL }}css/images/image.jpg" alt="" />
-						</div>
-						<div class="text">
-							<h5>Project Name Goes Here</h5>
-							<p><span>Person’s Name Here or Date</span></p>
-							<p>Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter.</p>
-							<p class="more"><a href="#">View Projects</a></p>
-						</div>
-					</li>
-				</ul>
+				{% featured_stories %}
 			</div>
 			<div class="cl">&nbsp;</div>
 		</div>
