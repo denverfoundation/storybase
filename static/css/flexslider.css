@@ -1,0 +1,71 @@
+/*
+ * jQuery FlexSlider v1.8
+ * http://flex.madebymufffin.com
+ *
+ * Copyright 2011, Tyler Smith
+ * Free to use under the MIT license.
+ * http://www.opensource.org/licenses/mit-license.php
+ */
+ 
+/* Browser Resets */
+.flex-container a:active,
+.flexslider a:active {outline: none;}
+
+.flex-control-nav,
+.flex-direction-nav { display:none !important; } 
+
+/* FlexSlider Necessary Styles
+*********************************/ 
+.flexslider {width: 100%; margin: 0; padding: 0;}
+.flexslider .slides > li {display: none;} /* Hide the slides before the JS is loaded. Avoids image jumping */
+.flexslider .slides img {max-width: 100%; display: block;}
+.flex-pauseplay span {text-transform: capitalize;}
+
+ul.flex-direction-nav {  }  
+
+/* Clearfix for the .slides element */
+.slides:after {content: "."; display: block; clear: both; visibility: hidden; line-height: 0; height: 0;} 
+html[xmlns] .slides {display: block;} 
+* html .slides {height: 1%;}
+
+/* No JavaScript Fallback */
+/* If you are not using another script, such as Modernizr, make sure you
+ * include js that eliminates this class on page load */
+.no-js .slides > li:first-child {display: block;}
+
+
+/* FlexSlider Default Theme
+*********************************/
+.flexslider { position: relative; }
+.flexslider .slides {}
+.flexslider .slides > li {position: relative;}
+/* Suggested container for "Slide" animation setups. Can replace this with your own, if you wish */
+.flex-container { position: relative;}
+
+/* Caption style */
+/* IE rgba() hack */
+.flex-caption {background:none; -ms-filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#4C000000,endColorstr=#4C000000);
+filter:progid:DXImageTransform.Microsoft.gradient(startColorstr=#4C000000,endColorstr=#4C000000); zoom: 1;}
+.flex-caption {width: 96%; padding: 2%; position: absolute; left: 0; bottom: 0; background: rgba(0,0,0,.3); color: #fff; text-shadow: 0 -1px 0 rgba(0,0,0,.3); font-size: 14px; line-height: 18px;}
+
+ul.slides { list-style:none !important; }
+
+/* Direction Nav */
+.flex-direction-nav { display:block !important; z-index: 5000;  }
+
+.flex-direction-nav li a {margin-top:0 !important; }
+.flex-direction-nav li .next { position:absolute; top:0; right:0;  z-index: 5000;  }
+.flex-direction-nav li .prev { position:absolute; top:0; left:0;  z-index: 5000;  }
+.flex-direction-nav li .disabled {opacity: .3; filter:alpha(opacity=30); cursor: default;}
+
+.flex-direction-nav li .next { width:75px; height:100%; background:#fff url('images/right-arrow2.jpg') no-repeat right 0; font-size: 0; line-height: 0; text-indent: -4000px;  }
+.flex-direction-nav li .prev { width:75px; height:100%; background:#fff url('images/left-arrow2.jpg') no-repeat 0 0; font-size: 0; line-height: 0; text-indent: -4000px;  }
+
+.cols  .prev, .cols .next { margin-top:22px !important;  }
+/* Control Nav */
+.flex-control-nav { list-style:none; list-style:none; display:block !important; margin-top:33px; text-align:center;  }
+.flex-control-nav li { display:inline-block; padding:0 3px;  }
+.flex-control-nav li a { 	display:inline-block; width:9px; height:9px; background:url('images/flex-control-nav.png') no-repeat right 0; font-size: 0; line-height: 0; text-indent: -4000px;   }
+.flex-control-nav li a.active { background-position:0 0; }
+
+

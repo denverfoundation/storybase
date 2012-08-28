@@ -9,6 +9,8 @@ Account management links included in the main navigation menu
     <li><a href="{% url auth_logout %}">{% trans "Sign Out" %}</a>
   </ul>
 </li>
+{% else %}
+<li><a href="{% url auth_login %}">{% trans "Sign In" %}</a></li>
 {% endif %}
 
 
