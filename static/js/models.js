@@ -123,9 +123,9 @@ storybase.models.Location = Backbone.Model.extend({
    * first, instead of the urlRoot value.
    */
   url: function() {
-    var base = getValue(this, 'urlRoot') || getValue(this.collection, 'url') || urlError();
+    var base = _.result(this, 'urlRoot') || _.result(this.collection, 'url') || urlError();
     if (this.isNew()) {
-      base = getValue(this.collection, 'url') || getValue(this, 'urlRoot') || urlError();
+      base = _.result(this.collection, 'url') || _.result(this, 'urlRoot') || urlError();
       return base;
     }
     else {
@@ -396,7 +396,24 @@ storybase.collections.SectionAssets = storybase.collections.Assets.extend({
 });
 
 storybase.models.Tag = Backbone.Model.extend({
-  idAttribute: "tag_id"
+  idAttribute: "tag_id",
+
+  /**
+   * Check whether the model has been saved to the server.
+   *
+   * This version checks for a resource_uri attribute instead of
+   * Backbone's default behavior, which is to check for a non-null id.
+   * This is needed because of the API semantics which associate a new
+   * tag with a story by POSTing to /API_ROOT/tags/stories/STORY_ID/
+   * with a payload that includes a tag_id property. It makes sense to
+   * do this with Backbone.Collection.create, but setting tag_id (this
+   * model's idAttribute) causes the default isNew implementation to
+   * think the model already exists and do a PUT request to the 
+   * wrong url.
+   */
+  isNew: function() {
+    return _.isUndefined(this.get('resource_uri'));
+  }
 });
 
 storybase.collections.Tags = Backbone.Collection.extend(

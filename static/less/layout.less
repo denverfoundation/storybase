@@ -1,41 +1,51 @@
+// Section Layouts
+// These are used in both the story builder and story viewer
+
+@import "variables.less";
+
+
+// Fixed-width, centered "slide"
 .section-width {
-  width: 940px;
+  width: @section-width;
   margin-left: auto;
   margin-right: auto;
 }
+
 .section-title {
-  font-size: 30px;
-  width: 940px;
-  margin-left: auto;
-  margin-right: auto;
+  font-size: @heading-font-size;
+  .section-width;
 }
+
 .section-layout {
   overflow: hidden;
-  font-size: 13px;
-  width: 940px;
-  margin-left: auto;
-  margin-right: auto;
+  font-size: @base-font-size;
+  .section-width;
 }
+
 .section-layout.side-by-side .left,
 .section-layout.side-by-side .right {
-  height: 489px;
+  height: @container-height; 
   width: 48%;
   float: left;
 }
+
 .section-layout.side-by-side .left {
   margin-left: 0;
   margin-right: 1%;
 }
+
 .section-layout.side-by-side .right {
   margin-left: 1%;
   margin-right: 0;
 }
+
 .section-layout.one-up .center {
   position: relative;
-  height: 805px;
+  height: @container-height-tall; 
   width: 100%;
   margin: 2 0%;
 }
+
 .section-layout img {
   max-width: 100%;
-}
+ }

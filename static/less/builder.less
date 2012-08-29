@@ -1,4 +1,7 @@
+@import "variables.less";
+
 /* Common Styles */
+
 .btn {
   border-radius: 4px;
   font-size: 13px;
@@ -9,7 +12,7 @@
   text-align: center;
   cursor: pointer;
   background-color: #F5F5F5;
-  background-image: -moz-linear-gradient(center top, #ffffff, #e6e6e6);
+  background-image: -moz-linear-gradient(center top , #FFFFFF, #E6E6E6);
   background-repeat: repeat-x;
   border-color: #E6E6E6 #E6E6E6 #B3B3B3;
   display: inline-block;
@@ -19,52 +22,65 @@
   box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
   color: #333333;
 }
+
 .btn.disabled {
   cursor: default;
   opacity: 0.65;
 }
+
 .btn-container {
   padding: 2em 0;
 }
+
 .alert-success {
   background-color: #DFF0D8;
   border-color: #D6E9C6;
   color: #468847;
 }
+
 .alert-error {
   background-color: #F2DEDE;
   border-color: #EED3D7;
   color: #B94A48;
 }
+
 .alert-info {
   background-color: #D9EDF7;
   border-color: #BCE8F1;
   color: #3A87AD;
 }
+
 .introduction {
   margin-top: 1em;
 }
+
 .centered {
   text-align: center;
 }
+
 /* Help Modal */
+
 #simplemodal-container {
   background-color: #fff;
   width: 66%;
   height: 66%;
 }
+
 #simplemodal-wrap {
   overflow-x: hidden;
   overflow-y: scroll;
 }
+
 #simplemodal-data {
   padding: 10px;
 }
+
 .help .close {
   position: absolute;
   display: block;
   right: 20px;
 }
+
 .help .continue {
   position: absolute;
   display: block;
@@ -72,27 +88,35 @@
   right: 20px;
   margin-top: -10px;
 }
+
 .help-modal-controls {
   position: relative;
   margin-top: 10px;
 }
+
 /* Rich Text Editor */
+
 .wysihtml5-toolbar {
   position: relative;
   padding: 0 0 20px 0;
 }
+
 .wysihtml5-sandbox {
   border: none !important;
 }
-[[object Object]] {
+
+[~"data-wysihtml5-dialog"] {
   position: absolute;
   top: 20px;
   width: 100%;
 }
-[[object Object]] {
+
+[~"data-wysihtml5-dialog-action"] {
   cursor: pointer;
 }
+
 /* Navigation Bar */
+
 .navbar {
   background-color: #000;
   color: #fff;
@@ -101,15 +125,18 @@
   top: 0;
   margin-bottom: 0;
 }
+
 .navbar .row {
   position: relative;
 }
+
 .navbar .title {
   float: left;
   font-size: 20px;
   padding: 8px 0 12px 0;
   line-height: 1;
 }
+
 .navbar .nav {
   position: relative;
   display: block;
@@ -118,11 +145,13 @@
   margin: 0 0 0 10px;
   padding: 0;
 }
+
 .navbar .nav > li {
   display: block;
   float: left;
   line-height: 18px;
 }
+
 .navbar .nav > li > a {
   display: block;
   float: none;
@@ -132,62 +161,74 @@
   font-weight: bold;
   text-decoration: none;
 }
+
 .tools {
   position: absolute !important;
   right: 0;
 }
+
 .workflow .active {
   background-color: #fff;
 }
+
 .workflow .active a {
   color: #000 !important;
   font-style: italic;
 }
+
 /* Main Application Container */
+
 #builder .navbar {
   position: fixed;
   z-index: 999;
 }
+
 #builder .alerts {
   /* Make sure alerts are shown below the navbar */
-
   top: 40px;
   position: fixed;
   width: 100%;
 }
+
 #builder .alert {
   padding: 1%;
   text-align: center;
 }
+
 #app {
   height: 100%;
   /* Make space for the navbar */
-
   padding-top: 40px;
 }
+
 /* Story Template List */
+
 .story-templates {
-  list-style: none;
+  list-style: none
 }
+
 .story-templates li {
   display: block;
   float: left;
   width: 30%;
   padding: 1%;
 }
+
 /* Story Builder View */
+
 .builder {
   position: relative;
   height: 100%;
 }
-.section-controls,
-.last-saved {
+
+.section-controls, .last-saved {
   position: absolute;
   top: 0;
   padding: 1% 0;
   min-width: 755px;
   max-width: 1140px;
 }
+
 .section-controls {
   width: 940px;
   margin-left: auto;
@@ -195,12 +236,15 @@
   position: absolute;
   top: 0;
 }
+
 .last-saved {
   width: 100%;
   right: 0;
   text-align: right;
 }
+
 /* Unused Assets List */
+
 .unused-assets {
   position: absolute;
   top: 0;
@@ -211,73 +255,93 @@
   color: #fff;
   z-index: 9999;
 }
+
 .unused-assets a {
   color: #fff;
   font-weight: bold;
 }
+
 .unused-assets ul {
   list-style: none;
   padding: 0;
 }
+
 .unused-asset {
   cursor: pointer;
   padding: 2px 0;
 }
+
 .unused-asset.ui-draggable-dragging {
   color: #000;
 }
+
 .unused-asset .thumbnail {
   margin: 2px;
   width: 32px;
   height: 32px;
 }
+
 /* Story information editor */
+
 .summary {
   width: 100%;
   min-height: 400px;
 }
+
 /* Call to action editor */
+
 .call-to-action {
   width: 100%;
   height: 60%;
 }
+
 /* Section Editor */
+
 .edit-section {
   position: relative;
-  width: 940px;
+  width: @section-width;
   margin-left: auto;
   margin-right: auto;
   height: 70%;
   padding: 2%;
 }
+
 .section-edit-layout {
   position: relative;
   height: 90%;
   padding-bottom: 2%;
 }
+
+
 .storybase-container-placeholder {
   position: relative;
   height: 94%;
   min-height: 400px;
+
   border: solid 1px #c8c8c8;
   overflow: hidden;
 }
+
 .storybase-container-placeholder.select {
   padding: 2%;
 }
+
 .storybase-container-placeholder.display {
   height: auto;
   min-height: 40px;
 }
+
 .storybase-container-placeholder#top,
-.storybase-container-placeholder#middle {
+.storybase-container-placeholder#middle
+{
   margin-bottom: 10px;
 }
+
 .storybase-container-placeholder [name=body] {
   /* TODO: Figure out a better way to set height */
-
   height: 150px;
 }
+
 .section-asset-controls {
   display: none;
   top: 0;
@@ -290,30 +354,38 @@
   background-color: #fff;
   z-index: 999;
 }
+
 .storybase-container-placeholder:hover .section-asset-controls {
   display: block;
 }
+
 .section-asset-controls li {
   display: inline-block;
 }
+
 .bbf-form ul {
   margin: 0;
   padding: 0;
 }
+
 .field-body .bbf-editor {
   margin-left: 0;
   width: 100%;
 }
+
 .bbf-field .bbf-editor {
   margin-left: 0;
   width: 100%;
 }
+
 .bbf-field label {
   float: none;
   width: 100%;
   font-weight: bold;
 }
+
 /* Table of contents thumbnails */
+
 #section-list {
   position: fixed;
   width: 100%;
@@ -321,31 +393,37 @@
   bottom: 0;
   z-index: 998;
 }
+
 #toggle-section-list {
   padding: 4px;
   margin-left: 8px;
   font-weight: bold;
   text-decoration: none;
   border-radius: 4px 4px 0 0;
-  background-color: #666666;
+  background-color: @control-color-1;
   color: #fff;
 }
+
 #toggle-section-list.opened::after {
   content: ' - ';
 }
+
 #toggle-section-list.closed::after {
   content: ' + ';
 }
+
 .sections-container-border {
-  border-top: 4px solid #666666;
+  border-top: 4px solid @control-color-1;
 }
+
 .sections-container {
   position: relative;
   overflow: hidden;
-  background-color: #666666;
+  background-color: @control-color-1;
   padding: 0 10px;
   text-align: center;
 }
+
 .sections-clip {
   float: left;
   width: 90%;
@@ -353,8 +431,8 @@
   padding: 0 10px;
   overflow: auto;
 }
-.scroll-left,
-.scroll-right {
+
+.scroll-left, .scroll-right {
   display: block;
   float: left;
   line-height: 100px;
@@ -362,28 +440,31 @@
   color: #fff;
   font-weight: bold;
 }
-.scroll-left:hover,
-.scroll-right:hover {
+
+.scroll-left:hover, .scroll-right:hover {
   color: #fff;
 }
+
 .scroll-right {
   position: absolute;
   right: 10px;
 }
+
 .sections {
   width: 1500px;
   margin: 0;
   padding: 0;
   float: left;
 }
+
 .section-thumbnail-container {
   position: relative;
   display: block;
   float: left;
   list-style: none;
 }
-.section-thumbnail,
-.spacer {
+
+.section-thumbnail, .spacer {
   position: relative;
   float: left;
   height: 75px;
@@ -392,17 +473,21 @@
   text-align: center;
   cursor: pointer;
 }
+
 .section-thumbnail {
   width: 120px;
   border: 1px solid #000;
   background-color: #fff;
 }
+
 .section-thumbnail .title {
   padding: 22% 0;
 }
+
 .spacer {
   width: 20px;
 }
+
 .spacer:hover {
   width: 120px;
   border: 1px solid #000;
@@ -411,25 +496,32 @@
   background-color: #C8C8C8;
   color: #fff;
 }
+
 .spacer div {
   display: none;
   padding: 22% 0;
 }
+
 .spacer:hover div {
   display: block;
 }
+
+
 .section-thumbnail-container.pseudo .section-thumbnail {
   background-color: #C8C8C8;
   color: #fff;
 }
+
 .section-thumbnail-container.selected .section-thumbnail {
-  box-shadow: 0 0 5px #0000ff;
-  -webkit-box-shadow: 0 0 5px #0000ff;
-  -moz-box-shadow: 0 0 5px #0000ff;
+  box-shadow: 0 0 5px rgba(0, 0, 255, 1);
+  -webkit-box-shadow: 0 0 5px rgba(0, 0, 255, 1);
+  -moz-box-shadow: 0 0 5px rgba(0, 0, 255, 1);
 }
+
 .section-thumbnail.new {
   margin: 10px;
 }
+
 .section-thumbnail .remove {
   display: none;
   position: absolute;
@@ -437,10 +529,14 @@
   right: 4px;
   text-decoration: none;
 }
+
 .section-thumbnail:hover .remove {
   display: block;
 }
+
+
 /* Builder Navigation Buttons */
+
 .workflow-nav {
   position: fixed;
   right: 20px;
@@ -448,71 +544,88 @@
   padding: 20px;
   text-align: right;
   border-radius: 4px;
-  background-color: rgba(102, 102, 102, 0.5);
+  background-color: @control-color-1-transparent;
 }
+
 /* Add Data View */
 .datasets {
   margin: 2% 0;
   width: 100%;
 }
+
 .datasets th,
 .datasets td {
   text-align: left;
 }
+
 .datasets th {
   font-weight: bold;
   border-bottom: solid 2px;
 }
+
 .datasets td {
   padding: 6px 0;
   border-bottom: 1px solid #CCCCCC;
 }
+
 .dataset {
   padding: 1% 0;
 }
+
 .dataset p {
   padding: 0;
 }
+
 /* Legal agreement view */
 #share-legal #permission ul {
   margin: 1em 0;
   padding: 0 0 0 40px;
 }
+
 /* Select taxonomy view */
+
 #share-taxonomy select {
   width: 300px;
 }
+
 #taxonomy {
   width: 50%;
   float: left;
 }
+
 #story-tags {
   width: 50%;
   overflow: hidden;
 }
+
 #story-tags form,
 #add-location form {
   margin-top: 1em;
   margin-bottom: 1em;
 }
+
 /* Tagging view */
 #tags {
   display: none;
   width: 300px;
 }
+
 /* Add location view */
 #add-location {
   width: 50%;
   overflow: hidden;
 }
+
 #add-location label {
   font-weight: bold;
 }
+
 #add-location form {
   display: block;
   margin-bottom: 10px;
   overflow: hidden;
 }
+
 #map {
   float: left;
   position: relative;
@@ -521,34 +634,42 @@
   margin: 0 10px 0 0;
   overflow: hidden;
 }
+
 #found-address {
   width: 200px;
   margin: 0 0 10px 210px;
 }
+
 input[name=address] {
   width: 250px;
   margin-bottom: 10px;
 }
+
 #address-name-container {
   margin-bottom: 10px;
 }
+
 #locations {
   margin: 10px 0 0 0;
   padding: 0;
   list-style: none;
 }
+
 #share-link {
   display: table;
   width: 50%;
   margin: 2em auto;
 }
+
 #share-link div {
   display: table-cell;
   vertical-align: middle;
 }
+
 #story-url {
   width: 300px;
 }
+
 .addthis_toolbox {
   display: inline-block;
   padding: 0;

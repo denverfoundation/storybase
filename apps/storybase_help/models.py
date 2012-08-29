@@ -7,6 +7,11 @@ from uuidfield.fields import UUIDField
 from storybase.fields import ShortTextField
 from storybase.models.translation import TranslatedModel, TranslationModel
 
+
+class HelpManager(models.Manager):
+    def get_by_natural_key(self, help_id):
+        return self.get(help_id=help_id)
+
 class HelpTranslation(TranslationModel):
     help = models.ForeignKey('Help')
     title = ShortTextField(blank=True) 
@@ -16,6 +21,8 @@ class HelpTranslation(TranslationModel):
 class Help(TranslatedModel):
     help_id = UUIDField(auto=True)
     slug = models.SlugField(blank=True)
+
+    objects = HelpManager()
 
     translated_fields = ['body', 'title']
     translation_set = 'helptranslation_set'
@@ -29,6 +36,9 @@ class Help(TranslatedModel):
             return self.title
 
         return _("Help Item") + " " + self.help_id
+
+    def natural_key(self):
+        return (self.help_id,)
 
 
 def create_help(title='', body='', language=settings.LANGUAGE_CODE, 

@@ -41,9 +41,6 @@ class Migration(SchemaMigration):
         ))
         db.create_unique('storybase_story_sectionlayout_containers', ['sectionlayout_id', 'container_id'])
 
-        # Deleting field 'SectionAsset.weight'
-        db.delete_column('storybase_story_sectionasset', 'weight')
-
         # Adding field 'SectionAsset.container'
         db.add_column('storybase_story_sectionasset', 'container', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['storybase_story.Container'], null=True), keep_default=False)
 
@@ -64,9 +61,6 @@ class Migration(SchemaMigration):
 
         # Removing M2M table for field containers on 'SectionLayout'
         db.delete_table('storybase_story_sectionlayout_containers')
-
-        # Adding field 'SectionAsset.weight'
-        db.add_column('storybase_story_sectionasset', 'weight', self.gf('django.db.models.fields.IntegerField')(default=0), keep_default=False)
 
         # Deleting field 'SectionAsset.container'
         db.delete_column('storybase_story_sectionasset', 'container_id')
@@ -204,7 +198,8 @@ class Migration(SchemaMigration):
             'asset': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['storybase_asset.Asset']"}),
             'container': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['storybase_story.Container']", 'null': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'section': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['storybase_story.Section']"})
+            'section': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['storybase_story.Section']"}),
+            'weight': ('django.db.models.fields.IntegerField', [], {'default': '0'})
         },
         'storybase_story.sectionlayout': {
             'Meta': {'object_name': 'SectionLayout'},

@@ -23,8 +23,18 @@
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/select2/select2.css">{% endaddtoblock %}
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/leaflet/leaflet.css">{% endaddtoblock %}
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/style.css">{% endaddtoblock %}
+    {% comment %}
+    In development, use Javascript to compile the LESS to CSS. In
+    production, assume they've been pre-compiled/collected.
+    {% endcomment %}
+    {% if debug %}
+    {% addtoblock "css" %}<link rel="stylesheet/less" href="{{ STATIC_URL }}less/builder.less">{% endaddtoblock %}
+    {% addtoblock "css" %}<link rel="stylesheet/less" href="{{ STATIC_URL }}less/layout.less">{% endaddtoblock %}
+    {% addtoblock "css" %}<script src="{{ STATIC_URL }}js/libs/less-1.3.0.min.js"></script>{% endaddtoblock %}
+    {% else %}
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/builder.css">{% endaddtoblock %}
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/layout.css">{% endaddtoblock %}
+    {% endif %}
 
     {% render_block "css" %}
     <!-- end CSS-->
@@ -65,19 +75,16 @@
     <script src="{{ STATIC_URL }}js/libs/json2.js"></script>
     <script src="{{ STATIC_URL }}js/libs/backbone-min.js"></script>
     <script src="{{ STATIC_URL }}js/libs/handlebars-1.0.0.beta.6.js"></script>
-    <script src="{{ STATIC_URL }}js/libs/backbone-forms/backbone-forms.js"></script>
+    <script src="{{ STATIC_URL }}js/libs/backbone-forms/backbone-forms.min.js"></script>
     <!-- Default styles for backbone forms templates are included above -->
     <script defer src="{{ STATIC_URL }}js/libs/jquery.simplemodal.1.4.2.min.js"></script>
     <!-- TODO: Finalize editor matching views -->
     <script src="{{ STATIC_URL}}js/libs/wysihtml5/advanced.js"></script>
-    <!-- TODO: Use minified version of WYSIHTML5 -->
-    <script src="{{ STATIC_URL}}js/libs/wysihtml5/wysihtml5-0.3.0.js"></script>
-    <!-- TODO: Use minified version -->
+    <script src="{{ STATIC_URL}}js/libs/wysihtml5/wysihtml5-0.3.0.min.js"></script>
     <script src="{{ STATIC_URL }}js/libs/jquery-ui-1.8.22.custom.min.js"></script>
-    <script src="{{ STATIC_URL}}js/libs/jquery.jeditable.js"></script>
-    <script src="{{ STATIC_URL }}js/libs/select2/select2.js"></script>
-    <!-- TODO: change to leaflet.js -->
-    <script src="{{ STATIC_URL}}js/libs/leaflet/leaflet-src.js"></script>
+    <script src="{{ STATIC_URL}}js/libs/jquery.jeditable.mini.js"></script>
+    <script src="{{ STATIC_URL }}js/libs/select2/select2.min.js"></script>
+    <script src="{{ STATIC_URL}}js/libs/leaflet/leaflet.js"></script>
     <script src="{{ STATIC_URL }}js/libs/jquery.cookie.js"></script>
 
     <script src="{{ STATIC_URL }}js/utils.js"></script>

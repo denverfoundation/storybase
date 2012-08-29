@@ -8,25 +8,45 @@
   <script type="text/javascript" src="libs/jasmine-1.2.0/jasmine.js"></script>
   <script type="text/javascript" src="libs/jasmine-1.2.0/jasmine-html.js"></script>
 
+
   <!-- Testing dependencies -->
   <script src="libs/jasmine-jquery-1.3.1.js"></script>
   <script src="libs/sinon-1.3.4.js"></script>
 
   <!-- Applicaton dependencies -->
   <script src="libs/jquery-1.7.2.min.js"></script>
+  <script src="libs/jquery-ui-1.8.22.custom.min.js"></script>
   <script src="libs/Namespace.js"></script>
   <script src="libs/underscore-min.js"></script>
   <script src="libs/json2.js"></script>
   <script src="libs/backbone-min.js"></script>
   <script src="libs/handlebars-1.0.0.beta.6.js"></script>
-  <!--
+  <script src="libs/leaflet/leaflet.js"></script>
+  <script src="libs/jquery.jeditable.js"></script>
   <script src="libs/backbone-min.js"></script>
-  -->
-  <script src="libs/backbone.js"></script>
   <script src="libs/backbone-forms/backbone-forms.min.js"></script>
   <link href="libs/backbone-forms/templates/default.css" rel="stylesheet">
+  <script src="libs/wysihtml5/advanced.js"></script>
+  <script src="libs/wysihtml5/wysihtml5-0.3.0.min.js"></script>
+
+  <!-- Mock JavaScript stuff -->
+  <script type="text/javascript">
+  // Mock Django's JavaScript translation catalog
+  var gettext = function(s) {
+    return s;
+  };
+  // Mock the jquery-cookie plugin
+  $.cookie = function() {};
+
+  // Add Handlebars Templates to the DOM.  This is needed because the 
+  // Backbone views expect them to be there when the JavaScript files are
+  // parsed.
+  jasmine.getFixtures().fixturesPath = 'spec/fixtures';
+  $('head').append(readFixtures('story_builder_handlebars.html'));
+  </script>
 
   <!-- Application -->
+  <script src="utils.js"></script>
   <script src="models.js"></script>
   <script src="forms.js"></script>
   <script src="builder/views.js"></script>

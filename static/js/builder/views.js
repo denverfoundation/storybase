@@ -1,6 +1,5 @@
 Namespace('storybase.builder.views');
 Namespace.use('storybase.utils.capfirst');
-Namespace.use('storybase.utils.getValue');
 Namespace.use('storybase.utils.geocode');
 
 /**
@@ -526,7 +525,7 @@ storybase.builder.views.WorkflowNavView = Backbone.View.extend({
 
   getVisibleItems: function() {
     return _.filter(this.items, function(item) {
-      return _.isUndefined(item.visible) ? true : getValue(item.visible); 
+      return _.isUndefined(item.visible) ? true : _.result(item.visible); 
     });
   },
 
@@ -1663,7 +1662,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   templateSource: $('#section-edit-template').html(),
 
   defaults: {
-    titleEl: '.title'
+    titleEl: '.section-title'
   },
 
   events: {
@@ -2089,7 +2088,9 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       this.$el.html(this.template(context));
       this.setClass();
       if (state == 'select') {
-        this.$el.droppable();
+        // The accept option needs to match the class on the items in
+        // the UnusedAssetView list
+        this.$el.droppable({ accept: ".unused-asset" });
       }
       if (state == 'display') {
         if (!this.$('.caption').length && this.model.formFieldVisible('caption', this.model.get('type'))) {
@@ -2288,17 +2289,19 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       this.setState('select').render();
     },
 
-    handleDrop: function(event, ui) {
+    handleDrop: function(evt, ui) {
       console.debug("Asset dropped");
       var id = ui.draggable.data('asset-id');
-      this.model = this.story.unusedAssets.get(id);
-      this.story.unusedAssets.remove(this.model);
-      if (!this.story.unusedAssets.length) {
-        this.dispatcher.trigger('has:assetlist', false);
+      if (id) {
+        this.model = this.story.unusedAssets.get(id);
+        this.story.unusedAssets.remove(this.model);
+        if (!this.story.unusedAssets.length) {
+          this.dispatcher.trigger('has:assetlist', false);
+        }
+        this.setState('display');
+        this.dispatcher.trigger("do:add:sectionasset", this.section, this.model, this.container);
+        this.render();
       }
-      this.setState('display');
-      this.dispatcher.trigger("do:add:sectionasset", this.section, this.model, this.container);
-      this.render();
     }
   })
 );
@@ -3115,7 +3118,6 @@ storybase.builder.views.AddLocationView = Backbone.View.extend({
   deleteLocation: function(evt) {
     evt.preventDefault();
     var id = $(evt.target).data('location-id');
-    console.debug(id);
     var loc = this.collection.get(id);
     loc.destroy();
   }
@@ -3137,6 +3139,14 @@ storybase.builder.views.TagView = Backbone.View.extend({
       story: this.model
     });
     this.collection.on("reset", this.setTags, this);
+    if (_.isUndefined(this.model)) {
+      this.dispatcher.on("ready:story", this.setStory, this);
+    }
+  },
+
+  setStory: function(story) {
+    this.model = story;
+    this.collection.setStory(story);
   },
 
   render: function() {
@@ -3189,7 +3199,6 @@ storybase.builder.views.TagView = Backbone.View.extend({
     var data = {};
     var id;
     var model;
-    console.debug(evt);
     if (evt.added) {
       if (evt.added.tagId) {
         // Existing tag
@@ -3217,7 +3226,6 @@ storybase.builder.views.TagView = Backbone.View.extend({
         model = this.collection.get(evt.removed.id);
         id = evt.removed.id;
       }
-      console.debug(model);
       model.url = storybase.globals.API_ROOT + 'tags/' + id + '/stories/' + this.model.id + '/';
       model.destroy();
     }

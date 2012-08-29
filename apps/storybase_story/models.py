@@ -27,7 +27,8 @@ from storybase_asset.models import Asset, DataSet
 from storybase_help.models import Help
 from storybase_user.models import Organization, Project
 from storybase_story import structure
-from storybase_story.managers import StoryManager
+from storybase_story.managers import (ContainerManager, SectionLayoutManager,
+    SectionManager, StoryManager, StoryTemplateManager)
 from storybase_taxonomy.models import TaggedItem
 
 
@@ -321,6 +322,8 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
 
         return points
 
+    def natural_key(self):
+        return (self.story_id,)
 
 
 def set_story_slug(sender, instance, **kwargs):
@@ -398,7 +401,8 @@ class SectionTranslation(TranslationModel):
         return self.title
 
 
-class Section(node_factory('SectionRelation'), TranslatedModel, SectionPermission):
+class Section(node_factory('SectionRelation'), TranslatedModel, 
+              SectionPermission):
     """ Section of a story """
     section_id = UUIDField(auto=True)
     story = models.ForeignKey('Story', related_name='sections')
@@ -412,6 +416,8 @@ class Section(node_factory('SectionRelation'), TranslatedModel, SectionPermissio
     """The ordering of top-level sections relative to each other"""
     assets = models.ManyToManyField(Asset, related_name='sections',
                                     blank=True, through='SectionAsset')
+
+    objects = SectionManager()
 
     translated_fields = ['title']
     translation_set = 'sectiontranslation_set'
@@ -490,16 +496,18 @@ class Section(node_factory('SectionRelation'), TranslatedModel, SectionPermissio
 
     def render_html(self):
         """Render a HTML representation of the section structure"""
+        default_template = "storybase_story/sectionlayouts/weighted.html"
+        assets = self.sectionasset_set.order_by('weight')
         output = []
         context = {
-            'asset_content': {}
+            'assets': assets,
         }
         output.append("<h2 class='title'>%s</h2>" % self.title)
-        template_filename = self.layout.get_template_filename()
-        for asset in self.assets.select_subclasses():
-            section_asset = asset.sectionasset_set.get(section=self)
-            context['asset_content'][section_asset.container.name] = asset.render_html()
-
+        # If there isn't a layout specified, default to the one that just
+        # orders the section's assets by their weight.
+        template_filename = (self.layout.get_template_filename()
+            if self.layout is not None else default_template)
+                
         output.append(render_to_string(template_filename, context))
         return mark_safe(u'\n'.join(output))
 
@@ -519,6 +527,9 @@ class Section(node_factory('SectionRelation'), TranslatedModel, SectionPermissio
     change_link.short_description = 'Change' 
     change_link.allow_tags = True
 
+    def natural_key(self):
+        return (self.section_id,)
+    natural_key.dependencies = ['storybase_help.help', 'storybase_story.story']
 
 
 class SectionRelation(edge_factory(Section, concrete=False)):
@@ -557,6 +568,10 @@ class SectionAsset(models.Model, SectionAssetPermission):
     section = models.ForeignKey('Section')
     asset = models.ForeignKey('storybase_asset.Asset')
     container = models.ForeignKey('Container', null=True)
+    # This won't really get used moving forward, but needs to stay to
+    # support backward compatibility for the initial set of stories on
+    # staging during the development process.
+    weight = models.IntegerField(default=0)
 
 
 def add_section_asset_to_story(sender, instance, **kwargs):
@@ -615,6 +630,8 @@ class StoryTemplate(TranslatedModel):
     time_needed = models.CharField(max_length=140, choices=TIME_NEEDED_CHOICES,
                                    blank=True)
 
+    objects = StoryTemplateManager()
+
     # Class attributes to handle translation
     translated_fields = ['title', 'description', 'tag_line']
     translation_set = 'storytemplatetranslation_set'
@@ -622,6 +639,9 @@ class StoryTemplate(TranslatedModel):
 
     def __unicode__(self):
         return self.title
+
+    def natural_key(self):
+        return (self.template_id,)
 
 
 class SectionLayoutTranslation(TranslationModel):
@@ -642,10 +662,13 @@ class SectionLayout(TranslatedModel):
     containers = models.ManyToManyField('Container', related_name='layouts',
                                         blank=True)
 
+    objects = SectionLayoutManager()
+
     # Class attributes to handle translation
     translated_fields = ['name']
     translation_set = 'sectionlayouttranslation_set'
     translation_class = SectionLayoutTranslation
+
 
     def __unicode__(self):
         return self.name
@@ -657,6 +680,9 @@ class SectionLayout(TranslatedModel):
         template_filename = self.get_template_filename() 
         return render_to_string(template_filename)
 
+    def natural_key(self):
+        return (self.layout_id,)
+
 
 class Container(models.Model):
     """
@@ -664,8 +690,13 @@ class Container(models.Model):
     """
     name = models.SlugField(unique=True)
 
+    objects = ContainerManager()
+
     def __unicode__(self):
         return self.name
+
+    def natural_key(self):
+        return (self.name,)
     
 
 # Internal API functions for creating model instances in a way that

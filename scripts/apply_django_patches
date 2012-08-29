@@ -17,13 +17,21 @@ while [ -h "$SOURCE" ] ; do SOURCE="$(readlink "$SOURCE")"; done
 DIR="$( cd -P "$( dirname "$SOURCE" )" && pwd )"
 DJANGO_PATH=$1
 PATCH_DIR="$( cd "$DIR/../patches" && pwd)"
-PATCH="$PATCH_DIR/postgis-adapter-2.patch"
-
+# Patch to support PostgreSQL 9.1's PostGIS in Django 1.3
+# Django Ticket #16778
+PATCH_16778="$PATCH_DIR/postgis-adapter-2.patch"
+# Patch to allow model self-references with natural keys in dumpdata
+# management command in Django 1.3. Django Ticket #16317
+# TODO: The line numbers in this patch need to be updated for Django 1.4
+PATCH_16317="$PATCH_DIR/16317_get_by_natural_key.patch"
 
 DJANGO_VERSION=( `django_version` )
 POSTGRES_VERSION=( `postgres_version` )
 
 if [ ${DJANGO_VERSION[0]} -le  1 -a ${DJANGO_VERSION[1]} -le 3 -a ${POSTGRES_VERSION[0]} -ge 9 -a ${POSTGRES_VERSION[1]} -ge 1 ]; then
-  patch -d $DJANGO_PATH -p1 --backup < $PATCH
+  patch -d $DJANGO_PATH -p1 --backup < $PATCH_16778
 fi
 
+if [ ${DJANGO_VERSION[0]} -le  1 -a ${DJANGO_VERSION[1]} -le 4 ]; then
+  patch -d $DJANGO_PATH -p1 --backup < $PATCH_16317
+fi

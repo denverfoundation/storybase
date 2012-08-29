@@ -8,8 +8,11 @@ class Migration(DataMigration):
 
     def forwards(self, orm):
         for user in orm['auth.User'].objects.all():
-            orm.UserProfile.objects.create(user=user)
-
+            profile = orm.UserProfile(user=user)
+            profile_id_field = profile._meta.get_field_by_name('profile_id')[0]
+            profile_id_field.auto = True
+            profile.profile_id = profile_id_field.pre_save(profile, True)
+            profile.save()
 
     def backwards(self, orm):
         orm.UserProfile.objects.all().delete()

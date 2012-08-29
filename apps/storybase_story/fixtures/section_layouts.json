@@ -1,132 +1,156 @@
 [
     {
-        "fields": {
-            "language": "en", 
-            "name": "Side by Side", 
-            "layout": 1, 
-            "translation_id": "6bc5da0836cc4b95bc03562a53c072c4"
-        }, 
-        "model": "storybase_story.sectionlayouttranslation", 
-        "pk": 1
-    }, 
-    {
-        "fields": {
-            "language": "en", 
-            "name": "1 Up", 
-            "layout": 2, 
-            "translation_id": "b684361fc0b04d4ab241ac88b02fc9a5"
-        }, 
-        "model": "storybase_story.sectionlayouttranslation", 
-        "pk": 2
-    }, 
-    {
-        "fields": {
-            "language": "en", 
-            "layout": 3, 
-            "name": "Above/Below", 
-            "translation_id": "fee7cf78143d44569567e5a8343fc438"
-        }, 
-        "model": "storybase_story.sectionlayouttranslation", 
-        "pk": 3
-    },
-    {
-        "fields": {
-            "language": "en", 
-            "layout": 4, 
-            "name": "3 Stacked", 
-            "translation_id": "85747943a76943ce9ae7afa3ae69f9e5"
-        }, 
-        "model": "storybase_story.sectionlayouttranslation", 
-        "pk": 4
-    }, 
-    {
-        "fields": {
-            "containers": [
-                1, 
-                2
-            ], 
-            "layout_id": "26c81c9dd24c4aecab7ab4eb1cc9e2fb", 
-            "template": "side_by_side.html"
-        }, 
-        "model": "storybase_story.sectionlayout", 
-        "pk": 1
-    }, 
-    {
-        "fields": {
-            "containers": [
-                3
-            ], 
-            "layout_id": "ccaea5bac5c7467eb014baf6f7476ccb", 
-            "template": "1up.html"
-        }, 
-        "model": "storybase_story.sectionlayout", 
-        "pk": 2
-    }, 
-    {
-        "fields": {
-            "containers": [
-                4,
-                5
-            ], 
-            "layout_id": "f4fba003eecd4efa83fd45321537e24a", 
-            "template": "above_below.html"
-        }, 
-        "model": "storybase_story.sectionlayout", 
-        "pk": 3
-    },
-    {
-        "fields": {
-            "containers": [
-                4, 
-                5, 
-                6
-            ], 
-            "layout_id": "f0317038b9ab41e6beeedea7b7fe178e", 
-            "template": "3_stacked.html"
-        }, 
-        "model": "storybase_story.sectionlayout", 
-        "pk": 4
-    }, 
-    {
+        "pk": null, 
+        "model": "storybase_story.container", 
         "fields": {
             "name": "left"
-        }, 
-        "model": "storybase_story.container", 
-        "pk": 1
+        }
     }, 
     {
+        "pk": null, 
+        "model": "storybase_story.container", 
         "fields": {
             "name": "right"
-        }, 
-        "model": "storybase_story.container", 
-        "pk": 2
-    },
+        }
+    }, 
     {
+        "pk": null, 
+        "model": "storybase_story.container", 
         "fields": {
             "name": "center"
-        }, 
-        "model": "storybase_story.container", 
-        "pk": 3
-    },
+        }
+    }, 
     {
+        "pk": null, 
+        "model": "storybase_story.container", 
         "fields": {
             "name": "top"
-        }, 
-        "model": "storybase_story.container", 
-        "pk": 4
-    },
+        }
+    }, 
     {
+        "pk": null, 
+        "model": "storybase_story.container", 
         "fields": {
             "name": "bottom"
-        }, 
-        "model": "storybase_story.container", 
-        "pk": 5
-    },
+        }
+    }, 
     {
+        "pk": null, 
+        "model": "storybase_story.container", 
         "fields": {
             "name": "middle"
-        }, 
-        "model": "storybase_story.container", 
-        "pk": 6
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_story.sectionlayout", 
+        "fields": {
+            "layout_id": "26c81c9dd24c4aecab7ab4eb1cc9e2fb", 
+            "containers": [
+                [
+                    "left"
+                ], 
+                [
+                    "right"
+                ]
+            ], 
+            "template": "side_by_side.html"
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_story.sectionlayout", 
+        "fields": {
+            "layout_id": "ccaea5bac5c7467eb014baf6f7476ccb", 
+            "containers": [
+                [
+                    "center"
+                ]
+            ], 
+            "template": "1up.html"
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_story.sectionlayout", 
+        "fields": {
+            "layout_id": "f4fba003eecd4efa83fd45321537e24a", 
+            "containers": [
+                [
+                    "top"
+                ], 
+                [
+                    "bottom"
+                ]
+            ], 
+            "template": "above_below.html"
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_story.sectionlayout", 
+        "fields": {
+            "layout_id": "f0317038b9ab41e6beeedea7b7fe178e", 
+            "containers": [
+                [
+                    "top"
+                ], 
+                [
+                    "bottom"
+                ], 
+                [
+                    "middle"
+                ]
+            ], 
+            "template": "3_stacked.html"
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_story.sectionlayouttranslation", 
+        "fields": {
+            "layout": [
+                "26c81c9dd24c4aecab7ab4eb1cc9e2fb"
+            ], 
+            "translation_id": "6bc5da0836cc4b95bc03562a53c072c4", 
+            "language": "en", 
+            "name": "Side by Side"
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_story.sectionlayouttranslation", 
+        "fields": {
+            "layout": [
+                "ccaea5bac5c7467eb014baf6f7476ccb"
+            ], 
+            "translation_id": "b684361fc0b04d4ab241ac88b02fc9a5", 
+            "language": "en", 
+            "name": "1 Up"
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_story.sectionlayouttranslation", 
+        "fields": {
+            "layout": [
+                "f4fba003eecd4efa83fd45321537e24a"
+            ], 
+            "translation_id": "fee7cf78143d44569567e5a8343fc438", 
+            "language": "en", 
+            "name": "Above/Below"
+        }
+    }, 
+    {
+        "pk": null, 
+        "model": "storybase_story.sectionlayouttranslation", 
+        "fields": {
+            "layout": [
+                "f0317038b9ab41e6beeedea7b7fe178e"
+            ], 
+            "translation_id": "85747943a76943ce9ae7afa3ae69f9e5", 
+            "language": "en", 
+            "name": "3 Stacked"
+        }
     }
 ]
