@@ -5,22 +5,17 @@ import random # temp
 
 register = template.Library()
 
-@register.simple_tag(takes_context=True)
-def container(context, name):
-    try:
-        return context['asset_content'][name]
-    except KeyError:
-        return '<div class="storybase-container-placeholder" id="%s"></div>' % (name)
-
 @register.simple_tag
-def featured_stories(count = 4):
-    # temp: should actually pull stories, etc.
+def featured_projects(count = 4):
+    # temp: should actually pull projects, etc.    
     # currently the template asks for a "normalized" dictionary format, so 
-    # note that passing raw project objects may not work.
-    stories = []
+    # note that passing raw project objects won't work.
+
+    #projects = Project.objects.on_homepage().order_by('-last_edited')[:count]
+    projects = []
     for i in range(count):
-        stories.append({ 
-            "title": "Story %d Title" % (i + 1),
+        projects.append({ 
+            "title": "Project %d Title" % (i + 1),
             "author": "Author Name", 
             "date": "August 25, 2012", 
             "image_url": "/static/css/images/image%d.jpg" % random.randrange(1, 9), 
@@ -28,5 +23,5 @@ def featured_stories(count = 4):
         })
 
     template = get_template('featured_objects.html')
-    context = Context({ "objects": stories, "more_link_text": "View Stories", "more_link_url": "/stories"})
+    context = Context({ "objects": projects, "more_link_text": "View Projects", "more_link_url": "/projects"})
     return template.render(context)
