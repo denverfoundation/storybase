@@ -131,7 +131,7 @@ textarea { overflow: auto; }
 #main .full-width .image { width:335px; float:left; display:inline;  padding-left:76px;   }
 #main .text { margin-top:4px; float:right; display:inline; width:490px;   padding-right:76px;   }
 #main .text p { font-size:12px; line-height:16px;  font-family:Georgia, 'Times New Roman', Serif; color:#5a5a5a;  }
-#main .text p span { font-size:12px; color:#5a5a5a; font-style:italic; display:block; padding-bottom:10px;  }
+#main .text p.byline { font-size:12px; color:#5a5a5a; font-style:italic; display:block; padding-bottom:10px;  }
 #main .text p.more a { font-size:14px; color:#fe9703;  font-family: 'MuseoSlab500Regular'; display:block; margin-top:15px;  }
 
 p.byline span.author, p.byline span.date { float: left; padding-right:15px; }
@@ -272,3 +272,52 @@ ul.social li.icon3 a { background-position:-67px 0; }
 
 .bottom .flexslider .flex-control-nav,
 .bottom .flexslider .flex-direction-nav { display:none !important;  }
+
+/* Modal dialogs */
+.modal {
+	display: none;
+}
+
+a#launch-story-viewer {
+	position: absolute;
+	right: 0;
+}
+
+
+/* story detail */
+.content-page.story-detail hr {
+	border:0;
+	height:1px;
+	padding:7px 0;
+	background:url('images/h3-line.png') repeat-x;
+	margin-bottom:20px;
+}
+.content-page.story-detail section {
+	overflow:hidden;
+}
+.content-page.story-detail .story-featured-asset,
+.content-page.story-detail .story-summary,
+.content-page.story-detail .related-stories,
+.content-page.story-detail .story-details,
+.content-page.story-detail .citizen-comments,
+.content-page.story-detail .call-to-action
+{ float:left; width:480px; position: relative; }
+.content-page.story-detail .story img { width:480px; }
+.content-page.story-detail .story-featured-asset,
+.content-page.story-detail .related-stories,
+.content-page.story-detail .citizen-comments
+{ margin-right:40px; }
+.content-page.story-detail .story + hr,
+.content-page.story-detail .story-outreach { clear:left; }
+.content-page.story-detail .call-to-action p,
+.content-page.story-detail .call-to-action ul {
+	float:left;
+	width:50%;
+}
+#main .content-page.story-detail .call-to-action ul {
+	list-style:disc;
+}
+.content-page.story-detail .story-metadata dt, 
+.content-page.story-detail .story-metadata dd { float:left; }
+.content-page.story-detail .story-metadata dt { clear:left; margin-right:4px }
+.content-page.story-detail .story-metadata dt:after { content:": " }
