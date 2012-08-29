@@ -137,7 +137,31 @@
 		});
 
 		$('.list-view .box ').append('<div class="cl"/>')
-
+		
+		// nb: using classes atm; best not to have mutliple on a page
+		$('.post-content .slides').cycle({
+			before: function(currSlideElement, nextSlideElement, options, forwardFlag) {
+				// in safari, at any rate, we have to jiggle the width or it doesn't render properly. :(
+				var w = $(this).width();
+				$(this).width(w + 1).width(w - 1);
+			},
+			after: function(currSlideElement, nextSlideElement, options, forwardFlag) {
+				$('.post-content .slides').data('active-index', $(this).index());
+				$('.post-nav a').removeClass('active').eq($(this).index()).addClass('active');
+			},
+			autostop: true,
+			autostopCount: 1,
+			fx: 'scrollLeft',
+			speed: 500
+		});
+		$('.post-nav a').click(function() {
+			var myIndex = $(this).parent().index();
+			var transition = 'scrollRight';
+			if ($('.post-content .slides').data('active-index') < $(this).parent().index()) {
+				transition = 'scrollLeft';
+			}
+			$('.post-content .slides').cycle($(this).parent().index(), transition);
+		});
 	});
 
 
