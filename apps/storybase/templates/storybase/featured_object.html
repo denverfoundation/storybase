@@ -1,3 +1,4 @@
+{% load cms_tags i18n %}
 
 {% comment %}
 context:
@@ -15,7 +16,7 @@ context:
 	{% for object in objects %}
 	<li>
 		<div class="image">
-			<img src="{{ object.image_url }}" alt="" />
+			<img src="{{ STATIC_URL }}{{ object.image_url }}" alt="" />
 		</div>
 		<div class="text">
 			<h5>{{ object.title }}</h5>
