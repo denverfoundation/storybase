@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load cms_tags i18n story %}
+{% load cms_tags i18n story projects %}
 
 {% block extrameta %}
 <meta name="author" content="The Piton Foundation">
@@ -38,54 +38,7 @@
 		</div>
 		<div class=" bottom">
 			<h3><span>Supporting Foundations</span></h3>
-			<div class="left">
-				<ul>
-					<li><a class="active" href="#">The Denver Foundation</a></li>
-					<li><a href="#">The Piton Foundation</a></li>
-					<li><a href="#">The Knight Foundation</a></li>
-					<li><a href="#">iNet News</a></li>
-				</ul>
-			</div>
-			<div class="right flexslider">
-				<ul class="slides">
-					<li>
-						<div class="image">
-							<img src="{{ STATIC_URL }}css/images/denver.jpg" alt="" />
-						</div>
-						<div class="text">
-							<p>Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit.</p>
-						</div>
-						<div class="cl">&nbsp;</div>
-					</li>
-					<li>
-						<div class="image">
-							<img src="{{ STATIC_URL }}css/images/denver.jpg" alt="" />
-						</div>
-						<div class="text">
-							<p>Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit.</p>
-						</div>
-						<div class="cl">&nbsp;</div>
-					</li>
-					<li>
-						<div class="image">
-							<img src="{{ STATIC_URL }}css/images/denver.jpg" alt="" />
-						</div>
-						<div class="text">
-							<p>Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit.</p>
-						</div>
-						<div class="cl">&nbsp;</div>
-					</li>
-					<li>
-						<div class="image">
-							<img src="{{ STATIC_URL }}css/images/denver.jpg" alt="" />
-						</div>
-						<div class="text">
-							<p>Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit.</p>
-						</div>
-						<div class="cl">&nbsp;</div>
-					</li>
-				</ul>
-			</div>
+			{% placeholder supporting-foundations %}
 		</div>
 	</div>
 </div><!-- main -->
