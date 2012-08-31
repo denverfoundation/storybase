@@ -121,9 +121,30 @@
             storyTemplates: new storybase.builder.collections.StoryTemplates,
             topics: {{ topics_json }} 
         };
+        var templateAssetsJSON = null;
+        var templateSectionsJSON = null;
         {% if story_json %}
         options.model = new storybase.models.Story({{ story_json }});
         {% endif %}
+        {% if template_story_json %}
+        options.templateStory = new storybase.models.Story({{ template_story_json }});
+        {% endif %}
+        {% if template_sections_json %}
+        templateSectionsJSON = {{ template_sections_json }};
+        {% endif %}
+        {% if template_assets_json %}
+        templateAssetsJSON = {{ template_assets_json }};
+        {% endif %}
+        if (templateSectionsJSON) {
+          options.templateStory.sections.reset(templateSectionsJSON.objects);
+            if (templateAssetsJSON) {
+              options.templateStory.sections.each(function(section) {
+                  var parse = section.assets.parse;
+                  section.assets.reset(parse(templateAssetsJSON[section.id]));
+                  console.debug(section.assets);
+              });
+            }
+        }
         options.storyTemplates.reset(storyTemplatesData.objects);
         options.help.reset(helpData.objects);
         

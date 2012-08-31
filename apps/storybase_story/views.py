@@ -15,7 +15,8 @@ from django.utils.translation import ugettext as _
 from storybase_asset.models import ASSET_TYPES
 from storybase_geo.models import Place
 from storybase_help.api import HelpResource
-from storybase_story.api import StoryResource, StoryTemplateResource
+from storybase_story.api import (SectionAssetResource, SectionResource,
+    StoryResource, StoryTemplateResource)
 from storybase_story.models import SectionLayout, Story
 from storybase_taxonomy.models import Category
 from storybase.utils import simple_language_changer
@@ -129,10 +130,64 @@ class StoryBuilderView(DetailView):
         else:
             return None
 
-    def get_story_json(self):
+    def get_story_json(self, obj=None):
+        if obj is None:
+            obj = self.object
         resource = StoryResource()
-        bundle = resource.build_bundle(obj=self.object)
+        bundle = resource.build_bundle(obj=obj)
         to_be_serialized = resource.full_dehydrate(bundle)
+        return resource.serialize(None, to_be_serialized, 'application/json')
+
+    def get_sections_json(self, story=None):
+        """
+        Get serialized section data for a story
+
+        This is used to add JSON data to the view's response context in
+        order to bootstrap Backbone models and collections.
+        
+        """
+        if story is None:
+            story = self.object
+        resource = SectionResource()
+        to_be_serialized = {}
+        objects = resource.obj_get_list(story__story_id=story.story_id)
+        sorted_objects = resource.apply_sorting(objects)
+        to_be_serialized['objects'] = sorted_objects
+
+        # Dehydrate the bundles in preparation for serialization.
+        bundles = [resource.build_bundle(obj=obj) for obj in to_be_serialized['objects']]
+        to_be_serialized['objects'] = [resource.full_dehydrate(bundle) for bundle in bundles]
+        to_be_serialized = resource.alter_list_data_to_serialize(request=None, data=to_be_serialized)
+        return resource.serialize(None, to_be_serialized, 'application/json')
+
+    def get_assets_json(self, story=None):
+        """
+        Get serialized asset data for a story
+
+        This is used to add JSON data to the view's response context in
+        order to bootstrap Backbone models and collections.
+        
+        The response JSON is an object keyed with the section IDs.
+        The asset data is accessible via the objects property of
+        each section object.
+        
+        """
+        if story is None:
+            story = self.object
+        resource = SectionAssetResource()
+        to_be_serialized = {}
+        for section in story.sections.all():
+            sa_to_be_serialized = {}
+            objects = resource.obj_get_list(section__section_id=section.section_id)
+            sorted_objects = resource.apply_sorting(objects)
+            sa_to_be_serialized['objects'] = sorted_objects
+
+            # Dehydrate the bundles in preparation for serialization.
+            bundles = [resource.build_bundle(obj=obj) for obj in sa_to_be_serialized['objects']]
+            sa_to_be_serialized['objects'] = [resource.full_dehydrate(bundle) for bundle in bundles]
+            sa_to_be_serialized = resource.alter_list_data_to_serialize(request=None, data=sa_to_be_serialized)
+            to_be_serialized[section.section_id] = sa_to_be_serialized
+
         return resource.serialize(None, to_be_serialized, 'application/json')
 
     def get_story_template_json(self):
@@ -199,6 +254,13 @@ class StoryBuilderView(DetailView):
 
         if self.object:
             context['story_json'] = mark_safe(self.get_story_json())
+            if self.object.template_story:
+                context['template_story_json'] = mark_safe(
+                    self.get_story_json(self.object.template_story))
+                context['template_sections_json'] = mark_safe(
+                    self.get_sections_json(self.object.template_story))
+                context['template_assets_json'] = mark_safe(
+                    self.get_assets_json(self.object.template_story))
 
         return context
 

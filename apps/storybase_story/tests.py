@@ -1,6 +1,7 @@
 # vim: set fileencoding=utf-8 :
 """Unit tests for storybase_story app"""
 
+import json
 from time import sleep
 
 from django.conf import settings
@@ -24,6 +25,7 @@ from storybase_story.models import (Container, Story, StoryTranslation,
     Section, SectionAsset, SectionLayout, SectionRelation, StoryTemplate,
     create_story, create_section)
 from storybase_story.templatetags.story import container
+from storybase_story.views import StoryBuilderView
 from storybase_taxonomy.models import Category, create_category
 from storybase_user.models import (Organization, Project,
                                    create_organization, create_project)
@@ -378,6 +380,64 @@ class ViewsTest(TestCase):
         sorted_titles = tuple(reversed(homepage_titles))
         for i in range(len(sorted_titles)):
             self.assertTrue(sorted_titles[i] in elements[i].text_content())
+
+
+class StoryBuilderViewTest(TestCase):
+    """Test case for view that bootstraps Backbone view for editing stories"""
+    fixtures = ['section_layouts.json']
+    
+    def setUp(self):
+        self.username = 'test'
+        self.password = 'test'
+        self.user = User.objects.create_user(self.username, 'test@example.com', self.password)
+        self.story = create_story(title="Test Story", summary="Test Summary",
+                                  byline="Test Byline", status='published',
+                                  author=self.user)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        section1 = create_section(title="Test Section 1", story=self.story,
+                                  layout=layout)
+        section2 = create_section(title="Test Section 2", story=self.story,
+                                  layout=layout)
+        create_html_asset(type='text', title='Test Asset', 
+            body='Test content')
+        create_html_asset(type='text', title='Test Asset 2',
+            body='Test content 2')
+        create_html_asset(type='text', title='Test Asset 3',
+            body='Test content 3')
+        create_html_asset(type='text', title='Test Asset 4',
+            body='Test content 4')
+        left = Container.objects.get(name='left')
+        right = Container.objects.get(name='right')
+        assets = Asset.objects.all()
+        SectionAsset.objects.create(section=section1, asset=assets[0], container=left)
+        SectionAsset.objects.create(section=section1, asset=assets[1], container=right)
+        SectionAsset.objects.create(section=section2, asset=assets[2], container=left)
+        SectionAsset.objects.create(section=section2, asset=assets[3], container=right)
+        self.view = StoryBuilderView()
+
+    def test_get_sections_json(self):
+        """Test getting serialized section data for a story"""
+        json_data = self.view.get_sections_json(story=self.story)
+        data = json.loads(json_data)
+        self.assertEqual(len(data['objects']), len(self.story.sections.all()))
+        section_ids = [section_data['section_id'] for section_data in data['objects']]
+        for section in self.story.sections.all():
+            self.assertIn(section.section_id, section_ids)
+
+    def test_get_assets_json(self):
+        """Test getting serialized asset data for a story"""
+        json_data = self.view.get_assets_json(story=self.story)
+        data = json.loads(json_data)
+        self.assertEqual(len(data), len(self.story.sections.all()))
+        for section in self.story.sections.all():
+            self.assertIn(section.section_id, data)
+            self.assertEqual(len(data[section.section_id]['objects']),
+                             len(section.assets.all()))
+            asset_ids = [sectionasset['asset']['asset_id'] for
+                         sectionasset in 
+                         data[section.section_id]['objects']]
+            for asset in section.assets.all():
+                self.assertIn(asset.asset_id, asset_ids)
 
 
 class SectionModelTest(TestCase, SloppyComparisonTestMixin):
