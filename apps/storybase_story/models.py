@@ -65,6 +65,8 @@ class StoryTranslation(TranslationModel):
     summary = models.TextField(blank=True)
     call_to_action = models.TextField(_("Call to Action"),
                                       blank=True)
+    connected_prompt = models.TextField(_("Connected Story Prompt"),
+                                        blank=True)
 
     class Meta:
         """Model metadata options"""
@@ -108,6 +110,8 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
                                       blank=True)
     is_template = models.BooleanField(_("Story is a template"),
                                       default=False)
+    connected = models.BooleanField(
+        _("Story can have connected stories"), default=False)
     template_story = models.ForeignKey('Story',
         related_name='template_for', blank=True, null=True,
         help_text=_("Story whose structure was used to create this story"))
@@ -128,10 +132,18 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
                                        related_name='stories',
                                        blank=True)
     tags = TaggableManager(through=TaggedItem)
+    related_stories = models.ManyToManyField('self',
+                                             related_name='related_to',
+                                             blank=True,
+                                             through='StoryRelation',
+                                             symmetrical=False)
 
     objects = StoryManager()
+    # TODO: Create a custom manager, or barring that to retrieve
+    # connected stories
 
-    translated_fields = ['title', 'summary', 'call_to_action']
+    translated_fields = ['title', 'summary', 'call_to_action',
+                         'connected_prompt']
     translation_set = 'storytranslation_set'
     translation_class = StoryTranslation
 
@@ -366,6 +378,20 @@ pre_save.connect(set_date_on_published, sender=Story)
 post_save.connect(set_story_slug, sender=StoryTranslation)
 m2m_changed.connect(update_last_edited, sender=Story.organizations.through)
 m2m_changed.connect(update_last_edited, sender=Story.projects.through)
+
+
+class StoryRelation(models.Model):
+    """Relationship between two stories"""
+    RELATION_TYPES = (
+        ('connected', u"Connected Story"),
+    )
+    DEFAULT_TYPE = 'connected'
+
+    relation_id = UUIDField(auto=True)
+    relation_type = models.CharField(max_length=25, choices=RELATION_TYPES,
+                                      default=DEFAULT_TYPE)
+    source = models.ForeignKey(Story, related_name="target")
+    target = models.ForeignKey(Story, related_name="source")
 
 
 class SectionPermission(PermissionMixin):

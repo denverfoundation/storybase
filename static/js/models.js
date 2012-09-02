@@ -168,7 +168,9 @@ storybase.models.Story = Backbone.Model.extend(
     defaults: {
       'title': '',
       'byline': '',
-      'summary': ''
+      'summary': '',
+      'connected': false,
+      'connected_prompt': ''
     },
 
     initialize: function(options) {

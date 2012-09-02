@@ -1494,6 +1494,8 @@ class StoryResourceTest(ResourceTestCase):
     def test_get_detail(self):
         story_attribute_keys = ['byline',
                                 'call_to_action',
+                                'connected',
+                                'connected_prompt',
                                 'contact_info',
                                 'created',
                                 'languages', 
