@@ -56,7 +56,8 @@ storybase.builder.views.AppView = Backbone.View.extend({
     buildViewOptions = _.extend(commonOptions, {
       assetTypes: this.options.assetTypes,
       layouts: this.options.layouts,
-      help: this.options.help
+      help: this.options.help,
+      templateStory: this.options.templateStory
     });
     shareViewOptions = _.extend(commonOptions, {
       places: this.options.places,
@@ -657,6 +658,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
         title: ""
       });
     }
+
+    this.templateStory = this.options.templateStory;
 
     this.sectionListView = new storybase.builder.views.SectionListView({
       dispatcher: this.dispatcher,

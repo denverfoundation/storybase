@@ -141,7 +141,6 @@
               options.templateStory.sections.each(function(section) {
                   var parse = section.assets.parse;
                   section.assets.reset(parse(templateAssetsJSON[section.id]));
-                  console.debug(section.assets);
               });
             }
         }
