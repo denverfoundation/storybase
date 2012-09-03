@@ -73,10 +73,15 @@
           </section>
           {% endfor %}
 
-          {% if story.call_to_action %} 
+          {% if story.call_to_action or story.connected %} 
           <section id="call-to-action" class="section call-to-action" style="display:none;">
 	        <h2>{% trans "How Can You Help?" %}</h2>
 	        {{ story.call_to_action|safe }}
+            {% if story.connected %}
+            <p>{{ story.connected_prompt|linebreaks }}</p>
+            {% TODO: Finalize this URL %}
+            <p><a href="{% url story_builder %}?template=connected">{% trans "Click here to contribute to this story" %}</a></p>
+            {% endif %}
 	      </section>
 	      {% endif %}
         </div>
