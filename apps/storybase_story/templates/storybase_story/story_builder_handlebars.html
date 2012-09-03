@@ -94,7 +94,21 @@ Handlebars.js templates for story builder Backbone application
 <script type="text/x-handlebars-template" id="story-call-to-action-edit-template">
 <h2>{{gettext message="Call to Action"}}</h2>
 <form>
-    <textarea class="call-to-action" name="call_to_action" placeholder='{{gettext message="Click to edit the call to action"}}'>{{call_to_action}}</textarea>
+    <div class="section-layout side-by-side">
+        <div class="left">
+            <textarea class="call-to-action" name="call_to_action" placeholder='{{gettext message="Click to edit the call to action"}}'>{{call_to_action}}</textarea>
+        </div>
+        <div class="right">
+            <p>{{#blockgettext}}TODO: Add description of connected stories feature{{/blockgettext}}</p>
+            <div>
+                <input class="connected" name="connected" type="checkbox" {{#if connected}}checked="checked" {{/if}}/>
+                <label for="connected">{{gettext message="Make this a Connected Story"}}</label> 
+            </div>
+            <div>
+                <textarea class="connected-prompt" name="connected_prompt" placeholder="TODO: Add placeholder for connected stories prompt"{{#unless connected}} style="display: none"{{/unless}}>{{connected_prompt}}</textarea>
+            </div>
+        </div>
+    </div>
 </form>
 </script>
 

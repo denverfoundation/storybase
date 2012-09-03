@@ -1543,6 +1543,9 @@ storybase.builder.views.PseudoSectionEditView = Backbone.View.extend(
     change: function(e) {
       var key = $(e.target).attr("name");
       var value = $(e.target).val();
+      if ($(e.target).prop('checked')) {
+        value = true;
+      }
       this.saveAttr(key, value);
     }
   })
@@ -1616,7 +1619,9 @@ storybase.builder.views.CallToActionEditView = storybase.builder.views.PseudoSec
   pseudoSectionId: 'call-to-action',
 
   defaults: {
-    callToActionEl: 'textarea[name="call_to_action"]'
+    callToActionEl: 'textarea[name="call_to_action"]',
+    connectedEl: 'input[name="connected"]',
+    connectedPromptEl: 'textarea[name="connected_prompt"]'
   },
 
   templateSource: $('#story-call-to-action-edit-template').html(),
@@ -1624,7 +1629,20 @@ storybase.builder.views.CallToActionEditView = storybase.builder.views.PseudoSec
   events: function() {
     var events = {};
     events['change ' + this.options.callToActionEl] = 'change';
+    events['change ' + this.options.connectedEl] = 'changeConnectedEl';
+    events['change ' + this.options.connectedPromptEl] = 'change';
     return events;
+  },
+
+  changeConnectedEl: function(evt) {
+    this.change(evt);
+    console.debug('In changeConnectedEl');
+    if ($(evt.target).prop('checked')) {
+      this.$(this.options.connectedPromptEl).show(); 
+    }
+    else {
+      this.$(this.options.connectedPromptEl).hide(); 
+    }
   },
 
   render: function() {
@@ -1634,7 +1652,7 @@ storybase.builder.views.CallToActionEditView = storybase.builder.views.PseudoSec
       that.$(that.options.callToActionEl).trigger('change');
     };
     this.$el.html(this.template(this.model.toJSON()));
-    // Add the toolbar elemebt for the wysihtml5 editor
+    // Add the toolbar element for the wysihtml5 editor
     // Initialize wysihmtl5 editor
     this.callEditor = this.getEditor(
       this.$(this.options.callToActionEl)[0],
