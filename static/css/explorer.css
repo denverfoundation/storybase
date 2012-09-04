@@ -4,19 +4,7 @@
 }
 
 
-#filters {
-  background: none repeat scroll 0 0 #EEEEEE;
-  border: 1px solid #CCCCCC;
-  border-radius: 5px 5px 5px 5px;
-  color: #000000;
-  padding: 1%;
-  position: static;
-  z-index: 40;
-}
 
-#filters .select2-container {
-  min-width: 200px;
-}
 
 #filters.sticky {
   position: fixed;
@@ -113,3 +101,77 @@
   }
 }
 
+/* begin */
+#filters { 
+	padding-bottom:18px;
+	border-bottom:1px solid #ccc;
+	margin-bottom:22px;
+	padding-top:20px;
+	position:relative;
+	z-index: 1000;
+}
+
+#filters .field {
+	margin-right:6px;
+}
+
+#filters .select2-container {
+	background:url('images/filter-link.png') no-repeat 0 0; 
+	min-width:180px;
+	width:191px;
+	display:block; 
+	font-size:16px; 
+	color:#fbfaf2; 
+	font-family: 'MuseoSlab500Regular'; 
+	text-shadow:0 -1px 0 #605f5f; 
+	line-height:34px;
+	height:34px;
+	padding-right:7px;
+}
+
+.select2-result-label {
+	font-family: 'MuseoSlab500Regular';
+}
+
+#filters .select2-default {
+	color:#fbfaf2 !important;
+}
+#filters .select2-container .select2-choice,
+#filters .select2-dropdown-open .select2-choice {
+	background:none;
+	background-image:none;
+	border:0px;
+	color:#fbfaf2;
+	line-height:inherit;
+	height:34px;
+	border-radius:0;
+	padding-left:11px;
+}
+#filters .select2-container .select2-choice div {
+	background:none;
+	border:none;
+}
+#filters .select2-container .select2-choice div b {
+	background:none;
+}
+.select2-drop .select2-drop-active {
+	border:none !important;
+}
+
+#filters .field label {
+	display:none;
+}
+#filters .select2-container .select2-choice abbr { /* little "x" to clear a filter */
+	/* for now, hide them */
+	left:-32000px;
+}
+#filters a.clear-filters {
+	padding-right: 17px;
+	padding-top: 10px;
+	text-align: right;
+	color: #FE9703;
+	font-family: 'MuseoSlab500Regular';
+	font-size: 14px;
+}
+
+/* end */

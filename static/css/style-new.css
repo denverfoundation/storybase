@@ -194,7 +194,7 @@ ul.social li.icon3 a { background-position:-67px 0; }
 .breadcrumbs ul li, .breadcrumbs ul li a { font-size:14px; color:#3b3b3b;font-family: 'MuseoSlab500Regular'; line-height:37px;   }
 
 #main.inner { overflow-x:visible !important; }
-
+/*
 .filters { padding-bottom:18px; border-bottom:1px solid #ccc; margin-bottom:22px;  padding-top:20px; position:relative; z-index: 1000; }
 .filters li { float:left; display:inline; padding-right:7px;  position:relative; }
 .filters li:last-child { padding-right:0; }
@@ -206,6 +206,7 @@ ul.social li.icon3 a { background-position:-67px 0; }
 .filters .filter-dd { position:absolute; top:34px; left:3px; width:185px; background:#fff; box-shadow:0 0 6px #7b7b7b; padding-bottom:15px; padding-top:8px; border-radius:0 0 3px 3px; display:none;  }
 .filters .filter-dd a { background:none; font-size:13px; color:#888787; text-shadow:none; height:auto; line-height:26px;   }
 .filters .filter-dd a:hover { text-decoration:underline;  }
+*/
 
 .columns {  }
 .columns .columns-top { padding-bottom:12px;  }

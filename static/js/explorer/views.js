@@ -516,6 +516,7 @@ storybase.explorer.views.Filters = Backbone.View.extend({
   tagName: 'div',
 
   id: 'filters',
+  className: 'filters',
 
   templateSource: $('#filters-template').html(),
 

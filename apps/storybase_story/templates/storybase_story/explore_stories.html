@@ -19,7 +19,7 @@ Handlebars templates for rendering Backbone views.
 </script>
 
 <script type="text/x-handlebars-template" id="story-count-template">
-  <h3>{{count}} {{gettext message="of"}} {{total}} {{#blockgettext}}Stor{{pluralize count suffix="y,ies"}} Shown{{/blockgettext}}</h3>
+  <h6>{{count}} {{gettext message="of"}} {{total}} {{#blockgettext}}Stor{{pluralize count suffix="y,ies"}} Shown{{/blockgettext}}</h6>
   {{#if showMore }}
   <a id="show-more" href="#">{{gettext message="Show More"}}</a>
   {{/if}}
@@ -28,7 +28,7 @@ Handlebars templates for rendering Backbone views.
 <script type="text/x-handlebars-template" id="filters-template">
 <div class="field">
 <label for="topics">{{gettext message="Topic"}}</label>
-<select name="topics" data-placeholder="{{gettext message="Select a Topic"}}">
+<select name="topics" data-placeholder="{{gettext message="Topic"}}">
   <option></option>
   {{#topics}}
   <option value="{{id}}"{{#if selected}}selected{{/if}}>{{name}}</option>
@@ -38,7 +38,7 @@ Handlebars templates for rendering Backbone views.
 
 <div class="field">
 <label for="places">{{gettext message="Place"}}</label>
-<select name="places" data-placeholder="{{gettext message="Select a Place"}}">
+<select name="places" data-placeholder="{{gettext message="Place"}}">
   <option></option>
   {{#places}}
   <option value="{{id}}"{{#if selected}}selected{{/if}}>{{name}}</option>
@@ -48,7 +48,7 @@ Handlebars templates for rendering Backbone views.
 
 <div class="field">
 <label for="organizations">{{gettext message="Organization"}}</label>
-<select name="organizations" data-placeholder="{{gettext message="Select an Organization"}}">
+<select name="organizations" data-placeholder="{{gettext message="Organization"}}">
   <option></option>
   {{#organizations}}
   <option value="{{id}}"{{#if selected}}selected{{/if}}>{{name}}</option>
@@ -58,7 +58,7 @@ Handlebars templates for rendering Backbone views.
 
 <div class="field">
 <label for="projects">{{gettext message="Project"}}</label>
-<select name="projects" data-placeholder="{{gettext message="Select a Project"}}">
+<select name="projects" data-placeholder="{{gettext message="Project"}}">
   <option></option>
   {{#projects}}
   <option value="{{id}}"{{#if selected}}selected{{/if}}>{{name}}</option>
@@ -68,7 +68,7 @@ Handlebars templates for rendering Backbone views.
 
 <div class="field">
 <label for="languages">{{gettext message="Language"}}</label>
-<select name="languages" data-placeholder="{{gettext message="Select a Language"}}">
+<select name="languages" data-placeholder="{{gettext message="Language"}}">
   <option></option>
   {{#languages}}
   <option value="{{id}}"{{#if selected}}selected{{/if}}>{{name}}</option>
@@ -76,7 +76,7 @@ Handlebars templates for rendering Backbone views.
 </select>
 </div>
 
-<a class="clear-filters" href="#">Clear Filters</a>
+<a class="clear-filters" href="#">Reset Filters</a>
 
 </script>
 
@@ -145,10 +145,13 @@ Handlebars templates for rendering Backbone views.
 {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/select2/select2.css">{% endaddtoblock %}
 {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/explorer.css">{% endaddtoblock %}
 
-<div class="twelvecol last">
-  <h2>{{ storybase_explore_title }}</h2>
-  <div id="explorer"></div>
-</div>
+<div id="main">
+	<div class="shell">
+
+		<h3><span>{{ storybase_explore_title }}</span></h3>
+		<div id="explorer"></div>
+	</div><!-- /.shell -->
+</div><!-- /#main -->
 
 
 {% addtoblock "js" %}
