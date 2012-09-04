@@ -23,6 +23,7 @@ from storybase_story.api import (SectionAssetResource, SectionResource,
 from storybase_story.forms import SectionRelationAdminForm
 from storybase_story.models import (Container, Story, StoryTranslation, 
     Section, SectionAsset, SectionLayout, SectionRelation, StoryTemplate,
+    StoryRelation,
     create_story, create_section)
 from storybase_story.templatetags.story import container
 from storybase_story.views import StoryBuilderView
@@ -351,6 +352,50 @@ class StoryManagerTest(TestCase):
 	self.assertEqual(homepage_stories.count(), len(published_titles))
 	for title in published_titles:
 	    self.has_story_title(title, homepage_stories)
+
+
+class RelatedStoriesTest(TestCase):
+    """Tests for managing relationships between stories"""
+    def setUp(self):
+        self.username = 'test'
+        self.password = 'test'
+        self.user = User.objects.create_user(self.username, 'test@example.com', self.password)
+        self.story = create_story(title="Test Story", summary="Test Summary",
+                                  byline="Test Byline", status='published',
+                                  author=self.user)
+
+    def test_create_relation(self):
+        story = create_story(title="Test Related Story", 
+                             summary="Test Related Story Summary",
+                             byline="Test Related Story Byline",
+                             status='published',
+                             author=self.user)
+        self.assertEqual(len(self.story.related_stories.all()), 0)
+        StoryRelation.objects.create(source=self.story, target=story,
+                                     relation_type='connected')
+        self.assertEqual(len(self.story.related_stories.all()), 1)
+        self.assertEqual(self.story.related_stories.all()[0], story)
+
+    def test_connected_stories(self):
+        story = create_story(title="Test Related Story", 
+                             summary="Test Related Story Summary",
+                             byline="Test Related Story Byline",
+                             status='published',
+                             author=self.user)
+        story2 = create_story(title="Test Related Story 2", 
+                              summary="Test Related Story Summary 2",
+                              byline="Test Related Story Byline 2",
+                              status='published',
+                              author=self.user)
+        StoryRelation.objects.create(source=self.story, target=story,
+                                     relation_type='connected')
+        StoryRelation.objects.create(source=self.story, target=story,
+                                     relation_type='blahblahblah')
+        self.assertEqual(len(self.story.related_stories.all()), 2)
+        self.assertEqual(len(self.story.connected_stories()), 1)
+        self.assertEqual(self.story.connected_stories()[0], story)
+
+
 
 
 class ViewsTest(TestCase):

@@ -139,8 +139,6 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
                                              symmetrical=False)
 
     objects = StoryManager()
-    # TODO: Create a custom manager, or barring that to retrieve
-    # connected stories
 
     translated_fields = ['title', 'summary', 'call_to_action',
                          'connected_prompt']
@@ -339,6 +337,11 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
 
     def natural_key(self):
         return (self.story_id,)
+
+    def connected_stories(self):
+        """Get a queryset of connected stories"""
+        # Would this be better implemented as a related manager?
+        return self.related_stories.filter(source__relation_type='connected')
 
 
 def set_story_slug(sender, instance, **kwargs):
