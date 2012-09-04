@@ -12,14 +12,14 @@ Handlebars templates for rendering Backbone views.
 {% verbatim %}
 <script type="text/x-handlebars-template" id="explorer-template">
 <ul id="view-selector">
-  <li><a class="select-tile-view" href="#">{{gettext message="Tile View"}}</a></li>
-  <li><a class="select-list-view" href="#">{{gettext message="List View"}}</a></li>
-  <li><a class="select-map-view" href="#">{{gettext message="Map View"}}</a></li>
+  <li class="nav-1 active"><a class="select-tile-view" href="#"><span>{{gettext message="Tile"}}<span></a></li>
+  <li class="nav-2"><a class="select-list-view" href="#"><span>{{gettext message="List"}}<span></a></li>
+  <li class="nav-3"><a class="select-map-view" href="#"><span>{{gettext message="Map"}}<span></a></li>
 </ul>
 </script>
 
 <script type="text/x-handlebars-template" id="story-count-template">
-  <h6>{{count}} {{gettext message="of"}} {{total}} {{#blockgettext}}Stor{{pluralize count suffix="y,ies"}} Shown{{/blockgettext}}</h6>
+  <h6 class="story-count">{{count}} {{gettext message="of"}} {{total}} {{#blockgettext}}Stor{{pluralize count suffix="y,ies"}} Shown{{/blockgettext}}</h6>
   {{#if showMore }}
   <a id="show-more" href="#">{{gettext message="Show More"}}</a>
   {{/if}}
@@ -85,6 +85,10 @@ Handlebars templates for rendering Backbone views.
 </script>
 
 <script type="text/x-handlebars-template" id="story-partial-template">
+<a href="#">
+  <em class="hover"></em>
+  <img style="height:132px;" src="">
+</a>
 <h3>{{>story_link}}</h3>
 <p class="byline">{{byline}}</p>
 {{firstparagraph summary}}
