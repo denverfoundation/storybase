@@ -655,11 +655,15 @@ class StoryTemplate(TranslatedModel):
     )
     
     template_id = UUIDField(auto=True)
-    # The structure of the template comes from a story model instance
-    story = models.ForeignKey('Story', blank=True, null=True)
-    # The amount of time needed to create a story of this type
-    time_needed = models.CharField(max_length=140, choices=TIME_NEEDED_CHOICES,
-                                   blank=True)
+    story = models.ForeignKey('Story', blank=True, null=True,
+        help_text=_("The story that provides the structure for this "
+                    "template"))
+    time_needed = models.CharField(max_length=140, 
+        choices=TIME_NEEDED_CHOICES, blank=True,
+        help_text=_("The amount of time needed to create a story of this " 
+                    "type"))
+    slug = models.SlugField(unique=True, 
+        help_text=_("A human-readable unique identifier"))
 
     objects = StoryTemplateManager()
 
