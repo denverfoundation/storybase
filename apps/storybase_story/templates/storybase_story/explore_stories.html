@@ -137,10 +137,10 @@ Handlebars templates for rendering Backbone views.
 {% endblock %}
 
 {% block above_content %}
-<ul id="breadcrumbs" class="row">{% show_breadcrumb %}</ul>
+{% show_breadcrumb "breadcrumbs.html" %}
 {% endblock %}
 
-{% block col_center %}
+{% block base_content %}
 {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/leaflet/leaflet.css">{% endaddtoblock %}
 {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/select2/select2.css">{% endaddtoblock %}
 {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/explorer.css">{% endaddtoblock %}
@@ -149,6 +149,7 @@ Handlebars templates for rendering Backbone views.
   <h2>{{ storybase_explore_title }}</h2>
   <div id="explorer"></div>
 </div>
+
 
 {% addtoblock "js" %}
 <script>
