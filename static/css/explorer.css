@@ -105,7 +105,7 @@
 */
 }
 
-/* begin */
+/* begin template rules */
 #filters { 
 	padding-bottom:18px;
 	border-bottom:1px solid #ccc;
@@ -265,7 +265,8 @@ ul#view-selector li a {
 	float:left;
 	margin-right:16px;
 }
-#story-list li.story h3 a {
+#story-list li.story h3 a,
+#map-container .leaflet-popup h3 {
 	font-size:16px;
 	color:#03ccfe;
 	line-height:16px;
@@ -273,12 +274,8 @@ ul#view-selector li a {
 #story-list.list li.story h3 a {
 	font-size:20px;
 }
-#story-list li.story p em {
-	font-size:12px;
-	color:#5a5a5a;
-	font-family:Georgia, 'Times New Roman', Serif;
-}
-#story-list li.story p {
+#story-list li.story p,
+#map-container .leaflet-popup .story p {
 	font-family:Georgia, 'Times New Roman', Serif;
 	font-size:12px; 
 	color:#5a5a5a;
@@ -308,5 +305,6 @@ ul#view-selector li a {
 #story-list li.story .story-attributes dt { font-weight:bold; }
 #map-container {
 	clear:both;
+	margin-bottom:50px;
 }
 /* end */
