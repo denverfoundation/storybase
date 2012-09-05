@@ -242,6 +242,7 @@ ul#view-selector li a {
 #story-list.list li.story {
 	float:none;
 	width:100%;
+	clear:both;
 }
 #story-list li.story h3 {
 	padding-top:8px;
