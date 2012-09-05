@@ -253,6 +253,10 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     this.mapView.$el.hide();
     this.storyListView.$el.show();
     this.storyListView.tile();
+    $('#view-selector li')
+      .removeClass('active')
+      .filter('.tile-view')
+        .addClass('active');
     return false;
   },
 
@@ -275,6 +279,10 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     this.mapView.$el.hide();
     this.storyListView.$el.show();
     this.storyListView.list();
+    $('#view-selector li')
+      .removeClass('active')
+      .filter('.list-view')
+        .addClass('active');
     return false;
   },
 
@@ -286,6 +294,10 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     }
     this.storyListView.$el.hide();
     this.mapView.$el.show();
+    $('#view-selector li')
+      .removeClass('active')
+      .filter('.map-view')
+        .addClass('active');
     return false;
   },
 

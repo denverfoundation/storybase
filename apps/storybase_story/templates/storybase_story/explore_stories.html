@@ -12,9 +12,9 @@ Handlebars templates for rendering Backbone views.
 {% verbatim %}
 <script type="text/x-handlebars-template" id="explorer-template">
 <ul id="view-selector">
-  <li class="nav-1 active"><a class="select-tile-view" href="#"><span>{{gettext message="Tile"}}<span></a></li>
-  <li class="nav-2"><a class="select-list-view" href="#"><span>{{gettext message="List"}}<span></a></li>
-  <li class="nav-3"><a class="select-map-view" href="#"><span>{{gettext message="Map"}}<span></a></li>
+  <li class="tile-view active"><a class="select-tile-view" href="#"><span>{{gettext message="Tile"}}<span></a></li>
+  <li class="list-view"><a class="select-list-view" href="#"><span>{{gettext message="List"}}<span></a></li>
+  <li class="map-view"><a class="select-map-view" href="#"><span>{{gettext message="Map"}}<span></a></li>
 </ul>
 </script>
 
@@ -85,7 +85,7 @@ Handlebars templates for rendering Backbone views.
 </script>
 
 <script type="text/x-handlebars-template" id="story-partial-template">
-<a href="#">
+<a href="{{url}}">
   <em class="hover"></em>
   <img style="height:132px;" src="">
 </a>
