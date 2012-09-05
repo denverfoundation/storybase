@@ -88,17 +88,17 @@ Handlebars templates for rendering Backbone views.
 <script type="text/x-handlebars-template" id="story-partial-template">
 <a href="{{url}}">
   <em class="hover"></em>
-  <img style="height:132px;" src="{{ STATIC_URL }}css/images/image8.jpg">
+  <img style="height:132px;" src="{% endverbatim %}{{ STATIC_URL }}{% verbatim %}css/images/image8.jpg">
 </a>
 <h3>{{>story_link}}</h3>
 <p class="byline">{{byline}}</p>
 {{firstparagraph summary}}
 <dl class="story-attributes">
-  <dt>{{gettext message="Languages"}}</dt>
+  <dt><p>{{gettext message="Languages"}}</p></dt>
   <dd>
     <ul class="languages">
       {{#each languages}}
-      <li><a href="{{url}}" class="language-{{id}}">{{name}}</a></li>
+      <li><p><a href="{{url}}" class="language-{{id}}">{{name}}</a></p></li>
       {{/each}}
     </ul>
   </dd>
