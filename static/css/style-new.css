@@ -293,7 +293,7 @@ a#launch-story-viewer {
 	background:url('images/h3-line.png') repeat-x;
 	margin-bottom:20px;
 }
-.content-page.object-detail h2 { font-size:36px; color:#5a5a5a; text-align:left;  font-family: 'Museo300Regular'; font-weight:normal; }
+.content-page.object-detail h2 { font-size:26px; color:#444; text-align:left;  font-family: 'Museo300Regular'; font-weight:normal; }
 .content-page.object-detail section { overflow:hidden; }
 .content-page.object-detail .object-featured-asset,
 .content-page.object-detail .object-summary,
