@@ -293,7 +293,7 @@ a#launch-story-viewer {
 	background:url('images/h3-line.png') repeat-x;
 	margin-bottom:20px;
 }
-.content-page.object-detail h2 { font-size:36px; color:#5a5a5a; text-align:center;  font-family: 'Museo300Regular'; font-weight:normal; }
+.content-page.object-detail h2 { font-size:36px; color:#5a5a5a; text-align:left;  font-family: 'Museo300Regular'; font-weight:normal; }
 .content-page.object-detail section { overflow:hidden; }
 .content-page.object-detail .object-featured-asset,
 .content-page.object-detail .object-summary,
@@ -309,16 +309,25 @@ a#launch-story-viewer {
 { margin-right:40px; }
 .content-page.object-detail .object + hr,
 .content-page.object-detail .story-outreach { clear:left; }
-.content-page.object-detail .call-to-action p,
-.content-page.object-detail .call-to-action ul {
+.content-page.object-detail .call-to-action p {
 	float:left;
-	width:50%;
 }
+.content-page.object-detail .call-intro {
+	width:30%;
+	margin-right:10%;
+}
+.content-page.object-detail .story-call-to-action {
+	width:60%;
+}
+
 #main .content-page.object-detail .call-to-action ul {
 	list-style:disc;
 }
 .content-page.object-detail .object-metadata {
-	font-family:Georgia, 'Times New Roman', Serif; font-size:14px; color:#444;
+	font-family:Georgia, 'Times New Roman', Serif; 
+	font-size:12px; 
+	color:#444;
+	margin: 20px 0;
 }
 .content-page.object-detail .object-metadata dt, 
 .content-page.object-detail .object-metadata dd { float:left; }
