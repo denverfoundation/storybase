@@ -131,7 +131,7 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
                                        verbose_name=_("Places"),
                                        related_name='stories',
                                        blank=True)
-    tags = TaggableManager(through=TaggedItem)
+    tags = TaggableManager(through=TaggedItem, blank=True)
     related_stories = models.ManyToManyField('self',
                                              related_name='related_to',
                                              blank=True,
