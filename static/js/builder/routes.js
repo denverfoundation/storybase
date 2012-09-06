@@ -2,6 +2,7 @@ Namespace('storybase.builder.routers');
 storybase.builder.routers.Router = Backbone.Router.extend({
   routes: {
     "": "selectInitialStep",
+    "?template=:template": "selectStep",
     ":id/": "selectStep",
     ":id/:step/": "selectStep",
     ":id/:step/:substep/": "selectStep",

@@ -4,6 +4,7 @@ import json
 
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.db.models import Q
 from django.http import Http404
 from django.utils.decorators import method_decorator
 from django.template import Context
@@ -17,7 +18,7 @@ from storybase_geo.models import Place
 from storybase_help.api import HelpResource
 from storybase_story.api import (SectionAssetResource, SectionResource,
     StoryResource, StoryTemplateResource)
-from storybase_story.models import SectionLayout, Story
+from storybase_story.models import SectionLayout, Story, StoryTemplate
 from storybase_taxonomy.models import Category
 from storybase.utils import simple_language_changer
 from storybase.views.generic import ModelIdDetailView
@@ -129,6 +130,42 @@ class StoryBuilderView(DetailView):
             return obj
         else:
             return None
+
+    def get_template_object(self, queryset=None):
+        """
+        Get the ``StoryTemplate`` instance for this view
+
+        The template model instance is used to initialize the structure of the newly
+        created Story model instance.
+
+        The template is identified with a 'template' parameter in the
+        querystring of the view URL.  It can either be a value for the 
+        template_id or slug field of the the ``StoryTemplate`` model.
+
+        This method returns None if no matching story is found or if no
+        template identifier is provided.  This will cause the builder
+        to be launched with the select template step.
+
+        """
+        obj = None
+        template_slug_or_id = self.request.GET.get('template')
+        if template_slug_or_id:
+            if queryset is None:
+                queryset = StoryTemplate.objects.all()
+
+            q = Q(template_id=template_slug_or_id)
+            q = q | Q(slug=template_slug_or_id)
+            queryset = queryset.filter(q)
+
+            try:
+                obj = queryset.get()
+            except ObjectDoesNotExist:
+                # If a matching template doesn't exist, just return
+                # None. The user will be prompted to select a template
+                # in the builder
+                pass
+
+        return obj 
 
     def get_story_json(self, obj=None):
         if obj is None:
@@ -261,11 +298,19 @@ class StoryBuilderView(DetailView):
                     self.get_sections_json(self.object.template_story))
                 context['template_assets_json'] = mark_safe(
                     self.get_assets_json(self.object.template_story))
+        elif self.template_object:
+            context['template_story_json'] = mark_safe(
+                self.get_story_json(self.template_object.story))
+            context['template_sections_json'] = mark_safe(
+                self.get_sections_json(self.template_object.story))
+            context['template_assets_json'] = mark_safe(
+                self.get_assets_json(self.template_object.story))
 
         return context
 
     def get(self, request, **kwargs):
         self.object = self.get_object()
+        self.template_object = self.get_template_object()
         context = self.get_context_data(object=self.object, **kwargs)
         return self.render_to_response(context)
 

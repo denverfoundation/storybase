@@ -710,6 +710,11 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       this.model.sections.fetch();
       this.model.unusedAssets.fetch();
     }
+    else if (this.templateStory) {
+      // Model is new, but a template was provided when the builder was launched
+      // We don't have to wait to request the template from the server.
+      this.initializeStoryFromTemplate();
+    }
   },
 
   triggerReady: function() {
