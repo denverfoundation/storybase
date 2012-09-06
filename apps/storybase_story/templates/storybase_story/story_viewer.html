@@ -79,8 +79,7 @@
 	        {{ story.call_to_action|safe }}
             {% if story.connected %}
             <p>{{ story.connected_prompt|linebreaks }}</p>
-            {% TODO: Finalize this URL %}
-            <p><a href="{% url story_builder %}?template={{ storybase_connected_story_template }}">{% trans "Click here to contribute to this story" %}</a></p>
+            <p><a href="{% url connected_story_builder source_story_id=story.story_id %}">{% trans "Click here to contribute to this story" %}</a></p>
             {% endif %}
 	      </section>
 	      {% endif %}

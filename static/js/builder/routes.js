@@ -2,7 +2,6 @@ Namespace('storybase.builder.routers');
 storybase.builder.routers.Router = Backbone.Router.extend({
   routes: {
     "": "selectInitialStep",
-    "?template=:template": "selectStep",
     ":id/": "selectStep",
     ":id/:step/": "selectStep",
     ":id/:step/:substep/": "selectStep",
@@ -10,11 +9,17 @@ storybase.builder.routers.Router = Backbone.Router.extend({
 
   initialize: function(options) {
     this.dispatcher = options.dispatcher;
+    this.hasTemplate = options.hasTemplate;
     this.dispatcher.on("navigate", this.navigate, this);
   },
 
   selectInitialStep: function() {
-    this.selectStep(undefined, 'selecttemplate');
+    if (this.hasTemplate) {
+      this.selectStep(undefined, 'build');
+    }
+    else {
+      this.selectStep(undefined, 'selecttemplate');
+    }
   },
 
   selectStep: function(id, step, subStep) {

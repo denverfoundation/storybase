@@ -139,8 +139,9 @@ class StoryBuilderView(DetailView):
         created Story model instance.
 
         The template is identified with a 'template' parameter in the
-        querystring of the view URL.  It can either be a value for the 
-        template_id or slug field of the the ``StoryTemplate`` model.
+        querystring of the view URL or view keyword arguments.
+        It can either be a value for the template_id or slug field of 
+        the the ``StoryTemplate`` model.
 
         This method returns None if no matching story is found or if no
         template identifier is provided.  This will cause the builder
@@ -148,7 +149,11 @@ class StoryBuilderView(DetailView):
 
         """
         obj = None
-        template_slug_or_id = self.request.GET.get('template')
+        template_slug_or_id = self.kwargs.get('template', None)
+        if template_slug_or_id is None:
+            # Template identifier not in keyword arguments. Try
+            # getting it from URL query string
+            template_slug_or_id = self.request.GET.get('template', None)
         if template_slug_or_id:
             if queryset is None:
                 queryset = StoryTemplate.objects.all()
@@ -310,7 +315,7 @@ class StoryBuilderView(DetailView):
 
     def get(self, request, **kwargs):
         self.object = self.get_object()
-        self.template_object = self.get_template_object()
+        self.template_object = self.get_template_object(queryset=None)
         context = self.get_context_data(object=self.object, **kwargs)
         return self.render_to_response(context)
 

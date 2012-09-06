@@ -1,6 +1,7 @@
 """URL routing for storybase_story app"""
 
 #import datetime
+from django.conf import settings
 from django.conf.urls.defaults import patterns, url
 #from haystack.query import SearchQuerySet
 #from haystack.views import FacetedSearchView
@@ -32,4 +33,6 @@ urlpatterns = patterns('',
         StoryViewerView.as_view(), name='story_viewer_by_id'), 
     url(r'stories/(?P<slug>[0-9a-z-]+)/viewer/$',
         StoryViewerView.as_view(), name='story_viewer'), 
+    url(r'stories/(?P<source_story_id>[0-9a-f]{32,32})/build-connected/$', StoryBuilderView.as_view(), {'template': settings.STORYBASE_CONNECTED_STORY_TEMPLATE}, name='connected_story_builder'),
+    url(r'stories/(?P<source_slug>[0-9a-z-]+)/build-connected/$', StoryBuilderView.as_view(), {'template': settings.STORYBASE_CONNECTED_STORY_TEMPLATE}, name='connected_story_builder'),
 )
