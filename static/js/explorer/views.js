@@ -340,7 +340,7 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
         });
       }
       else {
-        console.debug('No more stories');
+        //console.debug('No more stories');
       }
   },
 
