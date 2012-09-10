@@ -47,3 +47,6 @@ django-passwords
 django-notification
 pytz
 micawber
+# Use version of django-threadedcomments from GitHub because the pypi
+# version is stale
+git+git://github.com/HonzaKral/django-threadedcomments.git

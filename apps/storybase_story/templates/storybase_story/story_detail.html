@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n sekizai_tags %}
+{% load i18n sekizai_tags threadedcomments_tags %}
 
 {% block head_title %}{{ story.title }}{% endblock %}
 
@@ -39,6 +39,14 @@
         {{ story.call_to_action|safe }}
         </div>
     </div>
+  </section>
+
+  <section class="comments">
+  {% get_comment_list for story as comment_list flat %}
+  {% for comment in comment_list %}
+    {{ comment.comment }}
+  {% endfor %}
+  {% render_comment_form for story %}  
   </section>
 </div>
 

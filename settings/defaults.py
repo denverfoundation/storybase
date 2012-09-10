@@ -176,6 +176,8 @@ INSTALLED_APPS = (
     'tinymce',
     'registration',
     'social_auth',
+    'django.contrib.comments',
+    'threadedcomments',
     'notification',
 
 
@@ -305,6 +307,9 @@ TINYMCE_JS_ROOT = os.path.join(STATIC_ROOT, 'js/libs/tiny_mce')
 
 # registration settings
 ACCOUNT_ACTIVATION_DAYS = 7
+
+# commenting settings
+COMMENTS_APP = 'threadedcomments'
 
 # storybase settings
 # The name of the group used for site administrators
