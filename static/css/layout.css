@@ -36,6 +36,7 @@
   width: 100%;
   margin: 2 0%;
 }
-.section-layout img {
+.section-layout img,
+.section-layout iframe {
   max-width: 100%;
 }
