@@ -14,17 +14,15 @@ from django.utils.safestring import mark_safe
 
 from filer.fields.image import FilerFileField, FilerImageField
 from filer.models import Image 
+from micawber.exceptions import ProviderException
 from model_utils.managers import InheritanceManager
-import oembed
-from oembed.exceptions import OEmbedMissingEndpoint
 from uuidfield.fields import UUIDField
 
 from storybase.fields import ShortTextField
 from storybase.models import (LicensedModel, PublishedModel,
     TimestampedModel, TranslatedModel, TranslationModel,
     PermissionMixin, set_date_on_published)
-from embedable_resource import EmbedableResource
-from embedable_resource.exceptions import UrlNotMatched
+from storybase_asset.oembed import bootstrap_providers
 
 ASSET_TYPES = (
   (u'image', u'image'),
@@ -249,6 +247,12 @@ class ExternalAsset(Asset):
     translated_fields = Asset.translated_fields + ['url']
     translation_class = ExternalAssetTranslation
 
+    oembed_providers = bootstrap_providers() 
+
+    @classmethod
+    def get_oembed_response(cls, url, **extra_params):
+        return cls.oembed_providers.request(url, **extra_params)
+
     def __unicode__(self):
         if self.title:
             return self.title
@@ -277,8 +281,9 @@ class ExternalAsset(Asset):
             # TODO: Set maxwidth and maxheight more intelligently
             # Hard-coding them is just a workaround for #130 as the Flickr API
             # doesn't support not having them.
-            resource = oembed.site.embed(self.url, format='json', maxwidth=1000, maxheight=1000)
-            resource_data = resource.get_data()
+            # TODO: Check if we need to hard-code maxwidth for Flickr
+            # e.g. resource_data = self.get_oembed_response(self.url, maxwidth=1000, maxheight=1000)
+            resource_data = self.get_oembed_response(self.url)  
             if resource_data['type'] in ('rich', 'video'):
                 output.append(resource_data['html'])
             elif resource_data['type'] == 'photo':
@@ -289,17 +294,12 @@ class ExternalAsset(Asset):
                 raise AssertionError(
                     "oEmbed provider returned invalid type")
                 
-        except OEmbedMissingEndpoint:
-            try:
-                # Next try to embed things ourselves
-                html = EmbedableResource.get_html(self.url)
-                output.append(html)
-            except UrlNotMatched:
-                # If all else fails, just show an image or a link
-                if self.type == 'image':
-                    output.append(self.render_img_html())
-                else:
-                    output.append(self.render_link_html())
+        except ProviderException:
+            # URL not matched, just show an image or a link
+            if self.type == 'image':
+                output.append(self.render_img_html())
+            else:
+                output.append(self.render_link_html())
 
         full_caption_html = self.full_caption_html()
         if full_caption_html:
@@ -337,11 +337,10 @@ class ExternalAsset(Asset):
         except AttributeError:
             try:
                 # First try to embed the resource via oEmbed
-                resource = oembed.site.embed(self.url, format='json')
-                resource_data = resource.get_data()
+                resource_data = self.get_oembed_response(self.url)
                 self._thumbnail_url = resource_data.get('thumbnail_url',
                                                         None)
-            except (OEmbedMissingEndpoint):
+            except (ProviderException):
                 self._thumbnail_url = None
             finally:
                 url = self._thumbnail_url
