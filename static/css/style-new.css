@@ -76,21 +76,48 @@ textarea { overflow: auto; }
 #navigation ul li { float:left; display:inline; padding-left:46px;  }
 #navigation ul li:first-child { padding-left:0;  }
 #navigation ul li.nodd a { background:none; padding-left:0;  }
+#navigation ul li { font-family: 'MuseoSlab500Regular'; }
 #navigation ul li a { font-size:16px; color:#ffffff;  font-family: 'MuseoSlab500Regular'; background:url('images/nav-arrow.png') no-repeat 0 3px; padding-left:12px; position:relative; padding-bottom:23px;  }
 #navigation ul li a em { height:8px; background:url('images/dd-arrow.png') no-repeat center 0; width:100%; position:absolute; bottom:-1px; left:0; display:none; z-index: 5000; }
 #navigation ul li a.active,
 #navigation ul li a.hover,
 #navigation ul li a:hover { color:#fe9703; text-decoration:none;   }
 #navigation ul li .dd { position:absolute; top:43px; left:0; background:#fff; width:1000px; min-height:200px; display:none; box-shadow: 0 0 5px #9a9a9a;   }
+#navigation ul li .dd.onecol { /* width:500px */ }
 #navigation ul li .dd .dd-col { float:left; display:inline; min-height:120px; margin-top:20px; border-right:1px dotted #666; padding-left:25px;  }
-#navigation ul li .dd .dd-col a { font-size:13px; color:#fe9703;  padding-bottom:0;  }
-#navigation ul li .dd .dd-col.col1 { width:146px; padding-right:20px;  }
-#navigation ul li .dd .dd-col.col2 { width:236px; padding-right:10px;  }
-#navigation ul li .dd .dd-col.col3 {width:220px; border-right:0;  }
+#navigation ul li .dd .dd-col a { font-size:13px; color:#fe9703; padding: 0 0 0 8px; position:relative; left:-8px; background-image: none; }
+#navigation ul li .dd .dd-col a:hover { background:url('images/h6-a-arrow.png') no-repeat 0 center; }
+#navigation ul li .dd .dd-col.col1 { padding-right:20px;  }
+#navigation ul li .dd .dd-col.col2,
+#navigation ul li .dd.fourcol .dd-col.col3,
+#navigation ul li .dd .dd-col.col1-2 { padding-right:10px;  }
+#navigation ul li .dd .dd-col.col1,
+#navigation ul li .dd .dd-col.col2,
+#navigation ul li .dd .dd-col.col3 {
+	width:25%;
+}
+#navigation ul li .dd .dd-col.col1-2 {
+	width:50%;
+}
+#navigation ul li .dd.onecol .dd-col.col1 { width:auto; }
+#navigation ul li .dd.fourcol .dd-col.col1,
+#navigation ul li .dd.fourcol .dd-col.col2,
+#navigation ul li .dd.fourcol .dd-col.col3,
+#navigation ul li .dd.fourcol .dd-col.col4 { 
+	width:20%;
+}
+#navigation ul li .dd.onecol .dd-col.col1,
+#navigation ul li .dd.onecol .dd-col.col1-2,
+#navigation ul li .dd.threecol .dd-col.col3,
+#navigation ul li .dd.fourcol .dd-col.col4 { 
+	border-right:0;  
+}
+#navigation ul li h6,
 #navigation ul li h6 a { font-size:16px !important; color:#3b3b3b !important; font-weight:normal; font-family: 'MuseoSlab500Regular'; background:none; display:block;  margin-bottom:9px; }
+#navigation ul li h6 a { color:#fe9703; }
 #navigation ul li h6 a:hover { background:url('images/h6-a-arrow.png') no-repeat 0 center; }
 #navigation ul li ul li { padding-left:0;  }
-#navigation ul li ul li a { background:none; display:block; margin-bottom:7px;  }
+#navigation ul li ul li a { background:none; display:block;  }
 #navigation ul li ul li a:hover { background:url('images/a-arrow.png') no-repeat 0 2px; }
 
 .images { width:100%; position:relative; overflow:hidden; display:none;  }

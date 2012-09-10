@@ -1,4 +1,4 @@
-{% load cms_tags sekizai_tags menu_tags i18n %}
+{% load cms_tags sekizai_tags menu_tags storybase_tags i18n %}
 <!doctype html>
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
 <!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
@@ -67,6 +67,11 @@
 					<li>{% language_chooser %}</li>
 					<li><a href="#">Contact Us</a></li>
 					<li><a href="#">Help</a></li>
+					{% comment %}
+					{% if user.is_authenticated %}
+					<li><a href="#">Hi, {{ user.first_name }}</a></li>
+					{% endif %}
+					{% endcomment %}
 				</ul>
 				<div class="cl">&nbsp;</div>
 				<form id="search" action="" method="post">
@@ -76,128 +81,7 @@
 				</form>
 			</div>
 			<div class="cl">&nbsp;</div>
-			<!-- Navigation -->
-			<div id="navigation">
-				<ul> 
-					<li class="nodd"><a class="active" href="#">HOME</a></li>
-					<li><a href="#">BUILD A STORY<em></em></a>
-						<div class="dd">
-							<div class="dd-col col1">
-								<h6><a href="#">Browse by Tags</a></h6>
-							</div>
-							<div class="dd-col col2">
-								<h6><a href="#">Contributing Organizations</a></h6>
-								<ul>
-									<li><a href="#">The Piton Foundation</a></li>
-									<li><a href="#">The Denver Foundation</a></li>
-									<li><a href="#">Colorado Center for <br />Community Development</a></li>
-								</ul>
-							</div>
-							<div class="dd-col col3">
-								<h6><a href="#">Special Projects</a></h6>
-								<ul>
-									<li><a href="#">The Children’s Corridor</a></li>
-									<li><a href="#">Hinkley High School</a></li>
-								</ul>
-							</div>
-							<div class="cl">&nbsp;</div>
-						</div>
-					</li>
-					<li><a href="#">EXPLORE FLOODLIGHT<em></em></a>
-						<div class="dd">
-							<div class="dd-col col1">
-								<h6><a href="#">Browse by Tags</a></h6>
-							</div>
-							<div class="dd-col col2">
-								<h6><a href="#">Contributing Organizations</a></h6>
-								<ul>
-									<li><a href="#">The Piton Foundation</a></li>
-									<li><a href="#">The Denver Foundation</a></li>
-									<li><a href="#">Colorado Center for <br />Community Development</a></li>
-								</ul>
-							</div>
-							<div class="dd-col col3">
-								<h6><a href="#">Special Projects</a></h6>
-								<ul>
-									<li><a href="#">The Children’s Corridor</a></li>
-									<li><a href="#">Hinkley High School</a></li>
-								</ul>
-							</div>
-							<div class="cl">&nbsp;</div>
-						</div>
-					</li>
-					<li><a href="#">ABOUT<em></em></a>
-						<div class="dd">
-							<div class="dd-col col1">
-								<h6><a href="#">Browse by Tags</a></h6>
-							</div>
-							<div class="dd-col col2">
-								<h6><a href="#">Contributing Organizations</a></h6>
-								<ul>
-									<li><a href="#">The Piton Foundation</a></li>
-									<li><a href="#">The Denver Foundation</a></li>
-									<li><a href="#">Colorado Center for <br />Community Development</a></li>
-								</ul>
-							</div>
-							<div class="dd-col col3">
-								<h6><a href="#">Special Projects</a></h6>
-								<ul>
-									<li><a href="#">The Children’s Corridor</a></li>
-									<li><a href="#">Hinkley High School</a></li>
-								</ul>
-							</div>
-							<div class="cl">&nbsp;</div>
-						</div>
-					</li>
-					<li><a href="#">GET INVOLVED<em></em></a>
-						<div class="dd">
-							<div class="dd-col col1">
-								<h6><a href="#">Browse by Tags</a></h6>
-							</div>
-							<div class="dd-col col2">
-								<h6><a href="#">Contributing Organizations</a></h6>
-								<ul>
-									<li><a href="#">The Piton Foundation</a></li>
-									<li><a href="#">The Denver Foundation</a></li>
-									<li><a href="#">Colorado Center for <br />Community Development</a></li>
-								</ul>
-							</div>
-							<div class="dd-col col3">
-								<h6><a href="#">Special Projects</a></h6>
-								<ul>
-									<li><a href="#">The Children’s Corridor</a></li>
-									<li><a href="#">Hinkley High School</a></li>
-								</ul>
-							</div>
-							<div class="cl">&nbsp;</div>
-						</div>
-					</li>
-					<li class="last"><a href="#">NEWS &amp; UPDATES<em></em></a>
-						<div class="dd">
-							<div class="dd-col col1">
-								<h6><a href="#">Browse by Tags</a></h6>
-							</div>
-							<div class="dd-col col2">
-								<h6><a href="#">Contributing Organizations</a></h6>
-								<ul>
-									<li><a href="#">The Piton Foundation</a></li>
-									<li><a href="#">The Denver Foundation</a></li>
-									<li><a href="#">Colorado Center for <br />Community Development</a></li>
-								</ul>
-							</div>
-							<div class="dd-col col3">
-								<h6><a href="#">Special Projects</a></h6>
-								<ul>
-									<li><a href="#">The Children’s Corridor</a></li>
-									<li><a href="#">Hinkley High School</a></li>
-								</ul>
-							</div>
-							<div class="cl">&nbsp;</div>
-						</div>
-					</li>
-				</ul>
-			</div>
-			<!-- end Navigation -->
+			{% megamenu %}
 		</div>
 		<div class="cl">&nbsp;</div>
 	</div>
