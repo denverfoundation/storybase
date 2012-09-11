@@ -18,9 +18,14 @@
   </li>
 {% endfor %}
 </ul>
-{% if user.is_authenticated %}
-{% render_comment_form for story %}  
-{% else %}
-{# TODO: Show link to login/register #}
-{% endif %}
+<div id="comment-form">
+  {% if user.is_authenticated %}
+  {% render_comment_form for story %}  
+  {% else %}
+  {# TODO: Show link to login/register #}
+  <p>
+    <a href="{% url auth_login %}?next={{ story.get_absolute_url }}#comment-form">{% trans "Log in" %}</a> {% trans "or" %} <a href="{% url registration_register %}">{% trans "register" %}</a> {% trans "to comment" %}
+  </p>
+  {% endif %}
+</div>
 </section>
