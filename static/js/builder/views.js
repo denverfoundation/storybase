@@ -2859,22 +2859,22 @@ storybase.builder.views.TaxonomyView = Backbone.View.extend({
       topics: { 
         type: 'Select', 
         options: topicsOptions, 
-        editorAttrs: _.extend(editorAttrs, {placeholder: gettext("Click to select topics")})
+        editorAttrs: _.extend(_.clone(editorAttrs), {placeholder: gettext("Click to select topics")})
       },
       places: { 
         type: 'Select', 
         options: placesOptions, 
-        editorAttrs: _.extend(editorAttrs, {placeholder: gettext("Click to select places")})
+        editorAttrs: _.extend(_.clone(editorAttrs), {placeholder: gettext("Click to select places")})
       },
       organizations: {
         type: 'Select',
         options: organizationsOptions,
-        editorAttrs: _.extend(editorAttrs, {placeholder: gettext("Click to select organizations")})
+        editorAttrs: _.extend(_.clone(editorAttrs), {placeholder: gettext("Click to select organizations")})
       },
       projects: {
         type: 'Select',
         options: projectsOptions,
-        editorAttrs: _.extend(editorAttrs, {placeholder: gettext("Click to select projects")})
+        editorAttrs: _.extend(_.clone(editorAttrs), {placeholder: gettext("Click to select projects")})
       }
     };
     if (!organizationsOptions.length) {
