@@ -26,6 +26,7 @@ from storybase.utils import slugify
 from storybase_asset.models import Asset, DataSet
 from storybase_help.models import Help
 from storybase_user.models import Organization, Project
+from storybase_user.utils import format_user_name
 from storybase_story import structure
 from storybase_story.managers import (ContainerManager, SectionLayoutManager,
     SectionManager, StoryManager, StoryTemplateManager)
@@ -177,18 +178,7 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
         """
         Return the contributor's first name and last initial or username
         """ 
-        contributor = self.author
-        contributor_name = "" 
-        if contributor.is_active and contributor.first_name:
-            contributor_name = contributor.first_name 
-                                
-            if contributor.last_name:
-                contributor_name = "%s %s." % (contributor.first_name,
-                                               contributor.last_name[0])
-            else:
-                contributor_name = contributor.first_name
-
-        return contributor_name
+        return format_user_name(self.author) 
 
     def to_simple(self):
         """
