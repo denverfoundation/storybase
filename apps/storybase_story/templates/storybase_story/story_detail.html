@@ -25,7 +25,7 @@
 		<div class="content-page object-detail story">
 			<h3><span>Explore Floodlight</span></h3>
 			
-			<section class="object post">
+			<section class="object content-block">
 				<section class="object-featured-asset">
 					{# TODO: wire in real asset #}
 					{{ story.render_featured_asset }}
@@ -44,11 +44,11 @@
 			</section>
 
 			<section class="object-ornament post">
-				<section class="related-stories">
+				<section class="related-stories content-block">
 					<h4>Related Stories</h4>
 					{# TODO: related story list + cycler #}
 				</section>
-				<section class="object-details">
+				<section class="object-details content-block">
 					{% include "addthis_widget.html" %}
 					<dl class="object-metadata">
 						{% if story.contributor_name %}
@@ -107,12 +107,12 @@
 			</section>
 
 			<section class="story-outreach post last">
-				<section class="citizen-comments">
+				<section class="citizen-comments content-block last">
 
 					<h4>{% trans "Citizen Comments" %}</h4>
 					{# TODO: comment view #}
 				</section>
-				<section class="call-to-action">
+				<section class="call-to-action content-block last">
 
 					<h4>{% trans "How Can You Help?" %}</h4>
 					<p class="call-intro">{% blocktrans %}Wondering what you can do to help? The contributor has listed the following actions that you can take to help.{% endblocktrans %}</p>
@@ -141,7 +141,6 @@
 $(document).ready(function () {
     // Display the story viewer in a modal dialog
     $("#launch-story-viewer").click(function (event) {
-        event.preventDefault();
         var width = $(window).width() * 0.9;
         var height = $(window).height() * 0.9;
         $("#story-viewer").modal({
@@ -151,6 +150,7 @@ $(document).ready(function () {
         });
         $("#story-viewer iframe").css("width", width); 
         $("#story-viewer iframe").css("height", height); 
+        return false;
     });
 
     // Launch the viewer in a new window

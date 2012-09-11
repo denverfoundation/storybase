@@ -4,57 +4,26 @@
 
 {% block body_title %}{% page_attribute "page_title" %}{% endblock%}
 
-{% block top-left-col %}
-<ul class="post-nav">
-	<li><a class="active" href="#">{% placeholder overview-title-1 or %}Overview{% endplaceholder %}</a></li>
-	<li><a href="#">{% placeholder overview-title-2 or %}The Vision{% endplaceholder %}</a></li>
-	<li><a href="#">{% placeholder overview-title-3 or %}How it Works{% endplaceholder %}</a></li>
+{% block sidebar %}
+<ul class="sibling-nav">
+	{% show_menu 1 100 0 1 %}
 </ul>
 {% endblock %}
 
-{% block top-right-col %}
-<div class="post-content">
-	<ul class="slides">
-		<li>
-			<h4 class="first">
-				{% placeholder large-copy-1 or %}
-				Floodlight is about two things: storytelling and positive change. Our goal is to help you use the first one to achieve the second.
-				{% endplaceholder %}
-			</h4>
-			{% placeholder overview-1 or %}
-			<p>Welcome to Floodlight&mdash;a, community-powered storytelling project designed to drive social change by giving individuals and organizations the skills and tools to generate visually-compelling, data-supported stories that inspire people to act and illuminate community issues.</p>
-			{% endplaceholder %}
-		</li>
-		<li style="display:none;">
-			<h4 class="first">
-				{% placeholder large-copy-2 or %}
-				Everyone’s got a story to tell. Floodlight makes yours shine.
-				{% endplaceholder %}
-			</h4>
-			{% placeholder overview-2 or %}
-			<p>Floodlight will give you the tools and support to take your own, on-the-ground experiences and knowledge and blend them with best-practice storytelling techniques, visually-enhancing elements such as data, videos, photos, maps and more – to turn your story into a powerful tool for change.</p>
-			{% endplaceholder %}
-		</li>
-		<li style="display:none;">
-			<h4 class="first">
-				{% placeholder large-copy-3 or %}
-				Together, We’re Telling A Bigger Story
-				{% endplaceholder %}
-			</h4>
-			{% placeholder overview-3 or %}
-			<p>Within every community lie hidden stories and truths about issues, problems and dynamics. Together, these stories add up to unveil an even bigger story. Floodlight will not only give you a powerful platform to get your voice heard on issues that matter to you, but it will alsoadd your voice to an emerging chorus of community storytellers and change makers, igniting interest around issues that matter to each of us.</p>
-			<p>In this way, Floodlight becomes a unique nexus between storytellers, story sharers and story readers each working together to brighten, inform and transform community though our collective stories.</p>
-			{% endplaceholder %}
-		</li>
-	</ul>
-</div>
+{% block twocol-content %}
+{% placeholder twocol-content or %}
+<h4 class="first">
+	Floodlight is about two things: storytelling and positive change. Our goal is to help you use the first one to achieve the second.
+</h4>
+<p>Welcome to Floodlight&mdash;a, community-powered storytelling project designed to drive social change by giving individuals and organizations the skills and tools to generate visually-compelling, data-supported stories that inspire people to act and illuminate community issues.</p>
+{% endplaceholder %}
 {% endblock %}
 
 
 {% block bottom-left-col %}
-<div class="mini-post">
-	<h4>{% placeholder mini-post-1-title or %}The Vision{% endplaceholder %}</h4>
-	{% placeholder mini-post-1 or %}
+<div class="page-pull">
+	<h4>{% placeholder page-pull-1-title or %}<a href="#">The Vision</a>{% endplaceholder %}</h4>
+	{% placeholder page-pull-1 or %}
 	<p><strong>We can’t change what we can’t see. But together our stories can illuminate issues that matter and brighten the world.</strong></p>
 
 	<p>We believe in the inherent power, desire and creativity of people to enlighten the others in their community about the critical issues that affect us all. We also believe that thriving communities hinge on full citizen engagement.</p>
@@ -63,27 +32,15 @@
 	<p><a href="#">Read More</a></p>
 	{% endplaceholder %}
 </div>
-<div class="mini-post">
-	<h4>{% placeholder mini-post-2-title or %}Mini Post Title 2{% endplaceholder %}</h4>
-	{% placeholder mini-post-2 or %}
-	<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
-	{% endplaceholder %}
-</div>
 {% endblock %}
 {% block bottom-right-col %}
-<div class="mini-post">
-	<h4>{% placeholder mini-post-3-title or %}Our Partners{% endplaceholder %}</h4>
-	{% placeholder mini-post-3 or %}
+<div class="page-pull">
+	<h4>{% placeholder page-pull-2-title or %}<a href="#">Our Partners</a>{% endplaceholder %}</h4>
+	{% placeholder page-pull-2 or %}
 	<p><strong>Created By Impassioned Storytellers, Data Geeks and Community Change Agents.</strong></p>
 
 	<p>Floodlight was created by a team of impassioned social change agents, investigative journalists, data visualization experts and technology gurus with the goal of helping community members create and share inspiring, data-driven stories. Through the use of a free, open source platform, Floodlight helps residents illuminate their own issues while contributing to a larger unfolding story about our community.</p>
 	<p><a href="#">Read More</a></p>
-	{% endplaceholder %}
-</div>
-<div class="mini-post">
-	<h4>{% placeholder mini-post-4-title or %}Mini Post Title 4{% endplaceholder %}</h4>
-	{% placeholder mini-post-4 or %}
-	<p>Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.</p>
 	{% endplaceholder %}
 </div>
 {% endblock %}

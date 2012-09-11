@@ -9,26 +9,15 @@
 {% block base_content %}
 <div id="main" class="inner">
 	<div class="shell">
-		<div class="content-page">
+		<div class="content-page twocol">
 			<h3><span>{% block body_title %}{% endblock%}</span></h3>
-
-			<div class="post">
-				<div class="left">
-					{% block top-left-col %}
-					{% endblock %}
-				</div>
-				<div class="right">
-					{% block top-right-col %}
-					{% endblock %}
-				</div>
-				<div class="cl">&nbsp;</div>
-			</div>
-		</div>
-		<div class="post last">
-			<div class="left">
-				
-			</div>
-			<div class="right">
+			<section class="sidebar">
+				{% block sidebar %}{% endblock %}
+			</section>
+			<section class="content-block">
+				{% block twocol-content %}{% endblock %}
+			</section>
+			<section class="below-content">
 				<div class="col left">
 					{% block bottom-left-col %}
 					{% endblock %}
@@ -38,8 +27,7 @@
 					{% endblock %}
 				</div>
 				<div class="cl">&nbsp;</div>
-			</div>
-			<div class="cl">&nbsp;</div>
+			</section>
 		</div>
 	</div>
 </div>
