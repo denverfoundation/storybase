@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n sekizai_tags threadedcomments_tags %}
+{% load i18n sekizai_tags  %}
 
 {% block head_title %}{{ story.title }}{% endblock %}
 
@@ -41,13 +41,8 @@
     </div>
   </section>
 
-  <section class="comments">
-  {% get_comment_list for story as comment_list flat %}
-  {% for comment in comment_list %}
-    {{ comment.comment }}
-  {% endfor %}
-  {% render_comment_form for story %}  
-  </section>
+  {% include "storybase_story/story_comments.html" %} 
+
 </div>
 
 <div class="fourcol last">

@@ -1,0 +1,12 @@
+{% load threadedcomments_tags %}
+<section class="comments">
+{% get_comment_list for story as comment_list flat %}
+<ul class="comments-list">
+{% for comment in comment_list %}
+  <li class="comment">
+  {{ comment.comment }}
+  </li>
+{% endfor %}
+</ul>
+{% render_comment_form for story %}  
+</section>
