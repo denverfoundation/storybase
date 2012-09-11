@@ -1,6 +1,6 @@
 {% load comments i18n %}
 <form action="{% comment_form_target %}" method="post">{% csrf_token %}
-  <div><input type="hidden" name="next" value="{{ story.get_absolute_url }}" /></div>
+  <div><input type="hidden" name="next" value="{{ story.get_absolute_url }}#comments" /></div>
   {% for field in form %}
     {% if field.is_hidden %}
       <div>{{ field }}</div>
@@ -22,6 +22,8 @@
   {% endfor %}
   <p class="submit">
     <input type="submit" name="post" class="submit-post" value="{% trans "Post" %}" />
+    {% comment %}
     <input type="submit" name="preview" class="submit-preview" value="{% trans "Preview" %}" />
+    {% endcomment %}
   </p>
 </form>

@@ -1,13 +1,26 @@
-{% load threadedcomments_tags storybase_user_tags %}
-<section class="comments">
+{% load threadedcomments_tags storybase_user_tags i18n %}
+<section id="comments" class="comments">
+<header><h2>{% trans "Comments" %}</h2></header>
 {% get_comment_list for story as comment_list flat %}
 <ul class="comments-list">
 {% for comment in comment_list %}
   <li class="comment">
-  <span class="commentor-name">{% format_user_name comment.user %}</span>
-  {{ comment.comment }}
+    <div class="comment-head">
+      {# TODO: Make this a link to the user profile page #}
+      <span class="comment-user-name"><a href="#">{% format_user_name comment.user %}</a></span>
+    </div>
+    <div class="comment-body">
+      {{ comment.comment }}
+    </div>
+    <div class="comment-footer">
+      <span class="comment-date">{{ comment.submit_date|date:"g:i A l M j, Y" }}</span>
+    </div>
   </li>
 {% endfor %}
 </ul>
+{% if user.is_authenticated %}
 {% render_comment_form for story %}  
+{% else %}
+{# TODO: Show link to login/register #}
+{% endif %}
 </section>
