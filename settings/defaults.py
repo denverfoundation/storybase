@@ -173,7 +173,6 @@ INSTALLED_APPS = (
     'taggit',
     'tastypie',
     'categories.editor',
-    'oembed',
     'tinymce',
     'registration',
     'social_auth',

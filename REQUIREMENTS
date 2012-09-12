@@ -36,8 +36,6 @@ python-ptrace==0.6.3
 wsgiref==0.1.2
 git+git://github.com/elpaso/django-dag.git#egg=django_dag
 django-uuidfield==0.2
-# Use my branch of djangoembed until #34 is fixed
-git+git://github.com/ghing/djangoembed.git#egg=djangoembed-0.1.1-py2.7-dev
 # Install djang-model-utils from Bitbucket so we can used
 # InheritanceManager.get_subclass()
 hg+https://bitbucket.org/carljm/django-model-utils
@@ -48,3 +46,4 @@ django-registration
 django-passwords
 django-notification
 pytz
+micawber
