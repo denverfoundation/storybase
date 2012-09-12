@@ -387,6 +387,13 @@ storybase.collections.Sections = Backbone.Collection.extend(
   })
 );
 
+storybase.models.StoryRelation = Backbone.Model.extend({
+  idAttribute: "relation_id"
+});
+
+storybase.collections.StoryRelations = Backbone.model.extend({
+});
+
 storybase.models.Asset = Backbone.Model.extend(
   _.extend({}, storybase.models.TastypieMixin, {
     showFormField: {

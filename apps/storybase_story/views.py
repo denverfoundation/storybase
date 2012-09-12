@@ -131,6 +131,28 @@ class StoryBuilderView(DetailView):
         else:
             return None
 
+    def get_source_story(self):
+        """Get the source story for a connected story"""
+        queryset = self.get_queryset()
+        source_story_id = self.kwargs.get('story_id', None)
+        source_slug = self.kwargs.get('slug', None)
+        if source_story_id is not None:
+            queryset = queryset.filter(story_id=source_story_id)
+        elif source_slug is not None:
+            queryset = queryset.filter(slug=source_slug)
+        else:
+            return None
+
+        try:
+            source_story = queryset.get()
+        except ObjectDoesNotExist:
+            raise Http404(_(u"No %(verbose_name)s found matching the query") %
+                    {'verbose_name': queryset.model._meta.verbose_name})
+        if not source_story.connected:
+            raise PermissionDenied(_(u"This story does not allow connected stories"))
+
+        return source_story
+
     def get_template_object(self, queryset=None):
         """
         Get the ``StoryTemplate`` instance for this view
@@ -281,6 +303,17 @@ class StoryBuilderView(DetailView):
                             for project in self.request.user.projects.all()]
         return json.dumps(to_be_serialized);
 
+    def get_related_stories_json(self):
+        if self.source_story:
+            return json.dumps([
+                {
+                    'source': self.source_story.story_id,
+                    'relation_type': 'connected'
+                },
+            ])
+        else:
+            return None
+
     def get_context_data(self, **kwargs):
         """Provide Bootstrap data for Backbone models and collections"""
         context = {
@@ -311,11 +344,17 @@ class StoryBuilderView(DetailView):
             context['template_assets_json'] = mark_safe(
                 self.get_assets_json(self.template_object.story))
 
+        related_stories_json = self.get_related_stories_json()
+        if related_stories_json: 
+            context['related_stories_json'] = mark_safe(
+                related_stories_json)
+
         return context
 
     def get(self, request, **kwargs):
         self.object = self.get_object()
         self.template_object = self.get_template_object(queryset=None)
+        self.source_story = self.get_source_story()
         context = self.get_context_data(object=self.object, **kwargs)
         return self.render_to_response(context)
 
