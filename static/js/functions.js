@@ -22,78 +22,78 @@
 			$(this).find('span.overlay').stop(true,true).fadeIn();
 			$(this).find('span.title').stop(true,true).slideUp();
 		})
-
-		$('.title .flexslider').flexslider({
-			animation: 'slide',
-			slideshow: false,
-			start: function(slider){
-				$('.right-nav').click(function  () {
-					slider.flexAnimate(slider.getTarget("next"), true)
-				});
-				$('.left-nav').click(function  () {
-					slider.flexAnimate(slider.getTarget("prev"), true)
-				});
-			}
-		});
-
-		$('.bottom .flexslider').flexslider({
-			animation: 'slide',
-			slideshow: false,
-			start: function(slider){
-				$('.bottom .left ul li:eq(0) a ').click(function() {
-
-					slider.flexAnimate(0)
-					$('.bottom .left ul li a ').removeClass('active');
-					$(this).addClass('active');
-					return false;
-				})
-				$('.bottom .left ul li:eq(1) a ').click(function() {
-
-					slider.flexAnimate(1)
-					$('.bottom .left ul li a ').removeClass('active');
-					$(this).addClass('active');
-					return false;
-				})
-				$('.bottom .left ul li:eq(2) a ').click(function() {
-
-					slider.flexAnimate(2)
-					$('.bottom .left ul li a ').removeClass('active');
-					$(this).addClass('active');
-					return false;
-				})
-				$('.bottom .left ul li:eq(3) a ').click(function() {
-					slider.flexAnimate(3)
-					$('.bottom .left ul li a ').removeClass('active');
-					$(this).addClass('active');
-					return false;
-				})
-
-			}
-		});
-
-
-		$('.flexslider').each(function() {
-			var jqThis = $(this);
-			jqThis.flexslider({
+		
+		if ($('.flexslider').length) {
+			$('.title .flexslider').flexslider({
 				animation: 'slide',
 				slideshow: false,
-				start: function() {
-					jqThis.find('.slide-shim').cycle({
-						fx:     'scrollLeft',
-						speed:  1500,
-						timeout: 0,
-						prev:   '.back',
-						next:   '.forward'
+				start: function(slider){
+					$('.right-nav').click(function  () {
+						slider.flexAnimate(slider.getTarget("next"), true)
+					});
+					$('.left-nav').click(function  () {
+						slider.flexAnimate(slider.getTarget("prev"), true)
 					});
 				}
 			});
-		});
+
+			$('.bottom .flexslider').flexslider({
+				animation: 'slide',
+				slideshow: false,
+				start: function(slider){
+					$('.bottom .left ul li:eq(0) a ').click(function() {
+
+						slider.flexAnimate(0)
+						$('.bottom .left ul li a ').removeClass('active');
+						$(this).addClass('active');
+						return false;
+					})
+					$('.bottom .left ul li:eq(1) a ').click(function() {
+
+						slider.flexAnimate(1)
+						$('.bottom .left ul li a ').removeClass('active');
+						$(this).addClass('active');
+						return false;
+					})
+					$('.bottom .left ul li:eq(2) a ').click(function() {
+
+						slider.flexAnimate(2)
+						$('.bottom .left ul li a ').removeClass('active');
+						$(this).addClass('active');
+						return false;
+					})
+					$('.bottom .left ul li:eq(3) a ').click(function() {
+						slider.flexAnimate(3)
+						$('.bottom .left ul li a ').removeClass('active');
+						$(this).addClass('active');
+						return false;
+					})
+
+				}
+			});
 
 
-		mySlider()
+			$('.flexslider').each(function() {
+				var jqThis = $(this);
+				jqThis.flexslider({
+					animation: 'slide',
+					slideshow: false,
+					start: function() {
+						jqThis.find('.slide-shim').cycle({
+							fx:     'scrollLeft',
+							speed:  1500,
+							timeout: 0,
+							prev:   '.back',
+							next:   '.forward'
+						});
+					}
+				});
+			});
+			mySlider();
+		}
+
 
 		//Drop down
-
 		$('.dd').hide();
 		$('#navigation ul li').hover(function(){ 
 			$(this).find('.dd:eq(0)').show();
@@ -137,7 +137,32 @@
 		});
 
 		$('.list-view .box ').append('<div class="cl"/>')
-
+		
+		// nb: using classes atm; best not to have mutliple on a page
+		$('.post-content .slides').cycle({
+			before: function(currSlideElement, nextSlideElement, options, forwardFlag) {
+				// in safari, at any rate, we have to jiggle the width or it doesn't render properly. :(
+				var w = $(this).width();
+				$(this).width(w + 1).width(w - 1);
+			},
+			after: function(currSlideElement, nextSlideElement, options, forwardFlag) {
+				$('.post-content .slides').data('active-index', $(this).index());
+				$('.post-nav a').removeClass('active').eq($(this).index()).addClass('active');
+			},
+			autostop: true,
+			autostopCount: 1,
+			fx: 'scrollLeft',
+			speed: 500
+		});
+		$('.post-nav a').click(function() {
+			var myIndex = $(this).parent().index();
+			var transition = 'scrollRight';
+			if ($('.post-content .slides').data('active-index') < $(this).parent().index()) {
+				transition = 'scrollLeft';
+			}
+			$('.post-content .slides').cycle($(this).parent().index(), transition);
+			return false;
+		});
 	});
 
 

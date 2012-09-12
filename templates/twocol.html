@@ -3,23 +3,32 @@
 {% load i18n sekizai_tags menu_tags %}
 
 {% block above_content %}
-<ul id="breadcrumbs" class="row">{% show_breadcrumb %}</ul>
+{% show_breadcrumb "breadcrumbs.html" %}
 {% endblock %}
 
-{% block col_left %}
-<div class="threecol sidebar-left">
-  <nav id="subnav">
-    <ul class="navroot">{% show_menu 1 %}</ul>
-  </nav>
-</div>
-{% endblock %}
-
-{% block col_right %}
-<div class="ninecol last primary-content">
-  <h2>{% block body_title %}{% endblock%}</h2>
-  {% block intro %}
-  {% endblock %}
-  {% block primary_content %}
-  {% endblock %}
+{% block base_content %}
+<div id="main" class="inner">
+	<div class="shell">
+		<div class="content-page twocol">
+			<h3><span>{% block body_title %}{% endblock%}</span></h3>
+			<section class="sidebar">
+				{% block sidebar %}{% endblock %}
+			</section>
+			<section class="content-block">
+				{% block twocol-content %}{% endblock %}
+			</section>
+			<section class="below-content">
+				<div class="col left">
+					{% block bottom-left-col %}
+					{% endblock %}
+				</div>
+				<div class="col right">
+					{% block bottom-right-col %}
+					{% endblock %}
+				</div>
+				<div class="cl">&nbsp;</div>
+			</section>
+		</div>
+	</div>
 </div>
 {% endblock %}

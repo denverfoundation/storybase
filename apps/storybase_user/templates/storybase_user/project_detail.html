@@ -1,53 +1,109 @@
 {% extends "twocol.html" %}
 
-{% load i18n sekizai_tags menu_tags %}
+{% load i18n sekizai_tags menu_tags story projects %}
 
 {% block head_title %}{{ project.name }}{{ block.super }}{% endblock %}
 
 {% block body_title %}{{ project.name }}{% endblock %}
 
-{% block primary_content %}
 
-{% if project.website_url %}
-<h3>Website URL</h3>
-<p><a href="{{ project.website_url }}">{{ project.website_url }}</a></p>
-{% endif %}
+{% block base_content %}
+<div id="main">
+	<div class="shell">
+		<div class="content-page object-detail project">
+			<h3><span>Special Projects</span></h3>
+			
+			<section class="object post">
+				<section class="object-featured-asset">
+					{# TODO: wire in real asset #}
+					<img src="/static/css/images/image3.jpg" title="temp asset">
+				</section>
+				<section class="object-summary">
+					<header>
+						<h2>{{ project.name }}</h2>
+					</header>
+					<section class="summary">
+						{% if project.description %}
+						{{ project.description|safe|linebreaks }}
+						{% endif %}
+					</section>
+					
+					{# just throwing a bunch of stuff in here for now #}
+					<dl class="object-metadata">
+						{% if project.website_url %}
+						<dt>Website URL</dt>
+						<dd><a href="{{ project.website_url }}">{{ project.website_url }}</a></dd>
+						{% endif %}
 
-{% if project.description %}
-<h3>Description</h3>
-{{ project.description|safe|linebreaks }}
-{% endif %}
+						{% if project.members.count %}
+						<dt>Members</dt>
+						<dd>
+							<ul class="members">
+							{% for member in project.members.all %}
+							  <li>{{ member.username }}</li>
+							{% endfor %}
+							</ul>
+						</dd>
+						{% endif %}
 
-{% if project.members.count %}
-<h3>Members</h3>
-<ul class="members">
-{% for member in project.members.all %}
-  <li>{{ member.username }}</li>
-{% endfor %}
-</ul>
-{% endif %}
+						{% if project.organizations.count %}
+						<dt>Organizations</dt>
+						<dd>
+							<ul class="organizations">
+							{% for organization in project.organizations.all %}
+							  <li>{{ organization.name }}</li>
+							{% endfor %}
+							</ul>
+						</dd>
+						{% endif %}
 
-{% if project.organizations.count %}
-<h3>Organizations</h3>
-<ul class="organizations">
-{% for organization in project.organizations.all %}
-  <li>{{ organization.name }}</li>
-{% endfor %}
-</ul>
-{% endif %}
+						{% if project.curated_stories.count %}
+						<dt>Stories</dt>
+						<dd>
+							<ul class="stories">
+							{% for story in project.ordered_stories %}
+							  <li>{{ story.title }}</li>
+							{% endfor %}
+							</ul>
+						</dd>
+						{% endif %}
 
-{% if project.curated_stories.count %}
-<h3>Stories</h3>
-<ul class="stories">
-{% for story in project.ordered_stories %}
-  <li>{{ story.title }}</li>
-{% endfor %}
-</ul>
-{% endif %}
+						<dt>Created</dt>
+						<dd><time class="created">{{ project.created|date:"F j, Y" }}</time></dd>
 
-<h3>Created</h3>
-<p><time class="created">{{ project.created|date:"F j, Y" }}</time></p>
+						<dt>Last Edited</dt>
+						<dd><time class="last-edited">{{ project.last_edited|date:"F j, Y g:i A" }} </time></dd>
+					</dl>
+				</section>
+			</section>
 
-<h3>Last Edited</h3>
-<p><time class="last-edited">{{ project.last_edited|date:"F j, Y g:i A" }} </time></p>
+			<div class="cols">
+				<div class="flexslider col left">
+					<h4><span>Featured Projects</span></h4>
+					{% featured_projects %}
+				</div>
+				<div class="flexslider col right">
+					<h4><span>Featured Stories</span></h4>
+					{% featured_stories %}
+				</div>
+				<div class="cl">&nbsp;</div>
+			</div>
+			<div class=" bottom">
+				<h3><span>Project Contributors</span></h3>
+				{# {% placeholder project-contributors %} #}
+				
+				<h3><span>Supporting Organizations</span></h3>
+				{# {% placeholder supporting-foundations %} #}
+			</div>
+
+
+
+		</div><!-- /.content-page -->
+	</div><!-- /.shell -->
+</div><!-- /#main -->
+{% endblock %}
+
+{% block extrajs %}
+	<script src="{{ STATIC_URL }}js/libs/jquery.cycle.all.min.js"></script>
+	<script src="{{ STATIC_URL }}js/libs/jquery.flexslider.js" type="text/javascript"></script>
 {% endblock %}
