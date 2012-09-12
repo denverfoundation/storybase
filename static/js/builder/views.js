@@ -1630,6 +1630,7 @@ storybase.builder.views.StoryInfoEditView = storybase.builder.views.PseudoSectio
       tooltip: gettext('Click to edit byline'),
       onblur: 'submit'
     });
+    this.delegateEvents(); 
     return this;
   }
 });
@@ -1672,6 +1673,7 @@ storybase.builder.views.CallToActionEditView = storybase.builder.views.PseudoSec
         change: handleChange
       }
     );
+    this.delegateEvents();
     return this;
   }
 });
