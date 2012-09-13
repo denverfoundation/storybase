@@ -391,7 +391,7 @@ storybase.models.StoryRelation = Backbone.Model.extend({
   idAttribute: "relation_id"
 });
 
-storybase.collections.StoryRelations = Backbone.model.extend({
+storybase.collections.StoryRelations = Backbone.Collection.extend({
 });
 
 storybase.models.Asset = Backbone.Model.extend(
