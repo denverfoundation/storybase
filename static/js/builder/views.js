@@ -488,6 +488,9 @@ storybase.builder.views.WorkflowNavView = Backbone.View.extend({
     this.back = this.options.back;
     this.items = _.isUndefined(this.options.items) ? this.items : this.options.items;
     this.itemTemplate = Handlebars.compile(this.itemTemplateSource);
+    // Include story ID in paths?  This should only happen for stories
+    // created in this session.
+    this._includeStoryId = _.isUndefined(this.model) || this.model.isNew();
     if (_.isUndefined(this.model)) {
       this.dispatcher.on("ready:story", this.setStory, this);
     }
@@ -495,16 +498,25 @@ storybase.builder.views.WorkflowNavView = Backbone.View.extend({
 
   setStory: function(story) {
     this.model = story;
+    this.dispatcher.on("save:story", this.handleInitialSave, this);
+    this.render();
+  },
+
+  handleInitialSave: function(story) {
+    this.dispatcher.off("save:story", this.handleInitialSave, this);
     this.render();
   },
 
   getHref: function(itemOptions) {
+    path = itemOptions.path;
     if (itemOptions.route !== false) {
-      return storybase.builder.globals.APP_ROOT + this.model.id + '/' + itemOptions.path;
+      if (this._includeStoryId) {
+        path = this.model.id + '/' + path;
+      }
+      path = storybase.builder.globals.APP_ROOT + path;
     }
-    else {
-      return itemOptions.path;
-    }
+    console.debug(path);
+    return path;
   },
 
   renderItem: function(itemOptions) {
