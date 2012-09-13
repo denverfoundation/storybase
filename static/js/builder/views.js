@@ -1165,7 +1165,21 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
     this.model = this.options.model;
+    /**
+     * A lookup table of SectionThumbnailView instances by their
+     * model's section ids.
+     * @type object
+     */
     this._thumbnailViews = {};
+    /**
+     * A list of SectionThumbnailView instances that defines the order
+     * of the thumbnails.
+     *
+     * We have to define this instead of just using the sections collection
+     * of the Story model because of the story information and call to 
+     * action "pseudo sections".
+     * @type array
+     */
     this._sortedThumbnailViews = [];
     this._sectionsFetched = false;
     this._thumbnailsAdded = false;
@@ -1183,13 +1197,14 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
   },
 
   addSectionThumbnail: function(section, index) {
+    var sectionId = section.isNew() ? section.cid : section.id;
     var view = new storybase.builder.views.SectionThumbnailView({
       dispatcher: this.dispatcher,
       model: section
     });
     index = _.isUndefined(index) ? this._sortedThumbnailViews.length - 1 : index + 1; 
     this._sortedThumbnailViews.splice(index, 0, view);
-    this._thumbnailViews[section.id] = view;
+    this._thumbnailViews[sectionId] = view;
     return view;
   },
 
@@ -1261,7 +1276,17 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
   },
 
   getThumbnailView: function(section) {
-    return this._thumbnailViews[section.id];
+    // First try looking up the section by section id
+    var view = this._thumbnailViews[section.id];
+    if (_.isUndefined(view)) {
+      // If that fails, look it up by client id
+      // This occurs when the section is one copied from the template
+      // that hadn't been saved when the thumbnail view lookup object
+      // was initialized
+      view = this._thumbnailViews[section.cid];
+    }
+    
+    return view; 
   },
 
   removeThumbnailView: function(view) {
@@ -1605,6 +1630,7 @@ storybase.builder.views.StoryInfoEditView = storybase.builder.views.PseudoSectio
       tooltip: gettext('Click to edit byline'),
       onblur: 'submit'
     });
+    this.delegateEvents(); 
     return this;
   }
 });
@@ -1647,6 +1673,7 @@ storybase.builder.views.CallToActionEditView = storybase.builder.views.PseudoSec
         change: handleChange
       }
     );
+    this.delegateEvents();
     return this;
   }
 });
