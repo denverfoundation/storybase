@@ -102,12 +102,6 @@
         storybase.globals.MAP_CENTER = {{ storybase_map_center }};
         storybase.globals.MAP_ZOOM_LEVEL = {{ storybase_map_zoom_level }};
         storybase.globals.MAP_POINT_ZOOM_LEVEL = {{ storybase_map_point_zoom_level }};
-        var getRoot = function() {
-          var base = '/build/';
-          var pathParts = window.location.pathname.split('/');
-          // If the URL contains a language, add it to the root
-          return root = (pathParts[1] != 'build' ? '/' + pathParts[1] : '') + base; 
-        };
         var storyTemplatesData = {{ story_template_json }};
         var helpData = {{ help_json }};
         var options = {
@@ -128,9 +122,10 @@
         options.storyTemplates.reset(storyTemplatesData.objects);
         options.help.reset(helpData.objects);
         
-        storybase.builder.globals.APP_ROOT = getRoot();
+        storybase.builder.globals.APP_ROOT = storybase.utils.getRoot(["build"], window.location.pathname, 1);
         storybase.builder.router = new storybase.builder.routers.Router({
-            dispatcher: storybase.builder.globals.dispatcher
+            dispatcher: storybase.builder.globals.dispatcher,
+            hasStory: !_.isUndefined(options.model)
         });
         storybase.builder.app = new storybase.builder.views.AppView(
             options
