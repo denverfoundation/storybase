@@ -309,6 +309,9 @@
   margin-top: 0.5%;
   padding-bottom: 2%;
 }
+.section-edit-layout .wysihtml5-sandbox {
+  border: none !important;
+}
 .storybase-container-placeholder {
   position: relative;
   height: 94%;
