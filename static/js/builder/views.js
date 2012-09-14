@@ -546,15 +546,18 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
     this.itemTemplate = this.getItemTemplate();
+    this.activeStep = null;
+    this.hasAssetList = false;
 
     this.dispatcher.on('has:assetlist', this.toggleAssetsItem, this);
     this.dispatcher.on('ready:story', this.handleStorySave, this);
     this.dispatcher.on('save:story', this.handleStorySave, this);
+    this.dispatcher.on("select:workflowstep", this.updateStep, this);
   },
 
-
-  toggleAssetsItem: function(visible) {
-    this.setVisibility('assets', visible);
+  toggleAssetsItem: function(hasAssetList) {
+    this.hasAssetList = hasAssetList;
+    this.setVisibility('assets', this.hasAssetList && this.activeStep === 'build');
     this.render();
   },
 
@@ -582,6 +585,23 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
       item.visible = true;
       this.render();
     }
+  },
+
+  updateVisible: function() {
+    // The assets item should only be visible in the build Workflow
+    // step
+    if (this.activeStep === 'build') {
+      this.setVisibility('assets', this.hasAssetList);
+    }
+    else {
+      this.setVisibility('assets', false);
+    }
+  },
+
+  updateStep: function(step) {
+    this.activeStep = step;
+    this.updateVisible();
+    this.render();
   }
 });
 
