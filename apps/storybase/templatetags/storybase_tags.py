@@ -48,7 +48,8 @@ def storybase_conf(parser, token):
         raise template.TemplateSyntaxError("%r tag's argument should be in quotes" % tag_name)
     return StorybaseConfNode(format_string[1:-1])
 
-@register.inclusion_tag('megamenu.html')
-def megamenu():
-    # currently all hard-coded in the template.
-    return {}
+@register.inclusion_tag('megamenu.html', takes_context=True)
+def megamenu(context):
+    return {
+        'user': context['user']
+    }

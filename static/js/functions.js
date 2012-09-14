@@ -95,7 +95,7 @@
 
 		//Drop down
 		$('.dd').hide();
-		$('#navigation ul li').hover(function(){ 
+		$('.megamenu ul li').hover(function(){ 
 			$(this).find('.dd:eq(0)').show();
 			$(this).find('a:eq(0)').addClass('hover');
 			$(this).find('a em').show();

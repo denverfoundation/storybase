@@ -66,15 +66,14 @@
 		<div class="shell">
 			<div class="header-right">
 				<ul class="top-nav">
-					{% include "account_menu.html" %}
 					<li>{% language_chooser %}</li>
 					<li><a href="#">Contact Us</a></li>
 					<li><a href="#">Help</a></li>
-					{% comment %}
 					{% if user.is_authenticated %}
-					<li><a href="#">Hi, {{ user.first_name }}</a></li>
+					<li><a href="{% url account_summary %}">Hi, {{ user.first_name }}</a></li>
+					{% else %}
+					<li><a href="{% url auth_login %}">{% trans "Sign In" %}</a></li>
 					{% endif %}
-					{% endcomment %}
 				</ul>
 				<div class="cl">&nbsp;</div>
 				<form id="search" action="" method="post">
