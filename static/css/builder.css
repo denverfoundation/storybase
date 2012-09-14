@@ -47,6 +47,20 @@
 .centered {
   text-align: center;
 }
+.editable {
+  border: solid 1px #20C6FD;
+  padding: 0.5%;
+}
+.editable-important {
+  border: solid 1px #20C6FD !important;
+  padding: 0.5% !important;
+}
+.editable:hover {
+  border-color: #FE9703;
+}
+.editable-important-hover {
+  border-color: #FE9703 !important;
+}
 /* Help Modal */
 #simplemodal-container {
   background-color: #fff;
@@ -80,9 +94,6 @@
 .wysihtml5-toolbar {
   position: relative;
   padding: 0 0 20px 0;
-}
-.wysihtml5-sandbox {
-  border: none !important;
 }
 [[object Object]] {
   position: absolute;
@@ -175,7 +186,15 @@
   width: 30%;
   padding: 1%;
 }
-/* Story Builder View */
+.vertical-space {
+  margin-top: 0.5%;
+}
+.vertical-space-important {
+  margin-top: 0.5% !important;
+}
+.full-width {
+  width: 100%;
+}
 .builder {
   position: relative;
   height: 100%;
@@ -232,14 +251,40 @@
   height: 32px;
 }
 /* Story information editor */
+.story-title {
+  width: 100%;
+  margin-top: 0.5%;
+}
+.byline {
+  margin-top: 0.5%;
+  width: 100%;
+}
+.byline input {
+  width: 98% !important;
+}
 .summary {
   width: 100%;
   min-height: 400px;
 }
-/* Call to action editor */
+.edit-story-info .wysihtml5-sandbox {
+  border: solid 1px #20C6FD !important;
+  padding: 0.5% !important;
+  margin-top: 0.5% !important;
+}
+.edit-story-info .wysihtml5-sandbox:hover {
+  border-color: #FE9703 !important;
+}
+.edit-call-to-action .wysihtml5-sandbox {
+  border: solid 1px #20C6FD !important;
+  padding: 0.5% !important;
+  margin-top: 0.5% !important;
+}
+.edit-call-to-action .wysihtml5-sandbox:hover {
+  border-color: #FE9703 !important;
+}
 .call-to-action {
   width: 100%;
-  height: 60%;
+  height: 250px;
 }
 /* Section Editor */
 .edit-section {
@@ -250,9 +295,14 @@
   height: 70%;
   padding: 2%;
 }
+.edit-section .section-title {
+  margin-top: 15px;
+  width: 930px;
+}
 .section-edit-layout {
   position: relative;
   height: 90%;
+  margin-top: 0.5%;
   padding-bottom: 2%;
 }
 .storybase-container-placeholder {
