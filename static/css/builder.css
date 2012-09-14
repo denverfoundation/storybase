@@ -136,10 +136,10 @@
   position: absolute !important;
   right: 0;
 }
-.workflow .active {
+.workflow-step .selected {
   background-color: #fff;
 }
-.workflow .active a {
+.workflow-step .selected a {
   color: #000 !important;
   font-style: italic;
 }
