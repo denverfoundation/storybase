@@ -314,22 +314,23 @@ ul.social li.icon3 a { background-position:-67px 0; }
 	display: none;
 }
 
-a#launch-story-viewer { 
-	float:right;
+a.button {
 	padding:8px;
 	background:#878787;
 	font-family: "Museo300Regular";
 	font-size:14px;
 	border-radius:4px;
 	font-weight:normal;
-	color:#fbfaf2;
+	color:#fbfaf2;	
 }
-a#launch-story-viewer:hover {
+a.button:hover {
 	text-decoration:none;
 	background: #fe9703;
-	color:#fff;
+	color:#fff;	
 }
-
+a.button.right {
+	float:right;
+}
 
 /* story/project detail */
 #main .content-page.object-detail .col {
@@ -350,14 +351,24 @@ a#launch-story-viewer:hover {
 	background:url('images/h3-line.png') repeat-x;
 	margin-bottom:20px;
 }
-.content-page.object-detail h2 { font-size:26px; color:#444; text-align:left;  font-family: 'Museo300Regular'; font-weight:normal; }
+.content-page.object-detail h2,
+.content-page.object-detail h3,
+.content-page.object-detail h4 {
+	text-align:left;
+	font-family: 'Museo300Regular';
+	font-weight:normal;
+}
+.content-page.object-detail h2 { font-size:26px; color:#444; }
 .content-page.object-detail .object-featured-asset,
 .content-page.object-detail .object-summary,
 .content-page.object-detail .related-stories,
 .content-page.object-detail .object-details,
 .content-page.object-detail .citizen-comments,
 .content-page.object-detail .call-to-action
-{ float:left; width:480px; position: relative; }
+{ /*float:left; width:480px; position: relative; */}
+.content-page.object-detail .object-featured-asset {
+	float:left;
+}
 .content-page.object-detail .object img { width:150px; }
 .content-page.object-detail .object-featured-asset,
 .content-page.object-detail .related-stories,
@@ -365,15 +376,16 @@ a#launch-story-viewer:hover {
 { margin-right:40px; }
 .content-page.object-detail .object + hr,
 .content-page.object-detail .story-outreach { clear:left; }
-.content-page.object-detail .call-to-action p {
-	float:left;
-}
-.content-page.object-detail .call-intro {
+/*.content-page.object-detail .call-intro {
 	width:30%;
 	margin-right:10%;
 }
 .content-page.object-detail .story-call-to-action {
 	width:60%;
+}
+*/
+.content-page.object-detail .connected-stories dl {
+	margin: 10px;
 }
 
 #main .content-page.object-detail .call-to-action ul {
