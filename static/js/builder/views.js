@@ -37,22 +37,24 @@ storybase.builder.views.AppView = Backbone.View.extend({
     // This will get set by an event callback 
     this.activeStep = null; 
 
+    // Initialize a view for the tools menu
+    this.toolsView = new storybase.builder.views.ToolsView(commonOptions);
+    // TODO: Change the selector as the template changes
+    this.$('header').first().children().first().append(this.toolsView.el);
+
+    this.helpView = new storybase.builder.views.HelpView(commonOptions);
+
+    if (this.model) {
+      commonOptions.model = this.model;
+    }
+
     // Initialize the view for the workflow step indicator
     this.workflowStepView = new storybase.builder.views.WorkflowStepView(
       commonOptions
     );
     // TODO: Change the selector as the template changes
     this.$('header').first().children().first().append(this.workflowStepView.el);
-    // Initialize a view for the tools menu
-    this.toolsView = new storybase.builder.views.ToolsView(commonOptions);
-    
-    // TODO: Change the selector as the template changes
-    this.$('header').first().children().first().append(this.toolsView.el);
-    this.helpView = new storybase.builder.views.HelpView(commonOptions);
 
-    if (this.model) {
-      commonOptions.model = this.model;
-    }
     buildViewOptions = _.extend(commonOptions, {
       assetTypes: this.options.assetTypes,
       layouts: this.options.layouts,
@@ -274,12 +276,183 @@ storybase.builder.views.MenuView = Backbone.View.extend({
 });
 
 /**
+ * List of clickable items that navigate to different workflow
+ * steps.
+ */
+// TODO: Merge this functionality with MenuView
+storybase.builder.views.WorkflowNavView = Backbone.View.extend({ 
+  tagName: 'div',
+
+  className: 'workflow-nav',
+
+  itemTemplateSource: $('#workflow-nav-item-template').html(),
+
+  items: {},
+
+  events: function() {
+    var events = {};
+    _.each(this.items, function(item) {
+      if (item.route !== false) {
+        events['click #' + item.id] = _.isUndefined(item.callback) ? this.handleClick : item.callback;
+      }
+    }, this);
+    return events;
+  },
+
+  initialize: function() {
+    this.dispatcher = this.options.dispatcher;
+    this.forward = this.options.forward;
+    this.back = this.options.back;
+    this.items = _.isUndefined(this.options.items) ? this.items : this.options.items;
+    this.itemTemplateSource = _.isUndefined(this.options.itemTemplateSource) ? this.itemTemplateSource : this.options.itemTemplateSource;
+    this.itemTemplate = Handlebars.compile(this.itemTemplateSource);
+    // Include story ID in paths?  This should only happen for stories
+    // created in this session.
+    this._includeStoryId = _.isUndefined(this.model) || this.model.isNew();
+    if (_.isUndefined(this.model)) {
+      this.dispatcher.on("ready:story", this.setStory, this);
+    }
+    this.extraInit();
+  },
+
+  /**
+   * Extra initialization operations
+   *
+   * Define this functionality in view subclasses.
+   */
+  extraInit: function() {
+  },
+
+  setStory: function(story) {
+    this.model = story;
+    this.dispatcher.on("save:story", this.handleInitialSave, this);
+    this.render();
+  },
+
+  handleInitialSave: function(story) {
+    this.dispatcher.off("save:story", this.handleInitialSave, this);
+    this.render();
+  },
+
+  getItemHref: function(itemOptions) {
+    path = itemOptions.path;
+    if (itemOptions.route !== false) {
+      if (!_.isUndefined(this.model) && this._includeStoryId) {
+        path = this.model.id + '/' + path;
+      }
+      path = storybase.builder.globals.APP_ROOT + path;
+    }
+    return path;
+  },
+
+  getItemClass: function(itemOptions) {
+    var cssClass = "";
+    var enabled = this.getPropertyValue(itemOptions, 'enabled', true);
+    var selected = this.getPropertyValue(itemOptions, 'selected', false); 
+
+    if (!enabled) {
+      cssClass = cssClass + " disabled"; 
+    }
+
+    if (selected) {
+      cssClass = cssClass + " selected";
+    }
+
+    return cssClass;
+  },
+
+  renderItem: function(itemOptions) {
+    this.$el.append(this.itemTemplate({
+      id: itemOptions.id,
+      class: this.getItemClass(itemOptions),
+      title: itemOptions.title,
+      href: this.getItemHref(itemOptions)
+    }));
+  },
+
+  getItem: function(id) {
+    return _.filter(this.items, function(item) {
+      return item.id === id;
+    })[0];
+  },
+
+  /**
+   * Get the value of a property of an item
+   *
+   * @param {Object} item Clickable item from this.items
+   * @param {String} property Property of item whose value should be fetched
+   * @param {Mixed} [defaultVal=true] Default value to return if property
+   *  is undefined
+   * @returns {Mixed} Value of property or defaultVal if property is undefined
+   *
+   * If the property value is a string, it tries to call a method of that name
+   * on this view instance and return that value.  Otherwise, it returns the
+   * value of the property or the return value of a call to the property if 
+   * it is a function.
+   */
+  getPropertyValue: function(item, property, defaultVal) {
+    defaultVal = _.isUndefined(defaultVal) ? true : defaultVal;
+    if (_.isUndefined(item[property])) {
+      // Property is undefined, return the default value 
+      return defaultVal; 
+    }
+    else if (_.isString(item[property])) {
+      // Visible property is a string, treat it as the name of a
+      // property of this view and return its value. 
+      return _.result(this, item[property]);
+    }
+    else {
+      // Visible property is a property of the item object.
+      // Return the value of that property.
+      return _.result(item, property);
+    }
+  },
+
+  getVisibleItems: function() {
+    return _.filter(this.items, function(item) {
+      return this.getPropertyValue(item, 'visible', true);
+    }, this);
+  },
+
+  render: function() {
+    this.$el.empty();
+    _.each(this.getVisibleItems(), function(item) {
+      this.renderItem(item);
+    }, this);
+    this.delegateEvents();
+
+    return this;
+  },
+
+  handleClick: function(evt) {
+    console.debug('handling click of navigation button');
+    evt.preventDefault();
+    var $button = $(evt.target);
+    var item = this.getItem($button.attr('id'));
+    var valid = _.isFunction(item.validate) ? item.validate() : true;
+    var href;
+    var route;
+    if (!$button.hasClass("disabled") && valid) { 
+      href = $button.attr("href");
+      // Strip the base path of this app
+      route = href.substr(storybase.builder.globals.APP_ROOT.length);
+      this.dispatcher.trigger('navigate', route, 
+        {trigger: true, replace: true});
+    }
+  },
+
+  isStorySaved: function() {
+    return _.isUndefined(this.model) ? false : !this.model.isNew();
+  }
+});
+
+/**
  * Shows current step of workflow 
  */
-storybase.builder.views.WorkflowStepView = storybase.builder.views.MenuView.extend({
+storybase.builder.views.WorkflowStepView = storybase.builder.views.WorkflowNavView.extend({
   tagName: 'ul',
 
-  className: 'workflow nav',
+  className: 'workflow-step nav',
 
   itemTemplateSource: $('#workflow-item-template').html(),
 
@@ -287,95 +460,56 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.MenuView.exte
     {
       id: 'build',
       title: gettext('Build'),
-      callback: 'selectStep',
       visible: true,
+      selected: false,
       path: ''
     },
     {
       id: 'data',
       title: gettext('Add Data'),
-      callback: 'selectStep',
-      visible: false,
+      visible: 'isStorySaved',
+      selected: false,
       path: 'data/'
     },
     {
       id: 'review',
       title: gettext('Review'),
-      callback: 'selectStep',
-      visible: false,
+      visible: 'isStorySaved',
+      selected: false,
       path: 'review/'
     },
     {
       id: 'share',
       title: gettext('Share'),
-      callback: 'selectStep',
-      visible: false,
+      visible: 'isStorySaved',
+      selected: false,
       path: 'share/legal/'
     }
   ],
 
-  initialize: function() {
-    this.dispatcher = this.options.dispatcher;
-    this.template = Handlebars.compile(this.templateSource);
-    this.storyId = null;
-
-    this.dispatcher.on('ready:story', this.showWorkflowItems, this);
-    this.dispatcher.on('save:story', this.showWorkflowItems, this);
-    this.dispatcher.on('ready:story', this.handleStorySave, this);
-    this.dispatcher.on('save:story', this.handleStorySave, this);
-    this.dispatcher.on('select:workflowstep', this.highlightActive, this);
+  extraInit: function() {
+    this.activeStep = null;
+    this.dispatcher.on("select:workflowstep", this.updateStep, this);
   },
 
-  render: function() {
-    var that = this;
-    var template = this.getItemTemplate();
-    var context = {
-      storyId: this.storyId
-    };
-    this.$el.empty();
-    _.each(this.getVisibleItems(), function(item) {
-      that.$el.append(template(_.extend(item, context)));
-    });
-    return this;
-  },
-
-
-  handleStorySave: function(story) {
-    if (!story.isNew()) {
-      this.storyId = story.id; 
-    }
-  },
-
-  /**
-   * Show the worfklow items that require a story.
-   */
-  showWorkflowItems: function(story) {
-    if (!story.isNew()) {
-      this.setVisibility('data', true);
-      this.setVisibility('review', true);
-      this.setVisibility('share', true);
-      this.render();
-    }
-    return this;
-  },
-
-  selectStep: function(evt) {
-    evt.preventDefault();
-    var route = $(evt.target).attr("href");
-    this.dispatcher.trigger('navigate', route, 
-      {trigger: true, replace: true});
-  },
-
-  highlightActive: function(step) {
+  updateSelected: function() {
     _.each(this.items, function(item) {
-      if (item.id === step) {
-        item.active = true;
+      if (item.id === this.activeStep) {
+        item.selected = true;
       }
       else {
-        item.active = false;
+        item.selected = false;
       }
-    });
-    return this.render();
+    }, this);
+  },
+
+  updateStep: function(step) {
+    this.activeStep = step;
+    if (this.activeStep === 'selecttemplate') {
+      this.activeStep = 'build';
+    }
+    this.updateSelected();
+    this.render();
   }
 });
 
@@ -458,117 +592,6 @@ storybase.builder.views.ToolsView = storybase.builder.views.MenuView.extend({
     }
   }
 });
-
-/**
- * Next/forward buttons for each section
- */
-// TODO: Merge this functionality with MenuView
-storybase.builder.views.WorkflowNavView = Backbone.View.extend({ 
-  tagName: 'div',
-
-  className: 'workflow-nav',
-
-  itemTemplateSource: $('#workflow-nav-item-template').html(),
-
-  items: {},
-
-  events: function() {
-    var events = {};
-    _.each(this.items, function(item) {
-      if (item.route !== false) {
-        events['click #' + item.id] = _.isUndefined(item.callback) ? this.handleClick : item.callback;
-      }
-    }, this);
-    return events;
-  },
-
-  initialize: function() {
-    this.dispatcher = this.options.dispatcher;
-    this.forward = this.options.forward;
-    this.back = this.options.back;
-    this.items = _.isUndefined(this.options.items) ? this.items : this.options.items;
-    this.itemTemplate = Handlebars.compile(this.itemTemplateSource);
-    // Include story ID in paths?  This should only happen for stories
-    // created in this session.
-    this._includeStoryId = _.isUndefined(this.model) || this.model.isNew();
-    if (_.isUndefined(this.model)) {
-      this.dispatcher.on("ready:story", this.setStory, this);
-    }
-  },
-
-  setStory: function(story) {
-    this.model = story;
-    this.dispatcher.on("save:story", this.handleInitialSave, this);
-    this.render();
-  },
-
-  handleInitialSave: function(story) {
-    this.dispatcher.off("save:story", this.handleInitialSave, this);
-    this.render();
-  },
-
-  getHref: function(itemOptions) {
-    path = itemOptions.path;
-    if (itemOptions.route !== false) {
-      if (this._includeStoryId) {
-        path = this.model.id + '/' + path;
-      }
-      path = storybase.builder.globals.APP_ROOT + path;
-    }
-    console.debug(path);
-    return path;
-  },
-
-  renderItem: function(itemOptions) {
-    var enabled = _.isFunction(itemOptions.enabled) ? itemOptions.enabled() : true;
-    this.$el.append(this.itemTemplate({
-      id: itemOptions.id,
-      class: (enabled ? "" : " disabled"),
-      title: itemOptions.title,
-      href: this.getHref(itemOptions)
-    }));
-  },
-
-  getItem: function(id) {
-    return _.filter(this.items, function(item) {
-      return item.id === id;
-    })[0];
-  },
-
-  getVisibleItems: function() {
-    return _.filter(this.items, function(item) {
-      return _.isUndefined(item.visible) ? true : _.result(item.visible); 
-    });
-  },
-
-  render: function() {
-    this.$el.empty();
-    _.each(this.getVisibleItems(), function(item) {
-      this.renderItem(item);
-    }, this);
-    this.delegateEvents();
-
-    return this;
-  },
-
-  handleClick: function(evt) {
-    console.debug('handling click of navigation button');
-    evt.preventDefault();
-    var $button = $(evt.target);
-    var item = this.getItem($button.attr('id'));
-    var valid = _.isFunction(item.validate) ? item.validate() : true;
-    var href;
-    var route;
-    if (!$button.hasClass("disabled") && valid) { 
-      href = $button.attr("href");
-      // Strip the base path of this app
-      route = href.substr(storybase.builder.globals.APP_ROOT.length);
-      this.dispatcher.trigger('navigate', route, 
-        {trigger: true, replace: true});
-    }
-  },
-});
-
 
 /**
  * Story template selector
