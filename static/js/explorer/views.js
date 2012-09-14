@@ -688,6 +688,7 @@ storybase.explorer.views.StoryList = Backbone.View.extend({
     var width = this.$el.width();
     this.$el.addClass('tile');
     this.$el.removeClass('list');
+    this.$el.find('li').removeClass('container_12')
     this.$el.masonry({
       itemSelector: '.story',
       columnWidth: function(containerWidth) {
@@ -709,6 +710,7 @@ storybase.explorer.views.StoryList = Backbone.View.extend({
   list: function() {
     this.$el.removeClass('tile');
     this.$el.addClass('list');
+    this.$el.find('li').addClass('container_12')
     this.$el.masonry('destroy');
   }
 

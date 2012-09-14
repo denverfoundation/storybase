@@ -261,6 +261,9 @@ ul#view-selector li a {
 	color:#03ccfe;
 	line-height:16px;
 }
+#story-list.list li.story h3 {
+	padding-top:0;
+}
 #story-list.list li.story h3,
 #map-container .leaflet-popup h3 {
 	text-align:left;
