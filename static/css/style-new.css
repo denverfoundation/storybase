@@ -309,7 +309,7 @@ ul.social li.icon3 a { background-position:-67px 0; }
 .content-page.generic .page-pull p a { font-size:14px; color:#fe9703; font-family: 'MuseoSlab500Regular'; }
 .content-page.generic .page-pull p strong { font-family:Georgia, 'Times New Roman', Serif; font-size:14px; color:#666; }
 
-.sibling-nav li a {  font-size:20px; line-height:22px;  color:#fe9703; font-family: 'MuseoSlab500Regular';  }
+.sibling-nav li a {  font-size:20px; line-height:22px;  color:#fe9703; font-family: 'MuseoSlab500Regular'; white-space:nowrap; }
 .sibling-nav li.selected a,
 .sibling-nav li a:hover { background:url('images/arrow-nav.png') no-repeat right center; padding-right:17px; text-decoration:none;  }
 
