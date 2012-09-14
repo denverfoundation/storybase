@@ -344,7 +344,7 @@ storybase.builder.views.ClickableItemsView = Backbone.View.extend({
     this.delegateEvents();
 
     return this;
-  },
+  }
 });
 
 /**
@@ -532,6 +532,7 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
     {
       id: 'preview',
       title: 'Preview',
+      callback: 'previewStory',
       visible: false
     },
     {
@@ -551,9 +552,16 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
     this.dispatcher.on('save:story', this.handleStorySave, this);
   },
 
+
   toggleAssetsItem: function(visible) {
     this.setVisibility('assets', visible);
     this.render();
+  },
+
+  previewStory: function(evt) {
+    evt.preventDefault();
+    var url = '/stories/' + this.storyId + '/viewer/';
+    window.open(url);
   },
 
   toggleAssetList: function(evt) {
