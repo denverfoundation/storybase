@@ -233,12 +233,13 @@ storybase.builder.views.HelpView = Backbone.View.extend({
 });
 
 /**
- * Base class for menu-like views
+ * Base class for views that represent a list of items that trigger
+ * some action when clicked.
  */
-storybase.builder.views.MenuView = Backbone.View.extend({
+storybase.builder.views.ClickableItemsView = Backbone.View.extend({
   items: [],
 
-  itemTemplateSource: $('#menu-item-template').html(),
+  itemTemplateSource: $('#clickable-item-template').html(),
 
   getItemTemplate: function() {
     if (_.isUndefined(this.itemTemplate)) {
@@ -266,114 +267,6 @@ storybase.builder.views.MenuView = Backbone.View.extend({
   setVisibility: function(id, visible) {
     var item = this.getItem(id);
     item.visible = visible;
-  },
-
-  getVisibleItems: function() {
-    return _.filter(this.items, function(item) {
-      return item.visible == true;
-    });
-  }
-});
-
-/**
- * List of clickable items that navigate to different workflow
- * steps.
- */
-// TODO: Merge this functionality with MenuView
-storybase.builder.views.WorkflowNavView = Backbone.View.extend({ 
-  tagName: 'div',
-
-  className: 'workflow-nav',
-
-  itemTemplateSource: $('#workflow-nav-item-template').html(),
-
-  items: {},
-
-  events: function() {
-    var events = {};
-    _.each(this.items, function(item) {
-      if (item.route !== false) {
-        events['click #' + item.id] = _.isUndefined(item.callback) ? this.handleClick : item.callback;
-      }
-    }, this);
-    return events;
-  },
-
-  initialize: function() {
-    this.dispatcher = this.options.dispatcher;
-    this.forward = this.options.forward;
-    this.back = this.options.back;
-    this.items = _.isUndefined(this.options.items) ? this.items : this.options.items;
-    this.itemTemplateSource = _.isUndefined(this.options.itemTemplateSource) ? this.itemTemplateSource : this.options.itemTemplateSource;
-    this.itemTemplate = Handlebars.compile(this.itemTemplateSource);
-    // Include story ID in paths?  This should only happen for stories
-    // created in this session.
-    this._includeStoryId = _.isUndefined(this.model) || this.model.isNew();
-    if (_.isUndefined(this.model)) {
-      this.dispatcher.on("ready:story", this.setStory, this);
-    }
-    this.extraInit();
-  },
-
-  /**
-   * Extra initialization operations
-   *
-   * Define this functionality in view subclasses.
-   */
-  extraInit: function() {
-  },
-
-  setStory: function(story) {
-    this.model = story;
-    this.dispatcher.on("save:story", this.handleInitialSave, this);
-    this.render();
-  },
-
-  handleInitialSave: function(story) {
-    this.dispatcher.off("save:story", this.handleInitialSave, this);
-    this.render();
-  },
-
-  getItemHref: function(itemOptions) {
-    path = itemOptions.path;
-    if (itemOptions.route !== false) {
-      if (!_.isUndefined(this.model) && this._includeStoryId) {
-        path = this.model.id + '/' + path;
-      }
-      path = storybase.builder.globals.APP_ROOT + path;
-    }
-    return path;
-  },
-
-  getItemClass: function(itemOptions) {
-    var cssClass = "";
-    var enabled = this.getPropertyValue(itemOptions, 'enabled', true);
-    var selected = this.getPropertyValue(itemOptions, 'selected', false); 
-
-    if (!enabled) {
-      cssClass = cssClass + " disabled"; 
-    }
-
-    if (selected) {
-      cssClass = cssClass + " selected";
-    }
-
-    return cssClass;
-  },
-
-  renderItem: function(itemOptions) {
-    this.$el.append(this.itemTemplate({
-      id: itemOptions.id,
-      class: this.getItemClass(itemOptions),
-      title: itemOptions.title,
-      href: this.getItemHref(itemOptions)
-    }));
-  },
-
-  getItem: function(id) {
-    return _.filter(this.items, function(item) {
-      return item.id === id;
-    })[0];
   },
 
   /**
@@ -414,6 +307,35 @@ storybase.builder.views.WorkflowNavView = Backbone.View.extend({
     }, this);
   },
 
+  getItemHref: function(itemOptions) {
+    return _.isUndefined(itemOptions.path) ? '#' : itemOptions.path;
+  },
+
+  getItemClass: function(itemOptions) {
+    var cssClass = "";
+    var enabled = this.getPropertyValue(itemOptions, 'enabled', true);
+    var selected = this.getPropertyValue(itemOptions, 'selected', false); 
+
+    if (!enabled) {
+      cssClass = cssClass + " disabled"; 
+    }
+
+    if (selected) {
+      cssClass = cssClass + " selected";
+    }
+
+    return cssClass;
+  },
+
+  renderItem: function(itemOptions) {
+    this.$el.append(this.itemTemplate({
+      id: itemOptions.id,
+      class: this.getItemClass(itemOptions),
+      title: itemOptions.title,
+      href: this.getItemHref(itemOptions)
+    }));
+  },
+
   render: function() {
     this.$el.empty();
     _.each(this.getVisibleItems(), function(item) {
@@ -423,6 +345,77 @@ storybase.builder.views.WorkflowNavView = Backbone.View.extend({
 
     return this;
   },
+});
+
+/**
+ * List of clickable items that navigate to different workflow
+ * steps.
+ */
+storybase.builder.views.WorkflowNavView = storybase.builder.views.ClickableItemsView.extend({ 
+  tagName: 'div',
+
+  className: 'workflow-nav',
+
+  itemTemplateSource: $('#workflow-nav-item-template').html(),
+
+  items: [],
+
+  events: function() {
+    var events = {};
+    _.each(this.items, function(item) {
+      if (item.route !== false) {
+        events['click #' + item.id] = _.isUndefined(item.callback) ? this.handleClick : item.callback;
+      }
+    }, this);
+    return events;
+  },
+
+  initialize: function() {
+    this.dispatcher = this.options.dispatcher;
+    this.forward = this.options.forward;
+    this.back = this.options.back;
+    this.items = _.isUndefined(this.options.items) ? this.items : this.options.items;
+    this.itemTemplateSource = _.isUndefined(this.options.itemTemplateSource) ? this.itemTemplateSource : this.options.itemTemplateSource;
+    this.itemTemplate = this.getItemTemplate();
+    // Include story ID in paths?  This should only happen for stories
+    // created in this session.
+    this._includeStoryId = _.isUndefined(this.model) || this.model.isNew();
+    if (_.isUndefined(this.model)) {
+      this.dispatcher.on("ready:story", this.setStory, this);
+    }
+    this.extraInit();
+  },
+
+  /**
+   * Extra initialization operations
+   *
+   * Define this functionality in view subclasses.
+   */
+  extraInit: function() {
+  },
+
+  setStory: function(story) {
+    this.model = story;
+    this.dispatcher.on("save:story", this.handleInitialSave, this);
+    this.render();
+  },
+
+  handleInitialSave: function(story) {
+    this.dispatcher.off("save:story", this.handleInitialSave, this);
+    this.render();
+  },
+
+  getItemHref: function(itemOptions) {
+    path = itemOptions.path;
+    if (itemOptions.route !== false) {
+      if (!_.isUndefined(this.model) && this._includeStoryId) {
+        path = this.model.id + '/' + path;
+      }
+      path = storybase.builder.globals.APP_ROOT + path;
+    }
+    return path;
+  },
+
 
   handleClick: function(evt) {
     console.debug('handling click of navigation button');
@@ -513,7 +506,12 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.WorkflowNavVi
   }
 });
 
-storybase.builder.views.ToolsView = storybase.builder.views.MenuView.extend({
+/**
+ * Global tools menu.
+ *
+ * This includes things like "Help", "Exit"
+ */
+storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.extend({
   tagName: 'ul',
 
   className: 'tools nav',
@@ -523,48 +521,34 @@ storybase.builder.views.ToolsView = storybase.builder.views.MenuView.extend({
       id: 'help',
       title: 'Help',
       callback: 'toggleHelp', 
-      href: '#',
       visible: true 
     },
     {
       id: 'assets',
       title: 'Assets',
       callback: 'toggleAssetList',
-      href: '#',
       visible: false
     },
     {
       id: 'preview',
       title: 'Preview',
-      callback: null,
-      href: '#',
       visible: false
     },
     {
       id: 'exit',
       title: 'Exit',
-      callback: null,
-      href: '/',
+      path: '/',
       visible: true 
-    },
+    }
   ],
 
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
+    this.itemTemplate = this.getItemTemplate();
 
     this.dispatcher.on('has:assetlist', this.toggleAssetsItem, this);
     this.dispatcher.on('ready:story', this.handleStorySave, this);
     this.dispatcher.on('save:story', this.handleStorySave, this);
-  },
-
-  render: function() {
-    var that = this;
-    var template = this.getItemTemplate();
-    this.$el.empty();
-    _.each(this.getVisibleItems(), function(item) {
-      that.$el.append(template(item));
-    });
-    return this;
   },
 
   toggleAssetsItem: function(visible) {
@@ -586,7 +570,7 @@ storybase.builder.views.ToolsView = storybase.builder.views.MenuView.extend({
     if (!story.isNew() && _.isUndefined(this.storyId)) {
       var item = this.getItem('preview');
       this.storyId = story.id; 
-      item.href = '/stories/' + this.storyId + '/viewer/';
+      item.path = '/stories/' + this.storyId + '/viewer/';
       item.visible = true;
       this.render();
     }
