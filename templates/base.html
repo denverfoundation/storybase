@@ -34,6 +34,9 @@
   <!-- 1140px Grid styles for IE -->
   {% addtoblock "css" %}<!--[if lte IE 9]><link rel="stylesheet" href="{{ STATIC_URL }}css/ie.css" type="text/css" media="screen" /><![endif]-->{% endaddtoblock %}
 
+  <!-- custom 1000px grid based on 960 grid, http://960.gs -->
+  {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/grid.css">{% endaddtoblock %}
+
 {% comment %}
   <!-- The 1140px Grid - http://cssgrid.net/ -->
   {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/1140.css">{% endaddtoblock %}
@@ -86,10 +89,10 @@
 		<div class="cl">&nbsp;</div>
 	</div>
 	<!-- end Header -->
-	<div id="container" class="container">
+	<div id="container">
 		{% block above_content %}
 		{% endblock %}    
-		<div id="main" role="main" class="row">
+		<div id="main" role="main">
 			{% placeholder base_content %}
 			{% block base_content%}
 			{% endblock %}

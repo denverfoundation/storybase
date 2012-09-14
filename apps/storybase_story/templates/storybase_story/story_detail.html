@@ -20,34 +20,46 @@
 {% endblock %}
 
 {% block base_content %}
-<div id="main" class="inner">
 	<div class="shell">
 		<div class="content-page object-detail story">
 			<h3><span>Explore Floodlight</span></h3>
-			
-			<section class="object content-block">
-				<section class="object-featured-asset">
-					{# TODO: wire in real asset #}
-					{{ story.render_featured_asset }}
-					<img src="/static/css/images/image3.jpg" title="temp asset">
-				</section>
-				<section class="object-summary">
+
+			<div class="col left">
+				<section class="object content-block">
 					<header>
 						<h2>{{ story.title }}</h2>
 						<p class="byline">{% trans "By" %} <span class="author">{{ story.byline }}</span></p>
 					</header>
-					<section class="summary">
-						{{ story.summary|safe|linebreaks }}
+					<section class="object-featured-asset">
+						{# TODO: wire in real asset #}
+						{{ story.render_featured_asset }}
+						<img src="/static/css/images/image3.jpg" title="temp asset">
 					</section>
-					<a id="launch-story-viewer" class="button" href="./viewer">{% trans "View Story" %}</a>
+					<section class="object-summary">
+						<section class="summary">
+							{{ story.summary|safe|linebreaks }}
+						</section>
+						<a id="launch-story-viewer" class="button" href="./viewer">{% trans "View Story" %}</a>
+					</section>
 				</section>
-			</section>
+				
+				<section class="story-outreach post last">
+					<section class="call-to-action content-block last">
 
-			<section class="object-ornament post">
-				<section class="related-stories content-block">
-					<h4>Related Stories</h4>
-					{# TODO: related story list + cycler #}
+						<h4>{% trans "How Can You Help?" %}</h4>
+						<p class="call-intro">{% blocktrans %}Wondering what you can do to help? The contributor has listed the following actions that you can take to help.{% endblocktrans %}</p>
+						<p class="story-call-to-action">{{ story.call_to_action|safe }}</p>
+					</section>
+					
+					<section class="citizen-comments content-block last">
+						<h4>{% trans "Citizen Comments" %}</h4>
+						{# TODO: comment view #}
+					</section>
+
 				</section>
+				
+			</div>
+			<div class="col right">
 				<section class="object-details content-block">
 					{% include "addthis_widget.html" %}
 					<dl class="object-metadata">
@@ -104,24 +116,22 @@
 						{% endif %}
 					</dl>
 				</section>
-			</section>
+			</div>
+			
+			
 
-			<section class="story-outreach post last">
-				<section class="citizen-comments content-block last">
 
-					<h4>{% trans "Citizen Comments" %}</h4>
-					{# TODO: comment view #}
+<!-- 			<section class="object-ornament post">
+				<section class="related-stories content-block">
+					<h4>Related Stories</h4>
+					{# TODO: related story list + cycler #}
 				</section>
-				<section class="call-to-action content-block last">
-
-					<h4>{% trans "How Can You Help?" %}</h4>
-					<p class="call-intro">{% blocktrans %}Wondering what you can do to help? The contributor has listed the following actions that you can take to help.{% endblocktrans %}</p>
-					<p class="story-call-to-action">{{ story.call_to_action|safe }}</p>
 			</section>
+ -->
+
 
 		</div>
 	</div>
-</div>
 
 {% endblock %}
 
