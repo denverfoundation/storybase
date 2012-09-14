@@ -1643,7 +1643,7 @@ storybase.builder.views.StoryInfoEditView = storybase.builder.views.PseudoSectio
   },
 
   defaults: {
-    titleEl: '.title',
+    titleEl: '.story-title',
     bylineEl: '.byline',
     summaryEl: 'textarea[name="summary"]' 
   },
