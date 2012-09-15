@@ -67,6 +67,9 @@ class HookedModelResource(ModelResource):
     def post_obj_get(self, obj, request=None, **kwargs):
         pass
 
+    def post_full_hydrate(self, obj, request=None, **kwargs):
+        pass
+
     def full_hydrate(self, bundle):
         """
         Given a populated bundle, distill it and turn it back into
@@ -121,6 +124,7 @@ class HookedModelResource(ModelResource):
             self.bundle_obj_setattr(bundle, key, value)
         self.pre_bundle_obj_hydrate(bundle, request, **kwargs)
         bundle = self.full_hydrate(bundle)
+        self.post_full_hydrate(bundle, request, **kwargs)
         self.is_valid(bundle,request)
 
         if bundle.errors:
@@ -150,6 +154,7 @@ class HookedModelResource(ModelResource):
                 self.post_bundle_obj_construct(bundle, request, **kwargs)
                 bundle.data.update(kwargs)
                 bundle = self.full_hydrate(bundle)
+                self.post_full_hydrate(bundle, request, **kwargs)
                 lookup_kwargs = kwargs.copy()
 
                 for key in kwargs.keys():
