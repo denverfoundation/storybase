@@ -23,6 +23,28 @@ storybase.models.TastypieMixin = {
   }
 }
 
+/**
+ * Collection that has an additional save method.
+ *
+ * This method uses a PUT request to replace entire server-side collection
+ * with the models in the Backbone collection.
+ */
+storybase.collections.SaveableCollection = Backbone.Collection.extend({
+  save: function(options) {
+    // TODO: Test this 
+    // BOOKMARK
+    options = options ? _.clone(options) : {};
+    var collection = this;
+    var success = options.success;
+    options.success = function(resp, status, xhr) {
+      collection.reset(collection.parse(resp, xhr), options);
+      if (success) success(collection, resp);
+    };
+    options.error = Backbone.wrapError(options.error, collection, options);
+    return (this.sync || Backbone.sync).call(this, 'update', this, options);
+  }
+});
+
 storybase.models.DataSet = Backbone.Model.extend({
     idAttribute: "dataset_id",
 
@@ -195,6 +217,14 @@ storybase.models.Story = Backbone.Model.extend(
     },
 
     /**
+     * Set the related stories collection.
+     */
+    setRelatedStories: function(relatedStories) {
+      this.relatedStories = relatedStories;
+      this.relatedStories.setStory(this);
+    },
+
+    /**
      * Re-set the section weights based on their order in the collection 
      */
     resetSectionWeights: function() {
@@ -203,6 +233,11 @@ storybase.models.Story = Backbone.Model.extend(
       });
     },
 
+    saveRelatedStories: function() {
+      if (this.relatedStories) {
+        this.relatedStories.save();
+      }
+    },
 
     /**
      * Save all the sections of the story
@@ -212,6 +247,7 @@ storybase.models.Story = Backbone.Model.extend(
         section.save();
       });
     },
+
 
     /**
      * Copy selected properties from another story.
@@ -391,14 +427,30 @@ storybase.models.StoryRelation = Backbone.Model.extend({
   idAttribute: "relation_id"
 });
 
-storybase.collections.StoryRelations = Backbone.Collection.extend(
+storybase.collections.StoryRelations = storybase.collections.SaveableCollection.extend(
   _.extend({}, storybase.collections.TastypieMixin, {
     model: storybase.models.StoryRelation,
 
     initialize: function(models, options) {
       if (!_.isUndefined(options)) {
-        this._story = options.story;
+        this.setStory(options.story);
       }
+    },
+
+    fillTargets: function() {
+      this.each(function(rel) {
+        if (rel.isNew()) {
+          // Unsaved story relation
+          if (_.isUndefined(rel.get('target'))) {
+            rel.set('target', this._story.id);
+          }
+        }
+      }, this);
+    },
+
+    save: function(options) {
+      this.fillTargets();
+      return storybase.collections.SaveableCollection.prototype.save.call(this, options);
     },
 
     setStory: function(story) {

@@ -59,6 +59,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
       assetTypes: this.options.assetTypes,
       layouts: this.options.layouts,
       help: this.options.help,
+      relatedStories: this.options.relatedStories,
       templateStory: this.options.templateStory
     }, commonOptions);
     shareViewOptions = _.defaults({
@@ -706,6 +707,9 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
         title: ""
       });
     }
+    if (this.options.relatedStories) {
+      this.model.setRelatedStories(this.options.relatedStories);
+    }
 
     this.templateStory = this.options.templateStory;
 
@@ -916,6 +920,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
           trigger: true 
         });
         model.saveSections();
+        model.saveRelatedStories();
         // Re-render the navigation view to enable the button
         that.navView.render();
       }
