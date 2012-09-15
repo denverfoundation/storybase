@@ -396,8 +396,6 @@ class RelatedStoriesTest(TestCase):
         self.assertEqual(self.story.connected_stories()[0], story)
 
 
-
-
 class ViewsTest(TestCase):
     """Tests for story-related views"""
 
@@ -3009,3 +3007,37 @@ class StoryRelationResourceTest(ResourceTestCase):
                          post_data['relation_type'])
         self.assertEqual(created_rel.source, related_story)
         self.assertEqual(created_rel.target, self.story)
+
+    def test_put_list(self):
+        related_story = create_story(title="Test Related Story", 
+             summary="Test Related Story Summary",
+             byline="Test Related Story Byline",
+             status='published',
+             author=self.user)
+        story2 = create_story(title="Test Story 2",
+                              summary="Test Story Summary 2",
+                              byline="Test Story Byline 2",
+                              status='published',
+                              author=self.user)
+        self.assertEqual(len(self.story.related_stories.all()), 0)
+        put_data = [
+            {
+                'relation_type': 'connected',
+                'source': self.story.story_id,
+                'target': related_story.story_id,
+            },
+            {
+                'relation_type': 'connected',
+                'source': story2.story_id,
+                'target': related_story.story_id,
+            },
+        ]
+        # Test getting the relation through the target story
+        uri = '/api/0.1/stories/%s/related/' % (related_story.story_id)
+        self.api_client.client.login(username=self.username, password=self.password)
+        resp = self.api_client.get(uri)
+        resp = self.api_client.put(uri, format='json', data=put_data)
+        self.assertHttpAccepted(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 2)
+        related_story = Story.objects.get(story_id=related_story.story_id)
+        self.assertEqual(len(related_story.related_to.all()), 2)

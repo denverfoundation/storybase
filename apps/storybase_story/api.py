@@ -13,8 +13,8 @@ from tastypie import fields, http
 from tastypie.authentication import Authentication
 from tastypie.bundle import Bundle
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
-from tastypie.exceptions import BadRequest
-from tastypie.utils import trailing_slash
+from tastypie.exceptions import BadRequest, ImmediateHttpResponse
+from tastypie.utils import dict_strip_unicode_keys, trailing_slash
 
 from storybase.utils import add_tzinfo
 from storybase.api import (DelayedAuthorizationResource,
@@ -905,6 +905,68 @@ class StoryRelationResource(DelayedAuthorizationResource):
             return obj_list.filter(q)
         else:
             return obj_list
+
+    def apply_authorization_limits(self, request, object_list):
+        if request.method == 'GET':
+            return object_list
+        else:
+            return [obj for obj in object_list
+                    if self._meta.authorization.is_authorized(request, obj)]
+
+    def obj_delete_list(self, request=None, **kwargs):
+        """
+        A ORM-specific implementation of ``obj_delete_list``.
+
+        Takes optional ``kwargs``, which can be used to narrow the query.
+        """
+        story_id = kwargs.pop('story_id')
+        if story_id:
+            q = Q(source__story_id=story_id)
+            q = q | Q(target__story_id=story_id)
+            q = q & Q(**kwargs)
+
+        base_object_list = self.get_object_list(request).filter(q)
+        authed_object_list = self.apply_authorization_limits(request, base_object_list)
+
+        if hasattr(authed_object_list, 'delete'):
+            # It's likely a ``QuerySet``. Call ``.delete()`` for efficiency.
+            authed_object_list.delete()
+        else:
+            for authed_obj in authed_object_list:
+                authed_obj.delete()
+
+    def put_list(self, request, **kwargs):
+        """
+        Replaces a collection of resources with another collection.
+
+        Unlike the default put_list, this doesn't expect the new collections
+        to be wrapped in an 'objects' property.
+        """
+        deserialized = self.deserialize(request, request.raw_post_data, format=request.META.get('CONTENT_TYPE', 'application/json'))
+        deserialized = self.alter_deserialized_list_data(request, deserialized)
+
+        self.obj_delete_list(request=request, **self.remove_api_resource_names(kwargs))
+        bundles_seen = []
+
+        for object_data in deserialized:
+            bundle = self.build_bundle(data=dict_strip_unicode_keys(object_data), request=request)
+
+            # Attempt to be transactional, deleting any previously created
+            # objects if validation fails.
+            try:
+                self.obj_create(bundle, request=request, **self.remove_api_resource_names(kwargs))
+                bundles_seen.append(bundle)
+            except ImmediateHttpResponse:
+                self.rollback(bundles_seen)
+                raise
+
+        if not self._meta.always_return_data:
+            return http.HttpNoContent()
+        else:
+            to_be_serialized = {}
+            to_be_serialized['objects'] = [self.full_dehydrate(bundle) for bundle in bundles_seen]
+            to_be_serialized = self.alter_list_data_to_serialize(request, to_be_serialized)
+            return self.create_response(request, to_be_serialized, response_class=http.HttpAccepted)
 
     def pre_bundle_obj_hydrate(self, bundle, request=None, **kwargs):
         # Override the authorization check that happens in the
