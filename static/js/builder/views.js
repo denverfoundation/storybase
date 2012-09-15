@@ -55,18 +55,19 @@ storybase.builder.views.AppView = Backbone.View.extend({
     // TODO: Change the selector as the template changes
     this.$('header').first().children().first().append(this.workflowStepView.el);
 
-    buildViewOptions = _.extend(commonOptions, {
+    buildViewOptions = _.defaults({
       assetTypes: this.options.assetTypes,
       layouts: this.options.layouts,
       help: this.options.help,
       templateStory: this.options.templateStory
-    });
-    shareViewOptions = _.extend(commonOptions, {
+    }, commonOptions);
+    shareViewOptions = _.defaults({
       places: this.options.places,
       topics: this.options.topics,
       organizations: this.options.organizations,
       projects: this.options.projects
-    });
+    }, commonOptions);
+
     // Store subviews in an object keyed with values of this.activeStep
     this.subviews = {
       selecttemplate: new storybase.builder.views.SelectStoryTemplateView({
@@ -225,10 +226,10 @@ storybase.builder.views.HelpView = Backbone.View.extend({
   },
 
   render: function() {
-    var context = _.extend(this.help, {
+    var context = _.extend({
       'autoShow': this.autoShow
-    });
-    this.$el.html(this.template(this.help));
+    }, this.help);
+    this.$el.html(this.template(context));
     return this;
   }
 });
@@ -2963,22 +2964,22 @@ storybase.builder.views.TaxonomyView = Backbone.View.extend({
       topics: { 
         type: 'Select', 
         options: topicsOptions, 
-        editorAttrs: _.extend(_.clone(editorAttrs), {placeholder: gettext("Click to select topics")})
+        editorAttrs: _.defaults({placeholder: gettext("Click to select topics")}, editorAttrs)
       },
       places: { 
         type: 'Select', 
         options: placesOptions, 
-        editorAttrs: _.extend(_.clone(editorAttrs), {placeholder: gettext("Click to select places")})
+        editorAttrs: _.defaults({placeholder: gettext("Click to select places")}, editorAttrs)
       },
       organizations: {
         type: 'Select',
         options: organizationsOptions,
-        editorAttrs: _.extend(_.clone(editorAttrs), {placeholder: gettext("Click to select organizations")})
+        editorAttrs: _.defaults({placeholder: gettext("Click to select organizations")}, editorAttrs)
       },
       projects: {
         type: 'Select',
         options: projectsOptions,
-        editorAttrs: _.extend(_.clone(editorAttrs), {placeholder: gettext("Click to select projects")})
+        editorAttrs: _.defaults({placeholder: gettext("Click to select projects")}, editorAttrs)
       }
     };
     if (!organizationsOptions.length) {
