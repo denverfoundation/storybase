@@ -134,8 +134,8 @@ class StoryBuilderView(DetailView):
     def get_source_story(self):
         """Get the source story for a connected story"""
         queryset = self.get_queryset()
-        source_story_id = self.kwargs.get('story_id', None)
-        source_slug = self.kwargs.get('slug', None)
+        source_story_id = self.kwargs.get('source_story_id', None)
+        source_slug = self.kwargs.get('source_slug', None)
         if source_story_id is not None:
             queryset = queryset.filter(story_id=source_story_id)
         elif source_slug is not None:

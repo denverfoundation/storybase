@@ -113,13 +113,18 @@
             organizations: {{ organizations_json }},
             places: {{ places_json }},
             projects: {{ projects_json }},
+            relatedStories: new storybase.collections.StoryRelations,
             storyTemplates: new storybase.builder.collections.StoryTemplates,
-            topics: {{ topics_json }} 
+            topics: {{ topics_json }}
         };
+        var relatedStoriesJSON = null;
         var templateAssetsJSON = null;
         var templateSectionsJSON = null;
         {% if story_json %}
         options.model = new storybase.models.Story({{ story_json }});
+        {% endif %}
+        {% if related_stories_json %}
+        relatedStoriesJSON = {{ related_stories_json }};
         {% endif %}
         {% if template_story_json %}
         options.templateStory = new storybase.models.Story({{ template_story_json }});
@@ -130,6 +135,9 @@
         {% if template_assets_json %}
         templateAssetsJSON = {{ template_assets_json }};
         {% endif %}
+        if (relatedStoriesJSON) {
+          options.relatedStories.reset(relatedStoriesJSON.objects);
+        }
         if (templateSectionsJSON) {
           options.templateStory.sections.reset(templateSectionsJSON.objects);
             if (templateAssetsJSON) {
