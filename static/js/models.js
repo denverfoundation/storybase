@@ -396,7 +396,9 @@ storybase.collections.StoryRelations = Backbone.Collection.extend(
     model: storybase.models.StoryRelation,
 
     initialize: function(models, options) {
-      this._story = options.story;
+      if (!_.isUndefined(options)) {
+        this._story = options.story;
+      }
     },
 
     setStory: function(story) {
