@@ -329,3 +329,26 @@ describe('Tag model', function() {
     });
   });
 });
+
+describe('StoryRelations collection', function() {
+  describe('A collection associated with a story', function() {
+    beforeEach(function() {
+      // Mock the story model's URL property
+      var Story = Backbone.Model.extend({
+        url: '/api/0.1/stories/78b26070d5d211e19b230800200c9a66/'
+      });
+      this.story = new Story({
+        id: '78b26070d5d211e19b230800200c9a66'
+      });
+      this.collection = new storybase.collections.StoryRelations([], {
+        story: this.story
+      });
+    });
+
+    it('should have a URL of "/<story_url>/related/"', function() {
+      // Make sure our mock URL is sane
+      expect(_.result(this.story, 'url')).toEqual('/api/0.1/stories/' + this.story.id + '/');
+      expect(this.collection.url()).toEqual(_.result(this.story, 'url') + 'related/');
+    });
+  });
+});

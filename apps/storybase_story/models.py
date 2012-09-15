@@ -382,8 +382,34 @@ post_save.connect(set_story_slug, sender=StoryTranslation)
 m2m_changed.connect(update_last_edited, sender=Story.organizations.through)
 m2m_changed.connect(update_last_edited, sender=Story.projects.through)
 
+class StoryRelationPermission(PermissionMixin):
+    """Permissions for Story Relations"""
+    def user_can_change(self, user):
+        from storybase_user.utils import is_admin
 
-class StoryRelation(models.Model):
+        if not user.is_active:
+            return False
+
+        # TODO: Add additional logic as different relation types
+        # are defined
+        if self.relation_type == 'connected' and self.target.author == user:
+            # Users should be able to define the parent of connected
+            # stories for stories that they own
+            return True
+
+        if is_admin(user):
+            return True
+
+        return False
+
+    def user_can_add(self, user):
+        return self.user_can_change(user)
+
+    def user_can_delete(self, user):
+        return self.user_can_change(user)
+
+
+class StoryRelation(StoryRelationPermission, models.Model):
     """Relationship between two stories"""
     RELATION_TYPES = (
         ('connected', u"Connected Story"),

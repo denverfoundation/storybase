@@ -4,6 +4,7 @@ from django.conf import settings
 from django.conf.urls.defaults import url
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.urlresolvers import NoReverseMatch
+from django.db.models import Q
 
 from haystack.query import SearchQuerySet
 from haystack.utils.geo import D, Point
@@ -24,7 +25,7 @@ from storybase_geo.models import Place
 from storybase_help.models import Help
 from storybase_story.models import (Container,
                                     Section, SectionAsset, SectionLayout, 
-                                    Story, StoryTemplate)
+                                    Story, StoryRelation, StoryTemplate)
 from storybase_taxonomy.models import Category
 from storybase_user.models import Organization, Project
 
@@ -87,7 +88,9 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
             url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/topics%s" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_storycategory_list'), name="api_dispatch_list_storycategories"),
             url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/places%s" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_storyplace_list'), name="api_dispatch_list_storyplaces"),
             url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/organizations%s" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_storyorganization_list'), name="api_dispatch_list_storyorganizations"),
+            url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/organizations%s" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_storyorganization_list'), name="api_dispatch_list_storyorganizations"),
             url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/projects%s" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_storyproject_list'), name="api_dispatch_list_storyprojects"),
+            url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/related%s" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_storyrelation_list'), name="api_dispatch_list_storyrelations"),
         ]
 
     def detail_uri_kwargs(self, bundle_or_obj):
@@ -109,7 +112,6 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
 
     def get_object_list(self, request):
         """Get a list of stories, filtering based on the request's user"""
-        from django.db.models import Q
         # Only show published stories  
         q = Q(status='published')
         if hasattr(request, 'user') and request.user.is_authenticated():
@@ -475,6 +477,8 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
     def dispatch_storyproject_list(self, request, **kwargs):
         return self.dispatch_metadata_list(request, StoryProjectResource(), **kwargs)
 
+    def dispatch_storyrelation_list(self, request, **kwargs):
+        return self.dispatch_metadata_list(request, StoryRelationResource(), **kwargs)
 
 class SectionResource(DelayedAuthorizationResource, TranslatedModelResource):
     # Explicitly declare fields that are on the translation model
@@ -873,3 +877,66 @@ class StoryProjectResource(PutListSubResource):
             if obj not in request.user.projects.all():
                 raise BadRequest("User is not a member of project with id %s" % obj.project_id)
         return object_list
+
+
+class StoryRelationResource(DelayedAuthorizationResource):
+    source = fields.CharField(attribute='source')
+    target = fields.CharField(attribute='target')
+
+    class Meta:
+        always_return_data = True
+        queryset = StoryRelation.objects.all()
+        resource_name = 'related'
+        list_allowed_methods = ['get', 'post', 'put']
+        authentication = Authentication()
+        authorization = LoggedInAuthorization()
+        # Hide the underlying id
+        excludes = ['id']
+
+        # Custom meta attributes
+        # Methods that handle authorization later than normain in the flow
+        delayed_authorization_methods = ('post_list', 'put_list')
+
+    def apply_request_kwargs(self, obj_list, request=None, **kwargs):
+        story_id = kwargs.get('story_id')
+        if story_id:
+            q = Q(source__story_id=story_id)
+            q = q | Q(target__story_id=story_id)
+            return obj_list.filter(q)
+        else:
+            return obj_list
+
+    def pre_bundle_obj_hydrate(self, bundle, request=None, **kwargs):
+        # Override the authorization check that happens in the
+        # default DelayedAuthorizationResource test.  This is needed
+        # because we need to check the related fields on the model
+        # which are not available until hydration
+        pass
+
+    def post_full_hydrate(self, bundle, request=None, **kwargs):
+        # Check the authorization on the object
+        self.is_authorized(request, bundle.obj, **kwargs)
+
+    def dehydrate_source(self, bundle):
+        if bundle.obj.source:
+            return bundle.obj.source.story_id
+        else:
+            return None
+
+    def hydrate_source(self, bundle):
+        source = bundle.data.get('source', None)
+        if source and not isinstance(source, Story):
+            bundle.data['source'] = Story.objects.get(story_id=source)
+        return bundle
+
+    def dehydrate_target(self, bundle):
+        if bundle.obj.target:
+            return bundle.obj.target.story_id
+        else:
+            return None
+
+    def hydrate_target(self, bundle):
+        target = bundle.data.get('target', None)
+        if target and not isinstance(target, Story):
+            bundle.data['target'] = Story.objects.get(story_id=target)
+        return bundle

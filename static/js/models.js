@@ -391,8 +391,23 @@ storybase.models.StoryRelation = Backbone.Model.extend({
   idAttribute: "relation_id"
 });
 
-storybase.collections.StoryRelations = Backbone.Collection.extend({
-});
+storybase.collections.StoryRelations = Backbone.Collection.extend(
+  _.extend({}, storybase.collections.TastypieMixin, {
+    model: storybase.models.StoryRelation,
+
+    initialize: function(models, options) {
+      this._story = options.story;
+    },
+
+    setStory: function(story) {
+      this._story = story;
+    },
+
+    url: function() {
+      return _.result(this._story, 'url') + 'related/';
+    }
+  })
+);
 
 storybase.models.Asset = Backbone.Model.extend(
   _.extend({}, storybase.models.TastypieMixin, {
