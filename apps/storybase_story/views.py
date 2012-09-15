@@ -305,12 +305,14 @@ class StoryBuilderView(DetailView):
 
     def get_related_stories_json(self):
         if self.source_story:
-            return json.dumps([
-                {
-                    'source': self.source_story.story_id,
-                    'relation_type': 'connected'
-                },
-            ])
+            return json.dumps({
+                'objects': [
+                    {
+                        'source': self.source_story.story_id,
+                        'relation_type': 'connected'
+                    },
+                ]
+            })
         else:
             return None
 
