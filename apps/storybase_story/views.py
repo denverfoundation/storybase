@@ -2,6 +2,7 @@
 
 import json
 
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.db.models import Q
@@ -318,15 +319,38 @@ class StoryBuilderView(DetailView):
 
     def get_options_json(self):
         """Get configuration options for the story builder"""
-        # TODO: Retrieve these from the template object
         options = {
-            'showBuilderOnly': True,
-            'showStoryInformation': False,
-            'showCallToAction': False,
-            'showSectionList': False,
-            'showSectionTitles': False,
-            'showLayoutSelection': False,
+            # Show only the builder workflow steps
+            'showBuilderOnly': False,
+            # Show the view that allows the user to edit
+            # the story title and byline
+            'showStoryInformation': True,
+            # Show the view that allows the user to edit the call
+            # to action or enable connected stories
+            'showCallToAction': True,
+            # Show a list of sections that the user can use to navigate
+            # between sectons
+            'showSectionList': True,
+            # Show the input for editing section titles
+            'showSectionTitles': True,
+            # Show the select input for changing section layouts
+            'showLayoutSelection': True,
+            # Show the story title input in the section edit view 
+            'showStoryTitleInline': False,
         }
+        if (self.template_object and  self.template_object.slug == settings.STORYBASE_CONNECTED_STORY_TEMPLATE):
+            # TODO: If these settings apply in cases other than just
+            # connected stories, it might make more sense to store them
+            # as part of the template model
+            options = {
+                'showBuilderOnly': True,
+                'showStoryInformation': False,
+                'showCallToAction': False,
+                'showSectionList': False,
+                'showSectionTitles': False,
+                'showLayoutSelection': False,
+                'showStoryTitleInline': True,
+            }
         return json.dumps(options)
 
     def get_context_data(self, **kwargs):
