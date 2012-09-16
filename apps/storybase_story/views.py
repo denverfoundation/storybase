@@ -336,7 +336,7 @@ class StoryBuilderView(DetailView):
             # Show the select input for changing section layouts
             'showLayoutSelection': True,
             # Show the story title input in the section edit view 
-            'showStoryTitleInline': False,
+            'showStoryInfoInline': False,
         }
         if (self.template_object and  self.template_object.slug == settings.STORYBASE_CONNECTED_STORY_TEMPLATE):
             # TODO: If these settings apply in cases other than just
@@ -349,7 +349,7 @@ class StoryBuilderView(DetailView):
                 'showSectionList': False,
                 'showSectionTitles': False,
                 'showLayoutSelection': False,
-                'showStoryTitleInline': True,
+                'showStoryInfoInline': True,
             }
         return json.dumps(options)
 

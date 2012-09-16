@@ -67,7 +67,9 @@ storybase.builder.views.AppView = Backbone.View.extend({
       showStoryInformation: this.options.showStoryInformation,
       showCallToAction: this.options.showCallToAction,
       showSectionList: this.options.showSectionList,
-      showLayoutSelection: this.options.showLayoutSelection
+      showLayoutSelection: this.options.showLayoutSelection,
+      showSectionTitles: this.options.showSectionTitles,
+      showStoryInfoInline: this.options.showStoryInfoInline
     }, commonOptions);
     shareViewOptions = _.defaults({
       places: this.options.places,
@@ -808,7 +810,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       layouts: this.options.layouts,
       defaultHelp: this.help.where({slug: 'new-section'})[0],
       showSectionTitles: this.options.showSectionTitles,
-      showLayoutSelection: this.options.showLayoutSelection
+      showLayoutSelection: this.options.showLayoutSelection,
+      showStoryInfoInline: this.options.showStoryInfoInline
     };
     var view;
     if (this.templateStory) {
@@ -961,7 +964,9 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
           model.saveRelatedStories();
         }
         // Re-render the navigation view to enable the button
-        that.navView.render();
+        if (that.navView) {
+          that.navView.render();
+        }
       }
     });
   },
@@ -1147,6 +1152,25 @@ storybase.builder.views.RichTextEditorMixin = {
       editor.on(key, value);
     });
     return editor;
+  }
+};
+
+/**
+ * View mixin for updating a Story model's attribute and triggering
+ * a save to the server.
+ */
+storybase.builder.views.StoryAttributeSavingMixin = {
+  saveAttr: function(key, value) {
+    if (_.has(this.model.attributes, key)) {
+      this.model.set(key, value);
+      if (this.model.isNew()) {
+        this.dispatcher.trigger("do:save:story");
+      }
+      else {
+        this.model.save();
+      }
+      console.info("Updated " + key + " to " + value);
+    }
   }
 };
 
@@ -1618,7 +1642,8 @@ storybase.builder.views.PseudoSectionThumbnailView = Backbone.View.extend(
 }));
 
 storybase.builder.views.PseudoSectionEditView = Backbone.View.extend(
-  _.extend({}, storybase.builder.views.RichTextEditorMixin, {
+  _.extend({}, storybase.builder.views.RichTextEditorMixin, 
+           storybase.builder.views.StoryAttributeSavingMixin, {
     tagName: 'div',
 
     defaults: {},
@@ -1644,19 +1669,6 @@ storybase.builder.views.PseudoSectionEditView = Backbone.View.extend(
         this.$el.hide();
       }
       return this;
-    },
-
-    saveAttr: function(key, value) {
-      if (_.has(this.model.attributes, key)) {
-        this.model.set(key, value);
-        if (this.model.isNew()) {
-          this.dispatcher.trigger("do:save:story");
-        }
-        else {
-          this.model.save();
-        }
-        console.info("Updated " + key + " to " + value);
-      }
     },
 
     /**
@@ -1731,6 +1743,53 @@ storybase.builder.views.StoryInfoEditView = storybase.builder.views.PseudoSectio
 });
 
 /**
+ * View for editing story information in the connected story builder.
+ *
+ * This view should be attached inside the section edit view
+ *
+ */
+storybase.builder.views.InlineStoryInfoEditView = Backbone.View.extend(
+  _.extend({}, storybase.builder.views.StoryAttributeSavingMixin, {
+    className: 'edit-story-info-inline',
+
+    templateSource: $('#story-info-edit-inline-template').html(),
+
+    defaults: {
+      titleEl: '.story-title',
+      bylineEl: '.byline'
+    },
+
+    initialize: function() {
+      _.defaults(this.options, this.defaults);
+      this.template = Handlebars.compile(this.templateSource);
+      this.dispatcher = this.options.dispatcher;
+    },
+
+    render: function() {
+      var that = this;
+      var editableCallback = function(value, settings) {
+        that.saveAttr($(this).data("input-name"), value);
+        return value;
+      };
+      this.$el.html(this.template(this.model.toJSON()));
+        
+      this.$(this.options.titleEl).editable(editableCallback, {
+        placeholder: gettext('Click to edit title'),
+        tooltip: gettext('Click to edit title'),
+        onblur: 'submit'
+      });
+      this.$(this.options.bylineEl).editable(editableCallback, {
+        placeholder: gettext('Click to edit byline'),
+        tooltip: gettext('Click to edit byline'),
+        onblur: 'submit'
+      });
+      this.delegateEvents(); 
+      return this;
+    }
+  })
+);
+
+/**
  * View for editing the story's call to action 
  */
 storybase.builder.views.CallToActionEditView = storybase.builder.views.PseudoSectionEditView.extend({ 
@@ -1799,11 +1858,11 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   templateSource: $('#section-edit-template').html(),
 
   defaults: {
-    titleEl: '.section-title'
+    titleEl: '.section-title',
+    storyTitleEl: '.story-title'
   },
 
   events: {
-    "change .title input": 'change',
     "change select.layout": 'change'
   },
 
@@ -1820,6 +1879,15 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     this._unsavedAssets = [];
     this._doConditionalRender = false;
     this._firstSave = this.model.isNew();
+    
+    // Edit the story information within the section edit view
+    // This is mostly used in the connected story builder
+    if (this.options.showStoryInfoInline) {
+      this.storyInfoEditView = new storybase.builder.views.InlineStoryInfoEditView({
+        dispatcher: this.dispatcher,
+        model: this.story
+      });
+    }
 
     _.bindAll(this, 'renderAssetViews');
     this.dispatcher.on('do:add:sectionasset', this.addAsset, this);
@@ -1905,17 +1973,22 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     context.showSectionTitles = this.options.showSectionTitles;
     context.showLayoutSelection = this.options.showLayoutSelection;
     this.$el.html(this.template(context));
+    if (this.storyInfoEditView) {
+      this.$el.prepend(this.storyInfoEditView.render().el);
+    }
     if (this.model.isNew()) {
       this.renderAssetViews();
     }
     else {
       this.assets.fetch();
     }
-    this.$(this.options.titleEl).editable(editableCallback, {
-      placeholder: gettext('Click to edit title'),
-      tooltip: gettext('Click to edit title'),
-      onblur: 'submit'
-    });
+    if (this.options.showSectionTitles) {
+      this.$(this.options.titleEl).editable(editableCallback, {
+        placeholder: gettext('Click to edit title'),
+        tooltip: gettext('Click to edit title'),
+        onblur: 'submit'
+      });
+    }
     return this;
   },
 
