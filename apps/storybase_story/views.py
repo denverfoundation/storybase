@@ -323,7 +323,7 @@ class StoryBuilderView(DetailView):
         """
         if self.object:
             return self.object.get_prompt()
-        elif self.source_story.connected_prompt:
+        elif self.source_story and self.source_story.connected_prompt:
             return self.source_story.connected_prompt;
         else:
             return "";
