@@ -104,7 +104,7 @@
         storybase.globals.MAP_POINT_ZOOM_LEVEL = {{ storybase_map_point_zoom_level }};
         var storyTemplatesData = {{ story_template_json }};
         var helpData = {{ help_json }};
-        var options = {
+        var options = _.extend({
             assetTypes: {{ asset_types_json }},
             el: $('#builder'),
             dispatcher: storybase.builder.globals.dispatcher,
@@ -116,7 +116,7 @@
             relatedStories: new storybase.collections.StoryRelations,
             storyTemplates: new storybase.builder.collections.StoryTemplates,
             topics: {{ topics_json }}
-        };
+        }, {{ options_json }});
         var relatedStoriesJSON = null;
         var templateAssetsJSON = null;
         var templateSectionsJSON = null;

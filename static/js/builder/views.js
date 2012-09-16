@@ -49,18 +49,25 @@ storybase.builder.views.AppView = Backbone.View.extend({
     }
 
     // Initialize the view for the workflow step indicator
-    this.workflowStepView = new storybase.builder.views.WorkflowStepView(
-      commonOptions
-    );
-    // TODO: Change the selector as the template changes
-    this.$('header').first().children().first().append(this.workflowStepView.el);
+    if (!this.options.showBuilderOnly) {
+      this.workflowStepView = new storybase.builder.views.WorkflowStepView(
+        commonOptions
+      );
+      // TODO: Change the selector as the template changes
+      this.$('header').first().children().first().append(this.workflowStepView.el);
+    }
 
     buildViewOptions = _.defaults({
       assetTypes: this.options.assetTypes,
       layouts: this.options.layouts,
       help: this.options.help,
       relatedStories: this.options.relatedStories,
-      templateStory: this.options.templateStory
+      templateStory: this.options.templateStory,
+      showBuilderOnly: this.options.showBuilderOnly,
+      showStoryInformation: this.options.showStoryInformation,
+      showCallToAction: this.options.showCallToAction,
+      showSectionList: this.options.showSectionList,
+      showLayoutSelection: this.options.showLayoutSelection
     }, commonOptions);
     shareViewOptions = _.defaults({
       places: this.options.places,
@@ -76,10 +83,14 @@ storybase.builder.views.AppView = Backbone.View.extend({
         collection: this.options.storyTemplates
       }),
       build: new storybase.builder.views.BuilderView(buildViewOptions),
-      data: new storybase.builder.views.DataView(commonOptions),
-      review: new storybase.builder.views.ReviewView(commonOptions),
-      share: new storybase.builder.views.ShareView(shareViewOptions)
     };
+    if (!this.options.showBuilderOnly) {
+      _.extend(this.subviews, {
+        data: new storybase.builder.views.DataView(commonOptions),
+        review: new storybase.builder.views.ReviewView(commonOptions),
+        share: new storybase.builder.views.ShareView(shareViewOptions)
+      });
+    }
 
     // Initialize the properties that store the last alert level
     // and message.
@@ -138,7 +149,9 @@ storybase.builder.views.AppView = Backbone.View.extend({
     if (activeView.onShow) {
       activeView.onShow();
     }
-    this.workflowStepView.render();
+    if (this.workflowStepView) {
+      this.workflowStepView.render();
+    }
     this.toolsView.render();
     return this;
   },
@@ -714,10 +727,12 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
     this.templateStory = this.options.templateStory;
 
-    this.sectionListView = new storybase.builder.views.SectionListView({
-      dispatcher: this.dispatcher,
-      model: this.model
-    });
+    if (this.options.showSectionList) {
+      this.sectionListView = new storybase.builder.views.SectionListView({
+        dispatcher: this.dispatcher,
+        model: this.model
+      });
+    }
     this.unusedAssetView = new storybase.builder.views.UnusedAssetView({
       dispatcher: this.dispatcher,
       assets: this.model.unusedAssets
@@ -726,20 +741,22 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       dispatcher: this.dispatcher,
       lastSaved: this.model.get('last_edited')
     });
-    this.navView = new storybase.builder.views.WorkflowNavView({
-      model: this.model,
-      dispatcher: this.dispatcher,
-      items: [
-        {
-          id: 'workflow-nav-data-fwd',
-          title: gettext("Add Data to Your Story"),
-          path: 'data/',
-          enabled: _.bind(function() {
-            return !this.model.isNew();
-          }, this)
-        }
-      ],
-    });
+    if (!this.options.showBuilderOnly) {
+      this.navView = new storybase.builder.views.WorkflowNavView({
+        model: this.model,
+        dispatcher: this.dispatcher,
+        items: [
+          {
+            id: 'workflow-nav-data-fwd',
+            title: gettext("Add Data to Your Story"),
+            path: 'data/',
+            enabled: _.bind(function() {
+              return !this.model.isNew();
+            }, this)
+          }
+        ],
+      });
+    }
     this._editViews = [];
 
     this.model.on("sync", this.triggerSaved, this);
@@ -789,7 +806,9 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       story: this.model,
       assetTypes: this.options.assetTypes,
       layouts: this.options.layouts,
-      defaultHelp: this.help.where({slug: 'new-section'})[0]
+      defaultHelp: this.help.where({slug: 'new-section'})[0],
+      showSectionTitles: this.options.showSectionTitles,
+      showLayoutSelection: this.options.showLayoutSelection
     };
     var view;
     if (this.templateStory) {
@@ -801,19 +820,25 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   },
 
   createEditViews: function() {
-    var storyEditView = new storybase.builder.views.StoryInfoEditView({
-      dispatcher: this.dispatcher,
-      help: this.help.where({slug: 'story-information'})[0],
-      model: this.model
-    });
-    var callEditView = new storybase.builder.views.CallToActionEditView({
-      dispatcher: this.dispatcher,
-      help: this.help.where({slug: 'call-to-action'})[0],
-      model: this.model
-    });
-    this._editViews.push(storyEditView);
+    var storyEditView = null;
+    var callEditView = null;
+    if (this.options.showStoryInformation) {
+      storyEditView = new storybase.builder.views.StoryInfoEditView({
+        dispatcher: this.dispatcher,
+        help: this.help.where({slug: 'story-information'})[0],
+        model: this.model
+      });
+      this._editViews.push(storyEditView);
+    }
     this.model.sections.each(this.createSectionEditView); 
-    this._editViews.push(callEditView);
+    if (this.options.showCallToAction) {
+      callEditView = new storybase.builder.views.CallToActionEditView({
+        dispatcher: this.dispatcher,
+        help: this.help.where({slug: 'call-to-action'})[0],
+        model: this.model
+      });
+      this._editViews.push(callEditView);
+    }
     if (this.$el.is(':visible')) {
       this.renderEditViews();
     }
@@ -830,7 +855,12 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     });
     var that = this;
     _.each(this._editViews, function(view) {
-      that.sectionListView.$el.before(view.render().$el.hide());
+      if (that.sectionListView) {
+        that.sectionListView.$el.before(view.render().$el.hide());
+      }
+      else {
+        that.$el.append(view.render().$el.hide());
+      }
     });
     if (this._editViews.length && options.showFirst) {
       this._editViews[0].show();
@@ -842,10 +872,14 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     var that = this;
     this.$el.prepend(this.unusedAssetView.render().$el.hide());
     this.$el.prepend(this.lastSavedView.render().el);
-    this.$el.append(this.sectionListView.render().el);
+    if (this.sectionListView) {
+      this.$el.append(this.sectionListView.render().el);
+    }
     this.renderEditViews();
-    // TODO: properly place this
-    this.$el.append(this.navView.render().el);
+    if (this.navView) {
+      // TODO: properly place this
+      this.$el.append(this.navView.render().el);
+    }
     return this;
   },
 
@@ -857,7 +891,9 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
    */
   onShow: function() {
     // Recalculate the width of the section list view.
-    this.sectionListView.setWidth();
+    if (this.sectionListView) {
+      this.sectionListView.setWidth();
+    }
   },
 
   /**
@@ -1866,6 +1902,8 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
       return value;
     };
     context.layouts = this.getLayoutContext();
+    context.showSectionTitles = this.options.showSectionTitles;
+    context.showLayoutSelection = this.options.showLayoutSelection;
     this.$el.html(this.template(context));
     if (this.model.isNew()) {
       this.renderAssetViews();

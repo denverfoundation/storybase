@@ -316,6 +316,19 @@ class StoryBuilderView(DetailView):
         else:
             return None
 
+    def get_options_json(self):
+        """Get configuration options for the story builder"""
+        # TODO: Retrieve these from the template object
+        options = {
+            'showBuilderOnly': True,
+            'showStoryInformation': False,
+            'showCallToAction': False,
+            'showSectionList': False,
+            'showSectionTitles': False,
+            'showLayoutSelection': False,
+        }
+        return json.dumps(options)
+
     def get_context_data(self, **kwargs):
         """Provide Bootstrap data for Backbone models and collections"""
         context = {
@@ -350,6 +363,8 @@ class StoryBuilderView(DetailView):
         if related_stories_json: 
             context['related_stories_json'] = mark_safe(
                 related_stories_json)
+
+        context['options_json'] = mark_safe(self.get_options_json())
 
         return context
 
