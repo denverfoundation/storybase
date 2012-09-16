@@ -317,6 +317,17 @@ class StoryBuilderView(DetailView):
         else:
             return None
 
+    def get_prompt(self):
+        """
+        Get the story prompt
+        """
+        if self.object:
+            return self.object.get_prompt()
+        elif self.source_story.connected_prompt:
+            return self.source_story.connected_prompt;
+        else:
+            return "";
+
     def get_options_json(self):
         """Get configuration options for the story builder"""
         options = {
@@ -337,12 +348,14 @@ class StoryBuilderView(DetailView):
             'showLayoutSelection': True,
             # Show the story title input in the section edit view 
             'showStoryInfoInline': False,
+            # Prompt
+            'prompt': self.get_prompt(),
         }
         if (self.template_object and  self.template_object.slug == settings.STORYBASE_CONNECTED_STORY_TEMPLATE):
             # TODO: If these settings apply in cases other than just
             # connected stories, it might make more sense to store them
             # as part of the template model
-            options = {
+            options.update({
                 'showBuilderOnly': True,
                 'showStoryInformation': False,
                 'showCallToAction': False,
@@ -350,7 +363,7 @@ class StoryBuilderView(DetailView):
                 'showSectionTitles': False,
                 'showLayoutSelection': False,
                 'showStoryInfoInline': True,
-            }
+            })
         return json.dumps(options)
 
     def get_context_data(self, **kwargs):

@@ -61,6 +61,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
       assetTypes: this.options.assetTypes,
       layouts: this.options.layouts,
       help: this.options.help,
+      prompt: this.options.prompt,
       relatedStories: this.options.relatedStories,
       templateStory: this.options.templateStory,
       showBuilderOnly: this.options.showBuilderOnly,
@@ -811,7 +812,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       defaultHelp: this.help.where({slug: 'new-section'})[0],
       showSectionTitles: this.options.showSectionTitles,
       showLayoutSelection: this.options.showLayoutSelection,
-      showStoryInfoInline: this.options.showStoryInfoInline
+      showStoryInfoInline: this.options.showStoryInfoInline,
+      prompt: this.options.prompt
     };
     var view;
     if (this.templateStory) {
@@ -1771,7 +1773,9 @@ storybase.builder.views.InlineStoryInfoEditView = Backbone.View.extend(
         that.saveAttr($(this).data("input-name"), value);
         return value;
       };
-      this.$el.html(this.template(this.model.toJSON()));
+      var context = this.model.toJSON();
+      context.prompt = this.options.prompt;
+      this.$el.html(this.template(context));
         
       this.$(this.options.titleEl).editable(editableCallback, {
         placeholder: gettext('Click to edit title'),
@@ -1885,7 +1889,8 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     if (this.options.showStoryInfoInline) {
       this.storyInfoEditView = new storybase.builder.views.InlineStoryInfoEditView({
         dispatcher: this.dispatcher,
-        model: this.story
+        model: this.story,
+        prompt: this.options.prompt
       });
     }
 
