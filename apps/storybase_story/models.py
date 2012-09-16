@@ -347,6 +347,13 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
         """Get a queryset of stories that this story is connected to"""
         return self.related_to.filter(target__relation_type='connected')
 
+    def get_prompt(self):
+        connected_to = self.connected_to_stories()
+        if (not connected_to):
+            return ""
+
+        return connected_to[0].connected_prompt
+
 
 def set_story_slug(sender, instance, **kwargs):
     """

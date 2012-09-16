@@ -368,6 +368,8 @@ class RelatedStoriesTest(TestCase):
         story = create_story(title="Test Related Story", 
                              summary="Test Related Story Summary",
                              byline="Test Related Story Byline",
+                             connected_prompt="Test connected prompt",
+                             connected=True,
                              status='published',
                              author=self.user)
         self.assertEqual(len(self.story.related_stories.all()), 0)
@@ -407,6 +409,32 @@ class RelatedStoriesTest(TestCase):
                                      relation_type='blahblahblah')
         self.assertEqual(len(story.connected_to_stories()), 1)
         self.assertEqual(story.connected_to_stories()[0], self.story)
+
+    def test_get_prompt(self):
+        """
+        Test retrieving the prompt from the parent story in a connected
+        story relationship.
+        """
+        story = create_story(title="Test Related Story", 
+                             summary="Test Related Story Summary",
+                             byline="Test Related Story Byline",
+                             status='published',
+                             author=self.user)
+        StoryRelation.objects.create(source=self.story, target=story,
+                                     relation_type='connected')
+        self.assertEqual(story.get_prompt(), self.story.connected_prompt)
+
+    def test_get_prompt_no_connections(self):
+        """
+        Test that an empty prompt is returned when there is no
+        connected story relationship.
+        """
+        story = create_story(title="Test Related Story", 
+                             summary="Test Related Story Summary",
+                             byline="Test Related Story Byline",
+                             status='published',
+                             author=self.user)
+        self.assertEqual(story.get_prompt(), "")
 
 
 class ViewsTest(TestCase):
