@@ -771,7 +771,7 @@ class Container(models.Model):
 # abstracts out the translation logic a bit.
 
 def create_story(title, structure_type=structure.DEFAULT_STRUCTURE,
-                 summary='', call_to_action='',
+                 summary='', call_to_action='', connected_prompt='',
                  language=settings.LANGUAGE_CODE, 
                  *args, **kwargs):
     """Convenience function for creating a Story
