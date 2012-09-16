@@ -395,6 +395,19 @@ class RelatedStoriesTest(TestCase):
         self.assertEqual(len(self.story.connected_stories()), 1)
         self.assertEqual(self.story.connected_stories()[0], story)
 
+    def test_connected_to_stories(self):
+        story = create_story(title="Test Related Story", 
+                             summary="Test Related Story Summary",
+                             byline="Test Related Story Byline",
+                             status='published',
+                             author=self.user)
+        StoryRelation.objects.create(source=self.story, target=story,
+                                     relation_type='connected')
+        StoryRelation.objects.create(source=self.story, target=story,
+                                     relation_type='blahblahblah')
+        self.assertEqual(len(story.connected_to_stories()), 1)
+        self.assertEqual(story.connected_to_stories()[0], self.story)
+
 
 class ViewsTest(TestCase):
     """Tests for story-related views"""

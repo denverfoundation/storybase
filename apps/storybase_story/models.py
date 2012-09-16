@@ -343,6 +343,10 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
         # Would this be better implemented as a related manager?
         return self.related_stories.filter(source__relation_type='connected')
 
+    def connected_to_stories(self):
+        """Get a queryset of stories that this story is connected to"""
+        return self.related_to.filter(target__relation_type='connected')
+
 
 def set_story_slug(sender, instance, **kwargs):
     """
