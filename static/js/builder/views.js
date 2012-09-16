@@ -65,6 +65,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
       relatedStories: this.options.relatedStories,
       templateStory: this.options.templateStory,
       showBuilderOnly: this.options.showBuilderOnly,
+      showSelectAssetType: this.options.showSelectAssetType,
       showStoryInformation: this.options.showStoryInformation,
       showCallToAction: this.options.showCallToAction,
       showSectionList: this.options.showSectionList,
@@ -810,6 +811,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       assetTypes: this.options.assetTypes,
       layouts: this.options.layouts,
       defaultHelp: this.help.where({slug: 'new-section'})[0],
+      showSelectAssetType: this.options.showSelectAssetType,
       showSectionTitles: this.options.showSectionTitles,
       showLayoutSelection: this.options.showLayoutSelection,
       showStoryInfoInline: this.options.showStoryInfoInline,
@@ -1947,7 +1949,8 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
         dispatcher: that.dispatcher,
         section: that.model, 
         story: that.story,
-        assetTypes: that.options.assetTypes
+        assetTypes: that.options.assetTypes,
+        showSelectAssetType: that.options.showSelectAssetType
       };
       if (that.assets.length) {
         // If there are assets, bind them to the view with the appropriate
@@ -2408,7 +2411,12 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
     cancel: function(e) {
       e.preventDefault();
       if (this.model.isNew()) {
-        this.setState('select');
+        if (this.options.showSelectAssetType) {
+          this.setState('select');
+        }
+        else {
+          this.setState('edit');
+        }
       }
       else {
         this.setState('display');
@@ -2516,7 +2524,14 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       this.model = new storybase.models.Asset();
       // Listen to events on the new model
       this.bindModelEvents();
-      this.setState('select').render();
+      if (this.options.showSelectAssetType) {
+        this.setState('select').render();
+      }
+      else {
+        this.model.set('type', this.options.suggestedType);
+        this.initializeForm();
+        this.setState('edit').render();
+      }
     },
 
     handleDrop: function(evt, ui) {

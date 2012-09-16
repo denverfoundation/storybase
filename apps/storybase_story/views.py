@@ -333,6 +333,8 @@ class StoryBuilderView(DetailView):
         options = {
             # Show only the builder workflow steps
             'showBuilderOnly': False,
+            # Show asset type selector
+            'showSelectAssetType': True,
             # Show the view that allows the user to edit
             # the story title and byline
             'showStoryInformation': True,
@@ -357,6 +359,7 @@ class StoryBuilderView(DetailView):
             # as part of the template model
             options.update({
                 'showBuilderOnly': True,
+                'showSelectAssetType': False,
                 'showStoryInformation': False,
                 'showCallToAction': False,
                 'showSectionList': False,
