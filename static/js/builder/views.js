@@ -78,7 +78,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
       build: new storybase.builder.views.BuilderView(buildViewOptions),
       data: new storybase.builder.views.DataView(commonOptions),
       review: new storybase.builder.views.ReviewView(commonOptions),
-      share: new storybase.builder.views.ShareView(commonOptions)
+      share: new storybase.builder.views.ShareView(shareViewOptions)
     };
 
     // Initialize the properties that store the last alert level
