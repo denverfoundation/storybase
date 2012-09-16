@@ -700,6 +700,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
     this.dispatcher = this.options.dispatcher;
     this.help = this.options.help;
+    this._relatedStoriesSaved = false;
 
     if (_.isUndefined(this.model)) {
       // Create a new story model instance
@@ -920,7 +921,9 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
           trigger: true 
         });
         model.saveSections();
-        model.saveRelatedStories();
+        if (!that._relatedStoriesSaved) {
+          model.saveRelatedStories();
+        }
         // Re-render the navigation view to enable the button
         that.navView.render();
       }
