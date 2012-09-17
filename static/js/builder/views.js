@@ -581,25 +581,31 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
   items: [
     {
       id: 'help',
-      title: 'Help',
+      title: gettext('Help'),
       callback: 'toggleHelp', 
       visible: true 
     },
     {
       id: 'assets',
-      title: 'Assets',
+      title: gettext('Assets'),
       callback: 'toggleAssetList',
       visible: false
     },
     {
       id: 'preview',
-      title: 'Preview',
+      title: gettext('Preview'),
       callback: 'previewStory',
       visible: false
     },
     {
+      id: 'start-over',
+      title: gettext('Start Over'),
+      path: '/build/',
+      visible: true
+    },
+    {
       id: 'exit',
-      title: 'Exit',
+      title: gettext('Exit'),
       path: '/',
       visible: true 
     }
