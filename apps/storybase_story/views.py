@@ -332,7 +332,13 @@ class StoryBuilderView(DetailView):
         """Get configuration options for the story builder"""
         options = {
             # Show only the builder workflow steps
-            'showBuilderOnly': False,
+            'visibleSteps': {
+                'build': True,
+                'data': True, 
+                'tag': True,
+                'review': True,
+                'publish': True
+            },
             # Show asset type selector
             'showSelectAssetType': True,
             # Show the view that allows the user to edit
@@ -358,7 +364,10 @@ class StoryBuilderView(DetailView):
             # connected stories, it might make more sense to store them
             # as part of the template model
             options.update({
-                'showBuilderOnly': True,
+                'visibleSteps': {
+                    'build': True,
+                    'publish': True
+                },
                 'showSelectAssetType': False,
                 'showStoryInformation': False,
                 'showCallToAction': False,

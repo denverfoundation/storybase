@@ -28,7 +28,9 @@ Namespace.use('storybase.utils.geocode');
 storybase.builder.views.AppView = Backbone.View.extend({
   initialize: function() {
     // Common options passed to sub-views
-    var commonOptions = {};
+    var commonOptions = {
+      visibleSteps: this.options.visibleSteps
+    };
     var buildViewOptions;
     var shareViewOptions;
     this.dispatcher = this.options.dispatcher;
@@ -49,13 +51,11 @@ storybase.builder.views.AppView = Backbone.View.extend({
     }
 
     // Initialize the view for the workflow step indicator
-    if (!this.options.showBuilderOnly) {
-      this.workflowStepView = new storybase.builder.views.WorkflowStepView(
-        commonOptions
-      );
-      // TODO: Change the selector as the template changes
-      this.$('header').first().children().first().append(this.workflowStepView.el);
-    }
+    this.workflowStepView = new storybase.builder.views.WorkflowStepView(
+      commonOptions
+    );
+    // TODO: Change the selector as the template changes
+    this.$('header').first().children().first().append(this.workflowStepView.el);
 
     buildViewOptions = _.defaults({
       assetTypes: this.options.assetTypes,
@@ -64,7 +64,6 @@ storybase.builder.views.AppView = Backbone.View.extend({
       prompt: this.options.prompt,
       relatedStories: this.options.relatedStories,
       templateStory: this.options.templateStory,
-      showBuilderOnly: this.options.showBuilderOnly,
       showSelectAssetType: this.options.showSelectAssetType,
       showStoryInformation: this.options.showStoryInformation,
       showCallToAction: this.options.showCallToAction,
@@ -86,16 +85,28 @@ storybase.builder.views.AppView = Backbone.View.extend({
         dispatcher: this.dispatcher,
         collection: this.options.storyTemplates
       }),
-      build: new storybase.builder.views.BuilderView(buildViewOptions),
     };
-    if (!this.options.showBuilderOnly) {
-      _.extend(this.subviews, {
-        data: new storybase.builder.views.DataView(commonOptions),
-        tag: new storybase.builder.views.TaxonomyView(shareViewOptions),
-        review: new storybase.builder.views.ReviewView(commonOptions),
-        publish: new storybase.builder.views.PublishView(shareViewOptions)
-      });
+
+    // Create views for additional workflow steps if they're enabled
+    // in options. We don't iterate through the steps because the
+    // views use different constructor, options. If this gets to
+    // unwieldy, maybe use a factory function.
+    if (this.options.visibleSteps.data) {
+      this.subviews.data = new storybase.builder.views.DataView(commonOptions);
     }
+    if (this.options.visibleSteps.tag) {
+      this.subviews.tag =  new storybase.builder.views.TaxonomyView(shareViewOptions);
+    }
+    if (this.options.visibleSteps.review) {
+      this.subviews.review = new storybase.builder.views.ReviewView(commonOptions);
+    }
+    if (this.options.visibleSteps.publish) {
+      this.subviews.publish =  new storybase.builder.views.PublishView(shareViewOptions);
+    }
+
+    // IMPORTANT: Create the builder view last because it triggers
+    // events that the other views need to listen to
+    this.subviews.build = new storybase.builder.views.BuilderView(buildViewOptions);
 
     // Initialize the properties that store the last alert level
     // and message.
@@ -270,8 +281,9 @@ storybase.builder.views.ClickableItemsView = Backbone.View.extend({
   },
 
   events: function() {
+    var items = _.result(this, 'items');
     var events = {};
-    _.each(this.items, function(item) {
+    _.each(items, function(item) {
       if (item.callback) {
         events["click ." + item.id] = item.callback;
       }
@@ -280,7 +292,8 @@ storybase.builder.views.ClickableItemsView = Backbone.View.extend({
   },
 
   getItem: function(id) {
-    return _.filter(this.items, function(item) {
+    var items = _.result(this, 'items');
+    return _.filter(items, function(item) {
       return item.id === id;
     })[0];
   },
@@ -323,7 +336,8 @@ storybase.builder.views.ClickableItemsView = Backbone.View.extend({
   },
 
   getVisibleItems: function() {
-    return _.filter(this.items, function(item) {
+    var items = _.result(this, 'items');
+    return _.filter(items, function(item) {
       return this.getPropertyValue(item, 'visible', true);
     }, this);
   },
@@ -383,7 +397,8 @@ storybase.builder.views.WorkflowNavView = storybase.builder.views.ClickableItems
 
   events: function() {
     var events = {};
-    _.each(this.items, function(item) {
+    var items = _.result(this, 'items');
+    _.each(items, function(item) {
       if (item.route !== false) {
         events['click #' + item.id] = _.isUndefined(item.callback) ? this.handleClick : item.callback;
       }
@@ -470,45 +485,64 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.WorkflowNavVi
 
   itemTemplateSource: $('#workflow-item-template').html(),
 
-  items: [
-    {
-      id: 'build',
-      title: gettext('Build'),
-      visible: true,
-      selected: false,
-      path: ''
-    },
-    {
-      id: 'data',
-      title: gettext('Add Data'),
-      visible: 'isStorySaved',
-      selected: false,
-      path: 'data/'
-    },
-    {
-      id: 'tag',
-      title: gettext('Tag'),
-      visible: 'isStorySaved',
-      selected: false,
-      path: 'tag/',
-    },
-    {
-      id: 'review',
-      title: gettext('Review'),
-      visible: 'isStorySaved',
-      selected: false,
-      path: 'review/'
-    },
-    {
-      id: 'publish',
-      title: gettext('Publish/Share'),
-      visible: 'isStorySaved',
-      selected: false,
-      path: 'publish/'
+  /**
+   * Initialize items.
+   *
+   * Call this from initialize() once rather than repeating the logic
+   * each time items() is called.
+   */
+  _initItems: function() {
+    var items = [];
+    if (this.options.visibleSteps.build) {
+      items.push({
+        id: 'build',
+        title: gettext('Build'),
+        visible: true,
+        selected: false,
+        path: ''
+      });
     }
-  ],
+    if (this.options.visibleSteps.data) {
+      items.push({
+        id: 'data',
+        title: gettext('Add Data'),
+        visible: 'isStorySaved',
+        selected: false,
+        path: 'data/'
+      });
+    }
+    if (this.options.visibleSteps.tag) {
+      items.push({
+        id: 'tag',
+        title: gettext('Tag'),
+        visible: 'isStorySaved',
+        selected: false,
+        path: 'tag/',
+      });
+    }
+    if (this.options.visibleSteps.review) {
+      items.push({
+        id: 'review',
+        title: gettext('Review'),
+        visible: 'isStorySaved',
+        selected: false,
+        path: 'review/'
+      });
+    }
+    if (this.options.visibleSteps.publish) {
+      items.push({
+        id: 'publish',
+        title: gettext('Publish/Share'),
+        visible: 'isStorySaved',
+        selected: false,
+        path: 'publish/'
+      });
+    }
+    return items;
+  },
 
   extraInit: function() {
+    this.items = _.isUndefined(this.options.items) ? this._initItems() : this.options.items;
     this.activeStep = null;
     this.dispatcher.on("select:workflowstep", this.updateStep, this);
   },
@@ -722,6 +756,10 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
   initialize: function() {
     var that = this;
+    var navViewOptions;
+    var isNew = _.bind(function() {
+      return !this.model.isNew();
+    }, this)
 
     this.dispatcher = this.options.dispatcher;
     this.help = this.options.help;
@@ -753,22 +791,34 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       dispatcher: this.dispatcher,
       lastSaved: this.model.get('last_edited')
     });
-    if (!this.options.showBuilderOnly) {
-      this.navView = new storybase.builder.views.WorkflowNavView({
-        model: this.model,
-        dispatcher: this.dispatcher,
-        items: [
-          {
-            id: 'workflow-nav-data-fwd',
-            title: gettext("Add Data to Your Story"),
-            path: 'data/',
-            enabled: _.bind(function() {
-              return !this.model.isNew();
-            }, this)
-          }
-        ],
+
+    // Initialize navigation to the next workflow step
+    navViewOptions = {
+      model: this.model,
+      dispatcher: this.dispatcher,
+      items: []
+    };
+    // The next step will either be data (in the normal builder) or
+    // publish (in the connected story builder). If this gets more
+    // complicated, it might make more sense to have a global set
+    // of items. 
+    if (this.options.visibleSteps.data) {
+      navViewOptions.items.push({
+        id: 'workflow-nav-data-fwd',
+        title: gettext("Add Data to Your Story"),
+        path: 'data/',
+        enabled: isNew 
       });
     }
+    else if (this.options.visibleSteps.publish) {
+      navViewOptions.items.push({
+        id: 'workflow-nav-publish-fwd',
+        title: gettext("Publish My Story"),
+        path: 'publish/',
+        enabled: isNew 
+      })
+    }
+    this.navView = new storybase.builder.views.WorkflowNavView(navViewOptions);
     this._editViews = [];
 
     this.model.on("sync", this.triggerSaved, this);
@@ -2755,7 +2805,7 @@ storybase.builder.views.ReviewView = Backbone.View.extend({
           path: 'tag/'
         },
         {
-          id: 'workflow-nav-share-legal-fwd',
+          id: 'workflow-nav-publish-fwd',
           title: gettext("Publish My Story"),
           path: 'publish/',
           enabled: this.hasPreviewed,
@@ -3426,29 +3476,42 @@ storybase.builder.views.PublishView = Backbone.View.extend({
   },
 
   initialize: function() {
+    var navViewOptions;
+
     this.dispatcher = this.options.dispatcher;
     this.template = Handlebars.compile(this.templateSource);
     this.legalView = new storybase.builder.views.LegalView({
       model: this.model,
       dispatcher: this.dispatcher
     });
-    this.navView = new storybase.builder.views.WorkflowNavView({
+
+    navViewOptions = {
       model: this.model,
       dispatcher: this.dispatcher,
-      items: [
-        {
-          id: 'workflow-nav-review-back',
-          title: gettext("Back to Review"),
-          path: 'review/'
-        },
-        {
-          id: 'workflow-nav-build-another-fwd',
-          title: gettext("Tell Another Story"),
-          path: '/build/',
-          route: false
-        }
-      ]
+      items: []
+    };
+    if (this.options.visibleSteps.review) {
+      navViewOptions.items.push({
+        id: 'workflow-nav-build-back',
+        title: gettext("Back to Review"),
+        path: 'review/'
+      });
+    }
+    else {
+      navViewOptions.items.push({
+        id: 'workflow-nav-review-back',
+        title: gettext("Continue Writing Story"),
+        path: ''
+      });
+    }
+    navViewOptions.items.push({
+      id: 'workflow-nav-build-another-fwd',
+      title: gettext("Tell Another Story"),
+      path: '/build/',
+      route: false
     });
+    this.navView = new storybase.builder.views.WorkflowNavView(navViewOptions);
+    
     if (_.isUndefined(this.model)) {
       this.dispatcher.on("ready:story", this.setStory, this);
     }
