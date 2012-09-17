@@ -95,7 +95,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
    */
   setTemplate: function(template) {
     this.activeTemplate = template;
-    this.updateStep('build');
+    this.dispatcher.trigger("select:workflowstep", 'build');
   },
 
   /**
@@ -539,7 +539,7 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
       id: 'start-over',
       title: gettext('Start Over'),
       path: '/build/',
-      visible: true
+      visible: false 
     },
     {
       id: 'exit',
@@ -601,6 +601,10 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
     }
     else {
       this.setVisibility('assets', false);
+    }
+
+    if (this.activeStep !== 'selecttemplate') {
+      this.setVisibility('start-over', true);
     }
   },
 
