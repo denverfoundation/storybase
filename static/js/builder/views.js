@@ -91,8 +91,9 @@ storybase.builder.views.AppView = Backbone.View.extend({
     if (!this.options.showBuilderOnly) {
       _.extend(this.subviews, {
         data: new storybase.builder.views.DataView(commonOptions),
+        tag: new storybase.builder.views.TaxonomyView(shareViewOptions),
         review: new storybase.builder.views.ReviewView(commonOptions),
-        share: new storybase.builder.views.ShareView(shareViewOptions)
+        publish: new storybase.builder.views.PublishView(shareViewOptions)
       });
     }
 
@@ -485,6 +486,13 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.WorkflowNavVi
       path: 'data/'
     },
     {
+      id: 'tag',
+      title: gettext('Tag'),
+      visible: 'isStorySaved',
+      selected: false,
+      path: 'tag/',
+    },
+    {
       id: 'review',
       title: gettext('Review'),
       visible: 'isStorySaved',
@@ -492,11 +500,11 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.WorkflowNavVi
       path: 'review/'
     },
     {
-      id: 'share',
-      title: gettext('Share'),
+      id: 'publish',
+      title: gettext('Publish/Share'),
       visible: 'isStorySaved',
       selected: false,
-      path: 'share/legal/'
+      path: 'publish/'
     }
   ],
 
@@ -2586,9 +2594,9 @@ storybase.builder.views.DataView = Backbone.View.extend(
             path: ''
           },
           {
-            id: 'workflow-nav-review-fwd',
-            title: gettext("Review"),
-            path: 'review/'
+            id: 'workflow-nav-tag-fwd',
+            title: gettext("Tag"),
+            path: 'tag/'
           }
         ]
       });
@@ -2742,14 +2750,14 @@ storybase.builder.views.ReviewView = Backbone.View.extend({
       dispatcher: this.dispatcher,
       items: [
         {
-          id: 'workflow-nav-data-back',
-          title: gettext("Back to Add Data"),
-          path: 'data/'
+          id: 'workflow-nav-tag-back',
+          title: gettext("Back to Tag"),
+          path: 'tag/'
         },
         {
           id: 'workflow-nav-share-legal-fwd',
-          title: gettext("Share My Story"),
-          path: 'share/legal/',
+          title: gettext("Publish My Story"),
+          path: 'publish/',
           enabled: this.hasPreviewed,
           validate: this.hasPreviewed
         }
@@ -2787,76 +2795,14 @@ storybase.builder.views.ReviewView = Backbone.View.extend({
   }
 });
 
-storybase.builder.views.ShareView = Backbone.View.extend({
-  id: 'share',
-
-  initialize: function() {
-    this.dispatcher = this.options.dispatcher;
-    this.template = Handlebars.compile(this.templateSource);
-    this.activeStep = null;
-
-    this.subviews = {
-      'legal': new storybase.builder.views.LegalView({
-        dispatcher: this.dispatcher,
-        model: this.model
-      }),
-      'tagging': new storybase.builder.views.TaxonomyView({
-        dispatcher: this.dispatcher,
-        model: this.model,
-        places: this.options.places,
-        topics: this.options.topics,
-        organizations: this.options.organizations,
-        projects: this.options.projects
-      }),
-      'publish': new storybase.builder.views.PublishView({
-        dispatcher: this.dispatcher,
-        model: this.model
-      }),
-    };
-
-    this.dispatcher.on('select:workflowstep', this.updateStep, this);
-  },
-
-  updateStep: function(step, subStep) {
-    if (step === 'share' && _.include(_.keys(this.subviews), subStep)) {
-      this.activeStep = subStep;
-      this.render();
-      this.onShow();
-    }
-  },
-
-  getActiveView: function() {
-    return this.activeStep ? this.subviews[this.activeStep] : this.subviews['legal'];
-  },
-
-  render: function() {
-    console.info('Rendering share view');
-    var context = {};
-    var subView = this.getActiveView(); 
-    _.each(this.subviews, function(view, subStep) {
-      if (subStep != this.activeStep) {
-        view.$el.remove();
-      }
-    }, this);
-    this.$el.append(subView.render().el);
-    return this;
-  },
-
-  onShow: function() {
-    var view = this.getActiveView();
-    if (view.onShow) {
-      view.onShow();
-    }
-  }
-});
-
 storybase.builder.views.LegalView = Backbone.View.extend({
   id: 'share-legal',
 
   templateSource: $('#share-legal-template').html(),
 
   events: {
-    'change input[name=license]': 'changeLicenseAgreement'
+    'change input[name=license]': 'changeLicenseAgreement',
+    'submit form': 'processForm'
   },
 
   // Schema for form
@@ -2915,26 +2861,6 @@ storybase.builder.views.LegalView = Backbone.View.extend({
     this.form = new Backbone.Form({
       schema: this.schema(),
       data: formValues
-    });
-    // IMPORTANT: Need to bind validate to this view before passing
-    // it as a callback to the WorkflowNavView instance
-    _.bindAll(this, 'validate');
-    this.navView = new storybase.builder.views.WorkflowNavView({
-      model: this.model,
-      dispatcher: this.dispatcher,
-      items: [
-        {
-          id: 'workflow-nav-review-back',
-          title: gettext("Back to Review"),
-          path: 'review/'
-        },
-        {
-          id: 'workflow-nav-share-tagging-fwd',
-          title: gettext("Continue"),
-          path: 'share/tagging/',
-          validate: this.validate
-        }
-      ]
     });
     if (_.isUndefined(this.model)) {
       this.dispatcher.on("ready:story", this.setStory, this);
@@ -3014,6 +2940,14 @@ storybase.builder.views.LegalView = Backbone.View.extend({
     }
   },
 
+  processForm: function(evt) {
+    evt.preventDefault();
+    if (this.validate()) {
+      console.debug("Form Valide");
+      this.dispatcher.trigger("accept:legal");
+    }
+  },
+
   setRadioEnabled: function() {
     this.form.fields['cc-allow-commercial'].$('input').prop('disabled', !this.agreedLicense);
     this.form.fields['cc-allow-modification'].$('input').prop('disabled', !this.agreedLicense);
@@ -3032,9 +2966,9 @@ storybase.builder.views.LegalView = Backbone.View.extend({
 
   render: function() {
     this.$el.html(this.template());
-    this.$el.append(this.form.render().el);
+    this.form.render().$el.append('<input type="submit" value="' + gettext("Agree") + '" />');
+    this.$el.append(this.form.el);
     this.updateFormDefaults();
-    this.$el.append(this.navView.render().el);
     this.delegateEvents();
 
     return this;
@@ -3043,6 +2977,10 @@ storybase.builder.views.LegalView = Backbone.View.extend({
   changeLicenseAgreement: function(evt) {
     this.agreedLicense = $(evt.target).prop('checked');
     this.setRadioEnabled();
+  },
+
+  acceptedLegalAgreement: function() {
+    return this.agreedLicense && this.hasPermission;
   }
 });
 
@@ -3059,14 +2997,14 @@ storybase.builder.views.TaxonomyView = Backbone.View.extend({
       dispatcher: this.dispatcher,
       items: [
         {
-          id: 'workflow-nav-share-legal-back',
-          title: gettext("Back to Legal Agreements"),
-          path: 'share/legal/'
+          id: 'workflow-nav-data-back',
+          title: gettext("Back to Add Data"),
+          path: 'data/'
         },
         {
-          id: 'workflow-nav-share-publish-fwd',
-          title: gettext("Continue"),
-          path: 'share/publish/'
+          id: 'workflow-nav-review-fwd',
+          title: gettext("Review"),
+          path: 'review/'
         }
       ]
     });
@@ -3490,14 +3428,18 @@ storybase.builder.views.PublishView = Backbone.View.extend({
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
     this.template = Handlebars.compile(this.templateSource);
+    this.legalView = new storybase.builder.views.LegalView({
+      model: this.model,
+      dispatcher: this.dispatcher
+    });
     this.navView = new storybase.builder.views.WorkflowNavView({
       model: this.model,
       dispatcher: this.dispatcher,
       items: [
         {
-          id: 'workflow-nav-share-tagging-back',
-          title: gettext("Back to Tagging"),
-          path: 'share/tagging/'
+          id: 'workflow-nav-review-back',
+          title: gettext("Back to Review"),
+          path: 'review/'
         },
         {
           id: 'workflow-nav-build-another-fwd',
@@ -3510,10 +3452,21 @@ storybase.builder.views.PublishView = Backbone.View.extend({
     if (_.isUndefined(this.model)) {
       this.dispatcher.on("ready:story", this.setStory, this);
     }
+    this.dispatcher.on("accept:legal", this.handleAcceptLegal, this);
   },
 
   setStory: function(story) {
     this.model = story;
+  },
+
+  /**
+   * Callback for when legal agreement is accepted.
+   */
+  handleAcceptLegal: function() {
+    // Hide the legal form
+    this.legalView.$el.hide();
+    // Show the publish button
+    this.togglePublished();
   },
 
   togglePublished: function() {
@@ -3524,7 +3477,9 @@ storybase.builder.views.PublishView = Backbone.View.extend({
     }
     else {
       this.$('.status-published').hide();
-      this.$('.status-unpublished').show();
+      if (this.legalView.acceptedLegalAgreement()) {
+        this.$('.status-unpublished').show();
+      }
     }
   },
 
@@ -3577,6 +3532,10 @@ storybase.builder.views.PublishView = Backbone.View.extend({
       title: this.model.get('title')
     };
     this.$el.html(this.template(context));
+    this.$('.title').after(this.legalView.render().el);
+    if (this.legalView.acceptedLegalAgreement()) {
+      this.legalView.$el.hide();
+    }
     this.togglePublished();
     if (window.addthis) {
       // Render the addthis toolbox.  We have to do this explictly
