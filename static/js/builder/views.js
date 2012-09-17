@@ -536,6 +536,12 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
       visible: false
     },
     {
+      id: 'start-over',
+      title: gettext('Start Over'),
+      path: '/build/',
+      visible: true
+    },
+    {
       id: 'exit',
       title: gettext('Exit'),
       path: '/',
