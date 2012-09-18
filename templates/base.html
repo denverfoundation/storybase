@@ -70,7 +70,7 @@
                     <li><a href="{% url contact %}">{% trans "Contact Us" %}</a></li>
                     <li><a href="#">{% trans "Help" %}</a></li>
 					{% if user.is_authenticated %}
-                    <li><a href="{% url account_summary %}">{% trnas "Hi" %}, {{ user.first_name }}</a></li>
+                    <li><a href="{% url account_summary %}">{% trans "Hi" %}, {{ user.first_name }}</a></li>
 					{% else %}
 					<li><a href="{% url auth_login %}">{% trans "Sign In" %}</a></li>
 					{% endif %}
@@ -83,7 +83,7 @@
 				</form>
 			</div>
 			<div class="cl">&nbsp;</div>
-			{% megamenu %}
+			{% include "megamenu.html" %}
 		</div>
 		<div class="cl">&nbsp;</div>
 	</div>
