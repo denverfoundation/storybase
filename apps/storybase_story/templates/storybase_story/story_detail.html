@@ -37,6 +37,11 @@
         <p class="fourcol">{% blocktrans %}Wondering what you can do to help? The contributor has listed the following actions that you can take to help.{% endblocktrans %}</p> 
         <div class="eightcol last">
         {{ story.call_to_action|safe }}
+        {% if story.connected %}
+        {{ story.connected_prompt|linebreaks }}
+        {# TODO: Style the links to the connected story builder as buttons #}
+        <a href="{% url connected_story_builder source_slug=story.slug %}" title="{% trans "Contribute to this story" %}">{% trans "Contribute to this story" %}</a>
+        {% endif %}
         </div>
     </div>
   </section>
