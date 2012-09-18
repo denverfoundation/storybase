@@ -80,7 +80,7 @@
             {% if story.connected %}
             <p>{{ story.connected_prompt|linebreaks }}</p>
             {# TODO: Style the links to the connected story builder as buttons #}
-            <p><a href="{% url connected_story_builder source_slug=story.slug %}" class="external">{% trans "Click here to contribute to this story" %}</a></p>
+            <p><a href="{% url connected_story_builder source_slug=story.slug %}" class="external" data-new-window-name="connected-builder">{% trans "Click here to contribute to this story" %}</a></p>
             {% endif %}
 	      </section>
 	      {% endif %}
@@ -140,6 +140,15 @@
         Backbone.history.start();
         storybase.viewer.app.render();
     });
+    // Launch the connected builder in a new window
+    $("a.external").click(
+        function (evt) {
+            evt.preventDefault();
+            var url = $(evt.target).attr('href'); 
+            var newWindowName = $(evt.target).data('new-window-name');
+            window.open(url, newWindowName, '');
+        }
+    );
     </script>
   </body>
 </html>
