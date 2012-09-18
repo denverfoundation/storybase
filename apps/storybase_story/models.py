@@ -65,6 +65,8 @@ class StoryTranslation(TranslationModel):
     summary = models.TextField(blank=True)
     call_to_action = models.TextField(_("Call to Action"),
                                       blank=True)
+    connected_prompt = models.TextField(_("Connected Story Prompt"),
+                                        blank=True)
 
     class Meta:
         """Model metadata options"""
@@ -108,6 +110,11 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
                                       blank=True)
     is_template = models.BooleanField(_("Story is a template"),
                                       default=False)
+    connected = models.BooleanField(
+        _("Story can have connected stories"), default=False)
+    template_story = models.ForeignKey('Story',
+        related_name='template_for', blank=True, null=True,
+        help_text=_("Story whose structure was used to create this story"))
     on_homepage = models.BooleanField(_("Featured on homepage"),
                                       default=False)
     contact_info = models.TextField(_("Contact Information"),
@@ -125,10 +132,16 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
                                        related_name='stories',
                                        blank=True)
     tags = TaggableManager(through=TaggedItem, blank=True)
+    related_stories = models.ManyToManyField('self',
+                                             related_name='related_to',
+                                             blank=True,
+                                             through='StoryRelation',
+                                             symmetrical=False)
 
     objects = StoryManager()
 
-    translated_fields = ['title', 'summary', 'call_to_action']
+    translated_fields = ['title', 'summary', 'call_to_action',
+                         'connected_prompt']
     translation_set = 'storytranslation_set'
     translation_class = StoryTranslation
 
@@ -325,6 +338,22 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
     def natural_key(self):
         return (self.story_id,)
 
+    def connected_stories(self):
+        """Get a queryset of connected stories"""
+        # Would this be better implemented as a related manager?
+        return self.related_stories.filter(source__relation_type='connected')
+
+    def connected_to_stories(self):
+        """Get a queryset of stories that this story is connected to"""
+        return self.related_to.filter(target__relation_type='connected')
+
+    def get_prompt(self):
+        connected_to = self.connected_to_stories()
+        if (not connected_to):
+            return ""
+
+        return connected_to[0].connected_prompt
+
 
 def set_story_slug(sender, instance, **kwargs):
     """
@@ -363,6 +392,46 @@ pre_save.connect(set_date_on_published, sender=Story)
 post_save.connect(set_story_slug, sender=StoryTranslation)
 m2m_changed.connect(update_last_edited, sender=Story.organizations.through)
 m2m_changed.connect(update_last_edited, sender=Story.projects.through)
+
+class StoryRelationPermission(PermissionMixin):
+    """Permissions for Story Relations"""
+    def user_can_change(self, user):
+        from storybase_user.utils import is_admin
+
+        if not user.is_active:
+            return False
+
+        # TODO: Add additional logic as different relation types
+        # are defined
+        if self.relation_type == 'connected' and self.target.author == user:
+            # Users should be able to define the parent of connected
+            # stories for stories that they own
+            return True
+
+        if is_admin(user):
+            return True
+
+        return False
+
+    def user_can_add(self, user):
+        return self.user_can_change(user)
+
+    def user_can_delete(self, user):
+        return self.user_can_change(user)
+
+
+class StoryRelation(StoryRelationPermission, models.Model):
+    """Relationship between two stories"""
+    RELATION_TYPES = (
+        ('connected', u"Connected Story"),
+    )
+    DEFAULT_TYPE = 'connected'
+
+    relation_id = UUIDField(auto=True)
+    relation_type = models.CharField(max_length=25, choices=RELATION_TYPES,
+                                      default=DEFAULT_TYPE)
+    source = models.ForeignKey(Story, related_name="target")
+    target = models.ForeignKey(Story, related_name="source")
 
 
 class SectionPermission(PermissionMixin):
@@ -410,10 +479,12 @@ class Section(node_factory('SectionRelation'), TranslatedModel,
     # the first section in a linear story, or the central node
     # in a drill-down/"spider" structure.  Otherwise, False
     root = models.BooleanField(default=False)
-    weight = models.IntegerField(default=0)
+    weight = models.IntegerField(default=0, help_text=_("The ordering of top-level sections relative to each other. Sections with lower weight values are shown before ones with higher weight values in lists."))
     layout = models.ForeignKey('SectionLayout', null=True)
     help = models.ForeignKey(Help, null=True)
-    """The ordering of top-level sections relative to each other"""
+    template_section = models.ForeignKey('Section', blank=True, null=True,
+        related_name='template_for',
+        help_text=_("A section that provides default values for layout, asset types and help for this section."))
     assets = models.ManyToManyField(Asset, related_name='sections',
                                     blank=True, through='SectionAsset')
 
@@ -624,11 +695,15 @@ class StoryTemplate(TranslatedModel):
     )
     
     template_id = UUIDField(auto=True)
-    # The structure of the template comes from a story model instance
-    story = models.ForeignKey('Story', blank=True, null=True)
-    # The amount of time needed to create a story of this type
-    time_needed = models.CharField(max_length=140, choices=TIME_NEEDED_CHOICES,
-                                   blank=True)
+    story = models.ForeignKey('Story', blank=True, null=True,
+        help_text=_("The story that provides the structure for this "
+                    "template"))
+    time_needed = models.CharField(max_length=140, 
+        choices=TIME_NEEDED_CHOICES, blank=True,
+        help_text=_("The amount of time needed to create a story of this " 
+                    "type"))
+    slug = models.SlugField(unique=True, 
+        help_text=_("A human-readable unique identifier"))
 
     objects = StoryTemplateManager()
 
@@ -703,7 +778,7 @@ class Container(models.Model):
 # abstracts out the translation logic a bit.
 
 def create_story(title, structure_type=structure.DEFAULT_STRUCTURE,
-                 summary='', call_to_action='',
+                 summary='', call_to_action='', connected_prompt='',
                  language=settings.LANGUAGE_CODE, 
                  *args, **kwargs):
     """Convenience function for creating a Story

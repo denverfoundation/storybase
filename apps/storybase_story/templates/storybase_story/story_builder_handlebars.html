@@ -91,22 +91,46 @@ Handlebars.js templates for story builder Backbone application
 <textarea name="summary" id="summary-textarea" class="summary" placeholder='{{gettext message="Click to edit the summary"}}'>{{summary}}</textarea>
 </script>
 
+<script type="text/x-handlebars-template" id="story-info-edit-inline-template">
+{{#if prompt}}<p class="prompt">{{prompt}}</p>{{/if}}
+<h2 class="story-title editable" data-input-name="title">{{title}}</h2>
+<p class="byline editable" data-input-name="byline">{{byline}}</p>
+</script>
+
 <script type="text/x-handlebars-template" id="story-call-to-action-edit-template">
 <h2>{{gettext message="Call to Action"}}</h2>
 <form>
-    <textarea class="call-to-action" name="call_to_action" placeholder='{{gettext message="Click to edit the call to action"}}'>{{call_to_action}}</textarea>
+    <div class="section-layout side-by-side">
+        <div class="left">
+            <textarea class="call-to-action" name="call_to_action" placeholder='{{gettext message="Click to edit the call to action"}}'>{{call_to_action}}</textarea>
+        </div>
+        <div class="right">
+            <p>{{#blockgettext}}TODO: Add description of connected stories feature{{/blockgettext}}</p>
+            <div>
+                <input class="connected" name="connected" type="checkbox" {{#if connected}}checked="checked" {{/if}}/>
+                <label for="connected">{{gettext message="Make this a Connected Story"}}</label> 
+            </div>
+            <div>
+                <textarea class="connected-prompt" name="connected_prompt" placeholder="TODO: Add placeholder for connected stories prompt"{{#unless connected}} style="display: none"{{/unless}}>{{connected_prompt}}</textarea>
+            </div>
+        </div>
+    </div>
 </form>
 </script>
 
 <script type="text/x-handlebars-template" id="section-edit-template">
 <div class="section-controls">
+    {{#if showLayoutSelection}}
     <select name="layout" class="layout">
     {{#each layouts}}
     <option value="{{layout_id}}"{{#if selected}} selected="selected"{{/if}}>{{name}}</option>
     {{/each}}
     </select>
+    {{/if}}
 </div>
+{{#if showSectionTitles}}
 <h2 class="section-title editable" data-input-name="title">{{title}}</h2>
+{{/if}}
 <div class="section-edit-layout">{{{layout_template}}}</div>
 </script>
 
@@ -182,7 +206,7 @@ Handlebars.js templates for story builder Backbone application
 </script>
 
 <script type="text/x-handlebars-template" id="share-publish-template">
-<h2>Share Your Story</h2>
+<h2 class="title">Publish and Share Your Story</h2>
 <div class="status-unpublished" style="display: none">
     <p>{{#blockgettext}}Looks like you're all set. When you're ready click the "Publish My Story" button.{{/blockgettext}}</p>
     <div class="centered"><a class="btn publish" href="#">Publish My Story</a></div>

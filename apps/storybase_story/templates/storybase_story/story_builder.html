@@ -106,7 +106,7 @@
         storybase.globals.MAP_POINT_ZOOM_LEVEL = {{ storybase_map_point_zoom_level }};
         var storyTemplatesData = {{ story_template_json }};
         var helpData = {{ help_json }};
-        var options = {
+        var options = _.extend({
             assetTypes: {{ asset_types_json }},
             el: $('#builder'),
             dispatcher: storybase.builder.globals.dispatcher,
@@ -115,25 +115,53 @@
             organizations: {{ organizations_json }},
             places: {{ places_json }},
             projects: {{ projects_json }},
+            relatedStories: new storybase.collections.StoryRelations,
             storyTemplates: new storybase.builder.collections.StoryTemplates,
-            topics: {{ topics_json }} 
-        };
+            topics: {{ topics_json }}
+        }, {{ options_json }});
+        var relatedStoriesJSON = null;
+        var templateAssetsJSON = null;
+        var templateSectionsJSON = null;
         {% if story_json %}
         options.model = new storybase.models.Story({{ story_json }});
         {% endif %}
+        {% if related_stories_json %}
+        relatedStoriesJSON = {{ related_stories_json }};
+        {% endif %}
+        {% if template_story_json %}
+        options.templateStory = new storybase.models.Story({{ template_story_json }});
+        {% endif %}
+        {% if template_sections_json %}
+        templateSectionsJSON = {{ template_sections_json }};
+        {% endif %}
+        {% if template_assets_json %}
+        templateAssetsJSON = {{ template_assets_json }};
+        {% endif %}
+        if (relatedStoriesJSON) {
+          options.relatedStories.reset(relatedStoriesJSON.objects);
+        }
+        if (templateSectionsJSON) {
+          options.templateStory.sections.reset(templateSectionsJSON.objects);
+            if (templateAssetsJSON) {
+              options.templateStory.sections.each(function(section) {
+                  var parse = section.assets.parse;
+                  section.assets.reset(parse(templateAssetsJSON[section.id]));
+              });
+            }
+        }
         options.storyTemplates.reset(storyTemplatesData.objects);
         options.help.reset(helpData.objects);
         
-        storybase.builder.globals.APP_ROOT = storybase.utils.getRoot(["build"], window.location.pathname, 1);
+        storybase.builder.globals.APP_ROOT = storybase.utils.getRoot(["build", "build-connected"], window.location.pathname, 1);
         storybase.builder.router = new storybase.builder.routers.Router({
-            dispatcher: storybase.builder.globals.dispatcher,
-            hasStory: !_.isUndefined(options.model)
+          dispatcher: storybase.builder.globals.dispatcher,
+          hasStory: !_.isUndefined(options.model),
+          hasTemplate: !_.isUndefined(options.templateStory)
         });
         storybase.builder.app = new storybase.builder.views.AppView(
             options
         );
         Backbone.history.start({pushState: true, root: storybase.builder.globals.APP_ROOT});
-
     });
     </script>
     <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js?domready=1"></script>

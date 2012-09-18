@@ -49,6 +49,111 @@ describe('DataSets collection', function() {
   });
 });
 
+describe("Section model", function() {
+  describe("when new", function() {
+    it("should have an assets collection", function() {
+      this.section = new storybase.models.Section;
+      expect(this.section.assets).toBeDefined();
+      expect(this.section.assets.length).toEqual(0);
+    });
+  });
+
+  describe("when initialized with attributes", function() {
+    beforeEach(function() {
+      var storyId = "0b2b9e3f38e3422ea3899ee66d1e334b";
+      this.fixture = this.fixtures.Sections.getList[storyId].objects[0];
+      this.section = new storybase.models.Section(this.fixture);
+    });
+
+    it('should have the asset collection URL initialized', function() {
+      expect(this.section.assets.url).toEqual(this.section.url() + 'assets/');
+    });
+  });
+});
+
+describe("Sections collection", function() {
+  describe("fetchAssets method", function() {
+    beforeEach(function() {
+      this.server = sinon.fakeServer.create();
+      this.sectionsFixture = this.fixtures.Sections.getList["6c8bfeaa6bb145e791b410e3ca5e9053"];
+      this.collection = new storybase.collections.Sections;
+      this.collection.url = "/api/0.1/stories/6c8bfeaa6bb145e791b410e3ca5e9053/sections/";
+      this.collection.reset(this.sectionsFixture.objects);
+    });
+
+    afterEach(function() {
+      this.server.restore();
+    });
+    
+    describe("when the server returns a valid response", function() {
+      beforeEach(function() {
+        this.server.respondWith(
+          "GET",
+          this.collection.url,
+          this.validResponse(this.sectionsFixture)
+        );
+        _.each(this.sectionsFixture.objects, function(section) {
+          var sectionId = section["section_id"]; 
+          var url = this.collection.url + sectionId + "/assets/";
+          this.server.respondWith(
+            "GET",
+            url, 
+            this.validResponse(this.fixtures.SectionAssets.getList[sectionId])
+          );
+        }, this);
+      });
+
+      it("should populate each section's assets collection", function() {
+        var spec = this;
+        var checkAssertions = function() {
+          spec.collection.each(function(section) {
+            var fixture = spec.fixtures.SectionAssets.getList[section.id];
+            expect(section.assets.length).toEqual(fixture.objects.length);
+            _.each(fixture.objects, function(assetJSON) {
+              var asset = section.assets.get(assetJSON["asset"]["asset_id"]);
+              expect(asset).toBeDefined();
+            });
+          });
+        };
+        var callback = sinon.spy(checkAssertions);
+        this.collection.fetchAssets({
+          success: callback 
+        });
+        this.server.respond();
+        expect(callback.called).toBe(true);
+      });
+    });
+
+    describe("when the server doesn't respond", function() {
+      it("should execute an error callback", function() {
+        var errorCallback = sinon.spy();
+        var successCallback = sinon.spy();
+        this.collection.fetchAssets({
+          success: successCallback,
+          error: errorCallback
+        });
+        this.server.respond();
+        expect(errorCallback.called).toBe(true);
+        expect(successCallback.called).toBe(false);
+      });
+
+      it("should have empty asset collections", function() {
+        var spec = this;
+        var errorCallback = sinon.spy(function() {
+          spec.collection.each(function(section) {
+            expect(section.assets.length).toEqual(0);
+          });
+        });
+        this.collection.fetchAssets({
+          error: errorCallback
+        });
+        this.server.respond();
+        expect(errorCallback.called).toBe(true);
+      });
+    });
+  });
+});
+
 describe('Story model', function() {
   beforeEach(function() {
     this.server = sinon.fakeServer.create();
@@ -66,9 +171,49 @@ describe('Story model', function() {
   });
 
   describe('when new', function() {
+    beforeEach(function() {
+      this.story = new storybase.models.Story;
+    });
+
     it("doesn't have an id in the url", function() {
+      expect(this.story.url()).toEqual('/api/0.1/stories/');
+    });
+
+    it("has a sections property", function() {
+      expect(this.story.sections).toBeDefined();
+      expect(this.story.sections.length).toEqual(0);
+    });
+  });
+
+  describe('fromTemplate method', function() {
+    it("copies selected attributes from another story", function() {
+      var templateFixture = this.fixtures.Stories.getDetail["0b2b9e3f38e3422ea3899ee66d1e334b"];
+      var templateSectionsFixture = this.fixtures.Sections.getList[templateFixture['story_id']];
+      var templateStory = new storybase.models.Story(templateFixture);
       var story = new storybase.models.Story;
-      expect(story.url()).toEqual('/api/0.1/stories/');
+      var storyProps = ['structure_type', 'summary', 'call_to_action'];
+      var sectionProps = ['title', 'layout', 'root', 'layout_template', 'help'];
+      templateStory.sections.reset(templateSectionsFixture.objects);
+
+      expect(story.id == templateStory.id).toBe(false);
+      story.fromTemplate(templateStory);
+      _.each(storyProps, function(prop) {
+        expect(story.get(prop)).toEqual(templateStory.get(prop));
+      });
+      expect(story.get('template_story')).toEqual(templateStory.get('story_id'));
+      expect(story.sections.length).toBeTruthy();
+      expect(story.sections.length).toEqual(templateStory.sections.length);
+      templateStory.sections.each(function(section) {
+        var sectionCopy = story.sections.where({
+          title: section.get('title')
+        })[0];
+        expect(sectionCopy).toBeDefined();
+        _.each(sectionProps, function(prop) {
+          expect(sectionCopy.get(prop)).toEqual(section.get(prop));
+        });
+        expect(sectionCopy.get('template_section')).toEqual(section.get('section_id'));
+        expect(sectionCopy.get('weight')).toEqual(section.get('weight') - 1);
+      });
     });
   });
 });
@@ -181,6 +326,29 @@ describe('Tag model', function() {
         this.collection.add(this.model);
         expect(this.model.url()).toEqual(this.collection.url);
       });
+    });
+  });
+});
+
+describe('StoryRelations collection', function() {
+  describe('A collection associated with a story', function() {
+    beforeEach(function() {
+      // Mock the story model's URL property
+      var Story = Backbone.Model.extend({
+        url: '/api/0.1/stories/78b26070d5d211e19b230800200c9a66/'
+      });
+      this.story = new Story({
+        id: '78b26070d5d211e19b230800200c9a66'
+      });
+      this.collection = new storybase.collections.StoryRelations([], {
+        story: this.story
+      });
+    });
+
+    it('should have a URL of "/<story_url>/related/"', function() {
+      // Make sure our mock URL is sane
+      expect(_.result(this.story, 'url')).toEqual('/api/0.1/stories/' + this.story.id + '/');
+      expect(this.collection.url()).toEqual(_.result(this.story, 'url') + 'related/');
     });
   });
 });

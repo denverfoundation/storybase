@@ -56,7 +56,7 @@
     <div id="app">
         <header>
           <h1 class="title">{{ story.title }}</h1>
-          <p>{% trans "By" %} <span class="byline">{{ story.byline }}</span></p>
+          <p>{% trans "By" %} <span class="byline">{% if story.byline %}{{ story.byline }}{% else %}{{ story.contributor_name }}{% endif %}</span></p>
         </header>
 
         <div id="body">
@@ -73,10 +73,14 @@
           </section>
           {% endfor %}
 
-          {% if story.call_to_action %} 
+          {% if story.call_to_action or story.connected %} 
           <section id="call-to-action" class="section call-to-action" style="display:none;">
 	        <h2>{% trans "How Can You Help?" %}</h2>
 	        {{ story.call_to_action|safe }}
+            {% if story.connected %}
+            <p>{{ story.connected_prompt|linebreaks }}</p>
+            <p><a href="{% url connected_story_builder source_story_id=story.story_id %}">{% trans "Click here to contribute to this story" %}</a></p>
+            {% endif %}
 	      </section>
 	      {% endif %}
         </div>
