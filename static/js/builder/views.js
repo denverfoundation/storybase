@@ -367,15 +367,19 @@ storybase.builder.views.ClickableItemsView = Backbone.View.extend({
       id: itemOptions.id,
       class: this.getItemClass(itemOptions),
       title: itemOptions.title,
+      text: itemOptions.text,
       href: this.getItemHref(itemOptions)
     }));
   },
+
+  extraRender: function() {},
 
   render: function() {
     this.$el.empty();
     _.each(this.getVisibleItems(), function(item) {
       this.renderItem(item);
     }, this);
+    this.extraRender();
     this.delegateEvents();
 
     return this;
@@ -496,7 +500,8 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.WorkflowNavVi
     if (this.options.visibleSteps.build) {
       items.push({
         id: 'build',
-        title: gettext('Build'),
+        title: gettext("Organize your thoughts, tell your story"),
+        text: gettext("Build"),
         visible: true,
         selected: false,
         path: ''
@@ -505,7 +510,8 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.WorkflowNavVi
     if (this.options.visibleSteps.data) {
       items.push({
         id: 'data',
-        title: gettext('Add Data'),
+        title: gettext("Add raw data for charts, tables, maps and other visualizations that you used in your story"),
+        text: gettext('Add Data'),
         visible: 'isStorySaved',
         selected: false,
         path: 'data/'
@@ -514,7 +520,8 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.WorkflowNavVi
     if (this.options.visibleSteps.tag) {
       items.push({
         id: 'tag',
-        title: gettext('Tag'),
+        title: gettext("Help others discover your story"),
+        text: gettext('Tag'),
         visible: 'isStorySaved',
         selected: false,
         path: 'tag/',
@@ -523,7 +530,8 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.WorkflowNavVi
     if (this.options.visibleSteps.review) {
       items.push({
         id: 'review',
-        title: gettext('Review'),
+        title: gettext("Make sure your story is good to go"),
+        text: gettext('Review'),
         visible: 'isStorySaved',
         selected: false,
         path: 'review/'
@@ -532,7 +540,8 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.WorkflowNavVi
     if (this.options.visibleSteps.publish) {
       items.push({
         id: 'publish',
-        title: gettext('Publish/Share'),
+        title: gettext("Publish your story and share it with others"),
+        text: gettext('Publish/Share'),
         visible: 'isStorySaved',
         selected: false,
         path: 'publish/'
@@ -565,6 +574,14 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.WorkflowNavVi
     }
     this.updateSelected();
     this.render();
+  },
+
+  extraRender: function() {
+    if (jQuery().tooltipster) {
+      this.$('.tooltip').tooltipster({
+        position: 'bottom'
+      });
+    }
   }
 });
 
@@ -581,31 +598,36 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
   items: [
     {
       id: 'help',
-      title: gettext('Help'),
+      title: gettext("Get help on the current story section"),
+      text: gettext('Help'),
       callback: 'toggleHelp', 
       visible: true 
     },
     {
       id: 'assets',
-      title: gettext('Assets'),
+      title: gettext("Show a list of assets you removed from your story"),
+      text: gettext('Assets'),
       callback: 'toggleAssetList',
       visible: false
     },
     {
       id: 'preview',
-      title: gettext('Preview'),
+      title: gettext("View your story in the story viewer (opens in a new window)"),
+      text: gettext('Preview'),
       callback: 'previewStory',
       visible: false
     },
     {
       id: 'start-over',
-      title: gettext('Start Over'),
+      title: gettext("Leave your story in its current state and start a new story, with a new template"),
+      text: gettext('Start Over'),
       path: '/build/',
       visible: false 
     },
     {
       id: 'exit',
-      title: gettext('Exit'),
+      title: gettext("Leave the story builder and go to the home page"),
+      text: gettext('Exit'),
       path: '/',
       visible: true 
     }
@@ -674,6 +696,14 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
     this.activeStep = step;
     this.updateVisible();
     this.render();
+  },
+
+  extraRender: function() {
+    if (jQuery().tooltipster) {
+      this.$('.tooltip').tooltipster({
+        position: 'bottom'
+      });
+    }
   }
 });
 
@@ -815,7 +845,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     if (this.options.visibleSteps.data) {
       navViewOptions.items.push({
         id: 'workflow-nav-data-fwd',
-        title: gettext("Add Data to Your Story"),
+        text: gettext("Add Data to Your Story"),
         path: 'data/',
         enabled: isNew 
       });
@@ -823,7 +853,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     else if (this.options.visibleSteps.publish) {
       navViewOptions.items.push({
         id: 'workflow-nav-publish-fwd',
-        title: gettext("Publish My Story"),
+        text: gettext("Publish My Story"),
         path: 'publish/',
         enabled: isNew 
       })
@@ -2686,12 +2716,12 @@ storybase.builder.views.DataView = Backbone.View.extend(
         items: [
           {
             id: 'workflow-nav-build-back',
-            title: gettext("Continue Writing Story"),
+            text: gettext("Continue Writing Story"),
             path: ''
           },
           {
             id: 'workflow-nav-tag-fwd',
-            title: gettext("Tag"),
+            text: gettext("Tag"),
             path: 'tag/'
           }
         ]
@@ -2847,12 +2877,12 @@ storybase.builder.views.ReviewView = Backbone.View.extend({
       items: [
         {
           id: 'workflow-nav-tag-back',
-          title: gettext("Back to Tag"),
+          text: gettext("Back to Tag"),
           path: 'tag/'
         },
         {
           id: 'workflow-nav-publish-fwd',
-          title: gettext("Publish My Story"),
+          text: gettext("Publish My Story"),
           path: 'publish/',
           enabled: this.hasPreviewed,
           validate: this.hasPreviewed
@@ -3094,12 +3124,12 @@ storybase.builder.views.TaxonomyView = Backbone.View.extend({
       items: [
         {
           id: 'workflow-nav-data-back',
-          title: gettext("Back to Add Data"),
+          text: gettext("Back to Add Data"),
           path: 'data/'
         },
         {
           id: 'workflow-nav-review-fwd',
-          title: gettext("Review"),
+          text: gettext("Review"),
           path: 'review/'
         }
       ]
@@ -3539,20 +3569,20 @@ storybase.builder.views.PublishView = Backbone.View.extend({
     if (this.options.visibleSteps.review) {
       navViewOptions.items.push({
         id: 'workflow-nav-build-back',
-        title: gettext("Back to Review"),
+        text: gettext("Back to Review"),
         path: 'review/'
       });
     }
     else {
       navViewOptions.items.push({
         id: 'workflow-nav-review-back',
-        title: gettext("Continue Writing Story"),
+        text: gettext("Continue Writing Story"),
         path: ''
       });
     }
     navViewOptions.items.push({
       id: 'workflow-nav-build-another-fwd',
-      title: gettext("Tell Another Story"),
+      text: gettext("Tell Another Story"),
       path: '/build/',
       route: false
     });
