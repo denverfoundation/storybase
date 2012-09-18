@@ -7,28 +7,34 @@
 {% endblock %}
 
 {% block base_content %}
-<div id="main" class="inner">
+
 	<div class="shell">
-		<div class="content-page twocol">
+		<div class="content-page generic container_12">
 			<h3><span>{% block body_title %}{% endblock%}</span></h3>
-			<section class="sidebar">
+			
+			<section class="sidebar grid_2 alpha">
 				{% block sidebar %}{% endblock %}
 			</section>
-			<section class="content-block">
-				{% block twocol-content %}{% endblock %}
-			</section>
-			<section class="below-content">
-				<div class="col left">
-					{% block bottom-left-col %}
-					{% endblock %}
-				</div>
-				<div class="col right">
-					{% block bottom-right-col %}
-					{% endblock %}
-				</div>
-				<div class="cl">&nbsp;</div>
-			</section>
+			
+			<div class="grid_10 omega">
+				
+				<section class="content-block">
+					{% block twocol-content %}{% endblock %}
+				</section>
+				
+				<section class="below-content">
+					<div class="grid_5 alpha">
+						{% block bottom-left-col %}
+						{% endblock %}
+					</div>
+					<div class="grid_5 omega">
+						{% block bottom-right-col %}
+						{% endblock %}
+					</div>
+					<div class="cl">&nbsp;</div>
+				</section>
+				
+			</div>
 		</div>
 	</div>
-</div>
 {% endblock %}

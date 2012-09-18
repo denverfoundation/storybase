@@ -149,13 +149,12 @@ Handlebars templates for rendering Backbone views.
 {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/select2/select2.css">{% endaddtoblock %}
 {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/explorer.css">{% endaddtoblock %}
 
-<div id="main">
-	<div class="shell">
 
-		<h3><span>{{ storybase_explore_title }}</span></h3>
-		<div id="explorer"></div>
-	</div><!-- /.shell -->
-</div><!-- /#main -->
+<div class="shell">
+
+	<h3><span>{{ storybase_explore_title }}</span></h3>
+	<div id="explorer"></div>
+</div><!-- /.shell -->
 
 
 {% addtoblock "js" %}
