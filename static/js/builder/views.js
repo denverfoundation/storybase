@@ -850,6 +850,42 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   onShow: function() {
     // Recalculate the width of the section list view.
     this.sectionListView.setWidth();
+
+    guiders.createGuider({
+      attachTo: '#toggle-section-list',
+      buttons: [{name: gettext("Next")}],
+      position: 3,
+      id: 'section-list-guider',
+      title: gettext("Section List"),
+      description: gettext("This bar shows a list of all the sections in the story. You can use it to select which section you want to edit, to add sections, and to remove sections"),
+      next: 'section-thumbnail-guider'
+    });
+    guiders.createGuider({
+      attachTo: '.section-thumbnail',
+      buttons: [{name: gettext("Next")}],
+      position: 2,
+      id: 'section-thumbnail-guider',
+      title: gettext("Select a Section"),
+      description: gettext("Clicking on one of the sections will let you edit that section"),
+      next: 'workflow-step-guider'
+    });
+    guiders.createGuider({
+      attachTo: '.workflow-step #build',
+      buttons: [{name: gettext("Next")}],
+      position: 6,
+      id: 'workflow-step-guider',
+      title: gettext("Workflow Step"),
+      description: gettext("Clicking on one of these tabs lets you switch between the different steps in the story building process"),
+      next: 'help-guider'
+    });
+    guiders.createGuider({
+      attachTo: '.tools .help',
+      position: 6,
+      id: 'help-guider',
+      title: gettext("Help"),
+      description: gettext("Clicking the help button shows you help for the story section you're currently editing")
+    });
+    guiders.show('section-list-guider');
   },
 
   /**
