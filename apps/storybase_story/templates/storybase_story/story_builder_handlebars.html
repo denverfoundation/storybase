@@ -15,12 +15,12 @@ Handlebars.js templates for story builder Backbone application
 </div>
 </script>
 
-<script type="text/x-handlebars-template" id="menu-item-template">
+<script type="text/x-handlebars-template" id="clickable-item-template">
 <li><a class="{{id}}" href="{{href}}">{{title}}</a></li>
 </script>
 
 <script type="text/x-handlebars-template" id="workflow-item-template">
-<li class="{{#if active}}active{{/if}}"><a class="{{id}}" href="{{storyId}}/{{path}}">{{title}}</a></li>
+    <li class="{{class}}"><a id="{{id}}" class="{{class}}" href="{{href}}">{{title}}</a></li>
 </script>
 
 <script type="text/x-handlebars-template" id="workflow-nav-item-template">
@@ -86,8 +86,8 @@ Handlebars.js templates for story builder Backbone application
 </script>
 
 <script type="text/x-handlebars-template" id="story-info-edit-template">
-<h2 class="title" data-input-name="title">{{title}}</h2>
-<p class="byline" data-input-name="byline">{{byline}}</p>
+<h2 class="story-title editable" data-input-name="title">{{title}}</h2>
+<p class="byline editable" data-input-name="byline">{{byline}}</p>
 <textarea name="summary" id="summary-textarea" class="summary" placeholder='{{gettext message="Click to edit the summary"}}'>{{summary}}</textarea>
 </script>
 
@@ -106,7 +106,7 @@ Handlebars.js templates for story builder Backbone application
     {{/each}}
     </select>
 </div>
-<h2 class="section-title" data-input-name="title">{{title}}</h2>
+<h2 class="section-title editable" data-input-name="title">{{title}}</h2>
 <div class="section-edit-layout">{{{layout_template}}}</div>
 </script>
 
