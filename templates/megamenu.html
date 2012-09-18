@@ -135,16 +135,19 @@
 {% if user.is_authenticated %}
 <div class="megamenu my-account">
 	<ul>
-		<li><a href="#">MY ACCOUNT<em></em></a>
+        <li><a href="{% url account_summary %}">{% trans "My Account"|upper %}</a>
 			<div class="dd onecol">
 				<div class="dd-col col1">
 					<ul>
 						<li><a href="{% url account_summary %}">{% trans "My Dashboard" %}</a></li>
-						<li><a href="#">{% trans "Communication Preferences" %}</a></li>
-						<li><a href="#">{% trans "My Password" %}</a></li>
-						<li><a href="#">{% trans "My Bio" %}</a></li>
+                        <li><a href="{% url account_notifications %}">{% trans "Communication Preferences" %}</a></li>
+                        <li><a href="{% url account_password %}">{% trans "My Password" %}</a></li>
+                        {# TODO: Enable these when/if these sections are implemented #}
+                        {% comment %}
+                        <li><a href="#">{% trans "My Bio" %}</a></li>
 						<li><a href="#">{% trans "My Organization" %}</a></li>
-						<li><a href="#">{% trans "My Stories" %}</a></li>
+                        {% endcomment %} 
+                        <li><a href="{% url account_stories %}">{% trans "My Stories" %}</a></li>
 						<li style="margin-top:20px"><a href="{% url auth_logout %}">{% trans "Sign Out" %}</a></li>
 					</ul>
 				</div>
