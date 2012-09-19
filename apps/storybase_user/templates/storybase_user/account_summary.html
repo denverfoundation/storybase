@@ -4,9 +4,9 @@
 
 {% block head_title %}{% trans "Account Information" %}{% endblock %}
 
-{% block primary_content %}
-<h1>{% trans "Account information for" %} {{ user.email }}</h1>
+{% block body_title %}{% trans "Account information for" %} {{ user.email }}{% endblock %}
 
+{% block twocol-content %}
 {% include "messages.html" %}
 
 <h2>{% trans "Email Address" %}</h2>

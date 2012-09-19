@@ -58,6 +58,25 @@
   text-align: center;
 }
 
+.editable {
+  border: solid 1px #20C6FD;
+  padding: 0.5%;
+}
+
+.editable-important {
+  border: solid 1px #20C6FD !important;
+  padding: 0.5% !important;
+}
+
+.editable:hover {
+  border-color: #FE9703;
+}
+
+.editable-important-hover {
+  border-color: #FE9703 !important;
+}
+
+
 /* Help Modal */
 
 #simplemodal-container {
@@ -99,10 +118,6 @@
 .wysihtml5-toolbar {
   position: relative;
   padding: 0 0 20px 0;
-}
-
-.wysihtml5-sandbox {
-  border: none !important;
 }
 
 [~"data-wysihtml5-dialog"] {
@@ -167,11 +182,11 @@
   right: 0;
 }
 
-.workflow .active {
+.workflow-step .selected {
   background-color: #fff;
 }
 
-.workflow .active a {
+.workflow-step .selected a {
   color: #000 !important;
   font-style: italic;
 }
@@ -214,7 +229,22 @@
   padding: 1%;
 }
 
-/* Story Builder View */
+// Story Builder View
+
+// Mixins
+
+.vertical-space {
+  margin-top: 0.5%;
+}
+
+.vertical-space-important {
+  margin-top: 0.5% !important;
+}
+
+.full-width {
+  width: 100%;
+}
+
 
 .builder {
   position: relative;
@@ -283,19 +313,56 @@
 
 /* Story information editor */
 
+.story-title {
+  .full-width;
+  .vertical-space;
+}
+
+.byline {
+  .vertical-space;
+  .full-width;
+}
+
+.byline input {
+  width: 98% !important;
+}
+
 .summary {
-  width: 100%;
+  .full-width;
   min-height: 400px;
 }
 
-/* Call to action editor */
+.edit-story-info {
+  .wysihtml5-sandbox {
+    .editable-important;
+    .vertical-space-important;
+  }
+
+  .wysihtml5-sandbox:hover {
+    .editable-important-hover;
+  }
+}
+
+// Call to action editor
+
+.edit-call-to-action {
+  .wysihtml5-sandbox {
+    .editable-important;
+    .vertical-space-important;
+  }
+
+  .wysihtml5-sandbox:hover {
+    .editable-important-hover;
+  }
+}
 
 .call-to-action {
   width: 100%;
-  height: 60%;
+  height: 250px;
 }
 
 /* Section Editor */
+
 
 .edit-section {
   position: relative;
@@ -304,12 +371,22 @@
   margin-right: auto;
   height: 70%;
   padding: 2%;
+
+  .section-title {
+    margin-top: 15px;
+    width: 930px;
+  }
 }
 
 .section-edit-layout {
   position: relative;
   height: 90%;
+  .vertical-space;
   padding-bottom: 2%;
+
+  .wysihtml5-sandbox {
+    border: none !important;
+  }
 }
 
 

@@ -19,7 +19,7 @@
 .section-layout.side-by-side .left,
 .section-layout.side-by-side .right {
   height: 489px;
-  width: 48%;
+  width: 49%;
   float: left;
 }
 .section-layout.side-by-side .left {
@@ -36,6 +36,7 @@
   width: 100%;
   margin: 2 0%;
 }
-.section-layout img {
+.section-layout img,
+.section-layout iframe {
   max-width: 100%;
 }

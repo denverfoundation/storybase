@@ -30,6 +30,69 @@ Namespace('storybase.utils', {
         }
       }
     });
+  },
+
+  /**
+   * Return the root of a URL path.
+   *
+   * This is used to separate the portion of the array that represents
+   * the base of a URL path from the portions that represent parameters.
+   *
+   * This is needed because a variable number of path elements might proceed
+   * the part of the URL that represents the base, for example,
+   * internatialization path prefixes.
+   * 
+   * This function is useful for providing a value for the 'root' argument
+   * to a call to Backbone.history.start().
+   *
+   * @param {String[]} bases An array of strings that will be used to
+   *                         separate the root from the rest of the path.
+   * @param {String} [path=window.location.pathname] Path to split, defaults
+   *   to the current window's path.
+   * @param {int} [extra=0] Extra path parts to include after the matching
+   *                        part in the final path.
+   *
+   * @example
+   * getRoot(['build'], '/en/build/f81eca996d754a549ae48cf8ef9622dc/');
+   * // Returns '/en/build/'
+   * getRoot(['build'], '/en/build/f81eca996d754a549ae48cf8ef9622dc/', 1);
+   * // Returns '/en/build/f81eca996d754a549ae48cf8ef9622dc/'
+   *
+   */
+  getRoot: function(bases, path, extra) {
+    var pathParts;
+    var len = bases.length;
+    var i;
+    var pos;
+    var extraPos;
+    if (_.isUndefined(path)) {
+      path = window.location.pathname;
+    }
+    if (_.isUndefined(extra)) {
+      extra = 0;
+    }
+    // Split the path into chunks.  Note that if there are a leading and
+    // trailing '/', the first and last array elements will be empty
+    // strings
+    pathParts = path.split('/');
+    for (i = len - 1, pos = -1; pos === -1 && i >= 0; i--) {
+      pos = _.lastIndexOf(pathParts, bases[i]);
+    }
+
+    if (pos === -1) {
+      // None of the base search strings were found.  This
+      // shouldn't happen
+      throw new Error("Base not found in location parts");
+    }
+
+    // Check if there are extra path chunks after the matching chunk
+    // and include them
+    extraPos = pos + extra;
+    if (extraPos + 1 <= pathParts.length && pathParts[extraPos] != "") {
+      pos = extraPos;
+    }
+
+    return _.first(pathParts, pos + 1).join('/') + '/'; 
   }
 });
 

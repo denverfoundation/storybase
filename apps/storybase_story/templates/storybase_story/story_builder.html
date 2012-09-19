@@ -69,6 +69,7 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="{{ STATIC_URL }}js/libs/jquery-1.7.2.min.js"><\/script>')</script>
 
+    <script type="text/javascript" src="{{ STATIC_URL}}js/plugins.js"></script>	    
     <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
     <script src="{{ STATIC_URL }}js/libs/Namespace.js"></script>
     <script src="{{ STATIC_URL }}js/libs/underscore-min.js"></script>
@@ -101,12 +102,6 @@
         storybase.globals.MAP_CENTER = {{ storybase_map_center }};
         storybase.globals.MAP_ZOOM_LEVEL = {{ storybase_map_zoom_level }};
         storybase.globals.MAP_POINT_ZOOM_LEVEL = {{ storybase_map_point_zoom_level }};
-        var getRoot = function() {
-          var base = '/build/';
-          var pathParts = window.location.pathname.split('/');
-          // If the URL contains a language, add it to the root
-          return root = (pathParts[1] != 'build' ? '/' + pathParts[1] : '') + base; 
-        };
         var storyTemplatesData = {{ story_template_json }};
         var helpData = {{ help_json }};
         var options = {
@@ -127,9 +122,10 @@
         options.storyTemplates.reset(storyTemplatesData.objects);
         options.help.reset(helpData.objects);
         
-        storybase.builder.globals.APP_ROOT = getRoot();
+        storybase.builder.globals.APP_ROOT = storybase.utils.getRoot(["build"], window.location.pathname, 1);
         storybase.builder.router = new storybase.builder.routers.Router({
-            dispatcher: storybase.builder.globals.dispatcher
+            dispatcher: storybase.builder.globals.dispatcher,
+            hasStory: !_.isUndefined(options.model)
         });
         storybase.builder.app = new storybase.builder.views.AppView(
             options
