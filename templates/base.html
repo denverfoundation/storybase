@@ -92,9 +92,11 @@
 		{% block above_content %}
 		{% endblock %}    
 		<div id="main" role="main">
+			<div class="shell">
 			{% placeholder base_content %}
 			{% block base_content%}
 			{% endblock %}
+			</div>
 		</div>
 		{% block below_content %}{% endblock %}
 	</div> <!--! end of #container -->
