@@ -37,10 +37,11 @@ body {
 
 }
 
-h2 {  font-size:48px; color:#4a4a4a; text-align:center;  font-family: 'Museo300Regular'; font-weight:normal; }
-h3 { font-size:36px; color:#5a5a5a; text-align:center;  font-family: 'Museo300Regular'; font-weight:normal;   }
-h4 { font-size:30px; color:#5a5a5a;  text-align:center;  font-family: 'Museo300Regular'; font-weight:normal;   }
-h5 { font-size:22px; color:#20c6fd;  font-family: 'MuseoSlab500Regular'; font-weight:normal;}
+h1 { font-size:48px; color:#4a4a4a; text-align:center;  font-family: 'Museo300Regular'; font-weight:normal; }
+h2 { font-size:36px; color:#4a4a4a; text-align:center;  font-family: 'Museo300Regular'; font-weight:normal; }
+h3 { font-size:30px; color:#5a5a5a; text-align:center;  font-family: 'Museo300Regular'; font-weight:normal;   }
+h4 { font-size:22px; color:#5a5a5a;  text-align:center;  font-family: 'Museo300Regular'; font-weight:normal;   }
+h5 { font-size:20px; color:#20c6fd;  font-family: 'MuseoSlab500Regular'; font-weight:normal;}
 
 a { color: #0252aa; text-decoration: none; cursor: pointer; }
 a:hover { text-decoration: underline; }
@@ -141,11 +142,12 @@ textarea { overflow: auto; }
 .images a span.title em { font-size:12px; font-style:normal; color:#20c6fd;  font-family: 'MuseoSlab500Regular'; padding:7px 14px 12px 14px; display:block;  }
 
 #main ul { list-style:none;  }
+#main .title h2 { font-size:48px; }
 #main .title { padding-top:25px; padding-bottom:55px;  }
 #main .title p { font-size:18px; color:#666666; text-align:center; font-family:Georgia, 'Times New Roman', Serif;   }
-#main .title p a { color:#fe9703;   }
-#main h3 { background:url('images/h3-line.png') repeat-x 0 8px; margin-bottom:10px;  }
-#main h3 span { background:#fff; padding-left:16px; padding-right:16px;   }
+#main .title p a { color:#fe9703; }
+#main h2 { background:url('images/h3-line.png') repeat-x 0 8px; margin-bottom:10px;  }
+#main h2 span { background:#fff; padding-left:16px; padding-right:16px;   }
 
 #main .main-slider {  }
 
@@ -362,14 +364,14 @@ a.button.right {
 	background:url('images/h3-line.png') repeat-x;
 	margin-bottom:20px;
 }
-.content-page.object-detail h2,
+
 .content-page.object-detail h3,
 .content-page.object-detail h4 {
 	text-align:left;
 	font-family: 'Museo300Regular';
 	font-weight:normal;
 }
-.content-page.object-detail h2 { font-size:26px; color:#444; }
+/*.content-page.object-detail h2 { font-size:26px; color:#444; }*/
 .content-page.object-detail .object-featured-asset,
 .content-page.object-detail .object-summary,
 .content-page.object-detail .related-stories,
