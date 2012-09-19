@@ -809,3 +809,12 @@ def create_section(title, story, layout=None,
                                      language=language)
     translation.save()
     return obj
+
+def create_story_template(title, story, tag_line='', description='',
+        language=settings.LANGUAGE_CODE, *args, **kwargs):
+    obj = StoryTemplate(story=story, *args, **kwargs)
+    obj.save()
+    translation = StoryTemplateTranslation(story_template=obj,
+        title=title, tag_line=tag_line, description=description)
+    translation.save()
+    return obj
