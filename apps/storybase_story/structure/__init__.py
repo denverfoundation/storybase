@@ -133,7 +133,8 @@ class BaseStructure(object):
                sections[0]['previous_section_id'] = 'summary'
             sections.insert(0, summary_section)
 
-        if include_call_to_action and self.story.call_to_action:
+        if (include_call_to_action and 
+                (self.story.call_to_action or self.story.connected)):
             call_to_action_section = {
                 'section_id': 'call-to-action',
                 'title': _("How Can You Help?"),
@@ -144,6 +145,17 @@ class BaseStructure(object):
             if len(sections):
                 sections[-1]['next_section_id'] = 'call-to-action'
             sections.append(call_to_action_section)
+
+            # TODO: Include connected stories in list
+            if self.story.connected and self.story.connected_stories():
+                connected_stories_section = {
+                    'section_id': 'connected-stories',
+                    'title': _("Connected Stories"),
+                    'children': [],
+                    'previous_section_id': sections[-1]['section_id'],
+                }
+                sections[-1]['next_section_id'] = 'connected-stories'
+                sections.append(connected_stories_section)
 
         return mark_safe(simplejson.dumps(sections))
 
@@ -160,6 +172,10 @@ class BaseStructure(object):
     def summary_toc_link(self):
         """Return a link to the summary section in the viewer"""
         return "<a href=\"#sections/summary\">%s</a>" % _("Summary")
+
+    def connected_toc_link(self):
+        """Return a link to the connected stories section in the viewer"""
+        return "<a href=\"#sections/connected-stories\">%s</a>" % _("Connected Stories")
 
     def render_toc(self, format='html'):
         """Return a rendered table of contents for a story"""
@@ -234,8 +250,10 @@ class LinearStructure(BaseStructure):
         for root_section in self.story.sections.filter(root=True) \
                                                .order_by('weight'):
             output.append(render_toc_section(root_section))
-        if self.story.call_to_action:
+        if self.story.call_to_action or self.story.connected:
             output.append("<li>%s</li>" % self.call_to_action_toc_link())
+        if self.story.connected and self.story.connected_stories:
+            output.append("<li>%s</li>" % self.connected_toc_link())
         output.append("</ul>")
         return mark_safe(u'\n'.join(output))
 

@@ -1,0 +1,4 @@
+{% load story i18n %}
+<h2>{{ story.title }}</h2>
+<p class="byline">{% trans "By" %} {{ story.byline|default:story.contributor_name }}</p>
+{% connected_story_section story.sections.all.0 %}

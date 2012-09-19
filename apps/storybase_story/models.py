@@ -338,10 +338,13 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
     def natural_key(self):
         return (self.story_id,)
 
-    def connected_stories(self):
+    def connected_stories(self, published_only=True):
         """Get a queryset of connected stories"""
         # Would this be better implemented as a related manager?
-        return self.related_stories.filter(source__relation_type='connected')
+        qs = self.related_stories.filter(source__relation_type='connected')
+        if published_only:
+            qs = qs.filter(status='published')
+        return qs
 
     def connected_to_stories(self):
         """Get a queryset of stories that this story is connected to"""
@@ -537,10 +540,10 @@ class Section(node_factory('SectionRelation'), TranslatedModel,
         """Get the previous section"""
         return self.story.structure.get_previous_section(self)
 
-    def render(self, format='html'):
+    def render(self, format='html', show_title=True):
         """Render a representation of the section structure"""
         try:
-            return getattr(self, "render_" + format).__call__()
+            return getattr(self, "render_" + format).__call__(show_title)
         except AttributeError:
             return self.__unicode__()
 
@@ -565,7 +568,7 @@ class Section(node_factory('SectionRelation'), TranslatedModel,
         
         return simple
 
-    def render_html(self):
+    def render_html(self, show_title=True):
         """Render a HTML representation of the section structure"""
         default_template = "storybase_story/sectionlayouts/weighted.html"
         assets = self.sectionasset_set.order_by('weight')
@@ -573,12 +576,13 @@ class Section(node_factory('SectionRelation'), TranslatedModel,
         context = {
             'assets': assets,
         }
-        output.append("<h2 class='title'>%s</h2>" % self.title)
+        if show_title:
+            output.append("<h2 class='title'>%s</h2>" % self.title)
         # If there isn't a layout specified, default to the one that just
         # orders the section's assets by their weight.
         template_filename = (self.layout.get_template_filename()
             if self.layout is not None else default_template)
-                
+        
         output.append(render_to_string(template_filename, context))
         return mark_safe(u'\n'.join(output))
 
@@ -791,6 +795,7 @@ def create_story(title, structure_type=structure.DEFAULT_STRUCTURE,
     obj.save()
     translation = StoryTranslation(story=obj, title=title, summary=summary,
                                    call_to_action=call_to_action,
+                                   connected_prompt=connected_prompt,
                                    language=language)
     translation.save()
     return obj
@@ -807,5 +812,14 @@ def create_section(title, story, layout=None,
     obj.save()
     translation = SectionTranslation(section=obj, title=title, 
                                      language=language)
+    translation.save()
+    return obj
+
+def create_story_template(title, story, tag_line='', description='',
+        language=settings.LANGUAGE_CODE, *args, **kwargs):
+    obj = StoryTemplate(story=story, *args, **kwargs)
+    obj.save()
+    translation = StoryTemplateTranslation(story_template=obj,
+        title=title, tag_line=tag_line, description=description)
     translation.save()
     return obj

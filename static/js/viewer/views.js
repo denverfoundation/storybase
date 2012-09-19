@@ -9,6 +9,7 @@ Namespace('storybase.viewer');
 storybase.viewer.views.ViewerApp = Backbone.View.extend({
   // Initialize the view
   initialize: function() {
+    this.showingConnectedStory = false;
     this.sections = this.options.sections;
     this.story = this.options.story;
     this.navigationView = new storybase.viewer.views.StoryNavigation({
@@ -100,6 +101,7 @@ storybase.viewer.views.StoryNavigation = Backbone.View.extend({
 
   initialize: function() {
     this.activeSection = null;
+    this.showingConnectedStory = false;
     this.sections = this.options.sections;
     this.template = Handlebars.compile(this.templateSource);
     if (this.options.hasOwnProperty('addlLinks')) {
@@ -119,14 +121,16 @@ storybase.viewer.views.StoryNavigation = Backbone.View.extend({
   // Render the view
   // Updates the next/previous buttons and where the links point
   render: function() {
-    var context = {};
+    var context = {
+      'addl_links': this.addlLinks,
+      'showing_connected_story': this.showingConnectedStory
+    };
     if (this.nextSection) {
       context.next_section = this.nextSection;
     }
     if (this.previousSection) {
       context.previous_section = this.previousSection;
     }
-    context.addl_links = this.addlLinks;
 
     this.$el.html(this.template(context));
     return this;
@@ -144,6 +148,7 @@ storybase.viewer.views.StoryNavigation = Backbone.View.extend({
 
   // Set the active section of the view 
   setSection: function(section) {
+    this.showingConnectedStory = false;
     this.activeSection = section;
     if (this.activeSection) {
       this.setNextSection(this.sections.get(
@@ -153,6 +158,11 @@ storybase.viewer.views.StoryNavigation = Backbone.View.extend({
 	  this.activeSection.get('previous_section_id')
       ));
     }
+    this.render();
+  },
+
+  showConnectedStory: function() {
+    this.showingConnectedStory = true; 
     this.render();
   }
 });
@@ -415,7 +425,14 @@ storybase.viewer.views.LinearViewerApp = storybase.viewer.views.ViewerApp.extend
 	
   // Show the active section
   showActiveSection: function() {
-    var sectionTop = this.$('#' + this.activeSection.id).offset().top;
+    var sectionEl = this.$('#' + this.activeSection.id);
+    var sectionTop;
+    this.showingConnectedStory = false;
+    // Hide connected stories
+    this.$('.connected-story').hide();
+    // Show all sections section if it's hidden
+    this.$('.section').show(); 
+    sectionTop = sectionEl.offset().top;
     this._preventScrollEvent = true;
     var headerHeight = this.$('header').outerHeight();
     // Calculate
@@ -451,7 +468,7 @@ storybase.viewer.views.LinearViewerApp = storybase.viewer.views.ViewerApp.extend
   handleScroll: function(e) {
     var newSection = this.activeSection;
     var scrollTop = $(window).scrollTop();
-    if (this._preventScrollEvent !== true) {
+    if (this._preventScrollEvent !== true && this.showingConnectedStory !== true) {
       if (scrollTop == 0) {
         // At the top of the window.  Set the active section to the 
         // first section
@@ -481,6 +498,14 @@ storybase.viewer.views.LinearViewerApp = storybase.viewer.views.ViewerApp.extend
                                      {trigger: false});
     }
     this._preventScrollEvent = false;
+  },
+
+  showConnectedStory: function(storyId) {
+    this.showingConnectedStory = true;
+    $(window).scrollTop(0);
+    this.$('.section').hide();
+    this.$('#connected-story-' + storyId).show();
+    this.navigationView.showConnectedStory();
   }
 });
 
