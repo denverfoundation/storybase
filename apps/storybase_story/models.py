@@ -795,6 +795,7 @@ def create_story(title, structure_type=structure.DEFAULT_STRUCTURE,
     obj.save()
     translation = StoryTranslation(story=obj, title=title, summary=summary,
                                    call_to_action=call_to_action,
+                                   connected_prompt=connected_prompt,
                                    language=language)
     translation.save()
     return obj
