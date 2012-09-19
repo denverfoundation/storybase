@@ -222,6 +222,7 @@ storybase.builder.views.HelpView = Backbone.View.extend({
 
     this.dispatcher.on('do:show:help', this.show, this);
     this.dispatcher.on('do:set:help', this.set, this);
+    this.dispatcher.on('do:hide:help', this.hide, this);
   },
 
   setAutoShow: function(evt) {
@@ -241,8 +242,6 @@ storybase.builder.views.HelpView = Backbone.View.extend({
    */
   show: function(force, help) {
     var show = this.autoShow || force;
-    console.debug(show);
-    console.debug(this.help);
     if (!_.isUndefined(help)) {
       // A new help object was sent with the signal, update
       // our internal value
@@ -256,6 +255,10 @@ storybase.builder.views.HelpView = Backbone.View.extend({
       }
     }
     return this;
+  },
+
+  hide: function() {
+    $.modal.close();
   },
 
   set: function(help) {
@@ -1003,13 +1006,19 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
    */
   onShow: function() {
     // Recalculate the width of the section list view.
+    var that = this;
     if (this.sectionListView) {
       this.sectionListView.setWidth();
     }
 
     guiders.createGuider({
       attachTo: '#toggle-section-list',
-      buttons: [{name: gettext("Next")}],
+      buttons: [
+        {
+          name: gettext("Next"),
+          onclick: guiders.next
+        }
+      ],
       position: 3,
       id: 'section-list-guider',
       title: gettext("Section List"),
@@ -1018,16 +1027,35 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     });
     guiders.createGuider({
       attachTo: '.section-thumbnail',
-      buttons: [{name: gettext("Next")}],
+      buttons: [
+        {
+          name: gettext("Prev"),
+          onclick: guiders.prev
+        },
+        {
+          name: gettext("Next"),
+          onclick: guiders.next
+        }
+      ],
       position: 2,
       id: 'section-thumbnail-guider',
       title: gettext("Select a Section"),
       description: gettext("Clicking on one of the sections will let you edit that section"),
+      prev: 'section-list-guider',
       next: 'workflow-step-guider'
     });
     guiders.createGuider({
       attachTo: '.workflow-step #build',
-      buttons: [{name: gettext("Next")}],
+      buttons: [
+        {
+          name: gettext("Prev"),
+          onclick: guiders.prev
+        },
+        {
+          name: gettext("Next"),
+          onclick: guiders.next
+        }
+      ],
       position: 6,
       id: 'workflow-step-guider',
       title: gettext("Workflow Step"),
@@ -1036,10 +1064,46 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     });
     guiders.createGuider({
       attachTo: '.tools .help',
+      buttons: [
+        {
+          name: gettext("Prev"),
+          onclick: guiders.prev
+        },
+        {
+          name: gettext("Next"),
+          onclick: guiders.next
+        }
+      ],
       position: 6,
       id: 'help-guider',
       title: gettext("Help"),
-      description: gettext("Clicking the help button shows you help for the story section you're currently editing")
+      description: gettext("Clicking the help button shows you help for the story section you're currently editing"),
+      onShow: function() {
+        that.dispatcher.trigger('do:show:help', true);
+      },
+      onHide: function() {
+        that.dispatcher.trigger('do:hide:help', true);
+      },
+      next: 'tooltip-guider'
+    });
+    guiders.createGuider({
+      attachTo: '.workflow-step #build',
+      buttons: [
+        {
+          name: gettext("Close"),
+          onclick: guiders.hideAll
+        }
+      ],
+      position: 3,
+      id: 'tooltip-guider',
+      title: gettext("Tooltips"),
+      description: gettext("You can find out more about many of the buttons and the links by hovering your mouse over the object"),
+      onShow: function() {
+        $('.workflow-step #build').triggerHandler('mouseover');
+      },
+      onHide: function() {
+        $('.workflow-step #build').triggerHandler('mouseout');
+      }
     });
     guiders.show('section-list-guider');
   },
