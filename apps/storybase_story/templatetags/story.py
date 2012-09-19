@@ -22,3 +22,13 @@ def container(context, value):
     # Get the asset subclass instance
     asset = Asset.objects.get_subclass(pk=asset.pk)
     return asset.render_html()
+
+@register.inclusion_tag("storybase_story/connected_story.html")
+def connected_story(story):
+    return {
+        'story': story,
+    }
+
+@register.simple_tag
+def connected_story_section(section):
+    return section.render(show_title=False)
