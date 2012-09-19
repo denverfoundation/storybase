@@ -221,6 +221,7 @@ storybase.builder.views.HelpView = Backbone.View.extend({
     this.autoShow = $.cookie('storybase_show_builder_help') === 'false' ? false : true;
 
     this.dispatcher.on('do:show:help', this.show, this);
+    this.dispatcher.on('do:set:help', this.set, this);
   },
 
   setAutoShow: function(evt) {
@@ -240,6 +241,8 @@ storybase.builder.views.HelpView = Backbone.View.extend({
    */
   show: function(force, help) {
     var show = this.autoShow || force;
+    console.debug(show);
+    console.debug(this.help);
     if (!_.isUndefined(help)) {
       // A new help object was sent with the signal, update
       // our internal value
@@ -253,6 +256,10 @@ storybase.builder.views.HelpView = Backbone.View.extend({
       }
     }
     return this;
+  },
+
+  set: function(help) {
+    this.help = help;
   },
 
   render: function() {
@@ -1800,7 +1807,9 @@ storybase.builder.views.PseudoSectionEditView = Backbone.View.extend(
       if (id == this.pseudoSectionId) {
         console.debug("Showing editor for pseduo-section " + this.pseudoSectionId);
         this.$el.show();
-        this.dispatcher.trigger('do:show:help', false, this.help.toJSON()); 
+        // For now, don't automatically show help
+        //this.dispatcher.trigger('do:show:help', false, this.help.toJSON()); 
+        this.dispatcher.trigger('do:set:help', this.help.toJSON());
       }
       else {
         console.debug("Hiding editor for pseduo-section " + this.pseudoSectionId);
@@ -2140,7 +2149,9 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     if (section == this.model) {
       console.debug('showing section ' + section.get('title'));
       this.$el.show();
-      this.dispatcher.trigger('do:show:help', false, help); 
+      // For now, don't show help automatically
+      //this.dispatcher.trigger('do:show:help', false, help); 
+      this.dispatcher.trigger('do:set:help', help);
     }
     else {
       console.debug('hiding section ' + this.model.get('title'));
