@@ -173,6 +173,7 @@ $(document).ready(function () {
     // Launch the viewer in a new window
     $("#story-viewer #modal-controls #launch-viewer-window").click(
         function (evt) {
+            evt.preventDefault();
             var viewerUrl = $(evt.target).attr('href');
             window.open(viewerUrl, 'story-viewer', '');
             $.modal.close();
