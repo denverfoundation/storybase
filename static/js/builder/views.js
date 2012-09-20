@@ -1233,7 +1233,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
    */
   simpleReview: function() {
     var editView = this.getEditView(0);
-    console.debug(this._editViews[0].allAssetsDefined());
     // Stories must have titles
     if (!this.model.get('title')) {
       this.dispatcher.trigger('error', gettext("You must give your story a title"));
@@ -2218,7 +2217,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
         // container
         options.model = that.assets.where({container: $(el).attr('id')})[0];
       }
-      else if (that.templateSection && that.templateSection.assets.length) {
+      if (that.templateSection && that.templateSection.assets.length) {
         // This section came from a template.  Check the template's
         // assets to get a suggested asset type.
         templateAsset = that.templateSection.assets.where({container: $(el).attr('id')})[0];
