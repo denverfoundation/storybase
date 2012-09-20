@@ -814,6 +814,10 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
   className: 'builder',
 
+  defaults: {
+    titleEl: '.story-title'
+  },
+
   initialize: function() {
     var that = this;
     var navViewOptions;
@@ -821,6 +825,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       return !this.model.isNew();
     }, this)
 
+    _.defaults(this.options, this.defaults);
     this.dispatcher = this.options.dispatcher;
     this.help = this.options.help;
     this._relatedStoriesSaved = false;
@@ -836,6 +841,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     }
 
     this.templateStory = this.options.templateStory;
+
+    _.bindAll(this, 'createSectionEditView', 'simpleReview', 'setTemplateStory', 'initializeStoryFromTemplate');
 
     if (this.options.showSectionList) {
       this.sectionListView = new storybase.builder.views.SectionListView({
@@ -875,8 +882,9 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
         id: 'workflow-nav-publish-fwd',
         text: gettext("Publish My Story"),
         path: 'publish/',
-        enabled: isNew 
-      })
+        enabled: isNew,
+        validate: this.options.visibleSteps.review ? true : this.simpleReview
+      });
     }
     this.navView = new storybase.builder.views.WorkflowNavView(navViewOptions);
     this._editViews = [];
@@ -896,7 +904,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.dispatcher.on("ready:story", this.setTitle, this);
     this.dispatcher.on("created:section", this.handleCreateSection, this);
 
-    _.bindAll(this, 'createSectionEditView', 'setTemplateStory', 'initializeStoryFromTemplate');
 
     if (!this.model.isNew()) {
       this.model.sections.fetch();
@@ -1213,6 +1220,36 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     if (title) {
       document.title = title + " | " + gettext("Floodlight Story Builder");
     }
+  },
+
+  getEditView: function(index) {
+    return this._editViews[index];
+  },
+
+  /**
+   * Do a simple review of the story.
+   *
+   * This is for the connected story builder.
+   */
+  simpleReview: function() {
+    var editView = this.getEditView(0);
+    console.debug(this._editViews[0].allAssetsDefined());
+    // Stories must have titles
+    if (!this.model.get('title')) {
+      this.dispatcher.trigger('error', gettext("You must give your story a title"));
+      this.$(this.options.titleEl).addClass('error');
+      this.$(this.options.titleEl).triggerHandler('click');
+      return false;
+    }
+
+    // All assets must be defined
+    if (!editView.allAssetsDefined()) {
+      this.dispatcher.trigger('error', gettext("You didn't fill out all the assets in the template"));
+      return false;
+    }
+
+    this.$(this.options.titleEl).removeClass('error');
+    return true;
   }
 
 });
@@ -2087,6 +2124,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   templateSource: $('#section-edit-template').html(),
 
   defaults: {
+    containerEl: '.storybase-container-placeholder',
     titleEl: '.section-title',
     storyTitleEl: '.story-title'
   },
@@ -2165,7 +2203,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     console.debug('Rendering asset views');
     var that = this;
     var templateAsset;
-    this.$('.storybase-container-placeholder').each(function(index, el) {
+    this.$(this.options.containerEl).each(function(index, el) {
       var options = {
         el: el,
         container: $(el).attr('id'),
@@ -2403,6 +2441,28 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     // Inform the user that the section has been deleted
     this.dispatcher.trigger('alert', 'success', gettext('The section  "' + this.model.get('title') + '" has been deleted'));
     this.close();
+  },
+
+  getContainerIds: function() {
+    var ids = [];
+    this.$(this.options.containerEl).each(function(index, el) {
+      ids.push($(el).attr('id'));
+    });
+    return ids;
+  },
+
+  allAssetsDefined: function() {
+    var containerIds = this.getContainerIds();
+    return _.reduce(this.getContainerIds(), function(memo, id) {
+      var matching;
+      if (memo === false) {
+        return false;
+      }
+      else { 
+        matching = this.assets.where({container: id});
+        return matching.length > 0;
+      }
+    }, true, this);
   }
 });
 
