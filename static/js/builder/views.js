@@ -70,7 +70,8 @@ storybase.builder.views.AppView = Backbone.View.extend({
       showSectionList: this.options.showSectionList,
       showLayoutSelection: this.options.showLayoutSelection,
       showSectionTitles: this.options.showSectionTitles,
-      showStoryInfoInline: this.options.showStoryInfoInline
+      showStoryInfoInline: this.options.showStoryInfoInline,
+      showTour: this.options.showTour
     }, commonOptions);
     // TODO: Name this something more accurate than shareViewOptions
     shareViewOptions = _.defaults({

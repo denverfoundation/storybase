@@ -374,6 +374,8 @@ class StoryBuilderView(DetailView):
             'prompt': self.get_prompt(),
             # Show the sharing view
             'showSharing': True,
+            # Show the builder tour
+            'showTour': True
         }
         if (self.template_object and  self.template_object.slug == settings.STORYBASE_CONNECTED_STORY_TEMPLATE):
             # TODO: If these settings apply in cases other than just
@@ -392,6 +394,7 @@ class StoryBuilderView(DetailView):
                 'showLayoutSelection': False,
                 'showStoryInfoInline': True,
                 'showSharing': False,
+                'showTour': False,
             })
         return json.dumps(options)
 
