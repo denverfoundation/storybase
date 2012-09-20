@@ -1010,7 +1010,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   onShow: function() {
     // Recalculate the width of the section list view.
     var that = this;
-    var showTour = _.isUndefined(guiders) ? false : ($.cookie('storybase_show_builder_tour') === 'false' ? false : true);
+    var showTour = _.isUndefined(guiders) ? false : ($.cookie('storybase_show_builder_tour') === 'false' ? false : true) && this.options.showTour;
 
     if (this.sectionListView) {
       this.sectionListView.setWidth();
