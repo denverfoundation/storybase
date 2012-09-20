@@ -53,6 +53,11 @@
 					<h4>{% trans "Connected Stories" %}</h4>
                     <p>{{ story.connected_prompt|linebreaks }}</p>
                     <a href="{% url connected_story_builder source_slug=story.slug %}" title="{% trans "Contribute to this story" %}" class="button right">{% trans "Contribute to this story" %}</a>
+                    {% with cs_count=story.connected_stories.count %}
+                    {% if cs_count %}
+                    <a href="{% url story_viewer slug=story.slug %}#sections/connected-stories" title="{% blocktrans count counter=cs_count %}View {{ counter }} connected story{% plural %}View {{ counter }} connected stories{% endblocktrans %}" class="button right">{% blocktrans count counter=cs_count %}View {{ counter }} connected story{% plural %}View {{ counter }} connected stories{% endblocktrans %}</a>
+                    {% endif %}
+                    {% endwith %}
 				</section>
                 {% endif %}
 				
