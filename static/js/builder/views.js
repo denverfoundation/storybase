@@ -24,11 +24,15 @@ Namespace.use('storybase.utils.geocode');
  * Master view for the story builder
  *
  * Dispatches to sub-views.
+ *
+ * TODO: Document the options for this view
+ *
  */
 storybase.builder.views.AppView = Backbone.View.extend({
   initialize: function() {
     // Common options passed to sub-views
     var commonOptions = {
+      startOverUrl: this.options.startOverUrl,
       visibleSteps: this.options.visibleSteps
     };
     var buildViewOptions;
@@ -608,46 +612,49 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
 
   className: 'tools nav',
 
-  items: [
-    {
-      id: 'help',
-      title: gettext("Get help on the current story section"),
-      text: gettext('Help'),
-      callback: 'toggleHelp', 
-      visible: true 
-    },
-    {
-      id: 'assets',
-      title: gettext("Show a list of assets you removed from your story"),
-      text: gettext('Assets'),
-      callback: 'toggleAssetList',
-      visible: false
-    },
-    {
-      id: 'preview',
-      title: gettext("View your story in the story viewer (opens in a new window)"),
-      text: gettext('Preview'),
-      callback: 'previewStory',
-      visible: false
-    },
-    {
-      id: 'start-over',
-      title: gettext("Leave your story in its current state and start a new story, with a new template"),
-      text: gettext('Start Over'),
-      path: '/build/',
-      visible: false 
-    },
-    {
-      id: 'exit',
-      title: gettext("Leave the story builder and go to the home page"),
-      text: gettext('Exit'),
-      path: '/',
-      visible: true 
-    }
-  ],
+  _initItems: function() {
+    return [
+      {
+        id: 'help',
+        title: gettext("Get help on the current story section"),
+        text: gettext('Help'),
+        callback: 'toggleHelp', 
+        visible: true 
+      },
+      {
+        id: 'assets',
+        title: gettext("Show a list of assets you removed from your story"),
+        text: gettext('Assets'),
+        callback: 'toggleAssetList',
+        visible: false
+      },
+      {
+        id: 'preview',
+        title: gettext("View your story in the story viewer (opens in a new window)"),
+        text: gettext('Preview'),
+        callback: 'previewStory',
+        visible: false
+      },
+      {
+        id: 'start-over',
+        title: gettext("Leave your story in its current state and start a new story, with a new template"),
+        text: gettext('Start Over'),
+        path: this.options.startOverUrl,
+        visible: false 
+      },
+      {
+        id: 'exit',
+        title: gettext("Leave the story builder and go to the home page"),
+        text: gettext('Exit'),
+        path: '/',
+        visible: true 
+      }
+    ];
+  },
 
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
+    this.items = this._initItems();
     this.itemTemplate = this.getItemTemplate();
     this.activeStep = null;
     this.hasAssetList = false;
