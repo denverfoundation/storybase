@@ -343,6 +343,7 @@ a.button:hover {
 }
 a.button.right {
 	float:right;
+        margin-left: 8px;
 }
 
 /* story/project detail */
