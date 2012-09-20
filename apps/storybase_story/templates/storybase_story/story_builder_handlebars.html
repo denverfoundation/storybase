@@ -214,6 +214,7 @@ Handlebars.js templates for story builder Backbone application
 <div class="status-published" style="display: none">
     <p>{{#blockgettext}}Congratulations, your story has been published. If you decide you'd like to unpublish your story, use the button below{{/blockgettext}}</p>
     <div class="centered btn-container"><a class="btn unpublish" href="#">Unpublish My Story</a></div>
+    {{#if showSharing}}
     <p>{{#blockgettext}}Let your story be heard! Spread the word by sharing it with your social networks, printing a copy, or embeding it on your own website.{{/blockgettext}}</p>
     <div id="share-link">
         <div><input id="story-url" type="text" value="{{url}}" /></div>
@@ -227,6 +228,7 @@ Handlebars.js templates for story builder Backbone application
           <a class="addthis_button_compact"></a>
         </div>
     </div>
+    {{/if}}
 </div>
 </script>
 

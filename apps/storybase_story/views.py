@@ -370,8 +370,10 @@ class StoryBuilderView(DetailView):
             'showLayoutSelection': True,
             # Show the story title input in the section edit view 
             'showStoryInfoInline': False,
-            # Prompt
+            # Prompt (for connected stories)
             'prompt': self.get_prompt(),
+            # Show the sharing view
+            'showSharing': True,
         }
         if (self.template_object and  self.template_object.slug == settings.STORYBASE_CONNECTED_STORY_TEMPLATE):
             # TODO: If these settings apply in cases other than just
@@ -389,6 +391,7 @@ class StoryBuilderView(DetailView):
                 'showSectionTitles': False,
                 'showLayoutSelection': False,
                 'showStoryInfoInline': True,
+                'showSharing': False,
             })
         return json.dumps(options)
 

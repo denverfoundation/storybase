@@ -72,11 +72,13 @@ storybase.builder.views.AppView = Backbone.View.extend({
       showSectionTitles: this.options.showSectionTitles,
       showStoryInfoInline: this.options.showStoryInfoInline
     }, commonOptions);
+    // TODO: Name this something more accurate than shareViewOptions
     shareViewOptions = _.defaults({
       places: this.options.places,
       topics: this.options.topics,
       organizations: this.options.organizations,
-      projects: this.options.projects
+      projects: this.options.projects,
+      showSharing: this.options.showSharing
     }, commonOptions);
 
     // Store subviews in an object keyed with values of this.activeStep
@@ -3743,7 +3745,8 @@ storybase.builder.views.PublishView = Backbone.View.extend({
   render: function() {
     var context = {
       url: this.getStoryUrl(),
-      title: this.model.get('title')
+      title: this.model.get('title'),
+      showSharing: this.options.showSharing
     };
     this.$el.html(this.template(context));
     this.$('.title').after(this.legalView.render().el);
