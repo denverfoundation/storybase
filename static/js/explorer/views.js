@@ -253,6 +253,10 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     this.mapView.$el.hide();
     this.storyListView.$el.show();
     this.storyListView.tile();
+    $('#view-selector li')
+      .removeClass('active')
+      .filter('.tile-view')
+        .addClass('active');
     return false;
   },
 
@@ -275,6 +279,10 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     this.mapView.$el.hide();
     this.storyListView.$el.show();
     this.storyListView.list();
+    $('#view-selector li')
+      .removeClass('active')
+      .filter('.list-view')
+        .addClass('active');
     return false;
   },
 
@@ -286,6 +294,10 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     }
     this.storyListView.$el.hide();
     this.mapView.$el.show();
+    $('#view-selector li')
+      .removeClass('active')
+      .filter('.map-view')
+        .addClass('active');
     return false;
   },
 
@@ -328,7 +340,7 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
         });
       }
       else {
-        console.debug('No more stories');
+        //console.debug('No more stories');
       }
   },
 
@@ -516,6 +528,7 @@ storybase.explorer.views.Filters = Backbone.View.extend({
   tagName: 'div',
 
   id: 'filters',
+  className: 'filters',
 
   templateSource: $('#filters-template').html(),
 
@@ -675,6 +688,7 @@ storybase.explorer.views.StoryList = Backbone.View.extend({
     var width = this.$el.width();
     this.$el.addClass('tile');
     this.$el.removeClass('list');
+    this.$el.find('li').removeClass('container_12')
     this.$el.masonry({
       itemSelector: '.story',
       columnWidth: function(containerWidth) {
@@ -696,6 +710,7 @@ storybase.explorer.views.StoryList = Backbone.View.extend({
   list: function() {
     this.$el.removeClass('tile');
     this.$el.addClass('list');
+    this.$el.find('li').addClass('container_12')
     this.$el.masonry('destroy');
   }
 
