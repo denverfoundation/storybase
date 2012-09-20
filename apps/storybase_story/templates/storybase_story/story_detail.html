@@ -50,7 +50,7 @@
 						<section class="summary">
 							{{ story.summary|safe|linebreaks }}
 						</section>
-						<a id="launch-story-viewer" class="button right" href="./viewer">{% trans "View Story" %}</a>
+                        <a id="launch-story-viewer" class="button right" href="{% url story_viewer slug=story.slug %}">{% trans "View Story" %}</a>
 					</section>
 				</section>
 				
@@ -157,10 +157,10 @@
 {% block bodyend %}
 <div id="story-viewer" class="modal">
   <div id="modal-controls">
-    <a id="launch-viewer-window" href="#">View in new window</a>
+      <a id="launch-viewer-window" href="{% url story_viewer slug=story.slug %}">View in new window</a>
     <a class="simplemodal-close" href="#">Close</a>
   </div>
-  <iframe src="./viewer"></iframe>
+  <iframe src="{% url story_viewer slug=story.slug %}"></iframe>
 </div>
 {% endblock bodyend %}
 
@@ -185,9 +185,10 @@ $(document).ready(function () {
 
     // Launch the viewer in a new window
     $("#story-viewer #modal-controls #launch-viewer-window").click(
-        function (event) {
-            var viewerUrl = document.location + "viewer";
-            window.open(viewerUrl, 'Story Viewer', '');
+        function (evt) {
+            evt.preventDefault();
+            var viewerUrl = $(evt.target).attr('href');
+            window.open(viewerUrl, 'story-viewer', '');
             $.modal.close();
             return false
         }
