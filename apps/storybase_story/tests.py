@@ -223,6 +223,34 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
                              author=user)
         self.assertEqual(story.contributor_name, '')
 
+    def test_builder_url(self):
+        title = ('Transportation Challenges Limit Education Choices for '
+                 'Denver Parents')
+        summary = """
+            Many families in the Denver metro area use public
+            transportation instead of a school bus because for them, a
+            quality education is worth hours of daily commuting. Colorado's
+            school choice program is meant to foster educational equity,
+            but the families who benefit most are those who have time and
+            money to travel. Low-income families are often left in a lurch.
+            """
+        byline = "Mile High Connects"
+        story = create_story(title=title, summary=summary, byline=byline)
+        self.assertEqual(story.builder_url(), "/build/%s/" % (story.story_id))
+
+    def test_builder_url_connected(self):
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status='published')
+        story2 = create_story(title="Test Related Story", 
+                             summary="Test Related Story Summary",
+                             byline="Test Related Story Byline",
+                             status='published')
+        StoryRelation.objects.create(source=story, target=story2,
+                                     relation_type='connected')
+        self.assertEqual(story2.builder_url(), 
+                         "/stories/%s/build-connected/%s/" % 
+                         (story.slug, story2.story_id))
+
 
 class StoryPermissionTest(TestCase):
     """Test case for story permissions"""

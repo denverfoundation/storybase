@@ -350,11 +350,27 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
         """Get a queryset of stories that this story is connected to"""
         return self.related_to.filter(target__relation_type='connected')
 
+    def connected_to(self):
+        connected_to = self.connected_to_stories()
+        if connected_to.count():
+            return connected_to[0]
+        else:
+            return None
+
     def is_connected(self):
         """
         Is this story a connected story?
         """
         return self.connected_to_stories().count() > 0
+
+    def builder_url(self):
+        if self.is_connected():
+            return urlresolvers.reverse('connected_story_builder',
+                kwargs={'source_slug':self.connected_to().slug,
+                        'story_id': self.story_id})
+        else:
+            return urlresolvers.reverse('story_builder', 
+                kwargs={'story_id': self.story_id})
 
     def get_prompt(self):
         connected_to = self.connected_to_stories()
