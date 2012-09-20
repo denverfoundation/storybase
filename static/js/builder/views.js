@@ -2067,7 +2067,7 @@ storybase.builder.views.CallToActionEditView = storybase.builder.views.PseudoSec
 
   defaults: {
     callToActionEl: 'textarea[name="call_to_action"]',
-    connectedEl: 'input[name="connected"]',
+    connectedEl: 'input[name="allow_connected"]',
     connectedPromptEl: 'textarea[name="connected_prompt"]'
   },
 

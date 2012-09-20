@@ -369,7 +369,7 @@ class RelatedStoriesTest(TestCase):
                              summary="Test Related Story Summary",
                              byline="Test Related Story Byline",
                              connected_prompt="Test connected prompt",
-                             connected=True,
+                             allow_connected=True,
                              status='published',
                              author=self.user)
         self.assertEqual(len(self.story.related_stories.all()), 0)
@@ -409,6 +409,19 @@ class RelatedStoriesTest(TestCase):
                                      relation_type='blahblahblah')
         self.assertEqual(len(story.connected_to_stories()), 1)
         self.assertEqual(story.connected_to_stories()[0], self.story)
+
+    def test_is_connected(self):
+        story = create_story(title="Test Related Story", 
+                             summary="Test Related Story Summary",
+                             byline="Test Related Story Byline",
+                             status='published',
+                             author=self.user)
+        StoryRelation.objects.create(source=self.story, target=story,
+                                     relation_type='connected')
+        StoryRelation.objects.create(source=self.story, target=story,
+                                     relation_type='blahblahblah')
+        self.assertEqual(self.story.is_connected(), False)
+        self.assertEqual(story.is_connected(), True)
 
     def test_get_prompt(self):
         """
@@ -1576,9 +1589,9 @@ class StoryResourceTest(ResourceTestCase):
                                    dehydrated['points'])
 
     def test_get_detail(self):
-        story_attribute_keys = ['byline',
+        story_attribute_keys = ['allow_connected',
+                                'byline',
                                 'call_to_action',
-                                'connected',
                                 'connected_prompt',
                                 'contact_info',
                                 'created',

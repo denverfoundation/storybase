@@ -134,7 +134,7 @@ class BaseStructure(object):
             sections.insert(0, summary_section)
 
         if (include_call_to_action and 
-                (self.story.call_to_action or self.story.connected)):
+                (self.story.call_to_action or self.story.allow_connected)):
             call_to_action_section = {
                 'section_id': 'call-to-action',
                 'title': _("How Can You Help?"),
@@ -147,7 +147,7 @@ class BaseStructure(object):
             sections.append(call_to_action_section)
 
             # TODO: Include connected stories in list
-            if self.story.connected and self.story.connected_stories():
+            if self.story.allow_connected and self.story.connected_stories():
                 connected_stories_section = {
                     'section_id': 'connected-stories',
                     'title': _("Connected Stories"),
@@ -250,9 +250,9 @@ class LinearStructure(BaseStructure):
         for root_section in self.story.sections.filter(root=True) \
                                                .order_by('weight'):
             output.append(render_toc_section(root_section))
-        if self.story.call_to_action or self.story.connected:
+        if self.story.call_to_action or self.story.allow_connected:
             output.append("<li>%s</li>" % self.call_to_action_toc_link())
-        if self.story.connected and self.story.connected_stories:
+        if self.story.allow_connected and self.story.connected_stories:
             output.append("<li>%s</li>" % self.connected_toc_link())
         output.append("</ul>")
         return mark_safe(u'\n'.join(output))

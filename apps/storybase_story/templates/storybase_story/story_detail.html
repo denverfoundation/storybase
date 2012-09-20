@@ -48,7 +48,7 @@
 					<div class="story-call-to-action grid_5 prefix_1 omega">{{ story.call_to_action|safe }}</div>
 				</section>
                 
-                {% if story.connected %}
+                {% if story.allow_connected %}
 				<section class="connected-stories content-block">
 					<h4>{% trans "Connected Stories" %}</h4>
                     <p>{{ story.connected_prompt|linebreaks }}</p>

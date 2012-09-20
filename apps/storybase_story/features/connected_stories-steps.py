@@ -16,7 +16,7 @@ def setup(feature):
 
 @step(u'Given the connected story "([^"]*)" has been created with prompt "([^"]*)"')
 def connected_story_created(step, title, prompt):
-    create_story(title=title, connected_prompt=prompt, connected=True)
+    create_story(title=title, connected_prompt=prompt, allow_connected=True)
 
 @step(u'Then the connected story builder is launched for the story "([^"]*)"')
 def connected_story_builder_is_launched(step, title):

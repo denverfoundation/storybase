@@ -163,7 +163,7 @@ class StoryBuilderView(DetailView):
         except ObjectDoesNotExist:
             raise Http404(_(u"No %(verbose_name)s found matching the query") %
                     {'verbose_name': queryset.model._meta.verbose_name})
-        if not source_story.connected:
+        if not source_story.allow_connected:
             raise PermissionDenied(_(u"This story does not allow connected stories"))
 
         return source_story

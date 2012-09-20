@@ -110,7 +110,7 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
                                       blank=True)
     is_template = models.BooleanField(_("Story is a template"),
                                       default=False)
-    connected = models.BooleanField(
+    allow_connected = models.BooleanField(
         _("Story can have connected stories"), default=False)
     template_story = models.ForeignKey('Story',
         related_name='template_for', blank=True, null=True,
@@ -349,6 +349,12 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
     def connected_to_stories(self):
         """Get a queryset of stories that this story is connected to"""
         return self.related_to.filter(target__relation_type='connected')
+
+    def is_connected(self):
+        """
+        Is this story a connected story?
+        """
+        return self.connected_to_stories().count() > 0
 
     def get_prompt(self):
         connected_to = self.connected_to_stories()

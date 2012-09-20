@@ -77,11 +77,11 @@
           </section>
           {% endfor %}
 
-          {% if story.call_to_action or story.connected %} 
+          {% if story.call_to_action or story.allow_connected %} 
           <section id="call-to-action" class="section call-to-action" style="display:none;">
 	        <h2>{% trans "How Can You Help?" %}</h2>
 	        {{ story.call_to_action|safe }}
-            {% if story.connected %}
+            {% if story.allow_connected %}
             <p>{{ story.connected_prompt|linebreaks }}</p>
             {# TODO: Style the links to the connected story builder as buttons #}
             <p><a href="{% url connected_story_builder source_slug=story.slug %}" class="external" data-new-window-name="connected-builder">{% trans "Click here to contribute to this story" %}</a></p>
@@ -89,7 +89,7 @@
 	      </section>
 	      {% endif %}
 
-          {% if story.connected and story.connected_stories %}
+          {% if story.allow_connected and story.connected_stories %}
           <section id="connected-stories" class="section connected-stories">
             <h2>{% trans "Connected Stories" %}</h2>
             {% for cs in story.connected_stories %}
