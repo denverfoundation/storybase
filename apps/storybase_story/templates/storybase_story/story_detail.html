@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n sekizai_tags %}
+{% load i18n cms_tags menu_tags sekizai_tags %}
 
 {% block head_title %}{{ story.title }}{% endblock %}
 
@@ -15,98 +15,127 @@
 <meta property="og:image" content="{{ story.featured_asset_thumbnail_url }}" />
 {% endblock %}
 
+{% block above_content %}
+{% show_breadcrumb "breadcrumbs.html" %}
+{% endblock %}
+
 {% block base_content %}
-<div class="eightcol">
-  <section class="story">
-    <header>
-      <h1>{{ story.title }}</h1>
-      <p>{% trans "By" %} <span class="byline">{{ story.byline }}</span></p>
-    </header>
-    {{ story.render_featured_asset }}
-    <section class="summary">
-      {{ story.summary|safe|linebreaks }}
-    </section>
-    <a id="launch-story-viewer" class="button" href="{% url story_viewer slug=story.slug %}">{% trans "View Story" %}</a>
-  </section>
+		<div class="content-page object-detail story container_12">
+			<h2><span>Explore Floodlight</span></h2>
 
-  <section class="actions">
-    <header>
-      <h2>{% trans "How Can You Help?" %}</h2>
-    </header>
-    <div class="row">
-        <p class="fourcol">{% blocktrans %}Wondering what you can do to help? The contributor has listed the following actions that you can take to help.{% endblocktrans %}</p> 
-        <div class="eightcol last">
-        {{ story.call_to_action|safe }}
-        {% if story.connected %}
-        {{ story.connected_prompt|linebreaks }}
-        {# TODO: Style the links to the connected story builder as buttons #}
-        <a href="{% url connected_story_builder source_slug=story.slug %}" title="{% trans "Contribute to this story" %}">{% trans "Contribute to this story" %}</a>
-        {% endif %}
-        </div>
-    </div>
-  </section>
-</div>
+			<div class="grid_8">
+				<section class="object content-block">
+					<header>
+						<h3>{{ story.title }}</h3>
+						<p class="byline">{% trans "By" %} <span class="author">{{ story.byline }}</span></p>
+					</header>
+					<section class="object-featured-asset">
+						{# TODO: wire in real asset #}
+						<img src="{{ story.featured_asset_thumbnail_url }}" title="temp asset">
+					</section>
+					<section class="object-summary">
+						<section class="summary">
+							{{ story.summary|safe|linebreaks }}
+						</section>
+						<a id="launch-story-viewer" class="button right" href="./viewer">{% trans "View Story" %}</a>
+					</section>
+				</section>
+				
+				<section class="call-to-action content-block">
 
-<div class="fourcol last">
-  {% include "addthis_widget.html" %}
+					<h4>{% trans "How Can You Help?" %}</h4>
+					<p class="call-intro grid_2 alpha">{% blocktrans %}Wondering what you can do to help? The contributor has listed the following actions that you can take to help.{% endblocktrans %}</p>
+					<div class="story-call-to-action grid_5 prefix_1 omega">{{ story.call_to_action|safe }}</div>
+				</section>
+                
+                {% if story.connected %}
+				<section class="connected-stories content-block">
+					<h4>{% trans "Connected Stories" %}</h4>
+                    <p>{{ story.connected_prompt|linebreaks }}</p>
+                    <a href="{% url connected_story_builder source_slug=story.slug %}" title="{% trans "Contribute to this story" %}" class="button right">{% trans "Contribute to this story" %}</a>
+				</section>
+                {% endif %}
+				
+				<section class="citizen-comments content-block">
+					<h4>{% trans "Citizen Comments" %}</h4>
+					{# TODO: comment view #}
+				</section>
+				
+			</div>
+			<div class="grid_4">
+				<section class="object-details content-block">
+					{% include "addthis_widget.html" %}
+					<dl class="object-metadata">
+						{% if story.contributor_name %}
+						<dt>{% trans "Contributed by" %}</dt>
+						<dd class="contributor">{{ story.contributor_name }}</dd>
+						{% endif %}
+						{% if story.published %}
+						<dt>{% trans "Published" %}</dt>
+						<dd><time class="published">{{ story.published|date:"F j, Y" }}</time></dd>
+						{% endif %}
 
-  <aside>
-    <dl class="story-metadata">
-      {% if story.contributor_name %}
-      <dt>{% trans "Contributed by" %}</dt>
-      <dd class="contributor">{{ story.contributor_name }}</dd>
-      {% endif %}
-      {% if story.published %}
-      <dt>{% trans "Published" %}</dt>
-      <dd><time class="published">{{ story.published|date:"F j, Y" }}</time></dd>
-      {% endif %}
+						<dt>{% trans "Updated" %}</dt>
+						<dd><time class="last-edited">{{ story.last_edited|date:"F j, Y" }} </time></dd>
 
-      <dt>{% trans "Updated" %}</dt>
-      <dd><time class="last-edited">{{ story.last_edited|date:"F j, Y" }} </time></dd>
+						{% if story.organizations.count %}
+						<dt>{% trans "Organizations" %}</dt>
+						<dd>
+							<ul class="organizations">
+								{% for organization in story.organizations.all %}
+								<li><a href="{{ organization.get_absolute_url }}">{{ organization.name }}</a></li>
+								{% endfor %}
+							</ul>
+						</dd>
+						{% endif %}
 
-      {% if story.organizations.count %}
-      <dt>{% trans "Organizations" %}</dt>
-      <dd>
-        <ul class="organizations">
-        {% for organization in story.organizations.all %}
-          <li><a href="{{ organization.get_absolute_url }}">{{ organization.name }}</a></li>
-        {% endfor %}
-        </ul>
-      </dd>
-      {% endif %}
+						{% if story.projects.count %}
+						<dt>{% trans "Projects" %}</dt>
+						<dd>
+							<ul class="projects">
+								{% for project in story.projects.all %}
+								<li><a href="{{ project.get_absolute_url }}">{{ project.name }}</a></li>
+								{% endfor %}
+							</ul>
+						</dd>
+						{% endif %}
 
-      {% if story.projects.count %}
-      <dt>{% trans "Projects" %}</dt>
-      <dd>
-	    <ul class="projects">
-        {% for project in story.projects.all %}
-          <li><a href="{{ project.get_absolute_url }}">{{ project.name }}</a></li>
-        {% endfor %}
-        </ul>
-      </dd>
-      {% endif %}
+						{% if story.topics.count %}
+						<dt>{% trans "Topics" %}</dt>
+						<dd>
+							<ul class="topics inline">
+								{% for topic in story.topics_with_links %}
+								<li{% if forloop.last %} class="last"{% endif %}><a href="{{ topic.url }}">{{ topic.name }}</a></li>
+								{% endfor %}
+							</ul>
+						</dd>
+						{% endif %}
 
-      {% if story.topics.count %}
-      <dt>{% trans "Topics" %}</dt>
-      <dd>
-        <ul class="topics inline">
-        {% for topic in story.topics_with_links %}
-        <li{% if forloop.last %} class="last"{% endif %}><a href="{{ topic.url }}">{{ topic.name }}</a></li>
-        {% endfor %}
-        </ul>
-      </dd>
-      {% endif %}
+						{% if story.contact_info %}
+						<dt>{% trans "Contact Info" %}</dt>
+						<dd>
+							{{ story.contact_info|linebreaks }}
+						</dd>
+						{% endif %}
+					</dl>
+				</section>
+			</div>
+			
+			
 
-      {% if story.contact_info %}
-      <dt>{% trans "Contact Info" %}</dt>
-      <dd>
-      {{ story.contact_info|linebreaks }}
-      </dd>
-      {% endif %}
-    </dl>
-  </aside>
 
-</div>
+<!-- 			<section class="object-ornament post">
+				<section class="related-stories content-block">
+					<h4>Related Stories</h4>
+					{# TODO: related story list + cycler #}
+				</section>
+			</section>
+ -->
+
+
+		</div>
+
+
 {% endblock %}
 
 {% block bodyend %}
@@ -125,16 +154,17 @@
 $(document).ready(function () {
     // Display the story viewer in a modal dialog
     $("#launch-story-viewer").click(function (event) {
-        event.preventDefault();
         var width = $(window).width() * 0.9;
         var height = $(window).height() * 0.9;
         $("#story-viewer").modal({
             opacity: 70,
             minHeight: height,
             minWidth: width,
+            zIndex: 6000
         });
         $("#story-viewer iframe").css("width", width); 
         $("#story-viewer iframe").css("height", height); 
+        return false;
     });
 
     // Launch the viewer in a new window
@@ -144,6 +174,7 @@ $(document).ready(function () {
             var viewerUrl = $(evt.target).attr('href');
             window.open(viewerUrl, 'story-viewer', '');
             $.modal.close();
+            return false
         }
     );
 });

@@ -3,7 +3,7 @@ from django.utils.translation import ugettext as _
 from cms.plugin_base import CMSPluginBase
 from cms.plugin_pool import plugin_pool
 
-from storybase_story.views import homepage_story_list
+from storybase_story.views import (homepage_story_list, homepage_banner_list)
 from storybase_user.views import (homepage_organization_list,
                                   homepage_project_list)
 
@@ -45,8 +45,18 @@ class HomepageStoriesPlugin(CMSPluginBase):
         context['story_list'] = homepage_story_list(instance.num_items)
 	return context 
 
+class HomepageBannerPlugin(CMSPluginBase):
+    model = List 
+    name = _("StoryBase Banner Stories")
+    render_template = "homepage_banner_plugin.html"
+    
+    def render(self, context, instance, placeholder):
+        context['stories'] = homepage_banner_list(instance.num_items)
+	return context
+
 
 plugin_pool.register_plugin(StoryPlugin)
 plugin_pool.register_plugin(HomepageStoriesPlugin)
+plugin_pool.register_plugin(HomepageBannerPlugin)
 plugin_pool.register_plugin(HomepageProjectsPlugin)
 plugin_pool.register_plugin(HomepageOrganizationsPlugin)

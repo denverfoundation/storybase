@@ -4,8 +4,9 @@
 
 {% block head_title %}{% trans "My Account" %}{% endblock %}
 
-{% block primary_content %}
-<h1>{%trans "My Stories" %}</h1>
+{% block body_title %}{%trans "My Stories" %}{% endblock %}
+
+{% block twocol-content %}
 {% if user.stories.count %}
 <table>
     <thead>

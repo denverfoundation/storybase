@@ -1,0 +1,15 @@
+<div id="banner">
+	<div class="images">
+		{% for story in stories %}
+		<a href="#">
+			<span class="overlay"></span>
+			<img src="{{ STATIC_URL }}css/images/{{ story.image }}" alt="" />
+			<span class="title"><em>{{ story.title }}</em></span>
+		</a>
+		{% if forloop.counter0 == 4 and forloop.revcounter0 == 5 %} {# cheesy! #}
+		<div class="cl">&nbsp;</div>
+		{% endif %}
+		{% endfor %}
+		<div class="cl">&nbsp;</div>
+	</div>
+</div>

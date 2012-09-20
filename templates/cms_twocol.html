@@ -2,24 +2,51 @@
 
 {% load cms_tags i18n sekizai_tags menu_tags %}
 
-{% block col_left %}
-<div class="threecol sidebar-left">
-  <nav id="subnav">
-  {% ifequal request.current_page.level 0 %}
-    <ul class="navroot">{% show_sub_menu 1 %}</ul>
-  {% endifequal %}
-  {% if request.current_page.level >= 1 %}
-    <ul class="navroot">{% show_menu 1 %}</ul>
-  {% endif %}
-  </nav>
-  {% placeholder col_left %}
+{% block body_title %}{% page_attribute "page_title" %}{% endblock%}
+
+{% block sidebar %}
+<ul class="sibling-nav">
+	{% show_menu 1 100 0 1 %}
+</ul>
+{% endblock %}
+
+{% block twocol-content %}
+{% placeholder twocol-content or %}
+<h4 class="first">
+	Floodlight is about two things: storytelling and positive change.<br>Our goal is to help you use the first one to achieve the second.
+</h4>
+<p>Welcome to Floodlight&mdash;a, community-powered storytelling project designed to drive social change by giving individuals and organizations the skills and tools to generate visually-compelling, data-supported stories that inspire people to act and illuminate community issues.</p>
+{% endplaceholder %}
+{% endblock %}
+
+
+{% block bottom-left-col %}
+<div class="page-pull">
+	<h4>{% placeholder page-pull-1-title or %}<a href="#">The Vision</a>{% endplaceholder %}</h4>
+	{% placeholder page-pull-1 or %}
+	<p><strong>We can’t change what we can’t see. But together our stories can illuminate issues that matter and brighten the world.</strong></p>
+
+	<p>We believe in the inherent power, desire and creativity of people to enlighten the others in their community about the critical issues that affect us all. We also believe that thriving communities hinge on full citizen engagement.</p>
+
+	<p>Floodlight strives to empower as many community members as possible to translate their own firsthand, on-the-ground experiences and knowledge into multi-media and data-rich stories to that can direct action to improve people’s lives.</p>
+	<p><a href="#">Read More</a></p>
+	{% endplaceholder %}
+</div>
+{% endblock %}
+{% block bottom-right-col %}
+<div class="page-pull">
+	<h4>{% placeholder page-pull-2-title or %}<a href="#">Our Partners</a>{% endplaceholder %}</h4>
+	{% placeholder page-pull-2 or %}
+	<p><strong>Created By Impassioned Storytellers, Data Geeks and Community Change Agents.</strong></p>
+
+	<p>Floodlight was created by a team of impassioned social change agents, investigative journalists, data visualization experts and technology gurus with the goal of helping community members create and share inspiring, data-driven stories. Through the use of a free, open source platform, Floodlight helps residents illuminate their own issues while contributing to a larger unfolding story about our community.</p>
+	<p><a href="#">Read More</a></p>
+	{% endplaceholder %}
 </div>
 {% endblock %}
 
-{% block body_title %}{% page_attribute "page_title" %}{% endblock%}
-{% block intro %}
-{% placeholder intro %}
-{% endblock %}
-{% block primary_content %}
-{% placeholder primary_content %}
+
+{% block extrajs %}
+	<script src="{{ STATIC_URL }}js/libs/jquery.cycle.all.min.js"></script>
+	<script src="{{ STATIC_URL }}js/libs/jquery.flexslider.js" type="text/javascript"></script>
 {% endblock %}
