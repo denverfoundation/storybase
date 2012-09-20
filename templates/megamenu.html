@@ -1,8 +1,8 @@
 {% load i18n %}
 <div class="megamenu navigation" id="navigation">
 	<ul> 
-		<li class="nodd"><a class="active" href="{{ SITE_URL }}">HOME</a></li>
-		<li><a href="{{ SITE_URL }}build">BUILD A STORY<em></em></a>
+		<li class="nodd"><a class="active" href="/">HOME</a></li>
+        <li><a href="{% url story_builder %}">BUILD A STORY<em></em></a>
 			<div class="dd onecol">
 				<div class="dd-col col1-2">
 					<h6>Take your storytelling to the next level.</h6>
@@ -13,23 +13,23 @@
 				<div class="cl">&nbsp;</div>
 			</div>
 		</li>
-		<li><a href="{{ SITE_URL }}explore">EXPLORE FLOODLIGHT<em></em></a>
+        <li><a href="{% url explore_stories %}">EXPLORE FLOODLIGHT<em></em></a>
 			<div class="dd threecol">
 				<div class="dd-col col1">
-					<h6><a href="{{ SITE_URL }}explore">Browse Stories</a></h6>
+                    <h6><a href="{% url explore_stories %}">Browse Stories</a></h6>
 					<p>
 						Browse and filter Floodlight stories by topic, location, language, project and organization.
 					</p>
 				</div>
 				<div class="dd-col col2">
-					<h6><a href="{{ SITE_URL }}organizations">Organizations</a></h6>
+                    <h6><a href="{% url organization_list %}">Organizations</a></h6>
 					<p>
 						Organizations are groups of people creating stories together. They can be non-profits, school groups, neighborhoods, or any storytellers who share a common goal.
 					</p>
 					<p><a href="#">Create an Organization</a></p>
 				</div>
 				<div class="dd-col col3">
-					<h6><a href="#">Projects</a></h6>
+                    <h6><a href="{% url project_list %}">Projects</a></h6>
 					<p>
 						Projects are collections of stories about a common theme, place, issue, event or movement. They can be open to contributions from any Floodlight user, or constrained to a group of authors.
 					</p>
