@@ -1,0 +1,29 @@
+{% load cms_tags i18n %}
+
+{% comment %}
+context:
+- more_link_text, eg "View Projects" or "View Stories"
+- more_link_url, a link to full listing of projects or stories
+- objects, a list of dicts with keys:
+	title
+	author
+	date
+	image_url
+	excerpt
+	
+{% endcomment %}
+<ul class="slides">
+	{% for object in objects %}
+	<li>
+		<div class="image">
+			<img src="{{ STATIC_URL }}{{ object.image_url }}" alt="" />
+		</div>
+		<div class="text">
+			<h5>{{ object.title }}</h5>
+			<p class="byline"><span class="author">{{ object.author }}</span><span class="date">{{ object.date }}</span></p>
+			<p>{{ object.excerpt }}</p>
+			<p class="more"><a href="{{ more_link_url }}">{{ more_link_text }}</a></p>
+		</div>
+	</li>
+	{% endfor %}
+</ul>

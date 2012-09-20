@@ -37,6 +37,20 @@ def homepage_story_list(num_stories):
     stories = Story.objects.on_homepage().order_by('-last_edited')[:num_stories]
     return simple_story_list(stories)
 
+def homepage_banner_list(num_stories):
+    """Render a listing of stories for the homepage banner """
+    # temp -- just putting out demo images
+    #stories = Story.objects.on_homepage().order_by('-last_edited')[:num_stories]
+    stories = []
+    image_num = 1
+    for i in range(num_stories):
+        image_num = i + 1
+        if (image_num > 9):
+            image_num -= 9
+        stories.append({"image": "image%d.jpg" % image_num, "title": "banner story %d title here." % i})
+    return stories
+
+
 
 class ExploreStoriesView(TemplateView):
     """

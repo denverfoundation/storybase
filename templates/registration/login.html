@@ -5,12 +5,12 @@
 {% block head_title %}{% trans "Sign In" %}{% endblock %}
 
 {% block base_content %}
-<h1>{% trans "Sign In" %}</h1>
+<h1><span>{% trans "Sign In" %}</span></h1>
 
 <p><a href="{% url registration_register %}">{% trans "Don't have an account? Join now." %}</a></p>
 
 {% if social_auth %}
-<h2>{% trans "Sign in using your favorite social media account" %}</h2>
+<h2><span>{% trans "Sign in using your favorite social media account" %}</span></h2>
 <ul>
   {% for name, value in social_auth.items %}
   <li><a href="{% url socialauth_begin name %}" class="{{ name }}">{% trans "Sign in with" %} {{ name|capfirst }}</a></li>
@@ -18,7 +18,7 @@
 </ul>
 {% endif %}
 
-<h2>{% blocktrans %}Or, sign in with your {{ storybase_site_name }} account{% endblocktrans %}</h2>
+<h2><span>{% blocktrans %}Or, sign in with your {{ storybase_site_name }} account{% endblocktrans %}</span></h2>
 
 <form method="post">
   {% csrf_token %}

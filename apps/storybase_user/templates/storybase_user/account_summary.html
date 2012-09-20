@@ -4,12 +4,12 @@
 
 {% block head_title %}{% trans "Account Information" %}{% endblock %}
 
-{% block primary_content %}
-<h1>{% trans "Account information for" %} {{ user.email }}</h1>
+{% block body_title %}{% trans "Account information for" %} {{ user.email }}{% endblock %}
 
+{% block twocol-content %}
 {% include "messages.html" %}
 
-<h2>{% trans "Email Address" %}</h2>
+<h2><span>{% trans "Email Address" %}</span></h2>
 
 <form method="post">{% csrf_token %}
 {{ change_email_form.as_p }}
@@ -17,7 +17,7 @@
 <input type="submit" value="{% trans "Change Email Address" %}" />
 </form>
 
-<h2>{% trans "Connected accounts" %}</h2>
+<h2><span>{% trans "Connected accounts" %}</span></h2>
 <ul>
   {% for name, value in social_auth.items %}
   <li>{{ name|capfirst }} {% if value %}<a href="{% url socialauth_disconnect backend=name %}">{% trans "disconnect" %}</a>{% else %}<a href="{% url socialauth_begin backend=name %}">{% trans "connect" %}</a>{% endif %}</li>

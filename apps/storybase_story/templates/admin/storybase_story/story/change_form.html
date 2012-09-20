@@ -1,0 +1,10 @@
+{% extends "admin/change_form.html" %}
+{% load i18n %}
+
+{% block object-tools-items %}
+{{ block.super }}
+{% if original.story_id %}
+{# Add link to edit the story in the builder #}
+<li><a class="build" href="{% url story_builder story_id=original.story_id %}">{% trans "Edit in Builder" %}</a></li>
+{% endif %}
+{% endblock %}
