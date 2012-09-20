@@ -1010,105 +1010,111 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   onShow: function() {
     // Recalculate the width of the section list view.
     var that = this;
+    var showTour = _.isUndefined(guiders) ? false : ($.cookie('storybase_show_builder_tour') === 'false' ? false : true);
+
     if (this.sectionListView) {
       this.sectionListView.setWidth();
     }
-
-    guiders.createGuider({
-      attachTo: '#toggle-section-list',
-      buttons: [
-        {
-          name: gettext("Next"),
-          onclick: guiders.next
-        }
-      ],
-      position: 3,
-      id: 'section-list-guider',
-      title: gettext("Section List"),
-      description: gettext("This bar shows a list of all the sections in the story. You can use it to select which section you want to edit, to add sections, and to remove sections"),
-      next: 'section-thumbnail-guider'
-    });
-    guiders.createGuider({
-      attachTo: '.section-thumbnail',
-      buttons: [
-        {
-          name: gettext("Prev"),
-          onclick: guiders.prev
+    
+    if (showTour) { 
+      guiders.createGuider({
+        attachTo: '#toggle-section-list',
+        buttons: [
+          {
+            name: gettext("Next"),
+            onclick: guiders.next
+          }
+        ],
+        position: 3,
+        id: 'section-list-guider',
+        title: gettext("Section List"),
+        description: gettext("This bar shows a list of all the sections in the story. You can use it to select which section you want to edit, to add sections, and to remove sections"),
+        next: 'section-thumbnail-guider'
+      });
+      guiders.createGuider({
+        attachTo: '.section-thumbnail',
+        buttons: [
+          {
+            name: gettext("Prev"),
+            onclick: guiders.prev
+          },
+          {
+            name: gettext("Next"),
+            onclick: guiders.next
+          }
+        ],
+        position: 2,
+        id: 'section-thumbnail-guider',
+        title: gettext("Select a Section"),
+        description: gettext("Clicking on one of the sections will let you edit that section"),
+        prev: 'section-list-guider',
+        next: 'workflow-step-guider'
+      });
+      guiders.createGuider({
+        attachTo: '.workflow-step #build',
+        buttons: [
+          {
+            name: gettext("Prev"),
+            onclick: guiders.prev
+          },
+          {
+            name: gettext("Next"),
+            onclick: guiders.next
+          }
+        ],
+        position: 6,
+        id: 'workflow-step-guider',
+        title: gettext("Workflow Step"),
+        description: gettext("Clicking on one of these tabs lets you switch between the different steps in the story building process"),
+        next: 'help-guider'
+      });
+      guiders.createGuider({
+        attachTo: '.tools .help',
+        buttons: [
+          {
+            name: gettext("Prev"),
+            onclick: guiders.prev
+          },
+          {
+            name: gettext("Next"),
+            onclick: guiders.next
+          }
+        ],
+        position: 6,
+        id: 'help-guider',
+        title: gettext("Help"),
+        description: gettext("Clicking the help button shows you help for the story section you're currently editing"),
+        onShow: function() {
+          that.dispatcher.trigger('do:show:help', true);
         },
-        {
-          name: gettext("Next"),
-          onclick: guiders.next
-        }
-      ],
-      position: 2,
-      id: 'section-thumbnail-guider',
-      title: gettext("Select a Section"),
-      description: gettext("Clicking on one of the sections will let you edit that section"),
-      prev: 'section-list-guider',
-      next: 'workflow-step-guider'
-    });
-    guiders.createGuider({
-      attachTo: '.workflow-step #build',
-      buttons: [
-        {
-          name: gettext("Prev"),
-          onclick: guiders.prev
+        onHide: function() {
+          that.dispatcher.trigger('do:hide:help', true);
         },
-        {
-          name: gettext("Next"),
-          onclick: guiders.next
-        }
-      ],
-      position: 6,
-      id: 'workflow-step-guider',
-      title: gettext("Workflow Step"),
-      description: gettext("Clicking on one of these tabs lets you switch between the different steps in the story building process"),
-      next: 'help-guider'
-    });
-    guiders.createGuider({
-      attachTo: '.tools .help',
-      buttons: [
-        {
-          name: gettext("Prev"),
-          onclick: guiders.prev
+        next: 'tooltip-guider'
+      });
+      guiders.createGuider({
+        attachTo: '.workflow-step #build',
+        buttons: [
+          {
+            name: gettext("Close"),
+            onclick: guiders.hideAll
+          }
+        ],
+        position: 3,
+        id: 'tooltip-guider',
+        title: gettext("Tooltips"),
+        description: gettext("You can find out more about many of the buttons and the links by hovering your mouse over the object"),
+        onShow: function() {
+          $('.workflow-step #build').triggerHandler('mouseover');
         },
-        {
-          name: gettext("Next"),
-          onclick: guiders.next
+        onHide: function() {
+          // Set a cookie so the user doesn't see the builder tour again
+          $.cookie("storybase_show_builder_tour", false, {path: '/'});
+          $('.workflow-step #build').triggerHandler('mouseout');
         }
-      ],
-      position: 6,
-      id: 'help-guider',
-      title: gettext("Help"),
-      description: gettext("Clicking the help button shows you help for the story section you're currently editing"),
-      onShow: function() {
-        that.dispatcher.trigger('do:show:help', true);
-      },
-      onHide: function() {
-        that.dispatcher.trigger('do:hide:help', true);
-      },
-      next: 'tooltip-guider'
-    });
-    guiders.createGuider({
-      attachTo: '.workflow-step #build',
-      buttons: [
-        {
-          name: gettext("Close"),
-          onclick: guiders.hideAll
-        }
-      ],
-      position: 3,
-      id: 'tooltip-guider',
-      title: gettext("Tooltips"),
-      description: gettext("You can find out more about many of the buttons and the links by hovering your mouse over the object"),
-      onShow: function() {
-        $('.workflow-step #build').triggerHandler('mouseover');
-      },
-      onHide: function() {
-        $('.workflow-step #build').triggerHandler('mouseout');
-      }
-    });
-    guiders.show('section-list-guider');
+      });
+      guiders.show('section-list-guider');
+    }
   },
 
   /**
