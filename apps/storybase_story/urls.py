@@ -34,4 +34,6 @@ urlpatterns = patterns('',
         StoryViewerView.as_view(), name='story_viewer'), 
     url(r'stories/(?P<source_story_id>[0-9a-f]{32,32})/build-connected/$', StoryBuilderView.as_view(), {'template': settings.STORYBASE_CONNECTED_STORY_TEMPLATE}, name='connected_story_builder'),
     url(r'stories/(?P<source_slug>[0-9a-z-]+)/build-connected/$', StoryBuilderView.as_view(), {'template': settings.STORYBASE_CONNECTED_STORY_TEMPLATE}, name='connected_story_builder'),
+    url(r'stories/(?P<source_story_id>[0-9a-f]{32,32})/build-connected/(?P<story_id>[0-9a-f]{32,32})/$', StoryBuilderView.as_view(), {'template': settings.STORYBASE_CONNECTED_STORY_TEMPLATE}, name='connected_story_builder'),
+    url(r'stories/(?P<source_slug>[0-9a-z-]+)/build-connected/(?P<story_id>[0-9a-f]{32,32})/$', StoryBuilderView.as_view(), {'template': settings.STORYBASE_CONNECTED_STORY_TEMPLATE}, name='connected_story_builder'),
 )
