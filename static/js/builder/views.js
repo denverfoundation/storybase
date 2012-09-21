@@ -3941,7 +3941,9 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
      * Update the view's form labels based on the asset type.
      */
     updateFormLabels: function() {
-      this.form.schema.url.title = capfirst(gettext("enter the featured image URL"));
+      if (this.form.schema.url) {
+        this.form.schema.url.title = capfirst(gettext("enter the featured image URL"));
+      }
       if (this.form.schema.image) {
         this.form.schema.image.title = capfirst(gettext("select the featured image from your own computer"));
       }
