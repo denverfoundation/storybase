@@ -412,11 +412,32 @@ def update_last_edited(sender, instance, **kwargs):
             obj.save()
 
 
+def add_assets(sender, **kwargs):
+    """
+    Add asset to a Story's asset list
+
+    This is meant as a signal handler to automatically add assets
+    to a Story's assets list when they're added to the
+    featured_assets relation
+    
+    """
+    instance = kwargs.get('instance')
+    action = kwargs.get('action')
+    pk_set = kwargs.get('pk_set')
+    model = kwargs.get('model')
+    reverse = kwargs.get('reverse')
+    if action == "post_add" and not reverse:
+        for obj in model.objects.filter(pk__in=pk_set):
+            instance.assets.add(obj)
+        instance.save()
+
 # Hook up some signal handlers
 pre_save.connect(set_date_on_published, sender=Story)
 post_save.connect(set_story_slug, sender=StoryTranslation)
 m2m_changed.connect(update_last_edited, sender=Story.organizations.through)
 m2m_changed.connect(update_last_edited, sender=Story.projects.through)
+m2m_changed.connect(add_assets, sender=Story.featured_assets.through)
+
 
 class StoryRelationPermission(PermissionMixin):
     """Permissions for Story Relations"""

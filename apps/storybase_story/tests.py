@@ -251,6 +251,20 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
                          "/stories/%s/build-connected/%s/" % 
                          (story.slug, story2.story_id))
 
+    def test_add_assets_signal(self):
+        """
+        Test that an asset is also added to the assets relation
+        when it's added to the featured_assets relation.
+        """
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status='published')
+        asset = create_html_asset(type='text', title='Test Asset', 
+                                  body='Test content')
+        self.assertEqual(story.assets.count(), 0)
+        story.featured_assets.add(asset)
+        story.save()
+        self.assertEqual(story.assets.count(), 1)
+
 
 class StoryPermissionTest(TestCase):
     """Test case for story permissions"""
