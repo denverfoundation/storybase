@@ -598,6 +598,30 @@ storybase.collections.SectionAssets = storybase.collections.Assets.extend({
   }
 });
 
+storybase.collections.FeaturedAssets = storybase.collections.SaveableCollection.extend(
+  _.extend({}, storybase.collections.TastypieMixin, {
+    model: storybase.models.Asset,
+
+    initialize: function(models, options) {
+      if (!_.isUndefined(options)) {
+        this.setStory(options.story);
+      }
+    },
+
+    save: function(options) {
+      return storybase.collections.SaveableCollection.prototype.save.call(this, options);
+    },
+
+    setStory: function(story) {
+      this._story = story;
+    },
+
+    url: function() {
+      return storybase.globals.API_ROOT + 'assets/stories/' + this._story.id + '/featured/';
+    }
+  })
+);
+
 storybase.models.Tag = Backbone.Model.extend({
   idAttribute: "tag_id",
 

@@ -2481,7 +2481,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
         return $('#section-asset-edit-template').html();
       }
       else if (state === 'upload') {
-        return $('#section-asset-uploadprogress-template').html();
+        return $('#asset-uploadprogress-template').html();
       }
       else {
         // state === 'select'
@@ -3706,6 +3706,10 @@ storybase.builder.views.PublishView = Backbone.View.extend({
 
     this.dispatcher = this.options.dispatcher;
     this.template = Handlebars.compile(this.templateSource);
+    this.featuredAssetView = new storybase.builder.views.FeaturedAssetView({
+      story: this.model,
+      dispatcher: this.dispatcher
+    });
     this.legalView = new storybase.builder.views.LegalView({
       model: this.model,
       dispatcher: this.dispatcher
@@ -3822,6 +3826,7 @@ storybase.builder.views.PublishView = Backbone.View.extend({
       showSharing: this.options.showSharing
     };
     this.$el.html(this.template(context));
+    this.$('.title').after(this.featuredAssetView.render().el);
     this.$('.title').after(this.legalView.render().el);
     if (this.legalView.acceptedLegalAgreement()) {
       this.legalView.$el.hide();
@@ -3841,3 +3846,222 @@ storybase.builder.views.PublishView = Backbone.View.extend({
     return this;
   }
 });
+
+storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
+  _.extend({}, storybase.builder.views.FileUploadMixin, {
+    id: 'featured-asset',
+
+    events: {
+      'click input[type="reset"]': "cancel",
+      'submit form.bbf-form': 'processForm'
+    },
+
+    templateSource: $('#featured-asset-template').html(),
+
+    subTemplateSource: {
+      'display': $('#featured-asset-display-template').html(),
+      'upload': $('#asset-uploadprogress-template').html()
+    },
+
+    getSubTemplate: function() {
+      var state = this.getState();
+      if (_.isUndefined(this.templates[state])) {
+        if (this.subTemplateSource[state]) {
+          this.templates[state] = Handlebars.compile(this.subTemplateSource[state]);
+        }
+        else {
+          return null;
+        }
+      }
+      return this.templates[state]; 
+    },
+
+    initialize: function() {
+      this.dispatcher = this.options.dispatcher;
+      this.template = Handlebars.compile(this.templateSource);
+      this.templates = {};
+
+      if (_.isUndefined(this.model)) {
+        this.model = new storybase.models.Asset({
+          'type': 'image'
+        });
+      }
+
+      if (_.isUndefined(this.collection)) {
+        this.collection = new storybase.collections.FeaturedAssets([], {
+          story: this.story
+        });
+      }
+      
+      if (_.isUndefined(this.story)) {
+        this.dispatcher.on("ready:story", this.setStory, this);
+      }
+
+      this.bindModelEvents();
+      this.initializeForm();
+      this.setInitialState();
+    },
+
+    bindModelEvents: function() {
+      this.model.on("change", this.initializeForm, this);
+    },
+
+    unbindModelEvents: function() {
+      this.model.off("change", this.initializeForm, this);
+    },
+
+    setInitialState: function() {
+      if (!this.model.isNew()) {
+        this._state = 'display';
+      }
+      else {
+        this._state = 'edit';
+      }
+      console.debug(this._state);
+    },
+
+    getState: function() {
+      return this._state;
+    },
+
+    setState: function(state) {
+      this._state = state;
+      return this;
+    },
+
+    initializeForm: function() {
+      this.form = new Backbone.Form({
+        model: this.model
+      });
+      this.updateFormLabels(); 
+      this.form.render();
+    },
+
+    /** 
+     * Update the view's form labels based on the asset type.
+     */
+    updateFormLabels: function() {
+      this.form.schema.url.title = capfirst(gettext("enter the featured image URL"));
+      if (this.form.schema.image) {
+        this.form.schema.image.title = capfirst(gettext("select the featured image from your own computer"));
+      }
+    },
+
+    setStory: function(story) {
+      this.story = story;
+      this.collection.setStory(story);
+    },
+
+    render: function() {
+      var context = {
+        model: this.model.toJSON()
+      };
+      var state = this.getState();
+      var subTemplate = this.getSubTemplate();
+      this.form.render().$el.append('<input type="reset" value="' + gettext("Cancel") + '" />').append('<input type="submit" value="' + gettext("Save Changes") + '" />');
+      this.$el.html(this.template(context));
+      if (subTemplate) {
+        this.$el.append(subTemplate(context));
+      }
+      if (state === 'edit') {
+        this.$el.append(this.form.el);
+      }
+      return this;
+    },
+
+    /**
+     * Event handler for submitting form
+     */
+    processForm: function(e) {
+      e.preventDefault();
+      var errors = this.form.validate();
+      var data;
+      var file;
+      var options = {};
+      var that = this;
+      if (!errors) {
+        var data = this.form.getValue();
+        if (data.image) {
+          file = data.image;
+          // Set a callback for saving the model that will upload the
+          // image.
+          options.success = function(model) {
+            that.uploadFile(model, 'image', file, {
+              progressHandler: that.handleUploadProgress,
+              beforeSend: function() {
+                that.setState('upload');
+                that.render();
+              },
+              success: function(model, response) {
+                that.setState('display');
+                that.render();
+              }
+            });
+          };
+        }
+
+        // Delete the image property.  We've either retrieved it for
+        // upload or it was empty (meaning we don't want to change the
+        // image.
+        delete data.image;
+        this.saveModel(data, options);
+      }
+      else {
+        // Remove any previous error messages
+        this.form.$('.bbf-model-errors').remove();
+        if (!_.isUndefined(errors._others)) {
+          that.form.$el.prepend('<ul class="bbf-model-errors">');
+          _.each(errors._others, function(msg) {
+            that.form.$('.bbf-model-errors').append('<li>' + msg + '</li>');
+          });
+        }
+      }
+    },
+
+    /**
+     * Set the featured asset.
+     *
+     * This method provides an interface for the actual set operation
+     * since it's a little unintuitive.
+     */
+    setFeaturedAsset: function(asset) {
+      // The data model supports having multiple featured assets, but
+      // our current use case only needs to keep one.
+      this.collection.reset(asset);
+      this.collection.save();
+      // BOOKMARK
+    },
+
+    saveModel: function(attributes, options) {
+      options = _.isUndefined(options) ? {} : options;
+      var that = this;
+      this.model.save(attributes, {
+        success: function(model) {
+          that.setState('display');
+          that.render();
+          that.setFeaturedAsset(model);
+          if (options.success) {
+            options.success(model);
+          }
+        },
+        error: function(model) {
+          that.dispatcher.trigger('error', gettext('Error saving the featured image'));
+        }
+      });
+    },
+
+    /**
+     * Event handler for canceling form interaction
+     */
+    cancel: function(e) {
+      e.preventDefault();
+      if (this.model.isNew()) {
+        this.setState('edit');
+      }
+      else {
+        this.setState('display');
+      }
+      this.render();
+    }
+  })
+);

@@ -14,7 +14,7 @@ from tastypie.test import ResourceTestCase, TestApiClient
 
 from storybase.tests.base import FixedTestApiClient, FileCleanupMixin
 from storybase_story.models import (create_section, create_story,
-                                    Container, SectionAsset, SectionLayout)
+    Container, SectionAsset, SectionLayout, Story)
 from storybase_asset.models import (Asset, ExternalAsset, HtmlAsset,
     HtmlAssetTranslation, LocalImageAsset, DataSet, LocalDataSet,
     create_html_asset, create_external_asset, create_local_image_asset,
@@ -1420,3 +1420,51 @@ class AssetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
             self.assertEqual(original_hash, created_hash)
             # Set our created file to be cleaned up
             self.add_file_to_cleanup(created_asset.image.file.path)
+
+
+class FeaturedAssetResourceTest(FileCleanupMixin, ResourceTestCase):
+    def setUp(self):
+        super(DataSetResourceTest, self).setUp()
+        self.api_client = TestApiClient()
+        self.username = 'test'
+        self.password = 'test'
+        self.user = User.objects.create_user(self.username, 
+            'test@example.com', self.password)
+        self.user2 = User.objects.create_user("test2", "test2@example.com",
+                                              "test2")
+        self.story = create_story(title="Test Story", summary="Test Summary",
+            byline="Test Byline", status="published", language="en", 
+            author=self.user)
+
+    def test_put_list(self):
+        asset_type = 'image'
+        asset_title = "Test Image Asset"
+        asset_caption = "This is a test image"
+        image_filename = "test_image.jpg"
+
+        app_dir = os.path.dirname(os.path.abspath(__file__))
+        img_path = os.path.join(app_dir, "test_files", image_filename)
+        with open(img_path) as image:
+            asset = create_local_image_asset(
+                type=asset_type,
+                image=image,
+                image_filename="test_image.jpg",
+                title=asset_title,
+                caption=asset_caption)
+            self.add_file_to_cleanup(asset.image.file.path)
+        put_data = [
+            {
+                'asset_id': asset.asset_id
+            },
+        ]
+        self.assertEqual(self.story.featured_assets.all().count(), 0)
+        uri = '/api/0.1/assets/stories/%s/featured/' % (self.story.story_id)
+        self.api_client.client.login(username=self.username, password=self.password)
+        resp = self.api_client.put(uri, format='json', data=put_data)
+        self.assertHttpAccepted(resp)
+        # Refresh the story
+        self.story = Story.objects.get(story_id=self.story.story_id)
+        self.assertEqual(self.story.featured_assets.all().count(), 1)
+        self.assertEqual(self.story.featured_assets.all()[0], 
+                         asset)
+        # BOOKMARK

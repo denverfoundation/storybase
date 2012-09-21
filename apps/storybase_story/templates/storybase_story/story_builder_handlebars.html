@@ -155,8 +155,20 @@ Handlebars.js templates for story builder Backbone application
 {{{model.content}}}
 </script>
 
-<script type="text/x-handlebars-template" id="section-asset-uploadprogress-template">
+<script type="text/x-handlebars-template" id="asset-uploadprogress-template">
 <div class="uploadprogress"></div>
+</script>
+
+<script type="text/x-handlebars-template" id="featured-asset-template">
+<h3>{{gettext message="Featured Image"}}</h3>
+</script>
+
+<script type="text/x-handlebars-template" id="featured-asset-display-template">
+<ul class="featured-asset-controls">
+    <li><a href="#" class="edit">{{gettext message="Edit"}}</a></li>
+    <li><a href="#" class="remove">{{gettext message="Remove"}}</a></li>
+</ul>
+{{{model.content}}}
 </script>
 
 <script type="text/x-handlebars-template" id="unused-assets-template">
