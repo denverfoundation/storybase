@@ -27,7 +27,7 @@ class AssetAdmin(StorybaseModelAdmin):
     filter_horizontal = ['datasets']
     list_display = ('change_link', 'type', 'owner', 'last_edited')
     list_filter = ('type', 'owner')
-    search_fields = ['asset__assettranslation__title']
+    search_fields = [cls.translation_set + '__title' for cls in (ExternalAsset, HtmlAsset, LocalImageAsset)] + [HtmlAsset.translation_set + '__body']
 
     def change_link(self, obj):
         """
