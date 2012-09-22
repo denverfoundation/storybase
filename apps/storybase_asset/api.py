@@ -45,6 +45,8 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
         queryset = Asset.objects.select_subclasses()
         resource_name = 'assets'
         allowed_methods = ['get', 'post', 'put']
+        featured_list_allowed_methods = ['get', 'put']
+        featured_detail_allowed_methods = []
         authentication = Authentication()
         authorization = LoggedInAuthorization()
         # Hide the underlying id
@@ -101,6 +103,11 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
                 (self._meta.resource_name, trailing_slash()),
                 self.wrap_view('dispatch_list'),
                 name="api_dispatch_list"),
+            url(r"^(?P<resource_name>%s)/stories/(?P<story_id>[0-9a-f]{32,32})/featured%s$" %
+                (self._meta.resource_name, trailing_slash()),
+                self.wrap_view('dispatch_featured_list'),
+                kwargs={'featured': True},
+                name="api_dispatch_featured_list"),
             url(r"^(?P<resource_name>%s)/stories/(?P<story_id>[0-9a-f]{32,32})/sections/none%s$" %
                 (self._meta.resource_name, trailing_slash()),
                 self.wrap_view('dispatch_list'),
@@ -111,6 +118,47 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
                 self.wrap_view('dispatch_list'),
                 name="api_dispatch_list"),
         ]
+
+    def dispatch_featured_list(self, request, **kwargs):
+        # This is defined as a separate method
+        # so dispatch will check which method is allowed separately
+        # from the other method handlers
+        return self.dispatch('featured_list', request, **kwargs)
+
+    def get_featured_list(self, request, **kwargs):
+        # Just call through to get_list.  The filtering is handled
+        # in apply_request_kwargs. 
+        #
+        # This is defined as a separate method
+        # to match the naming conventions expected by dispatch().  
+        # We do this so dispatch() will do a separate check for allowed
+        # methods.
+        return self.get_list(request, **kwargs)
+
+    def put_featured_list(self, request, **kwargs):
+        story_id = kwargs.pop('story_id')
+        story = Story.objects.get(story_id=story_id)
+        # QUESTION: Does authorization check need to go here?
+        deserialized = self.deserialize(request, request.raw_post_data, format=request.META.get('CONTENT_TYPE', 'application/json'))
+        deserialized = self.alter_deserialized_list_data(request, deserialized)
+        # Clear out existing relations
+        story.featured_assets.clear()
+        bundles = []
+        asset_ids = [asset_data['asset_id'] for asset_data in deserialized]
+        qs = self.get_object_list(request)
+        assets = qs.filter(asset_id__in=asset_ids)
+        for asset in assets:
+            story.featured_assets.add(asset)
+            bundles.append(self.build_bundle(obj=asset, request=request))
+        story.save()
+
+        if not self._meta.always_return_data:
+            return http.HttpNoContent()
+        else:
+            to_be_serialized = {}
+            to_be_serialized['objects'] = [self.full_dehydrate(bundle) for bundle in bundles]
+            to_be_serialized = self.alter_list_data_to_serialize(request, to_be_serialized)
+            return self.create_response(request, to_be_serialized, response_class=http.HttpAccepted)
 
     def detail_uri_kwargs(self, bundle_or_obj):
         """
@@ -159,8 +207,13 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
         story_id = kwargs.get('story_id')
         section_id = kwargs.get('section_id')
         no_section = kwargs.get('no_section')
+        featured = kwargs.get('featured')
         if story_id:
-            filters['stories__story_id'] = story_id
+            if featured:
+                filters['featured_in_stories__story_id'] = story_id
+            else:
+                filters['stories__story_id'] = story_id
+
         if section_id:
             filters['sectionasset__section__section_id'] = section_id
 

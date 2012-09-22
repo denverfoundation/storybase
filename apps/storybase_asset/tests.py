@@ -1467,4 +1467,3 @@ class FeaturedAssetResourceTest(FileCleanupMixin, ResourceTestCase):
         self.assertEqual(self.story.featured_assets.all().count(), 1)
         self.assertEqual(self.story.featured_assets.all()[0], 
                          asset)
-        # BOOKMARK
