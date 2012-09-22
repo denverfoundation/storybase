@@ -1,4 +1,5 @@
 from django import http as django_http
+from django.db.models import Q
 from django.http import Http404
 from django.conf.urls.defaults import url
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
@@ -45,14 +46,14 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
         queryset = Asset.objects.select_subclasses()
         resource_name = 'assets'
         allowed_methods = ['get', 'post', 'put']
-        featured_list_allowed_methods = ['get', 'put']
-        featured_detail_allowed_methods = []
         authentication = Authentication()
         authorization = LoggedInAuthorization()
         # Hide the underlying id
         excludes = ['id']
 
-        delayed_authorization_methods = ['put_detail']
+        featured_list_allowed_methods = ['get', 'put']
+        featured_detail_allowed_methods = []
+        delayed_authorization_methods = ['put_detail', 'put_featured_list']
 
     def get_object_class(self, bundle=None, request=None, **kwargs):
         content_fields = ('body', 'image', 'url')
@@ -73,21 +74,6 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
         else:
             raise BadRequest("You must specify an image, body, or url") 
 
-    def get_object_list(self, request):
-        """
-        Get a list of assets, filtering based on the request's user and 
-        the publication status
-        
-        """
-        from django.db.models import Q
-        # Only show published stories  
-        q = Q(status='published')
-        if hasattr(request, 'user') and request.user.is_authenticated():
-            # If the user is logged in, show their unpublished stories as
-            # well
-            q = q | Q(owner=request.user)
-
-        return super(AssetResource, self).get_object_list(request).filter(q)
 
     def prepend_urls(self):
         return [
@@ -138,7 +124,7 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
     def put_featured_list(self, request, **kwargs):
         story_id = kwargs.pop('story_id')
         story = Story.objects.get(story_id=story_id)
-        # QUESTION: Does authorization check need to go here?
+        self.is_authorized(request, story)
         deserialized = self.deserialize(request, request.raw_post_data, format=request.META.get('CONTENT_TYPE', 'application/json'))
         deserialized = self.alter_deserialized_list_data(request, deserialized)
         # Clear out existing relations
@@ -224,6 +210,21 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
 
         return new_obj_list
 
+    def obj_get_list(self, request=None, **kwargs):
+        """
+        Get a list of assets, filtering based on the request's user and 
+        the publication status
+        
+        """
+        # Only show published assets 
+        q = Q(status='published')
+        if hasattr(request, 'user') and request.user.is_authenticated():
+            # If the user is logged in, show their unpublished stories as
+            # well
+            q = q | Q(owner=request.user)
+
+        return super(AssetResource, self).obj_get_list(request, **kwargs).filter(q)
+
     def dehydrate(self, bundle):
         # Exclude the filename field from the output
         del bundle.data['filename']
@@ -306,21 +307,19 @@ class DataSetResource(DataUriResourceMixin,DelayedAuthorizationResource,
 
         return new_obj_list
 
-    def get_object_list(self, request):
+    def obj_get_list(self, request=None, **kwargs):
         """
         Get a list of assets, filtering based on the request's user and 
         the publication status
         
         """
-        from django.db.models import Q
-        # Only show published stories  
+        # Only show published datasets 
         q = Q(status='published')
         if hasattr(request, 'user') and request.user.is_authenticated():
             # If the user is logged in, show their unpublished stories as
             # well
             q = q | Q(owner=request.user)
-
-        return super(DataSetResource, self).get_object_list(request).filter(q)
+        return super(DataSetResource, self).obj_get_list(request, **kwargs).filter(q)
 
     def prepend_urls(self):
         return [
