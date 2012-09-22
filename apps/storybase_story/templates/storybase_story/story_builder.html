@@ -121,11 +121,13 @@
             relatedStories: new storybase.collections.StoryRelations,
             storyTemplates: new storybase.builder.collections.StoryTemplates,
             topics: {{ topics_json }},
-            startOverUrl: storybase.utils.getRoot(["build", "build-connected"], window.location.pathname)
+            startOverUrl: storybase.utils.getRoot(["build", "build-connected"], window.location.pathname),
+            featuredAssets: new storybase.collections.FeaturedAssets
         }, {{ options_json }});
         var relatedStoriesJSON = null;
         var templateAssetsJSON = null;
         var templateSectionsJSON = null;
+        var featuredAssetsJSON = null;
         {% if story_json %}
         options.model = new storybase.models.Story({{ story_json }});
         {% endif %}
@@ -141,6 +143,9 @@
         {% if template_assets_json %}
         templateAssetsJSON = {{ template_assets_json }};
         {% endif %}
+        {% if featured_assets_json %}
+        featuredAssetsJSON = {{ featured_assets_json }};
+        {% endif %}
         if (relatedStoriesJSON) {
           options.relatedStories.reset(relatedStoriesJSON.objects);
         }
@@ -152,6 +157,9 @@
                   section.assets.reset(parse(templateAssetsJSON[section.id]));
               });
             }
+        }
+        if (featuredAssetsJSON) {
+          options.featuredAssets.reset(featuredAssetsJSON.objects);
         }
         options.storyTemplates.reset(storyTemplatesData.objects);
         options.help.reset(helpData.objects);

@@ -14,6 +14,7 @@ from django.views.generic import DetailView, TemplateView
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
+from storybase_asset.api import AssetResource
 from storybase_asset.models import ASSET_TYPES
 from storybase_geo.models import Place
 from storybase_help.api import HelpResource
@@ -269,6 +270,20 @@ class StoryBuilderView(DetailView):
 
         return resource.serialize(None, to_be_serialized, 'application/json')
 
+    def get_featured_assets_json(self):
+        resource = AssetResource()
+        to_be_serialized = {}
+        objects = resource.obj_get_list(self.request, featured=True,
+                                        story_id=self.object.story_id)
+        sorted_objects = resource.apply_sorting(objects)
+        to_be_serialized['objects'] = sorted_objects
+
+        # Dehydrate the bundles in preparation for serialization.
+        bundles = [resource.build_bundle(obj=obj) for obj in to_be_serialized['objects']]
+        to_be_serialized['objects'] = [resource.full_dehydrate(bundle) for bundle in bundles]
+        to_be_serialized = resource.alter_list_data_to_serialize(request=None, data=to_be_serialized)
+        return resource.serialize(None, to_be_serialized, 'application/json')
+
     def get_story_template_json(self):
         to_be_serialized = {}
         resource = StoryTemplateResource()
@@ -413,6 +428,7 @@ class StoryBuilderView(DetailView):
 
         if self.object:
             context['story_json'] = mark_safe(self.get_story_json())
+            context['featured_assets_json'] = mark_safe(self.get_featured_assets_json())
             if self.object.template_story:
                 context['template_story_json'] = mark_safe(
                     self.get_story_json(self.object.template_story))
