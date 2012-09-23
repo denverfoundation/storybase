@@ -3854,7 +3854,8 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
     id: 'featured-asset',
 
     events: {
-      'click .change': 'change',
+      'click .change': 'clickChange',
+      'click .add': 'clickAdd',
       'click input[type="reset"]': "cancel",
       'submit form.bbf-form': 'processForm'
     },
@@ -3863,6 +3864,7 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
 
     subTemplateSource: {
       'display': $('#featured-asset-display-template').html(),
+      'select': $('#featured-asset-select-template').html(),
       'upload': $('#asset-uploadprogress-template').html()
     },
 
@@ -3901,7 +3903,7 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
         this._state = 'display';
       }
       else {
-        this._state = 'change';
+        this._state = 'select';
       }
     },
 
@@ -3955,7 +3957,7 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
       if (subTemplate) {
         this.$el.append(subTemplate(context));
       }
-      if (state === 'change') {
+      if (state === 'add') {
         this.$el.append(this.form.el);
       }
       this.delegateEvents();
@@ -4029,9 +4031,14 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
       });
     },
 
-    change: function(evt) {
+    clickChange: function(evt) {
       evt.preventDefault();
-      this.setState('change').render();
+      this.setState('select').render();
+    },
+
+    clickAdd: function(evt) {
+      evt.preventDefault();
+      this.setState('add').render();
     },
 
     /**
