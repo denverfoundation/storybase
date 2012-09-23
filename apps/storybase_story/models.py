@@ -241,6 +241,7 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
         """Render a representation of the story's featured asset"""
         try:
             featured_asset = self.get_featured_asset()
+            # TODO: Pick default size for image
             thumbnail_options = {}
             if format == 'html':
                 thumbnail_options.update({'html_class': 'featured-asset'})
@@ -248,6 +249,7 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
                                                    **thumbnail_options)
         except IndexError:
             # No featured assets
+            # TODO: Display default image
             return '' 
 
     def featured_asset_thumbnail_url(self):

@@ -30,8 +30,7 @@
 						<p class="byline">{% trans "By" %} <span class="author">{{ story.byline }}</span></p>
 					</header>
 					<section class="object-featured-asset">
-						{# TODO: wire in real asset #}
-						<img src="{{ story.featured_asset_thumbnail_url }}" title="temp asset">
+						{{ story.render_featured_asset }}
 					</section>
 					<section class="object-summary">
 						<section class="summary">
