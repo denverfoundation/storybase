@@ -3854,6 +3854,7 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
     id: 'featured-asset',
 
     events: {
+      'click .change': 'change',
       'click input[type="reset"]': "cancel",
       'submit form.bbf-form': 'processForm'
     },
@@ -3883,6 +3884,7 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
       this.story = this.options.story;
       this.template = Handlebars.compile(this.templateSource);
       this.templates = {};
+      this.form = this.getForm();
 
       if (_.isUndefined(this.story)) {
         this.dispatcher.on("ready:story", this.setStory, this);
@@ -3891,31 +3893,15 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
         this.model = this.story.getFeaturedAsset();
       }
 
-      if (_.isUndefined(this.model)) {
-        this.model = new storybase.models.Asset({
-          'type': 'image'
-        });
-      }
-
-      this.bindModelEvents();
-      this.initializeForm();
       this.setInitialState();
     },
 
-    bindModelEvents: function() {
-      this.model.on("change", this.initializeForm, this);
-    },
-
-    unbindModelEvents: function() {
-      this.model.off("change", this.initializeForm, this);
-    },
-
     setInitialState: function() {
-      if (!this.model.isNew()) {
+      if (!_.isUndefined(this.model)) {
         this._state = 'display';
       }
       else {
-        this._state = 'edit';
+        this._state = 'change';
       }
     },
 
@@ -3928,24 +3914,26 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
       return this;
     },
 
-    initializeForm: function() {
-      this.form = new Backbone.Form({
-        model: this.model
+    getForm: function() {
+      var form = new Backbone.Form({
+        model: new storybase.models.Asset({
+          type: 'image'
+        })
       });
-      this.updateFormLabels(); 
-      this.form.render();
+      return this.updateFormLabels(form); 
     },
 
     /** 
      * Update the view's form labels based on the asset type.
      */
-    updateFormLabels: function() {
-      if (this.form.schema.url) {
-        this.form.schema.url.title = capfirst(gettext("enter the featured image URL"));
+    updateFormLabels: function(form) {
+      if (form.schema.url) {
+        form.schema.url.title = capfirst(gettext("enter the featured image URL"));
       }
-      if (this.form.schema.image) {
-        this.form.schema.image.title = capfirst(gettext("select the featured image from your own computer"));
+      if (form.schema.image) {
+        form.schema.image.title = capfirst(gettext("select the featured image from your own computer"));
       }
+      return form;
     },
 
     setStory: function(story) {
@@ -3956,19 +3944,21 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
     },
 
     render: function() {
-      var context = {
-        model: this.model.toJSON()
-      };
+      var context = {};
       var state = this.getState();
       var subTemplate = this.getSubTemplate();
+      if (this.model) {
+        context.model = this.model.toJSON();
+      }
       this.form.render().$el.append('<input type="reset" value="' + gettext("Cancel") + '" />').append('<input type="submit" value="' + gettext("Save Changes") + '" />');
       this.$el.html(this.template(context));
       if (subTemplate) {
         this.$el.append(subTemplate(context));
       }
-      if (state === 'edit') {
+      if (state === 'change') {
         this.$el.append(this.form.el);
       }
+      this.delegateEvents();
       return this;
     },
 
@@ -3978,14 +3968,13 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
     processForm: function(e) {
       e.preventDefault();
       var errors = this.form.validate();
-      var data;
       var file;
       var options = {};
       var that = this;
       if (!errors) {
-        var data = this.form.getValue();
-        if (data.image) {
-          file = data.image;
+        this.form.commit();
+        file = this.form.model.get('image');
+        if (file) {
           // Set a callback for saving the model that will upload the
           // image.
           options.success = function(model) {
@@ -4006,8 +3995,8 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
         // Delete the image property.  We've either retrieved it for
         // upload or it was empty (meaning we don't want to change the
         // image.
-        delete data.image;
-        this.saveModel(data, options);
+        this.form.model.unset('image'); 
+        this.saveModel(this.form.model, options);
       }
       else {
         // Remove any previous error messages
@@ -4021,14 +4010,15 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
       }
     },
 
-    saveModel: function(attributes, options) {
+    saveModel: function(model, options) {
       options = _.isUndefined(options) ? {} : options;
       var that = this;
-      this.model.save(attributes, {
+      model.save(null, {
         success: function(model) {
+          that.model = model;
           that.setState('display');
           that.render();
-          that.setFeaturedAsset(model);
+          that.story.setFeaturedAsset(model);
           if (options.success) {
             options.success(model);
           }
@@ -4037,6 +4027,11 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
           that.dispatcher.trigger('error', gettext('Error saving the featured image'));
         }
       });
+    },
+
+    change: function(evt) {
+      evt.preventDefault();
+      this.setState('change').render();
     },
 
     /**

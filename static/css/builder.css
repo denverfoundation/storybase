@@ -614,3 +614,19 @@ input[name=address] {
   display: inline-block;
   padding: 0;
 }
+#featured-asset {
+  position: relative;
+}
+#featured-asset img {
+  max-width: 50%;
+}
+.featured-asset-controls {
+  margin: 0;
+  padding: 10px 10px 0 0;
+  list-style: none outside none;
+  background-color: #fff;
+  z-index: 999;
+}
+.featured-asset-controls li {
+  display: inline-block;
+}
