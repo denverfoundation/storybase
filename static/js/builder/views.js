@@ -2336,6 +2336,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
       // SectionAssets.parse()
       asset.set('container', container);
       this.assets.add(asset);
+      this.story.assets.add(asset);
       if (this.story.isNew()) {
         // We haven't saved the story or the section yet.
         // Defer the saving of the asset relation 
@@ -3856,6 +3857,7 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
     events: {
       'click .change': 'clickChange',
       'click .add': 'clickAdd',
+      'click .select-asset': 'clickSelectAsset',
       'click input[type="reset"]': "cancel",
       'submit form.bbf-form': 'processForm'
     },
@@ -3945,14 +3947,28 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
       );
     },
 
+    getImageAssetsJSON: function() {
+      return _.map(this.story.assets.where({type: 'image'}),
+        function(model) {
+          return model.toJSON();
+        }
+      );
+    },
+
     render: function() {
       var context = {};
       var state = this.getState();
       var subTemplate = this.getSubTemplate();
-      if (this.model) {
+      if (state === 'display') {
         context.model = this.model.toJSON();
       }
-      this.form.render().$el.append('<input type="reset" value="' + gettext("Cancel") + '" />').append('<input type="submit" value="' + gettext("Save Changes") + '" />');
+      else if (state === 'add') {
+        this.form.render().$el.append('<input type="reset" value="' + gettext("Cancel") + '" />').append('<input type="submit" value="' + gettext("Save Changes") + '" />');
+      }
+      else {
+        // state === 'select'
+        context.assets = this.getImageAssetsJSON();
+      }
       this.$el.html(this.template(context));
       if (subTemplate) {
         this.$el.append(subTemplate(context));
@@ -4020,6 +4036,7 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
           that.model = model;
           that.setState('display');
           that.render();
+          that.story.assets.add(model);
           that.story.setFeaturedAsset(model);
           if (options.success) {
             options.success(model);
@@ -4039,6 +4056,14 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
     clickAdd: function(evt) {
       evt.preventDefault();
       this.setState('add').render();
+    },
+
+    clickSelectAsset: function(evt) {
+      evt.preventDefault();
+      var id = $(evt.target).data('asset-id');
+      this.model = this.story.assets.get(id);
+      this.story.setFeaturedAsset(this.model);
+      this.setState('display').render();
     },
 
     /**

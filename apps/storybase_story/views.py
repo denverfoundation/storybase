@@ -240,9 +240,9 @@ class StoryBuilderView(DetailView):
         to_be_serialized = resource.alter_list_data_to_serialize(request=None, data=to_be_serialized)
         return resource.serialize(None, to_be_serialized, 'application/json')
 
-    def get_assets_json(self, story=None):
+    def get_section_assets_json(self, story=None):
         """
-        Get serialized asset data for a story
+        Get serialized asset data for a story by section
 
         This is used to add JSON data to the view's response context in
         order to bootstrap Backbone models and collections.
@@ -270,11 +270,13 @@ class StoryBuilderView(DetailView):
 
         return resource.serialize(None, to_be_serialized, 'application/json')
 
-    def get_featured_assets_json(self):
+    def get_assets_json(self, story=None, featured=False):
+        if story is None:
+            story = self.object
         resource = AssetResource()
         to_be_serialized = {}
-        objects = resource.obj_get_list(self.request, featured=True,
-                                        story_id=self.object.story_id)
+        objects = resource.obj_get_list(self.request, featured=featured,
+                                        story_id=story.story_id)
         sorted_objects = resource.apply_sorting(objects)
         to_be_serialized['objects'] = sorted_objects
 
@@ -428,7 +430,7 @@ class StoryBuilderView(DetailView):
 
         if self.object:
             context['story_json'] = mark_safe(self.get_story_json())
-            context['featured_assets_json'] = mark_safe(self.get_featured_assets_json())
+            context['featured_assets_json'] = mark_safe(self.get_assets_json(featured=True))
             context['assets_json'] = mark_safe(self.get_assets_json())
             if self.object.template_story:
                 context['template_story_json'] = mark_safe(
@@ -436,14 +438,14 @@ class StoryBuilderView(DetailView):
                 context['template_sections_json'] = mark_safe(
                     self.get_sections_json(self.object.template_story))
                 context['template_assets_json'] = mark_safe(
-                    self.get_assets_json(self.object.template_story))
+                    self.get_section_assets_json(self.object.template_story))
         elif self.template_object:
             context['template_story_json'] = mark_safe(
                 self.get_story_json(self.template_object.story))
             context['template_sections_json'] = mark_safe(
                 self.get_sections_json(self.template_object.story))
             context['template_assets_json'] = mark_safe(
-                self.get_assets_json(self.template_object.story))
+                self.get_section_assets_json(self.template_object.story))
 
         related_stories_json = self.get_related_stories_json()
         if related_stories_json: 

@@ -163,14 +163,7 @@
         }
         {# TODO: Bootstrap sections and assets #}
         if (options.model && assetsJSON) {
-            options.model.assets.reset(
-              _.reduce(assetsJSON, function(memo, data, sectionId) {
-                    if (data.objects.length) {
-                        memo.contact(data.objects);
-                    }
-                    return memo;
-              }, [])
-            );
+          options.model.assets.reset(assetsJSON.objects);
         }
         if (options.model && featuredAssetsJSON) {
           options.model.setFeaturedAssets(
