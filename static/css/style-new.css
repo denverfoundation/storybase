@@ -43,6 +43,15 @@ h3 { font-size:30px; color:#5a5a5a; text-align:center;  font-family: 'Museo300Re
 h4 { font-size:22px; color:#5a5a5a;  text-align:center;  font-family: 'Museo300Regular'; font-weight:normal;   }
 h5 { font-size:20px; color:#20c6fd;  font-family: 'MuseoSlab500Regular'; font-weight:normal;}
 
+.sidebar h3 {
+	font-size:14px;
+	text-align:left;
+	font-family: 'MuseoSlab500Regular';
+	border-bottom:1px solid #ccc;
+	padding-bottom:4px;
+	margin-bottom:5px;
+}
+
 a { color: #0252aa; text-decoration: none; cursor: pointer; }
 a:hover { text-decoration: underline; }
 a img { border: 0; }
@@ -286,6 +295,9 @@ ul.social li.icon3 a { background-position:-67px 0; }
 .list-view .box  { min-height:20px;  }
 
 /* Content page */
+.content-page {
+	overflow:hidden;
+}
 
 .content-page h3 span { /* margin-left:-320px; <-- this seems not to do anything useful */ position:relative;  }
 
@@ -311,10 +323,22 @@ ul.social li.icon3 a { background-position:-67px 0; }
 .content-page.generic .page-pull p a { font-size:14px; color:#fe9703; font-family: 'MuseoSlab500Regular'; }
 .content-page.generic .page-pull p strong { font-family:Georgia, 'Times New Roman', Serif; font-size:14px; color:#666; }
 
-.sibling-nav li a {  font-size:20px; line-height:22px;  color:#fe9703; font-family: 'MuseoSlab500Regular'; white-space:nowrap; }
-.sibling-nav li.selected a,
-.sibling-nav li a:hover { background:url('images/arrow-nav.png') no-repeat right center; padding-right:17px; text-decoration:none;  }
+.sidebar li {
+	color:#4a4a4a; 
+	font-family: 'MuseoSlab500Regular';
+}
 
+.sidebar li a {
+	color:#fe9703;
+}
+
+.sidebar .sibling-nav li a {  font-size:20px; line-height:22px; font-family: 'MuseoSlab500Regular'; white-space:nowrap; }
+.sidebar .sibling-nav li.selected a,
+.sidebar .sibling-nav li a:hover { background:url('images/arrow-nav.png') no-repeat right center; padding-right:17px; text-decoration:none;  }
+
+.twocol .twocol-content {
+	overflow:hidden;
+}
 
 .title .flexslider .flex-control-nav { display:none !important;  }
 .title .flexslider .flex-direction-nav { display:none !important;  }
@@ -365,11 +389,20 @@ a.button.right {
 	margin-bottom:20px;
 }
 
-.content-page.object-detail h3,
-.content-page.object-detail h4 {
+#main .content-page.object-detail h2 { font-size:30px;}
+#main .content-page.object-detail h2,
+#main .content-page.object-detail h3,
+#main .content-page.object-detail h4 {
 	text-align:left;
 	font-family: 'Museo300Regular';
 	font-weight:normal;
+	background:none;
+	margin-bottom:12px;
+}
+#main .content-page.object-detail h4 {
+	font-size:14px;
+	color:#333;
+	margin-bottom:0;
 }
 /*.content-page.object-detail h2 { font-size:26px; color:#444; }*/
 .content-page.object-detail .object-featured-asset,
@@ -416,3 +449,9 @@ a.button.right {
 .content-page.object-detail .object-metadata dt:after { content:": " }
 
 .content-page.object-detail.project section.post { border-bottom: none; }
+
+/* featured story */
+.content-page.object-detail.project .featured-story img { width: 100%; }
+.content-page.object-detail.project .recent-stories ul { margin-bottom: 30px; }
+.content-page.object-detail.project .recent-stories li { margin-bottom: 10px; overflow:hidden; }
+.content-page.object-detail.project .recent-stories li img { margin-top:8px; width: 100%; }

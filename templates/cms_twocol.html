@@ -11,17 +11,17 @@
 {% endblock %}
 
 {% block twocol-content %}
-{% placeholder twocol-content or %}
-<h4 class="first">
-	Floodlight is about two things: storytelling and positive change.<br>Our goal is to help you use the first one to achieve the second.
-</h4>
-<p>Welcome to Floodlight&mdash;a, community-powered storytelling project designed to drive social change by giving individuals and organizations the skills and tools to generate visually-compelling, data-supported stories that inspire people to act and illuminate community issues.</p>
-{% endplaceholder %}
-{% endblock %}
-
+<section class="content-block">
+	{% placeholder twocol-content or %}
+	<h4 class="first">
+		Floodlight is about two things: storytelling and positive change.<br>Our goal is to help you use the first one to achieve the second.
+	</h4>
+	<p>Welcome to Floodlight&mdash;a, community-powered storytelling project designed to drive social change by giving individuals and organizations the skills and tools to generate visually-compelling, data-supported stories that inspire people to act and illuminate community issues.</p>
+	{% endplaceholder %}
+</section>
 
 {% block bottom-left-col %}
-<div class="page-pull">
+<div class="page-pull grid_5 alpha">
 	<h4>{% placeholder page-pull-1-title or %}<a href="#">The Vision</a>{% endplaceholder %}</h4>
 	{% placeholder page-pull-1 or %}
 	<p><strong>We can’t change what we can’t see. But together our stories can illuminate issues that matter and brighten the world.</strong></p>
@@ -32,9 +32,9 @@
 	<p><a href="#">Read More</a></p>
 	{% endplaceholder %}
 </div>
-{% endblock %}
+{% endblock bottom-left-col %}
 {% block bottom-right-col %}
-<div class="page-pull">
+<div class="page-pull grid_5 omega">
 	<h4>{% placeholder page-pull-2-title or %}<a href="#">Our Partners</a>{% endplaceholder %}</h4>
 	{% placeholder page-pull-2 or %}
 	<p><strong>Created By Impassioned Storytellers, Data Geeks and Community Change Agents.</strong></p>
@@ -43,8 +43,9 @@
 	<p><a href="#">Read More</a></p>
 	{% endplaceholder %}
 </div>
-{% endblock %}
+{% endblock bottom-right-col %}
 
+{% endblock twocol-content %}
 
 {% block extrajs %}
 	<script src="{{ STATIC_URL }}js/libs/jquery.cycle.all.min.js"></script>
