@@ -563,9 +563,9 @@ class StoryBuilderViewTest(TestCase):
         for section in self.story.sections.all():
             self.assertIn(section.section_id, section_ids)
 
-    def test_get_assets_json(self):
+    def test_get_section_assets_json(self):
         """Test getting serialized asset data for a story"""
-        json_data = self.view.get_assets_json(story=self.story)
+        json_data = self.view.get_section_assets_json(story=self.story)
         data = json.loads(json_data)
         self.assertEqual(len(data), len(self.story.sections.all()))
         for section in self.story.sections.all():
