@@ -763,16 +763,25 @@ input[name=address] {
 }
 
 // Featured Asset View
-#featured-asset { position: relative; }
-#featured-asset img { max-width: 50%; }
-.featured-asset-controls {
-  margin: 0;
-  padding: 10px 10px 0 0;
-  list-style: none outside none;
-  background-color: #fff;
-  z-index: 999;
-}
+#featured-asset { 
+  position: relative; 
 
-.featured-asset-controls li {
-  display: inline-block;
+  img { max-width: 50%; }
+
+  .featured-asset-controls {
+    margin: 0;
+    padding: 10px 10px 0 0;
+    list-style: none outside none;
+    background-color: #fff;
+    z-index: 999;
+    
+    li { display: inline-block; }
+  }
+
+  .assets { 
+    padding: 0; 
+    list-style: none outside none;
+
+    .asset { padding: 8px 0; }
+  }
 }

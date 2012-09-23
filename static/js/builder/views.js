@@ -3858,7 +3858,7 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
       'click .change': 'clickChange',
       'click .add': 'clickAdd',
       'click .select-asset': 'clickSelectAsset',
-      'click input[type="reset"]': "cancel",
+      'click [type="reset"]': "cancel",
       'submit form.bbf-form': 'processForm'
     },
 
@@ -3959,15 +3959,14 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
       var context = {};
       var state = this.getState();
       var subTemplate = this.getSubTemplate();
-      if (state === 'display') {
+      if (this.model && (state === 'select' || state === 'display')) {
         context.model = this.model.toJSON();
       }
-      else if (state === 'add') {
-        this.form.render().$el.append('<input type="reset" value="' + gettext("Cancel") + '" />').append('<input type="submit" value="' + gettext("Save Changes") + '" />');
-      }
-      else {
-        // state === 'select'
+      if (state === 'select') {
         context.assets = this.getImageAssetsJSON();
+      }
+      if (state === 'add') {
+        this.form.render().$el.append('<input type="reset" value="' + gettext("Cancel") + '" />').append('<input type="submit" value="' + gettext("Save Changes") + '" />');
       }
       this.$el.html(this.template(context));
       if (subTemplate) {

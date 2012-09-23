@@ -620,13 +620,20 @@ input[name=address] {
 #featured-asset img {
   max-width: 50%;
 }
-.featured-asset-controls {
+#featured-asset .featured-asset-controls {
   margin: 0;
   padding: 10px 10px 0 0;
   list-style: none outside none;
   background-color: #fff;
   z-index: 999;
 }
-.featured-asset-controls li {
+#featured-asset .featured-asset-controls li {
   display: inline-block;
+}
+#featured-asset .assets {
+  padding: 0;
+  list-style: none outside none;
+}
+#featured-asset .assets .asset {
+  padding: 8px 0;
 }
