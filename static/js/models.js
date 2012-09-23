@@ -198,6 +198,7 @@ storybase.models.Story = Backbone.Model.extend(
     initialize: function(options) {
       this.sections = new storybase.collections.Sections;
       this.unusedAssets = new storybase.collections.Assets;
+      this.assets = new storybase.collections.Assets;
       this.setCollectionUrls();
       this.on("change", this.setCollectionUrls, this);
       this.sections.on("add", this.resetSectionWeights, this);
@@ -213,6 +214,7 @@ storybase.models.Story = Backbone.Model.extend(
       if (!this.isNew()) {
         this.sections.url = this.url() + 'sections/';
         this.unusedAssets.url = storybase.globals.API_ROOT + 'assets/stories/' + this.id + '/sections/none/'; 
+        this.assets.url = storybase.globals.API_ROOT + 'assets/stories/' + this.id + '/';
       }
     },
 

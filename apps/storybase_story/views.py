@@ -429,6 +429,7 @@ class StoryBuilderView(DetailView):
         if self.object:
             context['story_json'] = mark_safe(self.get_story_json())
             context['featured_assets_json'] = mark_safe(self.get_featured_assets_json())
+            context['assets_json'] = mark_safe(self.get_assets_json())
             if self.object.template_story:
                 context['template_story_json'] = mark_safe(
                     self.get_story_json(self.object.template_story))
