@@ -20,7 +20,6 @@
 {% endblock %}
 
 {% block base_content %}
-
 		<div class="content-page object-detail story container_12">
 			<h2><span>Explore Floodlight</span></h2>
 
@@ -38,7 +37,7 @@
 						<section class="summary">
 							{{ story.summary|safe|linebreaks }}
 						</section>
-						<a id="launch-story-viewer" class="button right" href="./viewer">{% trans "View Story" %}</a>
+                        <a id="launch-story-viewer" class="button right" href="{% url story_viewer slug=story.slug %}">{% trans "View Story" %}</a>
 					</section>
 				</section>
 				
@@ -48,16 +47,19 @@
 					<p class="call-intro grid_2 alpha">{% blocktrans %}Wondering what you can do to help? The contributor has listed the following actions that you can take to help.{% endblocktrans %}</p>
 					<div class="story-call-to-action grid_5 prefix_1 omega">{{ story.call_to_action|safe }}</div>
 				</section>
-
+                
+                {% if story.allow_connected %}
 				<section class="connected-stories content-block">
 					<h4>{% trans "Connected Stories" %}</h4>
-					<p>Shedding light and text for other light-related analogies goes here.</p>
-					<dl>
-						<dd>Most Recent</dd>
-						<dt><strong>Story Name</strong> by Username</dt>
-					</dl>
-					<a href="#" class="button right">Contribute Your Connected Story</a>
+                    <p>{{ story.connected_prompt|linebreaks }}</p>
+                    <a href="{% url connected_story_builder source_slug=story.slug %}" title="{% trans "Contribute to this story" %}" class="button right">{% trans "Contribute to this story" %}</a>
+                    {% with cs_count=story.connected_stories.count %}
+                    {% if cs_count %}
+                    <a href="{% url story_viewer slug=story.slug %}#sections/connected-stories" title="{% blocktrans count counter=cs_count %}View {{ counter }} connected story{% plural %}View {{ counter }} connected stories{% endblocktrans %}" class="button right">{% blocktrans count counter=cs_count %}View {{ counter }} connected story{% plural %}View {{ counter }} connected stories{% endblocktrans %}</a>
+                    {% endif %}
+                    {% endwith %}
 				</section>
+                {% endif %}
 				
 				<section class="citizen-comments content-block">
 					<h4>{% trans "Citizen Comments" %}</h4>
@@ -144,10 +146,10 @@
 {% block bodyend %}
 <div id="story-viewer" class="modal">
   <div id="modal-controls">
-    <a id="launch-viewer-window" href="#">View in new window</a>
+      <a id="launch-viewer-window" href="{% url story_viewer slug=story.slug %}">View in new window</a>
     <a class="simplemodal-close" href="#">Close</a>
   </div>
-  <iframe src="./viewer"></iframe>
+  <iframe src="{% url story_viewer slug=story.slug %}"></iframe>
 </div>
 {% endblock bodyend %}
 
@@ -172,9 +174,10 @@ $(document).ready(function () {
 
     // Launch the viewer in a new window
     $("#story-viewer #modal-controls #launch-viewer-window").click(
-        function (event) {
-            var viewerUrl = document.location + "viewer";
-            window.open(viewerUrl, 'Story Viewer', '');
+        function (evt) {
+            evt.preventDefault();
+            var viewerUrl = $(evt.target).attr('href');
+            window.open(viewerUrl, 'story-viewer', '');
             $.modal.close();
             return false
         }

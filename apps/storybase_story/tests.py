@@ -1,6 +1,7 @@
 # vim: set fileencoding=utf-8 :
 """Unit tests for storybase_story app"""
 
+import json
 from time import sleep
 
 from django.conf import settings
@@ -22,8 +23,10 @@ from storybase_story.api import (SectionAssetResource, SectionResource,
 from storybase_story.forms import SectionRelationAdminForm
 from storybase_story.models import (Container, Story, StoryTranslation, 
     Section, SectionAsset, SectionLayout, SectionRelation, StoryTemplate,
+    StoryRelation,
     create_story, create_section)
 from storybase_story.templatetags.story import container
+from storybase_story.views import StoryBuilderView
 from storybase_taxonomy.models import Category, create_category
 from storybase_user.models import (Organization, Project,
                                    create_organization, create_project)
@@ -220,6 +223,34 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
                              author=user)
         self.assertEqual(story.contributor_name, '')
 
+    def test_builder_url(self):
+        title = ('Transportation Challenges Limit Education Choices for '
+                 'Denver Parents')
+        summary = """
+            Many families in the Denver metro area use public
+            transportation instead of a school bus because for them, a
+            quality education is worth hours of daily commuting. Colorado's
+            school choice program is meant to foster educational equity,
+            but the families who benefit most are those who have time and
+            money to travel. Low-income families are often left in a lurch.
+            """
+        byline = "Mile High Connects"
+        story = create_story(title=title, summary=summary, byline=byline)
+        self.assertEqual(story.builder_url(), "/build/%s/" % (story.story_id))
+
+    def test_builder_url_connected(self):
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status='published')
+        story2 = create_story(title="Test Related Story", 
+                             summary="Test Related Story Summary",
+                             byline="Test Related Story Byline",
+                             status='published')
+        StoryRelation.objects.create(source=story, target=story2,
+                                     relation_type='connected')
+        self.assertEqual(story2.builder_url(), 
+                         "/stories/%s/build-connected/%s/" % 
+                         (story.slug, story2.story_id))
+
 
 class StoryPermissionTest(TestCase):
     """Test case for story permissions"""
@@ -351,6 +382,102 @@ class StoryManagerTest(TestCase):
 	    self.has_story_title(title, homepage_stories)
 
 
+class RelatedStoriesTest(TestCase):
+    """Tests for managing relationships between stories"""
+    def setUp(self):
+        self.username = 'test'
+        self.password = 'test'
+        self.user = User.objects.create_user(self.username, 'test@example.com', self.password)
+        self.story = create_story(title="Test Story", summary="Test Summary",
+                                  byline="Test Byline", status='published',
+                                  author=self.user)
+
+    def test_create_relation(self):
+        story = create_story(title="Test Related Story", 
+                             summary="Test Related Story Summary",
+                             byline="Test Related Story Byline",
+                             connected_prompt="Test connected prompt",
+                             allow_connected=True,
+                             status='published',
+                             author=self.user)
+        self.assertEqual(len(self.story.related_stories.all()), 0)
+        StoryRelation.objects.create(source=self.story, target=story,
+                                     relation_type='connected')
+        self.assertEqual(len(self.story.related_stories.all()), 1)
+        self.assertEqual(self.story.related_stories.all()[0], story)
+
+    def test_connected_stories(self):
+        story = create_story(title="Test Related Story", 
+                             summary="Test Related Story Summary",
+                             byline="Test Related Story Byline",
+                             status='published',
+                             author=self.user)
+        story2 = create_story(title="Test Related Story 2", 
+                              summary="Test Related Story Summary 2",
+                              byline="Test Related Story Byline 2",
+                              status='published',
+                              author=self.user)
+        StoryRelation.objects.create(source=self.story, target=story,
+                                     relation_type='connected')
+        StoryRelation.objects.create(source=self.story, target=story,
+                                     relation_type='blahblahblah')
+        self.assertEqual(len(self.story.related_stories.all()), 2)
+        self.assertEqual(len(self.story.connected_stories()), 1)
+        self.assertEqual(self.story.connected_stories()[0], story)
+
+    def test_connected_to_stories(self):
+        story = create_story(title="Test Related Story", 
+                             summary="Test Related Story Summary",
+                             byline="Test Related Story Byline",
+                             status='published',
+                             author=self.user)
+        StoryRelation.objects.create(source=self.story, target=story,
+                                     relation_type='connected')
+        StoryRelation.objects.create(source=self.story, target=story,
+                                     relation_type='blahblahblah')
+        self.assertEqual(len(story.connected_to_stories()), 1)
+        self.assertEqual(story.connected_to_stories()[0], self.story)
+
+    def test_is_connected(self):
+        story = create_story(title="Test Related Story", 
+                             summary="Test Related Story Summary",
+                             byline="Test Related Story Byline",
+                             status='published',
+                             author=self.user)
+        StoryRelation.objects.create(source=self.story, target=story,
+                                     relation_type='connected')
+        StoryRelation.objects.create(source=self.story, target=story,
+                                     relation_type='blahblahblah')
+        self.assertEqual(self.story.is_connected(), False)
+        self.assertEqual(story.is_connected(), True)
+
+    def test_get_prompt(self):
+        """
+        Test retrieving the prompt from the parent story in a connected
+        story relationship.
+        """
+        story = create_story(title="Test Related Story", 
+                             summary="Test Related Story Summary",
+                             byline="Test Related Story Byline",
+                             status='published',
+                             author=self.user)
+        StoryRelation.objects.create(source=self.story, target=story,
+                                     relation_type='connected')
+        self.assertEqual(story.get_prompt(), self.story.connected_prompt)
+
+    def test_get_prompt_no_connections(self):
+        """
+        Test that an empty prompt is returned when there is no
+        connected story relationship.
+        """
+        story = create_story(title="Test Related Story", 
+                             summary="Test Related Story Summary",
+                             byline="Test Related Story Byline",
+                             status='published',
+                             author=self.user)
+        self.assertEqual(story.get_prompt(), "")
+
+
 class ViewsTest(TestCase):
     """Tests for story-related views"""
 
@@ -378,6 +505,64 @@ class ViewsTest(TestCase):
         sorted_titles = tuple(reversed(homepage_titles))
         for i in range(len(sorted_titles)):
             self.assertTrue(sorted_titles[i] in elements[i].text_content())
+
+
+class StoryBuilderViewTest(TestCase):
+    """Test case for view that bootstraps Backbone view for editing stories"""
+    fixtures = ['section_layouts.json']
+    
+    def setUp(self):
+        self.username = 'test'
+        self.password = 'test'
+        self.user = User.objects.create_user(self.username, 'test@example.com', self.password)
+        self.story = create_story(title="Test Story", summary="Test Summary",
+                                  byline="Test Byline", status='published',
+                                  author=self.user)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        section1 = create_section(title="Test Section 1", story=self.story,
+                                  layout=layout)
+        section2 = create_section(title="Test Section 2", story=self.story,
+                                  layout=layout)
+        create_html_asset(type='text', title='Test Asset', 
+            body='Test content')
+        create_html_asset(type='text', title='Test Asset 2',
+            body='Test content 2')
+        create_html_asset(type='text', title='Test Asset 3',
+            body='Test content 3')
+        create_html_asset(type='text', title='Test Asset 4',
+            body='Test content 4')
+        left = Container.objects.get(name='left')
+        right = Container.objects.get(name='right')
+        assets = Asset.objects.all()
+        SectionAsset.objects.create(section=section1, asset=assets[0], container=left)
+        SectionAsset.objects.create(section=section1, asset=assets[1], container=right)
+        SectionAsset.objects.create(section=section2, asset=assets[2], container=left)
+        SectionAsset.objects.create(section=section2, asset=assets[3], container=right)
+        self.view = StoryBuilderView()
+
+    def test_get_sections_json(self):
+        """Test getting serialized section data for a story"""
+        json_data = self.view.get_sections_json(story=self.story)
+        data = json.loads(json_data)
+        self.assertEqual(len(data['objects']), len(self.story.sections.all()))
+        section_ids = [section_data['section_id'] for section_data in data['objects']]
+        for section in self.story.sections.all():
+            self.assertIn(section.section_id, section_ids)
+
+    def test_get_assets_json(self):
+        """Test getting serialized asset data for a story"""
+        json_data = self.view.get_assets_json(story=self.story)
+        data = json.loads(json_data)
+        self.assertEqual(len(data), len(self.story.sections.all()))
+        for section in self.story.sections.all():
+            self.assertIn(section.section_id, data)
+            self.assertEqual(len(data[section.section_id]['objects']),
+                             len(section.assets.all()))
+            asset_ids = [sectionasset['asset']['asset_id'] for
+                         sectionasset in 
+                         data[section.section_id]['objects']]
+            for asset in section.assets.all():
+                self.assertIn(asset.asset_id, asset_ids)
 
 
 class SectionModelTest(TestCase, SloppyComparisonTestMixin):
@@ -1432,8 +1617,10 @@ class StoryResourceTest(ResourceTestCase):
                                    dehydrated['points'])
 
     def test_get_detail(self):
-        story_attribute_keys = ['byline',
+        story_attribute_keys = ['allow_connected',
+                                'byline',
                                 'call_to_action',
+                                'connected_prompt',
                                 'contact_info',
                                 'created',
                                 'languages', 
@@ -1452,6 +1639,7 @@ class StoryResourceTest(ResourceTestCase):
                                 'story_id',
                                 'structure_type',
                                 'summary',
+                                'template_story',
                                 'title',
                                 'topics',
                                 'url']
@@ -1529,6 +1717,39 @@ class StoryResourceTest(ResourceTestCase):
         # Check that the story id is returned by the endpoint
         returned_story_id = response['location'].split('/')[-2]
         self.assertEqual(created_story.story_id, returned_story_id)
+
+    def test_post_list_with_template(self):
+        """
+        Test that a user can create a story specifying the story that
+        provides the structure for this story.
+        """
+        template_story = create_story(title="Test Template Story",
+            summary="Test Template Story Summary", 
+            byline="Test Template Story Byline",  status="published",
+            language="en")
+        post_data = {
+            'title': "Test Story",
+            'summary': "Test Summary",
+            'byline': "Test Byline",
+            'status': "draft",
+            'language': "en",
+            'template_story': template_story.story_id
+        }
+        self.assertEqual(Story.objects.count(), 1)
+        self.api_client.client.login(username=self.username, password=self.password)
+        response = self.api_client.post('/api/0.1/stories/',
+                               format='json', data=post_data)
+        self.assertHttpCreated(response)
+        self.assertEqual(Story.objects.count(), 2)
+        returned_story_id = response['location'].split('/')[-2]
+        created_story = Story.objects.get(story_id=returned_story_id)
+        self.assertEqual(created_story.title, post_data['title'])
+        self.assertEqual(created_story.summary, post_data['summary'])
+        self.assertEqual(created_story.byline, post_data['byline'])
+        self.assertEqual(created_story.status, post_data['status'])
+        self.assertEqual(created_story.get_languages(), [post_data['language']])
+        self.assertEqual(created_story.author, self.user)
+        self.assertEqual(created_story.template_story, template_story)
 
     def test_patch_detail_unauthorized_unauthenticated(self):
         """Test that anonymouse users cannot update a story"""
@@ -1892,6 +2113,58 @@ class SectionResourceTest(ResourceTestCase):
         self.assertEqual(section.title, section_post_data['title'])
         self.assertEqual(section.layout.layout_id, section_post_data['layout'])
         self.assertEqual(section.help, section_help)
+
+    def test_post_list_with_template_section(self):
+        """
+        Test that a user can add a new section to a story including
+        a reference to the section that was used to provide defaults
+        for the new section.
+        """
+        template_story = create_story(title="Test Template Story",
+            summary="Test Template Story Summary", byline="",
+            status="published", language="en")
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        template_section = create_section(title="Test Template Section",
+            story=template_story, layout=layout)
+        story_post_data = {
+            'title': "Test Story",
+            'summary': "Test Summary",
+            'byline': "Test Byline",
+            'status': "draft",
+            'language': "en",
+        }
+        section_post_data = {
+            'title': "Test Section",
+            'language': "en",
+            'layout': "26c81c9dd24c4aecab7ab4eb1cc9e2fb",
+            'template_section': template_section.section_id
+        }
+        self.assertEqual(Story.objects.count(), 1)
+        self.api_client.client.login(username=self.username, password=self.password)
+        # Create a new story through the API
+        response = self.api_client.post('/api/0.1/stories/',
+                               format='json', data=story_post_data)
+        story_resource_uri = response['location']
+        # Retrieve a model instance for the created story
+        story_id = story_resource_uri.split('/')[-2]
+        story = Story.objects.get(story_id=story_id)
+        # Confirm there are no sections
+        self.assertEqual(len(story.sections.all()), 0)
+        # Create a new section
+        sections_uri = "%ssections/" % (story_resource_uri)
+        response = self.api_client.post(sections_uri,
+                                        format='json', data=section_post_data)
+        self.assertHttpCreated(response)
+        section_resource_uri = response['location']
+        # Retrieve a model instance for the newly created section
+        story = Story.objects.get(story_id=story_id)
+        self.assertEqual(len(story.sections.all()), 1)
+        section = story.sections.all()[0]
+        self.assertEqual("%s%s/" % (sections_uri, section.section_id), 
+                         section_resource_uri)
+        self.assertEqual(section.title, section_post_data['title'])
+        self.assertEqual(section.layout.layout_id, section_post_data['layout'])
+        self.assertEqual(section.template_section, template_section)
 
     def test_patch_detail(self):
         """Test that a user can update the metadata of a section"""
@@ -2669,3 +2942,184 @@ class StoryProjectResourceTest(ResourceTestCase):
         self.assertHttpBadRequest(response)
         self.story = Story.objects.get(story_id=self.story.story_id)
         self.assertEqual(self.story.projects.count(), 0)
+
+
+class StoryRelationResourceTest(ResourceTestCase):
+    def setUp(self):
+        super(StoryRelationResourceTest, self).setUp()
+        self.username = 'test'
+        self.password = 'test'
+        self.user = User.objects.create_user(self.username, 'test@example.com', self.password)
+        self.user2 = User.objects.create_user("test2", "test2@example.com",
+                                              "test2")
+        self.story = create_story(title="Test Story", summary="Test Summary",
+                                  byline="Test Byline", status='published',
+                                  author=self.user)
+
+    def test_get_list(self):
+        related_story = create_story(title="Test Related Story", 
+             summary="Test Related Story Summary",
+             byline="Test Related Story Byline",
+             status='published',
+             author=self.user)
+        story2 = create_story(title="Test Story 2",
+                              summary="Test Story Summary 2",
+                              byline="Test Story Byline 2",
+                              status='published',
+                              author=self.user)
+        related_story2 = create_story(title="Test Related Story", 
+                             summary="Test Related Story Summary",
+                             byline="Test Related Story Byline",
+                             status='published',
+                             author=self.user)
+        self.assertEqual(len(self.story.related_stories.all()), 0)
+        StoryRelation.objects.create(source=self.story,
+            target=related_story, relation_type='connected')
+        # Create a second story relation to make sure filtering by
+        # story works correctly
+        StoryRelation.objects.create(source=story2,
+            target=related_story2, relation_type='connected')
+        self.assertEqual(len(self.story.related_stories.all()), 1)
+        self.assertEqual(self.story.related_stories.all()[0], 
+                         related_story)
+        # Test getting the relation through the target story
+        uri = '/api/0.1/stories/%s/related/' % (related_story.story_id)
+        resp = self.api_client.get(uri)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 1)
+        self.assertEqual(self.deserialize(resp)['objects'][0]['relation_type'], 'connected')
+        self.assertEqual(self.deserialize(resp)['objects'][0]['source'], self.story.story_id)
+        self.assertEqual(self.deserialize(resp)['objects'][0]['target'], related_story.story_id)
+        # Test getting the relation through the source story
+        uri = '/api/0.1/stories/%s/related/' % (self.story.story_id)
+        resp = self.api_client.get(uri)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 1)
+        self.assertEqual(self.deserialize(resp)['objects'][0]['relation_type'], 'connected')
+        self.assertEqual(self.deserialize(resp)['objects'][0]['source'], self.story.story_id)
+        self.assertEqual(self.deserialize(resp)['objects'][0]['target'], related_story.story_id)
+
+    def test_post_list(self):
+        related_story = create_story(title="Test Related Story", 
+             summary="Test Related Story Summary",
+             byline="Test Related Story Byline",
+             status='published',
+             author=self.user)
+        self.assertEqual(len(self.story.related_stories.all()), 0)
+        post_data = {
+            'relation_type': 'connected',
+            'source': self.story.story_id,
+            'target': related_story.story_id,
+        }
+        uri = '/api/0.1/stories/%s/related/' % (related_story.story_id)
+        self.api_client.client.login(username=self.username, password=self.password)
+        resp = self.api_client.post(uri,  format='json', 
+                                    data=post_data)
+        self.assertHttpCreated(resp)
+        self.assertEqual(StoryRelation.objects.count(), 1)
+        created_rel = StoryRelation.objects.get()
+        self.assertEqual(created_rel.relation_type,
+                         post_data['relation_type'])
+        self.assertEqual(created_rel.source, self.story)
+        self.assertEqual(created_rel.target, related_story)
+
+    def test_post_list_unauthenticated(self):
+        """Test that an aunauthenticated user can't create a relation"""
+        related_story = create_story(title="Test Related Story", 
+             summary="Test Related Story Summary",
+             byline="Test Related Story Byline",
+             status='published',
+             author=self.user)
+        self.assertEqual(len(self.story.related_stories.all()), 0)
+        post_data = {
+            'relation_type': 'connected',
+            'source': self.story.story_id,
+            'target': related_story.story_id,
+        }
+        uri = '/api/0.1/stories/%s/related/' % (related_story.story_id)
+        resp = self.api_client.post(uri, format='json',  data=post_data)
+        self.assertHttpUnauthorized(resp)
+        self.assertEqual(len(StoryRelation.objects.all()), 0)
+
+    def test_post_list_connected_unauthorized(self):
+        """
+        Test that a user can't define a connected story relation for a story
+        they don't own
+        """
+        related_story = create_story(title="Test Related Story", 
+             summary="Test Related Story Summary",
+             byline="Test Related Story Byline",
+             status='published',
+             author=self.user2)
+        self.assertEqual(len(self.story.related_stories.all()), 0)
+        post_data = {
+            'relation_type': 'connected',
+            'source': self.story.story_id,
+            'target': related_story.story_id,
+        }
+        uri = '/api/0.1/stories/%s/related/' % (related_story.story_id)
+        resp = self.api_client.post(uri, format='json',  data=post_data)
+        self.assertHttpUnauthorized(resp)
+        self.assertEqual(len(StoryRelation.objects.all()), 0)
+
+    def test_post_list_connected_other_users_story(self):
+        """
+        Test that a user can define their own story as connected
+        to another user's story
+        """
+        related_story = create_story(title="Test Related Story", 
+             summary="Test Related Story Summary",
+             byline="Test Related Story Byline",
+             status='published',
+             author=self.user2)
+        self.assertEqual(len(self.story.related_stories.all()), 0)
+        post_data = {
+            'relation_type': 'connected',
+            'source': related_story.story_id,
+            'target': self.story.story_id,
+        }
+        uri = '/api/0.1/stories/%s/related/' % (related_story.story_id)
+        self.api_client.client.login(username=self.username, password=self.password)
+        resp = self.api_client.post(uri,  format='json', 
+                                    data=post_data)
+        self.assertHttpCreated(resp)
+        self.assertEqual(StoryRelation.objects.count(), 1)
+        created_rel = StoryRelation.objects.get()
+        self.assertEqual(created_rel.relation_type,
+                         post_data['relation_type'])
+        self.assertEqual(created_rel.source, related_story)
+        self.assertEqual(created_rel.target, self.story)
+
+    def test_put_list(self):
+        related_story = create_story(title="Test Related Story", 
+             summary="Test Related Story Summary",
+             byline="Test Related Story Byline",
+             status='published',
+             author=self.user)
+        story2 = create_story(title="Test Story 2",
+                              summary="Test Story Summary 2",
+                              byline="Test Story Byline 2",
+                              status='published',
+                              author=self.user)
+        self.assertEqual(len(self.story.related_stories.all()), 0)
+        put_data = [
+            {
+                'relation_type': 'connected',
+                'source': self.story.story_id,
+                'target': related_story.story_id,
+            },
+            {
+                'relation_type': 'connected',
+                'source': story2.story_id,
+                'target': related_story.story_id,
+            },
+        ]
+        # Test getting the relation through the target story
+        uri = '/api/0.1/stories/%s/related/' % (related_story.story_id)
+        self.api_client.client.login(username=self.username, password=self.password)
+        resp = self.api_client.get(uri)
+        resp = self.api_client.put(uri, format='json', data=put_data)
+        self.assertHttpAccepted(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 2)
+        related_story = Story.objects.get(story_id=related_story.story_id)
+        self.assertEqual(len(related_story.related_to.all()), 2)

@@ -40,7 +40,8 @@
   padding: 1%;
 }
 
-.story-viewer .section {
+.story-viewer .section,
+.story-viewer .connected-story {
   padding: 1%;
 }
 

@@ -60,7 +60,7 @@
   {% block extrahead %}{% endblock %}
 </head>
 
-<body>
+<body class="{% block body_class %}{% endblock %}">
   {% cms_toolbar %}
 	<div id="header">
 		<div class="shell">

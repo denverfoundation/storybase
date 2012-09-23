@@ -61,6 +61,10 @@
 .editable-important-hover {
   border-color: #FE9703 !important;
 }
+.error input {
+  background-color: #F2DEDE;
+  border-color: #EED3D7;
+}
 /* Help Modal */
 #simplemodal-container {
   background-color: #fff;
@@ -285,6 +289,10 @@
 .call-to-action {
   width: 100%;
   height: 250px;
+}
+.connected-prompt {
+  width: 100%;
+  height: 300px;
 }
 /* Section Editor */
 .edit-section {

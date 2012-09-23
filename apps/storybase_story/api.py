@@ -4,6 +4,7 @@ from django.conf import settings
 from django.conf.urls.defaults import url
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.urlresolvers import NoReverseMatch
+from django.db.models import Q
 
 from haystack.query import SearchQuerySet
 from haystack.utils.geo import D, Point
@@ -12,8 +13,8 @@ from tastypie import fields, http
 from tastypie.authentication import Authentication
 from tastypie.bundle import Bundle
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
-from tastypie.exceptions import BadRequest
-from tastypie.utils import trailing_slash
+from tastypie.exceptions import BadRequest, ImmediateHttpResponse
+from tastypie.utils import dict_strip_unicode_keys, trailing_slash
 
 from storybase.utils import add_tzinfo
 from storybase.api import (DelayedAuthorizationResource,
@@ -24,7 +25,7 @@ from storybase_geo.models import Place
 from storybase_help.models import Help
 from storybase_story.models import (Container,
                                     Section, SectionAsset, SectionLayout, 
-                                    Story, StoryTemplate)
+                                    Story, StoryRelation, StoryTemplate)
 from storybase_taxonomy.models import Category
 from storybase_user.models import Organization, Project
 
@@ -33,6 +34,8 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
     title = fields.CharField(attribute='title', blank=True)
     summary = fields.CharField(attribute='summary', blank=True)
     call_to_action = fields.CharField(attribute='call_to_action', blank=True)
+    connected_prompt = fields.CharField(attribute='connected_prompt',
+                                        blank=True)
     url = fields.CharField(attribute='get_absolute_url', readonly=True)
     topics = fields.ListField(readonly=True)
     organizations = fields.ListField(readonly=True)
@@ -41,6 +44,8 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
     # A list of lat/lon values for related Location objects as well as
     # centroids of Place tags
     points = fields.ListField(readonly=True)
+    template_story = fields.CharField(attribute='template_story',
+        null=True)
 
     class Meta:
         always_return_data = True
@@ -82,7 +87,9 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
             url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/topics%s" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_storycategory_list'), name="api_dispatch_list_storycategories"),
             url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/places%s" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_storyplace_list'), name="api_dispatch_list_storyplaces"),
             url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/organizations%s" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_storyorganization_list'), name="api_dispatch_list_storyorganizations"),
+            url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/organizations%s" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_storyorganization_list'), name="api_dispatch_list_storyorganizations"),
             url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/projects%s" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_storyproject_list'), name="api_dispatch_list_storyprojects"),
+            url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/related%s" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_storyrelation_list'), name="api_dispatch_list_storyrelations"),
         ]
 
     def detail_uri_kwargs(self, bundle_or_obj):
@@ -104,7 +111,6 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
 
     def get_object_list(self, request):
         """Get a list of stories, filtering based on the request's user"""
-        from django.db.models import Q
         # Only show published stories  
         q = Q(status='published')
         if hasattr(request, 'user') and request.user.is_authenticated():
@@ -120,6 +126,18 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
         if request.user:
             kwargs['author'] = request.user
         return super(StoryResource, self).obj_create(bundle, request, **kwargs)
+
+    def dehydrate_template_story(self, bundle):
+        if bundle.obj.template_story:
+            return bundle.obj.template_story.story_id
+        else:
+            return None
+
+    def hydrate_template_story(self, bundle):
+        template_story = bundle.data.get('template_story', None)
+        if template_story and not isinstance(template_story, Story):
+            bundle.data['template_story'] = Story.objects.get(story_id=template_story)
+        return bundle
 
     def dehydrate_topics(self, bundle):
         """Populate a list of topic ids and names in the response objects"""
@@ -458,6 +476,8 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
     def dispatch_storyproject_list(self, request, **kwargs):
         return self.dispatch_metadata_list(request, StoryProjectResource(), **kwargs)
 
+    def dispatch_storyrelation_list(self, request, **kwargs):
+        return self.dispatch_metadata_list(request, StoryRelationResource(), **kwargs)
 
 class SectionResource(DelayedAuthorizationResource, TranslatedModelResource):
     # Explicitly declare fields that are on the translation model
@@ -468,6 +488,8 @@ class SectionResource(DelayedAuthorizationResource, TranslatedModelResource):
     """layout_id of related ``SectionLayout`` object"""
     layout_template = fields.CharField(readonly=True)
     help = fields.CharField(attribute='help', null=True)
+    template_section = fields.CharField(attribute='template_section',
+        null=True)
 
     class Meta:
         always_return_data = True
@@ -583,6 +605,19 @@ class SectionResource(DelayedAuthorizationResource, TranslatedModelResource):
         if help and not isinstance(help, Help):
             bundle.data['help'] = Help.objects.get(help_id=help['help_id'])
         return bundle
+
+    def dehydrate_template_section(self, bundle):
+        if bundle.obj.template_section:
+            return bundle.obj.template_section.section_id
+        else:
+            return None
+
+    def hydrate_template_section(self, bundle):
+        template_section = bundle.data.get('template_section', None)
+        if template_section and not isinstance(template_section, Section):
+            bundle.data['template_section'] = Section.objects.get(section_id=template_section)
+        return bundle
+
 
 class SectionAssetResource(DelayedAuthorizationResource, HookedModelResource):
     asset = fields.ToOneField(AssetResource, 'asset', full=True)
@@ -742,6 +777,16 @@ class StoryTemplateResource(TranslatedModelResource):
         except NoReverseMatch:
             return ''
 
+    def get_object_list(self, request):
+        objects = super(StoryTemplateResource, self).get_object_list(request)
+        connected_template_slug = getattr(settings, 'STORYBASE_CONNECTED_STORY_TEMPLATE', None)
+        # If a connected story template has been defined, don't show
+        # it in the list of available templates
+        if connected_template_slug:
+            objects = objects.exclude(slug=connected_template_slug)
+        return objects 
+
+
 class PutListSubResource(DelayedAuthorizationResource,HookedModelResource):
     """Base resource class for replacing a Story's related models from a list of ids"""
     class Meta:
@@ -841,3 +886,128 @@ class StoryProjectResource(PutListSubResource):
             if obj not in request.user.projects.all():
                 raise BadRequest("User is not a member of project with id %s" % obj.project_id)
         return object_list
+
+
+class StoryRelationResource(DelayedAuthorizationResource):
+    source = fields.CharField(attribute='source')
+    target = fields.CharField(attribute='target')
+
+    class Meta:
+        always_return_data = True
+        queryset = StoryRelation.objects.all()
+        resource_name = 'related'
+        list_allowed_methods = ['get', 'post', 'put']
+        authentication = Authentication()
+        authorization = LoggedInAuthorization()
+        # Hide the underlying id
+        excludes = ['id']
+
+        # Custom meta attributes
+        # Methods that handle authorization later than normain in the flow
+        delayed_authorization_methods = ('post_list', 'put_list')
+
+    def apply_request_kwargs(self, obj_list, request=None, **kwargs):
+        story_id = kwargs.get('story_id')
+        if story_id:
+            q = Q(source__story_id=story_id)
+            q = q | Q(target__story_id=story_id)
+            return obj_list.filter(q)
+        else:
+            return obj_list
+
+    def apply_authorization_limits(self, request, object_list):
+        if request.method == 'GET':
+            return object_list
+        else:
+            return [obj for obj in object_list
+                    if self._meta.authorization.is_authorized(request, obj)]
+
+    def obj_delete_list(self, request=None, **kwargs):
+        """
+        A ORM-specific implementation of ``obj_delete_list``.
+
+        Takes optional ``kwargs``, which can be used to narrow the query.
+        """
+        story_id = kwargs.pop('story_id')
+        if story_id:
+            q = Q(source__story_id=story_id)
+            q = q | Q(target__story_id=story_id)
+            q = q & Q(**kwargs)
+
+        base_object_list = self.get_object_list(request).filter(q)
+        authed_object_list = self.apply_authorization_limits(request, base_object_list)
+
+        if hasattr(authed_object_list, 'delete'):
+            # It's likely a ``QuerySet``. Call ``.delete()`` for efficiency.
+            authed_object_list.delete()
+        else:
+            for authed_obj in authed_object_list:
+                authed_obj.delete()
+
+    def put_list(self, request, **kwargs):
+        """
+        Replaces a collection of resources with another collection.
+
+        Unlike the default put_list, this doesn't expect the new collections
+        to be wrapped in an 'objects' property.
+        """
+        deserialized = self.deserialize(request, request.raw_post_data, format=request.META.get('CONTENT_TYPE', 'application/json'))
+        deserialized = self.alter_deserialized_list_data(request, deserialized)
+
+        self.obj_delete_list(request=request, **self.remove_api_resource_names(kwargs))
+        bundles_seen = []
+
+        for object_data in deserialized:
+            bundle = self.build_bundle(data=dict_strip_unicode_keys(object_data), request=request)
+
+            # Attempt to be transactional, deleting any previously created
+            # objects if validation fails.
+            try:
+                self.obj_create(bundle, request=request, **self.remove_api_resource_names(kwargs))
+                bundles_seen.append(bundle)
+            except ImmediateHttpResponse:
+                self.rollback(bundles_seen)
+                raise
+
+        if not self._meta.always_return_data:
+            return http.HttpNoContent()
+        else:
+            to_be_serialized = {}
+            to_be_serialized['objects'] = [self.full_dehydrate(bundle) for bundle in bundles_seen]
+            to_be_serialized = self.alter_list_data_to_serialize(request, to_be_serialized)
+            return self.create_response(request, to_be_serialized, response_class=http.HttpAccepted)
+
+    def pre_bundle_obj_hydrate(self, bundle, request=None, **kwargs):
+        # Override the authorization check that happens in the
+        # default DelayedAuthorizationResource test.  This is needed
+        # because we need to check the related fields on the model
+        # which are not available until hydration
+        pass
+
+    def post_full_hydrate(self, bundle, request=None, **kwargs):
+        # Check the authorization on the object
+        self.is_authorized(request, bundle.obj, **kwargs)
+
+    def dehydrate_source(self, bundle):
+        if bundle.obj.source:
+            return bundle.obj.source.story_id
+        else:
+            return None
+
+    def hydrate_source(self, bundle):
+        source = bundle.data.get('source', None)
+        if source and not isinstance(source, Story):
+            bundle.data['source'] = Story.objects.get(story_id=source)
+        return bundle
+
+    def dehydrate_target(self, bundle):
+        if bundle.obj.target:
+            return bundle.obj.target.story_id
+        else:
+            return None
+
+    def hydrate_target(self, bundle):
+        target = bundle.data.get('target', None)
+        if target and not isinstance(target, Story):
+            bundle.data['target'] = Story.objects.get(story_id=target)
+        return bundle

@@ -1,9 +1,13 @@
 import re
 
+from django.conf import settings
+
 from storybase_user.models import Organization, Project
 from storybase_geo.models import Location, Place
-from storybase_story.models import create_story
+from storybase_story.models import (Container, SectionAsset, SectionLayout,
+    create_section, create_story, create_story_template)
 from storybase_taxonomy.models import Category
+from storybase_asset.models import (create_external_asset, create_html_asset)
 
 def bulk_create(hashes):
     """Bulk create stories from a list of dictionaries
@@ -43,3 +47,25 @@ def bulk_create(hashes):
         story.places.add(*places)
         story.locations.add(*locations)
         story.save()
+
+def create_connected_story_template():
+    """
+    Create the connected stories template
+
+    This is essentially a programatic fixture for creating the 
+    connected story template
+    """
+    story = create_story(title="Connected Story Template", language="en",
+                         status="published", is_template=True)
+    layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+    section = create_section(title="Photo and Image", language="en",
+        story=story, layout=layout)
+    asset1 = create_external_asset(title="Mock Image Asset", type='image',
+        url='http://exampledomain.com/fake.png')
+    asset2 = create_html_asset(title="Mock Text Asset", type='text')
+    left = Container.objects.get(name='left')
+    right = Container.objects.get(name='right')
+    SectionAsset.objects.create(section=section, asset=asset1, container=left)
+    SectionAsset.objects.create(section=section, asset=asset2, container=right)
+    return create_story_template(title="Connected Story", story=story,
+        slug=settings.STORYBASE_CONNECTED_STORY_TEMPLATE)

@@ -172,7 +172,7 @@ textarea { overflow: auto; }
 .page-nav .left-nav {  background:url('images/left-arrow2.png') no-repeat 0 3px; padding-left:25px;  }
 .page-nav .right-nav {  background:url('images/right-arrow2.png') no-repeat right 3px; padding-right:25px;   }
 
-#main { overflow-x:hidden; }
+#main { overflow-x:hidden; min-height: 200px; padding-bottom: 8px; }
 #main .flexslider-holder { overflow:hidden;  }
 #main .full-width { padding-bottom:27px;  overflow:visible !important; margin-top:20px;  }
 #main .full-width ul { }
@@ -367,6 +367,7 @@ a.button:hover {
 }
 a.button.right {
 	float:right;
+        margin-left: 8px;
 }
 
 /* story/project detail */

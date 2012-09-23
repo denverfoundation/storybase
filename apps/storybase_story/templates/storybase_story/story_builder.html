@@ -22,6 +22,8 @@
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/backbone-forms/templates/default.css">{% endaddtoblock %}
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/select2/select2.css">{% endaddtoblock %}
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/leaflet/leaflet.css">{% endaddtoblock %}
+    {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/guiders/guiders-1.2.8.css">{% endaddtoblock %}
+    {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/tooltipster-1.2/css/tooltipster.css">{% endaddtoblock %}
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/style.css">{% endaddtoblock %}
     {% comment %}
     In development, use Javascript to compile the LESS to CSS. In
@@ -87,6 +89,8 @@
     <script src="{{ STATIC_URL }}js/libs/select2/select2.min.js"></script>
     <script src="{{ STATIC_URL}}js/libs/leaflet/leaflet.js"></script>
     <script src="{{ STATIC_URL }}js/libs/jquery.cookie.js"></script>
+    <script src="{{ STATIC_URL }}js/libs/guiders/guiders-1.2.8.js"></script>
+    <script src="{{ STATIC_URL }}js/libs/tooltipster-1.2/js/jquery.tooltipster.min.js"></script>
 
     <script src="{{ STATIC_URL }}js/utils.js"></script>
     <script src="{{ STATIC_URL }}js/forms.js"></script>
@@ -98,13 +102,14 @@
 
     <script type="text/javascript">
     $(document).ready(function() {
+        storybase.builder.globals.APP_ROOT = storybase.utils.getRoot(["build", "build-connected"], window.location.pathname, 1);
         storybase.globals.API_ROOT = '/api/0.1/';
         storybase.globals.MAP_CENTER = {{ storybase_map_center }};
         storybase.globals.MAP_ZOOM_LEVEL = {{ storybase_map_zoom_level }};
         storybase.globals.MAP_POINT_ZOOM_LEVEL = {{ storybase_map_point_zoom_level }};
         var storyTemplatesData = {{ story_template_json }};
         var helpData = {{ help_json }};
-        var options = {
+        var options = _.extend({
             assetTypes: {{ asset_types_json }},
             el: $('#builder'),
             dispatcher: storybase.builder.globals.dispatcher,
@@ -113,25 +118,53 @@
             organizations: {{ organizations_json }},
             places: {{ places_json }},
             projects: {{ projects_json }},
+            relatedStories: new storybase.collections.StoryRelations,
             storyTemplates: new storybase.builder.collections.StoryTemplates,
-            topics: {{ topics_json }} 
-        };
+            topics: {{ topics_json }},
+            startOverUrl: storybase.utils.getRoot(["build", "build-connected"], window.location.pathname)
+        }, {{ options_json }});
+        var relatedStoriesJSON = null;
+        var templateAssetsJSON = null;
+        var templateSectionsJSON = null;
         {% if story_json %}
         options.model = new storybase.models.Story({{ story_json }});
         {% endif %}
+        {% if related_stories_json %}
+        relatedStoriesJSON = {{ related_stories_json }};
+        {% endif %}
+        {% if template_story_json %}
+        options.templateStory = new storybase.models.Story({{ template_story_json }});
+        {% endif %}
+        {% if template_sections_json %}
+        templateSectionsJSON = {{ template_sections_json }};
+        {% endif %}
+        {% if template_assets_json %}
+        templateAssetsJSON = {{ template_assets_json }};
+        {% endif %}
+        if (relatedStoriesJSON) {
+          options.relatedStories.reset(relatedStoriesJSON.objects);
+        }
+        if (templateSectionsJSON) {
+          options.templateStory.sections.reset(templateSectionsJSON.objects);
+            if (templateAssetsJSON) {
+              options.templateStory.sections.each(function(section) {
+                  var parse = section.assets.parse;
+                  section.assets.reset(parse(templateAssetsJSON[section.id]));
+              });
+            }
+        }
         options.storyTemplates.reset(storyTemplatesData.objects);
         options.help.reset(helpData.objects);
         
-        storybase.builder.globals.APP_ROOT = storybase.utils.getRoot(["build"], window.location.pathname, 1);
         storybase.builder.router = new storybase.builder.routers.Router({
-            dispatcher: storybase.builder.globals.dispatcher,
-            hasStory: !_.isUndefined(options.model)
+          dispatcher: storybase.builder.globals.dispatcher,
+          hasStory: !_.isUndefined(options.model),
+          hasTemplate: !_.isUndefined(options.templateStory)
         });
         storybase.builder.app = new storybase.builder.views.AppView(
             options
         );
         Backbone.history.start({pushState: true, root: storybase.builder.globals.APP_ROOT});
-
     });
     </script>
     <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js?domready=1"></script>

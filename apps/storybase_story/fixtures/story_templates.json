@@ -225,6 +225,7 @@
         "pk": null, 
         "model": "storybase_story.storytemplate", 
         "fields": {
+            "slug": "photovoice",
             "story": [
                 "357c5885c4e844cb8a4cd4eebe912a1c"
             ], 
@@ -236,6 +237,7 @@
         "pk": null, 
         "model": "storybase_story.storytemplate", 
         "fields": {
+            "slug": "explainer",
             "story": [
                 "0b2b9e3f38e3422ea3899ee66d1e334b"
             ], 

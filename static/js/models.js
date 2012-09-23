@@ -23,6 +23,28 @@ storybase.models.TastypieMixin = {
   }
 }
 
+/**
+ * Collection that has an additional save method.
+ *
+ * This method uses a PUT request to replace entire server-side collection
+ * with the models in the Backbone collection.
+ */
+storybase.collections.SaveableCollection = Backbone.Collection.extend({
+  save: function(options) {
+    // TODO: Test this 
+    // BOOKMARK
+    options = options ? _.clone(options) : {};
+    var collection = this;
+    var success = options.success;
+    options.success = function(resp, status, xhr) {
+      collection.reset(collection.parse(resp, xhr), options);
+      if (success) success(collection, resp);
+    };
+    options.error = Backbone.wrapError(options.error, collection, options);
+    return (this.sync || Backbone.sync).call(this, 'update', this, options);
+  }
+});
+
 storybase.models.DataSet = Backbone.Model.extend({
     idAttribute: "dataset_id",
 
@@ -168,7 +190,9 @@ storybase.models.Story = Backbone.Model.extend(
     defaults: {
       'title': '',
       'byline': '',
-      'summary': ''
+      'summary': '',
+      'connected': false,
+      'connected_prompt': ''
     },
 
     initialize: function(options) {
@@ -193,6 +217,14 @@ storybase.models.Story = Backbone.Model.extend(
     },
 
     /**
+     * Set the related stories collection.
+     */
+    setRelatedStories: function(relatedStories) {
+      this.relatedStories = relatedStories;
+      this.relatedStories.setStory(this);
+    },
+
+    /**
      * Re-set the section weights based on their order in the collection 
      */
     resetSectionWeights: function() {
@@ -201,6 +233,11 @@ storybase.models.Story = Backbone.Model.extend(
       });
     },
 
+    saveRelatedStories: function() {
+      if (this.relatedStories) {
+        this.relatedStories.save();
+      }
+    },
 
     /**
      * Save all the sections of the story
@@ -209,7 +246,30 @@ storybase.models.Story = Backbone.Model.extend(
       this.sections.each(function(section) {
         section.save();
       });
-    }
+    },
+
+
+    /**
+     * Copy selected properties from another story.
+     */
+    fromTemplate: function(story) {
+      this.set('structure_type', story.get('structure_type'));
+      this.set('summary', story.get('summary'));
+      this.set('call_to_action', story.get('call_to_action'));
+      this.set('template_story', story.get('story_id'));
+                    
+      story.sections.each(function(section) {
+        var sectionCopy = new storybase.models.Section();
+        sectionCopy.set("title", section.get("title"));
+        sectionCopy.set("layout", section.get("layout"));
+        sectionCopy.set("root", section.get("root"));
+        sectionCopy.set("weight", section.get("weight"));
+        sectionCopy.set("layout_template", section.get("layout_template"));
+        sectionCopy.set("template_section", section.get("section_id"));
+        sectionCopy.set("help", section.get("help"));
+        this.sections.push(sectionCopy);
+      }, this);
+    },
   })
 );
 
@@ -226,6 +286,12 @@ storybase.models.Section = Backbone.Model.extend(
   _.extend({}, storybase.models.TastypieMixin, {
     idAttribute: "section_id",
 
+    initialize: function() {
+      this.assets = new storybase.collections.SectionAssets;
+      this.setCollectionUrls();
+      this.on("change", this.setCollectionUrls, this);
+    },
+
     populateChildren: function() {
       var $this = this;
       this.children = this.get('children').map(function(childId) {
@@ -234,8 +300,41 @@ storybase.models.Section = Backbone.Model.extend(
       return this;
     },
 
+    /**
+     * Set the url property of collections.
+     *
+     * This is needed because the URL of the collections are often based
+     * on the model id.
+     */
+    setCollectionUrls: function() {
+      if (!this.isNew()) {
+        this.assets.url = this.url() + 'assets/';
+      }
+    },
+
     title: function() {
       return this.get("title");
+    },
+
+    urlRoot: function() {
+      return storybase.globals.API_ROOT + 'sections';
+    },
+
+    /**
+     * Return the server URL for a model instance.
+     *
+     * This version always tries to use the model instance's collection
+     * URL first.
+     */
+    url: function() {
+      var base = _.result(this.collection, 'url') || _.result(this, 'urlRoot') || urlError();
+      if (this.isNew()) {
+        return base;
+      }
+      else {
+        base = base + (base.charAt(base.length - 1) == '/' ? '' : '/') + encodeURIComponent(this.id);
+      }
+      return base + (base.charAt(base.length - 1) == '/' ? '' : '/');
     }
   })
 );
@@ -245,6 +344,10 @@ storybase.collections.Sections = Backbone.Collection.extend(
     model: storybase.models.Section,
 
     url: storybase.globals.API_ROOT + 'sections/',
+
+    initialize: function() {
+      _.bindAll(this, '_assetsFetchedSuccess', '_assetsFetchedError');
+    },
 
     sortByIdList: function(idList) {
       var that = this;
@@ -257,6 +360,106 @@ storybase.collections.Sections = Backbone.Collection.extend(
         return weight;
       });
     },
+
+    /**
+     * Callback for when an individual section's asset is fetched.
+     */
+    _assetsFetchedSuccess: function(section, assets, response) {
+      var callback = this._fetchAssetsSuccess ? this._fetchAssetsSuccess : null;
+      this._assetsFetched.push(section.id);  
+      if (this._assetsFetched.length == this.length) {
+        // All the sections have been fetched!
+        this._fetchAssetsCleanup();
+        if (callback) {
+          callback(this);
+        }
+      }
+    },
+
+    /**
+     * Callback for when an individual section's assets failed to be 
+     * fetched
+     */
+    _assetsFetchedError: function(section, assets, response) {
+      var callback = this._fetchAssetsError ? this._fetchAssetsError : null;
+      this._fetchAssetsCleanup();
+      if (callback) {
+        callback(this);
+      }
+    },
+
+    _fetchAssetsCleanup: function() {
+      this._assetsFetched = [];
+      this._fetchAssetsSuccess = null; 
+      this._fetchAssetsError = null; 
+    },
+
+    /**
+     * Fetch the assets for each section in the collection.
+     */
+    fetchAssets: function(options) {
+      options = options ? options : {};
+      this._assetsFetched = [];
+      if (options.success) {
+        this._fetchAssetsSuccess = options.success;
+      }
+      if (options.error) {
+        this._fetchAssetsError = options.error;
+      }
+      this.each(function(section) {
+        var coll = this;
+        var success = function(assets, response) {
+          coll._assetsFetchedSuccess(section, assets, response);
+        };
+        var error = function(assets, response) {
+          coll._assetsFetchedError(section, assets, response);
+        };
+        section.assets.fetch({
+          success: success,
+          error: error 
+        });
+      }, this);
+    }
+  })
+);
+
+storybase.models.StoryRelation = Backbone.Model.extend({
+  idAttribute: "relation_id"
+});
+
+storybase.collections.StoryRelations = storybase.collections.SaveableCollection.extend(
+  _.extend({}, storybase.collections.TastypieMixin, {
+    model: storybase.models.StoryRelation,
+
+    initialize: function(models, options) {
+      if (!_.isUndefined(options)) {
+        this.setStory(options.story);
+      }
+    },
+
+    fillTargets: function() {
+      this.each(function(rel) {
+        if (rel.isNew()) {
+          // Unsaved story relation
+          if (_.isUndefined(rel.get('target'))) {
+            rel.set('target', this._story.id);
+          }
+        }
+      }, this);
+    },
+
+    save: function(options) {
+      this.fillTargets();
+      return storybase.collections.SaveableCollection.prototype.save.call(this, options);
+    },
+
+    setStory: function(story) {
+      this._story = story;
+    },
+
+    url: function() {
+      return _.result(this._story, 'url') + 'related/';
+    }
   })
 );
 

@@ -23,7 +23,7 @@
             <td><a class="view"  href="{{ story.get_absolute_url }}">{{ story }}</a></td>
             <td>{{ story.last_edited }}</td>
             <td>{{ story.status|capfirst }}</td>
-            <td><a class="build" href="{% url story_builder story_id=story.story_id %}">{% trans "Build" %}</a></td>
+            <td><a class="build" href="{{ story.builder_url }}">{% trans "Build" %}</a></td>
     </tbody>
     {% endfor %}
 </table>

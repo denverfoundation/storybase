@@ -2,8 +2,10 @@
 
 import json
 
+from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.db.models import Q
 from django.http import Http404
 from django.utils.decorators import method_decorator
 from django.template import Context
@@ -15,8 +17,9 @@ from django.utils.translation import ugettext as _
 from storybase_asset.models import ASSET_TYPES
 from storybase_geo.models import Place
 from storybase_help.api import HelpResource
-from storybase_story.api import StoryResource, StoryTemplateResource
-from storybase_story.models import SectionLayout, Story
+from storybase_story.api import (SectionAssetResource, SectionResource,
+    StoryResource, StoryTemplateResource)
+from storybase_story.models import SectionLayout, Story, StoryTemplate
 from storybase_taxonomy.models import Category
 from storybase.utils import simple_language_changer
 from storybase.views.generic import ModelIdDetailView
@@ -143,10 +146,127 @@ class StoryBuilderView(DetailView):
         else:
             return None
 
-    def get_story_json(self):
+    def get_source_story(self):
+        """Get the source story for a connected story"""
+        queryset = self.get_queryset()
+        source_story_id = self.kwargs.get('source_story_id', None)
+        source_slug = self.kwargs.get('source_slug', None)
+        if source_story_id is not None:
+            queryset = queryset.filter(story_id=source_story_id)
+        elif source_slug is not None:
+            queryset = queryset.filter(slug=source_slug)
+        else:
+            return None
+
+        try:
+            source_story = queryset.get()
+        except ObjectDoesNotExist:
+            raise Http404(_(u"No %(verbose_name)s found matching the query") %
+                    {'verbose_name': queryset.model._meta.verbose_name})
+        if not source_story.allow_connected:
+            raise PermissionDenied(_(u"This story does not allow connected stories"))
+
+        return source_story
+
+    def get_template_object(self, queryset=None):
+        """
+        Get the ``StoryTemplate`` instance for this view
+
+        The template model instance is used to initialize the structure of the newly
+        created Story model instance.
+
+        The template is identified with a 'template' parameter in the
+        querystring of the view URL or view keyword arguments.
+        It can either be a value for the template_id or slug field of 
+        the the ``StoryTemplate`` model.
+
+        This method returns None if no matching story is found or if no
+        template identifier is provided.  This will cause the builder
+        to be launched with the select template step.
+
+        """
+        obj = None
+        template_slug_or_id = self.kwargs.get('template', None)
+        if template_slug_or_id is None:
+            # Template identifier not in keyword arguments. Try
+            # getting it from URL query string
+            template_slug_or_id = self.request.GET.get('template', None)
+        if template_slug_or_id:
+            if queryset is None:
+                queryset = StoryTemplate.objects.all()
+
+            q = Q(template_id=template_slug_or_id)
+            q = q | Q(slug=template_slug_or_id)
+            queryset = queryset.filter(q)
+
+            try:
+                obj = queryset.get()
+            except ObjectDoesNotExist:
+                # If a matching template doesn't exist, just return
+                # None. The user will be prompted to select a template
+                # in the builder
+                pass
+
+        return obj 
+
+    def get_story_json(self, obj=None):
+        if obj is None:
+            obj = self.object
         resource = StoryResource()
-        bundle = resource.build_bundle(obj=self.object)
+        bundle = resource.build_bundle(obj=obj)
         to_be_serialized = resource.full_dehydrate(bundle)
+        return resource.serialize(None, to_be_serialized, 'application/json')
+
+    def get_sections_json(self, story=None):
+        """
+        Get serialized section data for a story
+
+        This is used to add JSON data to the view's response context in
+        order to bootstrap Backbone models and collections.
+        
+        """
+        if story is None:
+            story = self.object
+        resource = SectionResource()
+        to_be_serialized = {}
+        objects = resource.obj_get_list(story__story_id=story.story_id)
+        sorted_objects = resource.apply_sorting(objects)
+        to_be_serialized['objects'] = sorted_objects
+
+        # Dehydrate the bundles in preparation for serialization.
+        bundles = [resource.build_bundle(obj=obj) for obj in to_be_serialized['objects']]
+        to_be_serialized['objects'] = [resource.full_dehydrate(bundle) for bundle in bundles]
+        to_be_serialized = resource.alter_list_data_to_serialize(request=None, data=to_be_serialized)
+        return resource.serialize(None, to_be_serialized, 'application/json')
+
+    def get_assets_json(self, story=None):
+        """
+        Get serialized asset data for a story
+
+        This is used to add JSON data to the view's response context in
+        order to bootstrap Backbone models and collections.
+        
+        The response JSON is an object keyed with the section IDs.
+        The asset data is accessible via the objects property of
+        each section object.
+        
+        """
+        if story is None:
+            story = self.object
+        resource = SectionAssetResource()
+        to_be_serialized = {}
+        for section in story.sections.all():
+            sa_to_be_serialized = {}
+            objects = resource.obj_get_list(section__section_id=section.section_id)
+            sorted_objects = resource.apply_sorting(objects)
+            sa_to_be_serialized['objects'] = sorted_objects
+
+            # Dehydrate the bundles in preparation for serialization.
+            bundles = [resource.build_bundle(obj=obj) for obj in sa_to_be_serialized['objects']]
+            sa_to_be_serialized['objects'] = [resource.full_dehydrate(bundle) for bundle in bundles]
+            sa_to_be_serialized = resource.alter_list_data_to_serialize(request=None, data=sa_to_be_serialized)
+            to_be_serialized[section.section_id] = sa_to_be_serialized
+
         return resource.serialize(None, to_be_serialized, 'application/json')
 
     def get_story_template_json(self):
@@ -198,6 +318,86 @@ class StoryBuilderView(DetailView):
                             for project in self.request.user.projects.all()]
         return json.dumps(to_be_serialized);
 
+    def get_related_stories_json(self):
+        if self.source_story:
+            return json.dumps({
+                'objects': [
+                    {
+                        'source': self.source_story.story_id,
+                        'relation_type': 'connected'
+                    },
+                ]
+            })
+        else:
+            return None
+
+    def get_prompt(self):
+        """
+        Get the story prompt
+        """
+        if self.object:
+            return self.object.get_prompt()
+        elif self.source_story and self.source_story.connected_prompt:
+            return self.source_story.connected_prompt;
+        else:
+            return "";
+
+    def get_options_json(self):
+        """Get configuration options for the story builder"""
+        options = {
+            # Show only the builder workflow steps
+            'visibleSteps': {
+                'build': True,
+                'data': True, 
+                'tag': True,
+                'review': True,
+                'publish': True
+            },
+            # Show asset type selector
+            'showSelectAssetType': True,
+            # Show the view that allows the user to edit
+            # the story title and byline
+            'showStoryInformation': True,
+            # Show the view that allows the user to edit the call
+            # to action or enable connected stories
+            'showCallToAction': True,
+            # Show a list of sections that the user can use to navigate
+            # between sectons
+            'showSectionList': True,
+            # Show the input for editing section titles
+            'showSectionTitles': True,
+            # Show the select input for changing section layouts
+            'showLayoutSelection': True,
+            # Show the story title input in the section edit view 
+            'showStoryInfoInline': False,
+            # Prompt (for connected stories)
+            'prompt': self.get_prompt(),
+            # Show the sharing view
+            'showSharing': True,
+            # Show the builder tour
+            'showTour': True
+        }
+        if (self.template_object and  self.template_object.slug == settings.STORYBASE_CONNECTED_STORY_TEMPLATE):
+            # TODO: If these settings apply in cases other than just
+            # connected stories, it might make more sense to store them
+            # as part of the template model
+            options.update({
+                'visibleSteps': {
+                    'build': True,
+                    'publish': True
+                },
+                'showSelectAssetType': False,
+                'showStoryInformation': False,
+                'showCallToAction': False,
+                'showSectionList': False,
+                'showSectionTitles': False,
+                'showLayoutSelection': False,
+                'showStoryInfoInline': True,
+                'showSharing': False,
+                'showTour': False,
+            })
+        return json.dumps(options)
+
     def get_context_data(self, **kwargs):
         """Provide Bootstrap data for Backbone models and collections"""
         context = {
@@ -213,11 +413,34 @@ class StoryBuilderView(DetailView):
 
         if self.object:
             context['story_json'] = mark_safe(self.get_story_json())
+            if self.object.template_story:
+                context['template_story_json'] = mark_safe(
+                    self.get_story_json(self.object.template_story))
+                context['template_sections_json'] = mark_safe(
+                    self.get_sections_json(self.object.template_story))
+                context['template_assets_json'] = mark_safe(
+                    self.get_assets_json(self.object.template_story))
+        elif self.template_object:
+            context['template_story_json'] = mark_safe(
+                self.get_story_json(self.template_object.story))
+            context['template_sections_json'] = mark_safe(
+                self.get_sections_json(self.template_object.story))
+            context['template_assets_json'] = mark_safe(
+                self.get_assets_json(self.template_object.story))
+
+        related_stories_json = self.get_related_stories_json()
+        if related_stories_json: 
+            context['related_stories_json'] = mark_safe(
+                related_stories_json)
+
+        context['options_json'] = mark_safe(self.get_options_json())
 
         return context
 
     def get(self, request, **kwargs):
         self.object = self.get_object()
+        self.template_object = self.get_template_object(queryset=None)
+        self.source_story = self.get_source_story()
         context = self.get_context_data(object=self.object, **kwargs)
         return self.render_to_response(context)
 
