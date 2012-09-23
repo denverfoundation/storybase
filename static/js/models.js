@@ -217,6 +217,14 @@ storybase.models.Story = Backbone.Model.extend(
     },
 
     /**
+     * Set the featured assets collection.
+     */
+    setFeaturedAssets: function(collection) {
+      this.featuredAssets = collection;
+      this.featuredAssets.setStory(this);
+    },
+
+    /**
      * Set the related stories collection.
      */
     setRelatedStories: function(relatedStories) {
@@ -233,11 +241,41 @@ storybase.models.Story = Backbone.Model.extend(
       });
     },
 
+    /**
+     * Set the featured asset.
+     *
+     * This method provides an interface for the actual set operation
+     * since it's a little unintuitive.
+     */
+    setFeaturedAsset: function(asset) {
+      // The data model supports having multiple featured assets, but
+      // our current use case only needs to keep one.
+      this.featuredAssets.reset(asset);
+      this.featuredAssets.save();
+    },
+
+    getFeaturedAsset: function(index) {
+      index = _.isUndefined(index) ? 0 : index; 
+      if (this.featuredAssets) {
+        return this.featuredAssets.at(index);
+      }
+      else {
+        return undefined;
+      }
+    },
+
+    saveFeaturedAssets: function() {
+      if (this.featuredAssets) {
+        this.featuredAssets.save();
+      }
+    },
+
     saveRelatedStories: function() {
       if (this.relatedStories) {
         this.relatedStories.save();
       }
     },
+
 
     /**
      * Save all the sections of the story

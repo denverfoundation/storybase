@@ -36,7 +36,6 @@ storybase.builder.views.AppView = Backbone.View.extend({
       visibleSteps: this.options.visibleSteps
     };
     var buildViewOptions;
-    var shareViewOptions;
     this.dispatcher = this.options.dispatcher;
     commonOptions.dispatcher = this.dispatcher;
     // The currently active step of the story building process
@@ -77,14 +76,6 @@ storybase.builder.views.AppView = Backbone.View.extend({
       showStoryInfoInline: this.options.showStoryInfoInline,
       showTour: this.options.showTour
     }, commonOptions);
-    // TODO: Name this something more accurate than shareViewOptions
-    shareViewOptions = _.defaults({
-      places: this.options.places,
-      topics: this.options.topics,
-      organizations: this.options.organizations,
-      projects: this.options.projects,
-      showSharing: this.options.showSharing
-    }, commonOptions);
 
     // Store subviews in an object keyed with values of this.activeStep
     this.subviews = {
@@ -102,13 +93,24 @@ storybase.builder.views.AppView = Backbone.View.extend({
       this.subviews.data = new storybase.builder.views.DataView(commonOptions);
     }
     if (this.options.visibleSteps.tag) {
-      this.subviews.tag =  new storybase.builder.views.TaxonomyView(shareViewOptions);
+      this.subviews.tag =  new storybase.builder.views.TaxonomyView(
+        _.defaults({
+          places: this.options.places,
+          topics: this.options.topics,
+          organizations: this.options.organizations,
+          projects: this.options.projects
+        }, commonOptions)
+      );
     }
     if (this.options.visibleSteps.review) {
       this.subviews.review = new storybase.builder.views.ReviewView(commonOptions);
     }
     if (this.options.visibleSteps.publish) {
-      this.subviews.publish =  new storybase.builder.views.PublishView(shareViewOptions);
+      this.subviews.publish =  new storybase.builder.views.PublishView(
+        _.defaults({
+          showSharing: this.options.showSharing
+        }, commonOptions)
+      );
     }
 
     // IMPORTANT: Create the builder view last because it triggers
@@ -3878,23 +3880,21 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
 
     initialize: function() {
       this.dispatcher = this.options.dispatcher;
+      this.story = this.options.story;
       this.template = Handlebars.compile(this.templateSource);
       this.templates = {};
+
+      if (_.isUndefined(this.story)) {
+        this.dispatcher.on("ready:story", this.setStory, this);
+      }
+      else {
+        this.model = this.story.getFeaturedAsset();
+      }
 
       if (_.isUndefined(this.model)) {
         this.model = new storybase.models.Asset({
           'type': 'image'
         });
-      }
-
-      if (_.isUndefined(this.collection)) {
-        this.collection = new storybase.collections.FeaturedAssets([], {
-          story: this.story
-        });
-      }
-      
-      if (_.isUndefined(this.story)) {
-        this.dispatcher.on("ready:story", this.setStory, this);
       }
 
       this.bindModelEvents();
@@ -3917,7 +3917,6 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
       else {
         this._state = 'edit';
       }
-      console.debug(this._state);
     },
 
     getState: function() {
@@ -3951,7 +3950,9 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
 
     setStory: function(story) {
       this.story = story;
-      this.collection.setStory(story);
+      this.story.setFeaturedAssets(
+        new storybase.collections.FeaturedAssets
+      );
     },
 
     render: function() {
@@ -4018,20 +4019,6 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
           });
         }
       }
-    },
-
-    /**
-     * Set the featured asset.
-     *
-     * This method provides an interface for the actual set operation
-     * since it's a little unintuitive.
-     */
-    setFeaturedAsset: function(asset) {
-      // The data model supports having multiple featured assets, but
-      // our current use case only needs to keep one.
-      this.collection.reset(asset);
-      this.collection.save();
-      // BOOKMARK
     },
 
     saveModel: function(attributes, options) {

@@ -121,8 +121,7 @@
             relatedStories: new storybase.collections.StoryRelations,
             storyTemplates: new storybase.builder.collections.StoryTemplates,
             topics: {{ topics_json }},
-            startOverUrl: storybase.utils.getRoot(["build", "build-connected"], window.location.pathname),
-            featuredAssets: new storybase.collections.FeaturedAssets
+            startOverUrl: storybase.utils.getRoot(["build", "build-connected"], window.location.pathname)
         }, {{ options_json }});
         var relatedStoriesJSON = null;
         var templateAssetsJSON = null;
@@ -158,8 +157,11 @@
               });
             }
         }
-        if (featuredAssetsJSON) {
-          options.featuredAssets.reset(featuredAssetsJSON.objects);
+        if (options.model && featuredAssetsJSON) {
+          options.model.setFeaturedAssets(
+            new storybase.collections.FeaturedAssets(
+              featuredAssetsJSON.objects)
+          )
         }
         options.storyTemplates.reset(storyTemplatesData.objects);
         options.help.reset(helpData.objects);
