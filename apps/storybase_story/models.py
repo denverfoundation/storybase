@@ -218,14 +218,29 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
         """Return JSON representation of this object"""
         return mark_safe(simplejson.dumps(self.to_simple())) 
 
-    def render_featured_asset(self, format='html'):
-        """Render a representation of the story's featured asset"""
-        try:
+    def get_featured_asset(self):
+        """Return the featured asset"""
+        if self.featured_assets.count():
             # Return the first featured asset.  We have the ability of 
             # selecting multiple featured assets.  Perhaps in the future
             # allow for specifying a particular feature asset or randomly
             # displaying one.
-            featured_asset = self.featured_assets.select_subclasses()[0]
+            return self.featured_assets.select_subclasses()[0]
+
+        # No featured assets have been defined. Try to default to the
+        # first image asset
+        assets = self.assets.filter(type='image').select_subclasses()
+        if (assets.count()):
+            # QUESTION: Should this be saved?
+            return assets[0]
+
+        # No image assets either
+        return None
+
+    def render_featured_asset(self, format='html'):
+        """Render a representation of the story's featured asset"""
+        try:
+            featured_asset = self.get_featured_asset()
             thumbnail_options = {}
             if format == 'html':
                 thumbnail_options.update({'html_class': 'featured-asset'})
@@ -242,7 +257,7 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
 
         """
         try:
-            featured_asset = self.featured_assets.select_subclasses()[0]
+            featured_asset = self.get_featured_asset()
             return featured_asset.get_thumbnail_url(include_host=True)
         except IndexError:
             # No featured assets
