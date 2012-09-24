@@ -3829,8 +3829,8 @@ storybase.builder.views.PublishView = Backbone.View.extend({
       showSharing: this.options.showSharing
     };
     this.$el.html(this.template(context));
-    this.$('.title').after(this.featuredAssetView.render().el);
     this.$('.title').after(this.legalView.render().el);
+    this.$('.status-published').after(this.featuredAssetView.render().el);
     if (this.legalView.acceptedLegalAgreement()) {
       this.legalView.$el.hide();
     }
