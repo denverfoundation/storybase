@@ -117,7 +117,7 @@ class SectionAdmin(StorybaseModelAdmin):
     list_display = (obj_title, 'story', 'root')
 # TODO: Enable this on switch to Django 1.4
 #    list_filter = (SectionStoryTitleListFilter, 'root')
-    list_filter = ('story__storytranslation__title', 'root')
+    list_filter = ('story__storytranslation__title', 'root', 'story__is_template')
     search_fields = ['sectiontranslation__title']
     readonly_fields = ['section_id']
     raw_id_fields = ["help"]
