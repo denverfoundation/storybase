@@ -1023,6 +1023,7 @@ class ContainerTemplateResource(HookedModelResource):
     container = fields.CharField(attribute='container')
     template = fields.CharField(attribute='template')
     section = fields.CharField(attribute='section')
+    help = fields.CharField(attribute='help', blank=True, null=True)
 
     class Meta:
         always_return_data = True
@@ -1034,14 +1035,24 @@ class ContainerTemplateResource(HookedModelResource):
         # Hide the underlying id
         excludes = ['id']
 
-    def dehydrate_template(self, bundle):
-        return bundle.obj.template.template_id
+    def dehydrate_container(self, bundle):
+        return bundle.obj.container.name
+
+    def dehydrate_help(self, bundle):
+        if bundle.obj.help:
+            return {
+                'help_id': bundle.obj.help.help_id,
+                'title': bundle.obj.help.title,
+                'body': bundle.obj.help.body,
+            }
+        else:
+            return None
 
     def dehydrate_section(self, bundle):
         return bundle.obj.section.section_id
 
-    def dehydrate_container(self, bundle):
-        return bundle.obj.container.name
+    def dehydrate_template(self, bundle):
+        return bundle.obj.template.template_id
 
     def apply_request_kwargs(self, obj_list, request=None, **kwargs):
         story_id = kwargs.get('story_id')

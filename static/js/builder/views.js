@@ -2245,6 +2245,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
         if (containerTemplate) {
           options.suggestedType = containerTemplate.get('asset_type');
           options.canChangeAssetType = containerTemplate.get('can_change_asset_type');
+          options.help = containerTemplate.get('help');
         }
       }
       var sectionAssetView = new storybase.builder.views.SectionAssetEditView(options);
@@ -2516,6 +2517,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       "click .asset-type": "selectType", 
       "click .remove": "remove",
       "click .edit": "edit",
+      "click .help": "showHelp",
       'click input[type="reset"]': "cancel",
       'submit form.bbf-form': 'processForm',
       'drop': 'handleDrop'
@@ -2855,6 +2857,12 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       // Listen to events on the new model
       this.bindModelEvents();
       this.setState('select').render();
+    },
+
+    showHelp: function(evt) {
+      evt.preventDefault();
+      // BOOKMARK 
+      // TODO: Display the help
     },
 
     handleDrop: function(evt, ui) {
