@@ -23,7 +23,7 @@ from storybase.models import (LicensedModel, PermissionMixin,
     PublishedModel, TimestampedModel, TranslatedModel, TranslationModel,
     set_date_on_published)
 from storybase.utils import slugify
-from storybase_asset.models import Asset, DataSet
+from storybase_asset.models import Asset, DataSet, ASSET_TYPES
 from storybase_help.models import Help
 from storybase_user.models import Organization, Project
 from storybase_story import structure
@@ -843,7 +843,23 @@ class Container(models.Model):
 
     def natural_key(self):
         return (self.name,)
-    
+
+
+class ContainerTemplate(models.Model):
+    """Per-asset configuration for template assets in builder"""
+    template = models.ForeignKey('StoryTemplate')
+    section = models.ForeignKey('Section')
+    container = models.ForeignKey('Container')
+    asset_type = models.CharField(max_length=10, choices=ASSET_TYPES,
+                                  blank=True, 
+                                  help_text=_("Default asset type"))
+    can_change_asset_type = models.BooleanField(default=False,
+        help_text=_("User can change the asset type from the default"))
+    help = models.ForeignKey(Help, blank=True, null=True)
+
+    def __unicode__(self):
+        return "%s / %s / %s" % (self.template.title, self.section.title, self.container.name)
+       
 
 # Internal API functions for creating model instances in a way that
 # abstracts out the translation logic a bit.

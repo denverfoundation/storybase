@@ -62,12 +62,12 @@ storybase.builder.views.AppView = Backbone.View.extend({
 
     buildViewOptions = _.defaults({
       assetTypes: this.options.assetTypes,
+      containerTemplates: this.options.containerTemplates,
       layouts: this.options.layouts,
       help: this.options.help,
       prompt: this.options.prompt,
       relatedStories: this.options.relatedStories,
       templateStory: this.options.templateStory,
-      showSelectAssetType: this.options.showSelectAssetType,
       showStoryInformation: this.options.showStoryInformation,
       showCallToAction: this.options.showCallToAction,
       showSectionList: this.options.showSectionList,
@@ -828,6 +828,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     }, this)
 
     _.defaults(this.options, this.defaults);
+    this.containerTemplates = this.options.containerTemplates;
     this.dispatcher = this.options.dispatcher;
     this.help = this.options.help;
     this._relatedStoriesSaved = false;
@@ -937,8 +938,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       story: this.model,
       assetTypes: this.options.assetTypes,
       layouts: this.options.layouts,
+      containerTemplates: this.containerTemplates,
       defaultHelp: this.help.where({slug: 'new-section'})[0],
-      showSelectAssetType: this.options.showSelectAssetType,
       showSectionTitles: this.options.showSectionTitles,
       showLayoutSelection: this.options.showLayoutSelection,
       showStoryInfoInline: this.options.showStoryInfoInline,
@@ -1164,10 +1165,13 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     console.info("Setting template story");
     var that = this;
     this.templateStory = story;
-    this.templateStory.sections.on("reset", this.getTemplateAssets, this);
+    //this.templateStory.sections.on("reset", this.getTemplateAssets, this);
+    this.templateStory.sections.on("reset", this.getContainerTemplates, this);
     this.templateStory.sections.fetch();
   },
 
+  // TODO: Remove this
+  /*
   getTemplateAssets: function() {
     var that = this;
     this.templateStory.sections.fetchAssets({
@@ -1177,9 +1181,23 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       }
     });
   },
+  */
+
+  getContainerTemplates: function() {
+    var that = this;
+    this.templateStory.sections.off("reset", this.getContainerTemplates, this);
+    this.containerTemplates.setTemplate(this.storyTemplate);
+    this.containerTemplates.fetch({
+      success: this.initializeStoryFromTemplate,
+      error: function() {
+        that.error(gettext("Failed fetching container templates"));
+      }
+    });
+  },
 
   initializeStoryFromTemplate: function() {
     console.info("Initializing sections");
+    console.debug(this.containerTemplates);
     this.model.fromTemplate(this.templateStory);
     this.dispatcher.trigger("ready:story", this.model);
   },
@@ -2136,6 +2154,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
 
   initialize: function() {
     _.defaults(this.options, this.defaults);
+    this.containerTemplates = this.options.containerTemplates;
     this.dispatcher = this.options.dispatcher;
     this.story = this.options.story;
     this.layouts = this.options.layouts;
@@ -2203,7 +2222,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   renderAssetViews: function() {
     console.debug('Rendering asset views');
     var that = this;
-    var templateAsset;
+    var containerTemplate;
     this.$(this.options.containerEl).each(function(index, el) {
       var options = {
         el: el,
@@ -2211,20 +2230,21 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
         dispatcher: that.dispatcher,
         section: that.model, 
         story: that.story,
-        assetTypes: that.options.assetTypes,
-        showSelectAssetType: that.options.showSelectAssetType
+        assetTypes: that.options.assetTypes
       };
       if (that.assets.length) {
         // If there are assets, bind them to the view with the appropriate
         // container
         options.model = that.assets.where({container: $(el).attr('id')})[0];
       }
-      if (that.templateSection && that.templateSection.assets.length) {
-        // This section came from a template.  Check the template's
-        // assets to get a suggested asset type.
-        templateAsset = that.templateSection.assets.where({container: $(el).attr('id')})[0];
-        if (templateAsset) {
-          options.suggestedType = templateAsset.get('type');
+      if (that.templateSection && that.containerTemplates.length) {
+        containerTemplate = that.containerTemplates.where({
+          section: that.templateSection.id,
+          container: $(el).attr('id')
+        })[0];
+        if (containerTemplate) {
+          options.suggestedType = containerTemplate.get('asset_type');
+          options.canChangeAssetType = containerTemplate.get('can_change_asset_type');
         }
       }
       var sectionAssetView = new storybase.builder.views.SectionAssetEditView(options);
@@ -2698,7 +2718,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
     cancel: function(e) {
       e.preventDefault();
       if (this.model.isNew()) {
-        if (this.options.showSelectAssetType) {
+        if (this.options.canChangeAssetType) {
           this.setState('select');
         }
         else {
@@ -2811,7 +2831,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       this.model = new storybase.models.Asset();
       // Listen to events on the new model
       this.bindModelEvents();
-      if (this.options.showSelectAssetType) {
+      if (this.options.canChangeAssetType) {
         this.setState('select').render();
       }
       else {

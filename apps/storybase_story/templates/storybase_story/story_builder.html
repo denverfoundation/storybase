@@ -111,6 +111,7 @@
         var helpData = {{ help_json }};
         var options = _.extend({
             assetTypes: {{ asset_types_json }},
+            containerTemplates: new storybase.builder.collections.ContainerTemplates,
             el: $('#builder'),
             dispatcher: storybase.builder.globals.dispatcher,
             help: new Backbone.Collection,
@@ -125,9 +126,9 @@
         }, {{ options_json }});
         var relatedStoriesJSON = null;
         var assetsJSON = null;
-        var templateAssetsJSON = null;
         var templateSectionsJSON = null;
         var featuredAssetsJSON = null;
+        var containerTemplatesJSON = null;
         {% if story_json %}
         options.model = new storybase.models.Story({{ story_json }});
         {% endif %}
@@ -140,26 +141,20 @@
         {% if template_sections_json %}
         templateSectionsJSON = {{ template_sections_json }};
         {% endif %}
-        {% if template_assets_json %}
-        templateAssetsJSON = {{ template_assets_json }};
-        {% endif %}
         {% if assets_json %}
         assetsJSON = {{ assets_json }};
         {% endif %}
         {% if featured_assets_json %}
         featuredAssetsJSON = {{ featured_assets_json }};
         {% endif %}
+        {% if container_templates_json %}
+        containerTemplatesJSON = {{ container_templates_json }};
+        {% endif %}
         if (relatedStoriesJSON) {
           options.relatedStories.reset(relatedStoriesJSON.objects);
         }
         if (templateSectionsJSON) {
           options.templateStory.sections.reset(templateSectionsJSON.objects);
-            if (templateAssetsJSON) {
-              options.templateStory.sections.each(function(section) {
-                  var parse = section.assets.parse;
-                  section.assets.reset(parse(templateAssetsJSON[section.id]));
-              });
-            }
         }
         {# TODO: Bootstrap sections and assets #}
         if (options.model && assetsJSON) {
@@ -170,6 +165,9 @@
             new storybase.collections.FeaturedAssets(
               featuredAssetsJSON.objects)
           )
+        }
+        if (containerTemplatesJSON) {
+          options.containerTemplates.reset(containerTemplatesJSON.objects);
         }
         options.storyTemplates.reset(storyTemplatesData.objects);
         options.help.reset(helpData.objects);

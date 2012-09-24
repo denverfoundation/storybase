@@ -42,3 +42,23 @@ storybase.builder.collections.StoryTemplates = Backbone.Collection.extend({
     return response.objects;
   }
 });
+
+storybase.builder.collections.ContainerTemplates = Backbone.Collection.extend(
+  _.extend({}, storybase.collections.TastypieMixin, {
+    initialize: function(models, options) {
+      this._template = _.isUndefined(options) ? null : options.template;
+    },
+
+    setTemplate: function(template) {
+      this._template = template;
+    },
+
+    url: function() {
+      var url = storybase.globals.API_ROOT + 'stories/containertemplates/';
+      if (this._template) {
+        url = url + 'templates/' + this._template.id + '/';
+      }
+      return url;
+    }
+  })
+);

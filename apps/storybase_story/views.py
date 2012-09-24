@@ -18,7 +18,8 @@ from storybase_asset.api import AssetResource
 from storybase_asset.models import ASSET_TYPES
 from storybase_geo.models import Place
 from storybase_help.api import HelpResource
-from storybase_story.api import (SectionAssetResource, SectionResource,
+from storybase_story.api import (ContainerTemplateResource,
+    SectionAssetResource, SectionResource,
     StoryResource, StoryTemplateResource)
 from storybase_story.models import SectionLayout, Story, StoryTemplate
 from storybase_taxonomy.models import Category
@@ -359,6 +360,23 @@ class StoryBuilderView(DetailView):
         else:
             return "";
 
+    def get_container_templates_json(self, story=None):
+        if story is None:
+            story = self.object
+        resource = ContainerTemplateResource()
+        to_be_serialized = {}
+        objects = resource.obj_get_list(self.request,
+                                        story_id=story.story_id)
+        sorted_objects = resource.apply_sorting(objects)
+        to_be_serialized['objects'] = sorted_objects
+
+        # Dehydrate the bundles in preparation for serialization.
+        bundles = [resource.build_bundle(obj=obj) for obj in to_be_serialized['objects']]
+        to_be_serialized['objects'] = [resource.full_dehydrate(bundle) for bundle in bundles]
+        to_be_serialized = resource.alter_list_data_to_serialize(request=None, data=to_be_serialized)
+        return resource.serialize(None, to_be_serialized, 'application/json')
+
+
     def get_options_json(self):
         """Get configuration options for the story builder"""
         options = {
@@ -370,8 +388,6 @@ class StoryBuilderView(DetailView):
                 'review': True,
                 'publish': True
             },
-            # Show asset type selector
-            'showSelectAssetType': True,
             # Show the view that allows the user to edit
             # the story title and byline
             'showStoryInformation': True,
@@ -403,7 +419,6 @@ class StoryBuilderView(DetailView):
                     'build': True,
                     'publish': True
                 },
-                'showSelectAssetType': False,
                 'showStoryInformation': False,
                 'showCallToAction': False,
                 'showSectionList': False,
@@ -437,14 +452,13 @@ class StoryBuilderView(DetailView):
                     self.get_story_json(self.object.template_story))
                 context['template_sections_json'] = mark_safe(
                     self.get_sections_json(self.object.template_story))
-                context['template_assets_json'] = mark_safe(
-                    self.get_section_assets_json(self.object.template_story))
+                context['container_templates_json'] = mark_safe(self.get_container_templates_json(self.object.template_story))
         elif self.template_object:
             context['template_story_json'] = mark_safe(
                 self.get_story_json(self.template_object.story))
             context['template_sections_json'] = mark_safe(
                 self.get_sections_json(self.template_object.story))
-            context['template_assets_json'] = mark_safe(
+            context['container_templates_json'] = mark_safe(
                 self.get_section_assets_json(self.template_object.story))
 
         related_stories_json = self.get_related_stories_json()
