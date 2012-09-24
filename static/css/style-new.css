@@ -383,7 +383,7 @@ a.button.right {
 .content-page.object-detail .object-featured-asset {
 	float:left;
 }
-.content-page.object-detail .object img { width:150px; }
+.content-page.object-detail .object img { max-width:222px; }
 .content-page.object-detail .object-featured-asset,
 .content-page.object-detail .related-stories,
 .content-page.object-detail .citizen-comments

@@ -242,7 +242,14 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
         try:
             featured_asset = self.get_featured_asset()
             # TODO: Pick default size for image
-            thumbnail_options = {}
+            # Note that these dimensions are the size that the resized
+            # image will fit in, not the actual dimensions of the image
+            # that will be generated
+            # See http://easy-thumbnails.readthedocs.org/en/latest/usage/#thumbnail-options
+            thumbnail_options = {
+                'width': 222,
+                'height': 222,
+            }
             if format == 'html':
                 thumbnail_options.update({'html_class': 'featured-asset'})
             return featured_asset.render_thumbnail(format=format, 
