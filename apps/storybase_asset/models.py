@@ -454,7 +454,6 @@ class LocalImageAsset(Asset):
         width  -- Width of the thumbnail in pixels
 
         """
-        print width, height
         html_class = kwargs.get('html_class', "")
         thumbnailer = self.image.easy_thumbnails_thumbnailer
         thumbnail_options = {}
