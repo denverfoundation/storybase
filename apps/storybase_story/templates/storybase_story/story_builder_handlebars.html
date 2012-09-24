@@ -135,12 +135,23 @@ Handlebars.js templates for story builder Backbone application
 </script>
 
 <script type="text/x-handlebars-template" id="section-asset-select-type-template">
-<h3>Select Asset Type</h3>
+{{#if defaultType}}
+<p><a href="#" class="asset-type" data-asset-type="{{{defaultType.type}}}">{{gettext message="Click to add your"}} {{{defaultType.name}}}</a></p>
+{{/if}}
+{{#if assetTypes}}
+<p>
+{{#if defaultType}}
+{{gettext message="Or, select a different:"}}
+{{else}}
+{{gettext message="Select a:"}}
+{{/if}}
+</p>
 <ul class="asset-types">
     {{#each assetTypes}}
     <li><a href="#" class="asset-type" data-asset-type="{{type}}">{{name}}</a></li>
     {{/each}}
 </ul>
+{{/if}}
 </script>
 
 <script type="text/x-handlebars-template" id="section-asset-edit-template">

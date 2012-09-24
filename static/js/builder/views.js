@@ -2611,18 +2611,49 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       }, this);
     },
 
+    /**
+     * Get a list of asset types and their labels, filtering out the
+     * default type.
+     */
+    getAssetTypes: function() {
+      var type = this.options.suggestedType;
+      if (type) {
+        return _.filter(this.assetTypes, function(at) {
+          return at.type !== type;
+        });
+      }
+      else {
+        return this.assetTypes;
+      }
+    },
+
+    getDefaultAssetType: function() {
+      var type = this.options.suggestedType;
+      if (type) {
+        return _.filter(this.assetTypes, function(at) {
+          return at.type === type;
+        })[0];
+      }
+      else {
+        return null;
+      }
+    },
+
     render: function() {
-      console.debug("Rendering section asset edit view");
-      var context = {
-        assetTypes: this.assetTypes
-      };
+      var context = {};
       var editableCallback = function(value, settings) {
         that.saveAttr($(this).data("input-name"), value);
         return value;
       };
       var state = this.getState();
       this.template = Handlebars.compile(this.templateSource());
-      if (state === 'display') {
+      if (state === 'select') {
+        if (this.options.canChangeAssetType || _.isUndefined(this.options.canChangeAssetType)) {
+          context.assetTypes = this.getAssetTypes();
+        }
+        context.defaultType = this.getDefaultAssetType(); 
+      }
+      else if (state === 'display') {
         context.model = this.model.toJSON()
       }
       this.$el.html(this.template(context));
@@ -2681,9 +2712,6 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       if (!this.model.isNew()) {
         this._state = 'display';
       }
-      else if (!_.isUndefined(this.model.get('type'))) {
-        this._state = 'edit';
-      }
       else {
         this._state = 'select';
       }
@@ -2718,12 +2746,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
     cancel: function(e) {
       e.preventDefault();
       if (this.model.isNew()) {
-        if (this.options.canChangeAssetType) {
-          this.setState('select');
-        }
-        else {
-          this.setState('edit');
-        }
+        this.setState('select');
       }
       else {
         this.setState('display');
@@ -2831,14 +2854,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       this.model = new storybase.models.Asset();
       // Listen to events on the new model
       this.bindModelEvents();
-      if (this.options.canChangeAssetType) {
-        this.setState('select').render();
-      }
-      else {
-        this.model.set('type', this.options.suggestedType);
-        this.initializeForm();
-        this.setState('edit').render();
-      }
+      this.setState('select').render();
     },
 
     handleDrop: function(evt, ui) {
