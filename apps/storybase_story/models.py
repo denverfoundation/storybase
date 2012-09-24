@@ -847,6 +847,7 @@ class Container(models.Model):
 
 class ContainerTemplate(models.Model):
     """Per-asset configuration for template assets in builder"""
+    container_template_id = UUIDField(auto=True, db_index=True)
     template = models.ForeignKey('StoryTemplate')
     section = models.ForeignKey('Section')
     container = models.ForeignKey('Container')

@@ -11,6 +11,7 @@ class Migration(SchemaMigration):
         # Adding model 'ContainerTemplate'
         db.create_table('storybase_story_containertemplate', (
             ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
+            ('container_template_id', self.gf('uuidfield.fields.UUIDField')(db_index=True, unique=True, max_length=32, blank=True)),
             ('template', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['storybase_story.StoryTemplate'])),
             ('section', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['storybase_story.Section'])),
             ('container', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['storybase_story.Container'])),
@@ -152,6 +153,7 @@ class Migration(SchemaMigration):
             'asset_type': ('django.db.models.fields.CharField', [], {'max_length': '10', 'blank': 'True'}),
             'can_change_asset_type': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
             'container': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['storybase_story.Container']"}),
+            'container_template_id': ('uuidfield.fields.UUIDField', [], {'db_index': 'True', 'unique': 'True', 'max_length': '32', 'blank': 'True'}),
             'help': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['storybase_help.Help']", 'null': 'True', 'blank': 'True'}),
             'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
             'section': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['storybase_story.Section']"}),
