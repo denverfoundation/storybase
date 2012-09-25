@@ -1165,23 +1165,9 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     console.info("Setting template story");
     var that = this;
     this.templateStory = story;
-    //this.templateStory.sections.on("reset", this.getTemplateAssets, this);
     this.templateStory.sections.on("reset", this.getContainerTemplates, this);
     this.templateStory.sections.fetch();
   },
-
-  // TODO: Remove this
-  /*
-  getTemplateAssets: function() {
-    var that = this;
-    this.templateStory.sections.fetchAssets({
-      success: this.initializeStoryFromTemplate,
-      error: function() {
-        that.error(gettext("Failed fetching section assets"));
-      }
-    });
-  },
-  */
 
   getContainerTemplates: function() {
     var that = this;
