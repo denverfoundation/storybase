@@ -459,7 +459,7 @@ class StoryBuilderView(DetailView):
             context['template_sections_json'] = mark_safe(
                 self.get_sections_json(self.template_object.story))
             context['container_templates_json'] = mark_safe(
-                self.get_section_assets_json(self.template_object.story))
+                self.get_container_templates_json(self.template_object.story))
 
         related_stories_json = self.get_related_stories_json()
         if related_stories_json: 
