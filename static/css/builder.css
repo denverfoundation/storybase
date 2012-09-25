@@ -348,8 +348,9 @@
   left: auto;
   right: -38px;
 }
-#asset-help-modal-container {
+.asset-help-container {
   background-color: #fff;
+  max-width: 450px;
 }
 .storybase-container-placeholder [name=body] {
   /* TODO: Figure out a better way to set height */

@@ -2483,7 +2483,8 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
     className: 'edit-section-asset',
 
     defaults: {
-      wrapperEl: '.wrapper'
+      wrapperEl: '.wrapper',
+      helpPopupEl: '.asset-help-container'
     },
 
     templateSource: function() {
@@ -2509,7 +2510,8 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       "click .asset-type": "selectType", 
       "click .remove": "remove",
       "click .edit": "edit",
-      "click .help": "showHelp",
+      "mouseenter .help": "showHelp",
+      "mouseleave .help": "hideHelp",
       'click input[type="reset"]': "cancel",
       'submit form.bbf-form': 'processForm',
       'drop': 'handleDrop'
@@ -2870,27 +2872,51 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       return help;
     },
 
+    /**
+     * Show a help popup.
+     */
+    // TODO: Generalize this to be used in other cases. 
     showHelp: function(evt) {
-      evt.preventDefault();
-      var offset = this.$el.offset();
-      var maxWidth = 300;
-      var context = {};
+      var targetWidth = $(evt.target).outerWidth();
+      var windowWidth = $(window).width();
+      var windowLeft = $(window).scrollLeft();
+      var offset = $(evt.target).offset();
+      var popupClass = this.options.helpPopupEl.replace('.', '');
+      // Shift the popup this far
+      var popupOffsetX = 8;
+      var popupTop = offset.top;
+      // Default to positiioning the popup to the right of the
+      // clicked element
+      var popupLeft = offset.left + targetWidth + popupOffsetX;
+      var popupWidth;
+      var $popupEl;
       var context = {
         typeHelp: this.getAssetTypeHelp(this.options.suggestedType)
       };
+      var template = this.helpTemplate;
+
       _.defaults(context, this.options.help);
-      $.modal(this.helpTemplate(context), {
-        containerId: 'asset-help-modal-container',
-        position: [offset.top, offset.left],
-        overlayClose: true,
-        maxWidth: this.$el.width(),
-        minHeight: 300
+      $popupEl = $('<div class="' + popupClass + '">' + template(context) + '</div>').appendTo('body').hide();
+      popupWidth = $popupEl.outerWidth();
+
+      // Check if the popup will fall off the right of the screen
+      if ((popupLeft + popupWidth) - windowLeft > windowWidth) {
+        // The popup should go to the left of the element
+        popupLeft = offset.left - popupOffsetX - popupWidth;
+      }
+
+      $popupEl.css({
+        'position': 'absolute',
+        'top': popupTop+'px',
+        'left': popupLeft+'px'
       });
+      $popupEl.show();
     },
 
     hideHelp: function(evt) {
-      evt.preventDefault();
-      $.modal.close();
+      var popupEl = this.options.helpPopupEl;
+      $(popupEl).hide();
+      $(popupEl).remove();
     },
 
     handleDrop: function(evt, ui) {
