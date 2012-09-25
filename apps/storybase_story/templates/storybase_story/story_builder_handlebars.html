@@ -135,42 +135,47 @@ Handlebars.js templates for story builder Backbone application
 </script>
 
 <script type="text/x-handlebars-template" id="section-asset-select-type-template">
-<ul class="section-asset-controls">
-  {{#if help}}<li><a href="#" class="help">{{gettext message="Help"}}</a></li>{{/if}}
-</ul>
-{{#if defaultType}}
-<p><a href="#" class="asset-type" data-asset-type="{{{defaultType.type}}}">{{gettext message="Click to add your"}} {{{defaultType.name}}}</a></p>
-{{/if}}
-{{#if assetTypes}}
-<p>
-{{#if defaultType}}
-{{gettext message="Or, select a different:"}}
-{{else}}
-{{gettext message="Select a:"}}
-{{/if}}
-</p>
-<ul class="asset-types">
-    {{#each assetTypes}}
-    <li><a href="#" class="asset-type" data-asset-type="{{type}}">{{name}}</a></li>
-    {{/each}}
-</ul>
-{{/if}}
+<a href="#" class="help">{{gettext message="Help"}}</a></li>
+<div class="wrapper">
+    {{#if defaultType}}
+    <p><a href="#" class="asset-type" data-asset-type="{{{defaultType.type}}}">{{gettext message="Click to add your"}} {{{defaultType.name}}}</a></p>
+    {{/if}}
+    {{#if assetTypes}}
+    <p>
+    {{#if defaultType}}
+    {{gettext message="Or, select a different:"}}
+    {{else}}
+    {{gettext message="Select a:"}}
+    {{/if}}
+    </p>
+    <ul class="asset-types">
+        {{#each assetTypes}}
+        <li><a href="#" class="asset-type" data-asset-type="{{type}}">{{name}}</a></li>
+        {{/each}}
+    </ul>
+    {{/if}}
+</div>
 </script>
 
 <script type="text/x-handlebars-template" id="section-asset-edit-template">
+<a href="#" class="help">{{gettext message="Help"}}</a></li>
+<div class="wrapper">
 <h3>{{model.type}}</h3>
+</div>
 </script>
 
 <script type="text/x-handlebars-template" id="section-asset-display-template">
-<ul class="section-asset-controls hidden">
+<a href="#" class="help">{{gettext message="Help"}}</a></li>
+<div class="wrapper">
+<ul class="section-asset-controls">
     <li><a href="#" class="edit">{{gettext message="Edit"}}</a></li>
     <li><a href="#" class="remove">{{gettext message="Remove"}}</a></li>
 </ul>
 {{{model.content}}}
+</div>
 </script>
 
 <script type="text/x-handlebars-template" id="section-asset-help-template">
-<a class="simplemodal-close close" href="#">{{gettext message="Close"}}</a>
 {{#if title}}<h3>{{title}}</h3>{{/if}}
 {{{body}}}
 {{#if typeHelp}}

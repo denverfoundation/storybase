@@ -399,18 +399,27 @@
   }
 }
 
+#builder .section-layout {
+  // In builder, make overflow visible so help can be positioned to the
+  // left or right of the block
+  overflow: visible;
+}
 
 .storybase-container-placeholder {
   position: relative;
-  height: 94%;
-  min-height: 400px;
 
-  border: solid 1px #c8c8c8;
-  overflow: hidden;
+  .wrapper {
+    border: solid 1px #c8c8c8;
+    overflow: hidden;
+    height: 94%;
+    min-height: 400px;
+  }
 }
 
 .storybase-container-placeholder.select {
-  padding: 2%;
+  .wrapper {
+    padding: 2%;
+  }
 }
 
 .storybase-container-placeholder.display {
@@ -424,12 +433,28 @@
   margin-bottom: 10px;
 }
 
+.storybase-container-placeholder .help {
+  display: block;
+  position: absolute;
+  left: -38px;
+}
+
+.storybase-container-placeholder#right .help {
+  left: auto;
+  right: -38px;
+}
+
+#asset-help-modal-container {
+  background-color: #fff;
+}
+
 .storybase-container-placeholder [name=body] {
   /* TODO: Figure out a better way to set height */
   height: 150px;
 }
 
 .section-asset-controls {
+  display: none;
   top: 0;
   right: 0;
   position: absolute;
@@ -441,11 +466,7 @@
   z-index: 999;
 }
 
-.section-asset-controls.hidden {
-  display: none;
-}
-
-.storybase-container-placeholder:hover .section-asset-controls.hidden {
+.storybase-container-placeholder:hover .section-asset-controls {
   display: block;
 }
 
@@ -787,8 +808,4 @@ input[name=address] {
 
     .asset { padding: 8px 0; }
   }
-}
-
-#asset-help-modal-container {
-  background-color: #fff;
 }

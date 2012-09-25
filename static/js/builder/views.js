@@ -2482,6 +2482,10 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
 
     className: 'edit-section-asset',
 
+    defaults: {
+      wrapperEl: '.wrapper'
+    },
+
     templateSource: function() {
       var state = this.getState(); 
       if (state === 'display') {
@@ -2515,6 +2519,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
 
     initialize: function() {
       console.debug("Initializing new section asset edit view");
+      _.defaults(this.options, this.defaults);
       var modelOptions = {};
       this.container = this.options.container;
       this.dispatcher = this.options.dispatcher;
@@ -2637,6 +2642,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
         return value;
       };
       var state = this.getState();
+      var $wrapperEl;
       this.template = Handlebars.compile(this.templateSource());
       if (state === 'select') {
         if (this.options.canChangeAssetType || _.isUndefined(this.options.canChangeAssetType)) {
@@ -2649,15 +2655,16 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
         context.model = this.model.toJSON()
       }
       this.$el.html(this.template(context));
+      $wrapperEl = this.$(this.options.wrapperEl);
       this.setClass();
       if (state == 'select') {
         // The accept option needs to match the class on the items in
         // the UnusedAssetView list
-        this.$el.droppable({ accept: ".unused-asset" });
+        $wrapperEl.droppable({ accept: ".unused-asset" });
       }
       if (state == 'display') {
         if (!this.$('.caption').length && this.model.formFieldVisible('caption', this.model.get('type'))) {
-          this.$el.append($('<div class="caption"></div>'));
+          $wrapperEl.append($('<div class="caption"></div>'));
         }
         this.$('.caption').editable(this.editCaption, {
           type: 'textarea',
@@ -2682,7 +2689,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
           this.bodyEditor.stopObserving('blur');
           this.bodyEditor.stopObserving('load');
         }
-        this.$el.append(this.form.el);
+        $wrapperEl.append(this.form.el);
       }
 
       return this;
@@ -2858,7 +2865,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
     getAssetTypeHelp: function(type) {
       var help = this.assetTypeHelp[type]; 
       if (_.isUndefined(help)) {
-        help = ""; 
+        help = "TODO: Add help text!";
       }
       return help;
     },
@@ -2874,11 +2881,16 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       _.defaults(context, this.options.help);
       $.modal(this.helpTemplate(context), {
         containerId: 'asset-help-modal-container',
-        overlayClose: true,
         position: [offset.top, offset.left],
+        overlayClose: true,
         maxWidth: this.$el.width(),
         minHeight: 300
       });
+    },
+
+    hideHelp: function(evt) {
+      evt.preventDefault();
+      $.modal.close();
     },
 
     handleDrop: function(evt, ui) {
