@@ -431,8 +431,6 @@ storybase.builder.views.WorkflowNavView = storybase.builder.views.ClickableItems
 
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
-    this.forward = this.options.forward;
-    this.back = this.options.back;
     this.items = _.isUndefined(this.options.items) ? this.items : this.options.items;
     this.itemTemplateSource = _.isUndefined(this.options.itemTemplateSource) ? this.itemTemplateSource : this.options.itemTemplateSource;
     this.itemTemplate = this.getItemTemplate();
@@ -1525,6 +1523,21 @@ storybase.builder.views.FileUploadMixin = {
     return jqXHR;
   }
 };
+
+/**
+ * Next/previous buttons.
+ */
+storybase.builder.views.SectionNavView = Backbone.View.extend({
+  id: 'section-nav',
+
+  className: 'section-nav',
+
+  events: {
+  },
+
+  initialize: function() {
+  }
+});
 
 storybase.builder.views.SectionListView = Backbone.View.extend({
   tagName: 'div',
