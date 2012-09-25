@@ -2849,14 +2849,35 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       this.setState('select').render();
     },
 
+    assetTypeHelp: {
+      image: gettext('Click on "Add your image," then enter a URL or upload an image from your computer. If you’d like to add a different type of asset, click below.'),
+      text: gettext('Click on “Add your text,” and start typing. If you’d like to add a different type of asset, click below.')
+      // TODO: Add help text for other items
+    },
+
+    getAssetTypeHelp: function(type) {
+      var help = this.assetTypeHelp[type]; 
+      if (_.isUndefined(help)) {
+        help = ""; 
+      }
+      return help;
+    },
+
     showHelp: function(evt) {
       evt.preventDefault();
       var offset = this.$el.offset();
       var maxWidth = 300;
-      $.modal(this.helpTemplate(this.options.help), {
+      var context = {};
+      var context = {
+        typeHelp: this.getAssetTypeHelp(this.options.suggestedType)
+      };
+      _.defaults(context, this.options.help);
+      $.modal(this.helpTemplate(context), {
         containerId: 'asset-help-modal-container',
         overlayClose: true,
-        position: [offset.top, offset.left]
+        position: [offset.top, offset.left],
+        maxWidth: this.$el.width(),
+        minHeight: 300
       });
     },
 
