@@ -340,7 +340,6 @@
   height: 150px;
 }
 .section-asset-controls {
-  display: none;
   top: 0;
   right: 0;
   position: absolute;
@@ -351,7 +350,10 @@
   background-color: #fff;
   z-index: 999;
 }
-.storybase-container-placeholder:hover .section-asset-controls {
+.section-asset-controls.hidden {
+  display: none;
+}
+.storybase-container-placeholder:hover .section-asset-controls.hidden {
   display: block;
 }
 .section-asset-controls li {
@@ -636,4 +638,7 @@ input[name=address] {
 }
 #featured-asset .assets .asset {
   padding: 8px 0;
+}
+#asset-help-modal-container {
+  background-color: #fff;
 }

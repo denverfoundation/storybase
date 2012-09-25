@@ -1197,7 +1197,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
   initializeStoryFromTemplate: function() {
     console.info("Initializing sections");
-    console.debug(this.containerTemplates);
     this.model.fromTemplate(this.templateStory);
     this.dispatcher.trigger("ready:story", this.model);
   },
@@ -1751,7 +1750,8 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
     var section = new storybase.models.Section({
       title: gettext('New Section'),
       layout: this.model.sections.at(0).get('layout'),
-      root: true
+      root: true,
+      template_section: this.model.sections.at(0).get('template_section')
     });
     var postSave = function(section) {
       var thumbnailView;
@@ -2513,6 +2513,8 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       }
     },
 
+    helpTemplateSource: $('#section-asset-help-template').html(),
+
     events: {
       "click .asset-type": "selectType", 
       "click .remove": "remove",
@@ -2533,6 +2535,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       this.assetTypes = this.options.assetTypes;
       this.section = this.options.section;
       this.story = this.options.story;
+      this.helpTemplate = Handlebars.compile(this.helpTemplateSource); 
       if (_.isUndefined(this.model)) {
         if (this.options.suggestedType) {
           modelOptions.type = this.options.suggestedType;
@@ -2654,6 +2657,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
           context.assetTypes = this.getAssetTypes();
         }
         context.defaultType = this.getDefaultAssetType(); 
+        context.help = this.options.help;
       }
       else if (state === 'display') {
         context.model = this.model.toJSON()
@@ -2861,8 +2865,13 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
 
     showHelp: function(evt) {
       evt.preventDefault();
-      // BOOKMARK 
-      // TODO: Display the help
+      var offset = this.$el.offset();
+      var maxWidth = 300;
+      $.modal(this.helpTemplate(this.options.help), {
+        containerId: 'asset-help-modal-container',
+        overlayClose: true,
+        position: [offset.top, offset.left]
+      });
     },
 
     handleDrop: function(evt, ui) {
