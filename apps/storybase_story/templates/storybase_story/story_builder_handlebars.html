@@ -105,7 +105,8 @@ Handlebars.js templates for story builder Backbone application
             <textarea class="call-to-action" name="call_to_action" placeholder='{{gettext message="Click to edit the call to action"}}'>{{call_to_action}}</textarea>
         </div>
         <div class="right">
-            <p>{{#blockgettext}}TODO: Add description of connected stories feature{{/blockgettext}}</p>
+            <h3>{{gettext message="Create a Connected Story to collect audience feedback"}}</h3>
+            <p>{{#blockgettext}}Give your readers a clear way to contribute by asking them to add a mini Photovoice story. Prompt your readers with a specific question they can answer through a photo and a caption. {{/blockgettext}}</p>
             <div>
                 <input class="connected" name="allow_connected" type="checkbox" {{#if allow_connected}}checked="checked" {{/if}}/>
                 <label for="allow_connected">{{gettext message="Make this a Connected Story"}}</label> 
