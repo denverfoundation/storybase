@@ -1589,6 +1589,7 @@ storybase.builder.views.SectionNavView = Backbone.View.extend({
     this.template = Handlebars.compile(this.templateSource);
 
     this.model.sections.on("remove", this.updatePrevNext, this);
+    this.model.sections.on("sync", this.updatePrevNext, this);
     this.dispatcher.on('select:section', this.updateSection, this);
   },
 
