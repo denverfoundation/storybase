@@ -196,14 +196,19 @@ storybase.builder.views.AppView = Backbone.View.extend({
   },
 
   showAlert: function(level, msg) {
+    var $el = this.$('.alerts');
+    var newTop;
+    var numAlerts = $el.children().length;
     var view = new storybase.builder.views.AlertView({
       level: level,
       message: msg
     });
     // Check for duplicate messages and only show the message
     // if it's different.
-    if (!(level === this.lastLevel && msg === this.lastMessage)) {
-      this.$('.alerts').prepend(view.render().el);
+    if (!(level === this.lastLevel && msg === this.lastMessage && numAlerts > 0)) {
+      newTop = this.$('#nav-container').offset().top + this.$('#nav-container').outerHeight();
+      $el.css('top', newTop);
+      $el.prepend(view.render().el);
       view.$el.fadeOut(15000, function() {
         $(this).remove();
       });
