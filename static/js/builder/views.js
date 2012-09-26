@@ -999,21 +999,13 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       //this._editViews[0].show();
       this.dispatcher.trigger('select:section', 'story-info');
     }
+    this.$el.append(this.lastSavedView.render().el);
   },
 
   render: function() {
     console.info('Rendering builder view');
     var that = this;
     this.$el.prepend(this.unusedAssetView.render().$el.hide());
-    this.$el.prepend(this.lastSavedView.render().el);
-    /*
-    if (this.sectionListView) {
-      this.$el.prepend(this.sectionListView.render().el);
-    }
-    else {
-      this.$el.prepend(this.navView.render().el);
-    }
-    */
     if (this.sectionListView) {
       this.sectionListView.render();
     }
