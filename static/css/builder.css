@@ -169,6 +169,7 @@
   top: 40px;
   position: fixed;
   width: 100%;
+  z-index: 1001;
 }
 #builder .alert {
   padding: 1%;
@@ -219,8 +220,11 @@
   top: 0;
 }
 .last-saved {
-  width: 100%;
-  right: 0;
+  position: absolute;
+  top: 0;
+  width: 940px;
+  margin-left: auto;
+  margin-right: auto;
   text-align: right;
 }
 /* Unused Assets List */
@@ -392,34 +396,31 @@
   width: 100%;
   font-weight: bold;
 }
-/* Table of contents thumbnails */
 #section-list {
-  position: fixed;
+  position: relative;
   width: 100%;
-  left: 0;
-  bottom: 0;
-  z-index: 998;
+  z-index: 999;
+  background-color: #666666;
+  overflow: hidden;
 }
 #toggle-section-list {
-  padding: 4px;
-  margin-left: 8px;
+  display: block;
+  float: left;
+  padding: 10px;
   font-weight: bold;
   text-decoration: none;
-  border-radius: 4px 4px 0 0;
-  background-color: #666666;
   color: #fff;
 }
-#toggle-section-list.opened::after {
+.opened #toggle-section-list::after {
   content: ' - ';
 }
-#toggle-section-list.closed::after {
+.closed #toggle-section-list::after {
   content: ' + ';
-}
-.sections-container-border {
-  border-top: 4px solid #666666;
 }
 .sections-container {
   position: relative;
+  width: 65%;
+  float: left;
   overflow: hidden;
   background-color: #666666;
   padding: 0 10px;
@@ -519,15 +520,36 @@
 .section-thumbnail:hover .remove {
   display: block;
 }
+#section-nav {
+  float: left;
+  width: 65%;
+  height: 30px;
+  padding-left: 20px;
+  padding-top: 39px;
+}
+#section-list.closed #section-nav {
+  padding-top: 10px;
+}
+#section-list .workflow-nav {
+  float: left;
+  width: auto !important;
+  position: absolute;
+  right: 0;
+  padding-top: 39px;
+}
+#section-list.closed .workflow-nav {
+  padding-top: 5px;
+}
 /* Builder Navigation Buttons */
+#nav-container {
+  background-color: #666666;
+}
 .workflow-nav {
-  position: fixed;
-  right: 20px;
-  bottom: 20px;
-  padding: 20px;
+  position: relative;
+  width: 100%;
+  height: 35px;
+  padding-top: 5px;
   text-align: right;
-  border-radius: 4px;
-  background-color: rgba(102, 102, 102, 0.5);
 }
 /* Add Data View */
 .datasets {

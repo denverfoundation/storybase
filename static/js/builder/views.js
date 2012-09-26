@@ -165,8 +165,11 @@ storybase.builder.views.AppView = Backbone.View.extend({
   render: function() {
     console.debug('Rendering main view');
     var activeView = this.getActiveView();
+    var activeNavView = activeView.getNavView();
     //this.$el.height($(window).height());
     this.$('#app').empty();
+    this.$('#app').prepend('<div id="nav-container" class="container"></div>');
+    this.$('#app #nav-container').append(activeNavView.el);
     this.$('#app').append(activeView.render().$el);
     // Some views have things that only work when the element has been added
     // to the DOM. The pattern for handling this comes courtesy of
@@ -990,12 +993,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     });
     var that = this;
     _.each(this._editViews, function(view) {
-      if (that.sectionListView) {
-        that.sectionListView.$el.before(view.render().$el.hide());
-      }
-      else {
-        that.$el.append(view.render().$el.hide());
-      }
+      that.$el.append(view.render().$el.hide());
     });
     if (this._editViews.length && options.showFirst) {
       //this._editViews[0].show();
@@ -1008,18 +1006,31 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     var that = this;
     this.$el.prepend(this.unusedAssetView.render().$el.hide());
     this.$el.prepend(this.lastSavedView.render().el);
+    /*
     if (this.sectionListView) {
-      this.$el.append(this.sectionListView.render().el);
+      this.$el.prepend(this.sectionListView.render().el);
     }
-    this.renderEditViews();
+    else {
+      this.$el.prepend(this.navView.render().el);
+    }
+    */
+    if (this.sectionListView) {
+      this.sectionListView.render();
+    }
     if (this.navView) {
       this.navView.render();
-      if (!this.sectionListView) {
-        // TODO: properly place this
-        this.$el.append(this.navView.el);
-      }
     }
+    this.renderEditViews();
     return this;
+  },
+
+  getNavView: function() {
+    if (this.sectionListView) {
+      return this.sectionListView;
+    }
+    else {
+      return this.navView;
+    }
   },
 
   /**
@@ -1135,6 +1146,15 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
         }
       });
       guiders.show('section-list-guider');
+    }
+  },
+
+  getNavView: function() {
+    if (this.sectionListView) {
+      return this.sectionListView;
+    }
+    else {
+      return this.navView;
     }
   },
 
@@ -1522,6 +1542,16 @@ storybase.builder.views.FileUploadMixin = {
     };
     var jqXHR = $.ajax(url, settings);
     return jqXHR;
+  }
+};
+
+
+/**
+ * Mixin for views that have a navigation subview
+ */
+storybase.builder.views.NavViewMixin = {
+  getNavView: function() {
+    return this.navView;
   }
 };
 
@@ -3038,7 +3068,9 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
 );
 
 storybase.builder.views.DataView = Backbone.View.extend(
-  _.extend({}, storybase.builder.views.FileUploadMixin, {
+  _.extend({}, storybase.builder.views.NavViewMixin, storybase.builder.views.FileUploadMixin, {
+    className: 'container',
+
     templateSource: $('#data-template').html(),
 
     events: {
@@ -3123,7 +3155,7 @@ storybase.builder.views.DataView = Backbone.View.extend(
         };
         this.$el.html(this.template(context));
         this.$('.add-dataset').before(this.form.render().$el.append('<input class="cancel" type="reset" value="Cancel" />').append('<input type="submit" value="Save" />').hide());
-        this.$el.append(this.navView.render().el);
+        this.navView.render();
         this.delegateEvents();
       }
       return this;
@@ -3209,69 +3241,73 @@ storybase.builder.views.DataView = Backbone.View.extend(
   })
 );
 
-storybase.builder.views.ReviewView = Backbone.View.extend({
-  templateSource: $('#review-template').html(),
+storybase.builder.views.ReviewView = Backbone.View.extend(
+  _.extend({}, storybase.builder.views.NavViewMixin, {
+    className: 'container',
 
-  events: {
-    'click .preview': 'previewStory'
-  },
+    templateSource: $('#review-template').html(),
 
-  initialize: function() {
-    this.dispatcher = this.options.dispatcher;
-    this.template = Handlebars.compile(this.templateSource);
-    this.previewed = false;
-    // Need to bind validate to this before it's passed as a callback to
-    // the WorkflowNavView instance
-    _.bindAll(this, 'hasPreviewed');
-    this.navView = new storybase.builder.views.WorkflowNavView({
-      model: this.model,
-      dispatcher: this.dispatcher,
-      items: [
-        {
-          id: 'workflow-nav-tag-back',
-          text: gettext("Back to Tag"),
-          path: 'tag/'
-        },
-        {
-          id: 'workflow-nav-publish-fwd',
-          text: gettext("Publish My Story"),
-          path: 'publish/',
-          enabled: this.hasPreviewed,
-          validate: this.hasPreviewed
-        }
-      ]
-    });
-    if (_.isUndefined(this.model)) {
-      this.dispatcher.on("ready:story", this.setStory, this);
+    events: {
+      'click .preview': 'previewStory'
+    },
+
+    initialize: function() {
+      this.dispatcher = this.options.dispatcher;
+      this.template = Handlebars.compile(this.templateSource);
+      this.previewed = false;
+      // Need to bind validate to this before it's passed as a callback to
+      // the WorkflowNavView instance
+      _.bindAll(this, 'hasPreviewed');
+      this.navView = new storybase.builder.views.WorkflowNavView({
+        model: this.model,
+        dispatcher: this.dispatcher,
+        items: [
+          {
+            id: 'workflow-nav-tag-back',
+            text: gettext("Back to Tag"),
+            path: 'tag/'
+          },
+          {
+            id: 'workflow-nav-publish-fwd',
+            text: gettext("Publish My Story"),
+            path: 'publish/',
+            enabled: this.hasPreviewed,
+            validate: this.hasPreviewed
+          }
+        ]
+      });
+      if (_.isUndefined(this.model)) {
+        this.dispatcher.on("ready:story", this.setStory, this);
+      }
+    },
+
+    setStory: function(story) {
+      this.model = story;
+    },
+
+    render: function() {
+      console.info('Rendering review view');
+      var context = {};
+      this.$el.html(this.template(context));
+      this.navView.render();
+      this.delegateEvents();
+      return this;
+    },
+
+    previewStory: function(evt) {
+      evt.preventDefault();
+      var url = '/stories/' + this.model.id + '/viewer/';
+      this.previewed = true;
+      // Re-render the nav view to reflect the newly enabled button
+      this.navView.render();
+      window.open(url);
+    },
+
+    hasPreviewed: function() {
+      return this.previewed;
     }
-  },
-
-  setStory: function(story) {
-    this.model = story;
-  },
-
-  render: function() {
-    console.info('Rendering review view');
-    var context = {};
-    this.$el.html(this.template(context));
-    this.$el.append(this.navView.render().el);
-    this.delegateEvents();
-    return this;
-  },
-
-  previewStory: function(evt) {
-    evt.preventDefault();
-    var url = '/stories/' + this.model.id + '/viewer/';
-    this.previewed = true;
-    // Re-render the nav view to reflect the newly enabled button
-    this.navView.render();
-    window.open(url);
-  },
-
-  hasPreviewed: function() {
-    return this.previewed;
-  }
-});
+  })
+);
 
 storybase.builder.views.LegalView = Backbone.View.extend({
   id: 'share-legal',
@@ -3462,192 +3498,196 @@ storybase.builder.views.LegalView = Backbone.View.extend({
   }
 });
 
-storybase.builder.views.TaxonomyView = Backbone.View.extend({
-  id: 'share-taxonomy',
+storybase.builder.views.TaxonomyView = Backbone.View.extend(
+  _.extend({}, storybase.builder.views.NavViewMixin, {
+    id: 'share-taxonomy',
 
-  templateSource: $('#share-taxonomy-template').html(),
+    className: 'container',
 
-  initialize: function() {
-    this.dispatcher = this.options.dispatcher;
-    this.template = Handlebars.compile(this.templateSource);
-    this.navView = new storybase.builder.views.WorkflowNavView({
-      model: this.model,
-      dispatcher: this.dispatcher,
-      items: [
-        {
-          id: 'workflow-nav-data-back',
-          text: gettext("Back to Add Data"),
-          path: 'data/'
-        },
-        {
-          id: 'workflow-nav-review-fwd',
-          text: gettext("Review"),
-          path: 'review/'
-        }
-      ]
-    });
-    this.addLocationView = new storybase.builder.views.AddLocationView({
-      model: this.model,
-      dispatcher: this.dispatcher
-    });
-    this.tagView = new storybase.builder.views.TagView({
-      model: this.model,
-      dispatcher: this.dispatcher
-    });
+    templateSource: $('#share-taxonomy-template').html(),
 
-    if (this.model) {
-      this.initializeForm();
-    }
-    else {
-      this.dispatcher.on('ready:story', this.setStory, this);
-    }
-  },
+    initialize: function() {
+      this.dispatcher = this.options.dispatcher;
+      this.template = Handlebars.compile(this.templateSource);
+      this.navView = new storybase.builder.views.WorkflowNavView({
+        model: this.model,
+        dispatcher: this.dispatcher,
+        items: [
+          {
+            id: 'workflow-nav-data-back',
+            text: gettext("Back to Add Data"),
+            path: 'data/'
+          },
+          {
+            id: 'workflow-nav-review-fwd',
+            text: gettext("Review"),
+            path: 'review/'
+          }
+        ]
+      });
+      this.addLocationView = new storybase.builder.views.AddLocationView({
+        model: this.model,
+        dispatcher: this.dispatcher
+      });
+      this.tagView = new storybase.builder.views.TagView({
+        model: this.model,
+        dispatcher: this.dispatcher
+      });
 
-  initializeForm: function() {
-    // Convert the JSON into the format for Backbone Forms
-    var topicsOptions = this.getFormOptions(this.options.topics);
-    var placesOptions = this.getFormOptions(this.options.places);
-    var organizationsOptions = this.getFormOptions(this.options.organizations, 'organization_id');
-    var projectsOptions = this.getFormOptions(this.options.projects, 'project_id');
-    // Default editor attributes for the Backbone Form
-    var editorAttrs = {
-      multiple: "",
-      style: "width: 300px"
-    };
-    // Official taxonomies
-    var schema = {
-      topics: { 
-        type: 'Select', 
-        options: topicsOptions, 
-        editorAttrs: _.defaults({placeholder: gettext("Click to select topics")}, editorAttrs)
-      },
-      places: { 
-        type: 'Select', 
-        options: placesOptions, 
-        editorAttrs: _.defaults({placeholder: gettext("Click to select places")}, editorAttrs)
-      },
-      organizations: {
-        type: 'Select',
-        options: organizationsOptions,
-        editorAttrs: _.defaults({placeholder: gettext("Click to select organizations")}, editorAttrs)
-      },
-      projects: {
-        type: 'Select',
-        options: projectsOptions,
-        editorAttrs: _.defaults({placeholder: gettext("Click to select projects")}, editorAttrs)
+      if (this.model) {
+        this.initializeForm();
       }
-    };
-    if (!organizationsOptions.length) {
-      delete schema.organizations;
-    }
-    if (!projectsOptions.length) {
-      delete schema.projects;
-    }
-    this.officialForm = new Backbone.Form({
-      schema: schema
-    });
-    this.officialForm.on('topics:change', this.changeTopics, this);
-    this.officialForm.on('places:change', this.changePlaces, this);
-    this.officialForm.on('organizations:change', this.changeOrganizations, this);
-    this.officialForm.on('projects:change', this.changeProjects, this);
-  },
+      else {
+        this.dispatcher.on('ready:story', this.setStory, this);
+      }
+    },
 
-  setStory: function(story) {
-    this.model = story;
-    this.initializeForm();
-  },
-
-  /**
-   * Map the options from JSON provided from Django to the format needed
-   * by Backbone Forms for creating an HTML select element.
-   *
-   * See https://github.com/powmedia/backbone-forms#editor-select
-   *
-   * @param {Array} rawOptions Array of objects representing option
-   *     with attributes for keys and values.
-   * @param {String} [valAttr="id"] Name of property of the objects in
-   *     rawOptions that identifies the value of the option element.
-   * @param {String} [labelAttr="name"] Name of property of the objects in
-   *     rawOptions that identifies the text of the option element.
-   * @returns {Array} Array of objects with val and label properties.
-   */
-  getFormOptions: function(rawOptions, valAttr, labelAttr) {
-    // Set defaults for attributes for creating select options
-    valAttr = valAttr ? valAttr : 'id';
-    labelAttr = labelAttr ? labelAttr: 'name';
-    return _.map(rawOptions, function(value) {
-      return {
-        val: value[valAttr], 
-        label: value[labelAttr],
+    initializeForm: function() {
+      // Convert the JSON into the format for Backbone Forms
+      var topicsOptions = this.getFormOptions(this.options.topics);
+      var placesOptions = this.getFormOptions(this.options.places);
+      var organizationsOptions = this.getFormOptions(this.options.organizations, 'organization_id');
+      var projectsOptions = this.getFormOptions(this.options.projects, 'project_id');
+      // Default editor attributes for the Backbone Form
+      var editorAttrs = {
+        multiple: "",
+        style: "width: 300px"
       };
-    });
-  },
+      // Official taxonomies
+      var schema = {
+        topics: { 
+          type: 'Select', 
+          options: topicsOptions, 
+          editorAttrs: _.defaults({placeholder: gettext("Click to select topics")}, editorAttrs)
+        },
+        places: { 
+          type: 'Select', 
+          options: placesOptions, 
+          editorAttrs: _.defaults({placeholder: gettext("Click to select places")}, editorAttrs)
+        },
+        organizations: {
+          type: 'Select',
+          options: organizationsOptions,
+          editorAttrs: _.defaults({placeholder: gettext("Click to select organizations")}, editorAttrs)
+        },
+        projects: {
+          type: 'Select',
+          options: projectsOptions,
+          editorAttrs: _.defaults({placeholder: gettext("Click to select projects")}, editorAttrs)
+        }
+      };
+      if (!organizationsOptions.length) {
+        delete schema.organizations;
+      }
+      if (!projectsOptions.length) {
+        delete schema.projects;
+      }
+      this.officialForm = new Backbone.Form({
+        schema: schema
+      });
+      this.officialForm.on('topics:change', this.changeTopics, this);
+      this.officialForm.on('places:change', this.changePlaces, this);
+      this.officialForm.on('organizations:change', this.changeOrganizations, this);
+      this.officialForm.on('projects:change', this.changeProjects, this);
+    },
 
-  replaceRelated: function(url, data) {
-    data = data ? data : [];
-    $.ajax(url, {
-      type: "PUT", 
-      data: JSON.stringify(data),
-      contentType: "application/json",
-      processData: false
-    });
-  },
+    setStory: function(story) {
+      this.model = story;
+      this.initializeForm();
+    },
 
-  changeTopics: function(form, editor) {
-    var url = this.model.url() + 'topics/'; 
-    this.replaceRelated(url, editor.getValue());
-  },
+    /**
+     * Map the options from JSON provided from Django to the format needed
+     * by Backbone Forms for creating an HTML select element.
+     *
+     * See https://github.com/powmedia/backbone-forms#editor-select
+     *
+     * @param {Array} rawOptions Array of objects representing option
+     *     with attributes for keys and values.
+     * @param {String} [valAttr="id"] Name of property of the objects in
+     *     rawOptions that identifies the value of the option element.
+     * @param {String} [labelAttr="name"] Name of property of the objects in
+     *     rawOptions that identifies the text of the option element.
+     * @returns {Array} Array of objects with val and label properties.
+     */
+    getFormOptions: function(rawOptions, valAttr, labelAttr) {
+      // Set defaults for attributes for creating select options
+      valAttr = valAttr ? valAttr : 'id';
+      labelAttr = labelAttr ? labelAttr: 'name';
+      return _.map(rawOptions, function(value) {
+        return {
+          val: value[valAttr], 
+          label: value[labelAttr],
+        };
+      });
+    },
 
-  changePlaces: function(form, editor) {
-    var url = this.model.url() + 'places/'; 
-    this.replaceRelated(url, editor.getValue());
-  },
+    replaceRelated: function(url, data) {
+      data = data ? data : [];
+      $.ajax(url, {
+        type: "PUT", 
+        data: JSON.stringify(data),
+        contentType: "application/json",
+        processData: false
+      });
+    },
 
-  changeOrganizations: function(form, editor) {
-    var url = this.model.url() + 'organizations/'; 
-    this.replaceRelated(url, editor.getValue());
-  },
+    changeTopics: function(form, editor) {
+      var url = this.model.url() + 'topics/'; 
+      this.replaceRelated(url, editor.getValue());
+    },
 
-  changeProjects: function(form, editor) {
-    var url = this.model.url() + 'projects/'; 
-    this.replaceRelated(url, editor.getValue());
-  },
+    changePlaces: function(form, editor) {
+      var url = this.model.url() + 'places/'; 
+      this.replaceRelated(url, editor.getValue());
+    },
 
-  render: function() {
-    var initialValues = {
-      'topics': _.pluck(this.model.get('topics'), 'id'),
-      'places': _.pluck(this.model.get('places'), 'id'),
+    changeOrganizations: function(form, editor) {
+      var url = this.model.url() + 'organizations/'; 
+      this.replaceRelated(url, editor.getValue());
+    },
+
+    changeProjects: function(form, editor) {
+      var url = this.model.url() + 'projects/'; 
+      this.replaceRelated(url, editor.getValue());
+    },
+
+    render: function() {
+      var initialValues = {
+        'topics': _.pluck(this.model.get('topics'), 'id'),
+        'places': _.pluck(this.model.get('places'), 'id'),
+      }
+      this.$el.html(this.template());
+      this.$('#taxonomy').append(this.officialForm.render().el);
+      if (this.officialForm.fields.organizations) {
+        initialValues.organizations = _.pluck(this.model.get('organizations'), 'id');
+      }
+      if (this.officialForm.fields.projects) {
+        initialValues.projects = _.pluck(this.model.get('projects'), 'id');
+      }
+      this.officialForm.setValue(initialValues);
+      
+      // TODO: Custom editor that automatically does this?
+      this.officialForm.fields.topics.editor.$el.select2({width: 'resolve'});
+      this.officialForm.fields.places.editor.$el.select2({width: 'resolve'});
+      if (this.officialForm.fields.organizations) {
+        this.officialForm.fields.organizations.editor.$el.select2({width: 'resolve'});
+      }
+      if (this.officialForm.fields.projects) {
+        this.officialForm.fields.projects.editor.$el.select2({width: 'resolve'});
+      }
+      this.$el.append(this.tagView.render().el);
+      this.$el.append(this.addLocationView.render().el);
+      this.navView.render();
+
+      return this;
+    },
+
+    onShow: function() {
+      this.addLocationView.onShow();
     }
-    this.$el.html(this.template());
-    this.$('#taxonomy').append(this.officialForm.render().el);
-    if (this.officialForm.fields.organizations) {
-      initialValues.organizations = _.pluck(this.model.get('organizations'), 'id');
-    }
-    if (this.officialForm.fields.projects) {
-      initialValues.projects = _.pluck(this.model.get('projects'), 'id');
-    }
-    this.officialForm.setValue(initialValues);
-    
-    // TODO: Custom editor that automatically does this?
-    this.officialForm.fields.topics.editor.$el.select2({width: 'resolve'});
-    this.officialForm.fields.places.editor.$el.select2({width: 'resolve'});
-    if (this.officialForm.fields.organizations) {
-      this.officialForm.fields.organizations.editor.$el.select2({width: 'resolve'});
-    }
-    if (this.officialForm.fields.projects) {
-      this.officialForm.fields.projects.editor.$el.select2({width: 'resolve'});
-    }
-    this.$el.append(this.tagView.render().el);
-    this.$el.append(this.addLocationView.render().el);
-    this.$el.append(this.navView.render().el);
-
-    return this;
-  },
-
-  onShow: function() {
-    this.addLocationView.onShow();
-  }
-});
+  })
+);
 
 storybase.builder.views.AddLocationView = Backbone.View.extend({
   id: 'add-location',
@@ -3893,161 +3933,165 @@ storybase.builder.views.TagView = Backbone.View.extend({
   }
 });
 
-storybase.builder.views.PublishView = Backbone.View.extend({
-  id: 'share-publish',
+storybase.builder.views.PublishView = Backbone.View.extend(
+  _.extend({}, storybase.builder.views.NavViewMixin, {
+    id: 'share-publish',
 
-  templateSource: $('#share-publish-template').html(),
+    className: 'container',
 
-  events: {
-    'click .publish': 'handlePublish',
-    'click .unpublish': 'handleUnpublish'
-  },
+    templateSource: $('#share-publish-template').html(),
 
-  initialize: function() {
-    var navViewOptions;
+    events: {
+      'click .publish': 'handlePublish',
+      'click .unpublish': 'handleUnpublish'
+    },
 
-    this.dispatcher = this.options.dispatcher;
-    this.template = Handlebars.compile(this.templateSource);
-    this.featuredAssetView = new storybase.builder.views.FeaturedAssetView({
-      story: this.model,
-      dispatcher: this.dispatcher
-    });
-    this.legalView = new storybase.builder.views.LegalView({
-      model: this.model,
-      dispatcher: this.dispatcher
-    });
+    initialize: function() {
+      var navViewOptions;
 
-    navViewOptions = {
-      model: this.model,
-      dispatcher: this.dispatcher,
-      items: []
-    };
-    if (this.options.visibleSteps.review) {
-      navViewOptions.items.push({
-        id: 'workflow-nav-build-back',
-        text: gettext("Back to Review"),
-        path: 'review/'
+      this.dispatcher = this.options.dispatcher;
+      this.template = Handlebars.compile(this.templateSource);
+      this.featuredAssetView = new storybase.builder.views.FeaturedAssetView({
+        story: this.model,
+        dispatcher: this.dispatcher
       });
-    }
-    else {
-      navViewOptions.items.push({
-        id: 'workflow-nav-review-back',
-        text: gettext("Continue Writing Story"),
-        path: ''
+      this.legalView = new storybase.builder.views.LegalView({
+        model: this.model,
+        dispatcher: this.dispatcher
       });
-    }
-    navViewOptions.items.push({
-      id: 'workflow-nav-build-another-fwd',
-      text: gettext("Tell Another Story"),
-      path: '/build/',
-      route: false
-    });
-    this.navView = new storybase.builder.views.WorkflowNavView(navViewOptions);
-    
-    if (_.isUndefined(this.model)) {
-      this.dispatcher.on("ready:story", this.setStory, this);
-    }
-    this.dispatcher.on("accept:legal", this.handleAcceptLegal, this);
-  },
 
-  setStory: function(story) {
-    this.model = story;
-  },
-
-  /**
-   * Callback for when legal agreement is accepted.
-   */
-  handleAcceptLegal: function() {
-    // Hide the legal form
-    this.legalView.$el.hide();
-    // Show the publish button
-    this.togglePublished();
-  },
-
-  togglePublished: function() {
-    var published = this.model ? (this.model.get('status') === "published") : false;
-    if (published) {
-      this.$('.status-published').show();
-      this.$('.status-unpublished').hide();
-    }
-    else {
-      this.$('.status-published').hide();
-      if (this.legalView.acceptedLegalAgreement()) {
-        this.$('.status-unpublished').show();
+      navViewOptions = {
+        model: this.model,
+        dispatcher: this.dispatcher,
+        items: []
+      };
+      if (this.options.visibleSteps.review) {
+        navViewOptions.items.push({
+          id: 'workflow-nav-build-back',
+          text: gettext("Back to Review"),
+          path: 'review/'
+        });
       }
-    }
-  },
-
-  handlePublish: function(evt) {
-    evt.preventDefault();
-    console.debug('Entering handlePublish');
-    var that = this;
-    var triggerPublished = function(model, response) {
-      that.dispatcher.trigger('publish:story', model);
-      that.dispatcher.trigger('alert', 'success', 'Story published');
-      that.togglePublished();
-    };
-    var triggerError = function(model, response) {
-      that.dispatcher.trigger('error', "Error publishing story");
-    };
-    this.model.save({'status': 'published'}, {
-      success: triggerPublished, 
-      error: triggerError 
-    });
-  },
-
-  handleUnpublish: function(evt) {
-    evt.preventDefault();
-    var that = this;
-    var success = function(model, response) {
-      that.dispatcher.trigger('alert', 'success', 'Story unpublished');
-      that.togglePublished();
-    };
-    var triggerError = function(model, response) {
-      that.dispatcher.trigger('error', "Error unpublishing story");
-    };
-    this.model.save({'status': 'draft'}, {
-      success: success, 
-      error: triggerError 
-    });
-  },
-
-  getStoryUrl: function() {
-    var url = this.model ? this.model.get('url') : '';
-    var loc = window.location;
-    if (url) {
-      url = loc.protocol + "//" + loc.host + url;
-    }
-    return url;
-  },
-
-  render: function() {
-    var context = {
-      url: this.getStoryUrl(),
-      title: this.model.get('title'),
-      showSharing: this.options.showSharing
-    };
-    this.$el.html(this.template(context));
-    this.$('.title').after(this.legalView.render().el);
-    this.$('.status-published').after(this.featuredAssetView.render().el);
-    if (this.legalView.acceptedLegalAgreement()) {
-      this.legalView.$el.hide();
-    }
-    this.togglePublished();
-    if (window.addthis) {
-      // Render the addthis toolbox.  We have to do this explictly
-      // since it wasn't in the DOM when the page was loaded.
-      addthis.toolbox(this.$('.addthis_toolbox')[0], {
-        // Don't append clickback URL fragment so users get a clean
-        // URL when clicking the permalink button
-        data_track_clickback: false
+      else {
+        navViewOptions.items.push({
+          id: 'workflow-nav-review-back',
+          text: gettext("Continue Writing Story"),
+          path: ''
+        });
+      }
+      navViewOptions.items.push({
+        id: 'workflow-nav-build-another-fwd',
+        text: gettext("Tell Another Story"),
+        path: '/build/',
+        route: false
       });
+      this.navView = new storybase.builder.views.WorkflowNavView(navViewOptions);
+      
+      if (_.isUndefined(this.model)) {
+        this.dispatcher.on("ready:story", this.setStory, this);
+      }
+      this.dispatcher.on("accept:legal", this.handleAcceptLegal, this);
+    },
+
+    setStory: function(story) {
+      this.model = story;
+    },
+
+    /**
+     * Callback for when legal agreement is accepted.
+     */
+    handleAcceptLegal: function() {
+      // Hide the legal form
+      this.legalView.$el.hide();
+      // Show the publish button
+      this.togglePublished();
+    },
+
+    togglePublished: function() {
+      var published = this.model ? (this.model.get('status') === "published") : false;
+      if (published) {
+        this.$('.status-published').show();
+        this.$('.status-unpublished').hide();
+      }
+      else {
+        this.$('.status-published').hide();
+        if (this.legalView.acceptedLegalAgreement()) {
+          this.$('.status-unpublished').show();
+        }
+      }
+    },
+
+    handlePublish: function(evt) {
+      evt.preventDefault();
+      console.debug('Entering handlePublish');
+      var that = this;
+      var triggerPublished = function(model, response) {
+        that.dispatcher.trigger('publish:story', model);
+        that.dispatcher.trigger('alert', 'success', 'Story published');
+        that.togglePublished();
+      };
+      var triggerError = function(model, response) {
+        that.dispatcher.trigger('error', "Error publishing story");
+      };
+      this.model.save({'status': 'published'}, {
+        success: triggerPublished, 
+        error: triggerError 
+      });
+    },
+
+    handleUnpublish: function(evt) {
+      evt.preventDefault();
+      var that = this;
+      var success = function(model, response) {
+        that.dispatcher.trigger('alert', 'success', 'Story unpublished');
+        that.togglePublished();
+      };
+      var triggerError = function(model, response) {
+        that.dispatcher.trigger('error', "Error unpublishing story");
+      };
+      this.model.save({'status': 'draft'}, {
+        success: success, 
+        error: triggerError 
+      });
+    },
+
+    getStoryUrl: function() {
+      var url = this.model ? this.model.get('url') : '';
+      var loc = window.location;
+      if (url) {
+        url = loc.protocol + "//" + loc.host + url;
+      }
+      return url;
+    },
+
+    render: function() {
+      var context = {
+        url: this.getStoryUrl(),
+        title: this.model.get('title'),
+        showSharing: this.options.showSharing
+      };
+      this.$el.html(this.template(context));
+      this.$('.title').after(this.legalView.render().el);
+      this.$('.status-published').after(this.featuredAssetView.render().el);
+      if (this.legalView.acceptedLegalAgreement()) {
+        this.legalView.$el.hide();
+      }
+      this.togglePublished();
+      if (window.addthis) {
+        // Render the addthis toolbox.  We have to do this explictly
+        // since it wasn't in the DOM when the page was loaded.
+        addthis.toolbox(this.$('.addthis_toolbox')[0], {
+          // Don't append clickback URL fragment so users get a clean
+          // URL when clicking the permalink button
+          data_track_clickback: false
+        });
+      }
+      this.navView.render();
+      this.delegateEvents();
+      return this;
     }
-    this.$el.append(this.navView.render().el);
-    this.delegateEvents();
-    return this;
-  }
-});
+  })
+);
 
 storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
   _.extend({}, storybase.builder.views.FileUploadMixin, {
