@@ -1141,6 +1141,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
         },
         onHide: function() {
           // Set a cookie so the user doesn't see the builder tour again
+          // TODO: Set expires option on the cookie
           $.cookie("storybase_show_builder_tour", false, {path: '/'});
           $('.workflow-step #build').triggerHandler('mouseout');
         }
