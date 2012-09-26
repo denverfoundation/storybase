@@ -916,8 +916,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.dispatcher.on("save:story", this.setTitle, this);
     this.dispatcher.on("ready:story", this.setTitle, this);
     this.dispatcher.on("created:section", this.handleCreateSection, this);
-    this.dispatcher.on("toggle:sectionlist", this.handleToggleSectionList, this);
-
+    this.dispatcher.on("toggle:sectionlist", this.setPadding, this);
 
     if (!this.model.isNew()) {
       this.model.sections.fetch();
@@ -1005,7 +1004,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     });
     if (this._editViews.length && options.showFirst) {
       //this._editViews[0].show();
-      this.dispatcher.trigger('select:section', 'story-info');
+      //this.dispatcher.trigger('select:section', 'story-info');
+      this.dispatcher.trigger('select:section', this._editViews[0].getSection());
     }
   },
 
@@ -1043,6 +1043,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     // Recalculate the width of the section list view.
     var that = this;
     var showTour = _.isUndefined(guiders) ? false : ($.cookie('storybase_show_builder_tour') === 'false' ? false : true) && this.options.showTour;
+
+    this.setPadding();
 
     if (this.sectionListView) {
       this.sectionListView.setWidth();
@@ -1282,21 +1284,20 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   },
 
   /**
-   * Callback for toggling the section list from expanded to
-   * collapsed.
-   *
-   * This adjusts the padding of builder element so it has a consistent
-   * amount of padding regardless of the height of the section list.
+   * Set the top padding of the view's element to accomodate the
+   * navigation view.
    */
-  handleToggleSectionList: function(state) {
-    if (_.isUndefined(this._initialPadding)) {
-      this._initialPadding = parseInt(this.$el.css('padding-top').replace('px', ''), 10);
-    }
-    if (state === "closed") {
-      this.$el.css('padding-top', 0);
+  setPadding: function() {
+    var $navEl = this.navView.$el;
+    var navHeight = $navEl.outerHeight();
+    var navTop = $navEl.offset().top;
+    var navBottom = navTop + navHeight;
+    var elTop = this.$el.offset().top;
+    if (elTop < navBottom) {
+      this.$el.css('padding-top', navHeight);
     }
     else {
-      this.$el.css('padding-top', this._initialPadding);
+      this.$el.css('padding-top', 0);  
     }
   }
 });
@@ -1632,7 +1633,6 @@ storybase.builder.views.SectionNavView = Backbone.View.extend({
         this._next = null;
       }
     }
-    console.debug(this._active, this._prev, this._next);
 
     this.render();
   },
@@ -1669,7 +1669,6 @@ storybase.builder.views.SectionNavView = Backbone.View.extend({
       prevId: this.getId(this._prev),
       nextId: this.getId(this._next)
     };
-    console.debug(context);
     this.$el.html(this.template(context));
     this.delegateEvents();
     return this;
@@ -2145,6 +2144,10 @@ storybase.builder.views.PseudoSectionEditView = Backbone.View.extend(
         value = true;
       }
       this.saveAttr(key, value);
+    },
+
+    getSection: function() {
+      return this.pseudoSectionId;
     }
   })
 );
@@ -2667,6 +2670,10 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
         return matching.length > 0;
       }
     }, true, this);
+  },
+
+  getSection: function() {
+    return this.model;
   }
 });
 
