@@ -496,7 +496,11 @@
   font-weight: bold;
 }
 
-/* Table of contents thumbnails */
+// Table of contents thumbnails
+
+@section-thumbnail-height: 75px;
+@opened-padding: 39px;
+@closed-padding: 5px;
 
 #section-list {
   position: fixed;
@@ -504,32 +508,31 @@
   left: 0;
   bottom: 0;
   z-index: 998;
+  background-color: @control-color-1;
 }
 
 #toggle-section-list {
+  display: block;
+  float: left;
   padding: 4px;
   margin-left: 8px;
   font-weight: bold;
   text-decoration: none;
-  border-radius: 4px 4px 0 0;
-  background-color: @control-color-1;
   color: #fff;
 }
 
-#toggle-section-list.opened::after {
+.opened #toggle-section-list::after {
   content: ' - ';
 }
 
-#toggle-section-list.closed::after {
+.closed #toggle-section-list::after {
   content: ' + ';
-}
-
-.sections-container-border {
-  border-top: 4px solid @control-color-1;
 }
 
 .sections-container {
   position: relative;
+  width: 65%;
+  float: left;
   overflow: hidden;
   background-color: @control-color-1;
   padding: 0 10px;
@@ -646,17 +649,32 @@
   display: block;
 }
 
+#section-nav {
+  float: left;
+  width: 65%;
+  height: 30px;
+  padding-left: 20px;
+  padding-top: @opened-padding;
+}
+
+#section-list.closed #section-nav {
+  padding-top: 10px;
+}
+
+#section-list .workflow-nav {
+  float: left;
+  text-align: right;
+  width: 20%;
+  padding-top: @opened-padding;
+}
+
+#section-list.closed .workflow-nav {
+  padding-top: @closed-padding;
+}
 
 /* Builder Navigation Buttons */
 
 .workflow-nav {
-  position: fixed;
-  right: 20px;
-  bottom: 20px;
-  padding: 20px;
-  text-align: right;
-  border-radius: 4px;
-  background-color: @control-color-1-transparent;
 }
 
 /* Add Data View */

@@ -845,21 +845,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
     _.bindAll(this, 'createSectionEditView', 'simpleReview', 'setTemplateStory', 'initializeStoryFromTemplate');
 
-    if (this.options.showSectionList) {
-      this.sectionListView = new storybase.builder.views.SectionListView({
-        dispatcher: this.dispatcher,
-        model: this.model
-      });
-    }
-    this.unusedAssetView = new storybase.builder.views.UnusedAssetView({
-      dispatcher: this.dispatcher,
-      assets: this.model.unusedAssets
-    });
-    this.lastSavedView = new storybase.builder.views.LastSavedView({
-      dispatcher: this.dispatcher,
-      lastSaved: this.model.get('last_edited')
-    });
-
     // Initialize navigation to the next workflow step
     navViewOptions = {
       model: this.model,
@@ -888,6 +873,23 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       });
     }
     this.navView = new storybase.builder.views.WorkflowNavView(navViewOptions);
+
+    if (this.options.showSectionList) {
+      this.sectionListView = new storybase.builder.views.SectionListView({
+        dispatcher: this.dispatcher,
+        navView: this.navView,
+        model: this.model
+      });
+    }
+    this.unusedAssetView = new storybase.builder.views.UnusedAssetView({
+      dispatcher: this.dispatcher,
+      assets: this.model.unusedAssets
+    });
+    this.lastSavedView = new storybase.builder.views.LastSavedView({
+      dispatcher: this.dispatcher,
+      lastSaved: this.model.get('last_edited')
+    });
+
     this._editViews = [];
 
     this.model.on("sync", this.triggerSaved, this);
@@ -996,7 +998,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       }
     });
     if (this._editViews.length && options.showFirst) {
-      this._editViews[0].show();
+      //this._editViews[0].show();
+      this.dispatcher.trigger('select:section', 'story-info');
     }
   },
 
@@ -1010,8 +1013,11 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     }
     this.renderEditViews();
     if (this.navView) {
-      // TODO: properly place this
-      this.$el.append(this.navView.render().el);
+      this.navView.render();
+      if (!this.sectionListView) {
+        // TODO: properly place this
+        this.$el.append(this.navView.el);
+      }
     }
     return this;
   },
@@ -1441,13 +1447,8 @@ storybase.builder.views.StoryAttributeSavingMixin = {
 storybase.builder.views.ThumbnailHighlightMixin = {
   highlightClass: 'selected',
 
-  /**
-   * Highlight the thumbnail
-   *
-   * This method should be hooked up to a "select:thumbnail" event
-   */
-  highlight: function(view) {
-    if (view == this) {
+  highlightSection: function(section) {
+    if (section === this.getSection()) {
       this.$el.addClass(this.highlightClass);
     }
     else {
@@ -1533,9 +1534,78 @@ storybase.builder.views.SectionNavView = Backbone.View.extend({
   className: 'section-nav',
 
   events: {
+    'click .next,.prev': 'handleClick'
   },
 
+  templateSource: $('#section-nav-template').html(),
+
   initialize: function() {
+    this.dispatcher = this.options.dispatcher;
+    this._active = null; 
+    this._prev = null;
+    this._next = null;
+
+    this.template = Handlebars.compile(this.templateSource);
+
+    this.model.sections.on("remove", this.updatePrevNext, this);
+    this.dispatcher.on('select:section', this.updateSection, this);
+  },
+
+  updatePrevNext: function() {
+    if (_.isObject(this._active)) {
+      // section is a Section model instance
+      index = this.model.sections.indexOf(this._active);
+      if (index === 0) {
+        this._prev = 'story-info';
+      }
+      else {
+        this._prev = this.model.sections.at(index - 1);
+      }
+
+      if (index === this.model.sections.length - 1) {
+        this._next = 'call-to-action';
+      }
+      else {
+        this._next = this.model.sections.at(index + 1);
+      }
+    }
+    else {
+      // section is a string for the pseudo sections
+      if (this._active === 'story-info') {
+        // Assume story information view is the first view
+        this._prev = null;
+        this._next = this.model.sections.at(0);
+      }
+      else if (this._active === 'call-to-action') {
+        this._prev = this.model.sections.last();
+        this._next = null;
+      }
+    }
+
+    this.render();
+  },
+
+  updateSection: function(section) {
+    var index;
+    this._active = section;
+    this.updatePrevNext();
+  },
+
+  render: function() {
+    var context = {
+      prevId: _.isObject(this._prev) ? this._prev.id : this._prev,
+      nextId: _.isObject(this._next) ? this._next.id : this._next
+    };
+    this.$el.html(this.template(context));
+    this.delegateEvents();
+    return this;
+  },
+
+  handleClick: function(evt) {
+    var sectionId = $(evt.target).attr('id');
+    var section = sectionId === 'story-info' || sectionId === 'call-to-action' ? sectionId : this.model.sections.get(sectionId);
+    evt.preventDefault();
+    this.dispatcher.trigger('select:section', section);
   }
 });
 
@@ -1559,7 +1629,8 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
 
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
-    this.model = this.options.model;
+    this.navView = this.options.navView;
+    this._state = 'opened';
     /**
      * A lookup table of SectionThumbnailView instances by their
      * model's section ids.
@@ -1582,6 +1653,11 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
     this._thumbnailWidth = 0;
 
     this.template = Handlebars.compile(this.templateSource);
+
+    this.sectionNavView = new storybase.builder.views.SectionNavView({
+      dispatcher: this.dispatcher,
+      model: this.model
+    });
 
     this.dispatcher.on("do:remove:section", this.removeSection, this);
     this.dispatcher.on("ready:story", this.addSectionThumbnails, this);
@@ -1657,7 +1733,6 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
         thumbnailView = this._sortedThumbnailViews[i];
         this.$('.sections').append(thumbnailView.render().el);
       }
-      this.dispatcher.trigger("select:thumbnail", this._sortedThumbnailViews[0]);
       this.$('.sections').sortable({
         items: 'li:not(.pseudo)'
       });
@@ -1665,6 +1740,16 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
  
     this.setWidth();
     this.$('.sections-clip').css({overflow: 'hidden'});
+ 
+    this.$el.addClass(this._state);
+    this.sectionNavView.render();
+    if (this._state === 'opened') {
+      this.sectionNavView.$el.hide();
+    }
+    this.$el.append(this.sectionNavView.el);
+    if (this.navView) {
+      this.$el.append(this.navView.el);
+    }
     this.delegateEvents();
 
     return this;
@@ -1686,11 +1771,6 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
 
   removeThumbnailView: function(view) {
     var index = _.indexOf(this._sortedThumbnailViews, view);
-    if (view && view.isHighlighted()) {
-      // Trying to remove the currently active view. Switch to
-      // a different one before removing the elements.
-      this.dispatcher.trigger('select:thumbnail', this._sortedThumbnailViews[index - 1]);
-    }
     view.close();
     this._sortedThumbnailViews.splice(index, 1);
     if (_.isUndefined(view.pseudoSectionId)) {
@@ -1757,8 +1837,8 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
       section.off('sync', postSave);
       this.dispatcher.trigger("created:section", section, index);
       thumbnailView = this.addSectionThumbnail(section, index);
+      thumbnailView.highlightSection(section);
       this.render();
-      this.dispatcher.trigger('select:thumbnail', thumbnailView);
     };
     postSave = _.bind(postSave, this);
     this.model.sections.add(section, {at: index});
@@ -1810,10 +1890,12 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
 
   toggleList: function(evt) {
     evt.preventDefault();
+    this._state = this._state === 'opened' ? 'closed' : 'opened';
     // TODO: Use the 'blind' easing function to show/hide this
     this.$('.sections-container').toggle();
-    $(evt.target).toggleClass('opened');
-    $(evt.target).toggleClass('closed');
+    this.$el.toggleClass('opened');
+    this.$el.toggleClass('closed');
+    this.sectionNavView.$el.toggle();
   }
 });
 
@@ -1837,7 +1919,7 @@ storybase.builder.views.SectionThumbnailView = Backbone.View.extend(
       this._selected = false;
 
 
-      this.dispatcher.on("select:thumbnail", this.highlight, this);
+      this.dispatcher.on("select:section", this.highlightSection, this);
       this.dispatcher.on("remove:thumbnail", this.render, this);
       this.model.on("change", this.render, this);
       this.model.on("sync", this.render, this);
@@ -1850,10 +1932,14 @@ storybase.builder.views.SectionThumbnailView = Backbone.View.extend(
       this.remove();
       this.undelegateEvents();
       this.unbind();
-      this.dispatcher.off("select:thumbnail", this.highlight, this);
+      this.dispatcher.off("select:section", this.highlightSection, this);
       this.dispatcher.off("remove:thumbnail", this.render, this);
       this.model.off("change", this.render);
       this.model.off("sync", this.render, this);
+    },
+
+    getSection: function() {
+      return this.model;
     },
 
     render: function() {
@@ -1875,7 +1961,6 @@ storybase.builder.views.SectionThumbnailView = Backbone.View.extend(
 
     select: function() {
       console.info("Clicked thumbnail for section " + this.model.get('title'));
-      this.dispatcher.trigger("select:thumbnail", this);
       this.dispatcher.trigger("select:section", this.model);
     },
 
@@ -1903,7 +1988,7 @@ storybase.builder.views.PseudoSectionThumbnailView = Backbone.View.extend(
       this.pseudoSectionId = this.options.pseudoSectionId;
       this.title = this.options.title;
       this.template = Handlebars.compile(this.templateSource);
-      this.dispatcher.on("select:thumbnail", this.highlight, this);
+      this.dispatcher.on("select:section", this.highlightSection, this);
     },
 
     render: function() {
@@ -1915,8 +2000,11 @@ storybase.builder.views.PseudoSectionThumbnailView = Backbone.View.extend(
       return this;
     },
 
+    getSection: function() {
+      return this.pseudoSectionId;
+    },
+
     select: function() {
-      this.dispatcher.trigger("select:thumbnail", this);
       this.dispatcher.trigger('select:section', this.pseudoSectionId);
     }
 }));
