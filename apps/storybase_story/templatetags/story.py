@@ -26,6 +26,16 @@ def container(context, value):
     asset = Asset.objects.get_subclass(pk=asset.pk)
     return asset.render_html()
 
+@register.inclusion_tag("storybase_story/connected_story.html")
+def connected_story(story):
+    return {
+        'story': story,
+    }
+
+@register.simple_tag
+def connected_story_section(section):
+    return section.render(show_title=False)
+
 @register.simple_tag
 def featured_stories(count = 4):
     # temp: should actually pull stories, etc.

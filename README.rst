@@ -19,6 +19,7 @@ This project includes a number of excellent open-source libraries:
 * `The 1140px Grid V2 <http://cssgrid.net/>`_ by Andy Taylor
 * `Backbone <http://documentcloud.github.com/backbone/>`_ by Jeremy Ashkenas, DocumentCloud
 * `D3 <http://mbostock.github.com/d3/>`_ by Michael Bostock
+* `Guiders.js <https://github.com/jeff-optimizely/Guiders-JS>`_ by Optimizely
 * `Handlebars <http://handlebarsjs.com/>`_ by Yehuda Katz
 * `HTML5 Boilerplate <http://html5boilerplate.com/>`_
 * `jQuery <http://jquery.org/>`_ by John Resig
@@ -35,6 +36,7 @@ This project includes a number of excellent open-source libraries:
 * `Normalize.css <http://github.com/necolas/normalize.css>`_ by Nicolas Gallagher and Jonathan Neal
 * `Select2 <http://ivaynberg.github.com/select2/>`_ by Igor Vaynberg
 * `SimpleModal <http://simplemodal.com>`_ by Eric Martin
+* `Tooltipster <http://calebjacob.com/tooltipster/>`_ by Caleb Jacob
 * `TinyMCE <http://tinymce.com/>`_ by Moxiecode Systems AB
 * `Underscore <http://documentcloud.github.com/underscore/>`_ by Jeremy Ashkenas, DocumentCloud
 * `WYSIHTML5 <http://xing.github.com/wysihtml5/>`_ by XING AG

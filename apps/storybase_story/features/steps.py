@@ -2,8 +2,13 @@
 
 from datetime import datetime
 
+from django.core.urlresolvers import reverse
+from django.utils import translation
 from lettuce import step, world
+from lettuce.django import django_url
 from nose.tools import assert_equal
+
+from storybase_story.models import Story
 
 @step(u'Then the Story\'s title should be "([^"]*)"')
 def see_title(step, title):
@@ -46,3 +51,22 @@ def last_edited_today(step):
 def see_contributor(step, contributor):
     contributor_el = world.browser.find_by_css('.contributor').first
     assert_equal(contributor_el.text, contributor)
+
+@step(u'Given the user navigates to the story detail page for the story "([^"]*)"')
+def visit_story_detail(step, title):
+    story = Story.objects.get(storytranslation__title=title)
+    path = reverse('story_detail', kwargs={'slug': story.slug})
+    world.browser.visit(django_url(path))
+
+@step(u'the title input is present')
+def see_title_input(step):
+    assert world.browser.is_element_present_by_css('.story-title')
+
+@step(u'the byline input is present')
+def see_byline_input(step):
+    assert world.browser.is_element_present_by_css('.byline')
+
+@step(u'the section list is not present')
+def not_see_section_list(step):
+    assert world.browser.is_element_present_by_css('.section-list') is False
+    

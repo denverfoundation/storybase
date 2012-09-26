@@ -17,11 +17,13 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <title>{%trans "Story Builder" %}</title>
-    
+
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/1140.css">{% endaddtoblock %}
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/backbone-forms/templates/default.css">{% endaddtoblock %}
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/select2/select2.css">{% endaddtoblock %}
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/leaflet/leaflet.css">{% endaddtoblock %}
+    {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/guiders/guiders-1.2.8.css">{% endaddtoblock %}
+    {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/tooltipster-1.2/css/tooltipster.css">{% endaddtoblock %}
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/style.css">{% endaddtoblock %}
     {% comment %}
     In development, use Javascript to compile the LESS to CSS. In
@@ -62,7 +64,8 @@
             </div>
         </header>
         <div id="alerts" class="alerts"></div>
-        <div id="app" class="container"></div>
+        <div id="nav-container"></div>
+        <div id="app"></div>
     </div>
 
     <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline -->
@@ -87,6 +90,8 @@
     <script src="{{ STATIC_URL }}js/libs/select2/select2.min.js"></script>
     <script src="{{ STATIC_URL}}js/libs/leaflet/leaflet.js"></script>
     <script src="{{ STATIC_URL }}js/libs/jquery.cookie.js"></script>
+    <script src="{{ STATIC_URL }}js/libs/guiders/guiders-1.2.8.js"></script>
+    <script src="{{ STATIC_URL }}js/libs/tooltipster-1.2/js/jquery.tooltipster.min.js"></script>
 
     <script src="{{ STATIC_URL }}js/utils.js"></script>
     <script src="{{ STATIC_URL }}js/forms.js"></script>
@@ -98,14 +103,16 @@
 
     <script type="text/javascript">
     $(document).ready(function() {
+        storybase.builder.globals.APP_ROOT = storybase.utils.getRoot(["build", "build-connected"], window.location.pathname, 1);
         storybase.globals.API_ROOT = '/api/0.1/';
         storybase.globals.MAP_CENTER = {{ storybase_map_center }};
         storybase.globals.MAP_ZOOM_LEVEL = {{ storybase_map_zoom_level }};
         storybase.globals.MAP_POINT_ZOOM_LEVEL = {{ storybase_map_point_zoom_level }};
         var storyTemplatesData = {{ story_template_json }};
         var helpData = {{ help_json }};
-        var options = {
+        var options = _.extend({
             assetTypes: {{ asset_types_json }},
+            containerTemplates: new storybase.builder.collections.ContainerTemplates,
             el: $('#builder'),
             dispatcher: storybase.builder.globals.dispatcher,
             help: new Backbone.Collection,
@@ -113,25 +120,68 @@
             organizations: {{ organizations_json }},
             places: {{ places_json }},
             projects: {{ projects_json }},
+            relatedStories: new storybase.collections.StoryRelations,
             storyTemplates: new storybase.builder.collections.StoryTemplates,
-            topics: {{ topics_json }} 
-        };
+            topics: {{ topics_json }},
+            startOverUrl: storybase.utils.getRoot(["build", "build-connected"], window.location.pathname)
+        }, {{ options_json }});
+        var relatedStoriesJSON = null;
+        var assetsJSON = null;
+        var templateSectionsJSON = null;
+        var featuredAssetsJSON = null;
+        var containerTemplatesJSON = null;
         {% if story_json %}
         options.model = new storybase.models.Story({{ story_json }});
         {% endif %}
+        {% if related_stories_json %}
+        relatedStoriesJSON = {{ related_stories_json }};
+        {% endif %}
+        {% if template_story_json %}
+        options.templateStory = new storybase.models.Story({{ template_story_json }});
+        {% endif %}
+        {% if template_sections_json %}
+        templateSectionsJSON = {{ template_sections_json }};
+        {% endif %}
+        {% if assets_json %}
+        assetsJSON = {{ assets_json }};
+        {% endif %}
+        {% if featured_assets_json %}
+        featuredAssetsJSON = {{ featured_assets_json }};
+        {% endif %}
+        {% if container_templates_json %}
+        containerTemplatesJSON = {{ container_templates_json }};
+        {% endif %}
+        if (relatedStoriesJSON) {
+          options.relatedStories.reset(relatedStoriesJSON.objects);
+        }
+        if (templateSectionsJSON) {
+          options.templateStory.sections.reset(templateSectionsJSON.objects);
+        }
+        {# TODO: Bootstrap sections and assets #}
+        if (options.model && assetsJSON) {
+          options.model.assets.reset(assetsJSON.objects);
+        }
+        if (options.model && featuredAssetsJSON) {
+          options.model.setFeaturedAssets(
+            new storybase.collections.FeaturedAssets(
+              featuredAssetsJSON.objects)
+          )
+        }
+        if (containerTemplatesJSON) {
+          options.containerTemplates.reset(containerTemplatesJSON.objects);
+        }
         options.storyTemplates.reset(storyTemplatesData.objects);
         options.help.reset(helpData.objects);
         
-        storybase.builder.globals.APP_ROOT = storybase.utils.getRoot(["build"], window.location.pathname, 1);
         storybase.builder.router = new storybase.builder.routers.Router({
-            dispatcher: storybase.builder.globals.dispatcher,
-            hasStory: !_.isUndefined(options.model)
+          dispatcher: storybase.builder.globals.dispatcher,
+          hasStory: !_.isUndefined(options.model),
+          hasTemplate: !_.isUndefined(options.templateStory)
         });
         storybase.builder.app = new storybase.builder.views.AppView(
             options
         );
         Backbone.history.start({pushState: true, root: storybase.builder.globals.APP_ROOT});
-
     });
     </script>
     <script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js?domready=1"></script>

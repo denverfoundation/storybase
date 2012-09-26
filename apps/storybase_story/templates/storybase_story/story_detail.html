@@ -43,8 +43,7 @@
 						<p class="byline">{% trans "By" %} <span class="author">{{ story.byline }}</span></p>
 					</header>
 					<section class="object-featured-asset">
-						{# TODO: wire in real asset #}
-						<img src="{{ story.featured_asset_thumbnail_url }}" title="temp asset">
+						{{ story.render_featured_asset }}
 					</section>
 					<section class="object-summary">
 						<section class="summary">
@@ -60,16 +59,19 @@
 					<p class="call-intro grid_2 alpha">{% blocktrans %}Wondering what you can do to help? The contributor has listed the following actions that you can take to help.{% endblocktrans %}</p>
 					<div class="story-call-to-action grid_5 prefix_1 omega">{{ story.call_to_action|safe }}</div>
 				</section>
-
+                
+                {% if story.allow_connected %}
 				<section class="connected-stories content-block">
 					<h4>{% trans "Connected Stories" %}</h4>
-					<p>Shedding light and text for other light-related analogies goes here.</p>
-					<dl>
-						<dd>Most Recent</dd>
-						<dt><strong>Story Name</strong> by Username</dt>
-					</dl>
-					<a href="#" class="button right">Contribute Your Connected Story</a>
+                    <p>{{ story.connected_prompt|linebreaks }}</p>
+                    <a href="{% url connected_story_builder source_slug=story.slug %}" title="{% trans "Contribute to this story" %}" class="button right">{% trans "Contribute to this story" %}</a>
+                    {% with cs_count=story.connected_stories.count %}
+                    {% if cs_count %}
+                    <a href="{% url story_viewer slug=story.slug %}#sections/connected-stories" title="{% blocktrans count counter=cs_count %}View {{ counter }} connected story{% plural %}View {{ counter }} connected stories{% endblocktrans %}" class="button right">{% blocktrans count counter=cs_count %}View {{ counter }} connected story{% plural %}View {{ counter }} connected stories{% endblocktrans %}</a>
+                    {% endif %}
+                    {% endwith %}
 				</section>
+                {% endif %}
 				
 				<section class="citizen-comments content-block">
 					<h4>{% trans "Citizen Comments" %}</h4>

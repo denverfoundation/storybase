@@ -155,7 +155,7 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
         except AttributeError:
             return self.__unicode__()
 
-    def render_thumbnail(self, width=None, height=None, format='html',
+    def render_thumbnail(self, width=150, height=100, format='html',
                          **kwargs):
         """Render a thumbnail-sized viewable representation of an asset 
 

@@ -1,6 +1,7 @@
 from datetime import datetime
 import re
-#from django.conf import settings
+from urlparse import urlparse
+from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.management import call_command
 #from django.db import connection
@@ -174,6 +175,7 @@ def assert_is_uuid4(s):
 
 @world.absorb
 def assert_text_present(s):
+    print s
     assert world.browser.is_text_present(s)
 
 @world.absorb
@@ -247,6 +249,11 @@ def assert_list_equals(selector, list_items):
         assert_equal(item.text, list_items[i])
         i = i+1
 
+@world.absorb
+def assert_url_path_equal(url, path, language='en'):
+    url_parts = urlparse(url) 
+    assert url_parts.path == path or url_parts.path == ("/%s" % language) + path
+
 # TODO: Figure out why database create with create_test_db doesn't 
 # allow writing.
 #@before.runserver
@@ -266,15 +273,16 @@ def assert_list_equals(selector, list_items):
 @before.harvest
 def initialize_database(server):
     call_command('syncdb', interactive=False, verbosity=0)
-    try:
-        call_command('migrate', interactive=False, verbosity=0)
-    except DatabaseError as e:
-        # HACK: Workaround for weird Django-CMS migration that tries
-        # to re-run.
-        if str(e).strip() == 'relation "cms_cmsplugin" already exists':
-            pass
-        else:
-            raise
+    if 'south' in settings.INSTALLED_APPS:
+        try:
+            call_command('migrate', interactive=False, verbosity=0)
+        except DatabaseError as e:
+            # HACK: Workaround for weird Django-CMS migration that tries
+            # to re-run.
+            if str(e).strip() == 'relation "cms_cmsplugin" already exists':
+                pass
+            else:
+                raise
     call_command('flush', interactive=False, verbosity=0)
     call_command('loaddata', 'all', verbosity=0)
     setup_test_environment()
@@ -321,6 +329,14 @@ def teardown_browser(total):
         world.browser.quit()
 
 # Global steps used throughout tests
+@step(u'Given the user "([^"]*)" is logged in')
+def user_login(step, username, password="password"):
+    world.browser.visit(django_url("/accounts/login/"))
+    world.browser.fill('username', username)
+    world.browser.fill('password', password)
+    button = world.browser.find_by_css("input[type=submit]").first
+    button.click()
+
 @step(u'Given the admin user is logged in')
 def admin_login(step):
     """ Log in to the Django admin """
@@ -338,6 +354,7 @@ def create_user(step, username):
 @step(u'Given the User "([^"]*)" exists')
 def user_exists(step, username):
     User.objects.get(username=username)
+
 
 @step(u'Given the user navigates to the "([^"]*)" admin')
 def visit_model_admin(step, model_name):
@@ -572,3 +589,11 @@ def locations_in_database(step):
 @step(u'the following stories have been created:')
 def stories_in_database(step):
     bulk_create(step.hashes)
+
+@step(u'the text "([^"]*)" is present')
+def text_present(step, text):
+    world.assert_text_present(text)
+
+@step(u'the text "([^"]*)" is not present')
+def text_not_present(step, text):
+    world.assert_text_not_present(text)

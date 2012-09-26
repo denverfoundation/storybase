@@ -3,6 +3,7 @@ storybase.builder.routers.Router = Backbone.Router.extend({
   initialize: function(options) {
     this.dispatcher = options.dispatcher;
     this.hasStory = options.hasStory;
+    this.hasTemplate = options.hasTemplate;
     // Define the routes dynamically instead of a declaring
     // a rotues property because the routing changes
     // depending on whether we're creating a new story
@@ -15,7 +16,12 @@ storybase.builder.routers.Router = Backbone.Router.extend({
     }
     else {
       // Creating a new story
-      this.route("", "selectTemplate");
+      if (this.hasTemplate) {
+        this.route("", "build");
+      }
+      else {
+        this.route("", "selectTemplate");
+      }
       this.route(":id/", "build");
       this.route(":id/:step/", "selectIdStep");
       this.route(":id/:step/:substep/", "selectIdStep");

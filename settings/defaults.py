@@ -344,4 +344,7 @@ STORYBASE_LAYOUT_TEMPLATES = (
     'above_below.html',
     '3_stacked.html',
 )
+# Connected story template slug
+STORYBASE_CONNECTED_STORY_TEMPLATE = "connected" 
+
 
