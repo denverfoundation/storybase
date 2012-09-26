@@ -165,10 +165,12 @@ storybase.builder.views.AppView = Backbone.View.extend({
   render: function() {
     console.debug('Rendering main view');
     var activeView = this.getActiveView();
-    var activeNavView = activeView.getNavView();
-    this.$('#nav-container').empty();
-    this.$('#nav-container').append(activeNavView.el);
-    activeNavView.$el.addClass('container');
+    var activeNavView = _.isUndefined(activeView.getNavView) ? null: activeView.getNavView();
+    if (activeNavView) {
+      this.$('#nav-container').empty();
+      this.$('#nav-container').append(activeNavView.el);
+      activeNavView.$el.addClass('container');
+    }
     this.$('#app').empty();
     this.$('#app').append(activeView.render().$el);
     // Some views have things that only work when the element has been added
