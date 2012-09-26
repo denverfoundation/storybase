@@ -999,7 +999,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       //this._editViews[0].show();
       this.dispatcher.trigger('select:section', 'story-info');
     }
-    this.$el.append(this.lastSavedView.render().el);
   },
 
   render: function() {
@@ -1013,6 +1012,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       this.navView.render();
     }
     this.renderEditViews();
+    this.$el.append(this.lastSavedView.render().el);
     return this;
   },
 
@@ -1277,7 +1277,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 storybase.builder.views.LastSavedView = Backbone.View.extend({
   tagName: 'div',
 
-  className: 'last-saved',
+  className: 'last-saved container',
 
   initialize: function() {
     this.lastSaved = _.isUndefined(this.options.lastSaved) ? undefined : (_.isDate(this.options.lastSaved) ? this.options.lastSaved : new Date(this.options.lastSaved));
