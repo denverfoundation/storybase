@@ -219,7 +219,7 @@
 #app {
   height: 100%;
   /* Make space for the navbar */
-  padding-top: 40px;
+  padding-top: 80px;
 }
 
 /* Story Template List */
@@ -251,10 +251,12 @@
   width: 100%;
 }
 
-
 .builder {
   position: relative;
   height: 100%;
+  // Initial state of section list is opened, so set the padding
+  // enough to clear this element
+  padding-top: 60px;
 }
 
 .section-controls {
@@ -509,7 +511,6 @@
 
 #section-list {
   position: relative;
-  width: 100%;
   z-index: 999;
   background-color: @control-color-1;
   overflow: hidden;
@@ -534,7 +535,7 @@
 
 .sections-container {
   position: relative;
-  width: 65%;
+  width: 75%;
   float: left;
   overflow: hidden;
   background-color: @control-color-1;
@@ -681,7 +682,7 @@
   float: left;
   width: auto !important;
   position: absolute;
-  right: 0;
+  right: 20px;
   padding-top: @opened-padding;
 }
 
@@ -692,12 +693,14 @@
 /* Builder Navigation Buttons */
 
 #nav-container {
+  position: fixed;
+  width: 100%;
+  top: 40px;
   background-color: @control-color-1;
 }
 
 .workflow-nav {
   position: relative;
-  width: 100%;
   height: 35px;
   padding-top: @closed-padding;
   text-align: right;

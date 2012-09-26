@@ -166,10 +166,10 @@ storybase.builder.views.AppView = Backbone.View.extend({
     console.debug('Rendering main view');
     var activeView = this.getActiveView();
     var activeNavView = activeView.getNavView();
-    //this.$el.height($(window).height());
+    this.$('#nav-container').empty();
+    this.$('#nav-container').append(activeNavView.el);
+    activeNavView.$el.addClass('container');
     this.$('#app').empty();
-    this.$('#app').prepend('<div id="nav-container" class="container"></div>');
-    this.$('#app #nav-container').append(activeNavView.el);
     this.$('#app').append(activeView.render().$el);
     // Some views have things that only work when the element has been added
     // to the DOM. The pattern for handling this comes courtesy of
@@ -909,6 +909,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.dispatcher.on("save:story", this.setTitle, this);
     this.dispatcher.on("ready:story", this.setTitle, this);
     this.dispatcher.on("created:section", this.handleCreateSection, this);
+    this.dispatcher.on("toggle:sectionlist", this.handleToggleSectionList, this);
 
 
     if (!this.model.isNew()) {
@@ -1270,8 +1271,26 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
     this.$(this.options.titleEl).removeClass('error');
     return true;
-  }
+  },
 
+  /**
+   * Callback for toggling the section list from expanded to
+   * collapsed.
+   *
+   * This adjusts the padding of builder element so it has a consistent
+   * amount of padding regardless of the height of the section list.
+   */
+  handleToggleSectionList: function(state) {
+    if (_.isUndefined(this._initialPadding)) {
+      this._initialPadding = parseInt(this.$el.css('padding-top').replace('px', ''), 10);
+    }
+    if (state === "closed") {
+      this.$el.css('padding-top', 0);
+    }
+    else {
+      this.$el.css('padding-top', this._initialPadding);
+    }
+  }
 });
 
 storybase.builder.views.LastSavedView = Backbone.View.extend({
@@ -1918,6 +1937,7 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
     this.$el.toggleClass('opened');
     this.$el.toggleClass('closed');
     this.sectionNavView.$el.toggle();
+    this.dispatcher.trigger('toggle:sectionlist', this._state);
   }
 });
 
