@@ -1589,7 +1589,8 @@ storybase.builder.views.SectionNavView = Backbone.View.extend({
 
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
-    this._active = null; 
+    //this._active = 'story-info'; 
+    this._active = null;
     this._prev = null;
     this._next = null;
 
@@ -1630,6 +1631,7 @@ storybase.builder.views.SectionNavView = Backbone.View.extend({
         this._next = null;
       }
     }
+    console.debug(this._active, this._prev, this._next);
 
     this.render();
   },
@@ -1640,19 +1642,60 @@ storybase.builder.views.SectionNavView = Backbone.View.extend({
     this.updatePrevNext();
   },
 
+  /**
+   * Get a (pseudo) section's ID.
+   */
+  getId: function(value) {
+    if (_.isObject(value)) {
+      // Section is a model
+      if (value.isNew()) {
+        // It hasn't been saved, so return the client ID
+        return value.cid;  
+      }
+      else {
+        // Return the ID
+        return value.id;
+      }
+    }
+    else {
+      // Section is a pseudo-section ID, just return that string
+      return value;
+    }
+  },
+
   render: function() {
     var context = {
-      prevId: _.isObject(this._prev) ? this._prev.id : this._prev,
-      nextId: _.isObject(this._next) ? this._next.id : this._next
+      prevId: this.getId(this._prev),
+      nextId: this.getId(this._next)
     };
+    console.debug(context);
     this.$el.html(this.template(context));
     this.delegateEvents();
     return this;
   },
 
+  /**
+   * Lookup a (pseudo) section.
+   */
+  getSection: function(sectionId) {
+    var section;
+    // If the id is one of the pseudo-section ids, just return
+    // the id string
+    if (sectionId === 'story-info' || sectionId === 'call-to-action') {
+      return sectionId;
+    }
+    // Next, try to look up the section by the id 
+    section = this.model.sections.get(sectionId);
+    if (_.isUndefined(section)) {
+      // A matching section wasn't found. See if it's a client id
+      section = this.model.sections.getByCid(sectionId);
+    }
+    return section;
+  },
+
   handleClick: function(evt) {
     var sectionId = $(evt.target).attr('id');
-    var section = sectionId === 'story-info' || sectionId === 'call-to-action' ? sectionId : this.model.sections.get(sectionId);
+    var section = this.getSection(sectionId); 
     evt.preventDefault();
     this.dispatcher.trigger('select:section', section);
   }
