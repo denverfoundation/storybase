@@ -657,10 +657,23 @@
   height: 30px;
   padding-left: 20px;
   padding-top: @opened-padding;
+  font-weight: bold;
 }
 
 #section-list.closed #section-nav {
   padding-top: 10px;
+}
+
+#section-nav a {
+  color: #fff;
+}
+
+#section-nav .prev::before {
+  content: ' < ';
+}
+
+#section-nav .next::after {
+  content: ' > ';
 }
 
 #section-list .workflow-nav {
