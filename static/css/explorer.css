@@ -242,6 +242,7 @@ ul#view-selector li a {
 	background:#f3f3f3;
 	margin-bottom:11px;
 	margin-right:14px;
+	overflow:hidden;
 }
 #story-list.list li.story {
 	float:none;
