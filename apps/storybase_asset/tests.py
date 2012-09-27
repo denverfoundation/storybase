@@ -252,6 +252,14 @@ class HtmlAssetModelTest(TestCase):
         self.assertEqual(asset.display_title(),
                          truncatewords(striptags(asset.body), 4))
 
+    def test_string_representation_from_body_truncated(self):
+        """
+        Test that string representations made from the body are truncated
+        to 100 characters
+        """
+        asset = create_html_asset(type='text', title="", caption="", body='<script type="text/javascript" src="//ajax.googleapis.com/ajax/static/modules/gviz/1.0/chart.js">{"dataSourceUrl":"//docs.google.com/spreadsheet/tq?key=0AhWnhIC_xoBpdEpNQkRpdGN6V1FJQ1Y4NEVhQU83b1E&transpose=0&headers=1&range=R12%3AV20&gid=0&pub=1","options":{"vAxes":[{"title":"Cost in Dollars","useFormatFromData":true,"viewWindowMode":"pretty","gridlines":{"count":"10"},"viewWindow":{}},{"useFormatFromData":true,"viewWindowMode":"pretty","viewWindow":{}}],"title":"Cost Per Nutrients","booleanRole":"certainty","animation":{"duration":0},"hAxis":{"title":"\\"Food\\" Name","useFormatFromData":true,"viewWindowMode":"pretty","viewWindow":{}},"isStacked":false,"width":600,"height":371},"state":{},"chartType":"ColumnChart","chartName":"Chart 4"}</script>\n', status='published')
+        self.assertEqual(len(asset.__unicode__()), 100)
+
 
 class MockProviderTest(TestCase):
     def test_get_google_spreadsheet_embed(self):
