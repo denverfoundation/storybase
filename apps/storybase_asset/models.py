@@ -254,10 +254,14 @@ class ExternalAsset(Asset):
         return cls.oembed_providers.request(url, **extra_params)
 
     def __unicode__(self):
+        maxlength = 100
         if self.title:
             return self.title
         elif self.url:
-            return self.url
+            url = self.url 
+            if len(url) > maxlength:
+                url = url[0:maxlength] 
+            return url
         else:
             return "Asset %s" % self.asset_id
 
