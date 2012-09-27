@@ -228,6 +228,12 @@ class ExternalAssetModelTest(TestCase):
         response_data = ExternalAsset.get_oembed_response(url)
         self.assertIn('html', response_data)
 
+    def test_string_representation_from_url_truncated(self):
+        """Test that auto-generated string representations are truncated"""
+        url = "https://mail-attachment.googleusercontent.com/attachment/u/0/?ui=2&ik=7d10e7106d&view=att&th=139b9764517f43f5&attid=0.1&disp=inline&realattid=f_h704ppby0&safe=1&zw&saduie=AG9B_P-RVclBuCVY_NPm9GOGWp3O&sadet=1347459925218&sads=MMfkFunUT4iL-5L1SpqALCfYLGg&sadssc=1"
+        asset = create_external_asset(type='image', title='', url=url)
+        self.assertEqual(len(asset.__unicode__()), 100)
+
 
 class HtmlAssetModelTest(TestCase):
     def test_string_representation_from_title(self):
@@ -251,6 +257,14 @@ class HtmlAssetModelTest(TestCase):
         translation.save()
         self.assertEqual(asset.display_title(),
                          truncatewords(striptags(asset.body), 4))
+
+    def test_string_representation_from_body_truncated(self):
+        """
+        Test that string representations made from the body are truncated
+        to 100 characters
+        """
+        asset = create_html_asset(type='text', title="", caption="", body='<script type="text/javascript" src="//ajax.googleapis.com/ajax/static/modules/gviz/1.0/chart.js">{"dataSourceUrl":"//docs.google.com/spreadsheet/tq?key=0AhWnhIC_xoBpdEpNQkRpdGN6V1FJQ1Y4NEVhQU83b1E&transpose=0&headers=1&range=R12%3AV20&gid=0&pub=1","options":{"vAxes":[{"title":"Cost in Dollars","useFormatFromData":true,"viewWindowMode":"pretty","gridlines":{"count":"10"},"viewWindow":{}},{"useFormatFromData":true,"viewWindowMode":"pretty","viewWindow":{}}],"title":"Cost Per Nutrients","booleanRole":"certainty","animation":{"duration":0},"hAxis":{"title":"\\"Food\\" Name","useFormatFromData":true,"viewWindowMode":"pretty","viewWindow":{}},"isStacked":false,"width":600,"height":371},"state":{},"chartType":"ColumnChart","chartName":"Chart 4"}</script>\n', status='published')
+        self.assertEqual(len(asset.__unicode__()), 100)
 
 
 class MockProviderTest(TestCase):

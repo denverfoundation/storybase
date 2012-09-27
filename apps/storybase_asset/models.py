@@ -254,10 +254,14 @@ class ExternalAsset(Asset):
         return cls.oembed_providers.request(url, **extra_params)
 
     def __unicode__(self):
+        maxlength = 100
         if self.title:
             return self.title
         elif self.url:
-            return self.url
+            url = self.url 
+            if len(url) > maxlength:
+                url = url[0:maxlength] 
+            return url
         else:
             return "Asset %s" % self.asset_id
 
@@ -368,10 +372,16 @@ class HtmlAsset(Asset):
 
     def __unicode__(self):
         """ String representation of asset """
+        maxlength = 100
         if self.title:
             return self.title
         elif self.body:
-            return truncate_words(strip_tags(mark_safe(self.body)), 4)
+            title = truncate_words(strip_tags(mark_safe(self.body)), 4)
+            # Workaround for cases when there's javascript in the body
+            # with no spaces
+            if len(title) > maxlength:
+                title = title[0:maxlength]
+            return title
         else:
             return 'Asset %s' % self.asset_id
 
