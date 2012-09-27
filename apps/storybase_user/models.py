@@ -13,7 +13,7 @@ from storybase.fields import ShortTextField
 from storybase.managers import FeaturedManager
 from storybase.models import (TimestampedModel, TranslatedModel,
                               TranslationModel)
-from storybase.utils import slugify
+from storybase.utils import unique_slugify
 
 ADMIN_GROUP_NAME = getattr(settings, 'ADMIN_GROUP_NAME', 'CA Admin')
 """Default name of the administrator group"""
@@ -94,7 +94,7 @@ def set_organization_slug(sender, instance, **kwargs):
     Should be connected to OrganizationTranslation's post_save signal.
     """
     if not instance.organization.slug:
-        instance.organization.slug = slugify(instance.name)
+        unique_slugify(instance.organization, instance.name)
 	instance.organization.save()
 
 # Hook up some signal handlers
@@ -181,7 +181,7 @@ def set_project_slug(sender, instance, **kwargs):
     Should be connected to ProjectTranslation's post_save signal.
     """
     if not instance.project.slug:
-        instance.project.slug = slugify(instance.name)
+        unique_slugify(instance.project, instance.name)
 	instance.project.save()
 
 # Hook up some signal handlers
