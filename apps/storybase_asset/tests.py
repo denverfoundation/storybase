@@ -228,6 +228,12 @@ class ExternalAssetModelTest(TestCase):
         response_data = ExternalAsset.get_oembed_response(url)
         self.assertIn('html', response_data)
 
+    def test_string_representation_from_url_truncated(self):
+        """Test that auto-generated string representations are truncated"""
+        url = "https://mail-attachment.googleusercontent.com/attachment/u/0/?ui=2&ik=7d10e7106d&view=att&th=139b9764517f43f5&attid=0.1&disp=inline&realattid=f_h704ppby0&safe=1&zw&saduie=AG9B_P-RVclBuCVY_NPm9GOGWp3O&sadet=1347459925218&sads=MMfkFunUT4iL-5L1SpqALCfYLGg&sadssc=1"
+        asset = create_external_asset(type='image', title='', url=url)
+        self.assertEqual(len(asset.__unicode__()), 100)
+
 
 class HtmlAssetModelTest(TestCase):
     def test_string_representation_from_title(self):
