@@ -1,6 +1,5 @@
 {% load threadedcomments_tags storybase_user_tags i18n %}
 <section id="comments" class="comments">
-<header><h2>{% trans "Comments" %}</h2></header>
 {% get_comment_list for story as comment_list flat %}
 <ul class="comments-list">
 {% for comment in comment_list %}
@@ -20,9 +19,9 @@
 </ul>
 <div id="comment-form">
   {% if user.is_authenticated %}
+  {# TODO: Clean up the comment form #}
   {% render_comment_form for story %}  
   {% else %}
-  {# TODO: Show link to login/register #}
   <p>
     <a href="{% url auth_login %}?next={{ story.get_absolute_url }}#comment-form">{% trans "Log in" %}</a> {% trans "or" %} <a href="{% url registration_register %}">{% trans "register" %}</a> {% trans "to comment" %}
   </p>
