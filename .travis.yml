@@ -10,6 +10,7 @@ postgres:
   database: atlas_travis
   username: postgres
 before_install:
+  - "sudo apt-get update"
   - "sudo apt-get install gdal-bin libproj-dev postgis postgresql-9.1-postgis"
   - "sudo apt-get install openjdk-6-jdk solr-jetty" 
   - "sudo bash ./scripts/create_template_postgis-debian.sh"
