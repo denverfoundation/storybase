@@ -239,8 +239,12 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
 
     def render_featured_asset(self, format='html'):
         """Render a representation of the story's featured asset"""
-        try:
-            featured_asset = self.get_featured_asset()
+        featured_asset = self.get_featured_asset()
+        if featured_asset is None:
+            # No featured assets
+            # TODO: Display default image
+            return ''
+        else:
             # TODO: Pick default size for image
             # Note that these dimensions are the size that the resized
             # image will fit in, not the actual dimensions of the image
@@ -254,10 +258,6 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
                 thumbnail_options.update({'html_class': 'featured-asset'})
             return featured_asset.render_thumbnail(format=format, 
                                                    **thumbnail_options)
-        except IndexError:
-            # No featured assets
-            # TODO: Display default image
-            return '' 
 
     def featured_asset_thumbnail_url(self):
         """Return the URL of the featured asset's thumbnail
@@ -265,12 +265,12 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
         Returns None if the asset cannot be converted to a thumbnail image.
 
         """
-        try:
-            featured_asset = self.get_featured_asset()
-            return featured_asset.get_thumbnail_url(include_host=True)
-        except IndexError:
+        featured_asset = self.get_featured_asset()
+        if featured_asset is None:
             # No featured assets
             return None
+        else:
+            return featured_asset.get_thumbnail_url(include_host=True)
 
     def render_story_structure(self, format='html'):
         """Render a representation of the Story structure"""

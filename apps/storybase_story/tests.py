@@ -265,6 +265,28 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
         story.save()
         self.assertEqual(story.assets.count(), 1)
 
+    def test_render_featured_asset_empty(self): 
+        """
+        Test that Story.render_featured_assets returns an empty string
+        when the story has no featured assets and there isn't an
+        acceptable default.
+        """
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status='published')
+        self.assertEqual(story.assets.count(), 0)
+        self.assertEqual(story.render_featured_asset(), '')
+
+    def test_get_featured_asset_thumbnail_url_empty(self):
+        """
+        Test that Story.featured_asset_thumbnail_url returns None 
+        when the story has no featured assets and there isn't an
+        acceptable default.
+        """
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status='published')
+        self.assertEqual(story.assets.count(), 0)
+        self.assertEqual(story.featured_asset_thumbnail_url(), None)
+
 
 class StoryPermissionTest(TestCase):
     """Test case for story permissions"""
