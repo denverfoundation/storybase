@@ -1,0 +1,26 @@
+.sidebar {
+	li {
+		color:#4a4a4a; 
+		font-family: 'MuseoSlab500Regular';
+		
+		a {
+			color:@orange;
+		}
+	}
+	
+	.sibling-nav li {
+		a {
+			font-size:20px; 
+			line-height:22px; 
+			font-family: 'MuseoSlab500Regular'; 
+			white-space:nowrap;
+		}
+		
+		&.selected a,
+		a:hover {
+			background:url('images/arrow-nav.png') no-repeat right center;
+			padding-right:17px;
+			text-decoration:none;
+		}
+	} 
+}
