@@ -1711,7 +1711,7 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
   templateSource: $('#section-list-template').html(),
 
   events: {
-    'click .spacer': 'clickSpacer',
+    'click .spacer .add-section': 'clickAddSection',
     'click #toggle-section-list': 'toggleList',
     'sortupdate': 'handleSort',
     'mousedown .scroll-right': 'scrollRight',
@@ -1842,6 +1842,12 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
     if (this.navView) {
       this.$el.append(this.navView.el);
     }
+    // Add tooltip for section adding icon
+    if (jQuery().tooltipster) {
+      this.$('.tooltip').tooltipster({
+        position: 'top'
+      });
+    }
     this.delegateEvents();
 
     return this;
@@ -1909,7 +1915,7 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
    *
    * Initiates adding a section.
    */
-  clickSpacer: function(evt) {
+  clickAddSection: function(evt) {
     evt.stopPropagation(); 
     var index = $(evt.currentTarget).data('index');
     this.addNewSection(index);
