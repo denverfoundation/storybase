@@ -87,6 +87,7 @@ class SectionAssetInline(admin.TabularInline):
     """
     model = SectionAsset
     extra = 0
+    raw_id_fields = ["asset"]
 
 
 class SectionTranslationInline(StorybaseStackedInline):
