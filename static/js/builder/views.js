@@ -1061,8 +1061,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
         ],
         position: 3,
         id: 'section-list-guider',
-        title: gettext("Section List"),
-        description: gettext("This bar shows a list of all the sections in the story. You can use it to select which section you want to edit, to add sections, and to remove sections"),
+        title: gettext("This is your table of contents."),
+        description: gettext("This bar shows the sections in your story. You can hide the bar by clicking on the tab that says “Story Sections.”"),
         next: 'section-thumbnail-guider'
       });
       guiders.createGuider({
@@ -1079,8 +1079,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
         ],
         position: 2,
         id: 'section-thumbnail-guider',
-        title: gettext("Select a Section"),
-        description: gettext("Clicking on one of the sections will let you edit that section"),
+        title: gettext("Select the section you want to edit."),
+        description: gettext("Click on a section to edit it. The section you are actively editing is highlighted."),
         prev: 'section-list-guider',
         next: 'workflow-step-guider'
       });
@@ -1098,8 +1098,12 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
         ],
         position: 6,
         id: 'workflow-step-guider',
-        title: gettext("Workflow Step"),
-        description: gettext("Clicking on one of these tabs lets you switch between the different steps in the story building process"),
+        title: gettext("Building a story takes five simple steps."),
+        description: gettext("<p>Clicking on these tabs lets you switch between the different steps in the story building process. You can always move freely between the steps.</p><ul><li><strong>Build</strong> - Construct your story using text, photos, videos, data visualizations, and other materials.</li>
+<li><strong>Add Data</strong> - Upload or link to source data referenced in your story’s charts, maps, graphs and visualizations.</li>
+<li><strong>Tag</strong> - Label your story with topics and places so that people can easily discover it on Floodlight.</li>
+<li><strong>Review</strong> - Make sure your story is ready to go with spellcheck and other tools.</li>
+<li><strong>Publish/Share</li> - Post your story to Floodlight and your social networks.</li></ul>"),
         next: 'help-guider'
       });
       guiders.createGuider({
@@ -1116,8 +1120,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
         ],
         position: 6,
         id: 'help-guider',
-        title: gettext("Help"),
-        description: gettext("Clicking the help button shows you help for the story section you're currently editing"),
+        title: gettext("Get tips on how to make a great story."),
+        description: gettext("Clicking the “Help” button shows you tips for the section you're currently editing."),
         onShow: function() {
           that.dispatcher.trigger('do:show:help', true);
         },
@@ -1136,8 +1140,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
         ],
         position: 3,
         id: 'tooltip-guider',
-        title: gettext("Tooltips"),
-        description: gettext("You can find out more about many of the buttons and the links by hovering your mouse over the object"),
+        title: gettext("Need even more tips?"),
+        description: gettext("You can find out more about many of the buttons and links by hovering over them with your mouse. You can also hover over the “Help” icons."),
         onShow: function() {
           $('.workflow-step #build').triggerHandler('mouseover');
         },
