@@ -22,7 +22,7 @@ from storybase.fields import ShortTextField
 from storybase.models import (LicensedModel, PermissionMixin, 
     PublishedModel, TimestampedModel, TranslatedModel, TranslationModel,
     set_date_on_published)
-from storybase.utils import slugify
+from storybase.utils import unique_slugify
 from storybase_asset.models import Asset, DataSet, ASSET_TYPES
 from storybase_help.models import Help
 from storybase_user.models import Organization, Project
@@ -413,7 +413,7 @@ def set_story_slug(sender, instance, **kwargs):
     """
     try:
         if not instance.story.slug:
-            instance.story.slug = slugify(instance.title)
+            unique_slugify(instance.story, instance.title)
         instance.story.save()
     except Story.DoesNotExist:
         # Instance doesn't have a related story.

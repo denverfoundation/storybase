@@ -287,6 +287,35 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
         self.assertEqual(story.assets.count(), 0)
         self.assertEqual(story.featured_asset_thumbnail_url(), None)
 
+    def test_unique_slug(self):
+        """
+        Test that the unique_slug function works for the Story model's
+        title.
+        """
+        # While unique_slug lives in the storybase app, I test it here
+        # because this is the app where the relevent models live
+        from storybase.utils import unique_slugify
+        story = create_story(title="Test Story", summary="Test Summary",
+            byline="Test Byline")
+        self.assertEqual(story.slug, "test-story")
+        story2 = create_story(title="Test Story", summary="Test Summary 2",
+            byline="Test Byline 2", slug="non-colliding-slug")
+        self.assertEqual(story2.slug, "non-colliding-slug")
+        unique_slugify(story2, story2.title)
+        self.assertEqual(story2.slug, "test-story-2")
+
+    def test_auto_unique_slug(self):
+        """
+        Test that a story's slug is automatically set to a unique value.
+        """
+        story = create_story(title="Test Story", summary="Test Summary",
+            byline="Test Byline")
+        self.assertEqual(story.slug, "test-story")
+        story2 = create_story(title="Test Story", summary="Test Summary 2",
+            byline="Test Byline 2")
+        self.assertEqual(story2.slug, "test-story-2")
+        self.assertEqual(Story.objects.filter(slug="test-story").count(), 1)
+
 
 class StoryPermissionTest(TestCase):
     """Test case for story permissions"""
