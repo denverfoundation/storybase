@@ -35,7 +35,7 @@
 		
 	}
 	
-	form {
+	form#search {
 		padding-top:12px;
 		
 		input {
@@ -48,6 +48,13 @@
 				color:#535353;
 				font-family: 'Museo300Regular';
 				padding:8px 0 8px 5px;
+
+				// override site-wide default form styling
+				border: none;
+				border-radius: 0;
+				box-shadow: none;
+				font-style:normal;
+				
 			}
 			
 			&.submit { 
@@ -56,6 +63,9 @@
 				background:url('../img/search.png') no-repeat right 0;
 				border:0;
 				cursor:pointer;
+
+				// override site-wide default form styling
+				border-radius: 0;
 			}
 		}
 	}
