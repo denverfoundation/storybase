@@ -1,4 +1,4 @@
-{% load cms_tags i18n %}
+{% load i18n %}
 
 {% comment %}
 context:
@@ -8,19 +8,20 @@ context:
 	title
 	author
 	date
-	image_url
+	image_html
 	excerpt
+    url
 	
 {% endcomment %}
 <ul class="slides">
 	{% for object in objects %}
 	<li>
 		<div class="image">
-			<img src="{{ STATIC_URL }}{{ object.image_url }}" alt="" />
+            {{ object.image_html|safe }}
 		</div>
 		<div class="text">
-			<h5>{{ object.title }}</h5>
-			<p class="byline"><span class="author">{{ object.author }}</span><span class="date">{{ object.date }}</span></p>
+            <h5><a href="{{ object.url }}" title="{{ object.title }}">{{ object.title }}</a></h5>
+            <p class="byline">{% if object.author %}<span class="author">{{ object.author }}</span> {% endif %}<span class="date">{{ object.date|date:"F j, Y" }}</span></p>
 			<p>{{ object.excerpt }}</p>
 			<p class="more"><a href="{{ more_link_url }}">{{ more_link_text }}</a></p>
 		</div>
