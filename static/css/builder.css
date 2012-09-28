@@ -169,6 +169,7 @@
   top: 40px;
   position: fixed;
   width: 100%;
+  z-index: 1001;
 }
 #builder .alert {
   padding: 1%;
@@ -178,7 +179,7 @@
   height: 100%;
   /* Make space for the navbar */
 
-  padding-top: 40px;
+  padding-top: 80px;
 }
 /* Story Template List */
 .story-templates {
@@ -203,10 +204,8 @@
   position: relative;
   height: 100%;
 }
-.section-controls,
-.last-saved {
+.section-controls {
   position: absolute;
-  top: 0;
   padding: 1% 0;
   min-width: 755px;
   max-width: 1140px;
@@ -219,9 +218,14 @@
   top: 0;
 }
 .last-saved {
+  position: fixed;
+  bottom: 0;
   width: 100%;
-  right: 0;
-  text-align: right;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  background-color: #666666;
+  color: #fff;
+  z-index: 999;
 }
 /* Unused Assets List */
 .unused-assets {
@@ -301,7 +305,7 @@
   margin-left: auto;
   margin-right: auto;
   height: 70%;
-  padding: 2%;
+  padding: 2% 2% 1% 2%;
 }
 .edit-section .section-title {
   margin-top: 15px;
@@ -316,14 +320,19 @@
 .section-edit-layout .wysihtml5-sandbox {
   border: none !important;
 }
+#builder .section-layout {
+  overflow: visible;
+}
 .storybase-container-placeholder {
   position: relative;
-  height: 94%;
-  min-height: 400px;
+}
+.storybase-container-placeholder .wrapper {
   border: solid 1px #c8c8c8;
   overflow: hidden;
+  height: 94%;
+  min-height: 400px;
 }
-.storybase-container-placeholder.select {
+.storybase-container-placeholder.select .wrapper {
   padding: 2%;
 }
 .storybase-container-placeholder.display {
@@ -333,6 +342,19 @@
 .storybase-container-placeholder#top,
 .storybase-container-placeholder#middle {
   margin-bottom: 10px;
+}
+.storybase-container-placeholder .help {
+  display: block;
+  position: absolute;
+  left: -38px;
+}
+.storybase-container-placeholder#right .help {
+  left: auto;
+  right: -38px;
+}
+.asset-help-container {
+  background-color: #fff;
+  max-width: 450px;
 }
 .storybase-container-placeholder [name=body] {
   /* TODO: Figure out a better way to set height */
@@ -374,34 +396,30 @@
   width: 100%;
   font-weight: bold;
 }
-/* Table of contents thumbnails */
 #section-list {
-  position: fixed;
-  width: 100%;
-  left: 0;
-  bottom: 0;
-  z-index: 998;
+  position: relative;
+  z-index: 999;
+  background-color: #666666;
+  overflow: hidden;
 }
 #toggle-section-list {
-  padding: 4px;
-  margin-left: 8px;
+  display: block;
+  float: left;
+  padding: 10px;
   font-weight: bold;
   text-decoration: none;
-  border-radius: 4px 4px 0 0;
-  background-color: #666666;
   color: #fff;
 }
-#toggle-section-list.opened::after {
+.opened #toggle-section-list::after {
   content: ' - ';
 }
-#toggle-section-list.closed::after {
+.closed #toggle-section-list::after {
   content: ' + ';
-}
-.sections-container-border {
-  border-top: 4px solid #666666;
 }
 .sections-container {
   position: relative;
+  width: 75%;
+  float: left;
   overflow: hidden;
   background-color: #666666;
   padding: 0 10px;
@@ -451,12 +469,12 @@
   margin: 10px 0;
   padding: 1% 0;
   text-align: center;
-  cursor: pointer;
 }
 .section-thumbnail {
   width: 120px;
   border: 1px solid #000;
   background-color: #fff;
+  cursor: pointer;
 }
 .section-thumbnail .title {
   padding: 22% 0;
@@ -466,11 +484,14 @@
 }
 .spacer:hover {
   width: 120px;
-  border: 1px solid #000;
-  margin: 10px;
-  cursor: pointer;
-  background-color: #C8C8C8;
+  margin: 8px;
   color: #fff;
+}
+.spacer .add-section {
+  color: #fff;
+  font-weight: bold;
+  text-decoration: none;
+  font-size: 2em;
 }
 .spacer div {
   display: none;
@@ -501,15 +522,48 @@
 .section-thumbnail:hover .remove {
   display: block;
 }
-/* Builder Navigation Buttons */
-.workflow-nav {
-  position: fixed;
+#section-nav {
+  float: left;
+  width: 65%;
+  height: 30px;
+  padding-left: 20px;
+  padding-top: 39px;
+  font-weight: bold;
+}
+#section-list.closed #section-nav {
+  padding-top: 10px;
+}
+#section-nav a {
+  color: #fff;
+}
+#section-nav .prev::before {
+  content: ' < ';
+}
+#section-nav .next::after {
+  content: ' > ';
+}
+#section-list .workflow-nav {
+  float: left;
+  width: auto !important;
+  position: absolute;
   right: 20px;
-  bottom: 20px;
-  padding: 20px;
+  padding-top: 39px;
+}
+#section-list.closed .workflow-nav {
+  padding-top: 5px;
+}
+/* Builder Navigation Buttons */
+#nav-container {
+  position: fixed;
+  width: 100%;
+  top: 40px;
+  background-color: #666666;
+}
+.workflow-nav {
+  position: relative;
+  height: 35px;
+  padding-top: 5px;
   text-align: right;
-  border-radius: 4px;
-  background-color: rgba(102, 102, 102, 0.5);
 }
 /* Add Data View */
 .datasets {
@@ -613,4 +667,27 @@ input[name=address] {
 .addthis_toolbox {
   display: inline-block;
   padding: 0;
+}
+#featured-asset {
+  position: relative;
+}
+#featured-asset img {
+  max-width: 50%;
+}
+#featured-asset .featured-asset-controls {
+  margin: 0;
+  padding: 10px 10px 0 0;
+  list-style: none outside none;
+  background-color: #fff;
+  z-index: 999;
+}
+#featured-asset .featured-asset-controls li {
+  display: inline-block;
+}
+#featured-asset .assets {
+  padding: 0;
+  list-style: none outside none;
+}
+#featured-asset .assets .asset {
+  padding: 8px 0;
 }

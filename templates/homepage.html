@@ -23,49 +23,47 @@
 			<div class="flexslider">
 				<ul class="slides">
 					<li>
-						<h2><span>{% placeholder intro-carousel-title-1 or %}Tell Your Story. Transform Community.{% endplaceholder %}</span></h2>
+						<h2><span>{% placeholder intro-carousel-title-1 or %}{% trans "Tell your story. Transform our community." %}{% endplaceholder %}</span></h2>
 						{% placeholder intro-carousel-content-1 or %}
 						<p>
-							Your story matters. Without it, nothing happens. Floodlight will help you build, tell and share
-powerful stories that will make community change possible. <a href="#"><em>Learn how.</em></a>
+                        {% trans "Your story matters. Without it, nothing happens. Floodlight will help you build, tell and share  powerful stories that will make community change possible." %} <a href="{% url story_builder %}"><em>{% trans "Create your story now." %}</em></a> {% trans "Or" %}, <a href="{% url explore_stories %}"><em>{% trans "see the stories others are sharing." %}</em>
 						</p>
 						{% endplaceholder %}
 						<div class="page-nav">
 							<ul>
-								<li><a href="#" class="left-nav" rel="2">Build a Story</a></li>
-								<li><span class="sep"></span><a href="#" class="right-nav" rel="2">Explore Stories</a></li>
+                                <li><a href="#" class="left-nav" rel="2">{% trans "Explore Stories" %}</a></li>
+                                <li><span class="sep"></span><a href="#" class="right-nav" rel="2">{% trans "Build a Story" %}</a></li>
 							</ul>
 							<div class="cl"> </div>
 						</div>
 					</li>
 					<li>
-						<h2><span>{% placeholder intro-carousel-title-2 or %}Build a breakthrough story.{% endplaceholder %}</span></h2>
+						<h2><span>{% placeholder intro-carousel-title-2 or %}{% trans "Build a breakthrough story." %}{% endplaceholder %}</span></h2>
 						{% placeholder intro-carousel-content-2 or %}
 						<p>
-							Take your storytelling to the next level. Create visually compelling stories with photos, videos,
-data and more. Tell better stories by leveraging public data in creative ways. <a href="#"><em>Learn how.</em></a>
+                        {% trans "Take your storytelling to the next level. Create visually compelling stories with photos, videos, data and more. Learn how to tell better stories by leveraging public data in creative ways." %} <a href="{% url story_builder %}"><em>{% trans "Create your story now." %}</em></a> {% trans "Or" %}, <a href="#">{% trans "build your storytelling skills" %}</a>
+                           
 						</p>
 						{% endplaceholder %}
 						<div class="page-nav">
 							<ul>
-								<li><a href="#" class="left-nav" rel="2">Empower</a></li>
-								<li><span class="sep"></span><a href="#" class="right-nav" rel="2">Tell Your Story</a></li>
+                                <li><a href="#" class="left-nav" rel="2">{% trans "Your Story Matters" %}</a></li>
+                                <li><span class="sep"></span><a href="#" class="right-nav" rel="2">{% trans "Explrore Stories" %}</a></li>
 							</ul>
 							<div class="cl"> </div>
 						</div>
 					</li>
 					<li>
-						<h2><span>{% placeholder intro-carousel-title-3 or %}Build a breakthrough story.{% endplaceholder %}</span></h2>
+                    	<h2><span>{% placeholder intro-carousel-title-3 or %}{% trans "See and show your community in a new light." %}{% endplaceholder %}</span></h2>
 						{% placeholder intro-carousel-content-3 or %}
 						<p>
-							Take your storytelling to the next level. Create visually compelling stories with photos, videos,
-data and more. Tell better stories by leveraging public data in creative ways. <a href="#"><em>Learn how.</em></a>
+                        {% trans "Explore the stories others are sharing and discover new meaning in your neighborhood. Floodlight is where stories become movements." %} <strong><em>{% trans "Because what we can’t see, we can’t change." %}</em></strong>
 						</p>
 						{% endplaceholder %}
 						<div class="page-nav">
 							<ul>
-								<li><a href="#" class="left-nav" rel="2">Empower</a></li>
-								<li><span class="sep"></span><a href="#" class="right-nav" rel="2">Tell Your Story</a></li>
+                                <li><a href="#" class="left-nav" rel="2">{% trans "Build a Story" %}</a></li>
+                                <li><span class="sep"></span><a href="#" class="right-nav" rel="2">{% trans "Your Story Matters" %}</a></li>
 							</ul>
 							<div class="cl"> </div>
 						</div>

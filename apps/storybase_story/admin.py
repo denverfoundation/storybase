@@ -9,7 +9,8 @@ from storybase_asset.models import Asset
 from storybase_story.models import (Story, StoryTranslation,
     Section, SectionTranslation, SectionAsset, SectionRelation,
     StoryTemplate, StoryTemplateTranslation,
-    SectionLayout, SectionLayoutTranslation, Container)
+    SectionLayout, SectionLayoutTranslation,
+    Container, ContainerTemplate)
 from storybase_story.forms import (SectionRelationAdminForm,
 		                   StoryAdminForm, InlineSectionAdminForm,
 		                   StoryTranslationAdminForm)
@@ -87,6 +88,7 @@ class SectionAssetInline(admin.TabularInline):
     """
     model = SectionAsset
     extra = 0
+    raw_id_fields = ["asset"]
 
 
 class SectionTranslationInline(StorybaseStackedInline):
@@ -116,7 +118,7 @@ class SectionAdmin(StorybaseModelAdmin):
     list_display = (obj_title, 'story', 'root')
 # TODO: Enable this on switch to Django 1.4
 #    list_filter = (SectionStoryTitleListFilter, 'root')
-    list_filter = ('story__storytranslation__title', 'root')
+    list_filter = ('story__storytranslation__title', 'root', 'story__is_template')
     search_fields = ['sectiontranslation__title']
     readonly_fields = ['section_id']
     raw_id_fields = ["help"]
@@ -154,9 +156,14 @@ class SectionLayoutAdmin(StorybaseModelAdmin):
     prefix_inline_classes = ['SectionLayoutTranslationInline']
 
 
+class ContainerTemplateAdmin(StorybaseModelAdmin):
+    raw_id_fields = ("template", "section")
+
+
 admin.site.register(Story, StoryAdmin)
 admin.site.register(StoryTemplate, StoryTemplateAdmin)
 admin.site.register(Section, SectionAdmin)
 admin.site.register(SectionRelation, SectionRelationAdmin)
 admin.site.register(SectionLayout, SectionLayoutAdmin)
 admin.site.register(Container, StorybaseModelAdmin)
+admin.site.register(ContainerTemplate, ContainerTemplateAdmin)

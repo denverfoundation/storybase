@@ -1,0 +1,10 @@
+.comments-list {
+  padding: 0;
+}
+.comment {
+  margin: 5px 0;
+  padding: 5px;
+}
+.comment-user-name {
+  font-weight: bold;
+}

@@ -12,7 +12,22 @@
 <meta property="og:url" content="{{ story.get_full_url }}" />
 <meta property="og:title" content="{{ story.title }}" />
 <meta property="og:description" content="{{ story.summary }}" />
+{% comment %}
 <meta property="og:image" content="{{ story.featured_asset_thumbnail_url }}" />
+{% endcomment %}
+{% endblock %}
+
+{% block extrahead %}
+    {% comment %}
+    In development, use Javascript to compile the LESS to CSS. In
+    production, assume they've been pre-compiled/collected.
+    {% endcomment %}
+    {% if debug %}
+    {% addtoblock "css" %}<link rel="stylesheet/less" href="{{ STATIC_URL }}less/comments.less">{% endaddtoblock %}
+    {% addtoblock "css" %}<script src="{{ STATIC_URL }}js/libs/less-1.3.0.min.js"></script>{% endaddtoblock %}
+    {% else %}
+    {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/comments.css">{% endaddtoblock %}
+    {% endif %}
 {% endblock %}
 
 {% block above_content %}
@@ -30,8 +45,7 @@
 						<p class="byline">{% trans "By" %} <span class="author">{{ story.byline }}</span></p>
 					</header>
 					<section class="object-featured-asset">
-						{# TODO: wire in real asset #}
-						<img src="{{ story.featured_asset_thumbnail_url }}" title="temp asset">
+						{{ story.render_featured_asset }}
 					</section>
 					<section class="object-summary">
 						<section class="summary">
@@ -64,6 +78,7 @@
 				<section class="citizen-comments content-block">
 					<h4>{% trans "Citizen Comments" %}</h4>
 					{# TODO: comment view #}
+                    {% include "storybase_story/story_comments.html" %} 
 				</section>
 				
 			</div>

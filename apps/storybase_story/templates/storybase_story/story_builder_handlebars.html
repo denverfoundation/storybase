@@ -27,6 +27,17 @@ Handlebars.js templates for story builder Backbone application
 <a id="{{id}}" class="{{class}} btn" href="{{href}}">{{text}}</a>
 </script>
 
+<script type="text/x-handlebars-template" id="story-template-list-template">
+<h2>{{gettext message="Choose a template to start building your story."}}</h2>
+<p class="introduction">{{#blockgettext}}
+A template is a tried and true story structure you can populate with your own pictures, text, media, data and more.
+<br />
+Some templates are better for video, some for data, and some for text. Some templates are short and sweet, others are lengthier and more involved. Below, we’ve given you some tips for picking a template based on the time it takes and the type of story you are telling. You can also get to know a template by exploring stories people have made with it.
+<br />
+You can <strong>customize</strong> some templates by adding and reordering sections, and you can always <strong>start over</strong> by choosing a new template.
+{{/blockgettext}}</p>
+</script>
+
 <script type="text/x-handlebars-template" id="story-template-template">
 <h3><a href="#">{{title}}</a></h3>
 {{#if tag_line}}
@@ -37,8 +48,7 @@ Handlebars.js templates for story builder Backbone application
 </script>
 
 <script type="text/x-handlebars-template" id="section-list-template">
-<a id="toggle-section-list" class="opened" href="#">{{gettext message="Story Sections"}}</a>
-<div class="sections-container-border">
+<a id="toggle-section-list" href="#"></a>
 <div class="sections-container">
     <a class="scroll-left"><</a>
     <div class="sections-clip">
@@ -46,19 +56,23 @@ Handlebars.js templates for story builder Backbone application
     </div>
     <a class="scroll-right">></a>
 </div>
-</div>
+</script>
+
+<script type="text/x-handlebars-template" id="section-nav-template">
+{{#if prevId}}<a id="{{prevId}}" class="prev" href="#">{{gettext message="Edit previous section"}}</a>{{/if}}
+{{#if nextId}}<a id="{{nextId}}" class="next" href="#">{{gettext message="Edit next section"}}</a>{{/if}}
 </script>
 
 <script type="text/x-handlebars-template" id="section-thumbnail-template">
 {{#if index}}
-<div class="spacer" data-index="{{index}}"><div><span>{{gettext message="Add a section"}}</span></div></div>
+<div class="spacer"><div><a class="add-section tooltip" data-index="{{index}}" title='{{gettext message="Add a section"}}' href="#">+</a></div></div>
 {{/if}}
 <div class="section-thumbnail{{#if isNew}} new{{/if}}">
 {{#if id}}<a class="remove" href="#" title='{{gettext message="Remove section"}}'>x</a>{{/if}}
 <div class="title">{{ title }}</div>
 </div>
 {{#if nextIndex}}
-<div class="spacer" data-index="{{nextIndex}}"><div><span>{{gettext message="Add a section"}}</span><div></div>
+<div class="spacer"><div><a class="add-section tooltip" data-index="{{nextIndex}}" title='{{gettext message="Add a section"}}' href="#">+</a></div></div>
 {{/if}}
 </script>
 
@@ -105,7 +119,8 @@ Handlebars.js templates for story builder Backbone application
             <textarea class="call-to-action" name="call_to_action" placeholder='{{gettext message="Click to edit the call to action"}}'>{{call_to_action}}</textarea>
         </div>
         <div class="right">
-            <p>{{#blockgettext}}TODO: Add description of connected stories feature{{/blockgettext}}</p>
+            <h3>{{gettext message="Create a Connected Story to collect audience feedback"}}</h3>
+            <p>{{#blockgettext}}Give your readers a clear way to contribute by asking them to add a mini Photovoice story. Prompt your readers with a specific question they can answer through a photo and a caption. {{/blockgettext}}</p>
             <div>
                 <input class="connected" name="allow_connected" type="checkbox" {{#if allow_connected}}checked="checked" {{/if}}/>
                 <label for="allow_connected">{{gettext message="Make this a Connected Story"}}</label> 
@@ -135,28 +150,85 @@ Handlebars.js templates for story builder Backbone application
 </script>
 
 <script type="text/x-handlebars-template" id="section-asset-select-type-template">
-<h3>Select Asset Type</h3>
-<ul class="asset-types">
-    {{#each assetTypes}}
-    <li><a href="#" class="asset-type" data-asset-type="{{type}}">{{name}}</a></li>
-    {{/each}}
-</ul>
+<a href="#" class="help">{{gettext message="Help"}}</a></li>
+<div class="wrapper">
+    {{#if defaultType}}
+    <p><a href="#" class="asset-type" data-asset-type="{{{defaultType.type}}}">{{gettext message="Click to add your"}} {{{defaultType.name}}}</a></p>
+    {{/if}}
+    {{#if assetTypes}}
+    <p>
+    {{#if defaultType}}
+    {{gettext message="Or, select a different:"}}
+    {{else}}
+    {{gettext message="Select a:"}}
+    {{/if}}
+    </p>
+    <ul class="asset-types">
+        {{#each assetTypes}}
+        <li><a href="#" class="asset-type" data-asset-type="{{type}}">{{name}}</a></li>
+        {{/each}}
+    </ul>
+    {{/if}}
+</div>
 </script>
 
 <script type="text/x-handlebars-template" id="section-asset-edit-template">
+<a href="#" class="help">{{gettext message="Help"}}</a></li>
+<div class="wrapper">
 <h3>{{model.type}}</h3>
+</div>
 </script>
 
 <script type="text/x-handlebars-template" id="section-asset-display-template">
+<a href="#" class="help">{{gettext message="Help"}}</a></li>
+<div class="wrapper">
 <ul class="section-asset-controls">
     <li><a href="#" class="edit">{{gettext message="Edit"}}</a></li>
     <li><a href="#" class="remove">{{gettext message="Remove"}}</a></li>
 </ul>
 {{{model.content}}}
+</div>
 </script>
 
-<script type="text/x-handlebars-template" id="section-asset-uploadprogress-template">
+<script type="text/x-handlebars-template" id="section-asset-help-template">
+{{#if title}}<h3>{{title}}</h3>{{/if}}
+{{{body}}}
+{{#if typeHelp}}
+<p><strong>{{{typeHelp}}}</strong></p>
+{{/if}}
+</script>
+
+<script type="text/x-handlebars-template" id="asset-uploadprogress-template">
 <div class="uploadprogress"></div>
+</script>
+
+<script type="text/x-handlebars-template" id="featured-asset-template">
+<h3>{{gettext message="Featured Image"}}</h3>
+</script>
+
+<script type="text/x-handlebars-template" id="featured-asset-select-template">
+<p>
+  {{#if model}}<button type="reset" class="cancel">{{gettext message="Cancel"}}</button>{{/if}}
+  <button type="button" class="add">{{gettext message="Add a new image"}}</button>
+</p>
+{{#if assets}}
+{{gettext message="Or select an image from your story"}}
+</p>
+<ul class="assets">
+  {{#each assets}}
+  <li class="asset">
+  <img class="thumbnail" src="{{thumbnail_url}}" /><button type="button" class="select-asset" data-asset-id="{{asset_id}}">{{gettext message="Set as featured image"}}</button>
+  </li> 
+  {{/each}}
+</ul>
+{{/if}}
+</script>
+
+<script type="text/x-handlebars-template" id="featured-asset-display-template">
+<ul class="featured-asset-controls">
+    <li><button type="button" class="change">{{gettext message="Change"}}</button></li>
+</ul>
+{{{model.content}}}
 </script>
 
 <script type="text/x-handlebars-template" id="unused-assets-template">

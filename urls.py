@@ -63,6 +63,9 @@ urlpatterns += patterns('',
     # Make translations available in JavaScript
     (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', {}),
 
+    # Comments
+    (r'^comments/', include('django.contrib.comments.urls')),
+
     # 3rd-party apps
     (r'^tinymce/', include('tinymce.urls')),
     (r'^accounts/', include('storybase_user.registration.backends.extrainfo.urls')),

@@ -208,6 +208,7 @@
   top: 40px;
   position: fixed;
   width: 100%;
+  z-index: 1001;
 }
 
 #builder .alert {
@@ -218,7 +219,7 @@
 #app {
   height: 100%;
   /* Make space for the navbar */
-  padding-top: 40px;
+  padding-top: 80px;
 }
 
 /* Story Template List */
@@ -250,15 +251,13 @@
   width: 100%;
 }
 
-
 .builder {
   position: relative;
   height: 100%;
 }
 
-.section-controls, .last-saved {
+.section-controls {
   position: absolute;
-  top: 0;
   padding: 1% 0;
   min-width: 755px;
   max-width: 1140px;
@@ -273,9 +272,14 @@
 }
 
 .last-saved {
+  position: fixed;
+  bottom: 0;
   width: 100%;
-  right: 0;
-  text-align: right;
+  padding-top: 2px;
+  padding-bottom: 2px;
+  background-color: @control-color-1; 
+  color: #fff;
+  z-index: 999;
 }
 
 /* Unused Assets List */
@@ -380,7 +384,7 @@
   margin-left: auto;
   margin-right: auto;
   height: 70%;
-  padding: 2%;
+  padding: 2% 2% 1% 2%;
 
   .section-title {
     margin-top: 15px;
@@ -399,18 +403,27 @@
   }
 }
 
+#builder .section-layout {
+  // In builder, make overflow visible so help can be positioned to the
+  // left or right of the block
+  overflow: visible;
+}
 
 .storybase-container-placeholder {
   position: relative;
-  height: 94%;
-  min-height: 400px;
 
-  border: solid 1px #c8c8c8;
-  overflow: hidden;
+  .wrapper {
+    border: solid 1px #c8c8c8;
+    overflow: hidden;
+    height: 94%;
+    min-height: 400px;
+  }
 }
 
 .storybase-container-placeholder.select {
-  padding: 2%;
+  .wrapper {
+    padding: 2%;
+  }
 }
 
 .storybase-container-placeholder.display {
@@ -422,6 +435,22 @@
 .storybase-container-placeholder#middle
 {
   margin-bottom: 10px;
+}
+
+.storybase-container-placeholder .help {
+  display: block;
+  position: absolute;
+  left: -38px;
+}
+
+.storybase-container-placeholder#right .help {
+  left: auto;
+  right: -38px;
+}
+
+.asset-help-container {
+  background-color: #fff;
+  max-width: 450px;
 }
 
 .storybase-container-placeholder [name=body] {
@@ -471,40 +500,40 @@
   font-weight: bold;
 }
 
-/* Table of contents thumbnails */
+// Table of contents thumbnails
+
+@section-thumbnail-height: 75px;
+@opened-padding: 39px;
+@closed-padding: 5px;
 
 #section-list {
-  position: fixed;
-  width: 100%;
-  left: 0;
-  bottom: 0;
-  z-index: 998;
+  position: relative;
+  z-index: 999;
+  background-color: @control-color-1;
+  overflow: hidden;
 }
 
 #toggle-section-list {
-  padding: 4px;
-  margin-left: 8px;
+  display: block;
+  float: left;
+  padding: 10px;
   font-weight: bold;
   text-decoration: none;
-  border-radius: 4px 4px 0 0;
-  background-color: @control-color-1;
   color: #fff;
 }
 
-#toggle-section-list.opened::after {
+.opened #toggle-section-list::after {
   content: ' - ';
 }
 
-#toggle-section-list.closed::after {
+.closed #toggle-section-list::after {
   content: ' + ';
-}
-
-.sections-container-border {
-  border-top: 4px solid @control-color-1;
 }
 
 .sections-container {
   position: relative;
+  width: 75%;
+  float: left;
   overflow: hidden;
   background-color: @control-color-1;
   padding: 0 10px;
@@ -558,13 +587,13 @@
   margin: 10px 0;
   padding: 1% 0;
   text-align: center;
-  cursor: pointer;
 }
 
 .section-thumbnail {
   width: 120px;
   border: 1px solid #000;
   background-color: #fff;
+  cursor: pointer;
 }
 
 .section-thumbnail .title {
@@ -577,11 +606,17 @@
 
 .spacer:hover {
   width: 120px;
-  border: 1px solid #000;
-  margin: 10px;
-  cursor: pointer;
-  background-color: #C8C8C8;
+  //border: 1px solid #000;
+  margin: 8px;
+  //background-color: #C8C8C8;
   color: #fff;
+}
+
+.spacer .add-section {
+  color: #fff;
+  font-weight: bold;
+  text-decoration: none;
+  font-size: 2em;
 }
 
 .spacer div {
@@ -621,17 +656,57 @@
   display: block;
 }
 
+#section-nav {
+  float: left;
+  width: 65%;
+  height: 30px;
+  padding-left: 20px;
+  padding-top: @opened-padding;
+  font-weight: bold;
+}
+
+#section-list.closed #section-nav {
+  padding-top: 10px;
+}
+
+#section-nav a {
+  color: #fff;
+}
+
+#section-nav .prev::before {
+  content: ' < ';
+}
+
+#section-nav .next::after {
+  content: ' > ';
+}
+
+#section-list .workflow-nav {
+  float: left;
+  width: auto !important;
+  position: absolute;
+  right: 20px;
+  padding-top: @opened-padding;
+}
+
+#section-list.closed .workflow-nav {
+  padding-top: @closed-padding;
+}
 
 /* Builder Navigation Buttons */
 
-.workflow-nav {
+#nav-container {
   position: fixed;
-  right: 20px;
-  bottom: 20px;
-  padding: 20px;
+  width: 100%;
+  top: 40px;
+  background-color: @control-color-1;
+}
+
+.workflow-nav {
+  position: relative;
+  height: 35px;
+  padding-top: @closed-padding;
   text-align: right;
-  border-radius: 4px;
-  background-color: @control-color-1-transparent;
 }
 
 /* Add Data View */
@@ -760,4 +835,28 @@ input[name=address] {
 .addthis_toolbox {
   display: inline-block;
   padding: 0;
+}
+
+// Featured Asset View
+#featured-asset { 
+  position: relative; 
+
+  img { max-width: 50%; }
+
+  .featured-asset-controls {
+    margin: 0;
+    padding: 10px 10px 0 0;
+    list-style: none outside none;
+    background-color: #fff;
+    z-index: 999;
+    
+    li { display: inline-block; }
+  }
+
+  .assets { 
+    padding: 0; 
+    list-style: none outside none;
+
+    .asset { padding: 8px 0; }
+  }
 }

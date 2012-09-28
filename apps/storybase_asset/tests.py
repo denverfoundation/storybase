@@ -14,7 +14,7 @@ from tastypie.test import ResourceTestCase, TestApiClient
 
 from storybase.tests.base import FixedTestApiClient, FileCleanupMixin
 from storybase_story.models import (create_section, create_story,
-                                    Container, SectionAsset, SectionLayout)
+    Container, SectionAsset, SectionLayout, Story)
 from storybase_asset.models import (Asset, ExternalAsset, HtmlAsset,
     HtmlAssetTranslation, LocalImageAsset, DataSet, LocalDataSet,
     create_html_asset, create_external_asset, create_local_image_asset,
@@ -228,6 +228,12 @@ class ExternalAssetModelTest(TestCase):
         response_data = ExternalAsset.get_oembed_response(url)
         self.assertIn('html', response_data)
 
+    def test_string_representation_from_url_truncated(self):
+        """Test that auto-generated string representations are truncated"""
+        url = "https://mail-attachment.googleusercontent.com/attachment/u/0/?ui=2&ik=7d10e7106d&view=att&th=139b9764517f43f5&attid=0.1&disp=inline&realattid=f_h704ppby0&safe=1&zw&saduie=AG9B_P-RVclBuCVY_NPm9GOGWp3O&sadet=1347459925218&sads=MMfkFunUT4iL-5L1SpqALCfYLGg&sadssc=1"
+        asset = create_external_asset(type='image', title='', url=url)
+        self.assertEqual(len(asset.__unicode__()), 100)
+
 
 class HtmlAssetModelTest(TestCase):
     def test_string_representation_from_title(self):
@@ -251,6 +257,14 @@ class HtmlAssetModelTest(TestCase):
         translation.save()
         self.assertEqual(asset.display_title(),
                          truncatewords(striptags(asset.body), 4))
+
+    def test_string_representation_from_body_truncated(self):
+        """
+        Test that string representations made from the body are truncated
+        to 100 characters
+        """
+        asset = create_html_asset(type='text', title="", caption="", body='<script type="text/javascript" src="//ajax.googleapis.com/ajax/static/modules/gviz/1.0/chart.js">{"dataSourceUrl":"//docs.google.com/spreadsheet/tq?key=0AhWnhIC_xoBpdEpNQkRpdGN6V1FJQ1Y4NEVhQU83b1E&transpose=0&headers=1&range=R12%3AV20&gid=0&pub=1","options":{"vAxes":[{"title":"Cost in Dollars","useFormatFromData":true,"viewWindowMode":"pretty","gridlines":{"count":"10"},"viewWindow":{}},{"useFormatFromData":true,"viewWindowMode":"pretty","viewWindow":{}}],"title":"Cost Per Nutrients","booleanRole":"certainty","animation":{"duration":0},"hAxis":{"title":"\\"Food\\" Name","useFormatFromData":true,"viewWindowMode":"pretty","viewWindow":{}},"isStacked":false,"width":600,"height":371},"state":{},"chartType":"ColumnChart","chartName":"Chart 4"}</script>\n', status='published')
+        self.assertEqual(len(asset.__unicode__()), 100)
 
 
 class MockProviderTest(TestCase):
@@ -1420,3 +1434,155 @@ class AssetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
             self.assertEqual(original_hash, created_hash)
             # Set our created file to be cleaned up
             self.add_file_to_cleanup(created_asset.image.file.path)
+
+
+class AssetResourceFeaturedTest(FileCleanupMixin, ResourceTestCase):
+    """Test featured asset endpoints of AssetResource"""
+
+    def setUp(self):
+        super(AssetResourceFeaturedTest, self).setUp()
+        self.api_client = TestApiClient()
+        self.username = 'test'
+        self.password = 'test'
+        self.user = User.objects.create_user(self.username, 
+            'test@example.com', self.password)
+        self.user2 = User.objects.create_user("test2", "test2@example.com",
+                                              "test2")
+        self.story = create_story(title="Test Story", summary="Test Summary",
+            byline="Test Byline", status="published", language="en", 
+            author=self.user)
+
+    def test_get_list(self):
+        asset_type = 'image'
+        asset_title = "Test Image Asset"
+        asset_caption = "This is a test image"
+        image_filename = "test_image.jpg"
+
+        app_dir = os.path.dirname(os.path.abspath(__file__))
+        img_path = os.path.join(app_dir, "test_files", image_filename)
+        with open(img_path) as image:
+            asset = create_local_image_asset(
+                type=asset_type,
+                image=image,
+                image_filename="test_image.jpg",
+                title=asset_title,
+                caption=asset_caption,
+                status='published')
+            self.add_file_to_cleanup(asset.image.file.path)
+            asset2 = create_local_image_asset(
+                type=asset_type,
+                image=image,
+                image_filename="test_image.jpg",
+                title=asset_title,
+                caption=asset_caption,
+                status='published')
+            self.add_file_to_cleanup(asset2.image.file.path)
+            asset3 = create_local_image_asset(
+                type=asset_type,
+                image=image,
+                image_filename="test_image.jpg",
+                title=asset_title,
+                caption=asset_caption,
+                status='published')
+            self.add_file_to_cleanup(asset3.image.file.path)
+        self.story.assets.add(asset)
+        self.story.featured_assets.add(asset2)
+        uri = '/api/0.1/assets/stories/%s/featured/' % (self.story.story_id)
+        resp = self.api_client.get(uri, format='json')
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 1)
+        self.assertEqual(self.deserialize(resp)['objects'][0]['asset_id'], asset2.asset_id)
+
+    def test_put_list(self):
+        asset_type = 'image'
+        asset_title = "Test Image Asset"
+        asset_caption = "This is a test image"
+        image_filename = "test_image.jpg"
+
+        app_dir = os.path.dirname(os.path.abspath(__file__))
+        img_path = os.path.join(app_dir, "test_files", image_filename)
+        with open(img_path) as image:
+            asset = create_local_image_asset(
+                type=asset_type,
+                image=image,
+                image_filename="test_image.jpg",
+                title=asset_title,
+                caption=asset_caption)
+            self.add_file_to_cleanup(asset.image.file.path)
+        put_data = [
+            {
+                'asset_id': asset.asset_id
+            },
+        ]
+        self.assertEqual(self.story.featured_assets.all().count(), 0)
+        uri = '/api/0.1/assets/stories/%s/featured/' % (self.story.story_id)
+        self.api_client.client.login(username=self.username, password=self.password)
+        resp = self.api_client.put(uri, format='json', data=put_data)
+        self.assertHttpAccepted(resp)
+        # Refresh the story
+        self.story = Story.objects.get(story_id=self.story.story_id)
+        self.assertEqual(self.story.featured_assets.all().count(), 1)
+        self.assertEqual(self.story.featured_assets.select_subclasses()[0],
+                         asset)
+
+    def test_put_list_unauthenticated(self):
+        asset_type = 'image'
+        asset_title = "Test Image Asset"
+        asset_caption = "This is a test image"
+        image_filename = "test_image.jpg"
+
+        app_dir = os.path.dirname(os.path.abspath(__file__))
+        img_path = os.path.join(app_dir, "test_files", image_filename)
+        with open(img_path) as image:
+            asset = create_local_image_asset(
+                type=asset_type,
+                image=image,
+                image_filename="test_image.jpg",
+                title=asset_title,
+                caption=asset_caption)
+            self.add_file_to_cleanup(asset.image.file.path)
+        put_data = [
+            {
+                'asset_id': asset.asset_id
+            },
+        ]
+        self.assertEqual(self.story.featured_assets.all().count(), 0)
+        uri = '/api/0.1/assets/stories/%s/featured/' % (self.story.story_id)
+        resp = self.api_client.put(uri, format='json', data=put_data)
+        self.assertHttpUnauthorized(resp)
+        # Refresh the story
+        self.story = Story.objects.get(story_id=self.story.story_id)
+        self.assertEqual(self.story.featured_assets.all().count(), 0)
+
+    def test_put_list_unauthorized(self):
+        story = create_story(title="Test Story", summary="Test Summary",
+            byline="Test Byline", status="published", language="en", 
+            author=self.user2)
+        asset_type = 'image'
+        asset_title = "Test Image Asset"
+        asset_caption = "This is a test image"
+        image_filename = "test_image.jpg"
+
+        app_dir = os.path.dirname(os.path.abspath(__file__))
+        img_path = os.path.join(app_dir, "test_files", image_filename)
+        with open(img_path) as image:
+            asset = create_local_image_asset(
+                type=asset_type,
+                image=image,
+                image_filename="test_image.jpg",
+                title=asset_title,
+                caption=asset_caption)
+            self.add_file_to_cleanup(asset.image.file.path)
+        put_data = [
+            {
+                'asset_id': asset.asset_id
+            },
+        ]
+        self.assertEqual(story.featured_assets.all().count(), 0)
+        uri = '/api/0.1/assets/stories/%s/featured/' % (story.story_id)
+        self.api_client.client.login(username=self.username, password=self.password)
+        resp = self.api_client.put(uri, format='json', data=put_data)
+        self.assertHttpUnauthorized(resp)
+        # Refresh the story
+        story = Story.objects.get(story_id=story.story_id)
+        self.assertEqual(story.featured_assets.all().count(), 0)

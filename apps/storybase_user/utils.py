@@ -39,3 +39,16 @@ def bulk_create_organization(hashes, name_field='name',
 def bulk_create_project(hashes, name_field='name',
                         description_field='description'):
     bulk_create(Project, hashes, name_field, description_field)
+
+def format_user_name(user):
+    """Return the user's first name and last initial""" 
+    user_name = "" 
+    if user.is_active and user.first_name:
+        user_name = user.first_name 
+                            
+        if user.last_name:
+            user_name = "%s %s." % (user.first_name, user.last_name[0])
+        else:
+            user_name = user.first_name
+
+    return user_name
