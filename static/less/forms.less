@@ -1,0 +1,70 @@
+
+form {
+	overflow:hidden;
+	
+	@text-base-color: #555;
+	@border-color: #aaa;
+	
+	.form-text {
+		.plain-serif-text;
+		font-size:14px;
+		color:@text-base-color;
+	}
+	
+	.soft-edge-style {
+		.rounded-corners;
+		.form-text;
+		box-shadow:inset 0 0 3px #ccc;
+		border:1px solid @border-color;
+		padding:5px;
+	}
+	
+	ul.errorlist li {
+		.plain-serif-text;
+		color:@error-color;
+	}
+
+	p {
+		.form-text;
+		margin-bottom:8px;
+		clear:both;
+		line-height:30px;
+		overflow:hidden;
+		
+		label, label + input {
+			display:block;
+			float:left;
+		}
+		label + input {
+			position:absolute;
+			margin-left:140px;
+		}
+		
+		&.required label:after {
+			color:@error-color;
+			content: "*";
+		}
+	}
+	input {
+		&[type=text], 
+		&[type=password] {
+			.soft-edge-style;
+			font-style:italic;
+			
+			&[disabled] {
+				color:lighten(@text-base-color, 25%);
+				background:inherit;
+				border:lighten(@border-color, 10%);
+			}
+		}
+		&[type=submit] {
+			.button-style;
+		}
+	}
+	textarea {
+		.soft-edge-style;
+		display:block;
+		clear:left;
+	}
+	
+}

@@ -1,0 +1,130 @@
+.content-page {
+	h3 span { position:relative; }
+	
+	/* generic content page: probably cms-driven */
+	&.generic {
+		padding-bottom:34px; 
+		margin-bottom:39px;
+		
+		h4 { font-size:24px; color:#666; text-align:left; line-height:24px; margin-bottom:10px;    }
+		
+		h4.first { font-family:Georgia, 'Times New Roman', Serif; }
+		h4 a { color:#fe9703; }
+		p { font-size:12px; color:#5a5a5a; line-height:16px;font-family:Georgia, 'Times New Roman', Serif;    }
+
+		.page-pull { 
+			margin-bottom:31px !important;
+			
+			h4 { 
+				background:none !important; 
+				margin-bottom:10px !important;
+				font-family: 'MuseoSlab500Regular';
+			}
+			p { 
+				font-size:12px; 
+				color:#5a5a5a; 
+				line-height:16px; 
+				padding-bottom:12px;
+				font-family:Georgia, 'Times New Roman', Serif;
+				a {
+					font-size:14px; 
+					color:@orange;
+					font-family: 'MuseoSlab500Regular';
+				}
+				strong { 
+					font-family:Georgia, 'Times New Roman', Serif; 
+					font-size:14px; 
+					color:#666;
+				}
+			}
+			
+		}
+	}
+	
+	/* object detail pages: story, project, etc */
+	&.object-detail {
+		.col {
+			float:left;
+			&.left {
+				width:380px;
+				margin-right:45px;
+			}
+			&.right {
+				width:300px;
+			}
+		}
+		hr {
+			border:0;
+			height:1px;
+			padding:7px 0;
+			background:url('images/h3-line.png') repeat-x;
+			margin-bottom:20px;
+		}
+
+		h2 { font-size:30px;}
+		h2, h3, h4 {
+			text-align:left;
+			font-family: 'Museo300Regular';
+			font-weight:normal;
+			background:none;
+			margin-bottom:12px;
+		}
+		h4 {
+			font-size:14px;
+			color:#333;
+			margin-bottom:0;
+		}
+		
+		.object-featured-asset {
+			float:left;
+		}
+		.object img { width:150px; }
+		.object-featured-asset,
+		.related-stories,
+		.citizen-comments { 
+			margin-right:40px;
+		}
+		.object + hr,
+		.story-outreach { 
+			clear:left;
+		}
+		.connected-stories dl {
+			margin: 10px;
+		}
+		.call-to-action ul {
+			list-style:disc !important;
+		}
+		.object-metadata {
+			font-family:Georgia, 'Times New Roman', Serif; 
+			font-size:12px; 
+			color:#444;
+			margin: 20px 0;
+			
+			dt, dd { float:left; }
+			dt { clear:left; margin-right:4px }
+			dt:after { content:": " }
+		}
+		
+		&.project .featured-story img { width: 100%; }
+		&.project .recent-stories ul { margin-bottom: 30px; }
+		&.project .recent-stories li { 
+			margin-bottom: 10px; 
+			overflow:hidden;
+			img {
+				margin-top:8px; width: 100%;
+			}
+		}
+		
+	}
+	
+	section.content-block { 
+		padding-bottom: 40px; 
+		border-bottom:1px solid #ccc; 
+		margin-bottom:20px;
+		overflow:hidden;
+		
+		&.last {
+			border-bottom: none;
+		}
+	}
+}

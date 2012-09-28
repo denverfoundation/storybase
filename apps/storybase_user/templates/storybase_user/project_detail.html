@@ -4,30 +4,123 @@
 
 {% block head_title %}{{ project.name }}{{ block.super }}{% endblock %}
 
-{% block body_title %}{{ project.name }}{% endblock %}
+{% block body_title_markup %}{% endblock %}
 
 
-{% block base_content %}
+{% block sidebar %}
+<h3>{% trans "Contributing Organizations" %}</h3>
+<ul class="actions">
+	{% for organization in project.organizations.all %}
+	  <li>{{ organization.name }}</li>
+	{% endfor %}
+	<li>one</li>
+	<li>two</li>
+</ul>
+{% endblock %}
 
-
+{% block twocol-content %}
 		<div class="content-page object-detail project">
-			<h3><span>Special Projects</span></h3>
-			
-			<section class="object post">
-				<section class="object-featured-asset">
+			<section class="object-summary content-block">
+				{% if project.description %}
+				<div class="grid_7 alpha">
+					<h2>{{ project.name }}</h2>
+					<section class="summary">
+						{{ project.description|safe|linebreaks }}
+					</section>
+				</div>
+				{% endif %}
+				<div class="grid_3 omega">
+					{% include "addthis_widget.html" %}
 					{# TODO: wire in real asset #}
 					<img src="/static/css/images/image3.jpg" title="temp asset">
-				</section>
-				<section class="object-summary">
-					<header>
-						<h2>{{ project.name }}</h2>
-					</header>
-					<section class="summary">
-						{% if project.description %}
-						{{ project.description|safe|linebreaks }}
-						{% endif %}
+				</div>
+				<div class="object-metadata grid_10">
+					<section class="grid_3 alpha">
+						<h4>{% trans "Contact Info" %}</h4>
+						<addr></addr>
 					</section>
-					
+					<section class="grid_3">
+						<h4>{% trans "Project Contributors" %}</h4>
+						<ul>
+						</ul>
+					</section>
+					<section class="grid_3 omega">
+						<h4>{% trans "Sponsoring Organizations" %}</h4>
+						<ul>
+						</ul>
+					</section>
+					</dl>
+				</div>
+			</section>
+			<section class="featured-story content-block">
+				<h3>{% trans "Featured Story" %}</h3>
+				<div class="grid_2 alpha">
+					<a href="#"><img src="/static/css/images/image3.jpg" title="temp asset" ></a>
+				</div>
+				<div class="grid_8 omega">
+					<h4><a href="#">Story Title</a></h4>
+					Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+				</div>
+			</section>
+			<section class="recent-stories content-block last">
+				<h3>{% trans "Recent Stories" %}</h3>
+				<ul>
+					<li>
+						<div class="grid_1 alpha">
+							<a href="#"><img src="/static/css/images/image3.jpg" title="temp asset"></a>
+						</div>
+						<div class="grid_9 omega">
+							<h4><a href="#">Story Title</a></h4>
+							Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+						</div>
+					</li>
+					<li>
+						<div class="grid_1 alpha">
+							<a href="#"><img src="/static/css/images/image3.jpg" title="temp asset"></a>
+						</div>
+						<div class="grid_9 omega">
+							<h4><a href="#">Story Title</a></h4>
+							Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+						</div>
+					</li>
+				</ul>
+				<a class="button" href="#">{% trans "View All Stories for This Project" %}</a>
+			</section>
+		</div>
+{% endblock %}
+
+
+
+
+
+{% comment %}
+		<!-- below is previous wireframe code. leaving it here temporarily in case some of the wiring is useful. -->
+		<div class="content-page object-detail project container_12">
+			<h2><span>Special Projects</span></h2>
+			
+			<div class="grid_8">
+				
+				<section class="object content-block">
+					<header>
+						<h3>{{ project.name }}</h3>
+						<p class="byline">{% trans "By" %} <span class="author">{{ story.byline }}</span></p>
+					</header>
+					<section class="object-featured-asset">
+						{# TODO: wire in real asset #}
+						<img src="/static/css/images/image3.jpg" title="temp asset">
+					</section>
+					<section class="object-summary">
+						<section class="summary">
+							{% if project.description %}
+							{{ project.description|safe|linebreaks }}
+							{% endif %}
+						</section>
+						<a id="launch-story-viewer" class="button right" href="./viewer">{% trans "View Project" %}</a>
+					</section>
+				</section>
+			</div>
+			<div class="grid_4">
+				<section class="object-summary">
 					{# just throwing a bunch of stuff in here for now #}
 					<dl class="object-metadata">
 						{% if project.website_url %}
@@ -41,17 +134,6 @@
 							<ul class="members">
 							{% for member in project.members.all %}
 							  <li>{{ member.username }}</li>
-							{% endfor %}
-							</ul>
-						</dd>
-						{% endif %}
-
-						{% if project.organizations.count %}
-						<dt>Organizations</dt>
-						<dd>
-							<ul class="organizations">
-							{% for organization in project.organizations.all %}
-							  <li>{{ organization.name }}</li>
 							{% endfor %}
 							</ul>
 						</dd>
@@ -75,32 +157,18 @@
 						<dd><time class="last-edited">{{ project.last_edited|date:"F j, Y g:i A" }} </time></dd>
 					</dl>
 				</section>
-			</section>
-
-			<div class="cols">
-				<div class="flexslider col left">
-					<h4><span>Featured Projects</span></h4>
-					{% featured_projects %}
-				</div>
-				<div class="flexslider col right">
-					<h4><span>Featured Stories</span></h4>
-					{% featured_stories %}
-				</div>
-				<div class="cl">&nbsp;</div>
 			</div>
+
 			<div class=" bottom">
 				<h3><span>Project Contributors</span></h3>
 				{# {% placeholder project-contributors %} #}
-				
+			
 				<h3><span>Supporting Organizations</span></h3>
 				{# {% placeholder supporting-foundations %} #}
 			</div>
 
-
-
 		</div><!-- /.content-page -->
-
-{% endblock %}
+{% endcomment %}
 
 {% block extrajs %}
 	<script src="{{ STATIC_URL }}js/libs/jquery.cycle.all.min.js"></script>

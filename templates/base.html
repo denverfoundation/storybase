@@ -36,17 +36,12 @@
 
   <!-- custom 1000px grid based on 960 grid, http://960.gs -->
   {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/grid.css">{% endaddtoblock %}
-
-{% comment %}
-  <!-- The 1140px Grid - http://cssgrid.net/ -->
-  {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/1140.css">{% endaddtoblock %}
-  <!-- Formalize - http://formalize.me/ -->
-  {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/formalize.css">{% endaddtoblock %}
-  {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/style.css">{% endaddtoblock %}
-{% endcomment %}
-
-  {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/style-new.css">{% endaddtoblock %}
   {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/flexslider.css">{% endaddtoblock %}
+  {% if debug %}
+  {% addtoblock "css" %}<link rel="stylesheet/less" type="text/css" href="{{ STATIC_URL }}less/base.less">{% endaddtoblock %}
+  {% else %}
+  {% addtoblock "css" %}<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/compiled.css">{% endaddtoblock %}
+  {% endif %}
 
   {% render_block "css" %}
   <!-- end CSS-->
@@ -140,9 +135,11 @@
   var jqLatest = jQuery;
   </script>
 
-  {% addtoblock "js" %}<script src="{{ STATIC_URL }}js/libs/jquery.formalize.min.js"></script>{% endaddtoblock %}
   {% addtoblock "js" %}<script defer src="{{ STATIC_URL }}js/plugins.js"></script>{% endaddtoblock %}
   {% addtoblock "js" %}<script src="{{ STATIC_URL }}js/functions.js"></script>{% endaddtoblock %}
+  {% if debug %}
+  {% addtoblock "js" %}<script src="{{ STATIC_URL }}js/libs/less-1.3.0.min.js"></script>{% endaddtoblock %}
+  {% endif %}
   {% block extrajs %}{% endblock %}
   {% render_block "js" %}
   <!-- end scripts-->

@@ -1,0 +1,109 @@
+.homepage {
+	.title {
+		padding-top:25px; 
+		padding-bottom:55px;
+		
+		h2 { font-size:48px; background-position: 0 18px; }
+		p {
+			font-size:18px; 
+			color:#666666; 
+			text-align:center; 
+			font-family:Georgia, 'Times New Roman', Serif;
+			
+			a { color:@orange; }
+		}
+		
+		.flexslider {
+			.flex-control-nav { display:none !important; }
+			.flex-direction-nav { display:none !important; }
+		} 
+		
+	}
+	
+	.bottom .flexslider .flex-control-nav,
+	.bottom .flexslider .flex-direction-nav { display:none !important;  }
+
+	.images { 
+		width:100%; 
+		position:relative; 
+		overflow:hidden; 
+		display:none;
+		
+		a { 
+			float:left; 
+			display:inline; 
+			position:relative; 
+			margin-bottom:-4px; 
+			position:relative;
+			&:hover {
+				text-decoration:none;
+			}
+			img {
+				display:block;
+			}
+			span.overlay { 
+				background:url('images/image-overlay.png')  0 0; 
+				display:block; 
+				position:absolute; 
+				top:0; 
+				left:0;
+				width:100%;
+				height:100%; 
+			}
+			span.title { 
+				position:absolute; 
+				bottom:0; 
+				left:0; 
+				background:url('images/transparent.png')  0 0; 
+				display:block; 
+				width:100%; 
+				display:none;
+			}
+			span.title em { 
+				font-size:12px; 
+				font-style:normal; 
+				color:#20c6fd;
+				font-family: 'MuseoSlab500Regular';
+				padding:7px 14px 12px 14px;
+				display:block;
+			}
+		}
+	}
+	
+	.page-nav {
+		ul { 
+			text-align:center;
+			
+			li { 
+				display:inline;
+				
+				a { 
+					font-size:24px; 
+					color:#fe9703; 
+					font-weight:bold; 
+					font-family: 'MuseoSlab500Regular'; 
+					font-weight:normal;
+				}
+			}
+		}
+		span.sep { 
+			width:1px; 
+			height:42px; 
+			background:url('images/sep.png') no-repeat 0 0; 
+			display:inline-block; 
+			top:12px; 
+			position:relative; 
+			margin-left:15px; 
+			margin-right:15px;
+		}
+		.left-nav {
+			background:url('images/left-arrow2.png') no-repeat 0 3px;
+			padding-left:25px;
+		}
+		.right-nav {
+			background:url('images/right-arrow2.png') no-repeat right 3px;
+			padding-right:25px;
+		}
+	} 
+
+}

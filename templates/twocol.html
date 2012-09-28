@@ -6,34 +6,23 @@
 {% show_breadcrumb "breadcrumbs.html" %}
 {% endblock %}
 
+{% block body_class %}twocol{% endblock %}
+
 {% block base_content %}
 
 
-		<div class="content-page generic container_12">
+		<div class="content-page generic twocol container_12">
+			{% block body_title_markup %}
 			<h2><span>{% block body_title %}{% endblock%}</span></h2>
+			{% endblock %}
 			
 			<section class="sidebar grid_2 alpha">
 				{% block sidebar %}{% endblock %}
 			</section>
-			
 			<div class="grid_10 omega">
-				
-				<section class="content-block">
+				<section class="twocol-content">
 					{% block twocol-content %}{% endblock %}
 				</section>
-				
-				<section class="below-content">
-					<div class="grid_5 alpha">
-						{% block bottom-left-col %}
-						{% endblock %}
-					</div>
-					<div class="grid_5 omega">
-						{% block bottom-right-col %}
-						{% endblock %}
-					</div>
-					<div class="cl">&nbsp;</div>
-				</section>
-				
 			</div>
 		</div>
 
