@@ -1,10 +1,12 @@
 from django import template
 from django.core.exceptions import ObjectDoesNotExist
-from storybase_asset.models import Asset
-from django.template.loader import get_template
+from django.core.urlresolvers import reverse
 from django.template import Context
-from django.conf import settings
-import random # temp
+from django.template.loader import get_template
+from django.utils.translation import ugettext as _
+
+from storybase_asset.models import Asset
+from storybase_story.models import Story
 
 register = template.Library()
 
@@ -37,20 +39,23 @@ def connected_story_section(section):
     return section.render(show_title=False)
 
 @register.simple_tag
-def featured_stories(count = 4):
-    # temp: should actually pull stories, etc.
-    # currently the template asks for a "normalized" dictionary format, so 
-    # note that passing raw project objects may not work.
-    stories = []
-    for i in range(count):
-        stories.append({ 
-            "title": "Story %d Title" % (i + 1),
-            "author": "Author Name", 
-            "date": "August 25, 2012", 
-            "image_url": "css/images/image%d.jpg" % random.randrange(1, 9), 
-            "excerpt": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." 
+def featured_stories(count=4):
+    # Put story attributes into a "normalized" dictionary format 
+    objects = []
+    qs = Story.objects.on_homepage().order_by('-last_edited')[:count]
+    for obj in qs:
+        objects.append({ 
+            "title": obj.title,
+            "author": obj.contributor_name, 
+            "date": obj.created, 
+            "image_html": obj.render_featured_asset(), 
+            "excerpt": obj.summary,
+            "url": obj.get_absolute_url(),
         })
     template = get_template('storybase/featured_object.html')
-    # STATIC_URL should be included via context processor ... not sure best way to do that
-    context = Context({ "objects": stories, "more_link_text": "View Stories", "more_link_url": "/stories", "STATIC_URL": settings.STATIC_URL })
+    context = Context({
+        "objects": objects,
+        "more_link_text": _("View Stories"),
+        "more_link_url": reverse("explore_stories"),
+    })
     return template.render(context)
