@@ -748,8 +748,11 @@ storybase.builder.views.SelectStoryTemplateView = Backbone.View.extend({
   // system
   className: 'story-templates row',
 
+  templateSource: $('#story-template-list-template').html(),
+
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
+    this.template = Handlebars.compile(this.templateSource);
     _.bindAll(this, 'addTemplateEntry');
   },
 
@@ -762,6 +765,7 @@ storybase.builder.views.SelectStoryTemplateView = Backbone.View.extend({
   },
 
   render: function() {
+    this.$el.html(this.template());
     this.collection.each(this.addTemplateEntry);
     return this;
   }
@@ -1099,11 +1103,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
         position: 6,
         id: 'workflow-step-guider',
         title: gettext("Building a story takes five simple steps."),
-        description: gettext("<p>Clicking on these tabs lets you switch between the different steps in the story building process. You can always move freely between the steps.</p><ul><li><strong>Build</strong> - Construct your story using text, photos, videos, data visualizations, and other materials.</li>
-<li><strong>Add Data</strong> - Upload or link to source data referenced in your story’s charts, maps, graphs and visualizations.</li>
-<li><strong>Tag</strong> - Label your story with topics and places so that people can easily discover it on Floodlight.</li>
-<li><strong>Review</strong> - Make sure your story is ready to go with spellcheck and other tools.</li>
-<li><strong>Publish/Share</li> - Post your story to Floodlight and your social networks.</li></ul>"),
+        description: gettext("<p>Clicking on these tabs lets you switch between the different steps in the story building process. You can always move freely between the steps.</p><ul><li><strong>Build</strong> - Construct your story using text, photos, videos, data visualizations, and other materials.</li><li><strong>Add Data</strong> - Upload or link to source data referenced in your story’s charts, maps, graphs and visualizations.</li><li><strong>Tag</strong> - Label your story with topics and places so that people can easily discover it on Floodlight.</li><li><strong>Review</strong> - Make sure your story is ready to go with spellcheck and other tools.</li><li><strong>Publish/Share</strong></li> - Post your story to Floodlight and your social networks.</li></ul>"),
         next: 'help-guider'
       });
       guiders.createGuider({
@@ -1121,7 +1121,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
         position: 6,
         id: 'help-guider',
         title: gettext("Get tips on how to make a great story."),
-        description: gettext("Clicking the “Help” button shows you tips for the section you're currently editing."),
+        description: gettext("Clicking the \"Help\" button shows you tips for the section you're currently editing."),
         onShow: function() {
           that.dispatcher.trigger('do:show:help', true);
         },
@@ -1138,7 +1138,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
             onclick: guiders.hideAll
           }
         ],
-        position: 3,
+        position: 6,
+        offset: { left: 0, top: 20 },
         id: 'tooltip-guider',
         title: gettext("Need even more tips?"),
         description: gettext("You can find out more about many of the buttons and links by hovering over them with your mouse. You can also hover over the “Help” icons."),

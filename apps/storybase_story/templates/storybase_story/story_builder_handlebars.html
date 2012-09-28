@@ -27,8 +27,8 @@ Handlebars.js templates for story builder Backbone application
 <a id="{{id}}" class="{{class}} btn" href="{{href}}">{{text}}</a>
 </script>
 
-<script type="text/x-handlebars-template" id="story-template-template">
-<h3>{{gettext message="Choose a template to start building your story."}}</h3>
+<script type="text/x-handlebars-template" id="story-template-list-template">
+<h2>{{gettext message="Choose a template to start building your story."}}</h2>
 <p class="introduction">{{#blockgettext}}
 A template is a tried and true story structure you can populate with your own pictures, text, media, data and more.
 <br />
@@ -36,6 +36,9 @@ Some templates are better for video, some for data, and some for text. Some temp
 <br />
 You can <strong>customize</strong> some templates by adding and reordering sections, and you can always <strong>start over</strong> by choosing a new template.
 {{/blockgettext}}</p>
+</script>
+
+<script type="text/x-handlebars-template" id="story-template-template">
 <h3><a href="#">{{title}}</a></h3>
 {{#if tag_line}}
 <p>&hellip;{{tag_line}}</p>
