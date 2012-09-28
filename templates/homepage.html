@@ -48,7 +48,7 @@
 						<div class="page-nav">
 							<ul>
                                 <li><a href="#" class="left-nav" rel="2">{% trans "Your Story Matters" %}</a></li>
-                                <li><span class="sep"></span><a href="#" class="right-nav" rel="2">{% trans "Explrore Stories" %}</a></li>
+                                <li><span class="sep"></span><a href="#" class="right-nav" rel="2">{% trans "Explore Stories" %}</a></li>
 							</ul>
 							<div class="cl"> </div>
 						</div>
@@ -57,7 +57,7 @@
                     	<h2><span>{% placeholder intro-carousel-title-3 or %}{% trans "See and show your community in a new light." %}{% endplaceholder %}</span></h2>
 						{% placeholder intro-carousel-content-3 or %}
 						<p>
-                        {% trans "Explore the stories others are sharing and discover new meaning in your neighborhood. Floodlight is where stories become movements." %} <strong><em>{% trans "Because what we can’t see, we can’t change." %}</em></strong>
+                        {% trans "Explore the stories others are sharing and discover new meaning in your neighborhood. Floodlight is where stories become movements." %} <strong><em><a href="{% url explore_stories %}">{% trans "Because what we can’t see, we can’t change." %}</a></em></strong>
 						</p>
 						{% endplaceholder %}
 						<div class="page-nav">
