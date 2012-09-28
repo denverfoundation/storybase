@@ -24,7 +24,7 @@
 		})
 		
 		if ($('.flexslider').length) {
-			$('.title .flexslider').flexslider({
+			$('.intro .flexslider').flexslider({
 				animation: 'slide',
 				slideshow: false,
 				start: function(slider){
