@@ -1847,12 +1847,6 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
     if (this.navView) {
       this.$el.append(this.navView.el);
     }
-    // Add tooltip for section adding icon
-    if (jQuery().tooltipster) {
-      this.$('.tooltip').tooltipster({
-        position: 'top'
-      });
-    }
     this.delegateEvents();
 
     return this;
@@ -2060,6 +2054,12 @@ storybase.builder.views.SectionThumbnailView = Backbone.View.extend(
       );
       this.$el.attr('id', this.model.id);
       this.$el.html(this.template(context));
+      // Add tooltip for section adding icon
+      if (jQuery().tooltipster) {
+        this.$('.tooltip').tooltipster({
+          position: 'top'
+        });
+      }
       this.delegateEvents();
       return this;
     },
