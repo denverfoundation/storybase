@@ -26,6 +26,21 @@
 	.bottom .flexslider .flex-control-nav,
 	.bottom .flexslider .flex-direction-nav { display:none !important;  }
 
+	.featured-stories, 
+	.featured-projects {
+		h3 {
+			.line-through-header;
+			// a bit silly: this is to bring the header bg image up 
+			// over the flexslider controls which obscure their ends
+			// on the left and right.
+			z-index:10000;
+			position:relative;
+		}
+		img {
+			margin:0 auto;
+		}
+	}
+
 	.images { 
 		width:100%; 
 		position:relative; 
