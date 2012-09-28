@@ -19,7 +19,7 @@ def featured_projects(count = 4):
             "title": "Project %d Title" % (i + 1),
             "author": "Author Name", 
             "date": "August 25, 2012", 
-            "image_url": "css/images/image%d.jpg" % random.randrange(1, 9), 
+            "image_url": "img/image%d.jpg" % random.randrange(1, 9), 
             "excerpt": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." 
         })
 
