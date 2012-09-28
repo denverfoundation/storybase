@@ -153,10 +153,11 @@
 }
 .workflow-step .selected {
   background-color: #fff;
-}
-.workflow-step .selected a {
   color: #000 !important;
   font-style: italic;
+}
+.workflow-step .disabled {
+  font-weight: normal !important;
 }
 /* Main Application Container */
 #builder .navbar {

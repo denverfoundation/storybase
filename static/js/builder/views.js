@@ -539,7 +539,8 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.WorkflowNavVi
         id: 'data',
         title: gettext("Add raw data for charts, tables, maps and other visualizations that you used in your story"),
         text: gettext('Add Data'),
-        visible: 'isStorySaved',
+        visible: true,
+        enabled: 'isStorySaved',
         selected: false,
         path: 'data/'
       });
@@ -549,7 +550,8 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.WorkflowNavVi
         id: 'tag',
         title: gettext("Help others discover your story"),
         text: gettext('Tag'),
-        visible: 'isStorySaved',
+        visible: true,
+        enabled: 'isStorySaved',
         selected: false,
         path: 'tag/',
       });
@@ -559,7 +561,8 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.WorkflowNavVi
         id: 'review',
         title: gettext("Make sure your story is good to go"),
         text: gettext('Review'),
-        visible: 'isStorySaved',
+        visible: true,
+        enabled: 'isStorySaved',
         selected: false,
         path: 'review/'
       });
@@ -569,7 +572,8 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.WorkflowNavVi
         id: 'publish',
         title: gettext("Publish your story and share it with others"),
         text: gettext('Publish/Share'),
-        visible: 'isStorySaved',
+        visible: true,
+        enabled: 'isStorySaved',
         selected: false,
         path: 'publish/'
       });
