@@ -827,6 +827,212 @@ storybase.builder.views.AlertView = Backbone.View.extend({
   }
 });
 
+/**
+ * Class to encapsulate builder tour logic.
+ */
+storybase.builder.views.BuilderTour = function(options) {
+  this.options = _.extend({}, options);
+  this.initialize.apply(this, arguments);
+};
+
+_.extend(storybase.builder.views.BuilderTour.prototype, {
+  // Load some of the longer guider bodies from a template, because
+  // the text is too cumbersome to have inline.  Should all of the
+  // bodies be in a template for consistency?
+  //
+  // The properties of this object correspond to the ids defined in
+  // the guiders
+  templateSource: {
+    'workflow-step-guider': $('#workflow-step-guider-template').html(),
+    'section-manipulation-guider': $('#section-manipulation-guider-template').html(),
+    'exit-guider': $('#exit-guider-template').html()
+  },
+
+  initialize: function() {
+    this.dispatcher = this.options.dispatcher;
+    this._initTemplates();
+  },
+
+  /**
+   * Precompile the templates.
+   */
+  _initTemplates: function() {
+    this.template = {};
+    _.each(this.templateSource, function(source, id) {
+      this.template[id] = Handlebars.compile(source);
+    }, this);
+  },
+
+  show: function() {
+    var that = this;
+    // BOOKMARK
+    // TODO: Uncomment this
+    //var showTour = _.isUndefined(guiders) ? false : ($.cookie('storybase_show_builder_tour') === 'false' ? false : true) && this.options.showTour;
+    var showTour = true;
+
+    if (showTour) { 
+      guiders.createGuider({
+        id: 'workflow-step-guider',
+        attachTo: '.workflow-step #build',
+        buttons: [
+          {
+            name: gettext("Prev"),
+            onclick: guiders.prev
+          },
+          {
+            name: gettext("Next"),
+            onclick: guiders.next
+          }
+        ],
+        position: 6,
+        title: gettext("Building a story takes five simple steps."),
+        description: this.template['workflow-step-guider'](),
+        next: 'section-list-guider'
+      });
+      guiders.createGuider({
+        id: 'section-list-guider',
+        attachTo: '#toggle-section-list',
+        buttons: [
+          {
+            name: gettext("Next"),
+            onclick: guiders.next
+          }
+        ],
+        position: 3,
+        title: gettext("This is your table of contents."),
+        // TODO: Remove reference to "Story Sections" tab
+        description: gettext('This bar shows the sections in your story. You can hide the bar by clicking on the tab that says "Story Sections."'),
+        prev: 'workflow-step-guider',
+        next: 'section-thumbnail-guider'
+      });
+      guiders.createGuider({
+        id: 'section-thumbnail-guider',
+        attachTo: '.section-thumbnail',
+        buttons: [
+          {
+            name: gettext("Prev"),
+            onclick: guiders.prev
+          },
+          {
+            name: gettext("Next"),
+            onclick: guiders.next
+          }
+        ],
+        position: 2,
+        title: gettext("Select the section you want to edit."),
+        description: gettext("Click on a section to edit it. The section you are actively editing is highlighted."),
+        prev: 'section-list-guider',
+        next: 'section-manipulation-guider'
+      });
+      guiders.createGuider({
+        id: 'section-manipulation-guider',
+        attachTo: '.section-thumbnail',
+        buttons: [
+          {
+            name: gettext("Prev"),
+            onclick: guiders.prev
+          },
+          {
+            name: gettext("Next"),
+            onclick: guiders.next
+          }
+        ],
+        position: 2,
+        title: gettext("You can also add, move or delete sections."),
+        description: this.template['section-manipulation-guider'](),
+        prev: 'section-thumbnail-guider',
+        next: 'preview-guider'
+      });
+      guiders.createGuider({
+        id: 'preview-guider',
+        attachTo: '.tools .preview',
+        buttons: [
+          {
+            name: gettext("Prev"),
+            onclick: guiders.prev
+          },
+          {
+            name: gettext("Next"),
+            onclick: guiders.next
+          }
+        ],
+        position: 6,
+        title: gettext("Preview your story at any time."),
+        description: gettext("Clicking here lets you preview your story in a new window"),
+        prev: 'section-manipulation-guider',
+        next: 'exit-guider'
+      });
+      guiders.createGuider({
+        id: 'exit-guider',
+        attachTo: '.tools .exit',
+        buttons: [
+          {
+            name: gettext("Prev"),
+            onclick: guiders.prev
+          },
+          {
+            name: gettext("Next"),
+            onclick: guiders.next
+          }
+        ],
+        position: 6,
+        title: gettext("You can leave your story at any time and come back later."),
+        description: this.template['exit-guider'](),
+        prev: 'preview-guider',
+        next: 'help-guider'
+      });
+      guiders.createGuider({
+        attachTo: '.tools .help',
+        buttons: [
+          {
+            name: gettext("Prev"),
+            onclick: guiders.prev
+          },
+          {
+            name: gettext("Next"),
+            onclick: guiders.next
+          }
+        ],
+        position: 6,
+        id: 'help-guider',
+        title: gettext("Get tips on how to make a great story."),
+        description: gettext("Clicking the \"Help\" button shows you tips for the section you're currently editing."),
+        onShow: function() {
+          that.dispatcher.trigger('do:show:help', true);
+        },
+        onHide: function() {
+          that.dispatcher.trigger('do:hide:help', true);
+        },
+        next: 'tooltip-guider'
+      });
+      guiders.createGuider({
+        attachTo: '.workflow-step #build',
+        buttons: [
+          {
+            name: gettext("Close"),
+            onclick: guiders.hideAll
+          }
+        ],
+        position: 6,
+        offset: { left: 0, top: 20 },
+        id: 'tooltip-guider',
+        title: gettext("Need even more tips?"),
+        description: gettext("You can find out more about many of the buttons and links by hovering over them with your mouse. You can also hover over the “Help” icons."),
+        onShow: function() {
+          $('.workflow-step #build').triggerHandler('mouseover');
+        },
+        onHide: function() {
+          // Set a cookie so the user doesn't see the builder tour again
+          // TODO: Set expires option on the cookie
+          $.cookie("storybase_show_builder_tour", false, {path: '/'});
+          $('.workflow-step #build').triggerHandler('mouseout');
+        }
+      });
+      guiders.show('section-list-guider');
+    }
+  }
+});
+
 storybase.builder.views.BuilderView = Backbone.View.extend({
   tagName: 'div',
 
@@ -848,6 +1054,10 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.dispatcher = this.options.dispatcher;
     this.help = this.options.help;
     this._relatedStoriesSaved = false;
+    this._tour = new storybase.builder.views.BuilderTour({
+      dispatcher: this.dispatcher,
+      showTour: this.options.showTour
+    });
 
     if (_.isUndefined(this.model)) {
       // Create a new story model instance
@@ -1048,117 +1258,17 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
    * This is called from upstream views.
    */
   onShow: function() {
-    // Recalculate the width of the section list view.
-    var that = this;
-    var showTour = _.isUndefined(guiders) ? false : ($.cookie('storybase_show_builder_tour') === 'false' ? false : true) && this.options.showTour;
-
+    // Dynamically set the padding at the top of the view to
+    // accomodate the workflow/section navigation bar
     this.setPadding();
 
+    // Recalculate the width of the section list view.
     if (this.sectionListView) {
       this.sectionListView.setWidth();
     }
-    
-    if (showTour) { 
-      guiders.createGuider({
-        attachTo: '#toggle-section-list',
-        buttons: [
-          {
-            name: gettext("Next"),
-            onclick: guiders.next
-          }
-        ],
-        position: 3,
-        id: 'section-list-guider',
-        title: gettext("This is your table of contents."),
-        description: gettext("This bar shows the sections in your story. You can hide the bar by clicking on the tab that says “Story Sections.”"),
-        next: 'section-thumbnail-guider'
-      });
-      guiders.createGuider({
-        attachTo: '.section-thumbnail',
-        buttons: [
-          {
-            name: gettext("Prev"),
-            onclick: guiders.prev
-          },
-          {
-            name: gettext("Next"),
-            onclick: guiders.next
-          }
-        ],
-        position: 2,
-        id: 'section-thumbnail-guider',
-        title: gettext("Select the section you want to edit."),
-        description: gettext("Click on a section to edit it. The section you are actively editing is highlighted."),
-        prev: 'section-list-guider',
-        next: 'workflow-step-guider'
-      });
-      guiders.createGuider({
-        attachTo: '.workflow-step #build',
-        buttons: [
-          {
-            name: gettext("Prev"),
-            onclick: guiders.prev
-          },
-          {
-            name: gettext("Next"),
-            onclick: guiders.next
-          }
-        ],
-        position: 6,
-        id: 'workflow-step-guider',
-        title: gettext("Building a story takes five simple steps."),
-        description: gettext("<p>Clicking on these tabs lets you switch between the different steps in the story building process. You can always move freely between the steps.</p><ul><li><strong>Build</strong> - Construct your story using text, photos, videos, data visualizations, and other materials.</li><li><strong>Add Data</strong> - Upload or link to source data referenced in your story’s charts, maps, graphs and visualizations.</li><li><strong>Tag</strong> - Label your story with topics and places so that people can easily discover it on Floodlight.</li><li><strong>Review</strong> - Make sure your story is ready to go with spellcheck and other tools.</li><li><strong>Publish/Share</strong></li> - Post your story to Floodlight and your social networks.</li></ul>"),
-        next: 'help-guider'
-      });
-      guiders.createGuider({
-        attachTo: '.tools .help',
-        buttons: [
-          {
-            name: gettext("Prev"),
-            onclick: guiders.prev
-          },
-          {
-            name: gettext("Next"),
-            onclick: guiders.next
-          }
-        ],
-        position: 6,
-        id: 'help-guider',
-        title: gettext("Get tips on how to make a great story."),
-        description: gettext("Clicking the \"Help\" button shows you tips for the section you're currently editing."),
-        onShow: function() {
-          that.dispatcher.trigger('do:show:help', true);
-        },
-        onHide: function() {
-          that.dispatcher.trigger('do:hide:help', true);
-        },
-        next: 'tooltip-guider'
-      });
-      guiders.createGuider({
-        attachTo: '.workflow-step #build',
-        buttons: [
-          {
-            name: gettext("Close"),
-            onclick: guiders.hideAll
-          }
-        ],
-        position: 6,
-        offset: { left: 0, top: 20 },
-        id: 'tooltip-guider',
-        title: gettext("Need even more tips?"),
-        description: gettext("You can find out more about many of the buttons and links by hovering over them with your mouse. You can also hover over the “Help” icons."),
-        onShow: function() {
-          $('.workflow-step #build').triggerHandler('mouseover');
-        },
-        onHide: function() {
-          // Set a cookie so the user doesn't see the builder tour again
-          // TODO: Set expires option on the cookie
-          $.cookie("storybase_show_builder_tour", false, {path: '/'});
-          $('.workflow-step #build').triggerHandler('mouseout');
-        }
-      });
-      guiders.show('section-list-guider');
-    }
+
+    // Show the tour
+    this._tour.show();
   },
 
   getNavView: function() {
