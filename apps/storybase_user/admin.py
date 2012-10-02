@@ -213,6 +213,7 @@ class ProjectStoryInline(admin.TabularInline):
 class ProjectAdmin(StorybaseModelAdmin):
     search_fields = ['name']
     filter_horizontal = ['members', 'organizations']
+    list_filter = ('on_homepage',)
     readonly_fields = ['created', 'last_edited', 'project_id']
     inlines = [ProjectStoryInline, ProjectTranslationInline]
     prefix_inline_classes = ['ProjectTranslationInline']

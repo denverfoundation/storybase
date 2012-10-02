@@ -37,7 +37,7 @@ class StoryAdmin(StorybaseModelAdmin):
     search_fields = ['storytranslation__title', 'author__first_name',
                      'author__last_name']
     list_display = (obj_title, 'author', 'last_edited', 'status', 'view_link')
-    list_filter = ('status', 'author')
+    list_filter = ('status', 'author', 'on_homepage')
     filter_horizontal = ['assets', 'featured_assets', 'locations', 
                          'places', 'projects', 'organizations', 'topics']
     inlines = [SectionInline, StoryTranslationInline]
