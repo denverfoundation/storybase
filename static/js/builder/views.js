@@ -647,7 +647,8 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
         title: gettext("View your story in the story viewer (opens in a new window)"),
         text: gettext('Preview'),
         callback: 'previewStory',
-        visible: false
+        visible: false, 
+        enabled: 'isStorySaved'
       },
       {
         id: 'start-over',
@@ -686,9 +687,11 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
   },
 
   previewStory: function(evt) {
+    if (!$(evt.target).hasClass("disabled")) {
+      var url = '/stories/' + this.storyId + '/viewer/';
+      window.open(url);
+    }
     evt.preventDefault();
-    var url = '/stories/' + this.storyId + '/viewer/';
-    window.open(url);
   },
 
   toggleAssetList: function(evt) {
@@ -702,13 +705,13 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
   },
   
   handleStorySave: function(story) {
+    var item = this.getItem('preview');
     if (!story.isNew() && _.isUndefined(this.storyId)) {
-      var item = this.getItem('preview');
       this.storyId = story.id; 
       item.path = '/stories/' + this.storyId + '/viewer/';
-      item.visible = true;
-      this.render();
     }
+    item.visible = true;
+    this.render();
   },
 
   updateVisible: function() {
@@ -738,6 +741,10 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
         position: 'bottom'
       });
     }
+  },
+
+  isStorySaved: function() {
+    return !_.isUndefined(this.storyId)
   }
 });
 
