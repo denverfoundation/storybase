@@ -156,8 +156,10 @@
   color: #000 !important;
   font-style: italic;
 }
-.workflow-step .disabled {
+.workflow-step .disabled,
+.tools .disabled {
   font-weight: normal !important;
+  cursor: default;
 }
 /* Main Application Container */
 #builder .navbar {
