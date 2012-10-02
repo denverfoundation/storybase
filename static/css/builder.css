@@ -153,10 +153,13 @@
 }
 .workflow-step .selected {
   background-color: #fff;
-}
-.workflow-step .selected a {
   color: #000 !important;
   font-style: italic;
+}
+.workflow-step .disabled,
+.tools .disabled {
+  font-weight: normal !important;
+  cursor: default;
 }
 /* Main Application Container */
 #builder .navbar {
@@ -558,6 +561,7 @@
   width: 100%;
   top: 40px;
   background-color: #666666;
+  z-index: 999;
 }
 .workflow-nav {
   position: relative;

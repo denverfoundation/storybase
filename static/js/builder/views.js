@@ -527,7 +527,7 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.WorkflowNavVi
     if (this.options.visibleSteps.build) {
       items.push({
         id: 'build',
-        title: gettext("Organize your thoughts, tell your story"),
+        title: gettext("Construct your story using text, photos, videos, data visualizations, and other materials"),
         text: gettext("Build"),
         visible: true,
         selected: false,
@@ -537,9 +537,10 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.WorkflowNavVi
     if (this.options.visibleSteps.data) {
       items.push({
         id: 'data',
-        title: gettext("Add raw data for charts, tables, maps and other visualizations that you used in your story"),
+        title: gettext("Upload or link to source data referenced in your story’s charts, maps, graphs and visualizations"),
         text: gettext('Add Data'),
-        visible: 'isStorySaved',
+        visible: true,
+        enabled: 'isStorySaved',
         selected: false,
         path: 'data/'
       });
@@ -547,9 +548,10 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.WorkflowNavVi
     if (this.options.visibleSteps.tag) {
       items.push({
         id: 'tag',
-        title: gettext("Help others discover your story"),
+        title: gettext("Label your story with topics and places so that people can easily discover it on Floodlight"),
         text: gettext('Tag'),
-        visible: 'isStorySaved',
+        visible: true,
+        enabled: 'isStorySaved',
         selected: false,
         path: 'tag/',
       });
@@ -557,9 +559,11 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.WorkflowNavVi
     if (this.options.visibleSteps.review) {
       items.push({
         id: 'review',
-        title: gettext("Make sure your story is good to go"),
+        //title: gettext("Make sure your story is ready to go with spellcheck and other tools"),
+        title: gettext("Make sure your story is ready to go"),
         text: gettext('Review'),
-        visible: 'isStorySaved',
+        visible: true,
+        enabled: 'isStorySaved',
         selected: false,
         path: 'review/'
       });
@@ -567,9 +571,10 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.WorkflowNavVi
     if (this.options.visibleSteps.publish) {
       items.push({
         id: 'publish',
-        title: gettext("Publish your story and share it with others"),
+        title: gettext("Post your story to Floodlight and your social networks"),
         text: gettext('Publish/Share'),
-        visible: 'isStorySaved',
+        visible: true,
+        enabled: 'isStorySaved',
         selected: false,
         path: 'publish/'
       });
@@ -626,7 +631,7 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
     return [
       {
         id: 'help',
-        title: gettext("Get help on the current story section"),
+        title: gettext("Get storytelling tips for the section you're currently editing"),
         text: gettext('Help'),
         callback: 'toggleHelp', 
         visible: true 
@@ -640,21 +645,22 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
       },
       {
         id: 'preview',
-        title: gettext("View your story in the story viewer (opens in a new window)"),
+        title: gettext("Preview your story in a new window"),
         text: gettext('Preview'),
         callback: 'previewStory',
-        visible: false
+        visible: false, 
+        enabled: 'isStorySaved'
       },
       {
         id: 'start-over',
-        title: gettext("Leave your story in its current state and start a new story, with a new template"),
+        title: gettext("Leave your story and start a new one with a different template"),
         text: gettext('Start Over'),
         path: this.options.startOverUrl,
         visible: false 
       },
       {
         id: 'exit',
-        title: gettext("Leave the story builder and go to the home page"),
+        title: gettext("Leave the Story Builder and go back to the homepage. You can always return later"),
         text: gettext('Exit'),
         path: '/',
         visible: true 
@@ -682,9 +688,11 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
   },
 
   previewStory: function(evt) {
+    if (!$(evt.target).hasClass("disabled")) {
+      var url = '/stories/' + this.storyId + '/viewer/';
+      window.open(url);
+    }
     evt.preventDefault();
-    var url = '/stories/' + this.storyId + '/viewer/';
-    window.open(url);
   },
 
   toggleAssetList: function(evt) {
@@ -698,13 +706,13 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
   },
   
   handleStorySave: function(story) {
+    var item = this.getItem('preview');
     if (!story.isNew() && _.isUndefined(this.storyId)) {
-      var item = this.getItem('preview');
       this.storyId = story.id; 
       item.path = '/stories/' + this.storyId + '/viewer/';
-      item.visible = true;
-      this.render();
     }
+    item.visible = true;
+    this.render();
   },
 
   updateVisible: function() {
@@ -734,6 +742,10 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
         position: 'bottom'
       });
     }
+  },
+
+  isStorySaved: function() {
+    return !_.isUndefined(this.storyId)
   }
 });
 
@@ -823,6 +835,209 @@ storybase.builder.views.AlertView = Backbone.View.extend({
   }
 });
 
+/**
+ * Class to encapsulate builder tour logic.
+ */
+storybase.builder.views.BuilderTour = function(options) {
+  this.options = _.extend({}, options);
+  this.initialize.apply(this, arguments);
+};
+
+_.extend(storybase.builder.views.BuilderTour.prototype, {
+  // Load some of the longer guider bodies from a template, because
+  // the text is too cumbersome to have inline.  Should all of the
+  // bodies be in a template for consistency?
+  //
+  // The properties of this object correspond to the ids defined in
+  // the guiders
+  templateSource: {
+    'workflow-step-guider': $('#workflow-step-guider-template').html(),
+    'section-manipulation-guider': $('#section-manipulation-guider-template').html(),
+    'exit-guider': $('#exit-guider-template').html()
+  },
+
+  initialize: function() {
+    this.dispatcher = this.options.dispatcher;
+    this._initTemplates();
+  },
+
+  /**
+   * Precompile the templates.
+   */
+  _initTemplates: function() {
+    this.template = {};
+    _.each(this.templateSource, function(source, id) {
+      this.template[id] = Handlebars.compile(source);
+    }, this);
+  },
+
+  show: function() {
+    var that = this;
+    var showTour = _.isUndefined(guiders) ? false : ($.cookie('storybase_show_builder_tour') === 'false' ? false : true) && this.options.showTour;
+
+    if (showTour) { 
+      guiders.createGuider({
+        id: 'workflow-step-guider',
+        attachTo: '.workflow-step #build',
+        buttons: [
+          {
+            name: gettext("Next"),
+            onclick: guiders.next
+          }
+        ],
+        position: 6,
+        title: gettext("Building a story takes five simple steps."),
+        description: this.template['workflow-step-guider'](),
+        next: 'section-list-guider'
+      });
+      guiders.createGuider({
+        id: 'section-list-guider',
+        attachTo: '#toggle-section-list',
+        buttons: [
+          {
+            name: gettext("Prev"),
+            onclick: guiders.prev
+          },
+          {
+            name: gettext("Next"),
+            onclick: guiders.next
+          }
+        ],
+        position: 3,
+        title: gettext("This is your table of contents."),
+        // TODO: Remove reference to "Story Sections" tab
+        description: gettext('This bar shows the sections in your story. You can hide the bar by clicking on the tab that says "Story Sections."'),
+        prev: 'workflow-step-guider',
+        next: 'section-thumbnail-guider'
+      });
+      guiders.createGuider({
+        id: 'section-thumbnail-guider',
+        attachTo: '.section-thumbnail:first',
+        buttons: [
+          {
+            name: gettext("Prev"),
+            onclick: guiders.prev
+          },
+          {
+            name: gettext("Next"),
+            onclick: guiders.next
+          }
+        ],
+        position: 2,
+        title: gettext("Select the section you want to edit."),
+        description: gettext("Click on a section to edit it. The section you are actively editing is highlighted."),
+        prev: 'section-list-guider',
+        next: 'section-manipulation-guider'
+      });
+      guiders.createGuider({
+        id: 'section-manipulation-guider',
+        attachTo: '.section-thumbnail',
+        buttons: [
+          {
+            name: gettext("Prev"),
+            onclick: guiders.prev
+          },
+          {
+            name: gettext("Next"),
+            onclick: guiders.next
+          }
+        ],
+        position: 2,
+        title: gettext("You can also add, move or delete sections."),
+        description: this.template['section-manipulation-guider'](),
+        prev: 'section-thumbnail-guider',
+        next: 'preview-guider'
+      });
+      guiders.createGuider({
+        id: 'preview-guider',
+        attachTo: '.tools .preview',
+        buttons: [
+          {
+            name: gettext("Prev"),
+            onclick: guiders.prev
+          },
+          {
+            name: gettext("Next"),
+            onclick: guiders.next
+          }
+        ],
+        position: 6,
+        title: gettext("Preview your story at any time."),
+        description: gettext("Clicking here lets you preview your story in a new window"),
+        prev: 'section-manipulation-guider',
+        next: 'exit-guider'
+      });
+      guiders.createGuider({
+        id: 'exit-guider',
+        attachTo: '.tools .exit',
+        buttons: [
+          {
+            name: gettext("Prev"),
+            onclick: guiders.prev
+          },
+          {
+            name: gettext("Next"),
+            onclick: guiders.next
+          }
+        ],
+        position: 6,
+        title: gettext("You can leave your story at any time and come back later."),
+        description: this.template['exit-guider'](),
+        prev: 'preview-guider',
+        next: 'help-guider'
+      });
+      guiders.createGuider({
+        attachTo: '.tools .help',
+        buttons: [
+          {
+            name: gettext("Prev"),
+            onclick: guiders.prev
+          },
+          {
+            name: gettext("Next"),
+            onclick: guiders.next
+          }
+        ],
+        position: 6,
+        id: 'help-guider',
+        title: gettext("Get tips on how to make a great story."),
+        description: gettext("Clicking the \"Help\" button shows you tips for the section you're currently editing."),
+        onShow: function() {
+          that.dispatcher.trigger('do:show:help', true);
+        },
+        onHide: function() {
+          that.dispatcher.trigger('do:hide:help', true);
+        },
+        next: 'tooltip-guider'
+      });
+      guiders.createGuider({
+        attachTo: '.workflow-step #build',
+        buttons: [
+          {
+            name: gettext("Close"),
+            onclick: guiders.hideAll
+          }
+        ],
+        position: 6,
+        offset: { left: 0, top: 20 },
+        id: 'tooltip-guider',
+        title: gettext("Need even more tips?"),
+        description: gettext("You can find out more about many of the buttons and links by hovering over them with your mouse. You can also hover over the “Help” icons."),
+        onShow: function() {
+          $('.workflow-step #build').triggerHandler('mouseover');
+        },
+        onHide: function() {
+          // Set a cookie so the user doesn't see the builder tour again
+          // TODO: Set expires option on the cookie
+          $.cookie("storybase_show_builder_tour", false, {path: '/'});
+          $('.workflow-step #build').triggerHandler('mouseout');
+        }
+      });
+      guiders.show('workflow-step-guider');
+    }
+  }
+});
+
 storybase.builder.views.BuilderView = Backbone.View.extend({
   tagName: 'div',
 
@@ -844,6 +1059,10 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.dispatcher = this.options.dispatcher;
     this.help = this.options.help;
     this._relatedStoriesSaved = false;
+    this._tour = new storybase.builder.views.BuilderTour({
+      dispatcher: this.dispatcher,
+      showTour: this.options.showTour
+    });
 
     if (_.isUndefined(this.model)) {
       // Create a new story model instance
@@ -1044,117 +1263,17 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
    * This is called from upstream views.
    */
   onShow: function() {
-    // Recalculate the width of the section list view.
-    var that = this;
-    var showTour = _.isUndefined(guiders) ? false : ($.cookie('storybase_show_builder_tour') === 'false' ? false : true) && this.options.showTour;
-
+    // Dynamically set the padding at the top of the view to
+    // accomodate the workflow/section navigation bar
     this.setPadding();
 
+    // Recalculate the width of the section list view.
     if (this.sectionListView) {
       this.sectionListView.setWidth();
     }
-    
-    if (showTour) { 
-      guiders.createGuider({
-        attachTo: '#toggle-section-list',
-        buttons: [
-          {
-            name: gettext("Next"),
-            onclick: guiders.next
-          }
-        ],
-        position: 3,
-        id: 'section-list-guider',
-        title: gettext("This is your table of contents."),
-        description: gettext("This bar shows the sections in your story. You can hide the bar by clicking on the tab that says “Story Sections.”"),
-        next: 'section-thumbnail-guider'
-      });
-      guiders.createGuider({
-        attachTo: '.section-thumbnail',
-        buttons: [
-          {
-            name: gettext("Prev"),
-            onclick: guiders.prev
-          },
-          {
-            name: gettext("Next"),
-            onclick: guiders.next
-          }
-        ],
-        position: 2,
-        id: 'section-thumbnail-guider',
-        title: gettext("Select the section you want to edit."),
-        description: gettext("Click on a section to edit it. The section you are actively editing is highlighted."),
-        prev: 'section-list-guider',
-        next: 'workflow-step-guider'
-      });
-      guiders.createGuider({
-        attachTo: '.workflow-step #build',
-        buttons: [
-          {
-            name: gettext("Prev"),
-            onclick: guiders.prev
-          },
-          {
-            name: gettext("Next"),
-            onclick: guiders.next
-          }
-        ],
-        position: 6,
-        id: 'workflow-step-guider',
-        title: gettext("Building a story takes five simple steps."),
-        description: gettext("<p>Clicking on these tabs lets you switch between the different steps in the story building process. You can always move freely between the steps.</p><ul><li><strong>Build</strong> - Construct your story using text, photos, videos, data visualizations, and other materials.</li><li><strong>Add Data</strong> - Upload or link to source data referenced in your story’s charts, maps, graphs and visualizations.</li><li><strong>Tag</strong> - Label your story with topics and places so that people can easily discover it on Floodlight.</li><li><strong>Review</strong> - Make sure your story is ready to go with spellcheck and other tools.</li><li><strong>Publish/Share</strong></li> - Post your story to Floodlight and your social networks.</li></ul>"),
-        next: 'help-guider'
-      });
-      guiders.createGuider({
-        attachTo: '.tools .help',
-        buttons: [
-          {
-            name: gettext("Prev"),
-            onclick: guiders.prev
-          },
-          {
-            name: gettext("Next"),
-            onclick: guiders.next
-          }
-        ],
-        position: 6,
-        id: 'help-guider',
-        title: gettext("Get tips on how to make a great story."),
-        description: gettext("Clicking the \"Help\" button shows you tips for the section you're currently editing."),
-        onShow: function() {
-          that.dispatcher.trigger('do:show:help', true);
-        },
-        onHide: function() {
-          that.dispatcher.trigger('do:hide:help', true);
-        },
-        next: 'tooltip-guider'
-      });
-      guiders.createGuider({
-        attachTo: '.workflow-step #build',
-        buttons: [
-          {
-            name: gettext("Close"),
-            onclick: guiders.hideAll
-          }
-        ],
-        position: 6,
-        offset: { left: 0, top: 20 },
-        id: 'tooltip-guider',
-        title: gettext("Need even more tips?"),
-        description: gettext("You can find out more about many of the buttons and links by hovering over them with your mouse. You can also hover over the “Help” icons."),
-        onShow: function() {
-          $('.workflow-step #build').triggerHandler('mouseover');
-        },
-        onHide: function() {
-          // Set a cookie so the user doesn't see the builder tour again
-          // TODO: Set expires option on the cookie
-          $.cookie("storybase_show_builder_tour", false, {path: '/'});
-          $('.workflow-step #build').triggerHandler('mouseout');
-        }
-      });
-      guiders.show('section-list-guider');
-    }
+
+    // Show the tour
+    this._tour.show();
   },
 
   getNavView: function() {
@@ -1779,7 +1898,8 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
   addStoryInfoThumbnail: function() {
     var view = new storybase.builder.views.PseudoSectionThumbnailView({
       dispatcher: this.dispatcher,
-      title: "Story Information",
+      title: gettext("Story Information"),
+      tooltip: gettext("This section has basic information people will see when browsing stories on the site"),
       pseudoSectionId: 'story-info'
     });
     this._sortedThumbnailViews.push(view);
@@ -1789,7 +1909,8 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
   addCallToActionThumbnail: function() {
     var view = new storybase.builder.views.PseudoSectionThumbnailView({
       dispatcher: this.dispatcher,
-      title: "Call to Action",
+      title: gettext("Call to Action"),
+      tooltip: gettext("Inspire your readers to act after they read your story"),
       pseudoSectionId: 'call-to-action'
     });
     this._sortedThumbnailViews.push(view);
@@ -1846,6 +1967,15 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
     this.$el.append(this.sectionNavView.el);
     if (this.navView) {
       this.$el.append(this.navView.el);
+    }
+    // Add tooltips
+    if (jQuery().tooltipster) {
+      this.$('#toggle-section-list.tooltip').tooltipster({
+        position: 'bottom',
+        // Set the text here, because the text from the title attribute
+        // was disappearing
+        overrideText: gettext('You can hide or reveal the table of contents bar by clicking here'),
+      });
     }
     this.delegateEvents();
 
@@ -2098,9 +2228,15 @@ storybase.builder.views.PseudoSectionThumbnailView = Backbone.View.extend(
 
     render: function() {
       var context = {
-        title: this.title
+        title: this.title,
+        tooltip: this.options.tooltip
       };
       this.$el.html(this.template(context));
+      if (this.options.tooltip && jQuery().tooltipster) {
+        this.$('.section-thumbnail').tooltipster({
+          position: 'bottom'
+        });
+      }
       this.delegateEvents();
       return this;
     },

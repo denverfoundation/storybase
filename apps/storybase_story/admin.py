@@ -4,7 +4,7 @@ from django.contrib import admin
 #from django.contrib.admin import SimpleListFilter
 
 from storybase.admin import (StorybaseModelAdmin, StorybaseStackedInline,
-    obj_title)
+    obj_title, toggle_featured)
 from storybase_asset.models import Asset
 from storybase_story.models import (Story, StoryTranslation,
     Section, SectionTranslation, SectionAsset, SectionRelation,
@@ -37,11 +37,12 @@ class StoryAdmin(StorybaseModelAdmin):
     search_fields = ['storytranslation__title', 'author__first_name',
                      'author__last_name']
     list_display = (obj_title, 'author', 'last_edited', 'status', 'view_link')
-    list_filter = ('status', 'author')
+    list_filter = ('status', 'author', 'on_homepage')
     filter_horizontal = ['assets', 'featured_assets', 'locations', 
                          'places', 'projects', 'organizations', 'topics']
     inlines = [SectionInline, StoryTranslationInline]
     prefix_inline_classes = ['StoryTranslationInline']
+    actions = [toggle_featured]
 
     def get_object(self, request, object_id):
         """
@@ -140,9 +141,11 @@ class StoryTemplateTranslationInline(StorybaseStackedInline):
 
 
 class StoryTemplateAdmin(StorybaseModelAdmin):
-    raw_id_fields = ("story",)
+    raw_id_fields = ("story", "examples")
     inlines = [StoryTemplateTranslationInline]
     prefix_inline_classes = ['StoryTemplateTranslationInline']
+    # TODO: Limit examples field queryset to only stories that use this
+    # template
 
 
 class SectionLayoutTranslationInline(StorybaseStackedInline):
