@@ -883,10 +883,6 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         attachTo: '.workflow-step #build',
         buttons: [
           {
-            name: gettext("Prev"),
-            onclick: guiders.prev
-          },
-          {
             name: gettext("Next"),
             onclick: guiders.next
           }
@@ -901,6 +897,10 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         attachTo: '#toggle-section-list',
         buttons: [
           {
+            name: gettext("Prev"),
+            onclick: guiders.prev
+          },
+          {
             name: gettext("Next"),
             onclick: guiders.next
           }
@@ -914,7 +914,7 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
       });
       guiders.createGuider({
         id: 'section-thumbnail-guider',
-        attachTo: '.section-thumbnail',
+        attachTo: '.section-thumbnail:first',
         buttons: [
           {
             name: gettext("Prev"),
@@ -1035,7 +1035,7 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
           $('.workflow-step #build').triggerHandler('mouseout');
         }
       });
-      guiders.show('section-list-guider');
+      guiders.show('workflow-step-guider');
     }
   }
 });
