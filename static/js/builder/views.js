@@ -1898,7 +1898,8 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
   addStoryInfoThumbnail: function() {
     var view = new storybase.builder.views.PseudoSectionThumbnailView({
       dispatcher: this.dispatcher,
-      title: "Story Information",
+      title: gettext("Story Information"),
+      tooltip: gettext("This section has basic information people will see when browsing stories on the site"),
       pseudoSectionId: 'story-info'
     });
     this._sortedThumbnailViews.push(view);
@@ -1908,7 +1909,8 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
   addCallToActionThumbnail: function() {
     var view = new storybase.builder.views.PseudoSectionThumbnailView({
       dispatcher: this.dispatcher,
-      title: "Call to Action",
+      title: gettext("Call to Action"),
+      tooltip: gettext("Inspire your readers to act after they read your story"),
       pseudoSectionId: 'call-to-action'
     });
     this._sortedThumbnailViews.push(view);
@@ -1965,6 +1967,15 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
     this.$el.append(this.sectionNavView.el);
     if (this.navView) {
       this.$el.append(this.navView.el);
+    }
+    // Add tooltips
+    if (jQuery().tooltipster) {
+      this.$('#toggle-section-list.tooltip').tooltipster({
+        position: 'bottom',
+        // Set the text here, because the text from the title attribute
+        // was disappearing
+        overrideText: gettext('You can hide or reveal the table of contents bar by clicking here'),
+      });
     }
     this.delegateEvents();
 
@@ -2217,9 +2228,15 @@ storybase.builder.views.PseudoSectionThumbnailView = Backbone.View.extend(
 
     render: function() {
       var context = {
-        title: this.title
+        title: this.title,
+        tooltip: this.options.tooltip
       };
       this.$el.html(this.template(context));
+      if (this.options.tooltip && jQuery().tooltipster) {
+        this.$('.section-thumbnail').tooltipster({
+          position: 'bottom'
+        });
+      }
       this.delegateEvents();
       return this;
     },

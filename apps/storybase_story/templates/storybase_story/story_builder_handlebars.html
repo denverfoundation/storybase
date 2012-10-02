@@ -48,7 +48,7 @@ You can <strong>customize</strong> some templates by adding and reordering secti
 </script>
 
 <script type="text/x-handlebars-template" id="section-list-template">
-<a id="toggle-section-list" href="#"></a>
+    <a id="toggle-section-list" href="#" title="{{gettext message="You can hide or reveal the table of contents bar by clicking here"}}" class="tooltip"></a>
 <div class="sections-container">
     <a class="scroll-left"><</a>
     <div class="sections-clip">
@@ -67,7 +67,7 @@ You can <strong>customize</strong> some templates by adding and reordering secti
 {{#if index}}
 <div class="spacer"><div><a class="add-section tooltip" data-index="{{index}}" title='{{gettext message="Add a section"}}' href="#">+</a></div></div>
 {{/if}}
-<div class="section-thumbnail{{#if isNew}} new{{/if}}">
+<div class="section-thumbnail{{#if isNew}} new{{/if}}"{{#if tooltip}} title="{{tooltip}}"{{/if}}>
 {{#if id}}<a class="remove" href="#" title='{{gettext message="Remove section"}}'>x</a>{{/if}}
 <div class="title">{{ title }}</div>
 </div>
