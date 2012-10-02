@@ -136,7 +136,6 @@ p.byline{overflow:hidden;font-style:italic;}
 .content-page.object-detail h4{font-size:19px;color:#333;margin-bottom:0;}
 .content-page.object-detail .object img{width:100%;}
 .content-page.object-detail .object #launch-story-viewer{margin:5px 0;font-size:16px;}
-.content-page.object-detail .object-featured-asset,.content-page.object-detail .related-stories,.content-page.object-detail .citizen-comments{margin-right:40px;}
 .content-page.object-detail .object+hr,.content-page.object-detail .story-outreach{clear:left;}
 .content-page.object-detail .connected-stories dl{margin:10px;}
 .content-page.object-detail .call-to-action ul{list-style:disc !important;}
@@ -313,7 +312,6 @@ input[name=address]{width:250px;margin-bottom:10px;}
 .content-page.object-detail h4{font-size:19px;color:#333;margin-bottom:0;}
 .content-page.object-detail .object img{width:100%;}
 .content-page.object-detail .object #launch-story-viewer{margin:5px 0;font-size:16px;}
-.content-page.object-detail .object-featured-asset,.content-page.object-detail .related-stories,.content-page.object-detail .citizen-comments{margin-right:40px;}
 .content-page.object-detail .object+hr,.content-page.object-detail .story-outreach{clear:left;}
 .content-page.object-detail .connected-stories dl{margin:10px;}
 .content-page.object-detail .call-to-action ul{list-style:disc !important;}
