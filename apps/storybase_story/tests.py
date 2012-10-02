@@ -1688,6 +1688,7 @@ class StoryResourceTest(ResourceTestCase):
                                 'connected_prompt',
                                 'contact_info',
                                 'created',
+                                'featured_asset_url',
                                 'languages', 
                                 'last_edited',
                                 'license',

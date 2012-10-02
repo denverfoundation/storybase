@@ -249,7 +249,7 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
             return featured_asset.render_thumbnail(format=format, 
                                                    **thumbnail_options)
 
-    def featured_asset_thumbnail_url(self):
+    def featured_asset_thumbnail_url(self, include_host=True):
         """Return the URL of the featured asset's thumbnail
 
         Returns None if the asset cannot be converted to a thumbnail image.
@@ -260,7 +260,12 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
             # No featured assets
             return None
         else:
-            return featured_asset.get_thumbnail_url(include_host=True)
+            thumbnail_options = {
+                'width': 222,
+                'height': 222,
+                'include_host': include_host
+            }
+            return featured_asset.get_thumbnail_url(**thumbnail_options)
 
     def render_story_structure(self, format='html'):
         """Render a representation of the Story structure"""

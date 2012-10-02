@@ -41,6 +41,7 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
     organizations = fields.ListField(readonly=True)
     projects = fields.ListField(readonly=True)
     places = fields.ListField(readonly=True)
+    featured_asset_url = fields.CharField(readonly=True)
     # A list of lat/lon values for related Location objects as well as
     # centroids of Place tags
     points = fields.ListField(readonly=True)
@@ -177,6 +178,9 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
         Add time zone to last_edited date
         """
         return add_tzinfo(bundle.data['last_edited'])
+
+    def dehydrate_featured_asset_url(self, bundle):
+        return bundle.obj.featured_asset_thumbnail_url(include_host=False)
 
     def _get_facet_field_name(self, field_name):
         """Convert public filter name to underlying Haystack index field"""
