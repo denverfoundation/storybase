@@ -527,7 +527,7 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.WorkflowNavVi
     if (this.options.visibleSteps.build) {
       items.push({
         id: 'build',
-        title: gettext("Organize your thoughts, tell your story"),
+        title: gettext("Construct your story using text, photos, videos, data visualizations, and other materials"),
         text: gettext("Build"),
         visible: true,
         selected: false,
@@ -537,7 +537,7 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.WorkflowNavVi
     if (this.options.visibleSteps.data) {
       items.push({
         id: 'data',
-        title: gettext("Add raw data for charts, tables, maps and other visualizations that you used in your story"),
+        title: gettext("Upload or link to source data referenced in your story’s charts, maps, graphs and visualizations"),
         text: gettext('Add Data'),
         visible: true,
         enabled: 'isStorySaved',
@@ -548,7 +548,7 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.WorkflowNavVi
     if (this.options.visibleSteps.tag) {
       items.push({
         id: 'tag',
-        title: gettext("Help others discover your story"),
+        title: gettext("Label your story with topics and places so that people can easily discover it on Floodlight"),
         text: gettext('Tag'),
         visible: true,
         enabled: 'isStorySaved',
@@ -559,7 +559,8 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.WorkflowNavVi
     if (this.options.visibleSteps.review) {
       items.push({
         id: 'review',
-        title: gettext("Make sure your story is good to go"),
+        //title: gettext("Make sure your story is ready to go with spellcheck and other tools"),
+        title: gettext("Make sure your story is ready to go"),
         text: gettext('Review'),
         visible: true,
         enabled: 'isStorySaved',
@@ -570,7 +571,7 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.WorkflowNavVi
     if (this.options.visibleSteps.publish) {
       items.push({
         id: 'publish',
-        title: gettext("Publish your story and share it with others"),
+        title: gettext("Post your story to Floodlight and your social networks"),
         text: gettext('Publish/Share'),
         visible: true,
         enabled: 'isStorySaved',
@@ -630,7 +631,7 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
     return [
       {
         id: 'help',
-        title: gettext("Get help on the current story section"),
+        title: gettext("Get storytelling tips for the section you're currently editing"),
         text: gettext('Help'),
         callback: 'toggleHelp', 
         visible: true 
@@ -644,7 +645,7 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
       },
       {
         id: 'preview',
-        title: gettext("View your story in the story viewer (opens in a new window)"),
+        title: gettext("Preview your story in a new window"),
         text: gettext('Preview'),
         callback: 'previewStory',
         visible: false, 
@@ -652,14 +653,14 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
       },
       {
         id: 'start-over',
-        title: gettext("Leave your story in its current state and start a new story, with a new template"),
+        title: gettext("Leave your story and start a new one with a different template"),
         text: gettext('Start Over'),
         path: this.options.startOverUrl,
         visible: false 
       },
       {
         id: 'exit',
-        title: gettext("Leave the story builder and go to the home page"),
+        title: gettext("Leave the Story Builder and go back to the homepage. You can always return later"),
         text: gettext('Exit'),
         path: '/',
         visible: true 
@@ -872,10 +873,7 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
 
   show: function() {
     var that = this;
-    // BOOKMARK
-    // TODO: Uncomment this
-    //var showTour = _.isUndefined(guiders) ? false : ($.cookie('storybase_show_builder_tour') === 'false' ? false : true) && this.options.showTour;
-    var showTour = true;
+    var showTour = _.isUndefined(guiders) ? false : ($.cookie('storybase_show_builder_tour') === 'false' ? false : true) && this.options.showTour;
 
     if (showTour) { 
       guiders.createGuider({
