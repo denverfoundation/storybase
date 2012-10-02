@@ -719,6 +719,11 @@ class StoryTemplateResource(TranslatedModelResource):
     tag_line = fields.CharField(attribute='tag_line')
     story = fields.ToOneField(StoryResource, attribute='story', 
                                blank=True, null=True)
+    ingredients = fields.CharField(attribute='ingredients', blank=True,
+                                   null=True)
+    best_for = fields.CharField(attribute='best_for', blank=True, null=True)
+    tip = fields.CharField(attribute='tip', blank=True, null=True)
+    examples = fields.ListField(blank=True, null=True)
     
     class Meta:
         queryset = StoryTemplate.objects.all()
@@ -794,6 +799,13 @@ class StoryTemplateResource(TranslatedModelResource):
         if connected_template_slug:
             objects = objects.exclude(slug=connected_template_slug)
         return objects 
+
+    def dehydrate_examples(self, bundle):
+        if bundle.obj.examples:
+            return [{'title': story.title, 'url': story.get_absolute_url()}
+                    for story in bundle.obj.examples.all()]
+        else:
+            return []
 
 
 class PutListSubResource(DelayedAuthorizationResource,HookedModelResource):

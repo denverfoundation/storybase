@@ -44,7 +44,30 @@ You can <strong>customize</strong> some templates by adding and reordering secti
 <p>&hellip;{{tag_line}}</p>
 {{/if}}
 <p>{{description}}</p>
-<p>{{gettext message="Time needed"}}: {{time_needed}}</p>
+<dl>
+    <dt>{{gettext message="Time needed"}}</dt>
+    <dd>{{time_needed}}</dd>
+    {{#if level}}
+    <dt>{{gettext message="Level"}}</dt>
+    <dd>{{level}}</dd>
+    {{/if}}
+    {{#if ingredients}}
+    <dt>{{gettext message="Recommended ingredients"}}</dt>
+    <dd>{{ingredients}}</dd>
+    {{/if}}
+    {{#if best_for}}
+    <dt>{{gettext message="Best for"}}</dt>
+    <dd>{{best_for}}</dd>
+    {{/if}}
+    {{#if tip}}
+    <dt>{{gettext message="Tip"}}</dt>
+    <dd>{{tip}}</dd>
+    {{/if}}
+    {{#if examples}}
+    <dt>{{gettext message="Examples"}}</dt>
+    <dd>{{#each examples}}<a href="{{this.url}}">{{this.title}}</a> {{/each}}</dd>
+    {{/if}}
+</dl>
 </script>
 
 <script type="text/x-handlebars-template" id="section-list-template">
