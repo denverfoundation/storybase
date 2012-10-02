@@ -31,8 +31,6 @@
 
   <!-- CSS: implied media=all -->
   <!-- CSS concatenated and minified via ant build script-->
-  <!-- 1140px Grid styles for IE -->
-  {% addtoblock "css" %}<!--[if lte IE 9]><link rel="stylesheet" href="{{ STATIC_URL }}css/ie.css" type="text/css" media="screen" /><![endif]-->{% endaddtoblock %}
 
   <!-- custom 1000px grid based on 960 grid, http://960.gs -->
   {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/grid.css">{% endaddtoblock %}
@@ -99,7 +97,7 @@
 	<div class="footer">
 		<div class="shell">
 			<div class="left">
-				<p>Copyright 2012 The Floodlight Project. All rights reserved.</p>
+				<p>{% trans "Copyright 2012 The Floodlight Project. All rights reserved." %}</p>
 				<ul class="social">
 					<li class="icon1"><a href="#">rss</a></li>
 					<li class="icon2"><a href="#">twitter</a></li>

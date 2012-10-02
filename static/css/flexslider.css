@@ -58,14 +58,14 @@ ul.slides { list-style:none !important; }
 .flex-direction-nav li .prev { position:absolute; top:0; left:0;  z-index: 5000;  }
 .flex-direction-nav li .disabled {opacity: .3; filter:alpha(opacity=30); cursor: default;}
 
-.flex-direction-nav li .next { width:75px; height:100%; background:#fff url('images/right-arrow2.jpg') no-repeat right 0; font-size: 0; line-height: 0; text-indent: -4000px;  }
-.flex-direction-nav li .prev { width:75px; height:100%; background:#fff url('images/left-arrow2.jpg') no-repeat 0 0; font-size: 0; line-height: 0; text-indent: -4000px;  }
+.flex-direction-nav li .next { width:75px; height:100%; background:#fff url('../img/right-arrow2.jpg') no-repeat right 0; font-size: 0; line-height: 0; text-indent: -4000px;  }
+.flex-direction-nav li .prev { width:75px; height:100%; background:#fff url('../img/left-arrow2.jpg') no-repeat 0 0; font-size: 0; line-height: 0; text-indent: -4000px;  }
 
 .cols  .prev, .cols .next { margin-top:22px !important;  }
 /* Control Nav */
 .flex-control-nav { list-style:none; list-style:none; display:block !important; margin-top:33px; text-align:center;  }
 .flex-control-nav li { display:inline-block; padding:0 3px;  }
-.flex-control-nav li a { 	display:inline-block; width:9px; height:9px; background:url('images/flex-control-nav.png') no-repeat right 0; font-size: 0; line-height: 0; text-indent: -4000px;   }
+.flex-control-nav li a { 	display:inline-block; width:9px; height:9px; background:url('../img/flex-control-nav.png') no-repeat right 0; font-size: 0; line-height: 0; text-indent: -4000px;   }
 .flex-control-nav li a.active { background-position:0 0; }
 
 

@@ -19,11 +19,11 @@
 
 {% block base_content %}
 
-		<div class="title">
+		<div class="intro">
 			<div class="flexslider">
 				<ul class="slides">
 					<li>
-                    <h2><span>{% placeholder intro-carousel-title-1 or %}{% trans "Tell your story. Transform our community." %}{% endplaceholder %}</span></h2>
+						<h2><span>{% placeholder intro-carousel-title-1 or %}{% trans "Tell your story. Transform our community." %}{% endplaceholder %}</span></h2>
 						{% placeholder intro-carousel-content-1 or %}
 						<p>
                         {% trans "Your story matters. Without it, nothing happens. Floodlight will help you build, tell and share  powerful stories that will make community change possible." %} <a href="{% url story_builder %}"><em>{% trans "Create your story now." %}</em></a> {% trans "Or" %}, <a href="{% url explore_stories %}"><em>{% trans "see the stories others are sharing." %}</em>
@@ -48,7 +48,7 @@
 						<div class="page-nav">
 							<ul>
                                 <li><a href="#" class="left-nav" rel="2">{% trans "Your Story Matters" %}</a></li>
-                                <li><span class="sep"></span><a href="#" class="right-nav" rel="2">{% trans "Explrore Stories" %}</a></li>
+                                <li><span class="sep"></span><a href="#" class="right-nav" rel="2">{% trans "Explore Stories" %}</a></li>
 							</ul>
 							<div class="cl"> </div>
 						</div>
@@ -57,7 +57,7 @@
                     <h2><span>{% placeholder intro-carousel-title-3 or %}{% trans "See and show your community in a new light." %}{% endplaceholder %}</span></h2>
 						{% placeholder intro-carousel-content-3 or %}
 						<p>
-                        {% trans "Explore the stories others are sharing and discover new meaning in your neighborhood. Floodlight is where stories become movements." %} <strong><em>{% trans "Because what we can’t see, we can’t change." %}</em></strong>
+                        {% trans "Explore the stories others are sharing and discover new meaning in your neighborhood. Floodlight is where stories become movements." %} <strong><em><a href="{% url explore_stories %}">{% trans "Because what we can’t see, we can’t change." %}</a></em></strong>
 						</p>
 						{% endplaceholder %}
 						<div class="page-nav">
@@ -79,11 +79,11 @@
 			</div>
 		</div>
 		<div class="flexslider-holder">
-			<div class="flexslider col left">
+			<div class="flexslider col left featured-projects">
 				<h3><span>Featured Projects</span></h3>
 				{% featured_projects %}
 			</div>
-			<div class="flexslider col right">
+			<div class="flexslider col right featured-stories">
 				<h3><span>Featured Stories</span></h3>
 				{% featured_stories %}
 			</div>

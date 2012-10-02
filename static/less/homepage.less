@@ -1,9 +1,12 @@
 .homepage {
-	.title {
+	.intro {
 		padding-top:25px; 
 		padding-bottom:55px;
 		
-		h2 { font-size:48px; background-position: 0 18px; }
+		h2 { 
+			font-size:45px; 
+			background: none;
+		}
 		p {
 			font-size:18px; 
 			color:#666666; 
@@ -22,6 +25,21 @@
 	
 	.bottom .flexslider .flex-control-nav,
 	.bottom .flexslider .flex-direction-nav { display:none !important;  }
+
+	.featured-stories, 
+	.featured-projects {
+		h3 {
+			.line-through-header;
+			// a bit silly: this is to bring the header bg image up 
+			// over the flexslider controls which obscure their ends
+			// on the left and right.
+			z-index:10000;
+			position:relative;
+		}
+		img {
+			margin:0 auto;
+		}
+	}
 
 	.images { 
 		width:100%; 
@@ -42,7 +60,7 @@
 				display:block;
 			}
 			span.overlay { 
-				background:url('images/image-overlay.png')  0 0; 
+				background:url('../img/image-overlay.png')  0 0; 
 				display:block; 
 				position:absolute; 
 				top:0; 
@@ -54,7 +72,7 @@
 				position:absolute; 
 				bottom:0; 
 				left:0; 
-				background:url('images/transparent.png')  0 0; 
+				background:url('../img/transparent.png')  0 0; 
 				display:block; 
 				width:100%; 
 				display:none;
@@ -89,7 +107,7 @@
 		span.sep { 
 			width:1px; 
 			height:42px; 
-			background:url('images/sep.png') no-repeat 0 0; 
+			background:url('../img/sep.png') no-repeat 0 0; 
 			display:inline-block; 
 			top:12px; 
 			position:relative; 
@@ -97,11 +115,11 @@
 			margin-right:15px;
 		}
 		.left-nav {
-			background:url('images/left-arrow2.png') no-repeat 0 3px;
+			background:url('../img/left-arrow2.png') no-repeat 0 3px;
 			padding-left:25px;
 		}
 		.right-nav {
-			background:url('images/right-arrow2.png') no-repeat right 3px;
+			background:url('../img/right-arrow2.png') no-repeat right 3px;
 			padding-right:25px;
 		}
 	} 

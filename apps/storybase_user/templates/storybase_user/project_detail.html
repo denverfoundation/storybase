@@ -4,12 +4,12 @@
 
 {% block head_title %}{{ project.name }}{{ block.super }}{% endblock %}
 
-{% block body_title_markup %}{% endblock %}
+{% block body_title %}{{ project.name }}{% endblock %}
 
 
 {% block sidebar %}
-<h3>{% trans "Contributing Organizations" %}</h3>
-<ul class="actions">
+<h4>{% trans "Contributing Organizations" %}</h4>
+<ul class="contributing-organizations">
 	{% for organization in project.organizations.all %}
 	  <li>{{ organization.name }}</li>
 	{% endfor %}
@@ -21,32 +21,45 @@
 {% block twocol-content %}
 		<div class="content-page object-detail project">
 			<section class="object-summary content-block">
-				{% if project.description %}
 				<div class="grid_7 alpha">
-					<h2>{{ project.name }}</h2>
 					<section class="summary">
-						{{ project.description|safe|linebreaks }}
+						{% if project.description %}
+							{{ project.description|safe|linebreaks }}
+						{% endif %}
 					</section>
 				</div>
-				{% endif %}
+
 				<div class="grid_3 omega">
-					{% include "addthis_widget.html" %}
 					{# TODO: wire in real asset #}
-					<img src="/static/css/images/image3.jpg" title="temp asset">
+					<section class="object-featured-asset">
+						<img src="/static/img/image3.jpg" title="temp asset">
+					</section>
+					{% include "addthis_widget.html" %}
 				</div>
 				<div class="object-metadata grid_10">
 					<section class="grid_3 alpha">
 						<h4>{% trans "Contact Info" %}</h4>
-						<addr></addr>
+						<addr>
+							370 17th Street, Suite 5300<br>
+							Denver, CO 80202<br>
+							(303) 825-6246<br>
+							<a href="http://www.piton.org">www.piton.org</a><br>
+						</addr>
 					</section>
 					<section class="grid_3">
 						<h4>{% trans "Project Contributors" %}</h4>
 						<ul>
+							<li><a href="#">Author Name</a></li>
+							<li><a href="#">Author Name</a></li>
+							<li><a href="#">Author Name</a></li>
 						</ul>
 					</section>
 					<section class="grid_3 omega">
 						<h4>{% trans "Sponsoring Organizations" %}</h4>
 						<ul>
+							<li><a href="#">Organization Name</a></li>
+							<li><a href="#">Organization Name</a></li>
+							<li><a href="#">Organization Name</a></li>
 						</ul>
 					</section>
 					</dl>
@@ -55,7 +68,7 @@
 			<section class="featured-story content-block">
 				<h3>{% trans "Featured Story" %}</h3>
 				<div class="grid_2 alpha">
-					<a href="#"><img src="/static/css/images/image3.jpg" title="temp asset" ></a>
+					<a href="#"><img src="/static/img/image3.jpg" title="temp asset" ></a>
 				</div>
 				<div class="grid_8 omega">
 					<h4><a href="#">Story Title</a></h4>
@@ -67,7 +80,7 @@
 				<ul>
 					<li>
 						<div class="grid_1 alpha">
-							<a href="#"><img src="/static/css/images/image3.jpg" title="temp asset"></a>
+							<a href="#"><img src="/static/img/image3.jpg" title="temp asset"></a>
 						</div>
 						<div class="grid_9 omega">
 							<h4><a href="#">Story Title</a></h4>
@@ -76,7 +89,7 @@
 					</li>
 					<li>
 						<div class="grid_1 alpha">
-							<a href="#"><img src="/static/css/images/image3.jpg" title="temp asset"></a>
+							<a href="#"><img src="/static/img/image3.jpg" title="temp asset"></a>
 						</div>
 						<div class="grid_9 omega">
 							<h4><a href="#">Story Title</a></h4>
@@ -107,7 +120,7 @@
 					</header>
 					<section class="object-featured-asset">
 						{# TODO: wire in real asset #}
-						<img src="/static/css/images/image3.jpg" title="temp asset">
+						<img src="/static/img/image3.jpg" title="temp asset">
 					</section>
 					<section class="object-summary">
 						<section class="summary">
