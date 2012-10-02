@@ -249,7 +249,7 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
             return featured_asset.render_thumbnail(format=format, 
                                                    **thumbnail_options)
 
-    def featured_asset_thumbnail_url(self):
+    def featured_asset_thumbnail_url(self, include_host=True):
         """Return the URL of the featured asset's thumbnail
 
         Returns None if the asset cannot be converted to a thumbnail image.
@@ -260,7 +260,12 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
             # No featured assets
             return None
         else:
-            return featured_asset.get_thumbnail_url(include_host=True)
+            thumbnail_options = {
+                'width': 222,
+                'height': 222,
+                'include_host': include_host
+            }
+            return featured_asset.get_thumbnail_url(**thumbnail_options)
 
     def render_story_structure(self, format='html'):
         """Render a representation of the Story structure"""
@@ -743,6 +748,9 @@ class StoryTemplateTranslation(TranslationModel):
     title = ShortTextField()
     tag_line = ShortTextField(blank=True)
     description = models.TextField(blank=True)
+    ingredients = ShortTextField(blank=True)
+    best_for = ShortTextField(blank=True)
+    tip = ShortTextField(blank=True)
 
     def __unicode__(self):
         return self.title
@@ -754,6 +762,9 @@ class StoryTemplate(TranslatedModel):
         ('5 minutes', _('5 minutes')),
         ('30 minutes', _('30 minutes')),
     )
+    LEVEL_CHOICES = (
+        ('beginner', _("Beginner")),
+    )
     
     template_id = UUIDField(auto=True)
     story = models.ForeignKey('Story', blank=True, null=True,
@@ -763,13 +774,21 @@ class StoryTemplate(TranslatedModel):
         choices=TIME_NEEDED_CHOICES, blank=True,
         help_text=_("The amount of time needed to create a story of this " 
                     "type"))
+    level = models.CharField(max_length=140,
+        choices=LEVEL_CHOICES, blank=True,
+        help_text=_("The level of storytelling experience suggested to "
+                    "create stories with this template"))
     slug = models.SlugField(unique=True, 
         help_text=_("A human-readable unique identifier"))
+    examples = models.ManyToManyField('Story', blank=True, null=True,
+        help_text=_("Stories that are examples of this template"),
+        related_name="example_for")
 
     objects = StoryTemplateManager()
 
     # Class attributes to handle translation
-    translated_fields = ['title', 'description', 'tag_line']
+    translated_fields = ['title', 'description', 'tag_line', 'ingredients',
+                         'best_for', 'tip']
     translation_set = 'storytemplatetranslation_set'
     translation_class = StoryTemplateTranslation
 

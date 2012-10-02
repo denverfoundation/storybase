@@ -219,6 +219,11 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     // Computed as: height of the document - top offset of story list container
     // - outer height of story list container
     this.options.pixelsFromListToBottom = $(document).height() - this.storyListView.$el.offset().top - this.storyListView.$el.outerHeight(); 
+    if (jQuery().tooltipster) {
+      this.$('.select-map-view,.select-tile-view,.select-list-view').tooltipster({
+        position: 'bottom'
+      });
+    }
     return this;
   },
 
@@ -580,8 +585,21 @@ storybase.explorer.views.Filters = Backbone.View.extend({
   render: function() {
     var context = this.buildContext();
     this.$el.html(this.template(context));
-    this.$('select').select2({
+    var selects = this.$('select').select2({
       allowClear: true
+    }).each(function() {
+      var select2 = $(this).data('select2');
+      var title = $(this).attr('title');
+      if (title) {
+        select2.container.attr('title', title);
+        if (jQuery().tooltipster) {
+          select2.container.tooltipster({
+            overrideText: title,
+            position: 'bottom'
+          });
+        }
+        
+      }
     });
     return this;
   },

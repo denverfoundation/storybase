@@ -140,9 +140,11 @@ class StoryTemplateTranslationInline(StorybaseStackedInline):
 
 
 class StoryTemplateAdmin(StorybaseModelAdmin):
-    raw_id_fields = ("story",)
+    raw_id_fields = ("story", "examples")
     inlines = [StoryTemplateTranslationInline]
     prefix_inline_classes = ['StoryTemplateTranslationInline']
+    # TODO: Limit examples field queryset to only stories that use this
+    # template
 
 
 class SectionLayoutTranslationInline(StorybaseStackedInline):

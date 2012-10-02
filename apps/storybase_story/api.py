@@ -41,6 +41,7 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
     organizations = fields.ListField(readonly=True)
     projects = fields.ListField(readonly=True)
     places = fields.ListField(readonly=True)
+    featured_asset_url = fields.CharField(readonly=True)
     # A list of lat/lon values for related Location objects as well as
     # centroids of Place tags
     points = fields.ListField(readonly=True)
@@ -177,6 +178,9 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
         Add time zone to last_edited date
         """
         return add_tzinfo(bundle.data['last_edited'])
+
+    def dehydrate_featured_asset_url(self, bundle):
+        return bundle.obj.featured_asset_thumbnail_url(include_host=False)
 
     def _get_facet_field_name(self, field_name):
         """Convert public filter name to underlying Haystack index field"""
@@ -715,6 +719,11 @@ class StoryTemplateResource(TranslatedModelResource):
     tag_line = fields.CharField(attribute='tag_line')
     story = fields.ToOneField(StoryResource, attribute='story', 
                                blank=True, null=True)
+    ingredients = fields.CharField(attribute='ingredients', blank=True,
+                                   null=True)
+    best_for = fields.CharField(attribute='best_for', blank=True, null=True)
+    tip = fields.CharField(attribute='tip', blank=True, null=True)
+    examples = fields.ListField(blank=True, null=True)
     
     class Meta:
         queryset = StoryTemplate.objects.all()
@@ -790,6 +799,13 @@ class StoryTemplateResource(TranslatedModelResource):
         if connected_template_slug:
             objects = objects.exclude(slug=connected_template_slug)
         return objects 
+
+    def dehydrate_examples(self, bundle):
+        if bundle.obj.examples:
+            return [{'title': story.title, 'url': story.get_absolute_url()}
+                    for story in bundle.obj.examples.all()]
+        else:
+            return []
 
 
 class PutListSubResource(DelayedAuthorizationResource,HookedModelResource):

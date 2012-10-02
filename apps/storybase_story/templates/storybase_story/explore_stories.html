@@ -12,9 +12,9 @@ Handlebars templates for rendering Backbone views.
 {% verbatim %}
 <script type="text/x-handlebars-template" id="explorer-template">
 <ul id="view-selector">
-  <li class="tile-view active"><a class="select-tile-view" href="#"><span>{{gettext message="Tile"}}<span></a></li>
-  <li class="list-view"><a class="select-list-view" href="#"><span>{{gettext message="List"}}<span></a></li>
-  <li class="map-view"><a class="select-map-view" href="#"><span>{{gettext message="Map"}}<span></a></li>
+    <li class="tile-view active"><a class="select-tile-view" href="#" title="{{gettext message="Click here to see the stories displayed as tiles"}}"><span>{{gettext message="Tile"}}<span></a></li>
+            <li class="list-view"><a class="select-list-view" href="#" title="{{gettext message="Click here to see a list of stories"}}"><span>{{gettext message="List"}}<span></a></li>
+                    <li class="map-view"><a class="select-map-view" href="#" title="{{gettext message="Click here to view the stories on a map or search for stories near an address"}}"><span>{{gettext message="Map"}}<span></a></li>
 </ul>
 </script>
 
@@ -28,7 +28,7 @@ Handlebars templates for rendering Backbone views.
 <script type="text/x-handlebars-template" id="filters-template">
 <div class="field">
 <label for="topics">{{gettext message="Topic"}}</label>
-<select name="topics" data-placeholder="{{gettext message="Topic"}}">
+<select name="topics" data-placeholder="{{gettext message="Topic"}}" title="{{gettext message="Filter stories by selecting one or more topics"}}">
   <option></option>
   {{#topics}}
   <option value="{{id}}"{{#if selected}}selected{{/if}}>{{name}}</option>
@@ -38,7 +38,7 @@ Handlebars templates for rendering Backbone views.
 
 <div class="field">
 <label for="places">{{gettext message="Place"}}</label>
-<select name="places" data-placeholder="{{gettext message="Place"}}">
+<select name="places" data-placeholder="{{gettext message="Place"}}" title="{{gettext message="Filter stories by selecting one or more places"}}">
   <option></option>
   {{#places}}
   <option value="{{id}}"{{#if selected}}selected{{/if}}>{{name}}</option>
@@ -48,7 +48,7 @@ Handlebars templates for rendering Backbone views.
 
 <div class="field">
 <label for="organizations">{{gettext message="Organization"}}</label>
-<select name="organizations" data-placeholder="{{gettext message="Organization"}}">
+<select name="organizations" data-placeholder="{{gettext message="Organization"}}" title="{{gettext message="Filter stories by selecting an organization"}}">
   <option></option>
   {{#organizations}}
   <option value="{{id}}"{{#if selected}}selected{{/if}}>{{name}}</option>
@@ -58,7 +58,7 @@ Handlebars templates for rendering Backbone views.
 
 <div class="field">
 <label for="projects">{{gettext message="Project"}}</label>
-<select name="projects" data-placeholder="{{gettext message="Project"}}">
+<select name="projects" data-placeholder="{{gettext message="Project"}}" title="{{gettext message="Filter stories by selecting a project"}}">
   <option></option>
   {{#projects}}
   <option value="{{id}}"{{#if selected}}selected{{/if}}>{{name}}</option>
@@ -68,7 +68,7 @@ Handlebars templates for rendering Backbone views.
 
 <div class="field">
 <label for="languages">{{gettext message="Language"}}</label>
-<select name="languages" data-placeholder="{{gettext message="Language"}}">
+<select name="languages" data-placeholder="{{gettext message="Language"}}" title="{{gettext message="Filter stories by language"}}">
   <option></option>
   {{#languages}}
   <option value="{{id}}"{{#if selected}}selected{{/if}}>{{name}}</option>
@@ -87,7 +87,7 @@ Handlebars templates for rendering Backbone views.
 <script type="text/x-handlebars-template" id="story-partial-template">
 <a href="{{url}}" class="grid_3 alpha">
   <em class="hover"></em>
-  <img style="height:132px;" src="{% endverbatim %}{{ STATIC_URL }}{% verbatim %}css/images/image8.jpg">
+  <img style="/*height:132px;*/" src="{{featured_asset_url}}">
 </a>
 <div class="grid_9 omega">
   <h3>{{>story_link}}</h3>
@@ -149,6 +149,7 @@ Handlebars templates for rendering Backbone views.
 {% block base_content %}
 {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/leaflet/leaflet.css">{% endaddtoblock %}
 {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/select2/select2.css">{% endaddtoblock %}
+{% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/tooltipster-1.2/css/tooltipster.css">{% endaddtoblock %}
 {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/explorer.css">{% endaddtoblock %}
 
 
@@ -173,6 +174,7 @@ $ = jQuery;
 <script src="{{ STATIC_URL}}js/libs/leaflet/leaflet.js"></script>
 <script src="{{ STATIC_URL}}js/libs/leafclusterer.js"></script>
 <script src="{{ STATIC_URL}}js/libs/spin.min.js"></script>
+<script src="{{ STATIC_URL }}js/libs/tooltipster-1.2/js/jquery.tooltipster.min.js"></script>
 <script src="{{ STATIC_URL }}js/models.js"></script>
 <script src="{{ STATIC_URL }}js/utils.js"></script>
 <script src="{{ STATIC_URL }}js/explorer/application.js"></script>
