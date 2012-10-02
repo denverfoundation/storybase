@@ -12,7 +12,8 @@ from django.http import HttpResponse
 from django.utils.text import capfirst
 from django.utils.translation import ugettext_lazy as _
 
-from storybase.admin import StorybaseModelAdmin, StorybaseStackedInline
+from storybase.admin import (StorybaseModelAdmin, StorybaseStackedInline,
+                             toggle_featured)
 from storybase_story.models import Story
 from storybase_user.auth.utils import send_account_deactivate_email
 from storybase_user.models import (Organization, OrganizationTranslation, 
@@ -217,6 +218,7 @@ class ProjectAdmin(StorybaseModelAdmin):
     readonly_fields = ['created', 'last_edited', 'project_id']
     inlines = [ProjectStoryInline, ProjectTranslationInline]
     prefix_inline_classes = ['ProjectTranslationInline']
+    actions = [toggle_featured]
 
 
 admin.site.register(Project, ProjectAdmin)

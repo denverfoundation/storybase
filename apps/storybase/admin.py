@@ -92,3 +92,14 @@ def obj_title(obj):
     else:
         return str(obj)
 obj_title.short_description = 'Title'
+
+
+def toggle_featured(modeladmin, request, queryset):
+    featured_field_name = 'on_homepage'
+    # In Django 1.5, we could use an F() object to update this in a single
+    # query. See https://docs.djangoproject.com/en/dev/topics/db/queries/#filters-can-reference-fields-on-the-model
+    for obj in queryset:
+        featured = getattr(obj, featured_field_name)
+        setattr(obj, featured_field_name, not featured)
+        obj.save()
+toggle_featured.short_description = "Toggle the featured on homepage status"

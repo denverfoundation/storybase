@@ -12,6 +12,7 @@ from django.utils import simplejson
 
 from tastypie.test import ResourceTestCase
 
+from storybase.admin import toggle_featured
 from storybase.tests.base import SloppyComparisonTestMixin, FixedTestApiClient
 from storybase.utils import slugify
 from storybase_asset.models import (Asset, HtmlAsset, HtmlAssetTranslation,
@@ -363,6 +364,33 @@ class StoryPermissionTest(TestCase):
         perm = "change"
         self.assertTrue(self.story.has_perm(self.user1, perm))
         self.assertFalse(self.story.has_perm(self.user2, perm))
+
+
+class StoryAdminTest(TestCase):
+    fixtures = ['section_layouts.json']
+
+    """Test case for the Story model's Django admin interface"""
+    def test_toggle_featured(self):
+        """
+        Test the admin action function that toggles the "featured
+        on homepage" flag.
+        """
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status='published',
+                             on_homepage=True)
+        story2 = create_story(title="Test Related Story", 
+                             summary="Test Related Story Summary",
+                             byline="Test Related Story Byline",
+                             status='published',
+                             on_homepage=False)
+        self.assertEqual(story.on_homepage, True)
+        self.assertEqual(story2.on_homepage, False)
+        toggle_featured(None, None,
+                        Story.objects.filter(pk__in=[story.pk, story2.pk]))
+        story = Story.objects.get(pk=story.pk)
+        story2 = Story.objects.get(pk=story2.pk)
+        self.assertEqual(story.on_homepage, False)
+        self.assertEqual(story2.on_homepage, True)
 
 
 class StoryApiTest(TestCase):
