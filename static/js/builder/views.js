@@ -804,7 +804,6 @@ storybase.builder.views.StoryTemplateView = Backbone.View.extend({
   },
 
   render: function() {
-    console.debug(this.model.toJSON());
     this.$el.html(this.template(this.model.toJSON()));
     return this;
   },
