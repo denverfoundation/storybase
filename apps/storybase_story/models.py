@@ -743,6 +743,9 @@ class StoryTemplateTranslation(TranslationModel):
     title = ShortTextField()
     tag_line = ShortTextField(blank=True)
     description = models.TextField(blank=True)
+    ingredients = ShortTextField(blank=True)
+    best_for = ShortTextField(blank=True)
+    tip = ShortTextField(blank=True)
 
     def __unicode__(self):
         return self.title
@@ -754,6 +757,9 @@ class StoryTemplate(TranslatedModel):
         ('5 minutes', _('5 minutes')),
         ('30 minutes', _('30 minutes')),
     )
+    LEVEL_CHOICES = (
+        ('beginner', _("Beginner")),
+    )
     
     template_id = UUIDField(auto=True)
     story = models.ForeignKey('Story', blank=True, null=True,
@@ -763,13 +769,21 @@ class StoryTemplate(TranslatedModel):
         choices=TIME_NEEDED_CHOICES, blank=True,
         help_text=_("The amount of time needed to create a story of this " 
                     "type"))
+    level = models.CharField(max_length=140,
+        choices=LEVEL_CHOICES, blank=True,
+        help_text=_("The level of storytelling experience suggested to "
+                    "create stories with this template"))
     slug = models.SlugField(unique=True, 
         help_text=_("A human-readable unique identifier"))
+    examples = models.ManyToManyField('Story', blank=True, null=True,
+        help_text=_("Stories that are examples of this template"),
+        related_name="example_for")
 
     objects = StoryTemplateManager()
 
     # Class attributes to handle translation
-    translated_fields = ['title', 'description', 'tag_line']
+    translated_fields = ['title', 'description', 'tag_line', 'ingredients',
+                         'best_for', 'tip']
     translation_set = 'storytemplatetranslation_set'
     translation_class = StoryTemplateTranslation
 
