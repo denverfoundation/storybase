@@ -127,7 +127,7 @@
 	min-width:180px;
 	width:191px;
 	display:block; 
-	font-size:16px; 
+	font-size:13px;
 	color:#fbfaf2; 
 	font-family: 'MuseoSlab500Regular'; 
 	text-shadow:0 -1px 0 #605f5f; 
@@ -169,8 +169,9 @@
 	display:none;
 }
 #filters .select2-container .select2-choice abbr { /* little "x" to clear a filter */
-	/* for now, hide them */
-	left:-32000px;
+	right:22px;
+	top:11px;
+	background-image:url(../img/select2.png);
 }
 #filters a.clear-filters {
 	padding-right: 17px;
@@ -329,4 +330,8 @@ ul#view-selector li a {
 	margin: 0;
 }
 .load-more a { width:110px; height:34px; background:url('../img/load-more.png') no-repeat 0 0; display:block; margin:20px auto 170px;  }
+
+.select2-container .select2-choice span {
+	margin-right:40px;
+}
 /* end */
