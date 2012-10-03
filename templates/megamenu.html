@@ -87,7 +87,11 @@
 				<div class="cl">&nbsp;</div>
 			</div>
 		</li>
-		<li><a href="#">{% trans "ABOUT" %}<em></em></a>
+		{% comment %}
+	       	TODO: Use the page_url template tag instead of hard-coding paths
+		although page_url breaks if the actual page doesn't exist.
+		{% endcomment %}
+		<li><a href="/about/">{% trans "ABOUT" %}<em></em></a>
 			<div class="dd fourcol">
 				<div class="dd-col col1">
 					<ul>
