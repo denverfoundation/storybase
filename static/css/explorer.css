@@ -258,6 +258,7 @@ ul#view-selector li a {
 	padding-top: 12px;
 	margin-bottom: 11px;
 	margin-right: 14px;
+	overflow:hidden;
 }
 #story-list li.story h3,
 #map-container .leaflet-popup h3 {
