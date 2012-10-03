@@ -120,6 +120,8 @@ MIDDLEWARE_CLASSES = (
     'cms.middleware.page.CurrentPageMiddleware',
     'cms.middleware.user.CurrentUserMiddleware',
     'cms.middleware.toolbar.ToolbarMiddleware',
+
+    'storybase.middleware.ExtractContentMiddleware',
 )
 
 ROOT_URLCONF = 'atlas.urls'
