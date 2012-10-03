@@ -72,26 +72,174 @@
 			</div>
 		</div>
 		
-		<h2><span>Featured on Floodlight</span></h2>
+		<h2><span>{% trans "Featured on Floodlight" %}</span></h2>
 		<div class="flexslider-holder">
 			<div class="flexslider full-width">
-				{% placeholder special-content %}
+				{% comment %}
+				if we are actually using this whole carousel-within-a-carousel
+				thing, we could break this out a little more.
+				{% endcomment %}
+				{% placeholder special-content or %}
+				<ul class="slides">
+					<li>
+						<div id="slideContainer" class="image ">
+							<div class="slide-shim">
+								<img src="/static/img/image.jpg" alt=""/>
+								<img src="/static/img/image22.jpg" alt=""/>
+								<img src="/static/img/image.jpg" alt=""/>
+								<img src="/static/img/image22.jpg" alt=""/>
+								<img src="/static/img/image.jpg" alt=""/>
+								<img src="/static/img/image22.jpg" alt=""/>
+								<img src="/static/img/image.jpg" alt=""/>
+								<img src="/static/img/image22.jpg" alt=""/>
+							</div>
+							<a href="#" class="back"></a>
+							<a href="#" class="forward"></a>
+						</div>
+						<div class="text">
+							<h5>Project Name Goes Here</h5>
+							<p><span>Person’s Name Here or Date</span></p>
+							<p>Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit.</p>
+							<p class="more"><a href="#">View Projects</a></p>
+						</div>
+						<div class="cl"> </div>
+					</li>
+					<li>
+						<div id="slideContainer" class="image ">
+							<div class="slide-shim">
+								<img src="/static/img/image.jpg" alt=""/>
+								<img src="/static/img/image22.jpg" alt=""/>
+								<img src="/static/img/image.jpg" alt=""/>
+								<img src="/static/img/image22.jpg" alt=""/>
+								<img src="/static/img/image.jpg" alt=""/>
+								<img src="/static/img/image22.jpg" alt=""/>
+								<img src="/static/img/image.jpg" alt=""/>
+								<img src="/static/img/image22.jpg" alt=""/>
+							</div>
+							<a href="#" class="back"></a>
+							<a href="#" class="forward"></a>
+						</div>
+						<div class="text">
+							<h5>Project Name Goes Here</h5>
+							<p><span>Person’s Name Here or Date</span></p>
+							<p>Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit.</p>
+							<p class="more"><a href="#">View Projects</a></p>
+						</div>
+						<div class="cl"> </div>
+					</li>
+					<li>
+						<div id="slideContainer" class="image ">
+							<div class="slide-shim">
+								<img src="/static/img/image.jpg" alt=""/>
+								<img src="/static/img/image22.jpg" alt=""/>
+								<img src="/static/img/image.jpg" alt=""/>
+								<img src="/static/img/image22.jpg" alt=""/>
+								<img src="/static/img/image.jpg" alt=""/>
+								<img src="/static/img/image22.jpg" alt=""/>
+								<img src="/static/img/image.jpg" alt=""/>
+								<img src="/static/img/image22.jpg" alt=""/>
+							</div>
+							<a href="#" class="back"></a>
+							<a href="#" class="forward"></a>
+						</div>
+						<div class="text">
+							<h5>Project Name Goes Here</h5>
+							<p><span>Person’s Name Here or Date</span></p>
+							<p>Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit.</p>
+							<p class="more"><a href="#">View Projects</a></p>
+						</div>
+						<div class="cl"> </div>
+					</li>
+					<li>
+						<div id="slideContainer" class="image ">
+							<div class="slide-shim">
+								<img src="/static/img/image.jpg" alt=""/>
+								<img src="/static/img/image22.jpg" alt=""/>
+								<img src="/static/img/image.jpg" alt=""/>
+								<img src="/static/img/image22.jpg" alt=""/>
+								<img src="/static/img/image.jpg" alt=""/>
+								<img src="/static/img/image22.jpg" alt=""/>
+								<img src="/static/img/image.jpg" alt=""/>
+								<img src="/static/img/static/img/image22.jpg" alt=""/>
+							</div>
+							<a href="#" class="back"></a>
+							<a href="#" class="forward"></a>
+						</div>
+						<div class="text">
+							<h5>Project Name Goes Here</h5>
+							<p><span>Person’s Name Here or Date</span></p>
+							<p>Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit.</p>
+							<p class="more"><a href="#">View Projects</a></p>
+						</div>
+						<div class="cl"> </div>
+					</li>
+				</ul>
+				{% endplaceholder %}
 			</div>
 		</div>
 		<div class="flexslider-holder">
 			<div class="flexslider col left featured-projects">
-				<h3><span>Featured Projects</span></h3>
+				<h3><span>{% trans "Featured Projects" %}</span></h3>
 				{% featured_projects %}
 			</div>
 			<div class="flexslider col right featured-stories">
-				<h3><span>Featured Stories</span></h3>
+				<h3><span>{% trans "Featured Stories" %}</span></h3>
 				{% featured_stories %}
 			</div>
 			<div class="cl">&nbsp;</div>
 		</div>
 		<div class="bottom">
-			<h2><span>Supporting Foundations</span></h2>
-			{% placeholder supporting-foundations %}
+			<h2><span>{% trans "Supporting Foundations" %}</span></h2>
+			{% placeholder supporting-foundations or %}
+			<div class="left">
+				<ul>
+					<li><a href="#" class="active">The Denver Foundation</a></li>
+					<li><a href="#">The Piton Foundation</a></li>
+					<li><a href="#">The Knight Foundation</a></li>
+					<li><a href="#">iNet News</a></li>
+				</ul>
+			</div>
+			<div class="right flexslider">
+				<ul class="slides">
+					<li>
+						<div class="image">
+							<img src="/static/img/denver.jpg" alt=""/>
+						</div>
+						<div class="text">
+							<p>Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit.</p>
+						</div>
+						<div class="cl"> </div>
+					</li>
+					<li>
+						<div class="image">
+							<img src="/static/img/denver.jpg" alt=""/>
+						</div>
+						<div class="text">
+							<p>Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit.</p>
+						</div>
+						<div class="cl"> </div>
+					</li>
+					<li>
+						<div class="image">
+							<img src="/static/img/denver.jpg" alt=""/>
+						</div>
+						<div class="text">
+							<p>Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit.</p>
+						</div>
+						<div class="cl"> </div>
+					</li>
+					<li>
+						<div class="image">
+							<img src="/static/img/denver.jpg" alt=""/>
+						</div>
+						<div class="text">
+							<p>Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit.</p>
+						</div>
+						<div class="cl"> </div>
+					</li>
+				</ul>
+			</div>
+			{% endplaceholder %}
 		</div>
 
 {% comment %}
