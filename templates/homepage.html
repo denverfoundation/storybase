@@ -17,6 +17,8 @@
 
 {% block body_class %}homepage{% endblock %}
 
+{% block logo_text %}<h1>Floodlight</h1>{% endblock %}
+
 {% block base_content %}
 
 		<div class="intro">
@@ -84,14 +86,14 @@
 					<li>
 						<div id="slideContainer" class="image ">
 							<div class="slide-shim">
-								<img src="/static/img/image.jpg" alt=""/>
-								<img src="/static/img/image22.jpg" alt=""/>
-								<img src="/static/img/image.jpg" alt=""/>
-								<img src="/static/img/image22.jpg" alt=""/>
-								<img src="/static/img/image.jpg" alt=""/>
-								<img src="/static/img/image22.jpg" alt=""/>
-								<img src="/static/img/image.jpg" alt=""/>
-								<img src="/static/img/image22.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image22.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image22.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image22.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image22.jpg" alt=""/>
 							</div>
 							<a href="#" class="back"></a>
 							<a href="#" class="forward"></a>
@@ -107,14 +109,14 @@
 					<li>
 						<div id="slideContainer" class="image ">
 							<div class="slide-shim">
-								<img src="/static/img/image.jpg" alt=""/>
-								<img src="/static/img/image22.jpg" alt=""/>
-								<img src="/static/img/image.jpg" alt=""/>
-								<img src="/static/img/image22.jpg" alt=""/>
-								<img src="/static/img/image.jpg" alt=""/>
-								<img src="/static/img/image22.jpg" alt=""/>
-								<img src="/static/img/image.jpg" alt=""/>
-								<img src="/static/img/image22.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image22.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image22.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image22.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image22.jpg" alt=""/>
 							</div>
 							<a href="#" class="back"></a>
 							<a href="#" class="forward"></a>
@@ -130,14 +132,14 @@
 					<li>
 						<div id="slideContainer" class="image ">
 							<div class="slide-shim">
-								<img src="/static/img/image.jpg" alt=""/>
-								<img src="/static/img/image22.jpg" alt=""/>
-								<img src="/static/img/image.jpg" alt=""/>
-								<img src="/static/img/image22.jpg" alt=""/>
-								<img src="/static/img/image.jpg" alt=""/>
-								<img src="/static/img/image22.jpg" alt=""/>
-								<img src="/static/img/image.jpg" alt=""/>
-								<img src="/static/img/image22.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image22.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image22.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image22.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image22.jpg" alt=""/>
 							</div>
 							<a href="#" class="back"></a>
 							<a href="#" class="forward"></a>
@@ -153,14 +155,14 @@
 					<li>
 						<div id="slideContainer" class="image ">
 							<div class="slide-shim">
-								<img src="/static/img/image.jpg" alt=""/>
-								<img src="/static/img/image22.jpg" alt=""/>
-								<img src="/static/img/image.jpg" alt=""/>
-								<img src="/static/img/image22.jpg" alt=""/>
-								<img src="/static/img/image.jpg" alt=""/>
-								<img src="/static/img/image22.jpg" alt=""/>
-								<img src="/static/img/image.jpg" alt=""/>
-								<img src="/static/img/static/img/image22.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image22.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image22.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image22.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/static/img/image22.jpg" alt=""/>
 							</div>
 							<a href="#" class="back"></a>
 							<a href="#" class="forward"></a>
@@ -179,11 +181,11 @@
 		</div>
 		<div class="flexslider-holder">
 			<div class="flexslider col left featured-projects">
-				<h3><span>{% trans "Featured Projects" %}</span></h3>
+				<h2><span>{% trans "Featured Projects" %}</span></h2>
 				{% featured_projects %}
 			</div>
 			<div class="flexslider col right featured-stories">
-				<h3><span>{% trans "Featured Stories" %}</span></h3>
+				<h2><span>{% trans "Featured Stories" %}</span></h2>
 				{% featured_stories %}
 			</div>
 			<div class="cl">&nbsp;</div>
@@ -203,7 +205,7 @@
 					<li>
 						<div class="image">
 							<a href="#">
-								<img src="/static/img/piton-foundation-logo.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/piton-foundation-logo.jpg" alt=""/>
 							</a>
 						</div>
 						<div class="text">
@@ -214,7 +216,7 @@
 					<li>
 						<div class="image">
 							<a href="#">
-								<img src="/static/img/denver-foundation-logo.gif" alt=""/>
+								<img src="{{ STATIC_URL }}img/denver-foundation-logo.gif" alt=""/>
 							</a>
 						</div>
 						<div class="text">
@@ -225,7 +227,7 @@
 					<li>
 						<div class="image">
 							<a href="#">
-								<img src="/static/img/knight-foundation-logo.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/knight-foundation-logo.jpg" alt=""/>
 							</a>
 						</div>
 						<div class="text">

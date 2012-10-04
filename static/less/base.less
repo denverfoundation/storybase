@@ -32,7 +32,7 @@
 // this should probably just be on the body ... not sure if the body
 // is arial/sans-serif for a reason.
 .plain-serif-text {
-	font-family:Georgia, 'Times New Roman', Serif;
+	font-family:'Times New Roman', Georgia, Serif;
 }
 
 .line-through-header {
@@ -87,11 +87,33 @@ body {
 
 }
 
-h1 { font-size:48px; color:@dark-gray; text-align:center;  font-family: 'Museo300Regular'; font-weight:normal; }
-h2 { font-size:36px; color:@dark-gray; text-align:center;  font-family: 'Museo300Regular'; font-weight:normal; }
-h3 { font-size:30px; color:@light-gray; text-align:center;  font-family: 'Museo300Regular'; font-weight:normal;   }
-h4 { font-size:22px; color:@light-gray;  text-align:center;  font-family: 'Museo300Regular'; font-weight:normal;   }
-h5 { font-size:20px; color:@highlight-blue; font-family: 'MuseoSlab500Regular'; font-weight:normal;}
+.basic-header {
+	text-align:center;
+	font-family: 'Museo300Regular';
+	font-weight:normal;
+}
+
+h1 { font-size:@top-header-size; color:@dark-gray; .basic-header; .line-through-header; }
+h2 { font-size:(@top-header-size * .8); color:@dark-gray; .basic-header; }
+h3 { font-size:(@top-header-size * .7); color:@light-gray; .basic-header; }
+h4 { font-size:(@top-header-size * .6); color:@light-gray; .basic-header; }
+h5 { font-size:(@top-header-size * .5); color:@highlight-blue; font-family: 'MuseoSlab500Regular'; font-weight:normal;}
+
+// based on "everything" comp, text content
+// headers are relatively diminuitive.
+// @see content-page.less. putting this here
+// for reference to "regular" header sizes.
+// could probably make a variable or something...
+.content-block {
+	h2 { font-size:(@top-header-size * .6); }
+	h3 { font-size:(@top-header-size * .5); }
+	h4 { font-size:(@top-header-size * .4); }
+	h5 { font-size:(@top-header-size * .3); }
+}
+
+h1 a, h2 a, h3 a, h4 a, h5 a {
+	color:@highlight-blue;
+}
 
 a { color: #0252aa; text-decoration: none; cursor: pointer; }
 a:hover { text-decoration: underline; }
@@ -106,14 +128,12 @@ textarea { overflow: auto; }
 .right, .alignright { float: right; display: inline; }
 
 ul { list-style:none; }
-h2 { background:url('../img/h3-line.png') repeat-x 0 8px; margin-bottom:10px;  }
-h2 span { background:#fff; padding-left:16px; padding-right:16px;   }
 
 .modal {
 	display: none;
 }
 
-a.button {
+#main a.button {
 	.button-style;
 	display:inline-block;
 }

@@ -6,6 +6,7 @@
 
 {% block body_title %}{{ project.name }}{% endblock %}
 
+{% block content_page_class %}object-detail project{% endblock %}
 
 {% block sidebar %}
 <h4>{% trans "Contributing Organizations" %}</h4>
@@ -19,7 +20,7 @@
 {% endblock %}
 
 {% block twocol-content %}
-		<div class="content-page object-detail project">
+
 			<section class="object-summary content-block">
 				<div class="grid_7 alpha">
 					<section class="summary">
@@ -99,7 +100,7 @@
 				</ul>
 				<a class="button" href="#">{% trans "View All Stories for This Project" %}</a>
 			</section>
-		</div>
+
 {% endblock %}
 
 

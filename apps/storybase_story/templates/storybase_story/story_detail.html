@@ -34,7 +34,7 @@
 
 {% block base_content %}
 		<div class="content-page object-detail story container_12">
-			<h2><span>{% trans "Explore Floodlight" %}</span></h2>
+			<h1><span>{{ story.title }}</span></h1>
 
 			<section class="object content-block">
 				<div class="grid_6">
@@ -44,7 +44,6 @@
 				</div>
 				<div class="grid_6">
 					<header>
-						<h3>{{ story.title }}</h3>
 						<p class="byline">{% trans "By" %} <span class="author">{{ story.byline }}</span></p>
 					</header>
 					<section class="object-summary">
