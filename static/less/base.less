@@ -99,6 +99,18 @@ h3 { font-size:(@top-header-size * .7); color:@light-gray; .basic-header; }
 h4 { font-size:(@top-header-size * .6); color:@light-gray; .basic-header; }
 h5 { font-size:(@top-header-size * .5); color:@highlight-blue; font-family: 'MuseoSlab500Regular'; font-weight:normal;}
 
+// based on "everything" comp, text content
+// headers are relatively diminuitive.
+// @see content-page.less. putting this here
+// for reference to "regular" header sizes.
+// could probably make a variable or something...
+.content-block {
+	h2 { font-size:(@top-header-size * .6); }
+	h3 { font-size:(@top-header-size * .5); }
+	h4 { font-size:(@top-header-size * .4); }
+	h5 { font-size:(@top-header-size * .3); }
+}
+
 h1 a, h2 a, h3 a, h4 a, h5 a {
 	color:@highlight-blue;
 }
@@ -116,8 +128,6 @@ textarea { overflow: auto; }
 .right, .alignright { float: right; display: inline; }
 
 ul { list-style:none; }
-h2 { background:url('../img/h3-line.png') repeat-x 0 8px; margin-bottom:10px;  }
-h2 span { background:#fff; padding-left:16px; padding-right:16px;   }
 
 .modal {
 	display: none;
