@@ -95,7 +95,7 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
-    'atlas.media_staticfiles_finder.AppDirectoriesFinderAsMedia',
+    'media_staticfiles_finder.AppDirectoriesFinderAsMedia',
 )
 
 # List of callables that know how to import templates from various sources.
@@ -121,7 +121,7 @@ MIDDLEWARE_CLASSES = (
     'storybase.middleware.ExtractContentMiddleware',
 )
 
-ROOT_URLCONF = 'atlas.urls'
+ROOT_URLCONF = 'urls'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
