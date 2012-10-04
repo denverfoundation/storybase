@@ -98,9 +98,6 @@ STATICFILES_FINDERS = (
     'atlas.media_staticfiles_finder.AppDirectoriesFinderAsMedia',
 )
 
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = 'a8398*@)#1orom%it1mhil27g1towb&1ix5vb3m6y--=_luo*v'
-
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
     'django.template.loaders.filesystem.Loader',
