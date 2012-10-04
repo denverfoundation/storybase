@@ -310,6 +310,11 @@ ACCOUNT_ACTIVATION_DAYS = 7
 # commenting settings
 COMMENTS_APP = 'threadedcomments'
 
+THUMBNAIL_PROCESSORS = (
+    # This is needed for cmsplugin_filer_image to work correctly
+    'filer.thumbnail_processors.scale_and_crop_with_subject_location',
+)
+
 # storybase settings
 # The name of the group used for site administrators
 ADMIN_GROUP_NAME = 'CA Admin'
