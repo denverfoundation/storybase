@@ -87,11 +87,21 @@ body {
 
 }
 
-h1 { font-size:48px; color:@dark-gray; text-align:center;  font-family: 'Museo300Regular'; font-weight:normal; }
-h2 { font-size:36px; color:@dark-gray; text-align:center;  font-family: 'Museo300Regular'; font-weight:normal; }
-h3 { font-size:30px; color:@light-gray; text-align:center;  font-family: 'Museo300Regular'; font-weight:normal;   }
-h4 { font-size:22px; color:@light-gray;  text-align:center;  font-family: 'Museo300Regular'; font-weight:normal;   }
-h5 { font-size:20px; color:@highlight-blue; font-family: 'MuseoSlab500Regular'; font-weight:normal;}
+.basic-header {
+	text-align:center;
+	font-family: 'Museo300Regular';
+	font-weight:normal;
+}
+
+h1 { font-size:@top-header-size; color:@dark-gray; .basic-header; .line-through-header; }
+h2 { font-size:(@top-header-size * .8); color:@dark-gray; .basic-header; }
+h3 { font-size:(@top-header-size * .7); color:@light-gray; .basic-header; }
+h4 { font-size:(@top-header-size * .6); color:@light-gray; .basic-header; }
+h5 { font-size:(@top-header-size * .5); color:@highlight-blue; font-family: 'MuseoSlab500Regular'; font-weight:normal;}
+
+h1 a, h2 a, h3 a, h4 a, h5 a {
+	color:@highlight-blue;
+}
 
 a { color: #0252aa; text-decoration: none; cursor: pointer; }
 a:hover { text-decoration: underline; }
@@ -113,7 +123,7 @@ h2 span { background:#fff; padding-left:16px; padding-right:16px;   }
 	display: none;
 }
 
-a.button {
+#main a.button {
 	.button-style;
 	display:inline-block;
 }

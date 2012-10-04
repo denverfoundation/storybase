@@ -69,12 +69,16 @@
 
 		.page-pull { 
 			margin-bottom:31px !important;
-			
+			h1, h2, h3, h4, h5 {
+				text-align:left;
+			}
 			h4 { 
 				background:none !important; 
 				margin-bottom:10px !important;
 				font-family: 'MuseoSlab500Regular';
-				a { color:#fe9703; }
+				a { 
+					color:@orange;
+				}
 			}
 			p { 
 				font-size:12px; 
@@ -99,6 +103,8 @@
 	
 	/* object detail pages: story, project, etc */
 	&.object-detail {
+		.plain-serif-text;
+		a { color:@highlight-blue; }
 		.col {
 			float:left;
 			&.left {
@@ -170,7 +176,8 @@
 		}
 		
 	}
-
+	
+	// content block: mostly has a bottom border
 	section.content-block { 
 		padding-bottom: 40px; 
 		border-bottom:1px solid #ccc; 
