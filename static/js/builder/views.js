@@ -892,7 +892,7 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
       });
       guiders.createGuider({
         id: 'section-list-guider',
-        attachTo: '#toggle-section-list',
+        attachTo: '#section-list',
         buttons: [
           {
             name: gettext("Prev"),
@@ -903,7 +903,7 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
             onclick: guiders.next
           }
         ],
-        position: 3,
+        position: 6,
         title: gettext("This is your table of contents."),
         // TODO: Remove reference to "Story Sections" tab
         description: gettext('This bar shows the sections in your story. You can hide the bar by clicking on the tab that says "Story Sections."'),
@@ -923,7 +923,7 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
             onclick: guiders.next
           }
         ],
-        position: 2,
+        position: 6,
         title: gettext("Select the section you want to edit."),
         description: gettext("Click on a section to edit it. The section you are actively editing is highlighted."),
         prev: 'section-list-guider',
@@ -942,7 +942,7 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
             onclick: guiders.next
           }
         ],
-        position: 2,
+        position: 6,
         title: gettext("You can also add, move or delete sections."),
         description: this.template['section-manipulation-guider'](),
         prev: 'section-thumbnail-guider',
@@ -1013,6 +1013,10 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
       guiders.createGuider({
         attachTo: '.workflow-step #build',
         buttons: [
+          {
+            name: gettext("Prev"),
+            onclick: guiders.prev
+          },
           {
             name: gettext("Close"),
             onclick: guiders.hideAll
