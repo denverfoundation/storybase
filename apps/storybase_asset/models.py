@@ -1,6 +1,8 @@
 """Models for story content assets"""
 import os
 
+import lxml.html
+
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
@@ -155,6 +157,17 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
         except AttributeError:
             return self.__unicode__()
 
+    def get_img_url(self):
+        raise NotImplemented
+
+    def render_img_html(self, url=None, **kwargs):
+        """Render an image tag for this asset""" 
+        html_class = kwargs.get('html_class', '')
+        template = '<img src="%s" alt="%s" class="%s" />'
+        if url is None:
+            url = self.get_img_url()
+        return mark_safe(template % (url, self.title, html_class))
+
     def render_thumbnail(self, width=0, height=0, format='html',
                          **kwargs):
         """Render a thumbnail-sized viewable representation of an asset 
@@ -169,27 +182,30 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
         return getattr(self, "render_thumbnail_" + format).__call__(
             width, height, **kwargs)
 
+    def get_thumbnail_url(self, width=0, height=0, **kwargs):
+        """Return the URL of the Asset's thumbnail"""
+        return None
+
     def render_thumbnail_html(self, width=0, height=0, **kwargs):
         """
         Render HTML for a thumbnail-sized viewable representation of an 
         asset 
-
-        This just provides a dummy placeholder and should be implemented
-        classes that inherit from Asset.
 
         Arguments:
         height -- Height of the thumbnail in pixels
         width  -- Width of the thumbnail in pixels
 
         """
-        html_class = kwargs.get('html_class', "")
-        return mark_safe("<div class='asset-thumbnail %s' "
-                "style='height: %dpx; width: %dpx'>Asset Thumbnail</div>" %
-                (html_class, height, width))
-
-    def get_thumbnail_url(self, width=0, height=0, **kwargs):
-        """Return the URL of the Asset's thumbnail"""
-        return None
+        html_class = kwargs.get('html_class', '')
+        url = self.get_thumbnail_url(width, height)
+        output = ("<div class='asset-thumbnail %s' "
+                  "style='height: %dpx; width: %dpx'>"
+                  "Asset Thumbnail</div>" % (html_class, height, width))
+        if url is not None: 
+            output = self.render_img_html(url,
+                html_class="asset-thumbnail " + html_class)
+            
+        return mark_safe(output)
 
     def dataset_html(self, label=_("Associated Datasets")):
         """Return an HTML list of associated datasets"""
@@ -230,16 +246,6 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
 
         return output
 
-    def get_img_url(self):
-        raise NotImplemented
-
-    def render_img_html(self, url=None, **kwargs):
-        """Render an image tag for this asset""" 
-        html_class = kwargs.get('html_class', '')
-        template = '<img src="%s" alt="%s" class="%s" />'
-        if url is None:
-            url = self.get_img_url()
-        return mark_safe(template % (url, self.title, html_class))
         
 
 class ExternalAssetTranslation(AssetTranslation):
@@ -323,27 +329,6 @@ class ExternalAsset(Asset):
 
         return mark_safe(u'\n'.join(output))
 
-    def render_thumbnail_html(self, width=0, height=0, **kwargs):
-        """
-        Render HTML for a thumbnail-sized viewable representation of an 
-        asset 
-
-        Arguments:
-        height -- Height of the thumbnail in pixels
-        width  -- Width of the thumbnail in pixels
-
-        """
-        html_class = kwargs.get('html_class', '')
-        url = self.get_thumbnail_url(width, height)
-        output = ("<div class='asset-thumbnail %s' "
-                  "style='height: %dpx; width: %dpx'>"
-                  "Asset Thumbnail</div>" % (html_class, height, width))
-        if url is not None: 
-            output = self.render_img_html(url,
-                html_class="asset-thumbnail " + html_class)
-            
-        return mark_safe(output)
-
     def get_thumbnail_url(self, width=0, height=0, **kwargs):
         """Return the URL of the Asset's thumbnail"""
         url = None
@@ -416,6 +401,25 @@ class HtmlAsset(Asset):
         else:
             return 'Asset %s' % self.asset_id
 
+    def get_thumbnail_url(self, width=0, height=0, **kwargs):
+        """Return the URL of the Asset's thumbnail
+        
+        This doesn't really make sense for an HTML Asset, but
+        there were a number of HTML Assets of type image that
+        were created where the HTML contained just an image tag.
+
+        This is a workaround for those cases.  New assets of this
+        type won't ever be created because the builder doesn't allow it.
+        """
+        fragment = lxml.html.fromstring(self.body)
+        matching = fragment.cssselect("img")
+        if not len(matching):
+            return None
+
+        img = matching[0]
+        src = img.get('src')
+        return src
+
     def render_html(self, **kwargs):
         """Render the asset as HTML"""
         output = []
@@ -486,24 +490,6 @@ class LocalImageAsset(Asset):
         output.append('</figure>')
             
         return mark_safe(u'\n'.join(output))
-
-    def render_thumbnail_html(self, width=0, height=0, **kwargs):
-        """
-        Render HTML for a thumbnail-sized viewable representation of an 
-        asset 
-
-        Arguments:
-        height -- Height of the thumbnail in pixels
-        width  -- Width of the thumbnail in pixels
-
-        """
-        html_class = kwargs.get('html_class', "")
-        thumbnailer = self.image.easy_thumbnails_thumbnailer
-        thumbnail_options = {}
-        thumbnail_options.update({'size': (width, height)})
-        thumbnail = thumbnailer.get_thumbnail(thumbnail_options)
-        return self.render_img_html(thumbnail.url,
-            html_class='asset-thumbnail ' + html_class)
 
     def get_thumbnail_url(self, width=0, height=0, **kwargs):
         """Return the URL of the Asset's thumbnail"""
