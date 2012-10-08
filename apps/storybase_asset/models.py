@@ -14,7 +14,7 @@ from django.utils.safestring import mark_safe
 
 from filer.fields.image import FilerFileField, FilerImageField
 from filer.models import Image 
-from micawber.exceptions import ProviderException
+from micawber.exceptions import ProviderException, ProviderNotFoundException
 from model_utils.managers import InheritanceManager
 from uuidfield.fields import UUIDField
 
@@ -298,12 +298,16 @@ class ExternalAsset(Asset):
                 raise AssertionError(
                     "oEmbed provider returned invalid type")
                 
-        except ProviderException:
+        except ProviderNotFoundException:
             # URL not matched, just show an image or a link
             if self.type == 'image':
                 output.append(self.render_img_html())
             else:
                 output.append(self.render_link_html())
+        except ProviderException:
+            # Some other error occurred with the oEmbed
+            # TODO: Show a default image
+            output.append(self.render_link_html())
 
         full_caption_html = self.full_caption_html()
         if full_caption_html:
@@ -344,7 +348,16 @@ class ExternalAsset(Asset):
                 resource_data = self.get_oembed_response(self.url)
                 self._thumbnail_url = resource_data.get('thumbnail_url',
                                                         None)
-            except (ProviderException):
+            except (ProviderNotFoundException):
+                if self.type == 'image':
+                    # There isn't an oEmbed provider for the URL. Just use the
+                    # raw image URL.
+                    self._thumbnail_url = self.url
+                else:
+                    self._thumbnail_url = None
+            except ProviderException:
+                # There was some other error. Set the return value to
+                # None
                 self._thumbnail_url = None
             finally:
                 url = self._thumbnail_url
