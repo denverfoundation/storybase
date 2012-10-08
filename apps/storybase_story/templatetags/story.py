@@ -39,7 +39,7 @@ def connected_story_section(section):
     return section.render(show_title=False)
 
 @register.simple_tag
-def featured_stories(count=4):
+def featured_stories(count=4, img_width=335):
     # Put story attributes into a "normalized" dictionary format 
     objects = []
     qs = Story.objects.on_homepage().order_by('-last_edited')[:count]
@@ -48,7 +48,7 @@ def featured_stories(count=4):
             "title": obj.title,
             "author": obj.contributor_name, 
             "date": obj.created, 
-            "image_html": obj.render_featured_asset(), 
+            "image_html": obj.render_featured_asset(width=img_width), 
             "excerpt": obj.summary,
             "url": obj.get_absolute_url(),
         })

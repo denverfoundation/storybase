@@ -227,7 +227,7 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
         # No image assets either
         return None
 
-    def render_featured_asset(self, format='html'):
+    def render_featured_asset(self, format='html', width=0, height=0):
         """Render a representation of the story's featured asset"""
         featured_asset = self.get_featured_asset()
         if featured_asset is None:
@@ -241,8 +241,8 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
             # that will be generated
             # See http://easy-thumbnails.readthedocs.org/en/latest/usage/#thumbnail-options
             thumbnail_options = {
-                'width': 240,
-                'height': 240,
+                'width': width,
+                'height': height
             }
             if format == 'html':
                 thumbnail_options.update({'html_class': 'featured-asset'})
