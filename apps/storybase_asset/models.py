@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core.files import File
 from django.db import models
-from django.db.models.signals import pre_save, pre_delete, post_delete
+from django.db.models.signals import pre_save, post_delete
 from django.utils.html import strip_tags
 from django.utils.text import truncate_words
 from django.utils.translation import ugettext_lazy as _
@@ -14,7 +14,7 @@ from django.utils.safestring import mark_safe
 
 from filer.fields.image import FilerFileField, FilerImageField
 from filer.models import Image 
-from micawber.exceptions import ProviderException
+from micawber.exceptions import ProviderException, ProviderNotFoundException
 from model_utils.managers import InheritanceManager
 from uuidfield.fields import UUIDField
 
@@ -142,7 +142,7 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
         # For now just call the __unicode__() method
         return unicode(self)
 
-    def render(self, format='html'):
+    def render(self, format='html', **kwargs):
         """Render a viewable representation of an asset
 
         Arguments:
@@ -151,11 +151,11 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
 
         """
         try:
-            return getattr(self, "render_" + format).__call__()
+            return getattr(self, "render_" + format).__call__(**kwargs)
         except AttributeError:
             return self.__unicode__()
 
-    def render_thumbnail(self, width=150, height=100, format='html',
+    def render_thumbnail(self, width=0, height=0, format='html',
                          **kwargs):
         """Render a thumbnail-sized viewable representation of an asset 
 
@@ -169,7 +169,7 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
         return getattr(self, "render_thumbnail_" + format).__call__(
             width, height, **kwargs)
 
-    def render_thumbnail_html(self, width=150, height=100, **kwargs):
+    def render_thumbnail_html(self, width=0, height=0, **kwargs):
         """
         Render HTML for a thumbnail-sized viewable representation of an 
         asset 
@@ -187,7 +187,7 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
                 "style='height: %dpx; width: %dpx'>Asset Thumbnail</div>" %
                 (html_class, height, width))
 
-    def get_thumbnail_url(self, width=150, height=100, **kwargs):
+    def get_thumbnail_url(self, width=0, height=0, **kwargs):
         """Return the URL of the Asset's thumbnail"""
         return None
 
@@ -229,6 +229,17 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
             output = '<%s>%s</%s>' % (wrapper, output, wrapper)
 
         return output
+
+    def get_img_url(self):
+        raise NotImplemented
+
+    def render_img_html(self, url=None, **kwargs):
+        """Render an image tag for this asset""" 
+        html_class = kwargs.get('html_class', '')
+        template = '<img src="%s" alt="%s" class="%s" />'
+        if url is None:
+            url = self.get_img_url()
+        return mark_safe(template % (url, self.title, html_class))
         
 
 class ExternalAssetTranslation(AssetTranslation):
@@ -265,18 +276,14 @@ class ExternalAsset(Asset):
         else:
             return "Asset %s" % self.asset_id
 
-    def render_img_html(self, url=None):
-        """Render an image tag for this asset"""
-        assert self.type == 'image'
-        if url is None:
-            url = self.url
-        return "<img src='%s' alt='%s' />" % (url, self.title)
+    def get_img_url(self):
+        return self.url
 
     def render_link_html(self):
         """Render a link for this asset"""
         return "<a href=\"%s\">%s</a>" % (self.url, self.title)
 
-    def render_html(self):
+    def render_html(self, **kwargs):
         """Render the asset as HTML"""
         output = []
         output.append('<figure>')
@@ -298,12 +305,16 @@ class ExternalAsset(Asset):
                 raise AssertionError(
                     "oEmbed provider returned invalid type")
                 
-        except ProviderException:
+        except ProviderNotFoundException:
             # URL not matched, just show an image or a link
             if self.type == 'image':
                 output.append(self.render_img_html())
             else:
                 output.append(self.render_link_html())
+        except ProviderException:
+            # Some other error occurred with the oEmbed
+            # TODO: Show a default image
+            output.append(self.render_link_html())
 
         full_caption_html = self.full_caption_html()
         if full_caption_html:
@@ -312,7 +323,7 @@ class ExternalAsset(Asset):
 
         return mark_safe(u'\n'.join(output))
 
-    def render_thumbnail_html(self, width=150, height=100, **kwargs):
+    def render_thumbnail_html(self, width=0, height=0, **kwargs):
         """
         Render HTML for a thumbnail-sized viewable representation of an 
         asset 
@@ -328,11 +339,12 @@ class ExternalAsset(Asset):
                   "style='height: %dpx; width: %dpx'>"
                   "Asset Thumbnail</div>" % (html_class, height, width))
         if url is not None: 
-            output = "<img class='asset-thumbnail %s' src='%s' alt='%s' />" % (html_class, url, self.title)
+            output = self.render_img_html(url,
+                html_class="asset-thumbnail " + html_class)
             
         return mark_safe(output)
 
-    def get_thumbnail_url(self, width=150, height=100, **kwargs):
+    def get_thumbnail_url(self, width=0, height=0, **kwargs):
         """Return the URL of the Asset's thumbnail"""
         url = None
         try:
@@ -341,10 +353,29 @@ class ExternalAsset(Asset):
         except AttributeError:
             try:
                 # First try to embed the resource via oEmbed
-                resource_data = self.get_oembed_response(self.url)
-                self._thumbnail_url = resource_data.get('thumbnail_url',
-                                                        None)
-            except (ProviderException):
+                params = {}
+                if self.type == 'image':
+                    # We're going to try to get the image as close to
+                    # the actual size that we asked for
+                    if width >= height:
+                        params['maxwidth'] = width
+                    else:
+                        params['maxheight'] = height
+                resource_data = self.get_oembed_response(self.url, **params)
+                if resource_data['type'] == 'photo':
+                    self._thumbnail_url = resource_data.get('url')
+                else:
+                    self._thumbnail_url = resource_data.get('thumbnail_url')
+            except (ProviderNotFoundException):
+                if self.type == 'image':
+                    # There isn't an oEmbed provider for the URL. Just use the
+                    # raw image URL.
+                    self._thumbnail_url = self.url
+                else:
+                    self._thumbnail_url = None
+            except ProviderException:
+                # There was some other error. Set the return value to
+                # None
                 self._thumbnail_url = None
             finally:
                 url = self._thumbnail_url
@@ -385,7 +416,7 @@ class HtmlAsset(Asset):
         else:
             return 'Asset %s' % self.asset_id
 
-    def render_html(self):
+    def render_html(self, **kwargs):
         """Render the asset as HTML"""
         output = []
         if self.title:
@@ -441,12 +472,14 @@ class LocalImageAsset(Asset):
         else:
             return "Asset %s" % self.asset_id
 
-    def render_html(self):
+    def get_img_url(self):
+        return self.image.url
+
+    def render_html(self, **kwargs):
         """Render the asset as HTML"""
         output = []
         output.append('<figure>')
-        output.append('<img src="%s" alt="%s" />' % (self.image.url, 
-                                                     self.title))
+        output.append(self.render_img_html(**kwargs))
         full_caption_html = self.full_caption_html()
         if full_caption_html:
 	    output.append(full_caption_html)
@@ -454,7 +487,7 @@ class LocalImageAsset(Asset):
             
         return mark_safe(u'\n'.join(output))
 
-    def render_thumbnail_html(self, width=150, height=100, **kwargs):
+    def render_thumbnail_html(self, width=0, height=0, **kwargs):
         """
         Render HTML for a thumbnail-sized viewable representation of an 
         asset 
@@ -469,11 +502,10 @@ class LocalImageAsset(Asset):
         thumbnail_options = {}
         thumbnail_options.update({'size': (width, height)})
         thumbnail = thumbnailer.get_thumbnail(thumbnail_options)
-        return mark_safe("<img class='asset-thumbnail %s' "
-            "src='%s' alt='%s' />" %
-            (html_class, thumbnail.url, self.title))
+        return self.render_img_html(thumbnail.url,
+            html_class='asset-thumbnail ' + html_class)
 
-    def get_thumbnail_url(self, width=150, height=100, **kwargs):
+    def get_thumbnail_url(self, width=0, height=0, **kwargs):
         """Return the URL of the Asset's thumbnail"""
         include_host = kwargs.get('include_host', False)
         if not self.image:

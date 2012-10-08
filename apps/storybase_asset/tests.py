@@ -234,6 +234,25 @@ class ExternalAssetModelTest(TestCase):
         asset = create_external_asset(type='image', title='', url=url)
         self.assertEqual(len(asset.__unicode__()), 100)
 
+    def test_get_thumbnail_url_image_no_oembed(self):
+        """
+        Test that the raw URL of an image is returned when there's no
+        oEmbed provider for the URL.
+        """
+        url = 'http://fakedomain.com/uploads/image.jpg'
+        asset = create_external_asset(type='image', title='', url=url)
+        self.assertEqual(asset.get_thumbnail_url(), url)
+
+    def test_get_thumbnail_url_video_no_oembed(self):
+        """
+        Test that None is returned when there's no oEmbed provider for
+        a URL and the asset's type is not image.
+        """
+        url = 'http://fakedomain.com/uploads/video.m4v'
+        asset = create_external_asset(type='video', title='', url=url)
+        self.assertEqual(asset.get_thumbnail_url(), None)
+
+
 
 class HtmlAssetModelTest(TestCase):
     def test_string_representation_from_title(self):

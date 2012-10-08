@@ -46,6 +46,7 @@ def bootstrap_providers(cache=None):
     pr.register('http://soundcloud.com/\S*', Provider('http://soundcloud.com/oembed'))
     pr.register('http://vimeo.com/\S*', Provider('http://vimeo.com/api/oembed.json'))
     pr.register('http://www.slideshare.net/[^\/]+/\S*', Provider('http://www.slideshare.net/api/oembed/2'))
+    pr.register('http://instagr.am/\S*', Provider('http://api.instagram.com/oembed'))
 
     # Register our fake providers
     pr.register('https://maps.google.com/maps.+', GoogleMapProvider(None))
