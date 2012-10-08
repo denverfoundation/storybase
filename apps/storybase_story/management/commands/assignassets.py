@@ -34,7 +34,7 @@ class Command(BaseCommand):
             for sa in SectionAsset.objects.filter(section__story=story):
                 if sa.asset not in story.assets.all():
                     changed = True
-                    self.stdout.write('Adding asset "%s"' % sa.asset)
+                    self.stdout.write('Adding asset "%s"\n' % sa.asset)
                     if not options['dry_run']:
                         story.assets.add(sa.asset)
             if changed and not options['dry_run']:
