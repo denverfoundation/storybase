@@ -6,7 +6,7 @@ from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core.files import File
 from django.db import models
-from django.db.models.signals import pre_save, pre_delete, post_delete
+from django.db.models.signals import pre_save, post_delete
 from django.utils.html import strip_tags
 from django.utils.text import truncate_words
 from django.utils.translation import ugettext_lazy as _
