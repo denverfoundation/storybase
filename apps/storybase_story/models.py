@@ -227,7 +227,7 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
         # No image assets either
         return None
 
-    def render_featured_asset(self, format='html', width=0, height=0):
+    def render_featured_asset(self, format='html', width=500, height=0):
         """Render a representation of the story's featured asset"""
         featured_asset = self.get_featured_asset()
         if featured_asset is None:
