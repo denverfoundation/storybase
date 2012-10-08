@@ -282,16 +282,16 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
 
     def get_explore_url(self, filters=None):
         """
-	Get a URL pointing to the explore view with specific filters set
-	"""
-	url = urlresolvers.reverse('explore_stories')
-	qs_params = []
-	for filter, values in filters.items():
-	    if values:
-	        qs_params.append("%s=%s" % (filter, ",".join([str(value) for value in values])))
+        Get a URL pointing to the explore view with specific filters set
+        """
+        url = urlresolvers.reverse('explore_stories')
+        qs_params = []
+        for filter, values in filters.items():
+            if values:
+                qs_params.append("%s=%s" % (filter, ",".join([str(value) for value in values])))
 
-        url += "?" + "&".join(qs_params) 
-	return url
+            url += "?" + "&".join(qs_params) 
+        return url
 	
     def topics_with_links(self):
         """
