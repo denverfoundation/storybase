@@ -241,8 +241,8 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
             # that will be generated
             # See http://easy-thumbnails.readthedocs.org/en/latest/usage/#thumbnail-options
             thumbnail_options = {
-                'width': 222,
-                'height': 222,
+                'width': 240,
+                'height': 240,
             }
             if format == 'html':
                 thumbnail_options.update({'html_class': 'featured-asset'})
@@ -261,8 +261,8 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
             return None
         else:
             thumbnail_options = {
-                'width': 222,
-                'height': 222,
+                'width': 240,
+                'height': 240,
                 'include_host': include_host
             }
             return featured_asset.get_thumbnail_url(**thumbnail_options)
