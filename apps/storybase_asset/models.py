@@ -237,7 +237,6 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
         """Render an image tag for this asset""" 
         html_class = kwargs.get('html_class', '')
         template = '<img src="%s" alt="%s" class="%s" />'
-        assert self.type == 'image'
         if url is None:
             url = self.get_img_url()
         return mark_safe(template % (url, self.title, html_class))
