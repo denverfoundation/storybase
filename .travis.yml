@@ -17,7 +17,7 @@ before_install:
 #  - "sudo apt-get install openjdk-6-jdk solr-jetty" 
   - "sudo apt-get install solr-jetty"
   - "sudo ls /usr/lib/jvm"
-  - "sudo sed -i.bak -r -e \"s/^#JAVA_HOME=/JAVA_HOME=/usr/lib/jvm/java-7-sun/g\" /etc/default/jetty"
+  - "sudo sed -i.bak -r -e \"s/^#JAVA_HOME=/JAVA_HOME=\/usr\/lib\/jvm\/java-7-oracle/g\" /etc/default/jetty"
   - "sudo cat /etc/default/jetty"
   - "sudo bash ./scripts/create_template_postgis-debian.sh"
 before_script:
