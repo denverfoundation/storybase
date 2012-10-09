@@ -38,7 +38,7 @@
   {% if debug %}
   {% addtoblock "css" %}<link rel="stylesheet/less" type="text/css" href="{{ STATIC_URL }}less/base.less">{% endaddtoblock %}
   {% else %}
-  {% addtoblock "css" %}<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/compiled.css">{% endaddtoblock %}
+  {% addtoblock "css" %}<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css">{% endaddtoblock %}
   {% endif %}
 
   {% render_block "css" %}
@@ -53,7 +53,7 @@
   {% block extrahead %}{% endblock %}
 </head>
 
-<body class="{% block body_class %}{% endblock %}">
+<body class="base-template {% block body_class %}{% endblock %}">
   {% cms_toolbar %}
 	<div id="header">
 		<div class="shell">

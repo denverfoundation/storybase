@@ -13,17 +13,21 @@
 	}
 	
 	.sibling-nav li {
+		margin-bottom:8px;
+		padding-right:17px;
+		
 		a {
-			font-size:20px; 
-			line-height:22px; 
-			font-family: 'MuseoSlab500Regular'; 
-			white-space:nowrap;
+			font-size:18px;
+			line-height:22px;
+			font-family: 'MuseoSlab500Regular';
 		}
 		
-		&.selected a,
-		a:hover {
+		&.selected,
+		&.hover {
 			background:url('../img/arrow-nav.png') no-repeat right center;
-			padding-right:17px;
+		}
+		
+		a:hover {
 			text-decoration:none;
 		}
 	} 

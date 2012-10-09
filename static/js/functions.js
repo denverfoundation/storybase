@@ -236,10 +236,15 @@
 	        return false;
 		});
 
-
-
-
 	}
+
+	// sidebar
+	$('.sidebar .sibling-nav li a').hover(function() {
+		$(this).parent('li').addClass('hover');
+	}, function() {
+		$(this).parent('li').removeClass('hover');
+	});
+
 
 })(jqLatest);
 

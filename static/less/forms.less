@@ -34,10 +34,11 @@ form {
 		label, label + input {
 			display:block;
 			float:left;
+			width:24%
 		}
 		label + input {
 			position:absolute;
-			margin-left:140px;
+			margin-left:24%;
 		}
 		
 		&.required label:after {
@@ -60,9 +61,18 @@ form {
 		&[type=submit] {
 			.button-style;
 		}
+		
+		&[type=checkbox] {
+			width:auto;
+			margin-top:7px;
+		}
 	}
 	textarea {
 		.soft-edge-style;
+		display:block;
+		clear:left;
+	}
+	span.helptext {
 		display:block;
 		clear:left;
 	}
