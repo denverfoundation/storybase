@@ -1032,8 +1032,11 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         },
         onHide: function() {
           // Set a cookie so the user doesn't see the builder tour again
-          // TODO: Set expires option on the cookie
-          $.cookie("storybase_show_builder_tour", false, {path: '/'});
+          $.cookie("storybase_show_builder_tour", false, {
+            path: '/',
+            // Don't show the tour for a very long time
+            expires: 365
+          });
           $('.workflow-step #build').triggerHandler('mouseout');
         }
       });
