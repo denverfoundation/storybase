@@ -1,7 +1,7 @@
 var less = require('less');
 var fs = require('fs');
 var pathToLessFiles = '../static/less/';
-var pathToCompiledCSS = '../static/css/compiled.css';
+var pathToCompiledCSS = '../static/css/style.css';
 
 var lessData = '';
 var dirContents = [];
@@ -13,7 +13,7 @@ catch (error) {
 }
 
 for (var i = 0; i < dirContents.length; i++) {
-	if (dirContents[i].indexOf('.less') != -1) {
+	if (dirContents[i].indexOf('base.less') != -1) {
 		try {
 			lessData += fs.readFileSync(pathToLessFiles + dirContents[i], 'utf8');
 		}

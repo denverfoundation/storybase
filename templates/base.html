@@ -38,7 +38,7 @@
   {% if debug %}
   {% addtoblock "css" %}<link rel="stylesheet/less" type="text/css" href="{{ STATIC_URL }}less/base.less">{% endaddtoblock %}
   {% else %}
-  {% addtoblock "css" %}<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/compiled.css">{% endaddtoblock %}
+  {% addtoblock "css" %}<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css">{% endaddtoblock %}
   {% endif %}
 
   {% render_block "css" %}

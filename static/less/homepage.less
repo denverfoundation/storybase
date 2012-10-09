@@ -1,4 +1,7 @@
-.homepage {
+// NB: this homepage is a body class.
+// this selector is assuming that this file is being included *within* a body.base-template {} less block.
+// this is less than ideal; no pun intended.
+&.homepage {
 	.intro {
 		padding-top:25px; 
 		padding-bottom:55px;
@@ -120,4 +123,21 @@
 		}
 	} 
 
+}
+
+/* Front page featured items */
+
+.featured-wrapper {
+ border: 1px solid #CCC; 
+ padding: 2%;
+ background-color: #CCC;
+}
+
+.featured-stories .featured-wrapper {
+  background-color: #EEE;
+}
+
+.featured-wrapper > ul {
+  list-style: none;
+  padding: 0;
 }

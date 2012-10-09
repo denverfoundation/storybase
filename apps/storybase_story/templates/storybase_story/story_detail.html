@@ -21,10 +21,10 @@
     production, assume they've been pre-compiled/collected.
     {% endcomment %}
     {% if debug %}
-    {% addtoblock "css" %}<link rel="stylesheet/less" href="{{ STATIC_URL }}less/comments.less">{% endaddtoblock %}
+    {% addtoblock "css" %}<link rel="stylesheet/less" href="{{ STATIC_URL }}less/base.less">{% endaddtoblock %}
     {% addtoblock "css" %}<script src="{{ STATIC_URL }}js/libs/less-1.3.0.min.js"></script>{% endaddtoblock %}
     {% else %}
-    {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/comments.css">{% endaddtoblock %}
+    {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/style.css">{% endaddtoblock %}
     {% endif %}
 {% endblock %}
 
