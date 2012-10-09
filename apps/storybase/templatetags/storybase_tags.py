@@ -47,3 +47,7 @@ def storybase_conf(parser, token):
     if not (format_string[0] == format_string[-1] and format_string[0] in ('"', "'")):
         raise template.TemplateSyntaxError("%r tag's argument should be in quotes" % tag_name)
     return StorybaseConfNode(format_string[1:-1])
+
+@register.simple_tag
+def featured_asset(obj, width=500):
+    return obj.render_featured_asset(format='html', width=width)
