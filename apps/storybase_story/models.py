@@ -227,7 +227,7 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
         # No image assets either
         return None
 
-    def render_featured_asset(self, format='html'):
+    def render_featured_asset(self, format='html', width=500, height=0):
         """Render a representation of the story's featured asset"""
         featured_asset = self.get_featured_asset()
         if featured_asset is None:
@@ -241,8 +241,8 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
             # that will be generated
             # See http://easy-thumbnails.readthedocs.org/en/latest/usage/#thumbnail-options
             thumbnail_options = {
-                'width': 222,
-                'height': 222,
+                'width': width,
+                'height': height
             }
             if format == 'html':
                 thumbnail_options.update({'html_class': 'featured-asset'})
@@ -261,8 +261,8 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
             return None
         else:
             thumbnail_options = {
-                'width': 222,
-                'height': 222,
+                'width': 240,
+                'height': 240,
                 'include_host': include_host
             }
             return featured_asset.get_thumbnail_url(**thumbnail_options)
@@ -282,16 +282,16 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
 
     def get_explore_url(self, filters=None):
         """
-	Get a URL pointing to the explore view with specific filters set
-	"""
-	url = urlresolvers.reverse('explore_stories')
-	qs_params = []
-	for filter, values in filters.items():
-	    if values:
-	        qs_params.append("%s=%s" % (filter, ",".join([str(value) for value in values])))
+        Get a URL pointing to the explore view with specific filters set
+        """
+        url = urlresolvers.reverse('explore_stories')
+        qs_params = []
+        for filter, values in filters.items():
+            if values:
+                qs_params.append("%s=%s" % (filter, ",".join([str(value) for value in values])))
 
-        url += "?" + "&".join(qs_params) 
-	return url
+            url += "?" + "&".join(qs_params) 
+        return url
 	
     def topics_with_links(self):
         """

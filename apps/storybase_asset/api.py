@@ -234,7 +234,7 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
         return bundle.obj.render(format="html")
 
     def dehydrate_thumbnail_url(self, bundle):
-        return bundle.obj.get_thumbnail_url(64, 64)
+        return bundle.obj.get_thumbnail_url(width=150, height=150)
 
 class DataSetValidation(Validation):
     def is_valid(self, bundle, request=None, **kwargs):

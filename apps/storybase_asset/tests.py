@@ -234,6 +234,25 @@ class ExternalAssetModelTest(TestCase):
         asset = create_external_asset(type='image', title='', url=url)
         self.assertEqual(len(asset.__unicode__()), 100)
 
+    def test_get_thumbnail_url_image_no_oembed(self):
+        """
+        Test that the raw URL of an image is returned when there's no
+        oEmbed provider for the URL.
+        """
+        url = 'http://fakedomain.com/uploads/image.jpg'
+        asset = create_external_asset(type='image', title='', url=url)
+        self.assertEqual(asset.get_thumbnail_url(), url)
+
+    def test_get_thumbnail_url_video_no_oembed(self):
+        """
+        Test that None is returned when there's no oEmbed provider for
+        a URL and the asset's type is not image.
+        """
+        url = 'http://fakedomain.com/uploads/video.m4v'
+        asset = create_external_asset(type='video', title='', url=url)
+        self.assertEqual(asset.get_thumbnail_url(), None)
+
+
 
 class HtmlAssetModelTest(TestCase):
     def test_string_representation_from_title(self):
@@ -265,6 +284,11 @@ class HtmlAssetModelTest(TestCase):
         """
         asset = create_html_asset(type='text', title="", caption="", body='<script type="text/javascript" src="//ajax.googleapis.com/ajax/static/modules/gviz/1.0/chart.js">{"dataSourceUrl":"//docs.google.com/spreadsheet/tq?key=0AhWnhIC_xoBpdEpNQkRpdGN6V1FJQ1Y4NEVhQU83b1E&transpose=0&headers=1&range=R12%3AV20&gid=0&pub=1","options":{"vAxes":[{"title":"Cost in Dollars","useFormatFromData":true,"viewWindowMode":"pretty","gridlines":{"count":"10"},"viewWindow":{}},{"useFormatFromData":true,"viewWindowMode":"pretty","viewWindow":{}}],"title":"Cost Per Nutrients","booleanRole":"certainty","animation":{"duration":0},"hAxis":{"title":"\\"Food\\" Name","useFormatFromData":true,"viewWindowMode":"pretty","viewWindow":{}},"isStacked":false,"width":600,"height":371},"state":{},"chartType":"ColumnChart","chartName":"Chart 4"}</script>\n', status='published')
         self.assertEqual(len(asset.__unicode__()), 100)
+
+    def test_get_thumbnail_url(self):
+        asset = create_html_asset(type='text', title="", caption="", body='<a title="SAM_1367 by JDenzler, on Flickr" href="http://www.flickr.com/photos/79208145@N08/7803936842/"><img src="http://farm8.staticflickr.com/7261/7803936842_19ec7bf391_n.jpg" alt="SAM_1367" width="320" height="240" /></a>', status='published')
+        self.assertEqual(asset.get_thumbnail_url(),
+            "http://farm8.staticflickr.com/7261/7803936842_19ec7bf391_n.jpg")
 
 
 class MockProviderTest(TestCase):

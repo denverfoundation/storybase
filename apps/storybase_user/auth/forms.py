@@ -11,12 +11,12 @@ from django.utils.translation import ugettext_lazy as _
 from storybase.utils import get_site_name
 
 class EmailAuthenticationForm(AuthenticationForm):
+    # Update the label and maximum length of the username field
+    # to reflect our use of e-mail addresses
+    username = forms.CharField(label=_("Email"), max_length=254)
+
     def __init__(self, request=None, *args, **kwargs):
         super(EmailAuthenticationForm, self).__init__(*args, **kwargs)
-        # Update the label and maximum lenght of the username field
-        # to reflect our use of e-mail addresses
-        self.fields['username'].max_length = 254
-        self.fields['username'].label = _("Email")
         # Set the template to use for the error message
         self.inactive_error_template = kwargs.get('inactive_error_template',
             "registration/account_inactive_error_message.html")
