@@ -226,7 +226,7 @@ You can <strong>customize</strong> some templates by adding and reordering secti
 </script>
 
 <script type="text/x-handlebars-template" id="featured-asset-template">
-<h3>{{gettext message="Featured Image"}}</h3>
+<h3>{{gettext message="Select a featured image"}}</h3>
 </script>
 
 <script type="text/x-handlebars-template" id="featured-asset-select-template">
@@ -328,9 +328,17 @@ You can <strong>customize</strong> some templates by adding and reordering secti
 </script>
 
 <script type="text/x-handlebars-template" id="share-legal-template">
+<h3>{{gettext message="Agree to some legal stuff"}}</h3>
+{{#if showForm}}
 <p class="introduction">{{#blockgettext}}
 In order to publish and share your story, you need to double-check a few legal details.
 {{/blockgettext}}<a href="#">{{gettext message="Read the Floodlight Terms of Service"}}</a>.</p>
+{{else}}
+<p>
+{{gettext message="You signed off on the legal agreement"}}
+<button type="button" class="view-agreement">{{gettext message="View agreement"}}</button>
+</p>
+{{/if}}
 </script>
 
 <script type="text/x-handlebars-template" id="share-permission-field-template">
@@ -344,6 +352,10 @@ In order to publish and share your story, you need to double-check a few legal d
 
 <script type="text/x-handlebars-template" id="share-license-field-template">
 <input type="checkbox" name="license" value="license" /> {{#blockgettext}}I participate in Floodlight’s cooperative distribution by publishing my story under a Creative Commons license. This means that I remain the owner of this story, but that my content can be featured on the site and redistributed by others. Learn more about Creative Commons.{{/blockgettext}}    
+</script>
+
+<script type="text/x-handlebars-template" id="share-license-template">
+<h3>{{gettext message="Select a license"}}</p>
 </script>
 
 <script type="text/x-handlebars-template" id="share-cc-allow-commercial-template">
