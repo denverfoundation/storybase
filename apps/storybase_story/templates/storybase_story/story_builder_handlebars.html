@@ -355,20 +355,24 @@ In order to publish and share your story, you need to double-check a few legal d
 </script>
 
 <script type="text/x-handlebars-template" id="share-license-template">
-<h3>{{gettext message="Select a license"}}</p>
+<h3>{{gettext message="Select a license"}}</h3>
+{{#unless showForm}}
+<div id="cc-license"></div>
+<button type="button" class="change-license">{{gettext message="Change license"}}</button>
+{{/unless}}
 </script>
 
-<script type="text/x-handlebars-template" id="share-cc-allow-commercial-template">
+<script type="text/x-handlebars-template" id="share-cc-commercial-template">
 <label for="cc-allow-commercial">Allow commercial uses of your work?</label>
-<input type="radio" name="cc-allow-commercial" value="yes" /> {{gettext message="Yes"}} 
-<input type="radio" name="cc-allow-commercial" value="no" /> {{gettext message="No"}}
+<input type="radio" name="cc-allow-commercial" value="y" /> {{gettext message="Yes"}} 
+<input type="radio" name="cc-allow-commercial" value="n" /> {{gettext message="No"}}
 </script>
 
-<script type="text/x-handlebars-template" id="share-cc-allow-modification-template">
+<script type="text/x-handlebars-template" id="share-cc-derivatives-template">
 <label for="cc-allow-commercial">Allow modifications of your work?</label>
-<input type="radio" name="cc-allow-modification" value="yes" /> {{gettext message="Yes"}} 
-<input type="radio" name="cc-allow-modification" value="share-alike" /> {{gettext message="Yes, as long as others can share alike"}} 
-<input type="radio" name="cc-allow-modification" value="no" /> {{gettext message="No"}}
+<input type="radio" name="cc-allow-modification" value="y" /> {{gettext message="Yes"}} 
+<input type="radio" name="cc-allow-modification" value="sa" /> {{gettext message="Yes, as long as others can share alike"}} 
+<input type="radio" name="cc-allow-modification" value="n" /> {{gettext message="No"}}
 </script>
 
 <script type="text/x-handlebars-template" id="share-taxonomy-template">

@@ -3977,6 +3977,7 @@ storybase.builder.views.TagView = Backbone.View.extend({
   }
 });
 
+
 storybase.builder.views.LegalView = Backbone.View.extend({
   id: 'share-legal',
 
@@ -4053,8 +4054,8 @@ storybase.builder.views.LegalView = Backbone.View.extend({
   // TODO: Remove this if it's really not needed
   /*
   setRadioEnabled: function() {
-    this.form.fields['cc-allow-commercial'].$('input').prop('disabled', !this.agreedLicense);
-    this.form.fields['cc-allow-modification'].$('input').prop('disabled', !this.agreedLicense);
+    this.form.fields['commercial'].$('input').prop('disabled', !this.agreedLicense);
+    this.form.fields['derivatives'].$('input').prop('disabled', !this.agreedLicense);
   },
   */
 
@@ -4097,7 +4098,50 @@ storybase.builder.views.LegalView = Backbone.View.extend({
   },
 
   showForm: function() {
-    this.render({showForm: true});
+    return this.render({showForm: true});
+  }
+});
+
+storybase.builder.views.LicenseDisplayView = Backbone.View.extend({
+  id: 'cc-license',
+
+  defaults: {
+    ccApiEndpoint: 'http://api.creativecommons.org/rest/1.5/license/standard/get'
+  },
+
+  initialize: function() {
+    var license = _.isUndefined(this.model) ? null : this.model.get('license');
+    _.defaults(this.options, this.defaults);
+    this._licenseHtml = null;
+    if (_.isUndefined(this.model)) {
+      this.dispatcher.on("ready:story", this.setStory, this);
+    }
+    // TODO: Fetch creative commons license info from API
+    // I think I need to proxy the API
+    /*
+    if (license) {
+      this.getLicenseHtml();
+    }
+    */
+  },
+
+  // BOOKMARK
+  setStory: function(story) {
+    this.model = story;
+  },
+
+  /*
+  getLicenseHtml: function() {
+    var license = this.model.get('license');
+    var params = storybase.utils.licenseStrToParams(license);
+    $.get(this.options.ccApiEndpoint, params, function(data) {
+      // TODO: Set license HTML here ... 
+    });
+  },
+  */
+
+  render: function() {
+    this.$el.html("<p>" + gettext("You selected the ") + this.model.get('license') + " " + gettext("license.") + "</p>");
   }
 });
 
@@ -4105,78 +4149,43 @@ storybase.builder.views.LicenseView = Backbone.View.extend({
   id: 'share-license',
 
   events: {
-    'submit form': 'processForm'
+    'submit form': 'processForm',
+    'click .change-license': 'showForm'
   },
 
   templateSource: $('#share-license-template').html(),
 
   schema: function() {
     return {
-      'cc-allow-commercial': {
+      'commercial': {
         type: 'Radio',
         title: '',
-        options: Handlebars.compile($('#share-cc-allow-commercial-template').html())(),
+        options: Handlebars.compile($('#share-cc-commercial-template').html())(),
         validators: ['required']
       },
-      'cc-allow-modification': {
+      'derivatives': {
         type: 'Radio',
         title: '',
-        options: Handlebars.compile($('#share-cc-allow-modification-template').html())(),
+        options: Handlebars.compile($('#share-cc-derivatives-template').html())(),
         validators: ['required']
       }
     };
   },
-
-  getLicense: function() {
-    var ccLicenses = {
-      'CC BY': {
-        allowCommercial: 'yes',
-        allowModification: 'yes'
-      },
-      'CC BY-SA': {
-        allowCommercial: 'yes',
-        allowModification: 'share-alike'
-      },
-      'CC BY-ND': {
-        allowCommercial: 'yes',
-        allowModification: 'no'
-      },
-      'CC BY-NC': {
-        allowCommercial: 'no',
-        allowModification: 'yes'
-      },
-      'CC BY-NC-SA': {
-        allowCommercial: 'no',
-        allowModification: 'share-alike'
-      },
-      'CC BY-NC-ND': {
-        allowCommercial: 'no',
-        allowModification: 'no'
-      }
-    };
-    var license = this.model ? this.model.get('license') : false;
-    if (license) {
-      return ccLicenses[license];
-    }
-    else {
-      return ccLicenses['CC BY'];
-    }
-  },
-
+ 
   setStory: function(story) {
     this.model = story;
   },
 
   initialize: function() {
-    var licenseFormVals = this.getLicense();
-    var formVals = {
-      'cc-allow-commercial': licenseFormVals.allowCommercial,
-      'cc-allow-modification': licenseFormVals.allowModification
-    };
+    var license = this.model ? this.model.get('license') : null;
+    var formVals = storybase.utils.licenseStrToParams(license);
     this.dispatcher = this.options.dispatcher;
     this.form = new Backbone.Form({
       schema: this.schema(),
       data: formVals
+    });
+    this.licenseDisplayView = new storybase.builder.views.LicenseDisplayView({
+      model: this.model
     });
     this.template = Handlebars.compile(this.templateSource);
     if (_.isUndefined(this.model)) {
@@ -4184,20 +4193,8 @@ storybase.builder.views.LicenseView = Backbone.View.extend({
     }
   },
 
-  setLicense: function(allowCommercial, allowModification) {
-    var ccLicenses = {
-      'yes': {
-        'yes': 'CC BY',
-        'share-alike': 'CC BY-SA', 
-        'no': 'CC BY-ND'
-      },
-      'no': {
-        'yes': 'CC BY-NC',
-        'share-alike': 'CC BY-NC-SA',
-        'no': 'CC BY-NC-ND'
-      }
-    }
-    this.model.set('license', ccLicenses[allowCommercial][allowModification]);
+  setLicense: function(params) {
+    this.model.set('license', storybase.utils.licenseParamsToStr(params));
     this.model.save();
   },
 
@@ -4205,9 +4202,7 @@ storybase.builder.views.LicenseView = Backbone.View.extend({
     var formValues = this.form.getValue();
     var errors = this.form.validate();
     if (!errors) {
-      this.setLicense(formValues['cc-allow-commercial'],
-        formValues['cc-allow-modification']
-      );
+      this.setLicense(formValues);
       return true;
     }
     else {
@@ -4219,17 +4214,36 @@ storybase.builder.views.LicenseView = Backbone.View.extend({
     evt.preventDefault();
     if (this.validate()) {
       this.dispatcher.trigger("select:license");
+      // Update the form data to the new value of the form, otherwise
+      // the new values will get clobbered when the form is re-rendered
+      // in render()
+      this.form.data = this.form.getValue();
+      this.render();
     }
   },
 
   render: function(options) {
     options = options || {};
-    this.$el.html(this.template());
-    this.form.render().$el.append('<input type="submit" value="' + gettext("Select License") + '" />');
-    this.$el.append(this.form.el);
+    var license = this.model.get('license');
+    var showForm = (license ? false : true) || options.showForm;
+    this.$el.html(this.template({
+      license: license,
+      showForm: showForm
+    }));
+    if (showForm) {
+      this.form.render().$el.append('<input type="submit" value="' + gettext("Select License") + '" />');
+      this.$el.append(this.form.el);
+    }
+    else {
+      this.licenseDisplayView.setElement(this.$('#cc-license')).render();
+    }
     this.delegateEvents();
 
     return this;
+  },
+
+  showForm: function() {
+    return this.render({showForm: true});
   }
 });
 
