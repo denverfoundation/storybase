@@ -3119,6 +3119,13 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       // Save the model's original new state to decide
       // whether to send a signal later
       var isNew = this.model.isNew();
+      var storyLicense = this.story.get('license');
+      if (isNew && _.isUndefined(attributes['license']) && storyLicense) {
+        // If this is the initial save and the story has a license
+        // defined and the asset has no explicit license defined, set the
+        // asset license to that of the story.
+        attributes['license'] = storyLicense;
+      }
       this.model.save(attributes, {
         success: function(model) {
           that.setState('display');
@@ -4577,6 +4584,7 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
     saveModel: function(model, options) {
       options = _.isUndefined(options) ? {} : options;
       var that = this;
+      model.set('license', this.story.get('license'));
       model.save(null, {
         success: function(model) {
           that.model = model;
