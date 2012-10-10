@@ -24,7 +24,7 @@
 		})
 		
 		if ($('.flexslider').length) {
-			$('.title .flexslider').flexslider({
+			$('.intro .flexslider').flexslider({
 				animation: 'slide',
 				slideshow: false,
 				start: function(slider){
@@ -236,10 +236,15 @@
 	        return false;
 		});
 
-
-
-
 	}
+
+	// sidebar
+	$('.sidebar .sibling-nav li a').hover(function() {
+		$(this).parent('li').addClass('hover');
+	}, function() {
+		$(this).parent('li').removeClass('hover');
+	});
+
 
 })(jqLatest);
 

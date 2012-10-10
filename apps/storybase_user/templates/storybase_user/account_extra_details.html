@@ -9,7 +9,22 @@
 
 <form method="post">
   {% csrf_token %}
-  {{ form.as_p }}
+  {{ form.non_field_errors }}
+  {% for hidden in form.hidden_fields %}
+  {{ hidden }}
+  {% endfor %}
+  {% for field in form.visible_fields %}
+  <p class="{{ field.css_classes }}">
+    {{ field.errors }}
+    <label for="{{field.html_name}}">{% if field.name == "tos"%}{% trans "I agree to the "%}<a href="{% page_url "tos" %}" class="toggle-tos">{% trans "terms of service" %}</a>{% else %}{{ field.label }}{% endif %}:</label>
+    {{ field }}
+  </p>
+  {% endfor %}
+  {% include "registration/terms_of_service.html" %}
   <input type="submit" value="{% trans "Submit" %}" />
 </form>
+{% endblock %}
+
+{% block extrajs %}
+{% include "registration/terms_of_service_js.html" %}
 {% endblock %}

@@ -1,0 +1,74 @@
+// multi-use widgets or stuff without a clear home otherwise
+
+.breadcrumbs { height:38px; background:url('../img/br-bg.png') repeat-x 0 0; margin-bottom:35px;  }
+.breadcrumbs ul { list-style:none; }
+.breadcrumbs ul li { float:left; display:inline; background:url('../img/bread-sep.png') no-repeat right center; padding-right:12px; padding-left:7px;   }
+.breadcrumbs ul li:first-child { padding-left:0;   }
+.breadcrumbs ul li.last {background:none;  }
+.breadcrumbs ul li.first a {color:@orange ;  }
+.breadcrumbs ul li, .breadcrumbs ul li a { font-size:14px; color:#3b3b3b;font-family: 'MuseoSlab500Regular'; line-height:37px;   }
+
+ul.messages {
+	.rounded-corners;
+	.plain-serif-text;
+	border:1px solid #bbb;
+	padding:10px;
+	margin:20px 0;
+	color:@light-gray;
+	font-size:16px;
+}
+
+ul.messages li.error {
+	color:@error-color;
+}
+
+ul.social { list-style:none; padding-top:12px;  }
+ul.social li { float:left; display:inline; padding-right:10px;  }
+ul.social li a { width:24px; height:24px; float:left; display:inline; background:url('../img/social.png') no-repeat 0 0; font-size: 0; line-height: 0; text-indent: -4000px;  }
+ul.social li a:hover { opacity:0.7; }
+ul.social li.icon1 a { background-position:0 0; }
+ul.social li.icon2 a { background-position:-34px 0; }
+ul.social li.icon3 a { background-position:-67px 0; }
+
+
+#slideContainer .back { width:26px; height:46px; background:url('../img/slider-arrows3.png') no-repeat 0 0; display:block; font-size: 0; line-height: 0; text-indent: -4000px; position:absolute; top:74px; left:76px; z-index: 500; }
+#slideContainer .forward {  width:26px; height:46px; background:url('../img/slider-arrows3.png') no-repeat right 0; display:block; font-size: 0; line-height: 0; text-indent: -4000px; position:absolute; top:74px; right:0; z-index: 500; }
+
+
+#main .flexslider-holder { overflow:hidden;  }
+.flexslider.col .next, 
+.flexslider.col .prev { margin-top:125px;  } 
+
+
+#main .full-width ul li .image { position:relative; }
+#main .full-width { padding-bottom:27px;  overflow:visible !important; margin-top:20px;  }
+#main .full-width .image { width:335px; float:left; display:inline;  padding-left:76px;   }
+#main .text { margin-top:4px; float:right; display:inline; width:490px;   padding-right:76px;   }
+#main .text p { font-size:12px; line-height:16px; color:#5a5a5a; .plain-serif-text; }
+#main .text p.byline { font-size:12px; color:@gray; font-style:italic; display:block; padding-bottom:10px;  }
+#main .text p.more a { font-size:14px; color:@orange;  font-family: 'MuseoSlab500Regular'; display:block; margin-top:15px;  }
+
+/* p.byline span.author, p.byline span.date { float: left; padding-right:15px; } */
+p.byline { overflow: hidden; font-style:italic; }
+
+#main .col h4 { .line-through-header; margin-bottom:20px;  }
+#main .col h4 span { background:#fff; padding-right:10px; padding-left:10px;   }
+#main .col ul { width:335px; margin:0 auto;   }
+#main .col ul .text {   width:335px; float:none; }
+#main .col h5 { 
+	font-size:18px; 
+	color:@highlight-blue; 
+	padding-top:10px;
+	a {
+		color:@highlight-blue;
+	}
+}
+
+#main .col ul .text,
+#main .col .image { padding-left:76px; padding-right:76px; display:block;   }  
+
+
+#main .bottom .left ul li a { font-size:14px; color:@orange;font-family: 'MuseoSlab500Regular'; padding-left:5px; padding-right:5px;  line-height:21px; display:inline-block;  }
+#main .bottom .left ul li a.active { background:@orange; color:#fff; border-radius:4px;  }
+#main .bottom .text { width:370px; padding-left:21px; border-left:1px dotted #666666;  float:right; display:inline;  padding-right:0; padding-left:21px;  }
+#main .bottom .image { width:300px; float:left; display:inline;   }

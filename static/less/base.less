@@ -1,0 +1,194 @@
+// base.less imports all other less files.
+
+// variables
+@import "variables.less";
+
+// fonts
+@font-face {
+    font-family: 'MuseoSlab500Regular';
+    src: url('../css/font-face/museo_slab_500-webfont.eot');
+    src: url('../css/font-face/museo_slab_500-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../css/font-face/museo_slab_500-webfont.woff') format('woff'),
+         url('../css/font-face/museo_slab_500-webfont.ttf') format('truetype'),
+         url('../css/font-face/museo_slab_500-webfont.svg#MuseoSlab500Regular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+
+@font-face {
+    font-family: 'Museo300Regular';
+    src: url('../css/font-face/museo300-regular-webfont.eot');
+    src: url('../css/font-face/museo300-regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../css/font-face/museo300-regular-webfont.woff') format('woff'),
+         url('../css/font-face/museo300-regular-webfont.ttf') format('truetype'),
+         url('../css/font-face/museo300-regular-webfont.svg#Museo300Regular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+// mixins
+.button-style {
+	padding:8px;
+	background:#878787;
+	font-family: "Museo300Regular";
+	font-size:14px;
+	border-radius:4px;
+	border:none;
+	font-weight:normal;
+	color:#fbfaf2;
+
+	&:hover {
+		text-decoration:none;
+		background: @orange;
+		color:#fff;	
+	}
+
+	&.right {
+		margin-left:8px;
+	}
+}
+
+.rounded-corners (@radius: 5px) {
+	border-radius: @radius;
+	-webkit-border-radius: @radius;
+	-moz-border-radius: @radius;
+}
+
+// this should probably just be on the body ... not sure if the body
+// is arial/sans-serif for a reason.
+.plain-serif-text {
+	font-family:'Times New Roman', Georgia, Serif;
+}
+
+.line-through-header {
+	background:url('../img/h3-line.png') repeat-x 0 8px; 
+	margin-bottom:10px;
+	
+	span {
+		background:#fff; 
+		padding-left:16px; 
+		padding-right:16px;
+	}
+}
+
+// global stuff
+
+html { font-size: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
+
+body, button, input, select, textarea { font-family: sans-serif; color: #444; }
+
+* { margin: 0; padding: 0; outline: 0; }
+
+body, html { height: 100%; }
+
+body.base-template {
+	
+    font-size: 12px;
+    line-height: 1.3;
+    font-family: arial, sans-serif;
+    color: #000;
+    background:url('../img/body.jpg') repeat-x 0 0;
+    min-width: 100%;
+    overflow-y:scroll;
+
+	.basic-header {
+		text-align:center;
+		font-family: 'Museo300Regular';
+		font-weight:normal;
+	}
+
+	h1 { font-size:@top-header-size; color:@dark-gray; .basic-header; .line-through-header; }
+	h2 { font-size:(@top-header-size * .8); color:@dark-gray; .basic-header; }
+	h3 { font-size:(@top-header-size * .7); color:@light-gray; .basic-header; }
+	h4 { font-size:(@top-header-size * .6); color:@light-gray; .basic-header; }
+	h5 { font-size:(@top-header-size * .5); color:@highlight-blue; font-family: 'MuseoSlab500Regular'; font-weight:normal;}
+
+	// based on "everything" comp, text content
+	// headers are relatively diminuitive.
+	// @see content-page.less. putting this here
+	// for reference to "regular" header sizes.
+	// could probably make a variable or something...
+	.content-block {
+		h2 { font-size:(@top-header-size * .6); }
+		h3 { font-size:(@top-header-size * .5); }
+		h4 { font-size:(@top-header-size * .4); }
+		h5 { font-size:(@top-header-size * .3); }
+	}
+
+	h1 a, h2 a, h3 a, h4 a, h5 a {
+		color:@highlight-blue;
+	}
+
+	// links are more often intended to be highlight-blue than this 
+	// color. not sure why this is set. may be worth just making 
+	// highlight-blue the default.
+	a { color: #0252aa; text-decoration: none; cursor: pointer; }
+	a:hover { text-decoration: underline; }
+	a img { border: 0; }
+
+	input, textarea, select { font-size: 12px; font-family: arial, sans-serif; }
+	textarea { overflow: auto; }
+
+	.cl { display: block; height: 0; font-size: 0; line-height: 0; text-indent: -4000px; clear: both; }
+	.notext { font-size: 0; line-height: 0; text-indent: -4000px; }
+	.left, .alignleft { float: left; display: inline; }
+	.right, .alignright { float: right; display: inline; }
+
+	ul { list-style:none; }
+
+	.modal {
+		display: none;
+	}
+
+	#main a.button {
+		.button-style;
+		display:inline-block;
+	}
+}
+
+
+// imports
+
+body.base-template {
+	@import "header.less";
+	@import "footer.less";
+	@import "megamenu.less";
+	@import "sidebar.less";
+	@import "homepage.less";
+	@import "misc.less";
+	@import "content-page.less";
+	@import "forms.less";
+	@import "comments.less";
+	@import "accounts.less";
+	@import "template-layout.less";
+}
+
+body.story-builder, 
+body.story-viewer {
+	
+	// the html5 boilerplate code is currently relied upon in story builder and viewer.
+	// the body {...} selector contents must be included directly here.
+	// @todo: clean this up
+	margin: 0; font-size: 13px; line-height: 1.231;
+	@import "html5-boilerplate.less";
+	
+	@import "layout.less";
+}
+
+body.story-builder {
+	@import "builder.less";	
+}
+
+// viewer css already has .story-viewer qualification
+@import "viewer.less";
+
+
+body.explorer {
+	@import "explorer.less";
+}
+
+// html5-boilerplate helpers want to go after other markup
+@import "helpers.less";

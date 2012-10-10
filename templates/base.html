@@ -31,22 +31,15 @@
 
   <!-- CSS: implied media=all -->
   <!-- CSS concatenated and minified via ant build script-->
-  <!-- 1140px Grid styles for IE -->
-  {% addtoblock "css" %}<!--[if lte IE 9]><link rel="stylesheet" href="{{ STATIC_URL }}css/ie.css" type="text/css" media="screen" /><![endif]-->{% endaddtoblock %}
 
   <!-- custom 1000px grid based on 960 grid, http://960.gs -->
   {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/grid.css">{% endaddtoblock %}
-
-{% comment %}
-  <!-- The 1140px Grid - http://cssgrid.net/ -->
-  {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/1140.css">{% endaddtoblock %}
-  <!-- Formalize - http://formalize.me/ -->
-  {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/formalize.css">{% endaddtoblock %}
-  {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/style.css">{% endaddtoblock %}
-{% endcomment %}
-
-  {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/style-new.css">{% endaddtoblock %}
   {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/flexslider.css">{% endaddtoblock %}
+  {% if debug %}
+  {% addtoblock "css" %}<link rel="stylesheet/less" type="text/css" href="{{ STATIC_URL }}less/base.less">{% endaddtoblock %}
+  {% else %}
+  {% addtoblock "css" %}<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css">{% endaddtoblock %}
+  {% endif %}
 
   {% render_block "css" %}
   <!-- end CSS-->
@@ -60,10 +53,14 @@
   {% block extrahead %}{% endblock %}
 </head>
 
-<body class="{% block body_class %}{% endblock %}">
+<body class="base-template {% block body_class %}{% endblock %}">
   {% cms_toolbar %}
 	<div id="header">
 		<div class="shell">
+			<a href="/" title="Return to Home">
+				<span class="logo-text">{% block logo_text %}{% endblock %}</span>
+				<img class="header-logo" src="{{ STATIC_URL }}img/header-logo.png" alt="{% trans "Floodlight: Tell a Story. Transform Your Community" %}" />
+			</a>
 			<div class="header-right">
 				<ul class="top-nav">
 					<li>{% language_chooser %}</li>
@@ -83,8 +80,8 @@
 				</form>
 			</div>
 			<div class="cl">&nbsp;</div>
-			{% include "megamenu.html" %}
 		</div>
+		{% include "megamenu.html" %}
 		<div class="cl">&nbsp;</div>
 	</div>
 	<!-- end Header -->
@@ -104,7 +101,7 @@
 	<div class="footer">
 		<div class="shell">
 			<div class="left">
-				<p>Copyright 2012 The Floodlight Project. All rights reserved.</p>
+				<p>{% trans "Copyright 2012 The Floodlight Project. All rights reserved." %}</p>
 				<ul class="social">
 					<li class="icon1"><a href="#">rss</a></li>
 					<li class="icon2"><a href="#">twitter</a></li>
@@ -118,7 +115,7 @@
 					<li><a href="#">{% trans "Explore Floodlight" %}</a></li>
 					<li><a href="#">{% trans "Get Involved" %}</a></li>
 					<li class="middle"><a href="#">{% trans "News &amp; Updates" %}</a></li>
-					<li class="last"><a href="#">{% trans "Privacy Policy" %}</a></li>
+                    <li class="last"><a href="{% page_url "policies" %}">{% trans "Privacy Policy" %}</a></li>
 					<li class="last"><a href="#">{% trans "Licensing Information" %}</a></li>
 				</ul>
 			</div>
@@ -140,9 +137,11 @@
   var jqLatest = jQuery;
   </script>
 
-  {% addtoblock "js" %}<script src="{{ STATIC_URL }}js/libs/jquery.formalize.min.js"></script>{% endaddtoblock %}
   {% addtoblock "js" %}<script defer src="{{ STATIC_URL }}js/plugins.js"></script>{% endaddtoblock %}
   {% addtoblock "js" %}<script src="{{ STATIC_URL }}js/functions.js"></script>{% endaddtoblock %}
+  {% if debug %}
+  {% addtoblock "js" %}<script src="{{ STATIC_URL }}js/libs/less-1.3.0.min.js"></script>{% endaddtoblock %}
+  {% endif %}
   {% block extrajs %}{% endblock %}
   {% render_block "js" %}
   <!-- end scripts-->

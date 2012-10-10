@@ -1,0 +1,31 @@
+
+.shell { 
+	width:1000px; 
+	margin:0 auto;
+	position:relative;
+}
+#header { 
+	height:165px; 
+	position:relative; 
+	z-index: 2501;
+}
+#container { width:100%;  }
+#main { 
+	overflow-x:hidden; 
+	min-height: 200px; 
+	padding-bottom: 8px;
+	
+	&.inner {
+		overflow-x:visible !important;
+	}
+	
+	.col { width:486px; padding-bottom:55px;  }
+	.bottom { 
+		margin-bottom:209px;
+		
+		.left { width:182px; float:left; display:inline; }
+		.right { width:721px;   }
+	}
+}
+.content-page { overflow:hidden; }
+.twocol .twocol-content { overflow:hidden; }

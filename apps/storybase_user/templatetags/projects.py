@@ -1,29 +1,41 @@
 from django import template
+from django.core.urlresolvers import reverse
 from django.template.loader import get_template
 from django.template import Context
-from django.conf import settings
-import random # temp
+from django.utils.translation import ugettext as _
+
+from storybase_user.models import Project
 
 register = template.Library()
 
-@register.simple_tag
-def featured_projects(count = 4):
-    # temp: should actually pull projects, etc.    
-    # currently the template asks for a "normalized" dictionary format, so 
-    # note that passing raw project objects won't work.
+# TODO: Actually wire in featured image for project
+def _mock_image_html(width):
+    from django.conf import settings
+    import random
+    image_url = "%scss/images/image%d.jpg" % (settings.STATIC_URL,
+                                              random.randrange(1, 9))
+    return "<img src=\"%s\" />" % (image_url)
 
-    #projects = Project.objects.on_homepage().order_by('-last_edited')[:count]
-    projects = []
-    for i in range(count):
-        projects.append({ 
-            "title": "Project %d Title" % (i + 1),
-            "author": "Author Name", 
-            "date": "August 25, 2012", 
-            "image_url": "css/images/image%d.jpg" % random.randrange(1, 9), 
-            "excerpt": "Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum." 
+@register.simple_tag
+def featured_projects(count=4, img_width=335):
+    # Put project attributes into a "normalized" dictionary format
+    objects = []
+    qs =  Project.objects.on_homepage().order_by('-last_edited')[:count]
+    for obj in qs:
+        objects.append({ 
+            "title": obj.name,
+            #"author": "Author Name", 
+            "date": obj.last_edited,
+            # TODO: Wire in featured image for Project
+            "image_html": _mock_image_html(width=img_width),
+            "excerpt": obj.description, 
+            "url": obj.get_absolute_url(),
         })
 
     template = get_template('storybase/featured_object.html')
-    # STATIC_URL should be included via context processor ... not sure best way to do that
-    context = Context({ "objects": projects, "more_link_text": "View Projects", "more_link_url": "/projects", "STATIC_URL": settings.STATIC_URL })
+    context = Context({
+        "objects": objects,
+        "more_link_text": _("View Projects"),
+        "more_link_url": reverse("project_list"),
+    })
     return template.render(context)

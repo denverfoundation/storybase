@@ -186,6 +186,15 @@ class OrganizationModelTest(TestCase):
         organization_translation.save()
         self.assertEqual(organization.slug, slugify(name))
 
+    def test_auto_unique_slug(self):
+        name = 'Mile High Connects'
+        organization = create_organization(name=name)
+        self.assertEqual(organization.slug, "mile-high-connects")
+        organization2 = create_organization(name=name)
+        self.assertEqual(organization2.slug, "mile-high-connects-2")
+        self.assertEqual(Organization.objects.filter(
+            slug="mile-high-connects").count(), 1)
+
     def test_add_story(self):
         organization = create_organization(name='Mile High Connects')
         title = "Transportation Challenges Limit Education Choices for Denver Parents"
@@ -256,6 +265,32 @@ class ProjectModelTest(TestCase):
         project_translation = ProjectTranslation(name=name, project=project)
         project_translation.save()
         self.assertEqual(project.slug, slugify(name))
+
+    def test_auto_unique_slug(self):
+        name = "The Metro Denver Regional Equity Atlas"
+        description = """
+            The Denver Regional Equity Atlas is a product of Mile High
+            Connects (MHC), which came together in 2011 to ensure that 
+            the region\'s significant investment in new rail and bus
+            service will provide greater access to opportunity and a
+            higher quality of life for all of the region\'s residents, but
+            especially for economically disadvantaged populations who
+            would benefit the most from safe, convenient transit service.
+
+            The Atlas visually documents the Metro Denver region\'s
+            demographic, educational, employment, health and housing
+            characteristics in relation to transit, with the goal of
+            identifying areas of opportunity as well as challenges to
+            creating and preserving quality communities near transit.
+            """
+        project = create_project(name=name, description=description)
+        self.assertEqual(project.slug,
+                         "the-metro-denver-regional-equity-atlas")
+        project2 = create_project(name=name, description=description)
+        self.assertEqual(project2.slug,
+                         "the-metro-denver-regional-equity-atlas-2")
+        self.assertEqual(Project.objects.filter(
+            slug="the-metro-denver-regional-equity-atlas").count(), 1)
 
     def test_add_story(self):
         name = "The Metro Denver Regional Equity Atlas"

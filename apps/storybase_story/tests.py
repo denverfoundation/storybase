@@ -12,6 +12,7 @@ from django.utils import simplejson
 
 from tastypie.test import ResourceTestCase
 
+from storybase.admin import toggle_featured
 from storybase.tests.base import SloppyComparisonTestMixin, FixedTestApiClient
 from storybase.utils import slugify
 from storybase_asset.models import (Asset, HtmlAsset, HtmlAssetTranslation,
@@ -251,6 +252,71 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
                          "/stories/%s/build-connected/%s/" % 
                          (story.slug, story2.story_id))
 
+    def test_add_assets_signal(self):
+        """
+        Test that an asset is also added to the assets relation
+        when it's added to the featured_assets relation.
+        """
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status='published')
+        asset = create_html_asset(type='text', title='Test Asset', 
+                                  body='Test content')
+        self.assertEqual(story.assets.count(), 0)
+        story.featured_assets.add(asset)
+        story.save()
+        self.assertEqual(story.assets.count(), 1)
+
+    def test_render_featured_asset_empty(self): 
+        """
+        Test that Story.render_featured_assets returns an empty string
+        when the story has no featured assets and there isn't an
+        acceptable default.
+        """
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status='published')
+        self.assertEqual(story.assets.count(), 0)
+        self.assertEqual(story.render_featured_asset(), '')
+
+    def test_get_featured_asset_thumbnail_url_empty(self):
+        """
+        Test that Story.featured_asset_thumbnail_url returns None 
+        when the story has no featured assets and there isn't an
+        acceptable default.
+        """
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status='published')
+        self.assertEqual(story.assets.count(), 0)
+        self.assertEqual(story.featured_asset_thumbnail_url(), None)
+
+    def test_unique_slug(self):
+        """
+        Test that the unique_slug function works for the Story model's
+        title.
+        """
+        # While unique_slug lives in the storybase app, I test it here
+        # because this is the app where the relevent models live
+        from storybase.utils import unique_slugify
+        story = create_story(title="Test Story", summary="Test Summary",
+            byline="Test Byline")
+        self.assertEqual(story.slug, "test-story")
+        story2 = create_story(title="Test Story", summary="Test Summary 2",
+            byline="Test Byline 2", slug="non-colliding-slug")
+        self.assertEqual(story2.slug, "non-colliding-slug")
+        unique_slugify(story2, story2.title)
+        self.assertEqual(story2.slug, "test-story-2")
+
+    def test_auto_unique_slug(self):
+        """
+        Test that a story's slug is automatically set to a unique value.
+        """
+        story = create_story(title="Test Story", summary="Test Summary",
+            byline="Test Byline")
+        self.assertEqual(story.slug, "test-story")
+        story2 = create_story(title="Test Story", summary="Test Summary 2",
+            byline="Test Byline 2")
+        self.assertEqual(story2.slug, "test-story-2")
+        self.assertEqual(Story.objects.filter(slug="test-story").count(), 1)
+
 
 class StoryPermissionTest(TestCase):
     """Test case for story permissions"""
@@ -298,6 +364,33 @@ class StoryPermissionTest(TestCase):
         perm = "change"
         self.assertTrue(self.story.has_perm(self.user1, perm))
         self.assertFalse(self.story.has_perm(self.user2, perm))
+
+
+class StoryAdminTest(TestCase):
+    fixtures = ['section_layouts.json']
+
+    """Test case for the Story model's Django admin interface"""
+    def test_toggle_featured(self):
+        """
+        Test the admin action function that toggles the "featured
+        on homepage" flag.
+        """
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status='published',
+                             on_homepage=True)
+        story2 = create_story(title="Test Related Story", 
+                             summary="Test Related Story Summary",
+                             byline="Test Related Story Byline",
+                             status='published',
+                             on_homepage=False)
+        self.assertEqual(story.on_homepage, True)
+        self.assertEqual(story2.on_homepage, False)
+        toggle_featured(None, None,
+                        Story.objects.filter(pk__in=[story.pk, story2.pk]))
+        story = Story.objects.get(pk=story.pk)
+        story2 = Story.objects.get(pk=story2.pk)
+        self.assertEqual(story.on_homepage, False)
+        self.assertEqual(story2.on_homepage, True)
 
 
 class StoryApiTest(TestCase):
@@ -549,9 +642,9 @@ class StoryBuilderViewTest(TestCase):
         for section in self.story.sections.all():
             self.assertIn(section.section_id, section_ids)
 
-    def test_get_assets_json(self):
+    def test_get_section_assets_json(self):
         """Test getting serialized asset data for a story"""
-        json_data = self.view.get_assets_json(story=self.story)
+        json_data = self.view.get_section_assets_json(story=self.story)
         data = json.loads(json_data)
         self.assertEqual(len(data), len(self.story.sections.all()))
         for section in self.story.sections.all():
@@ -1623,6 +1716,7 @@ class StoryResourceTest(ResourceTestCase):
                                 'connected_prompt',
                                 'contact_info',
                                 'created',
+                                'featured_asset_url',
                                 'languages', 
                                 'last_edited',
                                 'license',

@@ -15,55 +15,57 @@
 {% placeholder banner %}
 {% endblock %}
 
+{% block body_class %}homepage{% endblock %}
+
+{% block logo_text %}<h1>Floodlight</h1>{% endblock %}
+
 {% block base_content %}
 
-		<div class="title">
+		<div class="intro">
 			<div class="flexslider">
 				<ul class="slides">
 					<li>
-						<h2>{% placeholder intro-carousel-title-1 or %}Tell Your Story. Transform Community.{% endplaceholder %}</h2>
+						<h2><span>{% placeholder intro-carousel-title-1 or %}{% trans "Tell your story. Transform our community." %}{% endplaceholder %}</span></h2>
 						{% placeholder intro-carousel-content-1 or %}
 						<p>
-							Your story matters. Without it, nothing happens. Floodlight will help you build, tell and share
-powerful stories that will make community change possible. <a href="#"><em>Learn how.</em></a>
+                        {% trans "Your story matters. Without it, nothing happens. Floodlight will help you build, tell and share  powerful stories that will make community change possible." %} <a href="{% url story_builder %}"><em>{% trans "Create your story now." %}</em></a> {% trans "Or" %}, <a href="{% url explore_stories %}"><em>{% trans "see the stories others are sharing." %}</em>
 						</p>
 						{% endplaceholder %}
 						<div class="page-nav">
 							<ul>
-								<li><a href="#" class="left-nav" rel="2">Build a Story</a></li>
-								<li><span class="sep"></span><a href="#" class="right-nav" rel="2">Explore Stories</a></li>
+                                <li><a href="#" class="left-nav" rel="2">{% trans "Explore Stories" %}</a></li>
+                                <li><span class="sep"></span><a href="#" class="right-nav" rel="2">{% trans "Build a Story" %}</a></li>
 							</ul>
 							<div class="cl"> </div>
 						</div>
 					</li>
 					<li>
-						<h2>{% placeholder intro-carousel-title-2 or %}Build a breakthrough story.{% endplaceholder %}</h2>
+                    <h2><span>{% placeholder intro-carousel-title-2 or %}{% trans "Build a breakthrough story." %}{% endplaceholder %}</span></h2>
 						{% placeholder intro-carousel-content-2 or %}
 						<p>
-							Take your storytelling to the next level. Create visually compelling stories with photos, videos,
-data and more. Tell better stories by leveraging public data in creative ways. <a href="#"><em>Learn how.</em></a>
+                        {% trans "Take your storytelling to the next level. Create visually compelling stories with photos, videos, data and more. Learn how to tell better stories by leveraging public data in creative ways." %} <a href="{% url story_builder %}"><em>{% trans "Create your story now." %}</em></a> {% trans "Or" %}, <a href="#">{% trans "build your storytelling skills" %}</a>
+                           
 						</p>
 						{% endplaceholder %}
 						<div class="page-nav">
 							<ul>
-								<li><a href="#" class="left-nav" rel="2">Empower</a></li>
-								<li><span class="sep"></span><a href="#" class="right-nav" rel="2">Tell Your Story</a></li>
+                                <li><a href="#" class="left-nav" rel="2">{% trans "Your Story Matters" %}</a></li>
+                                <li><span class="sep"></span><a href="#" class="right-nav" rel="2">{% trans "Explore Stories" %}</a></li>
 							</ul>
 							<div class="cl"> </div>
 						</div>
 					</li>
 					<li>
-						<h2>{% placeholder intro-carousel-title-3 or %}Build a breakthrough story.{% endplaceholder %}</h2>
+                    <h2><span>{% placeholder intro-carousel-title-3 or %}{% trans "See and show your community in a new light." %}{% endplaceholder %}</span></h2>
 						{% placeholder intro-carousel-content-3 or %}
 						<p>
-							Take your storytelling to the next level. Create visually compelling stories with photos, videos,
-data and more. Tell better stories by leveraging public data in creative ways. <a href="#"><em>Learn how.</em></a>
+                        {% trans "Explore the stories others are sharing and discover new meaning in your neighborhood. Floodlight is where stories become movements." %} <strong><em><a href="{% url explore_stories %}">{% trans "Because what we can’t see, we can’t change." %}</a></em></strong>
 						</p>
 						{% endplaceholder %}
 						<div class="page-nav">
 							<ul>
-								<li><a href="#" class="left-nav" rel="2">Empower</a></li>
-								<li><span class="sep"></span><a href="#" class="right-nav" rel="2">Tell Your Story</a></li>
+                                <li><a href="#" class="left-nav" rel="2">{% trans "Build a Story" %}</a></li>
+                                <li><span class="sep"></span><a href="#" class="right-nav" rel="2">{% trans "Your Story Matters" %}</a></li>
 							</ul>
 							<div class="cl"> </div>
 						</div>
@@ -72,26 +74,170 @@ data and more. Tell better stories by leveraging public data in creative ways. <
 			</div>
 		</div>
 		
-		<h2><span>Featured on Floodlight</span></h2>
+		<h2><span>{% trans "Featured on Floodlight" %}</span></h2>
 		<div class="flexslider-holder">
 			<div class="flexslider full-width">
-				{% placeholder special-content %}
+				{% comment %}
+				if we are actually using this whole carousel-within-a-carousel
+				thing, we could break this out a little more.
+				{% endcomment %}
+				{% placeholder special-content or %}
+				<ul class="slides">
+					<li>
+						<div id="slideContainer" class="image ">
+							<div class="slide-shim">
+								<img src="{{ STATIC_URL }}img/image.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image22.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image22.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image22.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image22.jpg" alt=""/>
+							</div>
+							<a href="#" class="back"></a>
+							<a href="#" class="forward"></a>
+						</div>
+						<div class="text">
+							<h5>Project Name Goes Here</h5>
+							<p><span>Person’s Name Here or Date</span></p>
+							<p>Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit.</p>
+							<p class="more"><a href="#">View Projects</a></p>
+						</div>
+						<div class="cl"> </div>
+					</li>
+					<li>
+						<div id="slideContainer" class="image ">
+							<div class="slide-shim">
+								<img src="{{ STATIC_URL }}img/image.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image22.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image22.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image22.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image22.jpg" alt=""/>
+							</div>
+							<a href="#" class="back"></a>
+							<a href="#" class="forward"></a>
+						</div>
+						<div class="text">
+							<h5>Project Name Goes Here</h5>
+							<p><span>Person’s Name Here or Date</span></p>
+							<p>Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit.</p>
+							<p class="more"><a href="#">View Projects</a></p>
+						</div>
+						<div class="cl"> </div>
+					</li>
+					<li>
+						<div id="slideContainer" class="image ">
+							<div class="slide-shim">
+								<img src="{{ STATIC_URL }}img/image.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image22.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image22.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image22.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image22.jpg" alt=""/>
+							</div>
+							<a href="#" class="back"></a>
+							<a href="#" class="forward"></a>
+						</div>
+						<div class="text">
+							<h5>Project Name Goes Here</h5>
+							<p><span>Person’s Name Here or Date</span></p>
+							<p>Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit.</p>
+							<p class="more"><a href="#">View Projects</a></p>
+						</div>
+						<div class="cl"> </div>
+					</li>
+					<li>
+						<div id="slideContainer" class="image ">
+							<div class="slide-shim">
+								<img src="{{ STATIC_URL }}img/image.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image22.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image22.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image22.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/image.jpg" alt=""/>
+								<img src="{{ STATIC_URL }}img/static/img/image22.jpg" alt=""/>
+							</div>
+							<a href="#" class="back"></a>
+							<a href="#" class="forward"></a>
+						</div>
+						<div class="text">
+							<h5>Project Name Goes Here</h5>
+							<p><span>Person’s Name Here or Date</span></p>
+							<p>Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit. Lorem ipsum dolere sit amet nonummy consecuter nomen es quid adspecit.</p>
+							<p class="more"><a href="#">View Projects</a></p>
+						</div>
+						<div class="cl"> </div>
+					</li>
+				</ul>
+				{% endplaceholder %}
 			</div>
 		</div>
 		<div class="flexslider-holder">
-			<div class="flexslider col left">
-				<h3><span>Featured Projects</span></h3>
+			<div class="flexslider col left featured-projects">
+				<h2><span>{% trans "Featured Projects" %}</span></h2>
 				{% featured_projects %}
 			</div>
-			<div class="flexslider col right">
-				<h3><span>Featured Stories</span></h3>
+			<div class="flexslider col right featured-stories">
+				<h2><span>{% trans "Featured Stories" %}</span></h2>
 				{% featured_stories %}
 			</div>
 			<div class="cl">&nbsp;</div>
 		</div>
 		<div class="bottom">
-			<h2><span>Supporting Foundations</span></h2>
-			{% placeholder supporting-foundations %}
+			<h2><span>{% trans "Supporting Foundations" %}</span></h2>
+			{% placeholder supporting-foundations or %}
+			<div class="left">
+				<ul>
+					<li><a href="#" class="active">The Piton Foundation</a></li>
+					<li><a href="#">The Denver Foundation</a></li>
+					<li><a href="#">The Knight Foundation</a></li>
+				</ul>
+			</div>
+			<div class="right flexslider">
+				<ul class="slides">
+					<li>
+						<div class="image">
+							<a href="#">
+								<img src="{{ STATIC_URL }}img/piton-foundation-logo.jpg" alt=""/>
+							</a>
+						</div>
+						<div class="text">
+							<p>The Piton Foundation is a private, operating foundation established in 1976 by Denver oil man Sam Gary. The foundation provides opportunities for families and children in Denver to move from poverty and dependence to self-reliance. For more, visit <a href="http://piton.org">Piton.org</a>.</p>
+						</div>
+						<div class="cl"> </div>
+					</li>
+					<li>
+						<div class="image">
+							<a href="#">
+								<img src="{{ STATIC_URL }}img/denver-foundation-logo.gif" alt=""/>
+							</a>
+						</div>
+						<div class="text">
+							<p>Founded in 1925, The Denver Foundation is a community foundation serving Metro Denver, with the mission of inspiring people and mobilizing resources to strengthen the community.  The Denver Foundation three primary functions: stewarding an endowment to invest in meeting current and future needs for the community; managing more than 900 charitable funds for individuals, families and businesses; and working with the community and philanthropic leaders to address the core challenges that face Metro Denver. For more, visit <a href="http://denverfoundation.org">DenverFoundation.org</a>.</p>
+						</div>
+						<div class="cl"> </div>
+					</li>
+					<li>
+						<div class="image">
+							<a href="#">
+								<img src="{{ STATIC_URL }}img/knight-foundation-logo.jpg" alt=""/>
+							</a>
+						</div>
+						<div class="text">
+							<p>Knight Foundation supports transformational ideas that promote quality journalism, advance media innovation, engage communities and foster the arts. The foundation believes that democracy thrives when people and communities are informed and engaged. For more, visit <a href="http://knightfoundation.org">KnightFoundation.org</a>.</p>
+						</div>
+						<div class="cl"> </div>
+					</li>
+				</ul>
+			</div>
+			{% endplaceholder %}
 		</div>
 
 {% comment %}

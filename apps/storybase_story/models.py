@@ -22,10 +22,11 @@ from storybase.fields import ShortTextField
 from storybase.models import (LicensedModel, PermissionMixin, 
     PublishedModel, TimestampedModel, TranslatedModel, TranslationModel,
     set_date_on_published)
-from storybase.utils import slugify
-from storybase_asset.models import Asset, DataSet
+from storybase.utils import unique_slugify
+from storybase_asset.models import Asset, DataSet, ASSET_TYPES
 from storybase_help.models import Help
 from storybase_user.models import Organization, Project
+from storybase_user.utils import format_user_name
 from storybase_story import structure
 from storybase_story.managers import (ContainerManager, SectionLayoutManager,
     SectionManager, StoryManager, StoryTemplateManager)
@@ -190,18 +191,7 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
         """
         Return the contributor's first name and last initial or username
         """ 
-        contributor = self.author
-        contributor_name = "" 
-        if contributor.is_active and contributor.first_name:
-            contributor_name = contributor.first_name 
-                                
-            if contributor.last_name:
-                contributor_name = "%s %s." % (contributor.first_name,
-                                               contributor.last_name[0])
-            else:
-                contributor_name = contributor.first_name
-
-        return contributor_name
+        return format_user_name(self.author) 
 
     def to_simple(self):
         """
@@ -218,35 +208,64 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
         """Return JSON representation of this object"""
         return mark_safe(simplejson.dumps(self.to_simple())) 
 
-    def render_featured_asset(self, format='html'):
-        """Render a representation of the story's featured asset"""
-        try:
+    def get_featured_asset(self):
+        """Return the featured asset"""
+        if self.featured_assets.count():
             # Return the first featured asset.  We have the ability of 
             # selecting multiple featured assets.  Perhaps in the future
             # allow for specifying a particular feature asset or randomly
             # displaying one.
-            featured_asset = self.featured_assets.select_subclasses()[0]
-            thumbnail_options = {}
+            return self.featured_assets.select_subclasses()[0]
+
+        # No featured assets have been defined. Try to default to the
+        # first image asset
+        assets = self.assets.filter(type='image').select_subclasses()
+        if (assets.count()):
+            # QUESTION: Should this be saved?
+            return assets[0]
+
+        # No image assets either
+        return None
+
+    def render_featured_asset(self, format='html', width=500, height=0):
+        """Render a representation of the story's featured asset"""
+        featured_asset = self.get_featured_asset()
+        if featured_asset is None:
+            # No featured assets
+            # TODO: Display default image
+            return ''
+        else:
+            # TODO: Pick default size for image
+            # Note that these dimensions are the size that the resized
+            # image will fit in, not the actual dimensions of the image
+            # that will be generated
+            # See http://easy-thumbnails.readthedocs.org/en/latest/usage/#thumbnail-options
+            thumbnail_options = {
+                'width': width,
+                'height': height
+            }
             if format == 'html':
                 thumbnail_options.update({'html_class': 'featured-asset'})
             return featured_asset.render_thumbnail(format=format, 
                                                    **thumbnail_options)
-        except IndexError:
-            # No featured assets
-            return '' 
 
-    def featured_asset_thumbnail_url(self):
+    def featured_asset_thumbnail_url(self, include_host=True):
         """Return the URL of the featured asset's thumbnail
 
         Returns None if the asset cannot be converted to a thumbnail image.
 
         """
-        try:
-            featured_asset = self.featured_assets.select_subclasses()[0]
-            return featured_asset.get_thumbnail_url(include_host=True)
-        except IndexError:
+        featured_asset = self.get_featured_asset()
+        if featured_asset is None:
             # No featured assets
             return None
+        else:
+            thumbnail_options = {
+                'width': 240,
+                'height': 240,
+                'include_host': include_host
+            }
+            return featured_asset.get_thumbnail_url(**thumbnail_options)
 
     def render_story_structure(self, format='html'):
         """Render a representation of the Story structure"""
@@ -263,16 +282,16 @@ class Story(TranslatedModel, LicensedModel, PublishedModel,
 
     def get_explore_url(self, filters=None):
         """
-	Get a URL pointing to the explore view with specific filters set
-	"""
-	url = urlresolvers.reverse('explore_stories')
-	qs_params = []
-	for filter, values in filters.items():
-	    if values:
-	        qs_params.append("%s=%s" % (filter, ",".join([str(value) for value in values])))
+        Get a URL pointing to the explore view with specific filters set
+        """
+        url = urlresolvers.reverse('explore_stories')
+        qs_params = []
+        for filter, values in filters.items():
+            if values:
+                qs_params.append("%s=%s" % (filter, ",".join([str(value) for value in values])))
 
-        url += "?" + "&".join(qs_params) 
-	return url
+            url += "?" + "&".join(qs_params) 
+        return url
 	
     def topics_with_links(self):
         """
@@ -389,7 +408,7 @@ def set_story_slug(sender, instance, **kwargs):
     """
     try:
         if not instance.story.slug:
-            instance.story.slug = slugify(instance.title)
+            unique_slugify(instance.story, instance.title)
         instance.story.save()
     except Story.DoesNotExist:
         # Instance doesn't have a related story.
@@ -412,11 +431,32 @@ def update_last_edited(sender, instance, **kwargs):
             obj.save()
 
 
+def add_assets(sender, **kwargs):
+    """
+    Add asset to a Story's asset list
+
+    This is meant as a signal handler to automatically add assets
+    to a Story's assets list when they're added to the
+    featured_assets relation
+    
+    """
+    instance = kwargs.get('instance')
+    action = kwargs.get('action')
+    pk_set = kwargs.get('pk_set')
+    model = kwargs.get('model')
+    reverse = kwargs.get('reverse')
+    if action == "post_add" and not reverse:
+        for obj in model.objects.filter(pk__in=pk_set):
+            instance.assets.add(obj)
+        instance.save()
+
 # Hook up some signal handlers
 pre_save.connect(set_date_on_published, sender=Story)
 post_save.connect(set_story_slug, sender=StoryTranslation)
 m2m_changed.connect(update_last_edited, sender=Story.organizations.through)
 m2m_changed.connect(update_last_edited, sender=Story.projects.through)
+m2m_changed.connect(add_assets, sender=Story.featured_assets.through)
+
 
 class StoryRelationPermission(PermissionMixin):
     """Permissions for Story Relations"""
@@ -708,6 +748,9 @@ class StoryTemplateTranslation(TranslationModel):
     title = ShortTextField()
     tag_line = ShortTextField(blank=True)
     description = models.TextField(blank=True)
+    ingredients = ShortTextField(blank=True)
+    best_for = ShortTextField(blank=True)
+    tip = ShortTextField(blank=True)
 
     def __unicode__(self):
         return self.title
@@ -719,6 +762,9 @@ class StoryTemplate(TranslatedModel):
         ('5 minutes', _('5 minutes')),
         ('30 minutes', _('30 minutes')),
     )
+    LEVEL_CHOICES = (
+        ('beginner', _("Beginner")),
+    )
     
     template_id = UUIDField(auto=True)
     story = models.ForeignKey('Story', blank=True, null=True,
@@ -728,13 +774,21 @@ class StoryTemplate(TranslatedModel):
         choices=TIME_NEEDED_CHOICES, blank=True,
         help_text=_("The amount of time needed to create a story of this " 
                     "type"))
+    level = models.CharField(max_length=140,
+        choices=LEVEL_CHOICES, blank=True,
+        help_text=_("The level of storytelling experience suggested to "
+                    "create stories with this template"))
     slug = models.SlugField(unique=True, 
         help_text=_("A human-readable unique identifier"))
+    examples = models.ManyToManyField('Story', blank=True, null=True,
+        help_text=_("Stories that are examples of this template"),
+        related_name="example_for")
 
     objects = StoryTemplateManager()
 
     # Class attributes to handle translation
-    translated_fields = ['title', 'description', 'tag_line']
+    translated_fields = ['title', 'description', 'tag_line', 'ingredients',
+                         'best_for', 'tip']
     translation_set = 'storytemplatetranslation_set'
     translation_class = StoryTemplateTranslation
 
@@ -798,7 +852,24 @@ class Container(models.Model):
 
     def natural_key(self):
         return (self.name,)
-    
+
+
+class ContainerTemplate(models.Model):
+    """Per-asset configuration for template assets in builder"""
+    container_template_id = UUIDField(auto=True, db_index=True)
+    template = models.ForeignKey('StoryTemplate')
+    section = models.ForeignKey('Section')
+    container = models.ForeignKey('Container')
+    asset_type = models.CharField(max_length=10, choices=ASSET_TYPES,
+                                  blank=True, 
+                                  help_text=_("Default asset type"))
+    can_change_asset_type = models.BooleanField(default=False,
+        help_text=_("User can change the asset type from the default"))
+    help = models.ForeignKey(Help, blank=True, null=True)
+
+    def __unicode__(self):
+        return "%s / %s / %s" % (self.template.title, self.section.title, self.container.name)
+       
 
 # Internal API functions for creating model instances in a way that
 # abstracts out the translation logic a bit.

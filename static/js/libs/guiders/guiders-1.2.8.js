@@ -509,18 +509,30 @@ var guiders = (function($) {
     if (myGuider.onShow) {
       myGuider.onShow(myGuider);
     }
-    guiders._attach(myGuider);
+    guiders._attach(myGuider) && guiders._styleArrow(myGuider);
     myGuider.elem.fadeIn("fast").data("locked", false);
       
     guiders._currentGuiderID = id;
     
     var windowHeight = guiders._windowHeight = $(window).height();
+    var windowWidth = guiders._windowWidth = $(window).width();
     var scrollHeight = $(window).scrollTop();
     var guiderOffset = myGuider.elem.offset();
     var guiderElemHeight = myGuider.elem.height();
+    var guiderElemWidth = myGuider.elem.outerWidth();
     
     var isGuiderBelow = (scrollHeight + windowHeight < guiderOffset.top + guiderElemHeight); /* we will need to scroll down */
     var isGuiderAbove = (guiderOffset.top < scrollHeight); /* we will need to scroll up */
+    var isGuiderRight = (guiderOffset.left + guiderElemWidth > windowWidth);
+    var isGuiderLeft = (guiderOffset.left < 0);
+    // Check if the guider ends up to the left or to the right of the 
+    // window and nudge it over until it fits
+    if (isGuiderRight) {
+      guiders._nudge(myGuider, windowWidth - guiderOffset.left - guiderElemWidth);
+    }
+    if (isGuiderLeft) {
+      guiders._nudge(myGuider, 0 - guiderOffset.left);
+    }
     
     if (myGuider.autoFocus && (isGuiderBelow || isGuiderAbove)) {
       // Sometimes the browser won't scroll if the person just clicked,
@@ -532,6 +544,15 @@ var guiders = (function($) {
 
     return guiders;
   };
+
+  guiders._nudge = function(myGuider, amount) {
+    var guiderElemLeft = parseInt(myGuider.elem.css("left").replace('px', ''));
+    var myGuiderArrow = myGuider.elem.find(".guider_arrow");
+    var arrowElemLeft = parseInt(myGuiderArrow.css("left").replace('px', ''));
+    myGuider.elem.css("left", (guiderElemLeft + amount) + "px");
+    myGuiderArrow.css("left", (arrowElemLeft - amount) + "px");
+    
+  }
   
   guiders.scrollToCurrent = function() {
     var currentGuider = guiders._guiders[guiders._currentGuiderID];

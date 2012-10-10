@@ -1,0 +1,153 @@
+
+@dd-col-std-padding:10px;
+
+.megamenu { 
+	padding-top:39px;  
+	
+	ul { 
+		list-style:none;position:relative;
+		
+		li { 
+			float:left;
+			display:inline;
+			padding-left:46px;
+			font-family: 'MuseoSlab500Regular';
+			
+			a { 
+				font-size:16px;
+				color:#ffffff;
+				font-family: 'MuseoSlab500Regular';
+				background:url('../img/nav-arrow.png') no-repeat 0 3px;
+				padding-left:12px;
+				position:relative;
+				padding-bottom:23px;
+				
+				em { 
+					height:8px; 
+					background:url('../img/dd-arrow.png') no-repeat center 0; 
+					width:100%; 
+					position:absolute; 
+					bottom:-1px; 
+					left:0; 
+					display:none; 
+					z-index: 5000;
+				}
+				&.active,
+				&.hover,
+				&:hover {
+					color:@orange; 
+					text-decoration:underline;
+				}
+			}
+
+			.dd { 
+				position:absolute; 
+				top:43px;
+				left:0;
+				background:#fff;
+				width:1000px;
+				min-height:200px;
+				display:none;
+				box-shadow: 0 0 5px #9a9a9a;
+
+				&.onecol {
+					.dd-col.col1 { width:auto; }
+				}
+
+				&.fourcol {
+					.dd-col.col3 {
+						padding-right:@dd-col-std-padding;
+					}
+					.dd-col.col1,
+					.dd-col.col2,
+					.dd-col.col3,
+					.dd-col.col4 { 
+						width:20%;
+					}
+				}
+				
+				&.onecol .dd-col.col1,
+				&.onecol .dd-col.col1-2,
+				&.threecol .dd-col.col3,
+				&.fourcol .dd-col.col4 { 
+					border-right:0;  
+				}
+				
+				.dd-col {
+					float:left;
+					display:inline;
+					min-height:120px;
+					margin-top:20px;
+					border-right:1px dotted #666;
+					padding-left:25px;
+
+					&.col1 {
+						padding-right:20px;
+					}
+					&.col2,
+					&.col1-2 {
+						padding-right:@dd-col-std-padding;
+					}
+					&.col1,
+					&.col2,
+					&.col3 {
+						width:25%;
+					}
+					&.col1-2 {
+						width:50%;
+					}
+					
+					a { 
+						font-size:13px; 
+						color:#fe9703; 
+						padding: 0 0 0 8px; 
+						position:relative; 
+						left:-8px; 
+						background-image: none;
+					}
+					a:hover { background:url('../img/h6-a-arrow.png') no-repeat 0 center; }
+				}
+				
+			}
+
+			h6,
+			h6 a { 
+				font-size:16px !important; 
+				color:@almost-black !important; 
+				font-weight:normal; 
+				font-family: 'MuseoSlab500Regular'; 
+				background:none; 
+				display:block;  
+				margin-bottom:9px;
+			}
+			h6 a { color:@orange; }
+			h6 a:hover { background:url('../img/h6-a-arrow.png') no-repeat 0 center; }
+			ul li { 
+				padding-left:0;
+				a { background:none; display:block;  }
+				a:hover { background:url('../img/a-arrow.png') no-repeat 0 2px; }
+			}
+		}
+		
+		li:first-child { padding-left:0;  }
+		li.nodd a { background:none; padding-left:0; }
+		
+	}
+}
+.megamenu.my-account {
+	position: absolute;
+	top: 83px;
+	right:20px;
+	
+	ul li {
+		.dd {
+			width:auto;
+			left:-60px;
+			right:0;
+		}
+		ul li {
+			display:block;
+			float:none;
+		}
+	}
+}

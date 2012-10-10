@@ -17,25 +17,23 @@
     <meta name="description" content="">
     <meta name="author" content="">
     <title>{%trans "Story Builder" %}</title>
-    
+
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/1140.css">{% endaddtoblock %}
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/backbone-forms/templates/default.css">{% endaddtoblock %}
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/select2/select2.css">{% endaddtoblock %}
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/leaflet/leaflet.css">{% endaddtoblock %}
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/guiders/guiders-1.2.8.css">{% endaddtoblock %}
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/tooltipster-1.2/css/tooltipster.css">{% endaddtoblock %}
-    {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/style.css">{% endaddtoblock %}
+
     {% comment %}
     In development, use Javascript to compile the LESS to CSS. In
     production, assume they've been pre-compiled/collected.
     {% endcomment %}
     {% if debug %}
-    {% addtoblock "css" %}<link rel="stylesheet/less" href="{{ STATIC_URL }}less/builder.less">{% endaddtoblock %}
-    {% addtoblock "css" %}<link rel="stylesheet/less" href="{{ STATIC_URL }}less/layout.less">{% endaddtoblock %}
+    {% addtoblock "css" %}<link rel="stylesheet/less" href="{{ STATIC_URL }}less/base.less">{% endaddtoblock %}
     {% addtoblock "css" %}<script src="{{ STATIC_URL }}js/libs/less-1.3.0.min.js"></script>{% endaddtoblock %}
     {% else %}
-    {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/builder.css">{% endaddtoblock %}
-    {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/layout.css">{% endaddtoblock %}
+    {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/style.css">{% endaddtoblock %}
     {% endif %}
 
     {% render_block "css" %}
@@ -64,7 +62,8 @@
             </div>
         </header>
         <div id="alerts" class="alerts"></div>
-        <div id="app" class="container"></div>
+        <div id="nav-container"></div>
+        <div id="app"></div>
     </div>
 
     <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline -->
@@ -111,6 +110,7 @@
         var helpData = {{ help_json }};
         var options = _.extend({
             assetTypes: {{ asset_types_json }},
+            containerTemplates: new storybase.builder.collections.ContainerTemplates,
             el: $('#builder'),
             dispatcher: storybase.builder.globals.dispatcher,
             help: new Backbone.Collection,
@@ -124,8 +124,10 @@
             startOverUrl: storybase.utils.getRoot(["build", "build-connected"], window.location.pathname)
         }, {{ options_json }});
         var relatedStoriesJSON = null;
-        var templateAssetsJSON = null;
+        var assetsJSON = null;
         var templateSectionsJSON = null;
+        var featuredAssetsJSON = null;
+        var containerTemplatesJSON = null;
         {% if story_json %}
         options.model = new storybase.models.Story({{ story_json }});
         {% endif %}
@@ -138,20 +140,33 @@
         {% if template_sections_json %}
         templateSectionsJSON = {{ template_sections_json }};
         {% endif %}
-        {% if template_assets_json %}
-        templateAssetsJSON = {{ template_assets_json }};
+        {% if assets_json %}
+        assetsJSON = {{ assets_json }};
+        {% endif %}
+        {% if featured_assets_json %}
+        featuredAssetsJSON = {{ featured_assets_json }};
+        {% endif %}
+        {% if container_templates_json %}
+        containerTemplatesJSON = {{ container_templates_json }};
         {% endif %}
         if (relatedStoriesJSON) {
           options.relatedStories.reset(relatedStoriesJSON.objects);
         }
         if (templateSectionsJSON) {
           options.templateStory.sections.reset(templateSectionsJSON.objects);
-            if (templateAssetsJSON) {
-              options.templateStory.sections.each(function(section) {
-                  var parse = section.assets.parse;
-                  section.assets.reset(parse(templateAssetsJSON[section.id]));
-              });
-            }
+        }
+        {# TODO: Bootstrap sections and assets #}
+        if (options.model && assetsJSON) {
+          options.model.assets.reset(assetsJSON.objects);
+        }
+        if (options.model && featuredAssetsJSON) {
+          options.model.setFeaturedAssets(
+            new storybase.collections.FeaturedAssets(
+              featuredAssetsJSON.objects)
+          )
+        }
+        if (containerTemplatesJSON) {
+          options.containerTemplates.reset(containerTemplatesJSON.objects);
         }
         options.storyTemplates.reset(storyTemplatesData.objects);
         options.help.reset(helpData.objects);

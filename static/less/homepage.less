@@ -1,0 +1,143 @@
+// NB: this homepage is a body class.
+// this selector is assuming that this file is being included *within* a body.base-template {} less block.
+// this is less than ideal; no pun intended.
+&.homepage {
+	.intro {
+		padding-top:25px; 
+		padding-bottom:55px;
+		
+		h2 { 
+			font-size:45px;
+			background:none;
+		}
+		p {
+			font-size:18px; 
+			color:#666666; 
+			text-align:center; 
+			font-family:Georgia, 'Times New Roman', Serif;
+			
+			a { color:@orange; }
+		}
+		
+		.flexslider {
+			.flex-control-nav { display:none !important; }
+			.flex-direction-nav { display:none !important; }
+		} 
+		
+	}
+	
+	h2 {
+		.line-through-header
+	}
+	
+	.bottom .flexslider .flex-control-nav,
+	.bottom .flexslider .flex-direction-nav { display:none !important;  }
+
+	.featured-stories, 
+	.featured-projects {
+		img {
+			margin:0 auto;
+		}
+	}
+
+	.images { 
+		width:100%; 
+		position:relative; 
+		overflow:hidden; 
+		display:none;
+		
+		a { 
+			float:left; 
+			display:inline; 
+			position:relative; 
+			margin-bottom:-4px; 
+			position:relative;
+			&:hover {
+				text-decoration:none;
+			}
+			img {
+				display:block;
+			}
+			span.overlay { 
+				background:url('../img/image-overlay.png')  0 0; 
+				display:block; 
+				position:absolute; 
+				top:0; 
+				left:0;
+				width:100%;
+				height:100%; 
+			}
+			span.title { 
+				position:absolute; 
+				bottom:0; 
+				left:0; 
+				background:url('../img/transparent.png')  0 0; 
+				display:block; 
+				width:100%; 
+				display:none;
+			}
+			span.title em { 
+				font-size:12px; 
+				font-style:normal; 
+				color:#20c6fd;
+				font-family: 'MuseoSlab500Regular';
+				padding:7px 14px 12px 14px;
+				display:block;
+			}
+		}
+	}
+	
+	.page-nav {
+		ul { 
+			text-align:center;
+			
+			li { 
+				display:inline;
+				
+				a { 
+					font-size:24px; 
+					color:#fe9703; 
+					font-weight:bold; 
+					font-family: 'MuseoSlab500Regular'; 
+					font-weight:normal;
+				}
+			}
+		}
+		span.sep { 
+			width:1px; 
+			height:42px; 
+			background:url('../img/sep.png') no-repeat 0 0; 
+			display:inline-block; 
+			top:12px; 
+			position:relative; 
+			margin-left:15px; 
+			margin-right:15px;
+		}
+		.left-nav {
+			background:url('../img/left-arrow2.png') no-repeat 0 3px;
+			padding-left:25px;
+		}
+		.right-nav {
+			background:url('../img/right-arrow2.png') no-repeat right 3px;
+			padding-right:25px;
+		}
+	} 
+
+}
+
+/* Front page featured items */
+
+.featured-wrapper {
+ border: 1px solid #CCC; 
+ padding: 2%;
+ background-color: #CCC;
+}
+
+.featured-stories .featured-wrapper {
+  background-color: #EEE;
+}
+
+.featured-wrapper > ul {
+  list-style: none;
+  padding: 0;
+}

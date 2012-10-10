@@ -1,0 +1,10 @@
+{% extends "base.html" %}
+
+{% load i18n %}
+
+{% block head_title %}{% trans "There was a problem with your activation" %}{% endblock %}
+
+{% block base_content %}
+<p>{% trans "There was a problem activating your new account.  Please check that you correctly copied and pasted the activation link from your e-mail, or if you clicked on the link, try copying and pasting it.  If you're still not able to activate your account, please contact" %} <a href="mailto:{{ storybase_contact_email }}">{{storybase_contact_email}}</a>.</p>
+
+{% endblock %}

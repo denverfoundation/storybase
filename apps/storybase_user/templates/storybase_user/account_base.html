@@ -3,16 +3,28 @@
 {% load cms_tags sekizai_tags menu_tags i18n %}
 
 {% block sidebar %}
+{% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/tooltipster-1.2/css/tooltipster.css">{% endaddtoblock %}
   <nav id="subnav">
       <ul class="navroot">
           <li class="selected has_children">
-          <a href="{% url account_summary %}">{% trans "My Account" %}</a>
+          <a href="{% url account_summary %}" title="{% trans "Manage your basic information, like email address and connected social media accounts" %}" class="tooltip">{% trans "My Account" %}</a>
               <ul>
-                  <li><a href="{% url account_password %}">{% trans "Password" %}</a></li>
-                  <li><a href="{% url account_notifications %}">{% trans "Notifications and Subscriptions" %}</a></li>
-                  <li><a href="{% url account_stories %}">{% trans "My Stories" %}</a></li>
+                  <li><a href="{% url account_password %}" title="{% trans "Change your password" %}" class="tooltip">{% trans "Password" %}</a></li>
+                  <li><a href="{% url account_notifications %}" title="{% trans "Control your settings for receiving updates from" %} {{ storybase_site_name }}" class="tooltip">{% trans "Notifications and Subscriptions" %}</a></li>
+                  <li><a href="{% url account_stories %}" title="{% trans "Manage your stories and launch them in the Story Builder" %}" class="tooltip">{% trans "My Stories" %}</a></li>
               </ul>
           </li>
       </ul>
   </nav>
+{% endblock %}
+
+{% block extrajs %}
+{% addtoblock "js" %}<script src="{{ STATIC_URL }}js/libs/tooltipster-1.2/js/jquery.tooltipster.min.js"></script>{% endaddtoblock %}
+<script type="text/javascript">
+$(function() {
+  if (jQuery().tooltipster) {
+    $('.tooltip').tooltipster();
+  }
+});
+</script>
 {% endblock %}

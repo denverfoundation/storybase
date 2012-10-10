@@ -198,6 +198,7 @@ storybase.models.Story = Backbone.Model.extend(
     initialize: function(options) {
       this.sections = new storybase.collections.Sections;
       this.unusedAssets = new storybase.collections.Assets;
+      this.assets = new storybase.collections.Assets;
       this.setCollectionUrls();
       this.on("change", this.setCollectionUrls, this);
       this.sections.on("add", this.resetSectionWeights, this);
@@ -213,7 +214,16 @@ storybase.models.Story = Backbone.Model.extend(
       if (!this.isNew()) {
         this.sections.url = this.url() + 'sections/';
         this.unusedAssets.url = storybase.globals.API_ROOT + 'assets/stories/' + this.id + '/sections/none/'; 
+        this.assets.url = storybase.globals.API_ROOT + 'assets/stories/' + this.id + '/';
       }
+    },
+
+    /**
+     * Set the featured assets collection.
+     */
+    setFeaturedAssets: function(collection) {
+      this.featuredAssets = collection;
+      this.featuredAssets.setStory(this);
     },
 
     /**
@@ -233,11 +243,41 @@ storybase.models.Story = Backbone.Model.extend(
       });
     },
 
+    /**
+     * Set the featured asset.
+     *
+     * This method provides an interface for the actual set operation
+     * since it's a little unintuitive.
+     */
+    setFeaturedAsset: function(asset) {
+      // The data model supports having multiple featured assets, but
+      // our current use case only needs to keep one.
+      this.featuredAssets.reset(asset);
+      this.featuredAssets.save();
+    },
+
+    getFeaturedAsset: function(index) {
+      index = _.isUndefined(index) ? 0 : index; 
+      if (this.featuredAssets) {
+        return this.featuredAssets.at(index);
+      }
+      else {
+        return undefined;
+      }
+    },
+
+    saveFeaturedAssets: function() {
+      if (this.featuredAssets) {
+        this.featuredAssets.save();
+      }
+    },
+
     saveRelatedStories: function() {
       if (this.relatedStories) {
         this.relatedStories.save();
       }
     },
+
 
     /**
      * Save all the sections of the story
@@ -597,6 +637,30 @@ storybase.collections.SectionAssets = storybase.collections.Assets.extend({
     return models;
   }
 });
+
+storybase.collections.FeaturedAssets = storybase.collections.SaveableCollection.extend(
+  _.extend({}, storybase.collections.TastypieMixin, {
+    model: storybase.models.Asset,
+
+    initialize: function(models, options) {
+      if (!_.isUndefined(options)) {
+        this.setStory(options.story);
+      }
+    },
+
+    save: function(options) {
+      return storybase.collections.SaveableCollection.prototype.save.call(this, options);
+    },
+
+    setStory: function(story) {
+      this._story = story;
+    },
+
+    url: function() {
+      return storybase.globals.API_ROOT + 'assets/stories/' + this._story.id + '/featured/';
+    }
+  })
+);
 
 storybase.models.Tag = Backbone.Model.extend({
   idAttribute: "tag_id",

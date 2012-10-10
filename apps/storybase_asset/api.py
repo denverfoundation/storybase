@@ -1,4 +1,5 @@
 from django import http as django_http
+from django.db.models import Q
 from django.http import Http404
 from django.conf.urls.defaults import url
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
@@ -50,7 +51,9 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
         # Hide the underlying id
         excludes = ['id']
 
-        delayed_authorization_methods = ['put_detail']
+        featured_list_allowed_methods = ['get', 'put']
+        featured_detail_allowed_methods = []
+        delayed_authorization_methods = ['put_detail', 'put_featured_list']
 
     def get_object_class(self, bundle=None, request=None, **kwargs):
         content_fields = ('body', 'image', 'url')
@@ -71,21 +74,6 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
         else:
             raise BadRequest("You must specify an image, body, or url") 
 
-    def get_object_list(self, request):
-        """
-        Get a list of assets, filtering based on the request's user and 
-        the publication status
-        
-        """
-        from django.db.models import Q
-        # Only show published stories  
-        q = Q(status='published')
-        if hasattr(request, 'user') and request.user.is_authenticated():
-            # If the user is logged in, show their unpublished stories as
-            # well
-            q = q | Q(owner=request.user)
-
-        return super(AssetResource, self).get_object_list(request).filter(q)
 
     def prepend_urls(self):
         return [
@@ -101,6 +89,11 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
                 (self._meta.resource_name, trailing_slash()),
                 self.wrap_view('dispatch_list'),
                 name="api_dispatch_list"),
+            url(r"^(?P<resource_name>%s)/stories/(?P<story_id>[0-9a-f]{32,32})/featured%s$" %
+                (self._meta.resource_name, trailing_slash()),
+                self.wrap_view('dispatch_featured_list'),
+                kwargs={'featured': True},
+                name="api_dispatch_featured_list"),
             url(r"^(?P<resource_name>%s)/stories/(?P<story_id>[0-9a-f]{32,32})/sections/none%s$" %
                 (self._meta.resource_name, trailing_slash()),
                 self.wrap_view('dispatch_list'),
@@ -111,6 +104,47 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
                 self.wrap_view('dispatch_list'),
                 name="api_dispatch_list"),
         ]
+
+    def dispatch_featured_list(self, request, **kwargs):
+        # This is defined as a separate method
+        # so dispatch will check which method is allowed separately
+        # from the other method handlers
+        return self.dispatch('featured_list', request, **kwargs)
+
+    def get_featured_list(self, request, **kwargs):
+        # Just call through to get_list.  The filtering is handled
+        # in apply_request_kwargs. 
+        #
+        # This is defined as a separate method
+        # to match the naming conventions expected by dispatch().  
+        # We do this so dispatch() will do a separate check for allowed
+        # methods.
+        return self.get_list(request, **kwargs)
+
+    def put_featured_list(self, request, **kwargs):
+        story_id = kwargs.pop('story_id')
+        story = Story.objects.get(story_id=story_id)
+        self.is_authorized(request, story)
+        deserialized = self.deserialize(request, request.raw_post_data, format=request.META.get('CONTENT_TYPE', 'application/json'))
+        deserialized = self.alter_deserialized_list_data(request, deserialized)
+        # Clear out existing relations
+        story.featured_assets.clear()
+        bundles = []
+        asset_ids = [asset_data['asset_id'] for asset_data in deserialized]
+        qs = self.get_object_list(request)
+        assets = qs.filter(asset_id__in=asset_ids)
+        for asset in assets:
+            story.featured_assets.add(asset)
+            bundles.append(self.build_bundle(obj=asset, request=request))
+        story.save()
+
+        if not self._meta.always_return_data:
+            return http.HttpNoContent()
+        else:
+            to_be_serialized = {}
+            to_be_serialized['objects'] = [self.full_dehydrate(bundle) for bundle in bundles]
+            to_be_serialized = self.alter_list_data_to_serialize(request, to_be_serialized)
+            return self.create_response(request, to_be_serialized, response_class=http.HttpAccepted)
 
     def detail_uri_kwargs(self, bundle_or_obj):
         """
@@ -159,8 +193,13 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
         story_id = kwargs.get('story_id')
         section_id = kwargs.get('section_id')
         no_section = kwargs.get('no_section')
+        featured = kwargs.get('featured')
         if story_id:
-            filters['stories__story_id'] = story_id
+            if featured:
+                filters['featured_in_stories__story_id'] = story_id
+            else:
+                filters['stories__story_id'] = story_id
+
         if section_id:
             filters['sectionasset__section__section_id'] = section_id
 
@@ -171,6 +210,21 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
 
         return new_obj_list
 
+    def obj_get_list(self, request=None, **kwargs):
+        """
+        Get a list of assets, filtering based on the request's user and 
+        the publication status
+        
+        """
+        # Only show published assets 
+        q = Q(status='published')
+        if hasattr(request, 'user') and request.user.is_authenticated():
+            # If the user is logged in, show their unpublished stories as
+            # well
+            q = q | Q(owner=request.user)
+
+        return super(AssetResource, self).obj_get_list(request, **kwargs).filter(q)
+
     def dehydrate(self, bundle):
         # Exclude the filename field from the output
         del bundle.data['filename']
@@ -180,7 +234,7 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
         return bundle.obj.render(format="html")
 
     def dehydrate_thumbnail_url(self, bundle):
-        return bundle.obj.get_thumbnail_url(64, 64)
+        return bundle.obj.get_thumbnail_url(width=150, height=150)
 
 class DataSetValidation(Validation):
     def is_valid(self, bundle, request=None, **kwargs):
@@ -253,21 +307,19 @@ class DataSetResource(DataUriResourceMixin,DelayedAuthorizationResource,
 
         return new_obj_list
 
-    def get_object_list(self, request):
+    def obj_get_list(self, request=None, **kwargs):
         """
         Get a list of assets, filtering based on the request's user and 
         the publication status
         
         """
-        from django.db.models import Q
-        # Only show published stories  
+        # Only show published datasets 
         q = Q(status='published')
         if hasattr(request, 'user') and request.user.is_authenticated():
             # If the user is logged in, show their unpublished stories as
             # well
             q = q | Q(owner=request.user)
-
-        return super(DataSetResource, self).get_object_list(request).filter(q)
+        return super(DataSetResource, self).obj_get_list(request, **kwargs).filter(q)
 
     def prepend_urls(self):
         return [

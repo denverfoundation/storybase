@@ -23,7 +23,7 @@ from storybase.utils import get_language_name
 from storybase_asset.api import AssetResource
 from storybase_geo.models import Place
 from storybase_help.models import Help
-from storybase_story.models import (Container,
+from storybase_story.models import (Container, ContainerTemplate,
                                     Section, SectionAsset, SectionLayout, 
                                     Story, StoryRelation, StoryTemplate)
 from storybase_taxonomy.models import Category
@@ -41,6 +41,7 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
     organizations = fields.ListField(readonly=True)
     projects = fields.ListField(readonly=True)
     places = fields.ListField(readonly=True)
+    featured_asset_url = fields.CharField(readonly=True)
     # A list of lat/lon values for related Location objects as well as
     # centroids of Place tags
     points = fields.ListField(readonly=True)
@@ -79,6 +80,7 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
             url(r'^(?P<resource_name>%s)/explore%s$'  % (self._meta.resource_name, trailing_slash()), self.wrap_view('explore_get_list'), name="api_explore_get_list"),
             url(r'^(?P<resource_name>%s)/templates%s$'  % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_template_list'), name="api_dispatch_list_templates"),
             url(r'^(?P<resource_name>%s)/templates/(?P<template_id>[0-9a-f]{32,32})%s$'  % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_template_detail'), name="api_dispatch_detail_templates"),
+            url(r'^(?P<resource_name>%s)/containertemplates/templates/(?P<template_id>[0-9a-f]{32,32})%s$'  % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_container_template_list'), name="api_dispatch_list_containertemplates"),
             url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_detail'), name="api_dispatch_detail"),
             url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/sections%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_section_list'), name="api_dispatch_list_sections"),
             url(r"^(?P<resource_name>%s)/(?P<story_id>[0-9a-f]{32,32})/sections/(?P<section_id>[0-9a-f]{32,32})%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_section_detail'), name="api_dispatch_detail_sections"),
@@ -176,6 +178,9 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
         Add time zone to last_edited date
         """
         return add_tzinfo(bundle.data['last_edited'])
+
+    def dehydrate_featured_asset_url(self, bundle):
+        return bundle.obj.featured_asset_thumbnail_url(include_host=False)
 
     def _get_facet_field_name(self, field_name):
         """Convert public filter name to underlying Haystack index field"""
@@ -449,6 +454,10 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
         template_resource = StoryTemplateResource()
         return template_resource.dispatch_detail(request, template_id=template_id)
 
+    def dispatch_container_template_list(self, request, **kwargs):
+        resource = ContainerTemplateResource()
+        return resource.dispatch_list(request, **kwargs)
+
     def dispatch_metadata_list(self, request, resource, **kwargs):
         """
         Dispatcher for nested resources that allow setting/replacing 
@@ -710,6 +719,11 @@ class StoryTemplateResource(TranslatedModelResource):
     tag_line = fields.CharField(attribute='tag_line')
     story = fields.ToOneField(StoryResource, attribute='story', 
                                blank=True, null=True)
+    ingredients = fields.CharField(attribute='ingredients', blank=True,
+                                   null=True)
+    best_for = fields.CharField(attribute='best_for', blank=True, null=True)
+    tip = fields.CharField(attribute='tip', blank=True, null=True)
+    examples = fields.ListField(blank=True, null=True)
     
     class Meta:
         queryset = StoryTemplate.objects.all()
@@ -785,6 +799,13 @@ class StoryTemplateResource(TranslatedModelResource):
         if connected_template_slug:
             objects = objects.exclude(slug=connected_template_slug)
         return objects 
+
+    def dehydrate_examples(self, bundle):
+        if bundle.obj.examples:
+            return [{'title': story.title, 'url': story.get_absolute_url()}
+                    for story in bundle.obj.examples.all()]
+        else:
+            return []
 
 
 class PutListSubResource(DelayedAuthorizationResource,HookedModelResource):
@@ -1011,3 +1032,51 @@ class StoryRelationResource(DelayedAuthorizationResource):
         if target and not isinstance(target, Story):
             bundle.data['target'] = Story.objects.get(story_id=target)
         return bundle
+
+
+class ContainerTemplateResource(HookedModelResource):
+    # Define foreign key fields
+    container = fields.CharField(attribute='container')
+    template = fields.CharField(attribute='template')
+    section = fields.CharField(attribute='section')
+    help = fields.CharField(attribute='help', blank=True, null=True)
+
+    class Meta:
+        always_return_data = True
+        queryset = ContainerTemplate.objects.all()
+        resource_name = 'containertemplates'
+        list_allowed_methods = ['get']
+        authentication = Authentication()
+        authorization = LoggedInAuthorization()
+        # Hide the underlying id
+        excludes = ['id']
+
+    def dehydrate_container(self, bundle):
+        return bundle.obj.container.name
+
+    def dehydrate_help(self, bundle):
+        if bundle.obj.help:
+            return {
+                'help_id': bundle.obj.help.help_id,
+                'title': bundle.obj.help.title,
+                'body': bundle.obj.help.body,
+            }
+        else:
+            return None
+
+    def dehydrate_section(self, bundle):
+        return bundle.obj.section.section_id
+
+    def dehydrate_template(self, bundle):
+        return bundle.obj.template.template_id
+
+    def apply_request_kwargs(self, obj_list, request=None, **kwargs):
+        story_id = kwargs.get('story_id')
+        template_id = kwargs.get('template_id')
+        if story_id:
+            template = StoryTemplate.objects.get(story__story_id=story_id)
+            return obj_list.filter(template=template)
+        elif template_id:
+            return obj_list.filter(template__template_id=template_id)
+        else:
+            return obj_list

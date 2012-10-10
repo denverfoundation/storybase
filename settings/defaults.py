@@ -95,11 +95,8 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
-    'atlas.media_staticfiles_finder.AppDirectoriesFinderAsMedia',
+    'media_staticfiles_finder.AppDirectoriesFinderAsMedia',
 )
-
-# Make this unique, and don't share it with anybody.
-SECRET_KEY = 'a8398*@)#1orom%it1mhil27g1towb&1ix5vb3m6y--=_luo*v'
 
 # List of callables that know how to import templates from various sources.
 TEMPLATE_LOADERS = (
@@ -120,9 +117,11 @@ MIDDLEWARE_CLASSES = (
     'cms.middleware.page.CurrentPageMiddleware',
     'cms.middleware.user.CurrentUserMiddleware',
     'cms.middleware.toolbar.ToolbarMiddleware',
+
+    'storybase.middleware.ExtractContentMiddleware',
 )
 
-ROOT_URLCONF = 'atlas.urls'
+ROOT_URLCONF = 'urls'
 
 TEMPLATE_DIRS = (
     # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
@@ -176,6 +175,8 @@ INSTALLED_APPS = (
     'tinymce',
     'registration',
     'social_auth',
+    'django.contrib.comments',
+    'threadedcomments',
     'notification',
 
 
@@ -305,6 +306,14 @@ TINYMCE_JS_ROOT = os.path.join(STATIC_ROOT, 'js/libs/tiny_mce')
 
 # registration settings
 ACCOUNT_ACTIVATION_DAYS = 7
+
+# commenting settings
+COMMENTS_APP = 'threadedcomments'
+
+THUMBNAIL_PROCESSORS = (
+    # This is needed for cmsplugin_filer_image to work correctly
+    'filer.thumbnail_processors.scale_and_crop_with_subject_location',
+)
 
 # storybase settings
 # The name of the group used for site administrators
