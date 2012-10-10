@@ -3,9 +3,3 @@ from storybase.models.base import (LicensedModel, PublishedModel,
 from storybase.models.dirtyfields import DirtyFieldsMixin, TzDirtyFieldsMixin
 from storybase.models.permission import PermissionMixin
 from storybase.models.translation import TranslatedModel, TranslationModel
-
-
-
-
-
-
