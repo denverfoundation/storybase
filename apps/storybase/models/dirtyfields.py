@@ -77,7 +77,7 @@ class TzDirtyFieldsMixin(DirtyFieldsMixin):
     @classmethod
     def _value_changed(cls, old, new):
         # Special timezone aware handling goes here
-        if isinstance(new, datetime.datetime) and isinstance(old, datetime.datetime):
+        if isinstance(old, datetime.datetime) and isinstance(new, datetime.datetime):
             (old, new) = cls._match_aware(old, new)
         return super(TzDirtyFieldsMixin, cls)._value_changed(old, new)
 
