@@ -4266,7 +4266,6 @@ storybase.builder.views.LicenseView = Backbone.View.extend({
 // BOOKMARK
 // TODO:
 // * Tie in CC API
-// * Layout sharing 
 // -geoffhing@gmail.com 2012-10-09
 storybase.builder.views.PublishView = Backbone.View.extend(
   _.extend({}, storybase.builder.views.NavViewMixin, {
@@ -4502,12 +4501,14 @@ storybase.builder.views.PublishView = Backbone.View.extend(
       if (options.replace) {
         this.$el.html(this.template(context));
         _.each(this.subviews, function(view) {
-          this.$el.append(view.render().el);
+          this.$('.left').append(view.render().el);
         }, this);
       }
       this.renderTodo();
       this.renderButtons();
-      this.renderSharing();
+      if (this.options.showSharing) {
+        this.renderSharing();
+      }
       if (window.addthis) {
         // Render the addthis toolbox.  We have to do this explictly
         // since it wasn't in the DOM when the page was loaded.
@@ -4686,7 +4687,6 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
                 that.render();
               },
               success: function(model, response) {
-                that.dispatcher.trigger('select:featuredasset', model);
                 that.setState('display');
                 that.render();
               }
@@ -4723,6 +4723,7 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
           that.render();
           that.story.assets.add(model);
           that.story.setFeaturedAsset(model);
+          that.dispatcher.trigger('select:featuredasset', model);
           if (options.success) {
             options.success(model);
           }

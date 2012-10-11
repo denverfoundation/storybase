@@ -301,30 +301,34 @@ You can <strong>customize</strong> some templates by adding and reordering secti
 </script>
 
 <script type="text/x-handlebars-template" id="share-publish-template">
-<h2 class="title">Publish and Share Your Story</h2>
-<div class="publish-todo"></div>
-<div class="publish-buttons centered btn-container">
-    <button class="publish" type="button" disabled="disabled" style="display: none;">Publish My Story</button>
-    <a href="{{url}}" class="view-story" style="display: none;">{{gettext message="View my story"}}</a>
-    <button type="button" class="unpublish" style="display: none;">{{gettext message="Unpublish My Story"}}</button>
-</div>
-<div class="publish-sharing" style="display: none">
-{{#if showSharing}}
-    <p>{{#blockgettext}}Let your story be heard! Spread the word by sharing it with your social networks, printing a copy, or embeding it on your own website.{{/blockgettext}}</p>
-    <div id="share-link">
-        <div><input id="story-url" type="text" value="{{url}}" /></div>
-        <div class="addthis_toolbox addthis_default_style addthis_32x32_style"
-            addthis:url="{{url}}" addthis:title="{{title}}">
-          <a class="addthis_button_link" title="Copy Link"></a>
-          <a class="addthis_button_email"></a>
-          <a class="addthis_button_facebook"></a>
-          <a class="addthis_button_twitter"></a>
-          <a class="addthis_button_google_plusone_share"></a>
-          <a class="addthis_button_compact"></a>
+<div class="row">
+    <div class="left eightcol">
+        <h2 class="title">Publish and Share Your Story</h2>
+        <div class="publish-todo"></div>
+        <div class="publish-buttons centered btn-container">
+            <button class="publish" type="button" disabled="disabled" style="display: none;">Publish My Story</button>
+            <a href="{{url}}" class="view-story" style="display: none;">{{gettext message="View my story"}}</a>
+            <button type="button" class="unpublish" style="display: none;">{{gettext message="Unpublish My Story"}}</button>
         </div>
-    </div>
-</div>
-{{/if}}
+    </div> <!-- /.tencol -->
+    <div class="right fourcol last">
+        {{#if showSharing}}
+        <div class="publish-sharing" style="display: none">
+            <p>{{#blockgettext}}Let your story be heard! Spread the word by sharing it with your social networks, printing a copy, or embeding it on your own website.{{/blockgettext}}</p>
+            <div class="story-url-wrapper"><input id="story-url" type="text" value="{{url}}" /></div>
+            <div class="addthis_toolbox addthis_default_style addthis_32x32_style"
+                addthis:url="{{url}}" addthis:title="{{title}}">
+              <a class="addthis_button_link" title="Copy Link"></a>
+              <a class="addthis_button_email"></a>
+              <a class="addthis_button_facebook"></a>
+              <a class="addthis_button_twitter"></a>
+              <a class="addthis_button_google_plusone_share"></a>
+              <a class="addthis_button_compact"></a>
+            </div>
+        {{/if}}
+        </div>
+    </div> <!-- /.twocol -->
+</div> <!-- /.row -->
 </script>
 
 <script type="text/x-handlebars-template" id="publish-ready-msg-template">
