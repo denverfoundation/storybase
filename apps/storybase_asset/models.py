@@ -321,6 +321,12 @@ class ExternalAsset(Asset):
             # Some other error occurred with the oEmbed
             # TODO: Show a default image
             output.append(self.render_link_html())
+        except ValueError:
+            # ValueError is raised when JSON of response couldn't
+            # be decoded, e.g. when offline
+            # Some other error occurred with the oEmbed
+            # TODO: Show a default image
+            output.append(self.render_link_html())
 
         full_caption_html = self.full_caption_html()
         if full_caption_html:
@@ -351,7 +357,7 @@ class ExternalAsset(Asset):
                     self._thumbnail_url = resource_data.get('url')
                 else:
                     self._thumbnail_url = resource_data.get('thumbnail_url')
-            except (ProviderNotFoundException):
+            except ProviderNotFoundException:
                 if self.type == 'image':
                     # There isn't an oEmbed provider for the URL. Just use the
                     # raw image URL.
@@ -359,11 +365,13 @@ class ExternalAsset(Asset):
                 else:
                     self._thumbnail_url = None
             except ProviderException:
-                # There was some other error. Set the return value to
-                # None
-                self._thumbnail_url = None
+                # Do nothing, return value gets set in finally clause
+                pass 
+            except ValueError:
+                # Do nothing, return value gets set in finally clause
+                pass 
             finally:
-                url = self._thumbnail_url
+                url = getattr(self, '_thumbnail_url', None)
 
         return url
 
