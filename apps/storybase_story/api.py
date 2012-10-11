@@ -5,6 +5,10 @@ from django.conf.urls.defaults import url
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.urlresolvers import NoReverseMatch
 from django.db.models import Q
+try:
+    from django.utils import timezone
+except ImportError:
+    from storybase.utils import timezone
 
 from haystack.query import SearchQuerySet
 from haystack.utils.geo import D, Point
@@ -16,7 +20,6 @@ from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.exceptions import BadRequest, ImmediateHttpResponse
 from tastypie.utils import dict_strip_unicode_keys, trailing_slash
 
-from storybase.utils import add_tzinfo
 from storybase.api import (DelayedAuthorizationResource,
     HookedModelResource, LoggedInAuthorization, TranslatedModelResource)
 from storybase.utils import get_language_name
@@ -177,7 +180,8 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
         """
         Add time zone to last_edited date
         """
-        return add_tzinfo(bundle.data['last_edited'])
+        tz = timezone.get_default_timezone()
+        return timezone.make_aware(bundle.data['last_edited'], tz)
 
     def dehydrate_featured_asset_url(self, bundle):
         return bundle.obj.featured_asset_thumbnail_url(include_host=False)

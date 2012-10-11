@@ -93,6 +93,73 @@ Namespace('storybase.utils', {
     }
 
     return _.first(pathParts, pos + 1).join('/') + '/'; 
+  },
+
+  /**
+   * Convert the license value stored in the database (as a String) to 
+   * form parameters.
+   *
+   * The parameters keys try to match those of the Creative Commons
+   * Web Services API. See http://wiki.creativecommons.org/Web_Services
+   *
+   * @param {String} [license='CC BY'] License string 
+   */
+  licenseStrToParams: function(license) {
+    license = license || 'CC BY';
+    var ccLicenses = {
+      'CC BY': {
+        commercial: 'y',
+        derivatives: 'y'
+      },
+      'CC BY-SA': {
+        commercial: 'y',
+        derivatives: 'sa'
+      },
+      'CC BY-ND': {
+        commercial: 'y',
+        derivatives: 'n'
+      },
+      'CC BY-NC': {
+        commercial: 'n',
+        derivatives: 'y'
+      },
+      'CC BY-NC-SA': {
+        commercial: 'n',
+        derivatives: 'sa'
+      },
+      'CC BY-NC-ND': {
+        commercial: 'n',
+        derivatives: 'n'
+      }
+    };
+    return ccLicenses[license];
+  },
+
+  /**
+   * Convert the license form parameters to a string to store
+   * server-side.
+   *
+   * The parameters keys try to match those of the Creative Commons
+   * Web Services API. See http://wiki.creativecommons.org/Web_Services
+   *
+   * @param {Object} params Form parameters corresponding to a
+   *   particular Creative Commons license. The object must have
+   *   'commercial' and 'derivatives' properties.
+   */
+  licenseParamsToStr: function(params) {
+    var ccLicenses = {
+      'y': {
+        'y': 'CC BY',
+        'sa': 'CC BY-SA', 
+        'n': 'CC BY-ND'
+      },
+      'n': {
+        'y': 'CC BY-NC',
+        'sa': 'CC BY-NC-SA',
+        'n': 'CC BY-NC-ND'
+      }
+    };
+    return ccLicenses[params['commercial']][params['derivatives']];
   }
 });
 

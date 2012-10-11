@@ -48,3 +48,19 @@ storybase.forms.File = Backbone.Form.editors.Text.extend({
     }
   }
 });
+
+
+/**
+ * Custom validator for checkboxes.  
+ *
+ * For whatever reason, 'required' didn't work
+ */
+storybase.forms.isChecked = function(value, formValues) {
+  var err = {
+    type: 'checked',
+    message: gettext("You must check this checkbox")
+  };
+  if (!value.length) {
+    return err;
+  }
+};

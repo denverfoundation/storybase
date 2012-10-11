@@ -226,7 +226,7 @@ You can <strong>customize</strong> some templates by adding and reordering secti
 </script>
 
 <script type="text/x-handlebars-template" id="featured-asset-template">
-<h3>{{gettext message="Featured Image"}}</h3>
+<h3>{{title}}</h3>
 </script>
 
 <script type="text/x-handlebars-template" id="featured-asset-select-template">
@@ -301,36 +301,56 @@ You can <strong>customize</strong> some templates by adding and reordering secti
 </script>
 
 <script type="text/x-handlebars-template" id="share-publish-template">
-<h2 class="title">Publish and Share Your Story</h2>
-<div class="status-unpublished" style="display: none">
-    <p>{{#blockgettext}}Looks like you're all set. When you're ready click the "Publish My Story" button.{{/blockgettext}}</p>
-    <div class="centered"><a class="btn publish" href="#">Publish My Story</a></div>
-</div>
-<div class="status-published" style="display: none">
-    <p>{{#blockgettext}}Congratulations, your story has been published. If you decide you'd like to unpublish your story, use the button below{{/blockgettext}}</p>
-    <div class="centered btn-container"><a class="btn unpublish" href="#">Unpublish My Story</a></div>
-    {{#if showSharing}}
-    <p>{{#blockgettext}}Let your story be heard! Spread the word by sharing it with your social networks, printing a copy, or embeding it on your own website.{{/blockgettext}}</p>
-    <div id="share-link">
-        <div><input id="story-url" type="text" value="{{url}}" /></div>
-        <div class="addthis_toolbox addthis_default_style addthis_32x32_style"
-            addthis:url="{{url}}" addthis:title="{{title}}">
-          <a class="addthis_button_link" title="Copy Link"></a>
-          <a class="addthis_button_email"></a>
-          <a class="addthis_button_facebook"></a>
-          <a class="addthis_button_twitter"></a>
-          <a class="addthis_button_google_plusone_share"></a>
-          <a class="addthis_button_compact"></a>
+<div class="row">
+    <div class="left eightcol">
+        <h2 class="title">Publish and Share Your Story</h2>
+        <div class="publish-todo"></div>
+        <div class="publish-buttons centered btn-container">
+            <button class="publish" type="button" disabled="disabled" style="display: none;">Publish My Story</button>
+            <a href="{{url}}" class="view-story" style="display: none;">{{gettext message="View my story"}}</a>
+            <button type="button" class="unpublish" style="display: none;">{{gettext message="Unpublish My Story"}}</button>
         </div>
-    </div>
-    {{/if}}
-</div>
+    </div> <!-- /.tencol -->
+    <div class="right fourcol last">
+        {{#if showSharing}}
+        <div class="publish-sharing" style="display: none">
+            <p>{{#blockgettext}}Let your story be heard! Spread the word by sharing it with your social networks, printing a copy, or embeding it on your own website.{{/blockgettext}}</p>
+            <div class="story-url-wrapper"><input id="story-url" type="text" value="{{url}}" /></div>
+            <div class="addthis_toolbox addthis_default_style addthis_32x32_style"
+                addthis:url="{{url}}" addthis:title="{{title}}">
+              <a class="addthis_button_link" title="Copy Link"></a>
+              <a class="addthis_button_email"></a>
+              <a class="addthis_button_facebook"></a>
+              <a class="addthis_button_twitter"></a>
+              <a class="addthis_button_google_plusone_share"></a>
+              <a class="addthis_button_compact"></a>
+            </div>
+        {{/if}}
+        </div>
+    </div> <!-- /.twocol -->
+</div> <!-- /.row -->
+</script>
+
+<script type="text/x-handlebars-template" id="publish-ready-msg-template">
+<p>{{gettext message="Looks like you're all set. When you're ready click the \"Publish My Story\" button."}}</p>
+</script>
+
+<script type="text/x-handlebars-template" id="publish-published-msg-template">
+<p>{{gettext message="Congratulations, your story has been published. If you decide you'd like to view or unpublish your story, use the button below"}}</p>
 </script>
 
 <script type="text/x-handlebars-template" id="share-legal-template">
+<h3>{{title}}</h3>
+{{#if showForm}}
 <p class="introduction">{{#blockgettext}}
 In order to publish and share your story, you need to double-check a few legal details.
 {{/blockgettext}}<a href="#">{{gettext message="Read the Floodlight Terms of Service"}}</a>.</p>
+{{else}}
+<p>
+{{gettext message="You signed off on the legal agreement"}}
+<button type="button" class="view-agreement">{{gettext message="View agreement"}}</button>
+</p>
+{{/if}}
 </script>
 
 <script type="text/x-handlebars-template" id="share-permission-field-template">
@@ -346,17 +366,25 @@ In order to publish and share your story, you need to double-check a few legal d
 <input type="checkbox" name="license" value="license" /> {{#blockgettext}}I participate in Floodlight’s cooperative distribution by publishing my story under a Creative Commons license. This means that I remain the owner of this story, but that my content can be featured on the site and redistributed by others. Learn more about Creative Commons.{{/blockgettext}}    
 </script>
 
-<script type="text/x-handlebars-template" id="share-cc-allow-commercial-template">
-<label for="cc-allow-commercial">Allow commercial uses of your work?</label>
-<input type="radio" name="cc-allow-commercial" value="yes" /> {{gettext message="Yes"}} 
-<input type="radio" name="cc-allow-commercial" value="no" /> {{gettext message="No"}}
+<script type="text/x-handlebars-template" id="share-license-template">
+<h3>{{title}}</h3>
+{{#unless showForm}}
+<div id="cc-license"></div>
+<button type="button" class="change-license">{{gettext message="Change license"}}</button>
+{{/unless}}
 </script>
 
-<script type="text/x-handlebars-template" id="share-cc-allow-modification-template">
+<script type="text/x-handlebars-template" id="share-cc-commercial-template">
+<label for="cc-allow-commercial">Allow commercial uses of your work?</label>
+<input type="radio" name="cc-allow-commercial" value="y" /> {{gettext message="Yes"}} 
+<input type="radio" name="cc-allow-commercial" value="n" /> {{gettext message="No"}}
+</script>
+
+<script type="text/x-handlebars-template" id="share-cc-derivatives-template">
 <label for="cc-allow-commercial">Allow modifications of your work?</label>
-<input type="radio" name="cc-allow-modification" value="yes" /> {{gettext message="Yes"}} 
-<input type="radio" name="cc-allow-modification" value="share-alike" /> {{gettext message="Yes, as long as others can share alike"}} 
-<input type="radio" name="cc-allow-modification" value="no" /> {{gettext message="No"}}
+<input type="radio" name="cc-allow-modification" value="y" /> {{gettext message="Yes"}} 
+<input type="radio" name="cc-allow-modification" value="sa" /> {{gettext message="Yes, as long as others can share alike"}} 
+<input type="radio" name="cc-allow-modification" value="n" /> {{gettext message="No"}}
 </script>
 
 <script type="text/x-handlebars-template" id="share-taxonomy-template">
