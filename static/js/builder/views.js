@@ -3989,6 +3989,10 @@ storybase.builder.views.LegalView = Backbone.View.extend({
     'submit form': 'processForm'
   },
 
+  defaults: {
+    'title': gettext("Accept the legal agreement")
+  },
+
   // Schema for form
   schema: function () {
     var isChecked = storybase.forms.isChecked;
@@ -4013,6 +4017,7 @@ storybase.builder.views.LegalView = Backbone.View.extend({
       permission: this.hasPermission,
       license: this.agreedLicense
     };
+    _.defaults(this.options, this.defaults);
     this.dispatcher = this.options.dispatcher;
     this.template = Handlebars.compile(this.templateSource);
     this.hasPermission = this.model && this.model.get('status') === 'published';
@@ -4075,6 +4080,7 @@ storybase.builder.views.LegalView = Backbone.View.extend({
     options = options || {};
     var showForm = !(this.hasPermission && this.agreedLicense) || options.showForm;
     this.$el.html(this.template({
+      title: this.options.title,
       showForm: showForm 
     }));
     if (showForm) {
@@ -4093,7 +4099,7 @@ storybase.builder.views.LegalView = Backbone.View.extend({
     //this.setRadioEnabled();
   },
 
-  acceptedLegalAgreement: function() {
+  completed: function() {
     return this.agreedLicense && this.hasPermission;
   },
 
@@ -4112,6 +4118,7 @@ storybase.builder.views.LicenseDisplayView = Backbone.View.extend({
   initialize: function() {
     var license = _.isUndefined(this.model) ? null : this.model.get('license');
     _.defaults(this.options, this.defaults);
+    this.dispatcher = this.options.dispatcher;
     this._licenseHtml = null;
     if (_.isUndefined(this.model)) {
       this.dispatcher.on("ready:story", this.setStory, this);
@@ -4125,7 +4132,6 @@ storybase.builder.views.LicenseDisplayView = Backbone.View.extend({
     */
   },
 
-  // BOOKMARK
   setStory: function(story) {
     this.model = story;
   },
@@ -4153,7 +4159,10 @@ storybase.builder.views.LicenseView = Backbone.View.extend({
     'click .change-license': 'showForm'
   },
 
-  templateSource: $('#share-license-template').html(),
+  defaults: {
+    title: gettext("Select a license"),
+    templateSource: $('#share-license-template').html()
+  },
 
   schema: function() {
     return {
@@ -4179,18 +4188,24 @@ storybase.builder.views.LicenseView = Backbone.View.extend({
   initialize: function() {
     var license = this.model ? this.model.get('license') : null;
     var formVals = storybase.utils.licenseStrToParams(license);
+    _.defaults(this.options, this.defaults);
     this.dispatcher = this.options.dispatcher;
     this.form = new Backbone.Form({
       schema: this.schema(),
       data: formVals
     });
     this.licenseDisplayView = new storybase.builder.views.LicenseDisplayView({
+      dispatcher: this.dispatcher,
       model: this.model
     });
-    this.template = Handlebars.compile(this.templateSource);
+    this.template = Handlebars.compile(this.options.templateSource);
     if (_.isUndefined(this.model)) {
       this.dispatcher.on("ready:story", this.setStory, this);
     }
+  },
+
+  completed: function() {
+    return this.model && this.model.get('license');
   },
 
   setLicense: function(params) {
@@ -4227,6 +4242,7 @@ storybase.builder.views.LicenseView = Backbone.View.extend({
     var license = this.model.get('license');
     var showForm = (license ? false : true) || options.showForm;
     this.$el.html(this.template({
+      title: this.options.title,
       license: license,
       showForm: showForm
     }));
@@ -4249,11 +4265,8 @@ storybase.builder.views.LicenseView = Backbone.View.extend({
 
 // BOOKMARK
 // TODO:
-// 1. Break out terms of service and license selection into separate forms
-// 2. Break sharing out into its own view
-// 3. Show all the views at once
-// 3. Add a view for showing the remaining steps that need to be finished
-// 4. ...
+// * Tie in CC API
+// * Layout sharing 
 // -geoffhing@gmail.com 2012-10-09
 storybase.builder.views.PublishView = Backbone.View.extend(
   _.extend({}, storybase.builder.views.NavViewMixin, {
@@ -4261,22 +4274,38 @@ storybase.builder.views.PublishView = Backbone.View.extend(
 
     className: 'container',
 
-    templateSource: $('#share-publish-template').html(),
-
     events: {
       'click .publish': 'handlePublish',
-      'click .unpublish': 'handleUnpublish'
+      'click .unpublish': 'handleUnpublish',
+      'click .view-story': 'handleView'
+    },
+
+    defaults: {
+      // Source of template for the main view layout
+      templateSource: $('#share-publish-template').html(),
+      // Source of the template with markup/text that is displayed
+      // when all the required steps have been completed.
+      readyTemplateSource: $('#publish-ready-msg-template').html(),
+      // Source of the template with markup/text that is displayed
+      // when the story has been published
+      publishedTemplateSource: $('#publish-published-msg-template').html(),
+      // Selector for the element (defined in templateSource) that
+      // shows the remaining publication steps
+      todoEl: '.publish-todo',
+      // Selector for the element (defined in templateSource) that
+      // shows the sharing widgets
+      sharingEl: '.publish-sharing'
     },
 
     initialize: function() {
       var navViewOptions;
-
+  
+      _.defaults(this.options, this.defaults);
       this.dispatcher = this.options.dispatcher;
-      this.template = Handlebars.compile(this.templateSource);
-      this.featuredAssetView = new storybase.builder.views.FeaturedAssetView({
-        story: this.model,
-        dispatcher: this.dispatcher
-      });
+      this.template = Handlebars.compile(this.options.templateSource);
+      this.readyTemplate = Handlebars.compile(this.options.readyTemplateSource);
+      this.publishedTemplate = Handlebars.compile(this.options.publishedTemplateSource);
+      this.acceptedLegal = _.isUndefined(this.model) ? false : this.model.get('status') === "published";
       this.legalView = new storybase.builder.views.LegalView({
         model: this.model,
         dispatcher: this.dispatcher
@@ -4285,6 +4314,12 @@ storybase.builder.views.PublishView = Backbone.View.extend(
         model: this.model,
         dispatcher: this.dispatcher
       });
+      this.featuredAssetView = new storybase.builder.views.FeaturedAssetView({
+        story: this.model,
+        dispatcher: this.dispatcher
+      });
+      this.subviews = [this.legalView, this.licenseView, this.featuredAssetView];
+      this.updateTodo(null, false);
 
       navViewOptions = {
         model: this.model,
@@ -4317,6 +4352,28 @@ storybase.builder.views.PublishView = Backbone.View.extend(
         this.dispatcher.on("ready:story", this.setStory, this);
       }
       this.dispatcher.on("accept:legal", this.handleAcceptLegal, this);
+      this.dispatcher.on("select:license", this.updateTodo, this);
+      this.dispatcher.on("select:featuredasset", this.updateTodo, this);
+    },
+
+    todoItemLink: function(view) {
+      return '<a href="#' + view.$el.attr('id') + '" class="publish-todo-item">' + view.options.title + '</a>';
+    },
+
+    updateTodo: function(obj, render) {
+      render = _.isUndefined(render) ? true : render;
+      this.todo = [];
+  
+      _.each(this.subviews, function(view) {
+        if (!view.completed()) {
+          this.todo.push(this.todoItemLink(view));
+        }
+      }, this);
+
+      if (render) {
+        this.render({replace: false});
+      }
+      return this;
     },
 
     setStory: function(story) {
@@ -4327,32 +4384,17 @@ storybase.builder.views.PublishView = Backbone.View.extend(
      * Callback for when legal agreement is accepted.
      */
     handleAcceptLegal: function() {
-      // Show the publish button
-      this.togglePublished();
+      this.acceptedLegal = true;
+      this.updateTodo(null, true);
     },
 
-    togglePublished: function() {
-      var published = this.model ? (this.model.get('status') === "published") : false;
-      if (published) {
-        this.$('.status-published').show();
-        this.$('.status-unpublished').hide();
-      }
-      else {
-        this.$('.status-published').hide();
-        if (this.legalView.acceptedLegalAgreement()) {
-          this.$('.status-unpublished').show();
-        }
-      }
-    },
 
     handlePublish: function(evt) {
-      evt.preventDefault();
-      console.debug('Entering handlePublish');
       var that = this;
       var triggerPublished = function(model, response) {
         that.dispatcher.trigger('publish:story', model);
         that.dispatcher.trigger('alert', 'success', 'Story published');
-        that.togglePublished();
+        that.render({replace: false});
       };
       var triggerError = function(model, response) {
         that.dispatcher.trigger('error', "Error publishing story");
@@ -4361,6 +4403,7 @@ storybase.builder.views.PublishView = Backbone.View.extend(
         success: triggerPublished, 
         error: triggerError 
       });
+      evt.preventDefault();
     },
 
     handleUnpublish: function(evt) {
@@ -4368,7 +4411,7 @@ storybase.builder.views.PublishView = Backbone.View.extend(
       var that = this;
       var success = function(model, response) {
         that.dispatcher.trigger('alert', 'success', 'Story unpublished');
-        that.togglePublished();
+        that.render({replace: false});
       };
       var triggerError = function(model, response) {
         that.dispatcher.trigger('error', "Error unpublishing story");
@@ -4377,6 +4420,12 @@ storybase.builder.views.PublishView = Backbone.View.extend(
         success: success, 
         error: triggerError 
       });
+    },
+
+    handleView: function(evt) {
+      var url = $(evt.target).attr('href');
+      window.open(url);
+      evt.preventDefault();
     },
 
     getStoryUrl: function() {
@@ -4388,20 +4437,77 @@ storybase.builder.views.PublishView = Backbone.View.extend(
       return url;
     },
 
-    render: function() {
+    storyPublished: function() {
+      return this.model ? (this.model.get('status') === "published") : false;
+    },
+
+    renderButtons: function() {
+      var $publishBtn = this.$('.publish');
+      var $viewBtn = this.$('.view-story');
+      var $unpublishBtn = this.$('.unpublish');
+
+      if (this.storyPublished()) {
+        $publishBtn.hide();
+        $viewBtn.show();
+        $unpublishBtn.show();
+      }
+      else {
+        if (this.todo.length) {
+          $publishBtn.attr('disabled', 'disabled');
+        }
+        else {
+          $publishBtn.attr('disabled', null);
+        }
+        $publishBtn.show();
+        $viewBtn.hide();
+        $unpublishBtn.hide();
+      }
+    },
+
+    renderTodo: function() {
+      var $el = this.$(this.options.todoEl);
+      var html;
+      
+      if (this.todo.length) {
+        html = gettext("You need to ") + this.todo.join(", ");
+      }
+      else {
+        if (this.storyPublished()) {
+          html = this.publishedTemplate();
+        }
+        else {
+          html = this.readyTemplate(); 
+        }
+      }
+      $el.html(html);
+    },
+
+    renderSharing: function() {
+      var $el = this.$(this.options.sharingEl);
+      if (this.storyPublished()) {
+        $el.show();
+      }
+      else {
+        $el.hide();
+      }
+    },
+
+    render: function(options) {
+      options = options || {replace: true};
       var context = {
         url: this.getStoryUrl(),
         title: this.model.get('title'),
         showSharing: this.options.showSharing
       };
-      this.$el.html(this.template(context));
-      this.$el.append(this.legalView.render().el);
-      this.$el.append(this.licenseView.render().el);
-      this.$el.append(this.featuredAssetView.render().el);
-      if (this.legalView.acceptedLegalAgreement()) {
-        this.legalView.$el.hide();
+      if (options.replace) {
+        this.$el.html(this.template(context));
+        _.each(this.subviews, function(view) {
+          this.$el.append(view.render().el);
+        }, this);
       }
-      this.togglePublished();
+      this.renderTodo();
+      this.renderButtons();
+      this.renderSharing();
       if (window.addthis) {
         // Render the addthis toolbox.  We have to do this explictly
         // since it wasn't in the DOM when the page was loaded.
@@ -4430,7 +4536,10 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
       'submit form.bbf-form': 'processForm'
     },
 
-    templateSource: $('#featured-asset-template').html(),
+    defaults: {
+      title: gettext("Select a featured image"),
+      templateSource: $('#featured-asset-template').html(),
+    },
 
     subTemplateSource: {
       'display': $('#featured-asset-display-template').html(),
@@ -4452,9 +4561,10 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
     },
 
     initialize: function() {
+      _.defaults(this.options, this.defaults);
       this.dispatcher = this.options.dispatcher;
       this.story = this.options.story;
-      this.template = Handlebars.compile(this.templateSource);
+      this.template = Handlebars.compile(this.options.templateSource);
       this.templates = {};
       this.form = this.getForm();
 
@@ -4466,6 +4576,10 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
       }
 
       this.setInitialState();
+    },
+
+    completed: function() {
+      return !_.isUndefined(this.model);
     },
 
     setInitialState: function() {
@@ -4524,7 +4638,9 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
     },
 
     render: function() {
-      var context = {};
+      var context = {
+        title: this.options.title
+      };
       var state = this.getState();
       var subTemplate = this.getSubTemplate();
       if (this.model && (state === 'select' || state === 'display')) {
@@ -4570,6 +4686,7 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
                 that.render();
               },
               success: function(model, response) {
+                that.dispatcher.trigger('select:featuredasset', model);
                 that.setState('display');
                 that.render();
               }
@@ -4631,6 +4748,7 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
       var id = $(evt.target).data('asset-id');
       this.model = this.story.assets.get(id);
       this.story.setFeaturedAsset(this.model);
+      this.dispatcher.trigger('select:featuredasset', this.model);
       this.setState('display').render();
     },
 

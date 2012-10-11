@@ -226,7 +226,7 @@ You can <strong>customize</strong> some templates by adding and reordering secti
 </script>
 
 <script type="text/x-handlebars-template" id="featured-asset-template">
-<h3>{{gettext message="Select a featured image"}}</h3>
+<h3>{{title}}</h3>
 </script>
 
 <script type="text/x-handlebars-template" id="featured-asset-select-template">
@@ -302,14 +302,14 @@ You can <strong>customize</strong> some templates by adding and reordering secti
 
 <script type="text/x-handlebars-template" id="share-publish-template">
 <h2 class="title">Publish and Share Your Story</h2>
-<div class="status-unpublished" style="display: none">
-    <p>{{#blockgettext}}Looks like you're all set. When you're ready click the "Publish My Story" button.{{/blockgettext}}</p>
-    <div class="centered"><a class="btn publish" href="#">Publish My Story</a></div>
+<div class="publish-todo"></div>
+<div class="publish-buttons centered btn-container">
+    <button class="publish" type="button" disabled="disabled" style="display: none;">Publish My Story</button>
+    <a href="{{url}}" class="view-story" style="display: none;">{{gettext message="View my story"}}</a>
+    <button type="button" class="unpublish" style="display: none;">{{gettext message="Unpublish My Story"}}</button>
 </div>
-<div class="status-published" style="display: none">
-    <p>{{#blockgettext}}Congratulations, your story has been published. If you decide you'd like to unpublish your story, use the button below{{/blockgettext}}</p>
-    <div class="centered btn-container"><a class="btn unpublish" href="#">Unpublish My Story</a></div>
-    {{#if showSharing}}
+<div class="publish-sharing" style="display: none">
+{{#if showSharing}}
     <p>{{#blockgettext}}Let your story be heard! Spread the word by sharing it with your social networks, printing a copy, or embeding it on your own website.{{/blockgettext}}</p>
     <div id="share-link">
         <div><input id="story-url" type="text" value="{{url}}" /></div>
@@ -323,12 +323,20 @@ You can <strong>customize</strong> some templates by adding and reordering secti
           <a class="addthis_button_compact"></a>
         </div>
     </div>
-    {{/if}}
 </div>
+{{/if}}
+</script>
+
+<script type="text/x-handlebars-template" id="publish-ready-msg-template">
+<p>{{gettext message="Looks like you're all set. When you're ready click the \"Publish My Story\" button."}}</p>
+</script>
+
+<script type="text/x-handlebars-template" id="publish-published-msg-template">
+<p>{{gettext message="Congratulations, your story has been published. If you decide you'd like to view or unpublish your story, use the button below"}}</p>
 </script>
 
 <script type="text/x-handlebars-template" id="share-legal-template">
-<h3>{{gettext message="Agree to some legal stuff"}}</h3>
+<h3>{{title}}</h3>
 {{#if showForm}}
 <p class="introduction">{{#blockgettext}}
 In order to publish and share your story, you need to double-check a few legal details.
@@ -355,7 +363,7 @@ In order to publish and share your story, you need to double-check a few legal d
 </script>
 
 <script type="text/x-handlebars-template" id="share-license-template">
-<h3>{{gettext message="Select a license"}}</h3>
+<h3>{{title}}</h3>
 {{#unless showForm}}
 <div id="cc-license"></div>
 <button type="button" class="change-license">{{gettext message="Change license"}}</button>
