@@ -108,7 +108,8 @@ storybase.builder.views.AppView = Backbone.View.extend({
     if (this.options.visibleSteps.publish) {
       this.subviews.publish =  new storybase.builder.views.PublishView(
         _.defaults({
-          showSharing: this.options.showSharing
+          showSharing: this.options.showSharing,
+          licenseEndpoint: this.options.licenseEndpoint
         }, commonOptions)
       );
     }
@@ -4111,10 +4112,6 @@ storybase.builder.views.LegalView = Backbone.View.extend({
 storybase.builder.views.LicenseDisplayView = Backbone.View.extend({
   id: 'cc-license',
 
-  defaults: {
-    ccApiEndpoint: 'http://api.creativecommons.org/rest/1.5/license/standard/get'
-  },
-
   initialize: function() {
     var license = _.isUndefined(this.model) ? null : this.model.get('license');
     _.defaults(this.options, this.defaults);
@@ -4123,31 +4120,39 @@ storybase.builder.views.LicenseDisplayView = Backbone.View.extend({
     if (_.isUndefined(this.model)) {
       this.dispatcher.on("ready:story", this.setStory, this);
     }
-    // TODO: Fetch creative commons license info from API
-    // I think I need to proxy the API
-    /*
+    this.dispatcher.on("select:license", this.getLicenseHtml, this);
     if (license) {
       this.getLicenseHtml();
     }
-    */
   },
 
   setStory: function(story) {
     this.model = story;
   },
 
-  /*
   getLicenseHtml: function() {
+    var that = this;
     var license = this.model.get('license');
     var params = storybase.utils.licenseStrToParams(license);
-    $.get(this.options.ccApiEndpoint, params, function(data) {
-      // TODO: Set license HTML here ... 
+    // Set provision license text just so the user sees something
+    this._licenseHtml = "<p>" + gettext("You selected the ") + license + " " + gettext("license.") + "</p>";
+    this.render();
+    // Now try to get the license from the (proxied) Creative Commons
+    // endpoint.  If this succeeds, we'll re-render when we're finished
+    $.get(this.options.licenseEndpoint, params, function(data) {
+      // The endpoint returns XML. Use jQuery to grab the 'html' element
+      // of the XML response and the convert the element contents to 
+      // a string.
+      // 
+      // If we just append the matching elements, it doesn't display
+      // correctly in the browser
+      that._licenseHtml = $('<div>').append($(data).find("html").contents()).clone().html();
+      that.render();
     });
   },
-  */
 
   render: function() {
-    this.$el.html("<p>" + gettext("You selected the ") + this.model.get('license') + " " + gettext("license.") + "</p>");
+    this.$el.html(this._licenseHtml);
   }
 });
 
@@ -4196,7 +4201,8 @@ storybase.builder.views.LicenseView = Backbone.View.extend({
     });
     this.licenseDisplayView = new storybase.builder.views.LicenseDisplayView({
       dispatcher: this.dispatcher,
-      model: this.model
+      model: this.model,
+      licenseEndpoint: this.options.licenseEndpoint
     });
     this.template = Handlebars.compile(this.options.templateSource);
     if (_.isUndefined(this.model)) {
@@ -4311,7 +4317,8 @@ storybase.builder.views.PublishView = Backbone.View.extend(
       });
       this.licenseView = new storybase.builder.views.LicenseView({
         model: this.model,
-        dispatcher: this.dispatcher
+        dispatcher: this.dispatcher,
+        licenseEndpoint: this.options.licenseEndpoint
       });
       this.featuredAssetView = new storybase.builder.views.FeaturedAssetView({
         story: this.model,

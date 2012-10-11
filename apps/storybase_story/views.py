@@ -5,6 +5,7 @@ import json
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.http import Http404
 from django.utils.decorators import method_decorator
@@ -408,7 +409,9 @@ class StoryBuilderView(DetailView):
             # Show the sharing view
             'showSharing': True,
             # Show the builder tour
-            'showTour': True
+            'showTour': True,
+            # Endpoint for fetching license information
+            'licenseEndpoint': reverse("api_cc_license_get"),
         }
         if (self.template_object and  self.template_object.slug == settings.STORYBASE_CONNECTED_STORY_TEMPLATE):
             # TODO: If these settings apply in cases other than just
