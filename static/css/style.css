@@ -179,17 +179,6 @@ body.base-template form span.helptext{display:block;clear:left;}
 body.base-template .comments-list{padding:0;}
 body.base-template .comment{margin:5px 0;padding:5px;}
 body.base-template .comment-user-name{font-weight:bold;}
-body.base-template #subnav .navroot{list-style-type:none;border-top:4px solid #666666;border-bottom:4px solid #666666;}
-body.base-template #subnav li{background-color:#eee;border-bottom:1px solid #d3dbe3;}
-body.base-template #subnav .navroot>.selected,body.base-template #subnav .navroot>.ancestor{background-color:#4B7CAF;}
-body.base-template #subnav .navroot>li>a{font-weight:bold;}
-body.base-template #subnav .navroot>.selected>a,body.base-template #subnav .navroot>.ancestor>a{color:#fff;}
-body.base-template #subnav .navroot>.selected li,body.base-template #subnav .navroot>.ancestor li{background-color:#AED6FE;}
-body.base-template #subnav li a{color:#000;display:block;padding:2%;text-decoration:none;}
-body.base-template #subnav li:hover{background-color:#4B7CAF !important;}
-body.base-template #subnav li:hover>a{color:#fff;text-decoration:underline;}
-body.base-template #subnav .navroot ul li{padding-left:4%;}
-body.base-template #subnav .navroot ul li.selected a{font-weight:bold;}
 body.base-template .shell{width:1000px;margin:0 auto;position:relative;}
 body.base-template #header{height:165px;position:relative;z-index:2501;}
 body.base-template #container{width:100%;}
@@ -484,6 +473,8 @@ body.explorer #proximity-search-form{margin-top:2%;}
 body.explorer #proximity-search-form #proximity-search-address{width:80%;}
 @media only screen and (min-width:480px){body.explorer{}}@media only screen and (min-width:768px){body.explorer{}}body.explorer #filters{padding-bottom:18px;border-bottom:1px solid #ccc;margin-bottom:22px;padding-top:20px;position:relative;z-index:1000;}
 body.explorer #filters .field{margin-right:6px;}
+body.explorer #filters .field:first-child{margin-left:3px;}
+body.explorer #filters .field.last{margin-right:3px;}
 body.explorer #filters .select2-container{background:url('../img/filter-link.png') no-repeat 0 0;min-width:180px;width:191px;display:block;font-size:13px;color:#fbfaf2;font-family:'MuseoSlab500Regular';text-shadow:0 -1px 0 #605f5f;line-height:34px;height:34px;padding-right:7px;}
 body.explorer .select2-result-label{font-family:'MuseoSlab500Regular';}
 body.explorer #filters .select2-default{color:#fbfaf2 !important;}
