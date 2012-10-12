@@ -30,11 +30,9 @@ Handlebars.js templates for story builder Backbone application
 <script type="text/x-handlebars-template" id="story-template-list-template">
 <h2>{{gettext message="Choose a template to start building your story."}}</h2>
 <p class="introduction">{{#blockgettext}}
-A template is a tried and true story structure you can populate with your own pictures, text, media, data and more.
-<br />
-Some templates are better for video, some for data, and some for text. Some templates are short and sweet, others are lengthier and more involved. Below, we’ve given you some tips for picking a template based on the time it takes and the type of story you are telling. You can also get to know a template by exploring stories people have made with it.
-<br />
-You can <strong>customize</strong> some templates by adding and reordering sections, and you can always <strong>start over</strong> by choosing a new template.
+<p>A template is a tried and true story structure you can populate with your own pictures, text, media, data and more.</p>
+<p>Some templates are better for video, some for data, and some for text. Some templates are short and sweet, others are lengthier and more involved. Below, we’ve given you some tips for picking a template based on the time it takes and the type of story you are telling. You can also get to know a template by exploring stories people have made with it.</p>
+<p>You can <strong>customize</strong> some templates by adding and reordering sections, and you can always <strong>start over</strong> by choosing a new template.</p>
 {{/blockgettext}}</p>
 </script>
 
@@ -264,6 +262,9 @@ You can <strong>customize</strong> some templates by adding and reordering secti
 
 <script type="text/x-handlebars-template" id="data-template">
 <h2>Data Sets</h2>
+{{#blockgettext}}<p>Providing the raw source data you used to make your story’s charts, maps and graphs encourages readers to dig deeper and discover their own stories in the data.</p>
+<p>You can upload data sets from your computer if they are CSV or Excel files. You can link to data stored elsewhere on the web, like the Colorado Data Engine, Google Docs, or the U.S. Census Bureau.</p>
+<p>Add as many data sets as you like.</p>{{/blockgettext}}
 {{#if datasets.length}}
 <table class="datasets">
     <thead>
@@ -296,7 +297,7 @@ You can <strong>customize</strong> some templates by adding and reordering secti
 
 <script type="text/x-handlebars-template" id="review-template">
 <h2>Story Checklist</h2>
-<p>{{#blockgettext}}Congratulations on writing your story! We're going through your story right now, checking things out and making sure eveerything looks good from a content perspective, but why don't you also preview your story to see how it will look in the Floodlight story viewer.{{/blockgettext}}</p>
+<p>{{#blockgettext}}Congratulations on writing your story! We're checking things out right now and making sure everything looks good. Preview your story to see how it will look on Floodlight once it’s published.{{/blockgettext}}</p>
 <div class="centered btn-container"><a class="btn preview" href="#">{{gettext message="Preview Story"}}</a></div>
 </script>
 
@@ -389,15 +390,18 @@ In order to publish and share your story, you need to double-check a few legal d
 
 <script type="text/x-handlebars-template" id="share-taxonomy-template">
 <p class="introduction">{{#blockgettext}}
-Make sure readers can find your story. It will be easier for others to find, read and share your story if you include additional information, like a byline, topic tags, locations, or affiliated organizations.
+Label your story with topics and places so that people can easily discover it on Floodlight. The more information you add here, the more others can connect with your story.
 {{/blockgettext}}</p>
 <div id="taxonomy">
     <h3>{{gettext message="Tags"}}</h3> 
+<p>{{#blockgettext}}For topics and places, choose from the list that appears when you click in the boxes below. Topics include categories like “Crime and Justice” or “Education.” Places include neighborhoods, cities and zip codes. Add as many places or topics as you want.{{/blockgettext}}</p>
+<p>{{#blockgettext}}If you are a member of an organization or project, you can also add those. Stories can be in multiple projects or organizations.{{/blockgettext}}</p>
 </div>
 </script>
 
 <script type="text/x-handlebars-template" id="add-location-template">
 <h3>{{gettext message="Mapping"}}</h3>
+<p>{{#blockgettext}}Where did your story happen? Linking your story to an address will let people find it on a map. Add as many addresses as you want.{{/blockgettext}}</p>
 <form>
     <div id="address-search-container">
         <input id="address" name="address" type="text" placeholder="{{gettext message="Enter an address"}}"/>
@@ -424,6 +428,7 @@ Make sure readers can find your story. It will be easier for others to find, rea
 
 <script type="text/x-handlebars-template" id="tags-template">
 <h3>{{gettext message="Search Keywords"}}</h3>
+<p>{{gettext message="Type in your own search terms."}}</p>
 <form>
     <input id="tags" name="tags" type="hidden" style="width: 300px"/>
 </form>
