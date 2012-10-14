@@ -6,6 +6,14 @@ Taken from `django-dirtyfields <https://github.com/smn/django-dirtyfields/>`_
 to avoid having a separate dependency.
 
 """
+import datetime
+
+try:
+    # Use the native Django functions if Django >= 1.4
+    from django.utils import timezone
+except ImportError:
+    # Otherwise, use the backported version
+    from storybase.utils import timezone
 
 # Copyright (c) Praekelt Foundation and individual contributors.
 # All rights reserved.
@@ -37,10 +45,14 @@ class DirtyFieldsMixin(object):
 
     def _as_dict(self):
         return dict([(f.name, getattr(self, f.name)) for f in self._meta.local_fields if not f.rel])
+
+    @classmethod
+    def _value_changed(cls, old, new):
+        return old != new
     
     def get_dirty_fields(self):
         new_state = self._as_dict()
-        return dict([(key, value) for key, value in self._original_state.iteritems() if value != new_state[key]])
+        return dict([(key, value) for key, value in self._original_state.iteritems() if self._value_changed(value, new_state[key])])
     
     def is_dirty(self):
         # in order to be dirty we need to have been saved at least once, so we
@@ -48,6 +60,26 @@ class DirtyFieldsMixin(object):
         if not self.pk: 
             return True
         return {} != self.get_dirty_fields()
+
+
+class TzDirtyFieldsMixin(DirtyFieldsMixin):
+    """A timezone-aware version of DirtyFieldsMixin"""
+    @classmethod
+    def _match_aware(cls, old, new):
+        tz = timezone.get_default_timezone()
+        if timezone.is_naive(old) and timezone.is_aware(new):
+            return (old, timezone.make_naive(new, tz))
+        elif timezone.is_aware(old) and timezone.is_naive(new):
+            return (timezone.make_naive(old, tz), new)
+        else:
+            return (old, new)
+
+    @classmethod
+    def _value_changed(cls, old, new):
+        # Special timezone aware handling goes here
+        if isinstance(old, datetime.datetime) and isinstance(new, datetime.datetime):
+            (old, new) = cls._match_aware(old, new)
+        return super(TzDirtyFieldsMixin, cls)._value_changed(old, new)
 
 def reset_state(sender, instance, **kwargs):
     instance._original_state = instance._as_dict()

@@ -108,7 +108,8 @@ storybase.builder.views.AppView = Backbone.View.extend({
     if (this.options.visibleSteps.publish) {
       this.subviews.publish =  new storybase.builder.views.PublishView(
         _.defaults({
-          showSharing: this.options.showSharing
+          showSharing: this.options.showSharing,
+          licenseEndpoint: this.options.licenseEndpoint
         }, commonOptions)
       );
     }
@@ -3119,6 +3120,13 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       // Save the model's original new state to decide
       // whether to send a signal later
       var isNew = this.model.isNew();
+      var storyLicense = this.story.get('license');
+      if (isNew && _.isUndefined(attributes['license']) && storyLicense) {
+        // If this is the initial save and the story has a license
+        // defined and the asset has no explicit license defined, set the
+        // asset license to that of the story.
+        attributes['license'] = storyLicense;
+      }
       this.model.save(attributes, {
         success: function(model) {
           that.setState('display');
@@ -3534,195 +3542,6 @@ storybase.builder.views.ReviewView = Backbone.View.extend(
     }
   })
 );
-
-storybase.builder.views.LegalView = Backbone.View.extend({
-  id: 'share-legal',
-
-  templateSource: $('#share-legal-template').html(),
-
-  events: {
-    'change input[name=license]': 'changeLicenseAgreement',
-    'submit form': 'processForm'
-  },
-
-  // Schema for form
-  schema: function (){
-    // Custom validator for checkboxes.  For whatever reason, 'required'
-    // didn't work
-    var isChecked = function(value, formValues) {
-      var err = {
-        type: 'checked',
-        message: gettext("You must check this checkbox")
-      };
-      if (!value.length) {
-        return err;
-      }
-    };
-    return {
-      permission: { 
-        type: 'Checkboxes',
-        title: '',
-        options: Handlebars.compile($('#share-permission-field-template').html())(),
-        validators: [isChecked]
-      },
-      license: {
-        type: 'Checkboxes',
-        title: '',
-        options: Handlebars.compile($('#share-license-field-template').html())(),
-        validators: [isChecked]
-      },
-      'cc-allow-commercial': {
-        type: 'Radio',
-        title: '',
-        options: Handlebars.compile($('#share-cc-allow-commercial-template').html())(),
-        validators: ['required']
-      },
-      'cc-allow-modification': {
-        type: 'Radio',
-        title: '',
-        options: Handlebars.compile($('#share-cc-allow-modification-template').html())(),
-        validators: ['required']
-      }
-    };
-  },
-
-  initialize: function() {
-    var licenseFormVals = this.getLicense();
-    var formValues = {
-      permission: this.hasPermission,
-      license: this.agreedLicense,
-      'cc-allow-commercial': licenseFormVals.allowCommercial,
-      'cc-allow-modification': licenseFormVals.allowModification
-    };
-    this.dispatcher = this.options.dispatcher;
-    this.template = Handlebars.compile(this.templateSource);
-    this.hasPermission = this.model && this.model.get('status') === 'published';
-    this.agreedLicense = this.model && this.model.get('status') === 'published';
-    this.form = new Backbone.Form({
-      schema: this.schema(),
-      data: formValues
-    });
-    if (_.isUndefined(this.model)) {
-      this.dispatcher.on("ready:story", this.setStory, this);
-    }
-  },
-
-  setStory: function(story) {
-    this.model = story;
-  },
-
-  getLicense: function() {
-    var ccLicenses = {
-      'CC BY': {
-        allowCommercial: 'yes',
-        allowModification: 'yes'
-      },
-      'CC BY-SA': {
-        allowCommercial: 'yes',
-        allowModification: 'share-alike'
-      },
-      'CC BY-ND': {
-        allowCommercial: 'yes',
-        allowModification: 'no'
-      },
-      'CC BY-NC': {
-        allowCommercial: 'no',
-        allowModification: 'yes'
-      },
-      'CC BY-NC-SA': {
-        allowCommercial: 'no',
-        allowModification: 'share-alike'
-      },
-      'CC BY-NC-ND': {
-        allowCommercial: 'no',
-        allowModification: 'no'
-      }
-    };
-    var license = this.model ? this.model.get('license') : false;
-    if (license) {
-      return ccLicenses[license];
-    }
-    else {
-      return ccLicenses['CC BY'];
-    }
-  },
-
-  setLicense: function(allowCommercial, allowModification) {
-    var ccLicenses = {
-      'yes': {
-        'yes': 'CC BY',
-        'share-alike': 'CC BY-SA', 
-        'no': 'CC BY-ND'
-      },
-      'no': {
-        'yes': 'CC BY-NC',
-        'share-alike': 'CC BY-NC-SA',
-        'no': 'CC BY-NC-ND'
-      }
-    }
-    this.model.set('license', ccLicenses[allowCommercial][allowModification]);
-    this.model.save();
-  },
-
-  validate: function() {
-    var formValues = this.form.getValue();
-    var errors = this.form.validate();
-    if (!errors) {
-      this.setLicense(formValues['cc-allow-commercial'],
-        formValues['cc-allow-modification']
-      );
-      this.hasPermission = true;
-      this.agreedLicense = true;
-      return true;
-    }
-    else {
-      return false;
-    }
-  },
-
-  processForm: function(evt) {
-    evt.preventDefault();
-    if (this.validate()) {
-      console.debug("Form Valide");
-      this.dispatcher.trigger("accept:legal");
-    }
-  },
-
-  setRadioEnabled: function() {
-    this.form.fields['cc-allow-commercial'].$('input').prop('disabled', !this.agreedLicense);
-    this.form.fields['cc-allow-modification'].$('input').prop('disabled', !this.agreedLicense);
-  },
-
-  /**
-   * Workaround for limitations of form initial value setting.
-   */
-  updateFormDefaults: function() {
-    // HACK: Work around weird setValue implementation for checkbox
-    // type.  Maybe make a custom editor that does it right.
-    this.form.fields.permission.editor.$('input[type=checkbox]').prop('checked', this.hasPermission);
-    this.form.fields.license.$('input[type=checkbox]').prop('checked', this.agreedLicense);
-    this.setRadioEnabled();
-  },
-
-  render: function() {
-    this.$el.html(this.template());
-    this.form.render().$el.append('<input type="submit" value="' + gettext("Agree") + '" />');
-    this.$el.append(this.form.el);
-    this.updateFormDefaults();
-    this.delegateEvents();
-
-    return this;
-  },
-
-  changeLicenseAgreement: function(evt) {
-    this.agreedLicense = $(evt.target).prop('checked');
-    this.setRadioEnabled();
-  },
-
-  acceptedLegalAgreement: function() {
-    return this.agreedLicense && this.hasPermission;
-  }
-});
 
 storybase.builder.views.TaxonomyView = Backbone.View.extend(
   _.extend({}, storybase.builder.views.NavViewMixin, {
@@ -4159,32 +3978,354 @@ storybase.builder.views.TagView = Backbone.View.extend({
   }
 });
 
+
+storybase.builder.views.LegalView = Backbone.View.extend({
+  id: 'share-legal',
+
+  templateSource: $('#share-legal-template').html(),
+
+  events: {
+    'change input[name=license]': 'changeLicenseAgreement',
+    'click .view-agreement': 'showForm',
+    'submit form': 'processForm'
+  },
+
+  defaults: {
+    'title': gettext("Accept the legal agreement")
+  },
+
+  // Schema for form
+  schema: function () {
+    var isChecked = storybase.forms.isChecked;
+    return {
+      permission: { 
+        type: 'Checkboxes',
+        title: '',
+        options: Handlebars.compile($('#share-permission-field-template').html())(),
+        validators: [isChecked]
+      },
+      license: {
+        type: 'Checkboxes',
+        title: '',
+        options: Handlebars.compile($('#share-license-field-template').html())(),
+        validators: [isChecked]
+      }
+    };
+  },
+
+  initialize: function() {
+    var formVals = {
+      permission: this.hasPermission,
+      license: this.agreedLicense
+    };
+    _.defaults(this.options, this.defaults);
+    this.dispatcher = this.options.dispatcher;
+    this.template = Handlebars.compile(this.templateSource);
+    this.hasPermission = this.model && this.model.get('status') === 'published';
+    this.agreedLicense = this.model && this.model.get('status') === 'published';
+    this.form = new Backbone.Form({
+      schema: this.schema(),
+      data: formVals
+    });
+    if (_.isUndefined(this.model)) {
+      this.dispatcher.on("ready:story", this.setStory, this);
+    }
+  },
+
+  setStory: function(story) {
+    this.model = story;
+  },
+
+  validate: function() {
+    var formValues = this.form.getValue();
+    var errors = this.form.validate();
+    if (!errors) {
+      this.hasPermission = true;
+      this.agreedLicense = true;
+      return true;
+    }
+    else {
+      return false;
+    }
+  },
+
+  processForm: function(evt) {
+    evt.preventDefault();
+    if (this.validate()) {
+      this.render();
+      this.dispatcher.trigger("accept:legal");
+    }
+  },
+
+  // TODO: Remove this if it's really not needed
+  /*
+  setRadioEnabled: function() {
+    this.form.fields['commercial'].$('input').prop('disabled', !this.agreedLicense);
+    this.form.fields['derivatives'].$('input').prop('disabled', !this.agreedLicense);
+  },
+  */
+
+  /**
+   * Workaround for limitations of form initial value setting.
+   */
+  updateFormDefaults: function() {
+    // HACK: Work around weird setValue implementation for checkbox
+    // type.  Maybe make a custom editor that does it right.
+    this.form.fields.permission.editor.$('input[type=checkbox]').prop('checked', this.hasPermission);
+    this.form.fields.license.$('input[type=checkbox]').prop('checked', this.agreedLicense);
+    // TODO: Remove this if not needed
+    //this.setRadioEnabled();
+  },
+
+  render: function(options) {
+    options = options || {};
+    var showForm = !(this.hasPermission && this.agreedLicense) || options.showForm;
+    this.$el.html(this.template({
+      title: this.options.title,
+      showForm: showForm 
+    }));
+    if (showForm) {
+      this.form.render().$el.append('<input type="submit" value="' + gettext("Agree") + '" />');
+      this.updateFormDefaults();
+      this.$el.append(this.form.el);
+    }
+    this.delegateEvents();
+
+    return this;
+  },
+
+  changeLicenseAgreement: function(evt) {
+    this.agreedLicense = $(evt.target).prop('checked');
+    // TODO: Remove this if not needed
+    //this.setRadioEnabled();
+  },
+
+  completed: function() {
+    return this.agreedLicense && this.hasPermission;
+  },
+
+  showForm: function() {
+    return this.render({showForm: true});
+  }
+});
+
+storybase.builder.views.LicenseDisplayView = Backbone.View.extend({
+  id: 'cc-license',
+
+  initialize: function() {
+    var license = _.isUndefined(this.model) ? null : this.model.get('license');
+    _.defaults(this.options, this.defaults);
+    this.dispatcher = this.options.dispatcher;
+    this._licenseHtml = null;
+    if (_.isUndefined(this.model)) {
+      this.dispatcher.on("ready:story", this.setStory, this);
+    }
+    this.dispatcher.on("select:license", this.getLicenseHtml, this);
+    if (license) {
+      this.getLicenseHtml();
+    }
+  },
+
+  setStory: function(story) {
+    this.model = story;
+  },
+
+  getLicenseHtml: function() {
+    var that = this;
+    var license = this.model.get('license');
+    var params = storybase.utils.licenseStrToParams(license);
+    // Set provision license text just so the user sees something
+    this._licenseHtml = "<p>" + gettext("You selected the ") + license + " " + gettext("license.") + "</p>";
+    this.render();
+    // Now try to get the license from the (proxied) Creative Commons
+    // endpoint.  If this succeeds, we'll re-render when we're finished
+    $.get(this.options.licenseEndpoint, params, function(data) {
+      // The endpoint returns XML. Use jQuery to grab the 'html' element
+      // of the XML response and the convert the element contents to 
+      // a string.
+      // 
+      // If we just append the matching elements, it doesn't display
+      // correctly in the browser
+      that._licenseHtml = $('<div>').append($(data).find("html").contents()).clone().html();
+      that.render();
+    });
+  },
+
+  render: function() {
+    this.$el.html(this._licenseHtml);
+  }
+});
+
+storybase.builder.views.LicenseView = Backbone.View.extend({
+  id: 'share-license',
+
+  events: {
+    'submit form': 'processForm',
+    'click .change-license': 'showForm'
+  },
+
+  defaults: {
+    title: gettext("Select a license"),
+    templateSource: $('#share-license-template').html()
+  },
+
+  schema: function() {
+    return {
+      'commercial': {
+        type: 'Radio',
+        title: '',
+        options: Handlebars.compile($('#share-cc-commercial-template').html())(),
+        validators: ['required']
+      },
+      'derivatives': {
+        type: 'Radio',
+        title: '',
+        options: Handlebars.compile($('#share-cc-derivatives-template').html())(),
+        validators: ['required']
+      }
+    };
+  },
+ 
+  setStory: function(story) {
+    this.model = story;
+  },
+
+  initialize: function() {
+    var license = this.model ? this.model.get('license') : null;
+    var formVals = storybase.utils.licenseStrToParams(license);
+    _.defaults(this.options, this.defaults);
+    this.dispatcher = this.options.dispatcher;
+    this.form = new Backbone.Form({
+      schema: this.schema(),
+      data: formVals
+    });
+    this.licenseDisplayView = new storybase.builder.views.LicenseDisplayView({
+      dispatcher: this.dispatcher,
+      model: this.model,
+      licenseEndpoint: this.options.licenseEndpoint
+    });
+    this.template = Handlebars.compile(this.options.templateSource);
+    if (_.isUndefined(this.model)) {
+      this.dispatcher.on("ready:story", this.setStory, this);
+    }
+  },
+
+  completed: function() {
+    return this.model && this.model.get('license');
+  },
+
+  setLicense: function(params) {
+    this.model.set('license', storybase.utils.licenseParamsToStr(params));
+    this.model.save();
+  },
+
+  validate: function() {
+    var formValues = this.form.getValue();
+    var errors = this.form.validate();
+    if (!errors) {
+      this.setLicense(formValues);
+      return true;
+    }
+    else {
+      return false;
+    }
+  },
+
+  processForm: function(evt) {
+    evt.preventDefault();
+    if (this.validate()) {
+      this.dispatcher.trigger("select:license");
+      // Update the form data to the new value of the form, otherwise
+      // the new values will get clobbered when the form is re-rendered
+      // in render()
+      this.form.data = this.form.getValue();
+      this.render();
+    }
+  },
+
+  render: function(options) {
+    options = options || {};
+    var license = this.model.get('license');
+    var showForm = (license ? false : true) || options.showForm;
+    this.$el.html(this.template({
+      title: this.options.title,
+      license: license,
+      showForm: showForm
+    }));
+    if (showForm) {
+      this.form.render().$el.append('<input type="submit" value="' + gettext("Select License") + '" />');
+      this.$el.append(this.form.el);
+    }
+    else {
+      this.licenseDisplayView.setElement(this.$('#cc-license')).render();
+    }
+    this.delegateEvents();
+
+    return this;
+  },
+
+  showForm: function() {
+    return this.render({showForm: true});
+  }
+});
+
+// BOOKMARK
+// TODO:
+// * Tie in CC API
+// -geoffhing@gmail.com 2012-10-09
 storybase.builder.views.PublishView = Backbone.View.extend(
   _.extend({}, storybase.builder.views.NavViewMixin, {
     id: 'share-publish',
 
     className: 'container',
 
-    templateSource: $('#share-publish-template').html(),
-
     events: {
       'click .publish': 'handlePublish',
-      'click .unpublish': 'handleUnpublish'
+      'click .unpublish': 'handleUnpublish',
+      'click .view-story': 'handleView'
+    },
+
+    defaults: {
+      // Source of template for the main view layout
+      templateSource: $('#share-publish-template').html(),
+      // Source of the template with markup/text that is displayed
+      // when all the required steps have been completed.
+      readyTemplateSource: $('#publish-ready-msg-template').html(),
+      // Source of the template with markup/text that is displayed
+      // when the story has been published
+      publishedTemplateSource: $('#publish-published-msg-template').html(),
+      // Selector for the element (defined in templateSource) that
+      // shows the remaining publication steps
+      todoEl: '.publish-todo',
+      // Selector for the element (defined in templateSource) that
+      // shows the sharing widgets
+      sharingEl: '.publish-sharing'
     },
 
     initialize: function() {
       var navViewOptions;
-
+  
+      _.defaults(this.options, this.defaults);
       this.dispatcher = this.options.dispatcher;
-      this.template = Handlebars.compile(this.templateSource);
-      this.featuredAssetView = new storybase.builder.views.FeaturedAssetView({
-        story: this.model,
-        dispatcher: this.dispatcher
-      });
+      this.template = Handlebars.compile(this.options.templateSource);
+      this.readyTemplate = Handlebars.compile(this.options.readyTemplateSource);
+      this.publishedTemplate = Handlebars.compile(this.options.publishedTemplateSource);
+      this.acceptedLegal = _.isUndefined(this.model) ? false : this.model.get('status') === "published";
       this.legalView = new storybase.builder.views.LegalView({
         model: this.model,
         dispatcher: this.dispatcher
       });
+      this.licenseView = new storybase.builder.views.LicenseView({
+        model: this.model,
+        dispatcher: this.dispatcher,
+        licenseEndpoint: this.options.licenseEndpoint
+      });
+      this.featuredAssetView = new storybase.builder.views.FeaturedAssetView({
+        story: this.model,
+        dispatcher: this.dispatcher
+      });
+      this.subviews = [this.legalView, this.licenseView, this.featuredAssetView];
+      this.updateTodo(null, false);
 
       navViewOptions = {
         model: this.model,
@@ -4217,6 +4358,28 @@ storybase.builder.views.PublishView = Backbone.View.extend(
         this.dispatcher.on("ready:story", this.setStory, this);
       }
       this.dispatcher.on("accept:legal", this.handleAcceptLegal, this);
+      this.dispatcher.on("select:license", this.updateTodo, this);
+      this.dispatcher.on("select:featuredasset", this.updateTodo, this);
+    },
+
+    todoItemLink: function(view) {
+      return '<a href="#' + view.$el.attr('id') + '" class="publish-todo-item">' + view.options.title + '</a>';
+    },
+
+    updateTodo: function(obj, render) {
+      render = _.isUndefined(render) ? true : render;
+      this.todo = [];
+  
+      _.each(this.subviews, function(view) {
+        if (!view.completed()) {
+          this.todo.push(this.todoItemLink(view));
+        }
+      }, this);
+
+      if (render) {
+        this.render({replace: false});
+      }
+      return this;
     },
 
     setStory: function(story) {
@@ -4227,34 +4390,17 @@ storybase.builder.views.PublishView = Backbone.View.extend(
      * Callback for when legal agreement is accepted.
      */
     handleAcceptLegal: function() {
-      // Hide the legal form
-      this.legalView.$el.hide();
-      // Show the publish button
-      this.togglePublished();
+      this.acceptedLegal = true;
+      this.updateTodo(null, true);
     },
 
-    togglePublished: function() {
-      var published = this.model ? (this.model.get('status') === "published") : false;
-      if (published) {
-        this.$('.status-published').show();
-        this.$('.status-unpublished').hide();
-      }
-      else {
-        this.$('.status-published').hide();
-        if (this.legalView.acceptedLegalAgreement()) {
-          this.$('.status-unpublished').show();
-        }
-      }
-    },
 
     handlePublish: function(evt) {
-      evt.preventDefault();
-      console.debug('Entering handlePublish');
       var that = this;
       var triggerPublished = function(model, response) {
         that.dispatcher.trigger('publish:story', model);
         that.dispatcher.trigger('alert', 'success', 'Story published');
-        that.togglePublished();
+        that.render({replace: false});
       };
       var triggerError = function(model, response) {
         that.dispatcher.trigger('error', "Error publishing story");
@@ -4263,6 +4409,7 @@ storybase.builder.views.PublishView = Backbone.View.extend(
         success: triggerPublished, 
         error: triggerError 
       });
+      evt.preventDefault();
     },
 
     handleUnpublish: function(evt) {
@@ -4270,7 +4417,7 @@ storybase.builder.views.PublishView = Backbone.View.extend(
       var that = this;
       var success = function(model, response) {
         that.dispatcher.trigger('alert', 'success', 'Story unpublished');
-        that.togglePublished();
+        that.render({replace: false});
       };
       var triggerError = function(model, response) {
         that.dispatcher.trigger('error', "Error unpublishing story");
@@ -4279,6 +4426,12 @@ storybase.builder.views.PublishView = Backbone.View.extend(
         success: success, 
         error: triggerError 
       });
+    },
+
+    handleView: function(evt) {
+      var url = $(evt.target).attr('href');
+      window.open(url);
+      evt.preventDefault();
     },
 
     getStoryUrl: function() {
@@ -4290,19 +4443,79 @@ storybase.builder.views.PublishView = Backbone.View.extend(
       return url;
     },
 
-    render: function() {
+    storyPublished: function() {
+      return this.model ? (this.model.get('status') === "published") : false;
+    },
+
+    renderButtons: function() {
+      var $publishBtn = this.$('.publish');
+      var $viewBtn = this.$('.view-story');
+      var $unpublishBtn = this.$('.unpublish');
+
+      if (this.storyPublished()) {
+        $publishBtn.hide();
+        $viewBtn.show();
+        $unpublishBtn.show();
+      }
+      else {
+        if (this.todo.length) {
+          $publishBtn.attr('disabled', 'disabled');
+        }
+        else {
+          $publishBtn.attr('disabled', null);
+        }
+        $publishBtn.show();
+        $viewBtn.hide();
+        $unpublishBtn.hide();
+      }
+    },
+
+    renderTodo: function() {
+      var $el = this.$(this.options.todoEl);
+      var html;
+      
+      if (this.todo.length) {
+        html = gettext("You need to ") + this.todo.join(", ");
+      }
+      else {
+        if (this.storyPublished()) {
+          html = this.publishedTemplate();
+        }
+        else {
+          html = this.readyTemplate(); 
+        }
+      }
+      $el.html(html);
+    },
+
+    renderSharing: function() {
+      var $el = this.$(this.options.sharingEl);
+      if (this.storyPublished()) {
+        $el.show();
+      }
+      else {
+        $el.hide();
+      }
+    },
+
+    render: function(options) {
+      options = options || {replace: true};
       var context = {
         url: this.getStoryUrl(),
         title: this.model.get('title'),
         showSharing: this.options.showSharing
       };
-      this.$el.html(this.template(context));
-      this.$('.title').after(this.legalView.render().el);
-      this.$('.status-published').after(this.featuredAssetView.render().el);
-      if (this.legalView.acceptedLegalAgreement()) {
-        this.legalView.$el.hide();
+      if (options.replace) {
+        this.$el.html(this.template(context));
+        _.each(this.subviews, function(view) {
+          this.$('.left').append(view.render().el);
+        }, this);
       }
-      this.togglePublished();
+      this.renderTodo();
+      this.renderButtons();
+      if (this.options.showSharing) {
+        this.renderSharing();
+      }
       if (window.addthis) {
         // Render the addthis toolbox.  We have to do this explictly
         // since it wasn't in the DOM when the page was loaded.
@@ -4331,7 +4544,10 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
       'submit form.bbf-form': 'processForm'
     },
 
-    templateSource: $('#featured-asset-template').html(),
+    defaults: {
+      title: gettext("Select a featured image"),
+      templateSource: $('#featured-asset-template').html(),
+    },
 
     subTemplateSource: {
       'display': $('#featured-asset-display-template').html(),
@@ -4353,9 +4569,10 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
     },
 
     initialize: function() {
+      _.defaults(this.options, this.defaults);
       this.dispatcher = this.options.dispatcher;
       this.story = this.options.story;
-      this.template = Handlebars.compile(this.templateSource);
+      this.template = Handlebars.compile(this.options.templateSource);
       this.templates = {};
       this.form = this.getForm();
 
@@ -4367,6 +4584,10 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
       }
 
       this.setInitialState();
+    },
+
+    completed: function() {
+      return !_.isUndefined(this.model);
     },
 
     setInitialState: function() {
@@ -4425,7 +4646,9 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
     },
 
     render: function() {
-      var context = {};
+      var context = {
+        title: this.options.title
+      };
       var state = this.getState();
       var subTemplate = this.getSubTemplate();
       if (this.model && (state === 'select' || state === 'display')) {
@@ -4499,6 +4722,7 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
     saveModel: function(model, options) {
       options = _.isUndefined(options) ? {} : options;
       var that = this;
+      model.set('license', this.story.get('license'));
       model.save(null, {
         success: function(model) {
           that.model = model;
@@ -4506,6 +4730,7 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
           that.render();
           that.story.assets.add(model);
           that.story.setFeaturedAsset(model);
+          that.dispatcher.trigger('select:featuredasset', model);
           if (options.success) {
             options.success(model);
           }
@@ -4531,6 +4756,7 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
       var id = $(evt.target).data('asset-id');
       this.model = this.story.assets.get(id);
       this.story.setFeaturedAsset(this.model);
+      this.dispatcher.trigger('select:featuredasset', this.model);
       this.setState('display').render();
     },
 
