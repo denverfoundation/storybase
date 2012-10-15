@@ -98,7 +98,7 @@ Handlebars templates for rendering Backbone views.
     <dd>
       <ul class="languages">
         {{#each languages}}
-        <li><p><a href="{{url}}" class="language-{{id}}">{{name}}</a></p></li>
+        <li><p><a href="{{url}}" class="secondary language-{{id}}">{{name}}</a></p></li>
         {{/each}}
       </ul>
     </dd>
@@ -152,7 +152,6 @@ Handlebars templates for rendering Backbone views.
 {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/leaflet/leaflet.css">{% endaddtoblock %}
 {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/select2/select2.css">{% endaddtoblock %}
 {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/tooltipster-1.2/css/tooltipster.css">{% endaddtoblock %}
-{% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/explorer.css">{% endaddtoblock %}
 
 
 <h1><span>{{ storybase_explore_title }}</span></h1>
