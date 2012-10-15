@@ -16,9 +16,10 @@ body.base-template .content-block h2{font-size:21.599999999999998px;}
 body.base-template .content-block h3{font-size:18px;}
 body.base-template .content-block h4{font-size:14.4px;}
 body.base-template .content-block h5{font-size:10.799999999999999px;}
-body.base-template h1 a,body.base-template h2 a,body.base-template h3 a,body.base-template h4 a,body.base-template h5 a{color:#20c6fd;}
-body.base-template a{color:#0252aa;text-decoration:none;cursor:pointer;}
+body.base-template a{color:#20c6fd;text-decoration:none;cursor:pointer;}
 body.base-template a:hover{text-decoration:underline;}
+body.base-template a:visited{color:#19a3d1;}
+body.base-template a.secondary{color:#0252aa;}
 body.base-template a img{border:0;}
 body.base-template textarea{overflow:auto;}
 body.base-template .cl{display:block;height:0;font-size:0;line-height:0;text-indent:-4000px;clear:both;}
@@ -124,7 +125,7 @@ body.base-template #main .col h4{background:url('../img/h3-line.png') repeat-x 0
 body.base-template #main .col h4 span{background:#fff;padding-right:10px;padding-left:10px;}
 body.base-template #main .col ul{width:335px;margin:0 auto;}
 body.base-template #main .col ul .text{width:335px;float:none;}
-body.base-template #main .col h5{font-size:18px;color:#20c6fd;padding-top:10px;}body.base-template #main .col h5 a{color:#20c6fd;}
+body.base-template #main .col h5{font-size:18px;color:#20c6fd;padding-top:10px;}
 body.base-template #main .col ul .text,body.base-template #main .col .image{padding-left:76px;padding-right:76px;display:block;}
 body.base-template #main .bottom .left ul li a{font-size:14px;color:#fe9703;font-family:'MuseoSlab500Regular';padding-left:5px;padding-right:5px;line-height:21px;display:inline-block;}
 body.base-template #main .bottom .left ul li a.active{background:#fe9703;color:#fff;border-radius:4px;}
@@ -178,6 +179,8 @@ body.base-template form span.helptext{display:block;clear:left;}
 body.base-template .comments-list{padding:0;}
 body.base-template .comment{margin:5px 0;padding:5px;}
 body.base-template .comment-user-name{font-weight:bold;}
+body.base-template.accounts.login h2{text-align:left;margin-bottom:20px;}
+body.base-template.accounts.login ul{margin-bottom:20px;}
 body.base-template .shell{width:1000px;margin:0 auto;position:relative;}
 body.base-template #header{height:165px;position:relative;z-index:2501;}
 body.base-template #container{width:100%;}
@@ -504,6 +507,7 @@ body.explorer #story-list{clear:both;}
 body.explorer #story-list.tile li.story{width:222px;float:left;padding:7px;background:#f3f3f3;margin-bottom:11px;margin-right:14px;overflow:hidden;}
 body.explorer #story-list.list li.story{float:none;width:100%;background:none;border-top:1px dotted #7F7F7F;padding-bottom:9px;padding-top:12px;margin-bottom:11px;margin-right:14px;overflow:hidden;}
 body.explorer #story-list li.story h3,body.explorer #map-container .leaflet-popup h3{padding-top:8px;background:none;font-size:16px;color:#03ccfe;line-height:16px;}
+body.explorer #map-container .leaflet-popup-content-wrapper,body.explorer #map-container .leaflet-popup-tip{overflow:hidden;padding:0 0 25px 0;}
 body.explorer #story-list.list li.story h3{padding-top:0;}
 body.explorer #story-list.list li.story h3,body.explorer #map-container .leaflet-popup h3{text-align:left;}
 body.explorer #story-list.list li.story h3{font-size:20px;}
