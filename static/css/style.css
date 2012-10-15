@@ -164,7 +164,7 @@ body.base-template .content-page.object-detail.project .featured-story img{width
 body.base-template .content-page.object-detail.project .recent-stories ul{margin-bottom:30px;}
 body.base-template .content-page.object-detail.project .recent-stories li{margin-bottom:10px;overflow:hidden;}body.base-template .content-page.object-detail.project .recent-stories li img{margin-top:8px;width:100%;}
 body.base-template .content-page section.content-block{padding-bottom:40px;border-bottom:1px solid #ccc;margin-bottom:20px;overflow:hidden;}body.base-template .content-page section.content-block.last{border-bottom:none;}
-body.base-template form{overflow:hidden;}body.base-template form .form-text{font-family:'Times New Roman',Georgia,Serif;font-size:14px;color:#555555;}
+body.base-template form{overflow:hidden;position:relative;}body.base-template form .form-text{font-family:'Times New Roman',Georgia,Serif;font-size:14px;color:#555555;}
 body.base-template form .soft-edge-style{border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px;font-family:'Times New Roman',Georgia,Serif;font-size:14px;color:#555555;box-shadow:inset 0 0 3px #ccc;border:1px solid #aaaaaa;padding:5px;}
 body.base-template form ul.errorlist li{font-family:'Times New Roman',Georgia,Serif;color:#ee6666;}
 body.base-template form p{font-family:'Times New Roman',Georgia,Serif;font-size:14px;color:#555555;margin-bottom:8px;clear:both;line-height:30px;overflow:hidden;}body.base-template form p label,body.base-template form p label+input{display:block;float:left;width:24%;}
@@ -181,6 +181,7 @@ body.base-template .comment{margin:5px 0;padding:5px;}
 body.base-template .comment-user-name{font-weight:bold;}
 body.base-template.accounts.login h2{text-align:left;margin-bottom:20px;}
 body.base-template.accounts.login ul{margin-bottom:20px;}
+body.base-template.accounts.login #main form{width:50%;}body.base-template.accounts.login #main form input[type=text],body.base-template.accounts.login #main form input[type=password]{width:40%;}
 body.base-template .shell{width:1000px;margin:0 auto;position:relative;}
 body.base-template #header{height:165px;position:relative;z-index:2501;}
 body.base-template #container{width:100%;}
