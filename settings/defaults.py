@@ -209,6 +209,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 AUTH_PROFILE_MODULE = 'storybase_user.UserProfile'
 
 LOGIN_REDIRECT_URL = '/accounts/'
+LOGOUT_URL = '/'
 
 AUTHENTICATION_BACKENDS = (
     'social_auth.backends.twitter.TwitterBackend',
