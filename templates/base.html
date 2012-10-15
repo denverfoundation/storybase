@@ -110,13 +110,19 @@
 			</div>
 			<div class="right">
 				<ul>
-					<li><a href="#"></a>{% trans "Home" %}</li>
-					<li><a href="#">{% trans "About" %}</a></li>
-					<li><a href="#">{% trans "Explore Floodlight" %}</a></li>
-					<li><a href="#">{% trans "Get Involved" %}</a></li>
-					<li class="middle"><a href="#">{% trans "News &amp; Updates" %}</a></li>
-                    <li class="last"><a href="{% page_url "policies" %}">{% trans "Privacy Policy" %}</a></li>
-					<li class="last"><a href="#">{% trans "Licensing Information" %}</a></li>
+					<li><a href="/"></a>{% trans "Home" %}</li>
+                    <li><a href="{% page_url "story-builder-landing" %}">{% trans "Story Builder" %}</a></li>
+                    <li><a href="{% url explore_stories %}">{% trans "Explore" %} {{ storybase_site_name }}</a></li>
+                    <li><a href="{% page_url "grow-your-skills" %}">{% trans "Grow Your Skills" %}</a></li>
+                    <li class="last"><a href="{% page_url "about" %}">{% trans "About" %}</a></li>
+                </ul>
+                <ul>
+                    <li class="last"><a href="{% url account_summary %}">{% trans "My Account" %}</a></li>
+                </ul>
+                <ul>
+                    <li><a href="{% url contact %}">{% trans "Contact Us" %}</a></li>
+                    <li><a href="{% page_url "help" %}">{% trans "Help" %}</a></li>
+                    <li class="last"><a href="{% page_url "policies" %}">{{ storybase_site_name|default:"Floodlight" }} {% trans "Policies" %}</a></li>
 				</ul>
 			</div>
 			<div class="cl">&nbsp;</div>
