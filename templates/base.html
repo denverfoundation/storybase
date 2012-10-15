@@ -65,7 +65,7 @@
 				<ul class="top-nav">
 					<li>{% language_chooser %}</li>
                     <li><a href="{% url contact %}">{% trans "Contact Us" %}</a></li>
-                    <li><a href="#">{% trans "Help" %}</a></li>
+                    <li><a href="{% page_url "help" %}">{% trans "Help" %}</a></li>
 					{% if user.is_authenticated %}
                     <li><a href="{% url account_summary %}">{% trans "Hi" %}, {{ user.first_name }}</a></li>
 					{% else %}
