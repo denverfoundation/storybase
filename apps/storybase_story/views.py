@@ -412,6 +412,8 @@ class StoryBuilderView(DetailView):
             'showTour': True,
             # Endpoint for fetching license information
             'licenseEndpoint': reverse("api_cc_license_get"),
+            # Site name (used for re-writing title)
+            'siteName': settings.STORYBASE_SITE_NAME,
         }
         if (self.template_object and  self.template_object.slug == settings.STORYBASE_CONNECTED_STORY_TEMPLATE):
             # TODO: If these settings apply in cases other than just

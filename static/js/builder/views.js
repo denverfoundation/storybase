@@ -74,7 +74,8 @@ storybase.builder.views.AppView = Backbone.View.extend({
       showLayoutSelection: this.options.showLayoutSelection,
       showSectionTitles: this.options.showSectionTitles,
       showStoryInfoInline: this.options.showStoryInfoInline,
-      showTour: this.options.showTour
+      showTour: this.options.showTour,
+      siteName: this.options.siteName
     }, commonOptions);
 
     // Store subviews in an object keyed with values of this.activeStep
@@ -1382,7 +1383,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   setTitle: function() {
     var title = this.model.get('title');
     if (title) {
-      document.title = title + " | " + gettext("Floodlight Story Builder");
+      document.title =  this.options.siteName + " | " + title;
     }
   },
 

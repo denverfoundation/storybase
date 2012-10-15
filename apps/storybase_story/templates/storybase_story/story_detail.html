@@ -1,7 +1,7 @@
 {% extends "base.html" %}
 {% load i18n cms_tags menu_tags sekizai_tags storybase_tags %}
 
-{% block head_title %}{{ story.title }}{% endblock %}
+{% block head_title %}{{ storybase_site_name }} | {{ story.title }}{% endblock %}
 
 {% block extrameta %}
 <meta name="author" content="{{ story.byline }}">
