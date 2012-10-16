@@ -1,7 +1,8 @@
 
 /* Common Styles */
 
-.btn {
+// TODO: Get rid of these
+a.btn {
   border-radius: 4px;
   font-size: 13px;
   text-decoration: none;
@@ -22,7 +23,7 @@
   color: #333333;
 }
 
-.btn.disabled {
+a.btn.disabled {
   cursor: default;
   opacity: 0.65;
 }
@@ -239,8 +240,9 @@
 
 // Drawer
 #drawer-container {
+  position: absolute;
+  right: 0;
   float: left;
-  width: 10%;
   height: 100%;
   padding-top: 200px;
 }
@@ -255,8 +257,23 @@
   height: 100%;
 
   .btn {
+    border: none;
+    padding: 4px;
+    font-weight: bold;
+    color: white;
+    background-color: @highlight-blue;
     .rotate;
+    border-radius: 4px 4px 0 0;
+    overflow: visble;
   }
+}
+
+#drawer-contents {
+  position: relative;
+}
+
+.drawer-open #drawer-contents {
+  margin-left: 10%;
 }
 
 
@@ -438,12 +455,13 @@
 
 
 .edit-section {
+  @horizontal-padding: 2%;
   position: relative;
-  width: 100%; 
+  width: 100% - 2 * @horizontal-padding; 
   margin-left: auto;
   margin-right: auto;
   height: 70%;
-  padding: 2% 2% 1% 2%;
+  padding: 2% @horizontal-padding 1% @horizontal-padding;
 
   .section-title {
     margin-top: 15px;

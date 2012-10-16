@@ -336,13 +336,38 @@ storybase.builder.views.DrawerView = Backbone.View.extend({
       id: this._getButtonElId(options),
       title: options.title,
       text: options.text
-    })).addClass(this.options.buttonClass);
+    }))
+    .addClass(this.options.buttonClass);
+  },
+
+  /**
+   * Adjust the position of a rotated button element.
+   *
+   * @param {Array} $btnEl jQuery object matching the button
+   *   element to be moved
+   *
+   * This is needed because the element maintains its original width
+   * even after the CSS rotation has been applied, thus creating
+   * whitespace to the right of the element. We need to make it fit neatly
+   * at the very right of the screen, so we have to move the element all
+   * the way over.
+   */
+  adjustButtonPos: function($btnEl) {
+    var width = $btnEl.width();
+    var height = $btnEl.height();
+    console.debug(width, height);
+    // Convert the value returned by css() to an integer
+    var bottomPadding = parseInt($btnEl.css('padding-bottom'), 10);
+    var topPadding = parseInt($btnEl.css('padding-top'), 10);
+    console.debug(bottomPadding, topPadding);
+    // Move the element to the right with a negative margin
+    return $btnEl.css('margin-right', height - width + bottomPadding);
   },
 
   renderButtons: function() {
     var $controlsEl = this.$(this.options.controlsEl);
     _.each(this._buttons, function(options) {
-      $controlsEl.append(this.renderButton(options));
+      this.adjustButtonPos(this.renderButton(options).appendTo($controlsEl));
     }, this);
   },
 
