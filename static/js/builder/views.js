@@ -29,15 +29,20 @@ Namespace.use('storybase.utils.geocode');
  *
  */
 storybase.builder.views.AppView = Backbone.View.extend({
+  defaults: {
+    drawerEl: '#drawer-container'
+  },
+
   initialize: function() {
+    _.defaults(this.options, this.defaults);
     // Common options passed to sub-views
     var commonOptions = {
+      dispatcher: this.options.dispatcher,
       startOverUrl: this.options.startOverUrl,
       visibleSteps: this.options.visibleSteps
     };
     var buildViewOptions;
     this.dispatcher = this.options.dispatcher;
-    commonOptions.dispatcher = this.dispatcher;
     // The currently active step of the story building process
     // This will get set by an event callback 
     this.activeStep = null; 
@@ -48,6 +53,10 @@ storybase.builder.views.AppView = Backbone.View.extend({
     this.$('header').first().children().first().append(this.toolsView.el);
 
     this.helpView = new storybase.builder.views.HelpView(commonOptions);
+    this.drawerView = new storybase.builder.views.DrawerView({
+      dispatcher: this.dispatcher
+    });
+    this.drawerView.registerView(this.helpView);
 
     if (this.model) {
       commonOptions.model = this.model;
@@ -125,10 +134,20 @@ storybase.builder.views.AppView = Backbone.View.extend({
     this.lastMessage = null;
 
     // Bind callbacks for custom events
+    this.dispatcher.on("open:drawer", this.openDrawer, this);
+    this.dispatcher.on("close:drawer", this.closeDrawer, this);
     this.dispatcher.on("select:template", this.setTemplate, this);
     this.dispatcher.on("select:workflowstep", this.updateStep, this); 
     this.dispatcher.on("error", this.error, this);
     this.dispatcher.on("alert", this.showAlert, this);
+  },
+
+  openDrawer: function() {
+    this.$el.addClass('drawer-open');
+  },
+
+  closeDrawer: function() {
+    this.$el.removeClass('drawer-open');
   },
 
   /**
@@ -185,6 +204,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
       this.workflowStepView.render();
     }
     this.toolsView.render();
+    this.drawerView.setElement(this.options.drawerEl).render();
     return this;
   },
 
@@ -222,78 +242,239 @@ storybase.builder.views.AppView = Backbone.View.extend({
   }
 });
 
-storybase.builder.views.HelpView = Backbone.View.extend({
-  tagName: 'div',
+/**
+ * View to manage the slide-out drawer.
+ */
+storybase.builder.views.DrawerView = Backbone.View.extend({
+  defaults: {
+    templateSource: $('#drawer-template').html(),
+    buttonTemplateSource: $('#drawer-button-template').html(),
+    buttonClass: 'btn',
+    controlsEl: '#drawer-controls',
+    contentsEl: '#drawer-contents'
+  },
 
-  className: 'help',
+  _getButtonElId: function(options) {
+    return "drawer-button-" + options.id;
+  },
 
-  templateSource: $('#help-template').html(),
-
-  events: {
-    'change .auto-show-help': 'setAutoShow'
+  events: function() {
+    var events = {};
+    _.each(this._buttons, function(opts) {
+      var buttonElId = this._getButtonElId(opts);
+      events['click #' + buttonElId] = opts.callback;    
+    }, this);
+    return events;
   },
 
   initialize: function() {
+    _.defaults(this.options, this.defaults);
     this.dispatcher = this.options.dispatcher;
-    this.help = null;
-    this.template = Handlebars.compile(this.templateSource);
-    // If the cookie is set, use the stored value.
-    // Otherwise, default to true.
-    this.autoShow = $.cookie('storybase_show_builder_help') === 'false' ? false : true;
+    this.dispatcher.on('register:drawerview', this.registerView, this);
 
-    this.dispatcher.on('do:show:help', this.show, this);
-    this.dispatcher.on('do:set:help', this.set, this);
-    this.dispatcher.on('do:hide:help', this.hide, this);
+    this.template = Handlebars.compile(this.options.templateSource);
+    this.buttonTemplate = Handlebars.compile(this.options.buttonTemplateSource);
+    this._buttons = [];
+    this._subviews = [];
   },
 
-  setAutoShow: function(evt) {
-    this.autoShow = $(evt.target).prop('checked'); 
-    $.cookie("storybase_show_builder_help", this.autoShow, {path: '/'});
+  registerView: function(view) {
+    this.addButton(view.drawerButton());
+    _.each(view.drawerOpenEvents(), function(evt) {
+      this.dispatcher.on(evt, this.open, this);
+    }, this);
+    _.each(view.drawerCloseEvents(), function(evt) {
+      this.dispatcher.on(evt, this.close, this);
+    }, this);
+    this._subviews.push(view);
   },
 
-  /**
-   * Show the help text via a modal window.
-   *
-   * @param boolean force Force showing the help in a modal, overriding
-   *     the value of this.autoShow.
-   * @help object help Updated help information.  The object should have
-   *     a body property and optionally a title property.
-   *
-   * @returns object This view.
-   */
-  show: function(force, help) {
-    var show = this.autoShow || force;
-    if (!_.isUndefined(help)) {
-      // A new help object was sent with the signal, update
-      // our internal value
-      this.help = help;
-    }
-    if (this.help) {
-      this.render();
-      if (show) {
-        this.delegateEvents();
-        this.$el.modal();
+  unregisterView: function(view) {
+    this.removeButton(view.drawerButton());
+    _.each(view.drawerOpenEvents(), function(evt) {
+      this.dispatcher.off(evt, this.open, this);
+    }, this);
+    _.each(view.drawerCloseEvents(), function(evt) {
+      this.dispatcher.off(evt, this.close, this);
+    }, this);
+    this._subviews = _.reject(this._subviews, function(subView) {
+      if (view.cid === subView.cid) {
+        return true;
       }
-    }
-    return this;
+      else {
+        return false;
+      }
+    }, this);
   },
 
-  hide: function() {
-    $.modal.close();
+  addButton: function(options) {
+    this._buttons.push(options);
+    // Listen for the click event for the button.  This is handled by
+    // this.events()
+    this.delegateEvents();
   },
 
-  set: function(help) {
-    this.help = help;
+  removeButton: function(options) {
+    var buttonId = options.id;
+    // Remove this button from the list of buttons
+    this._buttons = _.reject(this._buttons, function(opts) {
+      if (opts.id === buttonId) {
+        return true;
+      }
+      else {
+        return false;
+      }
+    }, this);
+    // Stop listening for the click event for the button.  This is handled
+    // by this.events()
+    this.delegateEvents();
+  },
+
+  renderButton: function(options) {
+    var template = this.buttonTemplate;
+    return $(template({
+      id: this._getButtonElId(options),
+      title: options.title,
+      text: options.text
+    })).addClass(this.options.buttonClass);
+  },
+
+  renderButtons: function() {
+    var $controlsEl = this.$(this.options.controlsEl);
+    _.each(this._buttons, function(options) {
+      $controlsEl.append(this.renderButton(options));
+    }, this);
+  },
+
+  renderSubViews: function() {
+    var $contentsEl = this.$(this.options.contentsEl);
+    _.each(this._subviews, function(view) {
+      $contentsEl.append(view.$el);
+    }, this);
   },
 
   render: function() {
-    var context = _.extend({
-      'autoShow': this.autoShow
-    }, this.help);
-    this.$el.html(this.template(context));
+    this.$el.html(this.template());
+    this.renderButtons();
+    this.renderSubViews();
     return this;
+  },
+
+  open: function() {
+    this.$(this.options.contentsEl).show();
+    this.$(this.options.controlsEl).find('.'+this.options.buttonClass).data('drawer-open', true);
+    this.dispatcher.trigger('open:drawer');
+  },
+
+  close: function() {
+    this.$(this.options.contentsEl).hide();
+    this.$(this.options.controlsEl).find('.'+this.options.buttonClass).data('drawer-open', false);
+    this.dispatcher.trigger('close:drawer');
   }
 });
+
+storybase.builder.views.HelpDrawerMixin = {
+  drawerButton: function() {
+    return {
+      id: 'help',
+      class: '',
+      title: gettext('Help'),
+      text: gettext('Help'),
+      callback: function(evt) {
+        if ($(evt.target).data('drawer-open')) {
+          this.dispatcher.trigger('do:hide:help', true);
+        }
+        else {
+          this.dispatcher.trigger('do:show:help', true);
+        }
+      }
+    }
+  },
+
+  drawerOpenEvents: function() {
+    return ['do:show:help'];
+  },
+
+  drawerCloseEvents: function() {
+    return ['do:hide:help'];
+  }
+};
+
+storybase.builder.views.HelpView = Backbone.View.extend(
+  _.extend({}, storybase.builder.views.HelpDrawerMixin, {
+    tagName: 'div',
+
+    className: 'help',
+
+    defaults: {
+      templateSource: $('#help-template').html()
+    },
+
+    events: {},
+
+    initialize: function() {
+      _.defaults(this.options, this.defaults);
+      this.dispatcher = this.options.dispatcher;
+      this.help = null;
+      this.template = Handlebars.compile(this.options.templateSource);
+
+      // The help used to pop up automatically and be supressed based on a
+      // cookie.  That functionality is gone now, but keep this around in
+      // case we want to add it back.  Default to hiding the help. 
+      this.autoShow = false; 
+      if (!this.autoShow) {
+        this.$el.hide();
+      }
+
+      this.dispatcher.on('do:show:help', this.show, this);
+      this.dispatcher.on('do:set:help', this.set, this);
+      this.dispatcher.on('do:hide:help', this.hide, this);
+    },
+
+    /**
+     * Show the help text.
+     *
+     * @param boolean force Force showing the help, overriding
+     *     the value of this.autoShow.
+     * @help object help Updated help information.  The object should have
+     *     a body property and optionally a title property.
+     *
+     * @returns object This view.
+     */
+    show: function(force, help) {
+      var show = this.autoShow || force;
+      if (!_.isUndefined(help)) {
+        // A new help object was sent with the signal, update
+        // our internal value
+        this.help = help;
+      }
+      if (this.help) {
+        this.render();
+        if (show) {
+          this.delegateEvents();
+          this.$el.show();
+        }
+      }
+      return this;
+    },
+
+    hide: function() {
+      this.$el.hide();
+    },
+
+    set: function(help) {
+      this.help = help;
+    },
+
+    render: function() {
+      var context = _.extend({
+        'autoShow': this.autoShow
+      }, this.help);
+      this.$el.html(this.template(context));
+      return this;
+    }
+  })
+);
 
 /**
  * Base class for views that represent a list of items that trigger

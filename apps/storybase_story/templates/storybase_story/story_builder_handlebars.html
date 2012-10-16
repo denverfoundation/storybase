@@ -4,15 +4,18 @@ Handlebars.js templates for story builder Backbone application
 
 {% load  verbatim %}
 {% verbatim %}
+<script type="text/x-handlebars-template" id="drawer-template">
+<div id="drawer-controls"></div>
+<div id="drawer-contents"></div>
+</script>
+
+<script type="text/x-handlebars-template" id="drawer-button-template">
+<button id="{{id}}" type="button" title="{{title}}">{{text}}</button>
+</script>
+
 <script type="text/x-handlebars-template" id="help-template">
-<a class="simplemodal-close close" href="#">{{gettext message="Close"}}</a>
 <h3>{{title}}</h3>
 {{{body}}}
-<div class="help-modal-controls">
-    <input name="auto-show-help" class="auto-show-help" type="checkbox" {{#if autoShow}}checked="checked"{{/if}}/>
-    <label for="auto-show-help">Show these suggestions for each screen</label>
-    <a class="simplemodal-close continue btn" href="#">{{gettext message="Continue"}}</a>
-</div>
 </script>
 
 <script type="text/x-handlebars-template" id="clickable-item-template">

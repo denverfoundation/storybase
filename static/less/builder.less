@@ -200,6 +200,10 @@
 
 /* Main Application Container */
 
+#builder {
+  height: 100%;
+}
+
 #builder .navbar {
   position: fixed;
   z-index: 999;
@@ -220,9 +224,41 @@
 
 #app {
   height: 100%;
-  /* Make space for the navbar */
+  // TODO: Adjust this
+  width: 90%;
+  float: left;
+  // Make space for the navbar
   padding-top: 80px;
+
 }
+
+.drawer-open #app {
+  // Shrink the main app width when the drawer is open
+  width: 70%;
+}
+
+// Drawer
+#drawer-container {
+  float: left;
+  width: 10%;
+  height: 100%;
+  padding-top: 200px;
+}
+
+.drawer-open #drawer-container {
+  // Make the drawer container wider when the drawer is open
+  width: 30%;
+}
+
+#drawer-controls {
+  float: left;
+  height: 100%;
+
+  .btn {
+    .rotate;
+  }
+}
+
 
 /* Story Template List */
 
@@ -282,6 +318,23 @@
   background-color: @control-color-1; 
   color: #fff;
   z-index: 999;
+}
+
+.rotate {
+  // Safari
+  -webkit-transform: rotate(-90deg);
+        
+  // Firefox 
+  -moz-transform: rotate(-90deg);
+
+  // IE 
+  -ms-transform: rotate(-90deg);
+
+  // Opera
+  -o-transform: rotate(-90deg);
+
+  // Internet Explorer
+  filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
 }
 
 /* Unused Assets List */
@@ -347,6 +400,10 @@
   .wysihtml5-sandbox {
     .editable-important;
     .vertical-space-important;
+    // Override the element width that gets set by the Javascript plugin
+    // so the element adapts as the container width changes (e.g. to 
+    // accomodate the drawer)
+    width: 100% !important;
   }
 
   .wysihtml5-sandbox:hover {
@@ -382,7 +439,7 @@
 
 .edit-section {
   position: relative;
-  width: @section-width;
+  width: 100%; 
   margin-left: auto;
   margin-right: auto;
   height: 70%;
