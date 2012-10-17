@@ -355,11 +355,9 @@ storybase.builder.views.DrawerView = Backbone.View.extend({
   adjustButtonPos: function($btnEl) {
     var width = $btnEl.width();
     var height = $btnEl.height();
-    console.debug(width, height);
     // Convert the value returned by css() to an integer
     var bottomPadding = parseInt($btnEl.css('padding-bottom'), 10);
     var topPadding = parseInt($btnEl.css('padding-top'), 10);
-    console.debug(bottomPadding, topPadding);
     // Move the element to the right with a negative margin
     return $btnEl.css('margin-right', height - width + bottomPadding);
   },
@@ -488,6 +486,7 @@ storybase.builder.views.HelpView = Backbone.View.extend(
     },
 
     set: function(help) {
+      console.debug(help);
       this.help = help;
     },
 
@@ -3048,8 +3047,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
     className: 'edit-section-asset',
 
     defaults: {
-      wrapperEl: '.wrapper',
-      helpPopupEl: '.asset-help-container'
+      wrapperEl: '.wrapper'
     },
 
     templateSource: function() {
@@ -3069,14 +3067,11 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       }
     },
 
-    helpTemplateSource: $('#section-asset-help-template').html(),
-
     events: {
       "click .asset-type": "selectType", 
       "click .remove": "remove",
       "click .edit": "edit",
-      "mouseenter .help": "showHelp",
-      "mouseleave .help": "hideHelp",
+      "click .help": "showHelp",
       'click input[type="reset"]': "cancel",
       'submit form.bbf-form': 'processForm',
       'drop': 'handleDrop'
@@ -3093,7 +3088,6 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       this.assetTypes = this.options.assetTypes;
       this.section = this.options.section;
       this.story = this.options.story;
-      this.helpTemplate = Handlebars.compile(this.helpTemplateSource); 
       if (_.isUndefined(this.model)) {
         if (this.options.suggestedType) {
           modelOptions.type = this.options.suggestedType;
@@ -3445,50 +3439,17 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
     },
 
     /**
-     * Show a help popup.
+     * Show help 
      */
-    // TODO: Generalize this to be used in other cases. 
     showHelp: function(evt) {
-      var targetWidth = $(evt.target).outerWidth();
-      var windowWidth = $(window).width();
-      var windowLeft = $(window).scrollLeft();
-      var offset = $(evt.target).offset();
-      var popupClass = this.options.helpPopupEl.replace('.', '');
-      // Shift the popup this far
-      var popupOffsetX = 8;
-      var popupTop = offset.top;
-      // Default to positiioning the popup to the right of the
-      // clicked element
-      var popupLeft = offset.left + targetWidth + popupOffsetX;
-      var popupWidth;
-      var $popupEl;
-      var context = {
-        typeHelp: this.getAssetTypeHelp(this.options.suggestedType)
-      };
-      var template = this.helpTemplate;
-
-      _.defaults(context, this.options.help);
-      $popupEl = $('<div class="' + popupClass + '">' + template(context) + '</div>').appendTo('body').hide();
-      popupWidth = $popupEl.outerWidth();
-
-      // Check if the popup will fall off the right of the screen
-      if ((popupLeft + popupWidth) - windowLeft > windowWidth) {
-        // The popup should go to the left of the element
-        popupLeft = offset.left - popupOffsetX - popupWidth;
-      }
-
-      $popupEl.css({
-        'position': 'absolute',
-        'top': popupTop+'px',
-        'left': popupLeft+'px'
-      });
-      $popupEl.show();
-    },
-
-    hideHelp: function(evt) {
-      var popupEl = this.options.helpPopupEl;
-      $(popupEl).hide();
-      $(popupEl).remove();
+      var help = _.extend({
+        title: "",
+        body: ""
+      }, this.options.help);
+      var assetHelp = this.getAssetTypeHelp(this.options.suggestedType);
+      help.body += assetHelp;
+      this.dispatcher.trigger('do:set:help', help);
+      this.dispatcher.trigger('do:show:help', true);
     },
 
     handleDrop: function(evt, ui) {
