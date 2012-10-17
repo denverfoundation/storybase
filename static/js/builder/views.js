@@ -280,7 +280,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
  * View to manage the slide-out drawer.
  */
 storybase.builder.views.DrawerView = Backbone.View.extend({
-  defaults: {
+  options: {
     templateSource: $('#drawer-template').html(),
     buttonTemplateSource: $('#drawer-button-template').html(),
     buttonClass: 'btn',
@@ -302,7 +302,6 @@ storybase.builder.views.DrawerView = Backbone.View.extend({
   },
 
   initialize: function() {
-    _.defaults(this.options, this.defaults);
     this.dispatcher = this.options.dispatcher;
     this.dispatcher.on('register:drawerview', this.registerView, this);
 
@@ -463,14 +462,13 @@ storybase.builder.views.HelpView = Backbone.View.extend(
 
     className: 'help',
 
-    defaults: {
+    options: {
       templateSource: $('#help-template').html()
     },
 
     events: {},
 
     initialize: function() {
-      _.defaults(this.options, this.defaults);
       this.dispatcher = this.options.dispatcher;
       this.help = null;
       this.template = Handlebars.compile(this.options.templateSource);
