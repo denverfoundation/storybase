@@ -48,11 +48,15 @@ storybase.builder.views.AppView = Backbone.View.extend({
     this.activeStep = null; 
 
     // Initialize a view for the tools menu
-    this.toolsView = new storybase.builder.views.ToolsView(commonOptions);
+    this.toolsView = new storybase.builder.views.ToolsView(
+      _.clone(commonOptions)
+    );
     // TODO: Change the selector as the template changes
     this.$('header').first().children().first().append(this.toolsView.el);
 
-    this.helpView = new storybase.builder.views.HelpView(commonOptions);
+    this.helpView = new storybase.builder.views.HelpView(
+      _.clone(commonOptions)
+    );
     this.drawerView = new storybase.builder.views.DrawerView({
       dispatcher: this.dispatcher
     });
@@ -64,7 +68,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
 
     // Initialize the view for the workflow step indicator
     this.workflowStepView = new storybase.builder.views.WorkflowStepView(
-      commonOptions
+      _.clone(commonOptions)
     );
     // TODO: Change the selector as the template changes
     this.$('header').first().children().first().append(this.workflowStepView.el);
@@ -100,7 +104,9 @@ storybase.builder.views.AppView = Backbone.View.extend({
     // views use different constructor, options. If this gets to
     // unwieldy, maybe use a factory function.
     if (this.options.visibleSteps.data) {
-      this.subviews.data = new storybase.builder.views.DataView(commonOptions);
+      this.subviews.data = new storybase.builder.views.DataView(
+        _.clone(commonOptions)
+      );
     }
     if (this.options.visibleSteps.tag) {
       this.subviews.tag =  new storybase.builder.views.TaxonomyView(
@@ -113,7 +119,9 @@ storybase.builder.views.AppView = Backbone.View.extend({
       );
     }
     if (this.options.visibleSteps.review) {
-      this.subviews.review = new storybase.builder.views.ReviewView(commonOptions);
+      this.subviews.review = new storybase.builder.views.ReviewView(
+        _.clone(commonOptions)
+      );
     }
     if (this.options.visibleSteps.publish) {
       this.subviews.publish =  new storybase.builder.views.PublishView(
@@ -2466,7 +2474,6 @@ storybase.builder.views.PseudoSectionEditView = Backbone.View.extend(
     tagName: 'div',
 
     initialize: function() {
-      console.debug(this.options);
       this.dispatcher = this.options.dispatcher;
       this.help = this.options.help;
       this.template = Handlebars.compile(this.templateSource);
