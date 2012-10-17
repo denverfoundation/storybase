@@ -1254,7 +1254,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
   className: 'builder',
 
-  defaults: {
+  options: {
     titleEl: '.story-title'
   },
 
@@ -1265,7 +1265,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       return !this.model.isNew();
     }, this)
 
-    _.defaults(this.options, this.defaults);
     this.containerTemplates = this.options.containerTemplates;
     this.dispatcher = this.options.dispatcher;
     this.help = this.options.help;
@@ -2466,10 +2465,8 @@ storybase.builder.views.PseudoSectionEditView = Backbone.View.extend(
            storybase.builder.views.StoryAttributeSavingMixin, {
     tagName: 'div',
 
-    defaults: {},
-
     initialize: function() {
-      _.defaults(this.options, this.defaults);
+      console.debug(this.options);
       this.dispatcher = this.options.dispatcher;
       this.help = this.options.help;
       this.template = Handlebars.compile(this.templateSource);
@@ -2528,7 +2525,7 @@ storybase.builder.views.StoryInfoEditView = storybase.builder.views.PseudoSectio
     return events;
   },
 
-  defaults: {
+  options: {
     titleEl: '.story-title',
     bylineEl: '.byline',
     summaryEl: 'textarea[name="summary"]' 
@@ -2580,13 +2577,12 @@ storybase.builder.views.InlineStoryInfoEditView = Backbone.View.extend(
 
     templateSource: $('#story-info-edit-inline-template').html(),
 
-    defaults: {
+    options: {
       titleEl: '.story-title',
       bylineEl: '.byline'
     },
 
     initialize: function() {
-      _.defaults(this.options, this.defaults);
       this.template = Handlebars.compile(this.templateSource);
       this.dispatcher = this.options.dispatcher;
     },
@@ -2628,7 +2624,7 @@ storybase.builder.views.CallToActionEditView = storybase.builder.views.PseudoSec
   // explicit identifier
   pseudoSectionId: 'call-to-action',
 
-  defaults: {
+  options: {
     callToActionEl: 'textarea[name="call_to_action"]',
     connectedEl: 'input[name="allow_connected"]',
     connectedPromptEl: 'textarea[name="connected_prompt"]'
@@ -2685,7 +2681,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
 
   templateSource: $('#section-edit-template').html(),
 
-  defaults: {
+  options: {
     containerEl: '.storybase-container-placeholder',
     titleEl: '.section-title',
     storyTitleEl: '.story-title'
@@ -2696,7 +2692,6 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   },
 
   initialize: function() {
-    _.defaults(this.options, this.defaults);
     this.containerTemplates = this.options.containerTemplates;
     this.dispatcher = this.options.dispatcher;
     this.story = this.options.story;
@@ -3043,8 +3038,8 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
 
     className: 'edit-section-asset',
 
-    defaults: {
-      wrapperEl: '.wrapper'
+    options: {
+      wrapperEl: '.wrapper',
     },
 
     templateSource: function() {
@@ -3078,7 +3073,6 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
 
     initialize: function() {
       console.debug("Initializing new section asset edit view");
-      _.defaults(this.options, this.defaults);
       var modelOptions = {};
       this.container = this.options.container;
       this.dispatcher = this.options.dispatcher;
@@ -4155,7 +4149,7 @@ storybase.builder.views.LegalView = Backbone.View.extend({
     'submit form': 'processForm'
   },
 
-  defaults: {
+  options: {
     'title': gettext("Accept the legal agreement")
   },
 
@@ -4183,7 +4177,6 @@ storybase.builder.views.LegalView = Backbone.View.extend({
       permission: this.hasPermission,
       license: this.agreedLicense
     };
-    _.defaults(this.options, this.defaults);
     this.dispatcher = this.options.dispatcher;
     this.template = Handlebars.compile(this.templateSource);
     this.hasPermission = this.model && this.model.get('status') === 'published';
@@ -4279,7 +4272,6 @@ storybase.builder.views.LicenseDisplayView = Backbone.View.extend({
 
   initialize: function() {
     var license = _.isUndefined(this.model) ? null : this.model.get('license');
-    _.defaults(this.options, this.defaults);
     this.dispatcher = this.options.dispatcher;
     this._licenseHtml = null;
     if (_.isUndefined(this.model)) {
@@ -4329,7 +4321,7 @@ storybase.builder.views.LicenseView = Backbone.View.extend({
     'click .change-license': 'showForm'
   },
 
-  defaults: {
+  options: {
     title: gettext("Select a license"),
     templateSource: $('#share-license-template').html()
   },
@@ -4358,7 +4350,6 @@ storybase.builder.views.LicenseView = Backbone.View.extend({
   initialize: function() {
     var license = this.model ? this.model.get('license') : null;
     var formVals = storybase.utils.licenseStrToParams(license);
-    _.defaults(this.options, this.defaults);
     this.dispatcher = this.options.dispatcher;
     this.form = new Backbone.Form({
       schema: this.schema(),
@@ -4446,7 +4437,7 @@ storybase.builder.views.PublishView = Backbone.View.extend(
       'click .view-story': 'handleView'
     },
 
-    defaults: {
+    options: {
       // Source of template for the main view layout
       templateSource: $('#share-publish-template').html(),
       // Source of the template with markup/text that is displayed
@@ -4466,7 +4457,6 @@ storybase.builder.views.PublishView = Backbone.View.extend(
     initialize: function() {
       var navViewOptions;
   
-      _.defaults(this.options, this.defaults);
       this.dispatcher = this.options.dispatcher;
       this.template = Handlebars.compile(this.options.templateSource);
       this.readyTemplate = Handlebars.compile(this.options.readyTemplateSource);
@@ -4705,7 +4695,7 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
       'submit form.bbf-form': 'processForm'
     },
 
-    defaults: {
+    options: {
       title: gettext("Select a featured image"),
       templateSource: $('#featured-asset-template').html(),
     },
@@ -4730,7 +4720,6 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
     },
 
     initialize: function() {
-      _.defaults(this.options, this.defaults);
       this.dispatcher = this.options.dispatcher;
       this.story = this.options.story;
       this.template = Handlebars.compile(this.options.templateSource);
