@@ -465,7 +465,8 @@ a.btn.disabled {
 
   .section-title {
     margin-top: 15px;
-    width: 930px;
+    width: 100%; 
+    max-width: @section-width;
   }
 }
 
@@ -483,6 +484,8 @@ a.btn.disabled {
 #builder .section-layout {
   // In builder, make overflow visible so help can be positioned to the
   // left or right of the block
+  width: 100%;
+  max-width: @section-width; 
   overflow: visible;
 }
 
