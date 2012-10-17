@@ -962,10 +962,7 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
 storybase.builder.views.SelectStoryTemplateView = Backbone.View.extend({
   tagName: 'ul',
  
-  // TODO: Remove row from classes when we apply real styles.  The row
-  // class is just used for my bootstrap layout based on the 1140 grid
-  // system
-  className: 'story-templates row',
+  className: 'story-templates view-container',
 
   templateSource: $('#story-template-list-template').html(),
 
@@ -2044,7 +2041,7 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
   
   id: 'section-list',
 
-  className: 'section-list container_12',
+  className: 'section-list',
 
   templateSource: $('#section-list-template').html(),
 
@@ -3471,7 +3468,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
 
 storybase.builder.views.DataView = Backbone.View.extend(
   _.extend({}, storybase.builder.views.NavViewMixin, storybase.builder.views.FileUploadMixin, {
-    className: 'container',
+    className: 'view-container',
 
     templateSource: $('#data-template').html(),
 
@@ -3645,7 +3642,7 @@ storybase.builder.views.DataView = Backbone.View.extend(
 
 storybase.builder.views.ReviewView = Backbone.View.extend(
   _.extend({}, storybase.builder.views.NavViewMixin, {
-    className: 'container',
+    className: 'view-container',
 
     templateSource: $('#review-template').html(),
 
@@ -3715,7 +3712,7 @@ storybase.builder.views.TaxonomyView = Backbone.View.extend(
   _.extend({}, storybase.builder.views.NavViewMixin, {
     id: 'share-taxonomy',
 
-    className: 'container',
+    className: 'view-container',
 
     templateSource: $('#share-taxonomy-template').html(),
 
@@ -4437,15 +4434,11 @@ storybase.builder.views.LicenseView = Backbone.View.extend({
   }
 });
 
-// BOOKMARK
-// TODO:
-// * Tie in CC API
-// -geoffhing@gmail.com 2012-10-09
 storybase.builder.views.PublishView = Backbone.View.extend(
   _.extend({}, storybase.builder.views.NavViewMixin, {
     id: 'share-publish',
 
-    className: 'container',
+    className: 'view-container',
 
     events: {
       'click .publish': 'handlePublish',
