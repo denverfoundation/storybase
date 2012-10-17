@@ -16,9 +16,10 @@
 
     <meta name="description" content="">
     <meta name="author" content="">
+
     <title>{{ storybase_site_name }} | {% trans "Story Builder" %}</title>
 
-    {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/1140.css">{% endaddtoblock %}
+    {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/grid.css">{% endaddtoblock %}
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/backbone-forms/templates/default.css">{% endaddtoblock %}
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/select2/select2.css">{% endaddtoblock %}
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/leaflet/leaflet.css">{% endaddtoblock %}
@@ -56,12 +57,12 @@
 
   <body class="story-builder">
     <div id="builder">
-        <header class="navbar container">
-            <div class="row">
+        <header class="navbar">
+            <div class="container_12">
                 <h1 class="title">{{ storybase_site_name }} {% trans "Story Builder" %}</h1>
             </div>
         </header>
-        <div id="alerts" class="alerts"></div>
+        <div id="alerts" class="alerts container_12"></div>
         <div id="nav-container"></div>
         <div id="app"></div>
         <div id="drawer-container"></div>

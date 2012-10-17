@@ -2044,7 +2044,7 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
   
   id: 'section-list',
 
-  className: 'section-list',
+  className: 'section-list container_12',
 
   templateSource: $('#section-list-template').html(),
 
