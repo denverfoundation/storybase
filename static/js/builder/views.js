@@ -44,7 +44,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
     };
     var buildViewOptions;
     var $toolsContainerEl = this.$(this.options.toolsContainerEl);
-    var $workflowContainerEl = this.$(this.options.workflowContainerEl);
+    this.$workflowContainerEl = this.$(this.options.workflowContainerEl);
     this.dispatcher = this.options.dispatcher;
     // The currently active step of the story building process
     // This will get set by an event callback 
@@ -72,7 +72,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
     this.workflowStepView = new storybase.builder.views.WorkflowStepView(
       _.clone(commonOptions)
     );
-    $workflowContainerEl.append(this.workflowStepView.el);
+    this.$workflowContainerEl.append(this.workflowStepView.el);
 
     buildViewOptions = _.defaults({
       assetTypes: this.options.assetTypes,
@@ -192,15 +192,25 @@ storybase.builder.views.AppView = Backbone.View.extend({
     return this.subviews[this.activeStep];
   },
 
+  /**
+   * Update the next/previous workflow step buttons
+   */
+  renderWorkflowNavView: function(activeView) {
+    if (this._activeWorkflowNavView) {
+      // Remove the previous active workflow nav view
+      this._activeWorkflowNavView.$el.remove();
+    };
+    // Update the workflow nav view
+    this._activeWorkflowNavView = _.isUndefined(activeView.getWorkflowNavView) ? null: activeView.getWorkflowNavView();
+    if (this._activeWorkflowNavView) {
+      this.$workflowContainerEl.append(this._activeWorkflowNavView.el);
+    }
+  },
+
   render: function() {
     console.debug('Rendering main view');
     var activeView = this.getActiveView();
-    var activeNavView = _.isUndefined(activeView.getNavView) ? null: activeView.getNavView();
-    if (activeNavView) {
-      this.$('#nav-container').empty();
-      this.$('#nav-container').append(activeNavView.el);
-      activeNavView.$el.addClass('container');
-    }
+    this.renderWorkflowNavView(activeView);
     this.$('#app').empty();
     this.$('#app').append(activeView.render().$el);
     // Some views have things that only work when the element has been added
@@ -495,7 +505,6 @@ storybase.builder.views.HelpView = Backbone.View.extend(
     },
 
     set: function(help) {
-      console.debug(help);
       this.help = help;
     },
 
@@ -1328,12 +1337,12 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
         validate: this.options.visibleSteps.review ? true : this.simpleReview
       });
     }
-    this.navView = new storybase.builder.views.WorkflowNavView(navViewOptions);
+    this.workflowNavView = new storybase.builder.views.WorkflowNavView(navViewOptions);
 
     if (this.options.showSectionList) {
       this.sectionListView = new storybase.builder.views.SectionListView({
         dispatcher: this.dispatcher,
-        navView: this.navView,
+        navView: this.workflowNavView,
         model: this.model
       });
     }
@@ -1462,20 +1471,24 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     if (this.sectionListView) {
       this.sectionListView.render();
     }
-    if (this.navView) {
-      this.navView.render();
+    if (this.workflowNavView) {
+      this.workflowNavView.render();
     }
     this.renderEditViews();
     this.$el.append(this.lastSavedView.render().el);
     return this;
   },
 
-  getNavView: function() {
+  getWorkflowNavView: function() {
+    return this.workflowNavView;
+  },
+
+  getSubNavView: function() {
     if (this.sectionListView) {
       return this.sectionListView;
     }
     else {
-      return this.navView;
+      return null;
     }
   },
 
@@ -1499,12 +1512,12 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this._tour.show();
   },
 
-  getNavView: function() {
+  workflowNavView: function() {
     if (this.sectionListView) {
       return this.sectionListView;
     }
     else {
-      return this.navView;
+      return this.workflowNavView;
     }
   },
 
@@ -1635,7 +1648,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
    * navigation view.
    */
   setPadding: function() {
-    var $navEl = this.navView.$el;
+    var $navEl = this.workflowNavView.$el;
     var navHeight = $navEl.outerHeight();
     var navTop = $navEl.offset().top;
     var navBottom = navTop + navHeight;
@@ -1917,8 +1930,8 @@ storybase.builder.views.FileUploadMixin = {
  * Mixin for views that have a navigation subview
  */
 storybase.builder.views.NavViewMixin = {
-  getNavView: function() {
-    return this.navView;
+  getWorkflowNavView: function() {
+    return this.workflowNavView;
   }
 };
 
@@ -2068,7 +2081,7 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
 
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
-    this.navView = this.options.navView;
+    this.workflowNavView = this.options.navView;
     this._state = 'opened';
     /**
      * A lookup table of SectionThumbnailView instances by their
@@ -2188,8 +2201,8 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
       this.sectionNavView.$el.hide();
     }
     this.$el.append(this.sectionNavView.el);
-    if (this.navView) {
-      this.$el.append(this.navView.el);
+    if (this.workflowNavView) {
+      this.$el.append(this.workflowNavView.el);
     }
     // Add tooltips
     if (jQuery().tooltipster) {
@@ -3499,7 +3512,7 @@ storybase.builder.views.DataView = Backbone.View.extend(
       this.collection.on('reset', this.render, this);
       this._collectionFetched = false;
 
-      this.navView = new storybase.builder.views.WorkflowNavView({
+      this.workflowNavView = new storybase.builder.views.WorkflowNavView({
         model: this.model,
         dispatcher: this.dispatcher,
         items: [
@@ -3560,7 +3573,7 @@ storybase.builder.views.DataView = Backbone.View.extend(
         };
         this.$el.html(this.template(context));
         this.$('.add-dataset').before(this.form.render().$el.append('<input class="cancel" type="reset" value="Cancel" />').append('<input type="submit" value="Save" />').hide());
-        this.navView.render();
+        this.workflowNavView.render();
         this.delegateEvents();
       }
       return this;
@@ -3663,7 +3676,7 @@ storybase.builder.views.ReviewView = Backbone.View.extend(
       // Need to bind validate to this before it's passed as a callback to
       // the WorkflowNavView instance
       _.bindAll(this, 'hasPreviewed');
-      this.navView = new storybase.builder.views.WorkflowNavView({
+      this.workflowNavView = new storybase.builder.views.WorkflowNavView({
         model: this.model,
         dispatcher: this.dispatcher,
         items: [
@@ -3694,7 +3707,7 @@ storybase.builder.views.ReviewView = Backbone.View.extend(
       console.info('Rendering review view');
       var context = {};
       this.$el.html(this.template(context));
-      this.navView.render();
+      this.workflowNavView.render();
       this.delegateEvents();
       return this;
     },
@@ -3704,7 +3717,7 @@ storybase.builder.views.ReviewView = Backbone.View.extend(
       var url = '/stories/' + this.model.id + '/viewer/';
       this.previewed = true;
       // Re-render the nav view to reflect the newly enabled button
-      this.navView.render();
+      this.workflowNavView.render();
       window.open(url);
     },
 
@@ -3725,7 +3738,7 @@ storybase.builder.views.TaxonomyView = Backbone.View.extend(
     initialize: function() {
       this.dispatcher = this.options.dispatcher;
       this.template = Handlebars.compile(this.templateSource);
-      this.navView = new storybase.builder.views.WorkflowNavView({
+      this.workflowNavView = new storybase.builder.views.WorkflowNavView({
         model: this.model,
         dispatcher: this.dispatcher,
         items: [
@@ -3894,7 +3907,7 @@ storybase.builder.views.TaxonomyView = Backbone.View.extend(
       }
       this.$el.append(this.tagView.render().el);
       this.$el.append(this.addLocationView.render().el);
-      this.navView.render();
+      this.workflowNavView.render();
 
       return this;
     },
@@ -4515,7 +4528,7 @@ storybase.builder.views.PublishView = Backbone.View.extend(
         path: '/build/',
         route: false
       });
-      this.navView = new storybase.builder.views.WorkflowNavView(navViewOptions);
+      this.workflowNavView = new storybase.builder.views.WorkflowNavView(navViewOptions);
       
       if (_.isUndefined(this.model)) {
         this.dispatcher.on("ready:story", this.setStory, this);
@@ -4688,7 +4701,7 @@ storybase.builder.views.PublishView = Backbone.View.extend(
           data_track_clickback: false
         });
       }
-      this.navView.render();
+      this.workflowNavView.render();
       this.delegateEvents();
       return this;
     }
