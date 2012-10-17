@@ -32,7 +32,8 @@ storybase.builder.views.AppView = Backbone.View.extend({
   options: {
     drawerEl: '#drawer-container',
     toolsContainerEl: '#title-bar-contents',
-    workflowContainerEl: '#workflow-bar-contents'
+    workflowContainerEl: '#workflow-bar-contents',
+    subNavContainerEl: '#subnav-bar-contents'
   },
 
   initialize: function() {
@@ -207,10 +208,23 @@ storybase.builder.views.AppView = Backbone.View.extend({
     }
   },
 
+  renderSubNavView: function(activeView) {
+    var $subNavContainerEl = this.$(this.options.subNavContainerEl);
+    if (this._activeSubNavView) {
+      // Remove the previous subnav view
+      this._activeSubNavView.$el.remove();
+    }
+    this._activeSubNavView = _.isUndefined(activeView.getSubNavView) ? null : activeView.getSubNavView();
+    if (this._activeSubNavView) {
+      $subNavContainerEl.append(this._activeSubNavView.el);  
+    }
+  },
+
   render: function() {
     console.debug('Rendering main view');
     var activeView = this.getActiveView();
     this.renderWorkflowNavView(activeView);
+    this.renderSubNavView(activeView);
     this.$('#app').empty();
     this.$('#app').append(activeView.render().$el);
     // Some views have things that only work when the element has been added
@@ -249,6 +263,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
     // Check for duplicate messages and only show the message
     // if it's different.
     if (!(level === this.lastLevel && msg === this.lastMessage && numAlerts > 0)) {
+      // TODO: Remove this.  It's probably not relevent with the redesign
       newTop = this.$('#nav-container').offset().top + this.$('#nav-container').outerHeight();
       $el.css('top', newTop);
       $el.prepend(view.render().el);
@@ -1342,7 +1357,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     if (this.options.showSectionList) {
       this.sectionListView = new storybase.builder.views.SectionListView({
         dispatcher: this.dispatcher,
-        navView: this.workflowNavView,
         model: this.model
       });
     }
@@ -1371,7 +1385,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.dispatcher.on("save:story", this.setTitle, this);
     this.dispatcher.on("ready:story", this.setTitle, this);
     this.dispatcher.on("created:section", this.handleCreateSection, this);
-    this.dispatcher.on("toggle:sectionlist", this.setPadding, this);
 
     if (!this.model.isNew()) {
       this.model.sections.fetch();
@@ -1499,10 +1512,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
    * This is called from upstream views.
    */
   onShow: function() {
-    // Dynamically set the padding at the top of the view to
-    // accomodate the workflow/section navigation bar
-    this.setPadding();
-
     // Recalculate the width of the section list view.
     if (this.sectionListView) {
       this.sectionListView.setWidth();
@@ -1641,24 +1650,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
     this.$(this.options.titleEl).removeClass('error');
     return true;
-  },
-
-  /**
-   * Set the top padding of the view's element to accomodate the
-   * navigation view.
-   */
-  setPadding: function() {
-    var $navEl = this.workflowNavView.$el;
-    var navHeight = $navEl.outerHeight();
-    var navTop = $navEl.offset().top;
-    var navBottom = navTop + navHeight;
-    var elTop = this.$el.offset().top;
-    if (elTop < navBottom) {
-      this.$el.css('padding-top', navHeight);
-    }
-    else {
-      this.$el.css('padding-top', 0);  
-    }
   }
 });
 
@@ -1935,6 +1926,7 @@ storybase.builder.views.NavViewMixin = {
   }
 };
 
+// TODO: Remove this view
 /**
  * Next/previous buttons.
  */
@@ -2072,7 +2064,6 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
 
   events: {
     'click .spacer .add-section': 'clickAddSection',
-    'click #toggle-section-list': 'toggleList',
     'sortupdate': 'handleSort',
     'mousedown .scroll-right': 'scrollRight',
     'mousedown .scroll-left': 'scrollLeft',
@@ -2081,8 +2072,6 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
 
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
-    this.workflowNavView = this.options.navView;
-    this._state = 'opened';
     /**
      * A lookup table of SectionThumbnailView instances by their
      * model's section ids.
@@ -2105,11 +2094,6 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
     this._thumbnailWidth = 0;
 
     this.template = Handlebars.compile(this.templateSource);
-
-    this.sectionNavView = new storybase.builder.views.SectionNavView({
-      dispatcher: this.dispatcher,
-      model: this.model
-    });
 
     this.dispatcher.on("do:remove:section", this.removeSection, this);
     this.dispatcher.on("ready:story", this.addSectionThumbnails, this);
@@ -2195,24 +2179,6 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
     this.setWidth();
     this.$('.sections-clip').css({overflow: 'hidden'});
  
-    this.$el.addClass(this._state);
-    this.sectionNavView.render();
-    if (this._state === 'opened') {
-      this.sectionNavView.$el.hide();
-    }
-    this.$el.append(this.sectionNavView.el);
-    if (this.workflowNavView) {
-      this.$el.append(this.workflowNavView.el);
-    }
-    // Add tooltips
-    if (jQuery().tooltipster) {
-      this.$('#toggle-section-list.tooltip').tooltipster({
-        position: 'bottom',
-        // Set the text here, because the text from the title attribute
-        // was disappearing
-        overrideText: gettext('You can hide or reveal the table of contents bar by clicking here'),
-      });
-    }
     this.delegateEvents();
 
     return this;
@@ -2350,17 +2316,6 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
   stopScroll: function(evt) {
     evt.preventDefault();
     this._doScroll = false;
-  },
-
-  toggleList: function(evt) {
-    evt.preventDefault();
-    this._state = this._state === 'opened' ? 'closed' : 'opened';
-    // TODO: Use the 'blind' easing function to show/hide this
-    this.$('.sections-container').toggle();
-    this.$el.toggleClass('opened');
-    this.$el.toggleClass('closed');
-    this.sectionNavView.$el.toggle();
-    this.dispatcher.trigger('toggle:sectionlist', this._state);
   }
 });
 

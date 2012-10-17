@@ -215,6 +215,17 @@ a.btn.disabled {
   }
 }
 
+// Subnavigation Bar
+// Currently the only thing that ever goes in this is the section list
+#subnav-bar {
+  // TODO: Replace this with more-human-readable color variable
+  background-color: #f0efef;
+}
+
+#subnav-bar-contents {
+  .container_12;
+}
+
 /* Main Application Container */
 
 #builder {
@@ -604,10 +615,8 @@ a.btn.disabled {
 @closed-padding: 5px;
 
 #section-list {
-  .container_12;
   position: relative;
   z-index: 999;
-  background-color: @control-color-1;
   overflow: hidden;
 }
 
@@ -633,7 +642,6 @@ a.btn.disabled {
   width: 75%;
   float: left;
   overflow: hidden;
-  background-color: @control-color-1;
   padding: 0 10px;
   text-align: center;
 }
@@ -789,16 +797,6 @@ a.btn.disabled {
 
 #section-list.closed .workflow-nav {
   padding-top: @closed-padding;
-}
-
-/* Builder Navigation Buttons */
-
-#nav-container {
-  position: fixed;
-  width: 100%;
-  top: 40px;
-  background-color: @control-color-1;
-  z-index: 999;
 }
 
 // Add Data View
