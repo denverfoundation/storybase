@@ -1,8 +1,5 @@
 
 // Common Styles
-header {
-	background: #f7941e;
-}
 
 .view-container {
   .container_12;
@@ -142,28 +139,9 @@ a.btn.disabled {
   cursor: pointer;
 }
 
-/* Navigation Bar */
+// Header
 
-.navbar {
-  color: #fff;
-  right: 0;
-  left: 0;
-  top: 0;
-  margin-bottom: 0;
-}
-
-.navbar .row {
-  position: relative;
-}
-
-.navbar .title {
-  float: left;
-  font-size: 20px;
-  padding: 8px 0 12px 0;
-  line-height: 1;
-}
-
-.navbar .nav {
+#header .nav {
   position: relative;
   display: block;
   float: left;
@@ -172,13 +150,13 @@ a.btn.disabled {
   padding: 0;
 }
 
-.navbar .nav > li {
+#header .nav > li {
   display: block;
   float: left;
   line-height: 18px;
 }
 
-.navbar .nav > li > a {
+#header .nav > li > a {
   display: block;
   float: none;
   padding: 10px 10px 11px;
@@ -188,21 +166,53 @@ a.btn.disabled {
   text-decoration: none;
 }
 
+// Title Bar
+
+#title-bar {
+  background: #f7941e;
+  overflow: hidden;
+
+  .title {
+    color: #fff;
+    float: left;
+    font-size: 20px;
+    padding: 8px 0 12px 0;
+    line-height: 1;
+  }
+}
+
+#title-bar-contents {
+  .container_12;
+}
+
 .tools {
   position: absolute !important;
   right: 0;
 }
 
-.workflow-step .selected {
-  background-color: #fff;
-  color: #000 !important;
-  font-style: italic;
+// Workflow Bar
+
+#workflow-bar {
+  overflow: hidden;
+  background-color: #000;
 }
 
-.workflow-step .disabled,
-.tools .disabled {
-  font-weight: normal !important;
-  cursor: default;
+#workflow-bar-contents {
+  .container_12;
+}
+
+#workflow-step {
+  .selected {
+    background-color: #fff;
+    color: #000 !important;
+    font-style: italic;
+  }
+
+  .disabled,
+  .tools .disabled {
+    font-weight: normal !important;
+    cursor: default;
+  }
 }
 
 /* Main Application Container */

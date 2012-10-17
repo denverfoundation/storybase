@@ -29,12 +29,13 @@ Namespace.use('storybase.utils.geocode');
  *
  */
 storybase.builder.views.AppView = Backbone.View.extend({
-  defaults: {
-    drawerEl: '#drawer-container'
+  options: {
+    drawerEl: '#drawer-container',
+    toolsContainerEl: '#title-bar-contents',
+    workflowContainerEl: '#workflow-bar-contents'
   },
 
   initialize: function() {
-    _.defaults(this.options, this.defaults);
     // Common options passed to sub-views
     var commonOptions = {
       dispatcher: this.options.dispatcher,
@@ -42,6 +43,8 @@ storybase.builder.views.AppView = Backbone.View.extend({
       visibleSteps: this.options.visibleSteps
     };
     var buildViewOptions;
+    var $toolsContainerEl = this.$(this.options.toolsContainerEl);
+    var $workflowContainerEl = this.$(this.options.workflowContainerEl);
     this.dispatcher = this.options.dispatcher;
     // The currently active step of the story building process
     // This will get set by an event callback 
@@ -51,8 +54,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
     this.toolsView = new storybase.builder.views.ToolsView(
       _.clone(commonOptions)
     );
-    // TODO: Change the selector as the template changes
-    this.$('header').first().children().first().append(this.toolsView.el);
+    $toolsContainerEl.append(this.toolsView.el);
 
     this.helpView = new storybase.builder.views.HelpView(
       _.clone(commonOptions)
@@ -70,8 +72,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
     this.workflowStepView = new storybase.builder.views.WorkflowStepView(
       _.clone(commonOptions)
     );
-    // TODO: Change the selector as the template changes
-    this.$('header').first().children().first().append(this.workflowStepView.el);
+    $workflowContainerEl.append(this.workflowStepView.el);
 
     buildViewOptions = _.defaults({
       assetTypes: this.options.assetTypes,
@@ -727,7 +728,9 @@ storybase.builder.views.WorkflowNavView = storybase.builder.views.ClickableItems
 storybase.builder.views.WorkflowStepView = storybase.builder.views.WorkflowNavView.extend({
   tagName: 'ul',
 
-  className: 'workflow-step nav',
+  id: 'workflow-step',
+
+  className: 'nav',
 
   itemTemplateSource: $('#workflow-item-template').html(),
 
@@ -840,7 +843,9 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.WorkflowNavVi
 storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.extend({
   tagName: 'ul',
 
-  className: 'tools nav',
+  id: 'tools',
+
+  className: 'nav',
 
   _initItems: function() {
     return [
