@@ -141,6 +141,13 @@ a.btn.disabled {
 
 // Header
 
+#header {
+  display: block;
+  position: fixed;
+  width: 100%;
+  z-index: 999;
+}
+
 #header .nav {
   position: relative;
   display: block;
@@ -336,7 +343,8 @@ a.btn.disabled {
 
 .builder {
   position: relative;
-  height: 100%;
+  // TODO: Calculate this from the section list bar size
+  padding-top: 100px;
 }
 
 .section-controls {
@@ -616,7 +624,6 @@ a.btn.disabled {
 
 #section-list {
   position: relative;
-  z-index: 999;
   overflow: hidden;
 }
 
