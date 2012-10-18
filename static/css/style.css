@@ -375,7 +375,7 @@ body.story-builder #app{height:100%;width:90%;float:left;}
 body.story-builder .drawer-open #app{width:70%;}
 body.story-builder #drawer-container{position:absolute;right:0;float:left;height:100%;padding-top:200px;}
 body.story-builder .drawer-open #drawer-container{width:30%;}
-body.story-builder #drawer-controls{float:left;height:100%;}body.story-builder #drawer-controls .btn{border:none;padding:4px;font-weight:bold;color:white;background-color:#20c6fd;-webkit-transform:rotate(-90deg);-moz-transform:rotate(-90deg);-ms-transform:rotate(-90deg);-o-transform:rotate(-90deg);filter:progid:dximagetransform.microsoft.basicimage(rotation=3);border-radius:4px 4px 0 0;overflow:visble;}
+body.story-builder #drawer-controls{float:left;height:100%;}body.story-builder #drawer-controls .btn{display:block;margin-bottom:50px;border:none;padding:4px;font-weight:bold;color:white;background-color:#20c6fd;-webkit-transform:rotate(-90deg);-moz-transform:rotate(-90deg);-ms-transform:rotate(-90deg);-o-transform:rotate(-90deg);filter:progid:dximagetransform.microsoft.basicimage(rotation=3);border-radius:4px 4px 0 0;overflow:visble;}
 body.story-builder #drawer-contents{position:relative;}
 body.story-builder .drawer-open #drawer-contents{margin-left:10%;}
 body.story-builder .story-templates{margin-left:auto;margin-right:auto;width:1020px;list-style:none;}
@@ -386,9 +386,8 @@ body.story-builder .full-width{width:100%;}
 body.story-builder .section-controls{position:absolute;padding:1% 0;min-width:755px;max-width:1140px;}
 body.story-builder .section-controls{width:940px;margin-left:auto;margin-right:auto;position:absolute;top:0;}
 body.story-builder .rotate{-webkit-transform:rotate(-90deg);-moz-transform:rotate(-90deg);-ms-transform:rotate(-90deg);-o-transform:rotate(-90deg);filter:progid:dximagetransform.microsoft.basicimage(rotation=3);}
-body.story-builder .unused-assets{position:absolute;top:0;right:0;width:25%;padding:0 2%;background-color:#000;color:#fff;z-index:9999;}
-body.story-builder .unused-assets a{color:#fff;font-weight:bold;}
-body.story-builder .unused-assets ul{list-style:none;padding:0;}
+body.story-builder #unused-assets a{color:#fff;font-weight:bold;}
+body.story-builder #unused-assets ul{list-style:none;padding:0;}
 body.story-builder .unused-asset{cursor:pointer;padding:2px 0;}
 body.story-builder .unused-asset.ui-draggable-dragging{color:#000;}
 body.story-builder .unused-asset .thumbnail{margin:2px;width:32px;height:32px;}

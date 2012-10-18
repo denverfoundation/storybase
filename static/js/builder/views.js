@@ -1723,7 +1723,7 @@ storybase.builder.views.UnusedAssetView = Backbone.View.extend(
   _.extend({}, storybase.builder.views.UnusedAssetDrawerMixin, {
     tagName: 'div',
 
-    className: 'unused-assets',
+    id: 'unused-assets',
 
     templateSource: $('#unused-assets-template').html(),
 
