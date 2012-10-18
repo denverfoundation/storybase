@@ -179,6 +179,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
    * Set the active step of the workflow and re-render the view
    */
   updateStep: function(step) {
+    var activeView;
     // Checking that step is different from the active step is
     // required for the initial saving of the story.  The active view
     // has already been changed by ``this.setTemplate`` so we don't
@@ -187,6 +188,10 @@ storybase.builder.views.AppView = Backbone.View.extend({
     // workflowstep`` signal
     if (this.activeStep != step) {
       console.debug('Updating active step to ' + step);
+      activeView = this.getActiveView();
+      if (activeView && activeView.onHide) {
+        activeView.onHide();
+      }
       this.activeStep = step;
       this.render();
     }
@@ -338,6 +343,7 @@ storybase.builder.views.DrawerView = Backbone.View.extend({
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
     this.dispatcher.on('register:drawerview', this.registerView, this);
+    this.dispatcher.on('unregister:drawerview', this.unregisterView, this);
 
     this.template = Handlebars.compile(this.options.templateSource);
     this.buttonTemplate = Handlebars.compile(this.options.buttonTemplateSource);
@@ -357,6 +363,7 @@ storybase.builder.views.DrawerView = Backbone.View.extend({
       this.dispatcher.on(evt, this.close, this);
     }, this);
     this._subviews.push(view);
+    this.render();
   },
 
   unregisterView: function(view) {
@@ -375,6 +382,7 @@ storybase.builder.views.DrawerView = Backbone.View.extend({
         return false;
       }
     }, this);
+    this.render();
   },
 
   addButton: function(button) {
@@ -385,7 +393,7 @@ storybase.builder.views.DrawerView = Backbone.View.extend({
   removeButton: function(button) {
     // Remove this button from the list of buttons
     this._buttonIds = _.without(this._buttonIds, button.buttonId);
-    this._buttons = _.omit(this._buttonIds, button.buttonId);
+    this._buttons = _.omit(this._buttons, button.buttonId);
   },
 
   /**
@@ -1353,7 +1361,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       dispatcher: this.dispatcher,
       assets: this.model.unusedAssets
     });
-    this.dispatcher.trigger("register:drawerview", this.unusedAssetView);
 
     this._editViews = [];
 
@@ -1503,6 +1510,12 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
     // Show the tour
     this._tour.show();
+
+    this.dispatcher.trigger("register:drawerview", this.unusedAssetView);
+  },
+
+  onHide: function() {
+    this.dispatcher.trigger("unregister:drawerview", this.unusedAssetView);
   },
 
   workflowNavView: function() {
