@@ -139,6 +139,11 @@ storybase.builder.views.AppView = Backbone.View.extend({
     // IMPORTANT: Create the builder view last because it triggers
     // events that the other views need to listen to
     this.subviews.build = new storybase.builder.views.BuilderView(buildViewOptions);
+    this.lastSavedView = new storybase.builder.views.LastSavedView({
+      dispatcher: this.dispatcher,
+      lastSaved: this.model ? this.model.get('last_edited'): null
+    });
+    this.$workflowContainerEl.append(this.lastSavedView.render().el);
 
     // Initialize the properties that store the last alert level
     // and message.
@@ -226,15 +231,17 @@ storybase.builder.views.AppView = Backbone.View.extend({
    * Adjust the top padding of the subview container view to accomodate the
    * header.
    *
+   * @param {Array} $el jQuery object for element that needs to have its
+   *   padding adjusted.
+   *
    * This has to be done dynamically because the header is different
    * heights based on different workflow steps. 
    */
-  adjustPadding: function() {
+  adjustPadding: function($el) {
     var $header = this.$(this.options.headerEl);
-    var $container = this.$(this.options.subviewContainerEl);
-    var origPadding = $container.css('padding-top');
+    var origPadding = $el.css('padding-top');
     var headerBottom = $header.offset().top + $header.outerHeight();
-    $container.css('padding-top', headerBottom);
+    $el.css('padding-top', headerBottom);
     return this;
   },
 
@@ -246,7 +253,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
     this.renderSubNavView(activeView);
     $container.empty();
     $container.append(activeView.render().$el);
-    this.adjustPadding();
+    this.adjustPadding($container);
     // Some views have things that only work when the element has been added
     // to the DOM. The pattern for handling this comes courtesy of
     // http://stackoverflow.com/questions/9350591/backbone-using-jquery-plugins-on-views
@@ -258,6 +265,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
     }
     this.toolsView.render();
     this.drawerView.setElement(this.options.drawerEl).render();
+    this.adjustPadding(this.drawerView.$el);
     return this;
   },
 
@@ -1369,10 +1377,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       dispatcher: this.dispatcher,
       assets: this.model.unusedAssets
     });
-    this.lastSavedView = new storybase.builder.views.LastSavedView({
-      dispatcher: this.dispatcher,
-      lastSaved: this.model.get('last_edited')
-    });
 
     this._editViews = [];
 
@@ -1493,7 +1497,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       this.workflowNavView.render();
     }
     this.renderEditViews();
-    this.$el.append(this.lastSavedView.render().el);
     return this;
   },
 
@@ -1661,10 +1664,11 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 storybase.builder.views.LastSavedView = Backbone.View.extend({
   tagName: 'div',
 
-  className: 'last-saved container',
+  id: 'last-saved',
 
   initialize: function() {
-    this.lastSaved = _.isUndefined(this.options.lastSaved) ? undefined : (_.isDate(this.options.lastSaved) ? this.options.lastSaved : new Date(this.options.lastSaved));
+    this.lastSaved = !!this.options.lastSaved ? (_.isDate(this.options.lastSaved) ? this.options.lastSaved : new Date(this.options.lastSaved)) : null;
+    console.debug(!!this.options.lastSaved);
     this.dispatcher = this.options.dispatcher;
 
     this.dispatcher.on('save:section', this.updateLastSaved, this);
@@ -1704,7 +1708,7 @@ storybase.builder.views.LastSavedView = Backbone.View.extend({
 
   render: function() {
     if (this.lastSaved) {
-      this.$el.html('Last Saved: ' + this.formatDate(this.lastSaved));
+      this.$el.html(gettext('Last Saved') + ' ' + this.formatDate(this.lastSaved));
     }
     return this;
   }
