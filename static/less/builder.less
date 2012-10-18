@@ -772,6 +772,25 @@ a.btn.disabled {
   display: block;
   float: left;
   list-style: none;
+  
+  em {
+      background: url(../img/builder/section-selected.png) no-repeat left top;
+      display:none;
+      width:20px;
+      height:12px;
+      position:absolute;
+      top:88px;
+      left:70px;
+      z-index:10;
+  }
+  
+  &:first-child em {
+    left:50px;
+  }
+  
+  &.selected em {
+    display:block;
+  }
 }
 
 .section-thumbnail, .spacer {
@@ -785,9 +804,9 @@ a.btn.disabled {
 
 .section-thumbnail {
   width: 120px;
-  border: 1px solid @medium-gray;
+  border: 1px solid lighten(@medium-gray, 10%);
   .rounded-corners(4px);
-  .box-shadow(0, 0, 5px, @medium-gray);
+  .box-shadow(0, 0, 5px, lighten(@medium-gray, 10%));
   cursor: pointer;
   background-color: @light-gray;
   color: @medium-gray;
