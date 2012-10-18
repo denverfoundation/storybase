@@ -241,6 +241,7 @@ a.btn.disabled {
 
 #workflow-bar-contents {
   .container_12;
+  height:56px;
 }
 
 #workflow-step {
@@ -283,7 +284,7 @@ a.btn.disabled {
       &#publish { .builder-icon(4); }
 
       display:block-inline;
-      padding: 2px 0 2px (@icon-width * 2);
+      padding: 3px 0 1px (@icon-width * 2);
       height:@icon-height;
       font-family:'Museo300Regular';
       font-size:16px;
@@ -312,8 +313,9 @@ a.btn.disabled {
 // Currently the only thing that ever goes in this is the section list
 #subnav-bar {
   // TODO: Replace this with more-human-readable color variable
-  background-color: #f0efef;
+  background-color:@light-gray;
   width:100%;
+  height:114px;
 }
 
 #subnav-bar-contents {
