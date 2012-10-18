@@ -237,6 +237,8 @@ body.base-template .content-page.object-detail.project .featured-story img{width
 body.base-template .content-page.object-detail.project .recent-stories ul{margin-bottom:30px;}
 body.base-template .content-page.object-detail.project .recent-stories li{margin-bottom:10px;overflow:hidden;}body.base-template .content-page.object-detail.project .recent-stories li img{margin-top:8px;width:100%;}
 body.base-template .content-page section.content-block{padding-bottom:40px;border-bottom:1px solid #ccc;margin-bottom:20px;overflow:hidden;}body.base-template .content-page section.content-block.last{border-bottom:none;}
+body.base-template .faq-section,body.base-template .faq-question{color:#fe9703 !important;}
+body.base-template .faq-question{cursor:pointer;}
 body.base-template form{overflow:hidden;}body.base-template form .form-text{font-family:'Times New Roman',Georgia,Serif;font-size:14px;color:#555555;}
 body.base-template form .soft-edge-style{border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px;font-family:'Times New Roman',Georgia,Serif;font-size:14px;color:#555555;box-shadow:inset 0 0 3px #ccc;border:1px solid #aaaaaa;padding:5px;}
 body.base-template form ul.errorlist li{font-family:'Times New Roman',Georgia,Serif;color:#ee6666;}
