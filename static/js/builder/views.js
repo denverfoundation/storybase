@@ -717,7 +717,7 @@ storybase.builder.views.WorkflowNavView = storybase.builder.views.ClickableItems
  * Shows current step of workflow 
  */
 storybase.builder.views.WorkflowStepView = storybase.builder.views.WorkflowNavView.extend({
-  tagName: 'ul',
+  tagName: 'ol',
 
   className: 'workflow-step nav',
 
