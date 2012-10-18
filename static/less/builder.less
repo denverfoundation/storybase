@@ -79,24 +79,6 @@ a.btn.disabled {
   text-align: center;
 }
 
-.editable {
-  border: solid 1px #20C6FD;
-  padding: 0.5%;
-}
-
-.editable-important {
-  border: solid 1px #20C6FD !important;
-  padding: 0.5% !important;
-}
-
-.editable:hover {
-  border-color: #FE9703;
-}
-
-.editable-important-hover {
-  border-color: #FE9703 !important;
-}
-
 .error input {
   // TODO: User global error input styles
   background-color: #F2DEDE;
@@ -551,16 +533,11 @@ a.btn.disabled {
 
 .edit-story-info {
   .wysihtml5-sandbox {
-    .editable-important;
     .vertical-space-important;
     // Override the element width that gets set by the Javascript plugin
     // so the element adapts as the container width changes (e.g. to 
     // accomodate the drawer)
     width: 100% !important;
-  }
-
-  .wysihtml5-sandbox:hover {
-    .editable-important-hover;
   }
 }
 
@@ -568,12 +545,7 @@ a.btn.disabled {
 
 .edit-call-to-action {
   .wysihtml5-sandbox {
-    .editable-important;
     .vertical-space-important;
-  }
-
-  .wysihtml5-sandbox:hover {
-    .editable-important-hover;
   }
 }
 
@@ -877,43 +849,6 @@ a.btn.disabled {
 
 .section-thumbnail:hover .remove {
   display: block;
-}
-
-#section-nav {
-  float: left;
-  width: 65%;
-  height: 30px;
-  padding-left: 20px;
-  padding-top: @opened-padding;
-  font-weight: bold;
-}
-
-#section-list.closed #section-nav {
-  padding-top: 10px;
-}
-
-#section-nav a {
-  color: #fff;
-}
-
-#section-nav .prev::before {
-  content: ' < ';
-}
-
-#section-nav .next::after {
-  content: ' > ';
-}
-
-#section-list .workflow-nav {
-  float: left;
-  width: auto !important;
-  position: absolute;
-  right: 20px;
-  padding-top: @opened-padding;
-}
-
-#section-list.closed .workflow-nav {
-  padding-top: @closed-padding;
 }
 
 // Add Data View

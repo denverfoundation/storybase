@@ -636,7 +636,7 @@ storybase.builder.views.ClickableItemsView = Backbone.View.extend({
   },
 
   getItemClass: function(itemOptions) {
-    var cssClass = "";
+    var cssClass = itemOptions.class || "";
     var enabled = this.getPropertyValue(itemOptions, 'enabled', true);
     var selected = this.getPropertyValue(itemOptions, 'selected', false); 
 
@@ -1351,7 +1351,9 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     if (this.options.visibleSteps.data) {
       navViewOptions.items.push({
         id: 'workflow-nav-data-fwd',
-        text: gettext("Add Data to Your Story"),
+        class: 'next',
+        title: gettext("Add Data to Your Story"),
+        text: gettext("Next"),
         path: 'data/',
         enabled: isNew 
       });
@@ -1359,7 +1361,9 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     else if (this.options.visibleSteps.publish) {
       navViewOptions.items.push({
         id: 'workflow-nav-publish-fwd',
-        text: gettext("Publish My Story"),
+        class: 'next',
+        title: gettext("Publish My Story"),
+        text: gettext("Next"),
         path: 'publish/',
         enabled: isNew,
         validate: this.options.visibleSteps.review ? true : this.simpleReview
@@ -2511,12 +2515,14 @@ storybase.builder.views.StoryInfoEditView = storybase.builder.views.PseudoSectio
   events: function() {
     var events = {};
     events['change ' + this.options.summaryEl] = 'change';
+    events['change ' + this.options.titleEl] = 'change';
+    events['change ' + this.options.bylineEl] = 'change';
     return events;
   },
 
   options: {
-    titleEl: '.story-title',
-    bylineEl: '.byline',
+    titleEl: '[name="title"]',
+    bylineEl: '[name="byline"]',
     summaryEl: 'textarea[name="summary"]' 
   },
 
@@ -2525,10 +2531,6 @@ storybase.builder.views.StoryInfoEditView = storybase.builder.views.PseudoSectio
     var handleChange = function () {
       // Trigger the change event on the underlying element 
       that.$(that.options.summaryEl).trigger('change');
-    };
-    var editableCallback = function(value, settings) {
-      that.saveAttr($(this).data("input-name"), value);
-      return value;
     };
     this.$el.html(this.template(this.model.toJSON()));
     // Initialize wysihmtl5 editor
@@ -2539,16 +2541,6 @@ storybase.builder.views.StoryInfoEditView = storybase.builder.views.PseudoSectio
       }
     );
       
-    this.$(this.options.titleEl).editable(editableCallback, {
-      placeholder: gettext('Click to edit title'),
-      tooltip: gettext('Click to edit title'),
-      onblur: 'submit'
-    });
-    this.$(this.options.bylineEl).editable(editableCallback, {
-      placeholder: gettext('Click to edit byline'),
-      tooltip: gettext('Click to edit byline'),
-      onblur: 'submit'
-    });
     this.delegateEvents(); 
     return this;
   }
@@ -2567,8 +2559,15 @@ storybase.builder.views.InlineStoryInfoEditView = Backbone.View.extend(
     templateSource: $('#story-info-edit-inline-template').html(),
 
     options: {
-      titleEl: '.story-title',
-      bylineEl: '.byline'
+      titleEl: '[name="title"]',
+      bylineEl: '[name="byline"]'
+    },
+
+    events: function() {
+      var events = {};
+      events['change ' + this.options.titleEl] = 'change';
+      events['change ' + this.options.bylineEl] = 'change';
+      return events;
     },
 
     initialize: function() {
@@ -2578,26 +2577,24 @@ storybase.builder.views.InlineStoryInfoEditView = Backbone.View.extend(
 
     render: function() {
       var that = this;
-      var editableCallback = function(value, settings) {
-        that.saveAttr($(this).data("input-name"), value);
-        return value;
-      };
       var context = this.model.toJSON();
       context.prompt = this.options.prompt;
       this.$el.html(this.template(context));
         
-      this.$(this.options.titleEl).editable(editableCallback, {
-        placeholder: gettext('Click to edit title'),
-        tooltip: gettext('Click to edit title'),
-        onblur: 'submit'
-      });
-      this.$(this.options.bylineEl).editable(editableCallback, {
-        placeholder: gettext('Click to edit byline'),
-        tooltip: gettext('Click to edit byline'),
-        onblur: 'submit'
-      });
       this.delegateEvents(); 
       return this;
+    },
+
+    /**
+     * Event handler for when form elements are changed
+     */
+    change: function(e) {
+      var key = $(e.target).attr("name");
+      var value = $(e.target).val();
+      if ($(e.target).prop('checked')) {
+        value = true;
+      }
+      this.saveAttr(key, value);
     }
   })
 );
@@ -2673,11 +2670,14 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   options: {
     containerEl: '.storybase-container-placeholder',
     titleEl: '.section-title',
-    storyTitleEl: '.story-title'
+    selectLayoutEl: 'select.layout'
   },
 
-  events: {
-    "change select.layout": 'change'
+  events: function() {
+    var events = {};
+    events['change ' + this.options.selectLayoutEl] = 'change';
+    events['change ' + this.options.titleEl] = 'change';
+    return events;
   },
 
   initialize: function() {
@@ -2783,10 +2783,6 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   render: function() {
     var that = this;
     var context = this.model.toJSON();
-    var editableCallback = function(value, settings) {
-      that.saveAttr($(this).data("input-name"), value);
-      return value;
-    };
     context.layouts = this.getLayoutContext();
     context.showSectionTitles = this.options.showSectionTitles;
     context.showLayoutSelection = this.options.showLayoutSelection;
@@ -2799,13 +2795,6 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     }
     else {
       this.assets.fetch();
-    }
-    if (this.options.showSectionTitles) {
-      this.$(this.options.titleEl).editable(editableCallback, {
-        placeholder: gettext('Click to edit title'),
-        tooltip: gettext('Click to edit title'),
-        onblur: 'submit'
-      });
     }
     return this;
   },
@@ -3482,12 +3471,16 @@ storybase.builder.views.DataView = Backbone.View.extend(
         items: [
           {
             id: 'workflow-nav-build-back',
-            text: gettext("Continue Writing Story"),
+            class: 'prev',
+            title: gettext("Continue Writing Story"),
+            text: gettext("Previous"),
             path: ''
           },
           {
             id: 'workflow-nav-tag-fwd',
-            text: gettext("Tag"),
+            class: 'next',
+            title: gettext("Tag"),
+            text: gettext("Next"),
             path: 'tag/'
           }
         ]
@@ -3646,15 +3639,17 @@ storybase.builder.views.ReviewView = Backbone.View.extend(
         items: [
           {
             id: 'workflow-nav-tag-back',
-            text: gettext("Back to Tag"),
+            class: 'prev',
+            title: gettext("Back to Tag"),
+            text: gettext("Previous"),
             path: 'tag/'
           },
           {
             id: 'workflow-nav-publish-fwd',
-            text: gettext("Publish My Story"),
-            path: 'publish/',
-            enabled: this.hasPreviewed,
-            validate: this.hasPreviewed
+            class: 'next',
+            title: gettext("Publish My Story"),
+            text: gettext("Next"),
+            path: 'publish/'
           }
         ]
       });
@@ -3708,12 +3703,16 @@ storybase.builder.views.TaxonomyView = Backbone.View.extend(
         items: [
           {
             id: 'workflow-nav-data-back',
-            text: gettext("Back to Add Data"),
+            class: 'prev',
+            title: gettext("Back to Add Data"),
+            text: gettext("Previous"),
             path: 'data/'
           },
           {
             id: 'workflow-nav-review-fwd',
-            text: gettext("Review"),
+            class: 'next',
+            title: gettext("Review"),
+            text: gettext("Next"),
             path: 'review/'
           }
         ]
@@ -4475,23 +4474,21 @@ storybase.builder.views.PublishView = Backbone.View.extend(
       if (this.options.visibleSteps.review) {
         navViewOptions.items.push({
           id: 'workflow-nav-build-back',
-          text: gettext("Back to Review"),
+          class: 'prev',
+          title: gettext("Back to Review"),
+          text: gettext("Previous"), 
           path: 'review/'
         });
       }
       else {
         navViewOptions.items.push({
           id: 'workflow-nav-review-back',
-          text: gettext("Continue Writing Story"),
+          class: 'prev',
+          title: gettext("Continue Writing Story"),
+          text: gettext("Previous"),
           path: ''
         });
       }
-      navViewOptions.items.push({
-        id: 'workflow-nav-build-another-fwd',
-        text: gettext("Tell Another Story"),
-        path: '/build/',
-        route: false
-      });
       this.workflowNavView = new storybase.builder.views.WorkflowNavView(navViewOptions);
       
       if (_.isUndefined(this.model)) {

@@ -23,7 +23,7 @@ Handlebars.js templates for story builder Backbone application
 </script>
 
 <script type="text/x-handlebars-template" id="workflow-nav-item-template">
-<a id="{{id}}" class="{{class}} btn" href="{{href}}">{{text}}</a>
+    <a id="{{id}}" title="{{title}}" class="{{class}} btn" href="{{href}}">{{text}}</a>
 </script>
 
 <script type="text/x-handlebars-template" id="story-template-list-template">
@@ -117,15 +117,15 @@ Handlebars.js templates for story builder Backbone application
 </script>
 
 <script type="text/x-handlebars-template" id="story-info-edit-template">
-<h2 class="story-title editable" data-input-name="title">{{title}}</h2>
-<p class="byline editable" data-input-name="byline">{{byline}}</p>
+<input class="story-title" name="title" value="{{title}}" placeholder="{{gettext message="Edit your title"}}" />
+<input class="byline" name="byline" value="{{byline}}" placeholder="{{gettext message="Edit your byline"}}" />
 <textarea name="summary" id="summary-textarea" class="summary" placeholder='{{gettext message="Click to edit the summary"}}'>{{summary}}</textarea>
 </script>
 
 <script type="text/x-handlebars-template" id="story-info-edit-inline-template">
 {{#if prompt}}<p class="prompt">{{prompt}}</p>{{/if}}
-<h2 class="story-title editable" data-input-name="title">{{title}}</h2>
-<p class="byline editable" data-input-name="byline">{{byline}}</p>
+<input class="story-title" name="title" value="{{title}}" placeholder="{{gettext message="Edit your title"}}" />
+<input class="byline" name="byline" value="{{byline}}" placeholder="{{gettext message="Edit your byline"}}" />
 </script>
 
 <script type="text/x-handlebars-template" id="story-call-to-action-edit-template">
@@ -161,7 +161,7 @@ Handlebars.js templates for story builder Backbone application
     {{/if}}
 </div>
 {{#if showSectionTitles}}
-<h2 class="section-title editable" data-input-name="title">{{title}}</h2>
+<input class="section-title" name="title" value="{{title}}" placeholder="{{gettext message="Click to edit title"}}"/>
 {{/if}}
 <div class="section-edit-layout">{{{layout_template}}}</div>
 </script>
