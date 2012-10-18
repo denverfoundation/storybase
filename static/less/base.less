@@ -61,6 +61,12 @@
 	-moz-border-radius: @radius;
 }
 
+.box-shadow (@x: 0, @y: 0, @blur: 1px, @color: #000) {
+  box-shadow: @arguments;
+  -moz-box-shadow: @arguments;
+  -webkit-box-shadow: @arguments;
+}
+
 // this should probably just be on the body ... not sure if the body
 // is arial/sans-serif for a reason.
 .plain-serif-text {
@@ -106,8 +112,8 @@ body.base-template {
 
 	h1 { font-size:@top-header-size; color:@dark-gray; .basic-header; .line-through-header; }
 	h2 { font-size:(@top-header-size * .8); color:@dark-gray; .basic-header; }
-	h3 { font-size:(@top-header-size * .7); color:@light-gray; .basic-header; }
-	h4 { font-size:(@top-header-size * .6); color:@light-gray; .basic-header; }
+	h3 { font-size:(@top-header-size * .7); color:@medium-gray; .basic-header; }
+	h4 { font-size:(@top-header-size * .6); color:@medium-gray; .basic-header; }
 	h5 { font-size:(@top-header-size * .5); color:@highlight-blue; font-family: 'MuseoSlab500Regular'; font-weight:normal;}
 
 	// based on "everything" comp, text content
