@@ -332,10 +332,6 @@ body.story-builder .alert-error{background-color:#F2DEDE;border-color:#EED3D7;co
 body.story-builder .alert-info{background-color:#D9EDF7;border-color:#BCE8F1;color:#3A87AD;}
 body.story-builder .introduction{margin-top:1em;}
 body.story-builder .centered{text-align:center;}
-body.story-builder .editable{border:solid 1px #20C6FD;padding:0.5%;}
-body.story-builder .editable-important{border:solid 1px #20C6FD !important;padding:0.5% !important;}
-body.story-builder .editable:hover{border-color:#FE9703;}
-body.story-builder .editable-important-hover{border-color:#FE9703 !important;}
 body.story-builder .error input{background-color:#F2DEDE;border-color:#EED3D7;}
 body.story-builder #simplemodal-container{background-color:#fff;width:66%;height:66%;}
 body.story-builder #simplemodal-wrap{overflow-x:hidden;overflow-y:scroll;}
@@ -394,10 +390,8 @@ body.story-builder .story-title{width:100%;margin-top:0.5%;}
 body.story-builder .byline{margin-top:0.5%;width:100%;}
 body.story-builder .byline input{width:98% !important;}
 body.story-builder .summary{width:100%;min-height:400px;}
-body.story-builder .edit-story-info .wysihtml5-sandbox{border:solid 1px #20C6FD !important;padding:0.5% !important;margin-top:0.5% !important;width:100% !important;}
-body.story-builder .edit-story-info .wysihtml5-sandbox:hover{border-color:#FE9703 !important;}
-body.story-builder .edit-call-to-action .wysihtml5-sandbox{border:solid 1px #20C6FD !important;padding:0.5% !important;margin-top:0.5% !important;}
-body.story-builder .edit-call-to-action .wysihtml5-sandbox:hover{border-color:#FE9703 !important;}
+body.story-builder .edit-story-info .wysihtml5-sandbox{margin-top:0.5% !important;width:100% !important;}
+body.story-builder .edit-call-to-action .wysihtml5-sandbox{margin-top:0.5% !important;}
 body.story-builder .call-to-action{width:100%;height:250px;}
 body.story-builder .connected-prompt{width:100%;height:300px;}
 body.story-builder .edit-section{position:relative;width:96%;margin-left:auto;margin-right:auto;height:70%;padding:2% 2% 1% 2%;}body.story-builder .edit-section .section-title{margin-top:15px;width:100%;max-width:940px;}

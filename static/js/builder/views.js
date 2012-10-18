@@ -2515,12 +2515,14 @@ storybase.builder.views.StoryInfoEditView = storybase.builder.views.PseudoSectio
   events: function() {
     var events = {};
     events['change ' + this.options.summaryEl] = 'change';
+    events['change ' + this.options.titleEl] = 'change';
+    events['change ' + this.options.bylineEl] = 'change';
     return events;
   },
 
   options: {
-    titleEl: '.story-title',
-    bylineEl: '.byline',
+    titleEl: '[name="title"]',
+    bylineEl: '[name="byline"]',
     summaryEl: 'textarea[name="summary"]' 
   },
 
@@ -2529,10 +2531,6 @@ storybase.builder.views.StoryInfoEditView = storybase.builder.views.PseudoSectio
     var handleChange = function () {
       // Trigger the change event on the underlying element 
       that.$(that.options.summaryEl).trigger('change');
-    };
-    var editableCallback = function(value, settings) {
-      that.saveAttr($(this).data("input-name"), value);
-      return value;
     };
     this.$el.html(this.template(this.model.toJSON()));
     // Initialize wysihmtl5 editor
@@ -2543,16 +2541,6 @@ storybase.builder.views.StoryInfoEditView = storybase.builder.views.PseudoSectio
       }
     );
       
-    this.$(this.options.titleEl).editable(editableCallback, {
-      placeholder: gettext('Click to edit title'),
-      tooltip: gettext('Click to edit title'),
-      onblur: 'submit'
-    });
-    this.$(this.options.bylineEl).editable(editableCallback, {
-      placeholder: gettext('Click to edit byline'),
-      tooltip: gettext('Click to edit byline'),
-      onblur: 'submit'
-    });
     this.delegateEvents(); 
     return this;
   }
@@ -2571,8 +2559,15 @@ storybase.builder.views.InlineStoryInfoEditView = Backbone.View.extend(
     templateSource: $('#story-info-edit-inline-template').html(),
 
     options: {
-      titleEl: '.story-title',
-      bylineEl: '.byline'
+      titleEl: '[name="title"]',
+      bylineEl: '[name="byline"]'
+    },
+
+    events: function() {
+      var events = {};
+      events['change ' + this.options.titleEl] = 'change';
+      events['change ' + this.options.bylineEl] = 'change';
+      return events;
     },
 
     initialize: function() {
@@ -2582,26 +2577,24 @@ storybase.builder.views.InlineStoryInfoEditView = Backbone.View.extend(
 
     render: function() {
       var that = this;
-      var editableCallback = function(value, settings) {
-        that.saveAttr($(this).data("input-name"), value);
-        return value;
-      };
       var context = this.model.toJSON();
       context.prompt = this.options.prompt;
       this.$el.html(this.template(context));
         
-      this.$(this.options.titleEl).editable(editableCallback, {
-        placeholder: gettext('Click to edit title'),
-        tooltip: gettext('Click to edit title'),
-        onblur: 'submit'
-      });
-      this.$(this.options.bylineEl).editable(editableCallback, {
-        placeholder: gettext('Click to edit byline'),
-        tooltip: gettext('Click to edit byline'),
-        onblur: 'submit'
-      });
       this.delegateEvents(); 
       return this;
+    },
+
+    /**
+     * Event handler for when form elements are changed
+     */
+    change: function(e) {
+      var key = $(e.target).attr("name");
+      var value = $(e.target).val();
+      if ($(e.target).prop('checked')) {
+        value = true;
+      }
+      this.saveAttr(key, value);
     }
   })
 );
@@ -2677,11 +2670,14 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   options: {
     containerEl: '.storybase-container-placeholder',
     titleEl: '.section-title',
-    storyTitleEl: '.story-title'
+    selectLayoutEl: 'select.layout'
   },
 
-  events: {
-    "change select.layout": 'change'
+  events: function() {
+    var events = {};
+    events['change ' + this.options.selectLayoutEl] = 'change';
+    events['change ' + this.options.titleEl] = 'change';
+    return events;
   },
 
   initialize: function() {
@@ -2787,10 +2783,6 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   render: function() {
     var that = this;
     var context = this.model.toJSON();
-    var editableCallback = function(value, settings) {
-      that.saveAttr($(this).data("input-name"), value);
-      return value;
-    };
     context.layouts = this.getLayoutContext();
     context.showSectionTitles = this.options.showSectionTitles;
     context.showLayoutSelection = this.options.showLayoutSelection;
@@ -2803,13 +2795,6 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     }
     else {
       this.assets.fetch();
-    }
-    if (this.options.showSectionTitles) {
-      this.$(this.options.titleEl).editable(editableCallback, {
-        placeholder: gettext('Click to edit title'),
-        tooltip: gettext('Click to edit title'),
-        onblur: 'submit'
-      });
     }
     return this;
   },
