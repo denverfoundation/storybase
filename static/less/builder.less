@@ -237,6 +237,7 @@ a.btn.disabled {
 #workflow-bar {
   overflow: hidden;
   height:56px;
+  border-bottom:1px solid white;
 }
 
 #workflow-bar-contents {
@@ -731,34 +732,43 @@ a.btn.disabled {
   width: 75%;
   float: left;
   overflow: hidden;
-  padding: 0 10px;
+  padding: 8px 0 0;
   text-align: center;
 }
 
 .sections-clip {
   float: left;
   width: 90%;
-  margin: 0 20px;
+  margin: 0 40px;
   padding: 0 10px;
   overflow: auto;
 }
 
+@scroll-arrow-height: 34px;
+@scroll-arrow-hover-d: @scroll-arrow-height;
 .scroll-left, .scroll-right {
+  position:absolute;
+  top:40px;
+  text-indent: -32000px;
+  cursor:pointer;
+  background:url(../img/builder/section-scroll-arrows.png);
   display: block;
   float: left;
-  line-height: 100px;
-  cursor: pointer;
-  color: #fff;
-  font-weight: bold;
-}
-
-.scroll-left:hover, .scroll-right:hover {
-  color: #fff;
+  height:34px;
+  width:22px;
+  &:hover {
+    background-position:0 (-@scroll-arrow-hover-d);
+  }
 }
 
 .scroll-right {
+  background-position: 0 (@scroll-arrow-height * 2);
   position: absolute;
   right: 10px;
+  
+  &:hover {
+    background-position: 0 ((@scroll-arrow-height * 2) - @scroll-arrow-hover-d);
+  }
 }
 
 .sections {
@@ -786,13 +796,18 @@ a.btn.disabled {
 
 .section-thumbnail {
   width: 120px;
-  border: 1px solid #000;
-  background-color: #fff;
+  border: 1px solid @medium-gray;
+  .rounded-corners(4px);
+  .box-shadow(0, 0, 5px, @medium-gray);
   cursor: pointer;
+  background-color: @light-gray;
+  color: @medium-gray;
 }
 
 .section-thumbnail .title {
-  padding: 22% 0;
+  position:relative;
+  font-size: 12px;
+  top: ((@section-thumbnail-height / 2) - 6);
 }
 
 .spacer {
@@ -825,14 +840,10 @@ a.btn.disabled {
 
 
 .section-thumbnail-container.pseudo .section-thumbnail {
-  background-color: #C8C8C8;
-  color: #fff;
 }
 
 .section-thumbnail-container.selected .section-thumbnail {
-  box-shadow: 0 0 5px rgba(0, 0, 255, 1);
-  -webkit-box-shadow: 0 0 5px rgba(0, 0, 255, 1);
-  -moz-box-shadow: 0 0 5px rgba(0, 0, 255, 1);
+  background-color:white;
 }
 
 .section-thumbnail.new {
