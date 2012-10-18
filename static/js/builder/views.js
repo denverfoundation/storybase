@@ -139,6 +139,11 @@ storybase.builder.views.AppView = Backbone.View.extend({
     // IMPORTANT: Create the builder view last because it triggers
     // events that the other views need to listen to
     this.subviews.build = new storybase.builder.views.BuilderView(buildViewOptions);
+    this.lastSavedView = new storybase.builder.views.LastSavedView({
+      dispatcher: this.dispatcher,
+      lastSaved: this.model ? this.model.get('last_edited'): null
+    });
+    this.$workflowContainerEl.append(this.lastSavedView.render().el);
 
     // Initialize the properties that store the last alert level
     // and message.
@@ -1369,10 +1374,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       dispatcher: this.dispatcher,
       assets: this.model.unusedAssets
     });
-    this.lastSavedView = new storybase.builder.views.LastSavedView({
-      dispatcher: this.dispatcher,
-      lastSaved: this.model.get('last_edited')
-    });
 
     this._editViews = [];
 
@@ -1493,7 +1494,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       this.workflowNavView.render();
     }
     this.renderEditViews();
-    this.$el.append(this.lastSavedView.render().el);
     return this;
   },
 
@@ -1661,10 +1661,11 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 storybase.builder.views.LastSavedView = Backbone.View.extend({
   tagName: 'div',
 
-  className: 'last-saved container',
+  id: 'last-saved',
 
   initialize: function() {
-    this.lastSaved = _.isUndefined(this.options.lastSaved) ? undefined : (_.isDate(this.options.lastSaved) ? this.options.lastSaved : new Date(this.options.lastSaved));
+    this.lastSaved = !!this.options.lastSaved ? (_.isDate(this.options.lastSaved) ? this.options.lastSaved : new Date(this.options.lastSaved)) : null;
+    console.debug(!!this.options.lastSaved);
     this.dispatcher = this.options.dispatcher;
 
     this.dispatcher.on('save:section', this.updateLastSaved, this);
@@ -1704,7 +1705,7 @@ storybase.builder.views.LastSavedView = Backbone.View.extend({
 
   render: function() {
     if (this.lastSaved) {
-      this.$el.html('Last Saved: ' + this.formatDate(this.lastSaved));
+      this.$el.html(gettext('Last Saved') + ' ' + this.formatDate(this.lastSaved));
     }
     return this;
   }
