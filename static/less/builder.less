@@ -235,7 +235,6 @@ a.btn.disabled {
 }
 
 #workflow-bar {
-  overflow: hidden;
   height:56px;
   border-bottom:1px solid white;
 }
@@ -250,20 +249,6 @@ a.btn.disabled {
   clear:both;
 
   li {
-    @icon-height:23px;
-    @icon-width:20px;
-    @icon-highlight-d:23px;
-    @icon-next-d:(@icon-highlight-d * 2);
-
-    // where n is the index of the appropriate icon in the sprite
-    .builder-icon (@n) {
-      background: url(../img/builder/workflow-step-icons.png) no-repeat (@icon-width / 2) (-@n * @icon-next-d);
-      &.selected {
-        color:#fff;
-        background-position:(@icon-width / 2) ((-@n * @icon-next-d) - @icon-highlight-d);
-      }
-    }
-
     color:@orange;
     list-style:decimal inside none;
     padding:0 19px;
@@ -271,18 +256,42 @@ a.btn.disabled {
     border-right:1px solid @almost-black;
     font-family:'Museo300Regular';
     line-height:34px;
+    position:relative;
     
     &:first-child {
       border-left:1px solid @almost-black;
     }
+
+    @icon-height:23px;
+    @icon-width:20px;
+    @icon-highlight-d:23px;
+    @icon-next-d:(@icon-highlight-d * 2);
+    // where n is the index of the appropriate icon in the sprite
+    .workflow-icon (@n) {
+      background: url(../img/builder/workflow-step-icons.png) no-repeat (@icon-width / 2) (-@n * @icon-next-d);
+    }
+    .workflow-icon-selected (@n) {
+      background: url(../img/builder/workflow-step-icons.png) no-repeat (@icon-width / 2) ((-@n * @icon-next-d) - @icon-highlight-d);
+    }
+    
+    em {
+      display:none;
+      background:url(../img/builder/step-selected.png) no-repeat left top;
+      width:12px;
+      height:6px;
+      position:absolute;
+      top:46px;
+      left:48%;
+      z-index:10;
+    }
     
     a {
-      .builder-icon(0);
-      &#build { .builder-icon(0); }
-      &#data { .builder-icon(1); }
-      &#tag { .builder-icon(2); }
-      &#review { .builder-icon(3); }
-      &#publish { .builder-icon(4); }
+      .workflow-icon(0);
+      &#build { .workflow-icon(0); }
+      &#data { .workflow-icon(1); }
+      &#tag { .workflow-icon(2); }
+      &#review { .workflow-icon(3); }
+      &#publish { .workflow-icon(4); }
 
       display:block-inline;
       padding: 3px 0 1px (@icon-width * 2);
@@ -294,6 +303,19 @@ a.btn.disabled {
       text-decoration:none;
     }
     
+    &.selected {
+      em {
+        display:block;
+      }
+      a {
+        color:#fff;
+        &#build { .workflow-icon-selected(0); }
+        &#data { .workflow-icon-selected(1); }
+        &#tag { .workflow-icon-selected(2); }
+        &#review { .workflow-icon-selected(3); }
+        &#publish { .workflow-icon-selected(4); }
+      }
+    }
   }
 /*
   .selected {
@@ -749,7 +771,7 @@ a.btn.disabled {
   background:url(../img/builder/section-scroll-arrows.png);
   display: block;
   float: left;
-  height:34px;
+  height:@scroll-arrow-height;
   width:22px;
   &:hover {
     background-position:0 (-@scroll-arrow-hover-d);
