@@ -289,10 +289,10 @@ storybase.builder.views.DrawerButtonView = Backbone.View.extend({
     this.template = Handlebars.compile(this.options.templateSource);
   },
 
-
   render: function() {
     this.$el.attr('title', this.options.title);
     this.$el.html(this.options.text);
+    this.delegateEvents();
     return this;
   },
 });
