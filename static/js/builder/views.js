@@ -31,9 +31,11 @@ Namespace.use('storybase.utils.geocode');
 storybase.builder.views.AppView = Backbone.View.extend({
   options: {
     drawerEl: '#drawer-container',
+    headerEl: '#header',
+    subNavContainerEl: '#subnav-bar-contents',
+    subviewContainerEl: '#app',
     toolsContainerEl: '#title-bar-contents',
-    workflowContainerEl: '#workflow-bar-contents',
-    subNavContainerEl: '#subnav-bar-contents'
+    workflowContainerEl: '#workflow-bar-contents'
   },
 
   initialize: function() {
@@ -220,13 +222,31 @@ storybase.builder.views.AppView = Backbone.View.extend({
     }
   },
 
+  /**
+   * Adjust the top padding of the subview container view to accomodate the
+   * header.
+   *
+   * This has to be done dynamically because the header is different
+   * heights based on different workflow steps. 
+   */
+  adjustPadding: function() {
+    var $header = this.$(this.options.headerEl);
+    var $container = this.$(this.options.subviewContainerEl);
+    var origPadding = $container.css('padding-top');
+    var headerBottom = $header.offset().top + $header.outerHeight();
+    $container.css('padding-top', headerBottom);
+    return this;
+  },
+
   render: function() {
     console.debug('Rendering main view');
     var activeView = this.getActiveView();
+    var $container = this.$(this.options.subviewContainerEl);
     this.renderWorkflowNavView(activeView);
     this.renderSubNavView(activeView);
-    this.$('#app').empty();
-    this.$('#app').append(activeView.render().$el);
+    $container.empty();
+    $container.append(activeView.render().$el);
+    this.adjustPadding();
     // Some views have things that only work when the element has been added
     // to the DOM. The pattern for handling this comes courtesy of
     // http://stackoverflow.com/questions/9350591/backbone-using-jquery-plugins-on-views
