@@ -359,7 +359,7 @@ body.story-builder #workflow-step li a#tag{background:url(../img/builder/workflo
 body.story-builder #workflow-step li a#review{background:url(../img/builder/workflow-step-icons.png) no-repeat 10px -138px;}body.story-builder #workflow-step li a#review.selected{color:#fff;background-position:10px -161px;}
 body.story-builder #workflow-step li a#publish{background:url(../img/builder/workflow-step-icons.png) no-repeat 10px -184px;}body.story-builder #workflow-step li a#publish.selected{color:#fff;background-position:10px -207px;}
 body.story-builder #last-saved{color:#fff;font-style:italic;}
-body.story-builder #subnav-bar{background-color:#f0efef;width:100%;height:114px;}
+body.story-builder #subnav-bar{background-color:#f0efef;width:100%;}
 body.story-builder #subnav-bar-contents{margin-left:auto;margin-right:auto;width:1020px;}
 body.story-builder #builder{height:100%;}
 body.story-builder #builder .navbar{position:fixed;z-index:999;}
