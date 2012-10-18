@@ -64,6 +64,13 @@ body{min-width:1020px;}
 .clearfix:before,.clearfix:after{content:'\0020';display:block;overflow:hidden;visibility:hidden;width:0;height:0;}
 .clearfix:after{clear:both;}
 .clearfix{zoom:1;}
+.section-width{width:940px;margin-left:auto;margin-right:auto;}
+.section-title{font-size:30px;width:940px;margin-left:auto;margin-right:auto;}
+.section-layout{overflow:hidden;font-size:13px;width:940px;margin-left:auto;margin-right:auto;}.section-layout.side-by-side .left,.section-layout.side-by-side .right{height:489px;width:49%;float:left;}
+.section-layout.side-by-side .left{margin-left:0;margin-right:1%;}
+.section-layout.side-by-side .right{margin-left:1%;margin-right:0;}
+.section-layout.one-up .center{position:relative;height:805px;width:100%;margin:2 0%;}
+.section-layout img,.section-layout iframe{max-width:100%;}
 @font-face{font-family:'MuseoSlab500Regular';src:url('../css/font-face/museo_slab_500-webfont.eot');src:url('../css/font-face/museo_slab_500-webfont.eot?#iefix') format('embedded-opentype'),url('../css/font-face/museo_slab_500-webfont.woff') format('woff'),url('../css/font-face/museo_slab_500-webfont.ttf') format('truetype'),url('../css/font-face/museo_slab_500-webfont.svg#MuseoSlab500Regular') format('svg');font-weight:normal;font-style:normal;}@font-face{font-family:'Museo300Regular';src:url('../css/font-face/museo300-regular-webfont.eot');src:url('../css/font-face/museo300-regular-webfont.eot?#iefix') format('embedded-opentype'),url('../css/font-face/museo300-regular-webfont.woff') format('woff'),url('../css/font-face/museo300-regular-webfont.ttf') format('truetype'),url('../css/font-face/museo300-regular-webfont.svg#Museo300Regular') format('svg');font-weight:normal;font-style:normal;}.button-style{padding:8px;background:#878787;font-family:"Museo300Regular";font-size:14px;border-radius:4px;border:none;font-weight:normal;color:#fbfaf2;}.button-style:hover{text-decoration:none;background:#fe9703;color:#fff;}
 .button-style.right{margin-left:8px;}
 .plain-serif-text{font-family:'Times New Roman',Georgia,Serif;}
@@ -314,13 +321,6 @@ body.story-viewer .messages .error{color:red;}
 body.story-viewer .messages .success{color:green;}
 body.story-viewer table{border-collapse:collapse;border-spacing:0;}
 body.story-viewer td{vertical-align:top;}
-body.story-viewer .section-width{width:940px;margin-left:auto;margin-right:auto;}
-body.story-viewer .section-title{font-size:30px;width:940px;margin-left:auto;margin-right:auto;}
-body.story-viewer .section-layout{overflow:hidden;font-size:13px;width:940px;margin-left:auto;margin-right:auto;}body.story-viewer .section-layout.side-by-side .left,body.story-viewer .section-layout.side-by-side .right{height:489px;width:49%;float:left;}
-body.story-viewer .section-layout.side-by-side .left{margin-left:0;margin-right:1%;}
-body.story-viewer .section-layout.side-by-side .right{margin-left:1%;margin-right:0;}
-body.story-viewer .section-layout.one-up .center{position:relative;height:805px;width:100%;margin:2 0%;}
-body.story-viewer .section-layout img,body.story-viewer .section-layout iframe{max-width:100%;}
 body.story-builder{}body.story-builder header{border-bottom:1px solid white;background:url(../img/builder/header-bg.png) repeat-x top left;}body.story-builder header>div{width:100%;position:relative;margin-left:auto;margin-right:auto;width:1020px;}
 body.story-builder header h1{background:url(../img/builder/builder-logo.png) no-repeat;text-indent:-32000px;width:315px;height:32px;margin-top:20px;}
 body.story-builder .view-container{margin-left:auto;margin-right:auto;width:1020px;}

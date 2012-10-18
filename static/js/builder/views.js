@@ -254,7 +254,6 @@ storybase.builder.views.AppView = Backbone.View.extend({
 
   showAlert: function(level, msg) {
     var $el = this.$('.alerts');
-    var newTop;
     var numAlerts = $el.children().length;
     var view = new storybase.builder.views.AlertView({
       level: level,
@@ -263,9 +262,6 @@ storybase.builder.views.AppView = Backbone.View.extend({
     // Check for duplicate messages and only show the message
     // if it's different.
     if (!(level === this.lastLevel && msg === this.lastMessage && numAlerts > 0)) {
-      // TODO: Remove this.  It's probably not relevent with the redesign
-      newTop = this.$('#nav-container').offset().top + this.$('#nav-container').outerHeight();
-      $el.css('top', newTop);
       $el.prepend(view.render().el);
       view.$el.fadeOut(15000, function() {
         $(this).remove();
@@ -276,29 +272,39 @@ storybase.builder.views.AppView = Backbone.View.extend({
   }
 });
 
+storybase.builder.views.DrawerButtonView = Backbone.View.extend({
+  tagName: 'button',
+
+  className: 'btn',
+
+  events: function() {
+    return {
+      'click': this.options.callback
+    };
+  },
+
+  initialize: function() {
+    this.buttonId = this.options.buttonId;
+    this.dispatcher = this.options.dispatcher;
+    this.template = Handlebars.compile(this.options.templateSource);
+  },
+
+
+  render: function() {
+    this.$el.attr('title', this.options.title);
+    this.$el.html(this.options.text);
+    return this;
+  },
+});
+
 /**
  * View to manage the slide-out drawer.
  */
 storybase.builder.views.DrawerView = Backbone.View.extend({
   options: {
     templateSource: $('#drawer-template').html(),
-    buttonTemplateSource: $('#drawer-button-template').html(),
-    buttonClass: 'btn',
     controlsEl: '#drawer-controls',
     contentsEl: '#drawer-contents'
-  },
-
-  _getButtonElId: function(options) {
-    return "drawer-button-" + options.id;
-  },
-
-  events: function() {
-    var events = {};
-    _.each(this._buttons, function(opts) {
-      var buttonElId = this._getButtonElId(opts);
-      events['click #' + buttonElId] = opts.callback;    
-    }, this);
-    return events;
   },
 
   initialize: function() {
@@ -307,7 +313,10 @@ storybase.builder.views.DrawerView = Backbone.View.extend({
 
     this.template = Handlebars.compile(this.options.templateSource);
     this.buttonTemplate = Handlebars.compile(this.options.buttonTemplateSource);
-    this._buttons = [];
+    // Store the button views 
+    this._buttons = {};
+    // Store the order of buttons
+    this._buttonIds = [];
     this._subviews = [];
   },
 
@@ -340,44 +349,21 @@ storybase.builder.views.DrawerView = Backbone.View.extend({
     }, this);
   },
 
-  addButton: function(options) {
-    this._buttons.push(options);
-    // Listen for the click event for the button.  This is handled by
-    // this.events()
-    this.delegateEvents();
+  addButton: function(button) {
+    this._buttons[button.buttonId] = button;
+    this._buttonIds.push[button.buttonId];
   },
 
-  removeButton: function(options) {
-    var buttonId = options.id;
+  removeButton: function(button) {
     // Remove this button from the list of buttons
-    this._buttons = _.reject(this._buttons, function(opts) {
-      if (opts.id === buttonId) {
-        return true;
-      }
-      else {
-        return false;
-      }
-    }, this);
-    // Stop listening for the click event for the button.  This is handled
-    // by this.events()
-    this.delegateEvents();
-  },
-
-  renderButton: function(options) {
-    var template = this.buttonTemplate;
-    return $(template({
-      id: this._getButtonElId(options),
-      title: options.title,
-      text: options.text
-    }))
-    .addClass(this.options.buttonClass);
+    this._buttonIds = _.without(this._buttonIds, button.buttonId);
+    this._buttons = _.omit(this._buttonIds, button.buttonId);
   },
 
   /**
    * Adjust the position of a rotated button element.
    *
-   * @param {Array} $btnEl jQuery object matching the button
-   *   element to be moved
+   * @param {Array} $buttonEl jQuery object matching the button's element
    *
    * This is needed because the element maintains its original width
    * even after the CSS rotation has been applied, thus creating
@@ -385,20 +371,21 @@ storybase.builder.views.DrawerView = Backbone.View.extend({
    * at the very right of the screen, so we have to move the element all
    * the way over.
    */
-  adjustButtonPos: function($btnEl) {
-    var width = $btnEl.width();
-    var height = $btnEl.height();
+  adjustButtonPos: function($buttonEl) {
+    var width = $buttonEl.width();
+    var height = $buttonEl.height();
     // Convert the value returned by css() to an integer
-    var bottomPadding = parseInt($btnEl.css('padding-bottom'), 10);
-    var topPadding = parseInt($btnEl.css('padding-top'), 10);
+    var bottomPadding = parseInt($buttonEl.css('padding-bottom'), 10);
+    var topPadding = parseInt($buttonEl.css('padding-top'), 10);
     // Move the element to the right with a negative margin
-    return $btnEl.css('margin-right', height - width + bottomPadding);
+    $buttonEl.css('margin-right', height - width + bottomPadding);
+    return $buttonEl;
   },
 
   renderButtons: function() {
     var $controlsEl = this.$(this.options.controlsEl);
-    _.each(this._buttons, function(options) {
-      this.adjustButtonPos(this.renderButton(options).appendTo($controlsEl));
+    _.each(this._buttons, function(button) {
+      this.adjustButtonPos(button.render().$el.appendTo($controlsEl));
     }, this);
   },
 
@@ -418,33 +405,40 @@ storybase.builder.views.DrawerView = Backbone.View.extend({
 
   open: function() {
     this.$(this.options.contentsEl).show();
-    this.$(this.options.controlsEl).find('.'+this.options.buttonClass).data('drawer-open', true);
+    _.each(this._buttons, function(button, buttonId) {
+      button.$el.data('drawer-open', true);
+    });
     this.dispatcher.trigger('open:drawer');
   },
 
   close: function() {
     this.$(this.options.contentsEl).hide();
-    this.$(this.options.controlsEl).find('.'+this.options.buttonClass).data('drawer-open', false);
+    _.each(this._buttons, function(button, buttonId) {
+      button.$el.data('drawer-open', false);
+    });
     this.dispatcher.trigger('close:drawer');
   }
 });
 
 storybase.builder.views.HelpDrawerMixin = {
   drawerButton: function() {
-    return {
-      id: 'help',
-      class: '',
-      title: gettext('Help'),
-      text: gettext('Help'),
-      callback: function(evt) {
-        if ($(evt.target).data('drawer-open')) {
-          this.dispatcher.trigger('do:hide:help', true);
+    if (_.isUndefined(this.drawerButtonView)) {
+      this.drawerButtonView = new storybase.builder.views.DrawerButtonView({
+        dispatcher: this.dispatcher,
+        buttonId: 'help',
+        title: gettext('Help'),
+        text: gettext('Help'),
+        callback: function(evt) {
+          if ($(evt.target).data('drawer-open')) {
+            this.dispatcher.trigger('do:hide:help', true);
+          }
+          else {
+            this.dispatcher.trigger('do:show:help', true);
+          }
         }
-        else {
-          this.dispatcher.trigger('do:show:help', true);
-        }
-      }
+      });
     }
+    return this.drawerButtonView;
   },
 
   drawerOpenEvents: function() {
@@ -871,13 +865,6 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
 
   _initItems: function() {
     return [
-      {
-        id: 'help',
-        title: gettext("Get storytelling tips for the section you're currently editing"),
-        text: gettext('Help'),
-        callback: 'toggleHelp', 
-        visible: true 
-      },
       {
         id: 'assets',
         title: gettext("Show a list of assets you removed from your story"),
