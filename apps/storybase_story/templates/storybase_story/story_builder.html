@@ -56,13 +56,20 @@
 
   <body class="story-builder">
     <div id="builder">
-        <header class="navbar">
-            <div>
-                <h1 class="title">{{ storybase_site_name }} {% trans "Story Builder" %}</h1>
+        <header id="header">
+            <div id="title-bar">
+                <div id="title-bar-contents">
+                    <h1 class="title">{{ storybase_site_name }} {% trans "Story Builder" %}</h1>
+                </div>
             </div>
+            <div id="workflow-bar">
+                <div id="workflow-bar-contents"></div>
+            </div>
+            <div id="subnav-bar">
+                <div id="subnav-bar-contents"></div>
+            </div>
+            <div id="alerts" class="alerts container_12"></div>
         </header>
-        <div id="alerts" class="alerts container_12"></div>
-        <div id="nav-container"></div>
         <div id="app"></div>
         <div id="drawer-container"></div>
     </div>

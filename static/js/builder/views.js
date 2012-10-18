@@ -29,12 +29,14 @@ Namespace.use('storybase.utils.geocode');
  *
  */
 storybase.builder.views.AppView = Backbone.View.extend({
-  defaults: {
-    drawerEl: '#drawer-container'
+  options: {
+    drawerEl: '#drawer-container',
+    toolsContainerEl: '#title-bar-contents',
+    workflowContainerEl: '#workflow-bar-contents',
+    subNavContainerEl: '#subnav-bar-contents'
   },
 
   initialize: function() {
-    _.defaults(this.options, this.defaults);
     // Common options passed to sub-views
     var commonOptions = {
       dispatcher: this.options.dispatcher,
@@ -42,17 +44,22 @@ storybase.builder.views.AppView = Backbone.View.extend({
       visibleSteps: this.options.visibleSteps
     };
     var buildViewOptions;
+    var $toolsContainerEl = this.$(this.options.toolsContainerEl);
+    this.$workflowContainerEl = this.$(this.options.workflowContainerEl);
     this.dispatcher = this.options.dispatcher;
     // The currently active step of the story building process
     // This will get set by an event callback 
     this.activeStep = null; 
 
     // Initialize a view for the tools menu
-    this.toolsView = new storybase.builder.views.ToolsView(commonOptions);
-    // TODO: Change the selector as the template changes
-    this.$('header').first().children().first().append(this.toolsView.el);
+    this.toolsView = new storybase.builder.views.ToolsView(
+      _.clone(commonOptions)
+    );
+    $toolsContainerEl.append(this.toolsView.el);
 
-    this.helpView = new storybase.builder.views.HelpView(commonOptions);
+    this.helpView = new storybase.builder.views.HelpView(
+      _.clone(commonOptions)
+    );
     this.drawerView = new storybase.builder.views.DrawerView({
       dispatcher: this.dispatcher
     });
@@ -64,10 +71,9 @@ storybase.builder.views.AppView = Backbone.View.extend({
 
     // Initialize the view for the workflow step indicator
     this.workflowStepView = new storybase.builder.views.WorkflowStepView(
-      commonOptions
+      _.clone(commonOptions)
     );
-    // TODO: Change the selector as the template changes
-    this.$('header').first().children().first().append(this.workflowStepView.el);
+    this.$workflowContainerEl.append(this.workflowStepView.el);
 
     buildViewOptions = _.defaults({
       assetTypes: this.options.assetTypes,
@@ -100,7 +106,9 @@ storybase.builder.views.AppView = Backbone.View.extend({
     // views use different constructor, options. If this gets to
     // unwieldy, maybe use a factory function.
     if (this.options.visibleSteps.data) {
-      this.subviews.data = new storybase.builder.views.DataView(commonOptions);
+      this.subviews.data = new storybase.builder.views.DataView(
+        _.clone(commonOptions)
+      );
     }
     if (this.options.visibleSteps.tag) {
       this.subviews.tag =  new storybase.builder.views.TaxonomyView(
@@ -113,7 +121,9 @@ storybase.builder.views.AppView = Backbone.View.extend({
       );
     }
     if (this.options.visibleSteps.review) {
-      this.subviews.review = new storybase.builder.views.ReviewView(commonOptions);
+      this.subviews.review = new storybase.builder.views.ReviewView(
+        _.clone(commonOptions)
+      );
     }
     if (this.options.visibleSteps.publish) {
       this.subviews.publish =  new storybase.builder.views.PublishView(
@@ -183,15 +193,38 @@ storybase.builder.views.AppView = Backbone.View.extend({
     return this.subviews[this.activeStep];
   },
 
+  /**
+   * Update the next/previous workflow step buttons
+   */
+  renderWorkflowNavView: function(activeView) {
+    if (this._activeWorkflowNavView) {
+      // Remove the previous active workflow nav view
+      this._activeWorkflowNavView.$el.remove();
+    };
+    // Update the workflow nav view
+    this._activeWorkflowNavView = _.isUndefined(activeView.getWorkflowNavView) ? null: activeView.getWorkflowNavView();
+    if (this._activeWorkflowNavView) {
+      this.$workflowContainerEl.append(this._activeWorkflowNavView.el);
+    }
+  },
+
+  renderSubNavView: function(activeView) {
+    var $subNavContainerEl = this.$(this.options.subNavContainerEl);
+    if (this._activeSubNavView) {
+      // Remove the previous subnav view
+      this._activeSubNavView.$el.remove();
+    }
+    this._activeSubNavView = _.isUndefined(activeView.getSubNavView) ? null : activeView.getSubNavView();
+    if (this._activeSubNavView) {
+      $subNavContainerEl.append(this._activeSubNavView.el);  
+    }
+  },
+
   render: function() {
     console.debug('Rendering main view');
     var activeView = this.getActiveView();
-    var activeNavView = _.isUndefined(activeView.getNavView) ? null: activeView.getNavView();
-    if (activeNavView) {
-      this.$('#nav-container').empty();
-      this.$('#nav-container').append(activeNavView.el);
-      activeNavView.$el.addClass('container');
-    }
+    this.renderWorkflowNavView(activeView);
+    this.renderSubNavView(activeView);
     this.$('#app').empty();
     this.$('#app').append(activeView.render().$el);
     // Some views have things that only work when the element has been added
@@ -230,6 +263,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
     // Check for duplicate messages and only show the message
     // if it's different.
     if (!(level === this.lastLevel && msg === this.lastMessage && numAlerts > 0)) {
+      // TODO: Remove this.  It's probably not relevent with the redesign
       newTop = this.$('#nav-container').offset().top + this.$('#nav-container').outerHeight();
       $el.css('top', newTop);
       $el.prepend(view.render().el);
@@ -246,7 +280,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
  * View to manage the slide-out drawer.
  */
 storybase.builder.views.DrawerView = Backbone.View.extend({
-  defaults: {
+  options: {
     templateSource: $('#drawer-template').html(),
     buttonTemplateSource: $('#drawer-button-template').html(),
     buttonClass: 'btn',
@@ -268,7 +302,6 @@ storybase.builder.views.DrawerView = Backbone.View.extend({
   },
 
   initialize: function() {
-    _.defaults(this.options, this.defaults);
     this.dispatcher = this.options.dispatcher;
     this.dispatcher.on('register:drawerview', this.registerView, this);
 
@@ -429,14 +462,13 @@ storybase.builder.views.HelpView = Backbone.View.extend(
 
     className: 'help',
 
-    defaults: {
+    options: {
       templateSource: $('#help-template').html()
     },
 
     events: {},
 
     initialize: function() {
-      _.defaults(this.options, this.defaults);
       this.dispatcher = this.options.dispatcher;
       this.help = null;
       this.template = Handlebars.compile(this.options.templateSource);
@@ -486,7 +518,6 @@ storybase.builder.views.HelpView = Backbone.View.extend(
     },
 
     set: function(help) {
-      console.debug(help);
       this.help = help;
     },
 
@@ -719,7 +750,9 @@ storybase.builder.views.WorkflowNavView = storybase.builder.views.ClickableItems
 storybase.builder.views.WorkflowStepView = storybase.builder.views.WorkflowNavView.extend({
   tagName: 'ol',
 
-  className: 'workflow-step nav',
+  id: 'workflow-step',
+
+  className: 'nav',
 
   itemTemplateSource: $('#workflow-item-template').html(),
 
@@ -832,7 +865,9 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.WorkflowNavVi
 storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.extend({
   tagName: 'ul',
 
-  className: 'tools nav',
+  id: 'tools',
+
+  className: 'nav',
 
   _initItems: function() {
     return [
@@ -1254,7 +1289,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
   className: 'builder',
 
-  defaults: {
+  options: {
     titleEl: '.story-title'
   },
 
@@ -1265,7 +1300,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       return !this.model.isNew();
     }, this)
 
-    _.defaults(this.options, this.defaults);
     this.containerTemplates = this.options.containerTemplates;
     this.dispatcher = this.options.dispatcher;
     this.help = this.options.help;
@@ -1316,12 +1350,11 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
         validate: this.options.visibleSteps.review ? true : this.simpleReview
       });
     }
-    this.navView = new storybase.builder.views.WorkflowNavView(navViewOptions);
+    this.workflowNavView = new storybase.builder.views.WorkflowNavView(navViewOptions);
 
     if (this.options.showSectionList) {
       this.sectionListView = new storybase.builder.views.SectionListView({
         dispatcher: this.dispatcher,
-        navView: this.navView,
         model: this.model
       });
     }
@@ -1350,7 +1383,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.dispatcher.on("save:story", this.setTitle, this);
     this.dispatcher.on("ready:story", this.setTitle, this);
     this.dispatcher.on("created:section", this.handleCreateSection, this);
-    this.dispatcher.on("toggle:sectionlist", this.setPadding, this);
 
     if (!this.model.isNew()) {
       this.model.sections.fetch();
@@ -1450,20 +1482,24 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     if (this.sectionListView) {
       this.sectionListView.render();
     }
-    if (this.navView) {
-      this.navView.render();
+    if (this.workflowNavView) {
+      this.workflowNavView.render();
     }
     this.renderEditViews();
     this.$el.append(this.lastSavedView.render().el);
     return this;
   },
 
-  getNavView: function() {
+  getWorkflowNavView: function() {
+    return this.workflowNavView;
+  },
+
+  getSubNavView: function() {
     if (this.sectionListView) {
       return this.sectionListView;
     }
     else {
-      return this.navView;
+      return null;
     }
   },
 
@@ -1474,10 +1510,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
    * This is called from upstream views.
    */
   onShow: function() {
-    // Dynamically set the padding at the top of the view to
-    // accomodate the workflow/section navigation bar
-    this.setPadding();
-
     // Recalculate the width of the section list view.
     if (this.sectionListView) {
       this.sectionListView.setWidth();
@@ -1487,12 +1519,12 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this._tour.show();
   },
 
-  getNavView: function() {
+  workflowNavView: function() {
     if (this.sectionListView) {
       return this.sectionListView;
     }
     else {
-      return this.navView;
+      return this.workflowNavView;
     }
   },
 
@@ -1616,24 +1648,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
     this.$(this.options.titleEl).removeClass('error');
     return true;
-  },
-
-  /**
-   * Set the top padding of the view's element to accomodate the
-   * navigation view.
-   */
-  setPadding: function() {
-    var $navEl = this.navView.$el;
-    var navHeight = $navEl.outerHeight();
-    var navTop = $navEl.offset().top;
-    var navBottom = navTop + navHeight;
-    var elTop = this.$el.offset().top;
-    if (elTop < navBottom) {
-      this.$el.css('padding-top', navHeight);
-    }
-    else {
-      this.$el.css('padding-top', 0);  
-    }
   }
 });
 
@@ -1905,11 +1919,12 @@ storybase.builder.views.FileUploadMixin = {
  * Mixin for views that have a navigation subview
  */
 storybase.builder.views.NavViewMixin = {
-  getNavView: function() {
-    return this.navView;
+  getWorkflowNavView: function() {
+    return this.workflowNavView;
   }
 };
 
+// TODO: Remove this view
 /**
  * Next/previous buttons.
  */
@@ -2047,7 +2062,6 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
 
   events: {
     'click .spacer .add-section': 'clickAddSection',
-    'click #toggle-section-list': 'toggleList',
     'sortupdate': 'handleSort',
     'mousedown .scroll-right': 'scrollRight',
     'mousedown .scroll-left': 'scrollLeft',
@@ -2056,8 +2070,6 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
 
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
-    this.navView = this.options.navView;
-    this._state = 'opened';
     /**
      * A lookup table of SectionThumbnailView instances by their
      * model's section ids.
@@ -2080,11 +2092,6 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
     this._thumbnailWidth = 0;
 
     this.template = Handlebars.compile(this.templateSource);
-
-    this.sectionNavView = new storybase.builder.views.SectionNavView({
-      dispatcher: this.dispatcher,
-      model: this.model
-    });
 
     this.dispatcher.on("do:remove:section", this.removeSection, this);
     this.dispatcher.on("ready:story", this.addSectionThumbnails, this);
@@ -2170,24 +2177,6 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
     this.setWidth();
     this.$('.sections-clip').css({overflow: 'hidden'});
  
-    this.$el.addClass(this._state);
-    this.sectionNavView.render();
-    if (this._state === 'opened') {
-      this.sectionNavView.$el.hide();
-    }
-    this.$el.append(this.sectionNavView.el);
-    if (this.navView) {
-      this.$el.append(this.navView.el);
-    }
-    // Add tooltips
-    if (jQuery().tooltipster) {
-      this.$('#toggle-section-list.tooltip').tooltipster({
-        position: 'bottom',
-        // Set the text here, because the text from the title attribute
-        // was disappearing
-        overrideText: gettext('You can hide or reveal the table of contents bar by clicking here'),
-      });
-    }
     this.delegateEvents();
 
     return this;
@@ -2325,17 +2314,6 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
   stopScroll: function(evt) {
     evt.preventDefault();
     this._doScroll = false;
-  },
-
-  toggleList: function(evt) {
-    evt.preventDefault();
-    this._state = this._state === 'opened' ? 'closed' : 'opened';
-    // TODO: Use the 'blind' easing function to show/hide this
-    this.$('.sections-container').toggle();
-    this.$el.toggleClass('opened');
-    this.$el.toggleClass('closed');
-    this.sectionNavView.$el.toggle();
-    this.dispatcher.trigger('toggle:sectionlist', this._state);
   }
 });
 
@@ -2466,10 +2444,7 @@ storybase.builder.views.PseudoSectionEditView = Backbone.View.extend(
            storybase.builder.views.StoryAttributeSavingMixin, {
     tagName: 'div',
 
-    defaults: {},
-
     initialize: function() {
-      _.defaults(this.options, this.defaults);
       this.dispatcher = this.options.dispatcher;
       this.help = this.options.help;
       this.template = Handlebars.compile(this.templateSource);
@@ -2528,7 +2503,7 @@ storybase.builder.views.StoryInfoEditView = storybase.builder.views.PseudoSectio
     return events;
   },
 
-  defaults: {
+  options: {
     titleEl: '.story-title',
     bylineEl: '.byline',
     summaryEl: 'textarea[name="summary"]' 
@@ -2580,13 +2555,12 @@ storybase.builder.views.InlineStoryInfoEditView = Backbone.View.extend(
 
     templateSource: $('#story-info-edit-inline-template').html(),
 
-    defaults: {
+    options: {
       titleEl: '.story-title',
       bylineEl: '.byline'
     },
 
     initialize: function() {
-      _.defaults(this.options, this.defaults);
       this.template = Handlebars.compile(this.templateSource);
       this.dispatcher = this.options.dispatcher;
     },
@@ -2628,7 +2602,7 @@ storybase.builder.views.CallToActionEditView = storybase.builder.views.PseudoSec
   // explicit identifier
   pseudoSectionId: 'call-to-action',
 
-  defaults: {
+  options: {
     callToActionEl: 'textarea[name="call_to_action"]',
     connectedEl: 'input[name="allow_connected"]',
     connectedPromptEl: 'textarea[name="connected_prompt"]'
@@ -2685,7 +2659,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
 
   templateSource: $('#section-edit-template').html(),
 
-  defaults: {
+  options: {
     containerEl: '.storybase-container-placeholder',
     titleEl: '.section-title',
     storyTitleEl: '.story-title'
@@ -2696,7 +2670,6 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   },
 
   initialize: function() {
-    _.defaults(this.options, this.defaults);
     this.containerTemplates = this.options.containerTemplates;
     this.dispatcher = this.options.dispatcher;
     this.story = this.options.story;
@@ -3043,8 +3016,8 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
 
     className: 'edit-section-asset',
 
-    defaults: {
-      wrapperEl: '.wrapper'
+    options: {
+      wrapperEl: '.wrapper',
     },
 
     templateSource: function() {
@@ -3078,7 +3051,6 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
 
     initialize: function() {
       console.debug("Initializing new section asset edit view");
-      _.defaults(this.options, this.defaults);
       var modelOptions = {};
       this.container = this.options.container;
       this.dispatcher = this.options.dispatcher;
@@ -3493,7 +3465,7 @@ storybase.builder.views.DataView = Backbone.View.extend(
       this.collection.on('reset', this.render, this);
       this._collectionFetched = false;
 
-      this.navView = new storybase.builder.views.WorkflowNavView({
+      this.workflowNavView = new storybase.builder.views.WorkflowNavView({
         model: this.model,
         dispatcher: this.dispatcher,
         items: [
@@ -3554,7 +3526,7 @@ storybase.builder.views.DataView = Backbone.View.extend(
         };
         this.$el.html(this.template(context));
         this.$('.add-dataset').before(this.form.render().$el.append('<input class="cancel" type="reset" value="Cancel" />').append('<input type="submit" value="Save" />').hide());
-        this.navView.render();
+        this.workflowNavView.render();
         this.delegateEvents();
       }
       return this;
@@ -3657,7 +3629,7 @@ storybase.builder.views.ReviewView = Backbone.View.extend(
       // Need to bind validate to this before it's passed as a callback to
       // the WorkflowNavView instance
       _.bindAll(this, 'hasPreviewed');
-      this.navView = new storybase.builder.views.WorkflowNavView({
+      this.workflowNavView = new storybase.builder.views.WorkflowNavView({
         model: this.model,
         dispatcher: this.dispatcher,
         items: [
@@ -3688,7 +3660,7 @@ storybase.builder.views.ReviewView = Backbone.View.extend(
       console.info('Rendering review view');
       var context = {};
       this.$el.html(this.template(context));
-      this.navView.render();
+      this.workflowNavView.render();
       this.delegateEvents();
       return this;
     },
@@ -3698,7 +3670,7 @@ storybase.builder.views.ReviewView = Backbone.View.extend(
       var url = '/stories/' + this.model.id + '/viewer/';
       this.previewed = true;
       // Re-render the nav view to reflect the newly enabled button
-      this.navView.render();
+      this.workflowNavView.render();
       window.open(url);
     },
 
@@ -3719,7 +3691,7 @@ storybase.builder.views.TaxonomyView = Backbone.View.extend(
     initialize: function() {
       this.dispatcher = this.options.dispatcher;
       this.template = Handlebars.compile(this.templateSource);
-      this.navView = new storybase.builder.views.WorkflowNavView({
+      this.workflowNavView = new storybase.builder.views.WorkflowNavView({
         model: this.model,
         dispatcher: this.dispatcher,
         items: [
@@ -3888,7 +3860,7 @@ storybase.builder.views.TaxonomyView = Backbone.View.extend(
       }
       this.$el.append(this.tagView.render().el);
       this.$el.append(this.addLocationView.render().el);
-      this.navView.render();
+      this.workflowNavView.render();
 
       return this;
     },
@@ -4155,7 +4127,7 @@ storybase.builder.views.LegalView = Backbone.View.extend({
     'submit form': 'processForm'
   },
 
-  defaults: {
+  options: {
     'title': gettext("Accept the legal agreement")
   },
 
@@ -4183,7 +4155,6 @@ storybase.builder.views.LegalView = Backbone.View.extend({
       permission: this.hasPermission,
       license: this.agreedLicense
     };
-    _.defaults(this.options, this.defaults);
     this.dispatcher = this.options.dispatcher;
     this.template = Handlebars.compile(this.templateSource);
     this.hasPermission = this.model && this.model.get('status') === 'published';
@@ -4279,7 +4250,6 @@ storybase.builder.views.LicenseDisplayView = Backbone.View.extend({
 
   initialize: function() {
     var license = _.isUndefined(this.model) ? null : this.model.get('license');
-    _.defaults(this.options, this.defaults);
     this.dispatcher = this.options.dispatcher;
     this._licenseHtml = null;
     if (_.isUndefined(this.model)) {
@@ -4329,7 +4299,7 @@ storybase.builder.views.LicenseView = Backbone.View.extend({
     'click .change-license': 'showForm'
   },
 
-  defaults: {
+  options: {
     title: gettext("Select a license"),
     templateSource: $('#share-license-template').html()
   },
@@ -4358,7 +4328,6 @@ storybase.builder.views.LicenseView = Backbone.View.extend({
   initialize: function() {
     var license = this.model ? this.model.get('license') : null;
     var formVals = storybase.utils.licenseStrToParams(license);
-    _.defaults(this.options, this.defaults);
     this.dispatcher = this.options.dispatcher;
     this.form = new Backbone.Form({
       schema: this.schema(),
@@ -4446,7 +4415,7 @@ storybase.builder.views.PublishView = Backbone.View.extend(
       'click .view-story': 'handleView'
     },
 
-    defaults: {
+    options: {
       // Source of template for the main view layout
       templateSource: $('#share-publish-template').html(),
       // Source of the template with markup/text that is displayed
@@ -4466,7 +4435,6 @@ storybase.builder.views.PublishView = Backbone.View.extend(
     initialize: function() {
       var navViewOptions;
   
-      _.defaults(this.options, this.defaults);
       this.dispatcher = this.options.dispatcher;
       this.template = Handlebars.compile(this.options.templateSource);
       this.readyTemplate = Handlebars.compile(this.options.readyTemplateSource);
@@ -4513,7 +4481,7 @@ storybase.builder.views.PublishView = Backbone.View.extend(
         path: '/build/',
         route: false
       });
-      this.navView = new storybase.builder.views.WorkflowNavView(navViewOptions);
+      this.workflowNavView = new storybase.builder.views.WorkflowNavView(navViewOptions);
       
       if (_.isUndefined(this.model)) {
         this.dispatcher.on("ready:story", this.setStory, this);
@@ -4686,7 +4654,7 @@ storybase.builder.views.PublishView = Backbone.View.extend(
           data_track_clickback: false
         });
       }
-      this.navView.render();
+      this.workflowNavView.render();
       this.delegateEvents();
       return this;
     }
@@ -4705,7 +4673,7 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
       'submit form.bbf-form': 'processForm'
     },
 
-    defaults: {
+    options: {
       title: gettext("Select a featured image"),
       templateSource: $('#featured-asset-template').html(),
     },
@@ -4730,7 +4698,6 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
     },
 
     initialize: function() {
-      _.defaults(this.options, this.defaults);
       this.dispatcher = this.options.dispatcher;
       this.story = this.options.story;
       this.template = Handlebars.compile(this.options.templateSource);

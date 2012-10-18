@@ -6,7 +6,6 @@ header {
 
   > div {
     width:100%;
-    height:119px;
     position:relative;
     .container_12;
   }
@@ -157,28 +156,16 @@ a.btn.disabled {
   cursor: pointer;
 }
 
-/* Navigation Bar */
+// Header
 
-.navbar {
-  color: #fff;
-  right: 0;
-  left: 0;
-  top: 0;
-  margin-bottom: 0;
+#header {
+  display: block;
+  position: fixed;
+  width: 100%;
+  z-index: 999;
 }
 
-.navbar .row {
-  position: relative;
-}
-
-.navbar .title {
-  float: left;
-  font-size: 20px;
-  padding: 8px 0 12px 0;
-  line-height: 1;
-}
-
-.navbar .nav {
+#header .nav {
   position: relative;
   display: block;
   float: left;
@@ -189,7 +176,7 @@ a.btn.disabled {
 */
 }
 
-.navbar .nav > li {
+#header .nav > li {
   display: block;
   float: left;
 /*  
@@ -197,21 +184,41 @@ a.btn.disabled {
 */
 }
 
-.navbar .nav > li > a {
-/*
+#header .nav > li > a {
   display: block;
   float: none;
+/*
   padding: 10px 10px 11px;
   line-height: 19px;
   color: #fff;
   font-weight: bold;
-  text-decoration: none;
 */
+  text-decoration: none;
 }
 
-.tools {
+// Title Bar
+
+#title-bar {
+  background: #f7941e;
+  overflow: hidden;
+  height:63px;
+
+  .title {
+    color: #fff;
+    float: left;
+    font-size: 20px;
+    padding: 8px 0 12px 0;
+    line-height: 1;
+  }
+}
+
+#title-bar-contents {
+  .container_12;
+}
+
+#tools {
   position: absolute !important;
-  right: 45px;
+  right: 0px;
   top: 28px;
   font-family:'Museo300Regular';
   font-size:16px;
@@ -225,8 +232,17 @@ a.btn.disabled {
   }
 }
 
-.workflow-step {
-  margin:2px auto;
+#workflow-bar {
+  overflow: hidden;
+  height:56px;
+}
+
+#workflow-bar-contents {
+  .container_12;
+}
+
+#workflow-step {
+  margin:10px auto;
   clear:both;
 
   li {
@@ -237,10 +253,10 @@ a.btn.disabled {
 
     // where n is the index of the appropriate icon in the sprite
     .builder-icon (@n) {
-      background: url(../img/builder/workflow-step-icons.png) no-repeat 0 (-@n * @icon-next-d);
+      background: url(../img/builder/workflow-step-icons.png) no-repeat (@icon-width / 2) (-@n * @icon-next-d);
       &.selected {
         color:#fff;
-        background-position:0 ((-@n * @icon-next-d) - @icon-highlight-d);
+        background-position:(@icon-width / 2) ((-@n * @icon-next-d) - @icon-highlight-d);
       }
     }
 
@@ -256,9 +272,14 @@ a.btn.disabled {
     
     a {
       .builder-icon(0);
+      &#build { .builder-icon(0); }
+      &#data { .builder-icon(1); }
+      &#tag { .builder-icon(2); }
+      &#review { .builder-icon(3); }
+      &#publish { .builder-icon(4); }
 
       display:block;
-      padding-left:(@icon-width + 3px);
+      padding-left:(@icon-width * 2);
       height:@icon-height;
       font-family:'Museo300Regular';
       font-size:16px;
@@ -270,12 +291,31 @@ a.btn.disabled {
     }
     
   }
+/*
+  .selected {
+    background-color: #fff;
+    color: #000 !important;
+    font-style: italic;
+  }
+
+  .disabled,
+  .tools .disabled {
+    font-weight: normal !important;
+    cursor: default;
+  }
+*/
 }
 
-.workflow-step .disabled,
-.tools .disabled {
-  font-weight: normal !important;
-  cursor: default;
+// Subnavigation Bar
+// Currently the only thing that ever goes in this is the section list
+#subnav-bar {
+  // TODO: Replace this with more-human-readable color variable
+  background-color: #f0efef;
+  width:100%;
+}
+
+#subnav-bar-contents {
+  .container_12;
 }
 
 /* Main Application Container */
@@ -388,7 +428,8 @@ a.btn.disabled {
 
 .builder {
   position: relative;
-  height: 100%;
+  // TODO: Calculate this from the section list bar size
+  padding-top: 100px;
 }
 
 .section-controls {
@@ -667,10 +708,7 @@ a.btn.disabled {
 @closed-padding: 5px;
 
 #section-list {
-  .container_12;
   position: relative;
-  z-index: 999;
-  background-color: @control-color-1;
   overflow: hidden;
 }
 
@@ -696,7 +734,6 @@ a.btn.disabled {
   width: 75%;
   float: left;
   overflow: hidden;
-  background-color: @control-color-1;
   padding: 0 10px;
   text-align: center;
 }
@@ -852,23 +889,6 @@ a.btn.disabled {
 
 #section-list.closed .workflow-nav {
   padding-top: @closed-padding;
-}
-
-/* Builder Navigation Buttons */
-
-#nav-container {
-  position: fixed;
-  width: 100%;
-  top: 120px;
-  background-color: @control-color-1;
-  z-index: 999;
-}
-
-.workflow-nav {
-  position: relative;
-  height: 35px;
-  padding-top: @closed-padding;
-  text-align: right;
 }
 
 // Add Data View
