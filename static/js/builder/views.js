@@ -894,13 +894,6 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
   _initItems: function() {
     return [
       {
-        id: 'assets',
-        title: gettext("Show a list of assets you removed from your story"),
-        text: gettext('Assets'),
-        callback: 'toggleAssetList',
-        visible: false
-      },
-      {
         id: 'preview',
         title: gettext("Preview your story in a new window"),
         text: gettext('Preview'),
@@ -932,16 +925,9 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
     this.activeStep = null;
     this.hasAssetList = false;
 
-    this.dispatcher.on('has:assetlist', this.toggleAssetsItem, this);
     this.dispatcher.on('ready:story', this.handleStorySave, this);
     this.dispatcher.on('save:story', this.handleStorySave, this);
     this.dispatcher.on("select:workflowstep", this.updateStep, this);
-  },
-
-  toggleAssetsItem: function(hasAssetList) {
-    this.hasAssetList = hasAssetList;
-    this.setVisibility('assets', this.hasAssetList && this.activeStep === 'build');
-    this.render();
   },
 
   previewStory: function(evt) {
@@ -950,11 +936,6 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
       window.open(url);
     }
     evt.preventDefault();
-  },
-
-  toggleAssetList: function(evt) {
-    evt.preventDefault();
-    this.dispatcher.trigger("toggle:assetlist");
   },
 
   toggleHelp: function(evt) {
@@ -973,15 +954,6 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
   },
 
   updateVisible: function() {
-    // The assets item should only be visible in the build Workflow
-    // step
-    if (this.activeStep === 'build') {
-      this.setVisibility('assets', this.hasAssetList);
-    }
-    else {
-      this.setVisibility('assets', false);
-    }
-
     if (this.activeStep !== 'selecttemplate') {
       this.setVisibility('start-over', true);
     }
@@ -1381,6 +1353,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       dispatcher: this.dispatcher,
       assets: this.model.unusedAssets
     });
+    this.dispatcher.trigger("register:drawerview", this.unusedAssetView);
 
     this._editViews = [];
 
@@ -1390,7 +1363,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
     this.dispatcher.on("select:template", this.setStoryTemplate, this);
     this.dispatcher.on("do:save:story", this.save, this);
-    this.dispatcher.on("toggle:assetlist", this.toggleAssetList, this);
     this.dispatcher.on("add:sectionasset", this.showSaved, this);
     this.dispatcher.on("save:section", this.showSaved, this);
     this.dispatcher.on("save:story", this.showSaved, this);
@@ -1616,9 +1588,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     });
   },
 
-  toggleAssetList: function() {
-    this.unusedAssetView.$el.toggle(); 
-  },
 
   hasAssetList: function() {
     var hasAssets = false;
@@ -1672,7 +1641,6 @@ storybase.builder.views.LastSavedView = Backbone.View.extend({
 
   initialize: function() {
     this.lastSaved = !!this.options.lastSaved ? (_.isDate(this.options.lastSaved) ? this.options.lastSaved : new Date(this.options.lastSaved)) : null;
-    console.debug(!!this.options.lastSaved);
     this.dispatcher = this.options.dispatcher;
 
     this.dispatcher.on('save:section', this.updateLastSaved, this);
@@ -1718,58 +1686,100 @@ storybase.builder.views.LastSavedView = Backbone.View.extend({
   }
 });
 
+storybase.builder.views.UnusedAssetDrawerMixin = {
+  drawerButton: function() {
+    if (_.isUndefined(this.drawerButtonView)) {
+      this.drawerButtonView = new storybase.builder.views.DrawerButtonView({
+        dispatcher: this.dispatcher,
+        buttonId: 'unused-assets',
+        text: gettext('Assets'),
+        title: gettext("Show a list of assets you removed from your story"),
+        callback: function(evt) {
+          if ($(evt.target).data('drawer-open')) {
+            this.dispatcher.trigger('do:hide:assetlist', true);
+          }
+          else {
+            this.dispatcher.trigger('do:show:assetlist', true);
+          }
+        }
+      });
+    }
+    return this.drawerButtonView;
+  },
+
+  drawerOpenEvents: function() {
+    return ['do:show:assetlist'];
+  },
+
+  drawerCloseEvents: function() {
+    return ['do:hide:assetlist'];
+  }
+};
+
 /** 
  * A list of assets associated with the story but not used in any section.
  */
-storybase.builder.views.UnusedAssetView = Backbone.View.extend({
-  tagName: 'div',
+storybase.builder.views.UnusedAssetView = Backbone.View.extend(
+  _.extend({}, storybase.builder.views.UnusedAssetDrawerMixin, {
+    tagName: 'div',
 
-  className: 'unused-assets',
+    className: 'unused-assets',
 
-  templateSource: $('#unused-assets-template').html(),
+    templateSource: $('#unused-assets-template').html(),
 
-  initialize: function() {
-    this.dispatcher = this.options.dispatcher;
-    this.template = Handlebars.compile(this.templateSource);
-    this.assets = this.options.assets;
+    initialize: function() {
+      this.dispatcher = this.options.dispatcher;
+      this.template = Handlebars.compile(this.templateSource);
+      this.assets = this.options.assets;
 
-    // When the assets are synced with the server, re-render this view
-    this.assets.on("add reset sync remove", this.render, this);
-    // When an asset is removed from a section, add it to this view
-    this.dispatcher.on("remove:sectionasset", this.addAsset, this);
-    this.assets.on("remove", this.handleRemove, this);
-  },
+      // When the assets are synced with the server, re-render this view
+      this.assets.on("add reset sync remove", this.render, this);
+      // When an asset is removed from a section, add it to this view
+      this.dispatcher.on("remove:sectionasset", this.addAsset, this);
+      this.dispatcher.on("do:show:assetlist", this.show, this);
+      this.dispatcher.on("do:hide:assetlist", this.hide, this);
+      this.assets.on("remove", this.handleRemove, this);
+    },
 
-  render: function() {
-    var assetsJSON = this.assets.toJSON();
-    assetsJSON = _.map(assetsJSON, function(assetJSON) {
-      // TODO: Better shortened version of asset
-      return assetJSON;
-    });
-    var context = {
-      assets: assetsJSON
-    };
-    this.$el.html(this.template(context));
-    this.$('.unused-asset').draggable({
-      revert: 'invalid' 
-    });
-    return this;
-  },
+    render: function() {
+      var assetsJSON = this.assets.toJSON();
+      assetsJSON = _.map(assetsJSON, function(assetJSON) {
+        // TODO: Better shortened version of asset
+        return assetJSON;
+      });
+      var context = {
+        assets: assetsJSON
+      };
+      this.$el.html(this.template(context));
+      this.$('.unused-asset').draggable({
+        revert: 'invalid' 
+      });
+      return this;
+    },
 
-  /**
-   * Event callback for when assets are removed from a section
-   */
-  addAsset: function(asset) {
-    this.assets.push(asset);
-  },
+    /**
+     * Event callback for when assets are removed from a section
+     */
+    addAsset: function(asset) {
+      this.assets.push(asset);
+    },
 
-  handleRemove: function() {
-    // If the last asset was removed, hide the element
-    if (!this.assets.length) {
-      this.$el.hide(); 
+    handleRemove: function() {
+      // If the last asset was removed, hide the element
+      if (!this.assets.length) {
+        this.$el.hide(); 
+      }
+    },
+
+    show: function() {
+      return this.$el.show();
+    },
+
+    hide: function() {
+      return this.$el.hide();
     }
-  }
-});
+  })
+);
 
 storybase.builder.views.RichTextEditorMixin = {
   toolbarTemplateSource: $('#editor-toolbar-template').html(),
