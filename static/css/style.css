@@ -237,6 +237,8 @@ body.base-template .content-page.object-detail.project .featured-story img{width
 body.base-template .content-page.object-detail.project .recent-stories ul{margin-bottom:30px;}
 body.base-template .content-page.object-detail.project .recent-stories li{margin-bottom:10px;overflow:hidden;}body.base-template .content-page.object-detail.project .recent-stories li img{margin-top:8px;width:100%;}
 body.base-template .content-page section.content-block{padding-bottom:40px;border-bottom:1px solid #ccc;margin-bottom:20px;overflow:hidden;}body.base-template .content-page section.content-block.last{border-bottom:none;}
+body.base-template .faq-section,body.base-template .faq-question{color:#fe9703 !important;}
+body.base-template .faq-question{cursor:pointer;}
 body.base-template form{overflow:hidden;}body.base-template form .form-text{font-family:'Times New Roman',Georgia,Serif;font-size:14px;color:#555555;}
 body.base-template form .soft-edge-style{border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px;font-family:'Times New Roman',Georgia,Serif;font-size:14px;color:#555555;box-shadow:inset 0 0 3px #ccc;border:1px solid #aaaaaa;padding:5px;}
 body.base-template form ul.errorlist li{font-family:'Times New Roman',Georgia,Serif;color:#ee6666;}
@@ -349,15 +351,21 @@ body.story-builder #header .nav>li>a{}
 body.story-builder #title-bar{background:#f7941e;overflow:hidden;height:63px;}body.story-builder #title-bar .title{color:#fff;float:left;font-size:20px;padding:8px 0 12px 0;line-height:1;}
 body.story-builder #title-bar-contents{margin-left:auto;margin-right:auto;width:1020px;}
 body.story-builder #tools{position:absolute !important;right:0px;top:28px;font-family:'Museo300Regular';font-size:16px;}body.story-builder #tools li{padding:0 8px;list-style:none;}body.story-builder #tools li a{text-transform:uppercase;text-decoration:none;color:white;text-shadow:0 -1px 1px rgba(0, 0, 0, 0.3);}
-body.story-builder #workflow-bar{overflow:hidden;height:56px;border-bottom:1px solid white;}
+body.story-builder #workflow-bar{height:56px;border-bottom:1px solid white;}
 body.story-builder #workflow-bar-contents{margin-left:auto;margin-right:auto;width:1020px;height:56px;}
-body.story-builder #workflow-step{margin:10px auto;clear:both;}body.story-builder #workflow-step li{color:#fe9703;list-style:decimal inside none;padding:0 19px;height:34px;border-right:1px solid #3b3b3b;font-family:'Museo300Regular';line-height:34px;}body.story-builder #workflow-step li:first-child{border-left:1px solid #3b3b3b;}
-body.story-builder #workflow-step li a{background:url(../img/builder/workflow-step-icons.png) no-repeat 10px 0px;display:block-inline;padding:3px 0 1px 40px;height:23px;font-family:'Museo300Regular';font-size:16px;text-transform:uppercase;color:#5a5a5a;text-decoration:none;}body.story-builder #workflow-step li a.selected{color:#fff;background-position:10px -23px;}
-body.story-builder #workflow-step li a#build{background:url(../img/builder/workflow-step-icons.png) no-repeat 10px 0px;}body.story-builder #workflow-step li a#build.selected{color:#fff;background-position:10px -23px;}
-body.story-builder #workflow-step li a#data{background:url(../img/builder/workflow-step-icons.png) no-repeat 10px -46px;}body.story-builder #workflow-step li a#data.selected{color:#fff;background-position:10px -69px;}
-body.story-builder #workflow-step li a#tag{background:url(../img/builder/workflow-step-icons.png) no-repeat 10px -92px;}body.story-builder #workflow-step li a#tag.selected{color:#fff;background-position:10px -115px;}
-body.story-builder #workflow-step li a#review{background:url(../img/builder/workflow-step-icons.png) no-repeat 10px -138px;}body.story-builder #workflow-step li a#review.selected{color:#fff;background-position:10px -161px;}
-body.story-builder #workflow-step li a#publish{background:url(../img/builder/workflow-step-icons.png) no-repeat 10px -184px;}body.story-builder #workflow-step li a#publish.selected{color:#fff;background-position:10px -207px;}
+body.story-builder #workflow-step{margin:10px auto;clear:both;}body.story-builder #workflow-step li{color:#fe9703;list-style:decimal inside none;padding:0 19px;height:34px;border-right:1px solid #3b3b3b;font-family:'Museo300Regular';line-height:34px;position:relative;}body.story-builder #workflow-step li:first-child{border-left:1px solid #3b3b3b;}
+body.story-builder #workflow-step li em{display:none;background:url(../img/builder/step-selected.png) no-repeat left top;width:12px;height:6px;position:absolute;top:46px;left:48%;z-index:10;}
+body.story-builder #workflow-step li a{background:url(../img/builder/workflow-step-icons.png) no-repeat 10px 0px;display:block-inline;padding:3px 0 1px 40px;height:23px;font-family:'Museo300Regular';font-size:16px;text-transform:uppercase;color:#5a5a5a;text-decoration:none;}body.story-builder #workflow-step li a#build{background:url(../img/builder/workflow-step-icons.png) no-repeat 10px 0px;}
+body.story-builder #workflow-step li a#data{background:url(../img/builder/workflow-step-icons.png) no-repeat 10px -46px;}
+body.story-builder #workflow-step li a#tag{background:url(../img/builder/workflow-step-icons.png) no-repeat 10px -92px;}
+body.story-builder #workflow-step li a#review{background:url(../img/builder/workflow-step-icons.png) no-repeat 10px -138px;}
+body.story-builder #workflow-step li a#publish{background:url(../img/builder/workflow-step-icons.png) no-repeat 10px -184px;}
+body.story-builder #workflow-step li.selected em{display:block;}
+body.story-builder #workflow-step li.selected a{color:#fff;}body.story-builder #workflow-step li.selected a#build{background:url(../img/builder/workflow-step-icons.png) no-repeat 10px -23px;}
+body.story-builder #workflow-step li.selected a#data{background:url(../img/builder/workflow-step-icons.png) no-repeat 10px -69px;}
+body.story-builder #workflow-step li.selected a#tag{background:url(../img/builder/workflow-step-icons.png) no-repeat 10px -115px;}
+body.story-builder #workflow-step li.selected a#review{background:url(../img/builder/workflow-step-icons.png) no-repeat 10px -161px;}
+body.story-builder #workflow-step li.selected a#publish{background:url(../img/builder/workflow-step-icons.png) no-repeat 10px -207px;}
 body.story-builder #last-saved{color:#fff;font-style:italic;}
 body.story-builder #subnav-bar{background-color:#f0efef;width:100%;}
 body.story-builder #subnav-bar-contents{margin-left:auto;margin-right:auto;width:1020px;}
@@ -412,7 +420,7 @@ body.story-builder .bbf-form ul{margin:0;padding:0;}
 body.story-builder .field-body .bbf-editor{margin-left:0;width:100%;}
 body.story-builder .bbf-field .bbf-editor{margin-left:0;width:100%;}
 body.story-builder .bbf-field label{float:none;width:100%;font-weight:bold;}
-body.story-builder #section-list{position:relative;overflow:hidden;}
+body.story-builder #section-list{position:relative;overflow:hidden;min-height:108px;}
 body.story-builder #toggle-section-list{display:block;float:left;padding:10px;font-weight:bold;text-decoration:none;color:#fff;}
 body.story-builder .opened #toggle-section-list::after{content:' - ';}
 body.story-builder .closed #toggle-section-list::after{content:' + ';}
