@@ -133,6 +133,7 @@ TEMPLATE_DIRS = (
 CMS_TEMPLATES = (
     ('homepage.html', 'Home Page'),
     ('cms_twocol.html', 'Two Column'),
+    ('faq.html', 'FAQ'),
 )
 
 INSTALLED_APPS = (
