@@ -55,6 +55,7 @@ describe('SectionEditView view', function() {
         }
       });
       var Story = Backbone.Model.extend({
+        assets: new Backbone.Collection,
         url: function() {
           return '/api/0.1/stories/357c5885c4e844cb8a4cd4eebe912a1c/';
         }
@@ -142,8 +143,9 @@ describe('SectionAssetEditView view', function() {
     ];
     this.dispatcher = _.clone(Backbone.Events);
     this.view = new storybase.builder.views.SectionAssetEditView({
-       dispatcher: this.dispatcher,
        assetTypes: this.assetTypes,
+       dispatcher: this.dispatcher,
+       story: new Backbone.Model
     });
   });
 
