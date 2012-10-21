@@ -3,6 +3,21 @@ Namespace.use('storybase.utils.capfirst');
 Namespace.use('storybase.utils.geocode');
 
 /**
+ * Default visible steps of the story builder workflow.  
+ *
+ * These are usually passed to AppView when it is initialized.  However,
+ * these defaults are provided to better document the behavior of the
+ * app and for testing independent of the server-side code.
+ */
+storybase.builder.views.VISIBLE_STEPS = {
+  'build': true,
+  'data': true, 
+  'tag': true,
+  'review': true,
+  'publish': true
+};
+
+/**
  * @name save:section
  * @event
  * @param Section section Event triggered when a section has successfully
@@ -35,6 +50,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
     subNavContainerEl: '#subnav-bar-contents',
     subviewContainerEl: '#app',
     toolsContainerEl: '#title-bar-contents',
+    visibleSteps: storybase.builder.views.VISIBLE_STEPS, 
     workflowContainerEl: '#workflow-bar-contents'
   },
 
@@ -1285,7 +1301,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   className: 'builder',
 
   options: {
-    titleEl: '.story-title'
+    titleEl: '.story-title',
+    visibleSteps: storybase.builder.views.VISIBLE_STEPS
   },
 
   initialize: function() {
