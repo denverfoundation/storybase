@@ -326,10 +326,8 @@ storybase.builder.views.DrawerButtonView = Backbone.View.extend({
 
   className: 'btn',
 
-  events: function() {
-    return {
-      'click': this.options.callback
-    };
+  events: {
+    'click': 'handleClick'
   },
 
   initialize: function() {
@@ -344,10 +342,17 @@ storybase.builder.views.DrawerButtonView = Backbone.View.extend({
     this.delegateEvents();
     return this;
   },
+
+  handleClick: function(evt) {
+    this.dispatcher.trigger('do:toggle:drawer', this.options.parent);
+    if (this.options.callback) {
+      this.options.callback(evt);
+    }
+  },
 });
 
 /**
- * View to manage the slide-out drawer.
+ * View to toggle other views in a slide-out drawer.
  */
 storybase.builder.views.DrawerView = Backbone.View.extend({
   options: {
@@ -360,44 +365,54 @@ storybase.builder.views.DrawerView = Backbone.View.extend({
     this.dispatcher = this.options.dispatcher;
     this.dispatcher.on('register:drawerview', this.registerView, this);
     this.dispatcher.on('unregister:drawerview', this.unregisterView, this);
+    this.dispatcher.on('do:toggle:drawer', this.toggle, this);
 
     this.template = Handlebars.compile(this.options.templateSource);
     this.buttonTemplate = Handlebars.compile(this.options.buttonTemplateSource);
+    // The state of the drawer
+    this._open = false;
     // Store the button views 
     this._buttons = {};
     // Store the order of buttons
     this._buttonIds = [];
-    this._subviews = [];
+    this._subviews = {};
   },
 
+  /**
+   * Register a view with the drawer.
+   *
+   * @param {Object} view Backbone view 
+   *
+   * The view must have the following properties:
+   *   drawerButton: an instance (or function returning an instance) of 
+   *     DrawerButtonView
+   *   drawerOpenEvents: a string with a space-separated list of events that
+   *     will open the drawer and show the view.  This provides a
+   *     means of showing a view in the drawer other than clicking the
+   *     drawer button.
+   *   drawerCloseEvents: a string with a space-separated list of events
+   *     that will close the drawer.  This provides a means of hiding a
+   *     view in a drawer other htan clicking the drawer button.
+   *   show: A method that shows the view
+   *   hide: A method that hides the view
+   */
   registerView: function(view) {
-    this.addButton(view.drawerButton());
-    _.each(view.drawerOpenEvents(), function(evt) {
-      this.dispatcher.on(evt, this.open, this);
+    this.addButton(_.result(view, 'drawerButton'));
+    this.dispatcher.on(_.result(view, 'drawerOpenEvents'), function() {
+      this.open(view);
     }, this);
-    _.each(view.drawerCloseEvents(), function(evt) {
-      this.dispatcher.on(evt, this.close, this);
+    this.dispatcher.on(_.result(view, 'drawerCloseEvents'), function() {
+      this.close(view);
     }, this);
-    this._subviews.push(view);
+    this._subviews[view.cid] = view;
     this.render();
   },
 
   unregisterView: function(view) {
-    this.removeButton(view.drawerButton());
-    _.each(view.drawerOpenEvents(), function(evt) {
-      this.dispatcher.off(evt, this.open, this);
-    }, this);
-    _.each(view.drawerCloseEvents(), function(evt) {
-      this.dispatcher.off(evt, this.close, this);
-    }, this);
-    this._subviews = _.reject(this._subviews, function(subView) {
-      if (view.cid === subView.cid) {
-        return true;
-      }
-      else {
-        return false;
-      }
-    }, this);
+    this.removeButton(_.result(view, 'drawerButton'));
+    this.dispatcher.off(_.result(view, 'drawerOpenEvents'));
+    this.dispatcher.off(_.result(view, 'drawerCloseEvents'));
+    this._subviews = _.omit(this._subviews, view.cid);
     this.render();
   },
 
@@ -455,20 +470,61 @@ storybase.builder.views.DrawerView = Backbone.View.extend({
     return this;
   },
 
-  open: function() {
-    this.$(this.options.contentsEl).show();
-    _.each(this._buttons, function(button, buttonId) {
-      button.$el.data('drawer-open', true);
-    });
-    this.dispatcher.trigger('open:drawer');
+  activeView: function(view) {
+    if (!_.isUndefined(view)) {
+      this._activeView = view;
+    }
+    return this._activeView;
   },
 
-  close: function() {
+  // Show the active view and hide all the other views
+  showActiveView: function(view) {
+    var activeView = this.activeView(view);
+    _.each(this._subviews, function(view) {
+      if (view.cid === activeView.cid) {
+        view.show();
+      }
+      else {
+        view.hide();
+      }
+    }, this);
+  },
+
+  open: function(view) {
+    this._open = true;
+    if (view) {
+      this.showActiveView(view);
+    }
+    this.$(this.options.contentsEl).show();
+    this.dispatcher.trigger('open:drawer');
+    return this;
+  },
+
+  close: function(view) {
+    this._open = false;
     this.$(this.options.contentsEl).hide();
-    _.each(this._buttons, function(button, buttonId) {
-      button.$el.data('drawer-open', false);
-    });
     this.dispatcher.trigger('close:drawer');
+    return this;
+  },
+
+  isOpen: function() {
+    return this._open;
+  },
+  
+  toggle: function(view) {
+    var activeView = this.activeView();
+    if (this.isOpen()) {
+      if (activeView.cid === view.cid) {
+        this.close();
+      }
+      else {
+        this.showActiveView(view);
+      }
+    }
+    else {
+      this.open(view);
+    }
+    return this;
   }
 });
 
@@ -480,26 +536,15 @@ storybase.builder.views.HelpDrawerMixin = {
         buttonId: 'help',
         title: gettext('Help'),
         text: gettext('Help'),
-        callback: function(evt) {
-          if ($(evt.target).data('drawer-open')) {
-            this.dispatcher.trigger('do:hide:help', true);
-          }
-          else {
-            this.dispatcher.trigger('do:show:help', true);
-          }
-        }
+        parent: this
       });
     }
     return this.drawerButtonView;
   },
 
-  drawerOpenEvents: function() {
-    return ['do:show:help'];
-  },
+  drawerOpenEvents: 'do:show:help',
 
-  drawerCloseEvents: function() {
-    return ['do:hide:help'];
-  }
+  drawerCloseEvents: 'do:hide:help'
 };
 
 storybase.builder.views.HelpView = Backbone.View.extend(
@@ -519,13 +564,7 @@ storybase.builder.views.HelpView = Backbone.View.extend(
       this.help = null;
       this.template = Handlebars.compile(this.options.templateSource);
 
-      // The help used to pop up automatically and be supressed based on a
-      // cookie.  That functionality is gone now, but keep this around in
-      // case we want to add it back.  Default to hiding the help. 
-      this.autoShow = false; 
-      if (!this.autoShow) {
-        this.$el.hide();
-      }
+      this.$el.hide();
 
       this.dispatcher.on('do:show:help', this.show, this);
       this.dispatcher.on('do:set:help', this.set, this);
@@ -535,26 +574,21 @@ storybase.builder.views.HelpView = Backbone.View.extend(
     /**
      * Show the help text.
      *
-     * @param boolean force Force showing the help, overriding
-     *     the value of this.autoShow.
      * @help object help Updated help information.  The object should have
      *     a body property and optionally a title property.
      *
      * @returns object This view.
      */
-    show: function(force, help) {
-      var show = this.autoShow || force;
+    show: function(help) {
       if (!_.isUndefined(help)) {
         // A new help object was sent with the signal, update
         // our internal value
-        this.help = help;
+        this.set(help);
       }
       if (this.help) {
         this.render();
-        if (show) {
-          this.delegateEvents();
-          this.$el.show();
-        }
+        this.delegateEvents();
+        this.$el.show();
       }
       return this;
     },
@@ -565,6 +599,7 @@ storybase.builder.views.HelpView = Backbone.View.extend(
 
     set: function(help) {
       this.help = help;
+      this.render();
     },
 
     render: function() {
@@ -964,7 +999,7 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
 
   toggleHelp: function(evt) {
     evt.preventDefault();
-    this.dispatcher.trigger('do:show:help', true);
+    this.dispatcher.trigger('do:show:help');
   },
   
   handleStorySave: function(story) {
@@ -1253,10 +1288,10 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         title: gettext("Get tips on how to make a great story."),
         description: gettext("Clicking the \"Help\" button shows you tips for the section you're currently editing."),
         onShow: function() {
-          that.dispatcher.trigger('do:show:help', true);
+          that.dispatcher.trigger('do:show:help');
         },
         onHide: function() {
-          that.dispatcher.trigger('do:hide:help', true);
+          that.dispatcher.trigger('do:hide:help');
         },
         next: 'tooltip-guider'
       });
@@ -1724,26 +1759,15 @@ storybase.builder.views.UnusedAssetDrawerMixin = {
         buttonId: 'unused-assets',
         text: gettext('Assets'),
         title: gettext("Show a list of assets you removed from your story"),
-        callback: function(evt) {
-          if ($(evt.target).data('drawer-open')) {
-            this.dispatcher.trigger('do:hide:assetlist', true);
-          }
-          else {
-            this.dispatcher.trigger('do:show:assetlist', true);
-          }
-        }
+        parent: this
       });
     }
     return this.drawerButtonView;
   },
 
-  drawerOpenEvents: function() {
-    return ['do:show:assetlist'];
-  },
+  drawerOpenEvents: 'do:show:assetlist',
 
-  drawerCloseEvents: function() {
-    return ['do:hide:assetlist'];
-  }
+  drawerCloseEvents: 'do:hide:assetlist'
 };
 
 /** 
@@ -2513,7 +2537,7 @@ storybase.builder.views.PseudoSectionEditView = Backbone.View.extend(
         console.debug("Showing editor for pseduo-section " + this.pseudoSectionId);
         this.$el.show();
         // For now, don't automatically show help
-        //this.dispatcher.trigger('do:show:help', false, this.help.toJSON()); 
+        //this.dispatcher.trigger('do:show:help', this.help.toJSON()); 
         this.dispatcher.trigger('do:set:help', this.help.toJSON());
       }
       else {
@@ -2846,7 +2870,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
       console.debug('showing section ' + section.get('title'));
       this.$el.show();
       // For now, don't show help automatically
-      //this.dispatcher.trigger('do:show:help', false, help); 
+      //this.dispatcher.trigger('do:show:help', help); 
       this.dispatcher.trigger('do:set:help', help);
     }
     else {
@@ -3457,8 +3481,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       }, this.options.help);
       var assetHelp = this.getAssetTypeHelp(this.options.suggestedType);
       help.body += assetHelp;
-      this.dispatcher.trigger('do:set:help', help);
-      this.dispatcher.trigger('do:show:help', true);
+      this.dispatcher.trigger('do:show:help', help);
     },
 
     handleDrop: function(evt, ui) {
