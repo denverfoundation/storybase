@@ -407,6 +407,11 @@ storybase.builder.views.DrawerView = Backbone.View.extend({
     this.dispatcher.on(_.result(view, 'drawerCloseEvents'), function() {
       this.close(view);
     }, this);
+    if (view.extraEvents) {
+      _.each(_.result(view, 'extraEvents'), function(fn, evt) {
+        this.dispatcher.on(evt, fn, this);
+      }, this);
+    }
     this._subviews[view.cid] = view;
     this.render();
   },
@@ -415,6 +420,9 @@ storybase.builder.views.DrawerView = Backbone.View.extend({
     this.removeButton(_.result(view, 'drawerButton'));
     this.dispatcher.off(_.result(view, 'drawerOpenEvents'));
     this.dispatcher.off(_.result(view, 'drawerCloseEvents'));
+    _.each(_.result(view, 'extraEvents'), function(fn, evt) {
+      this.dispatcher.off(evt, fn, this);
+    }, this);
     this._subviews = _.omit(this._subviews, view.cid);
     this.render();
   },
@@ -1753,7 +1761,19 @@ storybase.builder.views.UnusedAssetDrawerMixin = {
 
   drawerOpenEvents: 'do:show:assetlist',
 
-  drawerCloseEvents: 'do:hide:assetlist'
+  drawerCloseEvents: 'do:hide:assetlist',
+
+  // Workaround for issue where draggable element is hidden when its
+  // container element has an overflow property that is not visible
+  extraEvents: {
+    'start:drag:asset': function() {
+      this.$el.addClass('dragging');
+    },
+
+    'stop:drag:asset': function() {
+      this.$el.removeClass('dragging');
+    },
+  }
 };
 
 /** 
@@ -1782,17 +1802,41 @@ storybase.builder.views.UnusedAssetView = Backbone.View.extend(
     },
 
     render: function() {
+      var that = this;
       var assetsJSON = this.assets.toJSON();
+      // Pluck specific attributes from the asset. This simplifies the
+      // logic in the template
       assetsJSON = _.map(assetsJSON, function(assetJSON) {
-        // TODO: Better shortened version of asset
-        return assetJSON;
+        var attrs = {
+          asset_id: assetJSON.asset_id,
+          type: assetJSON.type
+        };
+        if (assetJSON.thumbnail_url) {
+          attrs.thumbnail_url = assetJSON.thumbnail_url;
+        }
+        else if (assetJSON.body) {
+          attrs.body = assetJSON.body;
+        }
+
+        if (assetJSON.url) {
+          attrs.url = assetJSON.url;
+        }
+        return attrs;
       });
       var context = {
         assets: assetsJSON
       };
       this.$el.html(this.template(context));
       this.$('.unused-asset').draggable({
-        revert: 'invalid' 
+        revert: 'invalid',
+      // Workaround for issue where draggable element is hidden when its
+      // container element has an overflow property that is not visible
+        start: function() {
+          that.dispatcher.trigger("start:drag:asset")
+        },
+        stop: function() {
+          that.dispatcher.trigger("stop:drag:asset")
+        }
       });
       return this;
     },
