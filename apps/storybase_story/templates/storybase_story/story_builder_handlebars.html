@@ -30,7 +30,7 @@ Handlebars.js templates for story builder Backbone application
 <h2>{{gettext "Choose a template to start building your story."}}</h2>
 <p>{{gettext "A template is a tried and true story structure you can populate with your own pictures, text, media, data and more."}}</p>
 <p>{{gettext "Some templates are better for video, some for data, and some for text. Some templates are short and sweet, others are lengthier and more involved. Below, we’ve given you some tips for picking a template based on the time it takes and the type of story you are telling. You can also get to know a template by exploring stories people have made with it."}}</p>
-<p>{{#blockgettext}}You can <strong>customize</strong> some templates by adding and reordering sections, and you can always <strong>start over</strong> by choosing a new template.{{/blockgettext}}</p>
+<p>{{gettext "You can <strong>customize</strong> some templates by adding and reordering sections, and you can always <strong>start over</strong> by choosing a new template."}}</p>
 </script>
 
 <script type="text/x-handlebars-template" id="story-template-template">
@@ -138,7 +138,7 @@ Handlebars.js templates for story builder Backbone application
         </div>
         <div class="right">
             <h3>{{gettext "Create a Connected Story to collect audience feedback"}}</h3>
-            <p>{{#blockgettext}}Give your readers a clear way to contribute by asking them to add a mini Photovoice story. Prompt your readers with a specific question they can answer through a photo and a caption. {{/blockgettext}}</p>
+            <p>{{gettext "Give your readers a clear way to contribute by asking them to add a mini Photovoice story. Prompt your readers with a specific question they can answer through a photo and a caption. "}}</p>
             <div>
                 <input class="connected" name="allow_connected" type="checkbox" {{#if allow_connected}}checked="checked" {{/if}}/>
                 <label for="allow_connected">{{gettext "Make this a Connected Story"}}</label> 
@@ -176,9 +176,9 @@ Handlebars.js templates for story builder Backbone application
     {{#if assetTypes}}
     <p>
     {{#if defaultType}}
-    {{gettext "Or, select a different:"}}
+    {{gettext "Or, select a different"}}:
     {{else}}
-    {{gettext "Select a:"}}
+    {{gettext "Select a"}}:
     {{/if}}
     </p>
     <ul class="asset-types">
@@ -309,7 +309,7 @@ Handlebars.js templates for story builder Backbone application
     <div class="right fourcol last">
         {{#if showSharing}}
         <div class="publish-sharing" style="display: none">
-            <p>{{#blockgettext}}Let your story be heard! Spread the word by sharing it with your social networks, printing a copy, or embeding it on your own website.{{/blockgettext}}</p>
+            <p>{{gettext "Let your story be heard! Spread the word by sharing it with your social networks, printing a copy, or embeding it on your own website."}}</p>
             <div class="story-url-wrapper"><input id="story-url" type="text" value="{{url}}" /></div>
             <div class="addthis_toolbox addthis_default_style addthis_32x32_style"
                 addthis:url="{{url}}" addthis:title="{{title}}">
@@ -337,9 +337,7 @@ Handlebars.js templates for story builder Backbone application
 <script type="text/x-handlebars-template" id="share-legal-template">
 <h3>{{title}}</h3>
 {{#if showForm}}
-<p class="introduction">{{#blockgettext}}
-In order to publish and share your story, you need to double-check a few legal details.
-{{/blockgettext}}<a href="#">{{gettext "Read the Floodlight Terms of Service"}}</a>.</p>
+<p class="introduction">{{gettext "In order to publish and share your story, you need to double-check a few legal details."}} <a href="#">{{gettext "Read the Floodlight Terms of Service"}}</a>.</p>
 {{else}}
 <p>
 {{gettext "You signed off on the legal agreement"}}
@@ -351,14 +349,14 @@ In order to publish and share your story, you need to double-check a few legal d
 <script type="text/x-handlebars-template" id="share-permission-field-template">
 <input type="checkbox" name="permission" value="permission" /> {{gettext "I have the necessary ownership/rights/permissions to legally distribute the content in this story."}}
 <ul>
-    <li>{{#blockgettext}}The content in this story doesn’t violate copyright law or infringe on a third party’s trademark, trade secret, proprietary data or patent{{/blockgettext}}.</li>
-    <li>{{#blockgettext}}I have properly cited or credited any content that I did not create myself.{{/blockgettext}}</li>
-    <li>{{#blockgettext}}If this story has any photos or videos of children (under 18), I have obtained the proper parent or guardian release forms (a sample release form is available here){{/blockgettext}}.</li>
+    <li>{{gettext "The content in this story doesn’t violate copyright law or infringe on a third party’s trademark, trade secret, proprietary data or patent"}}.</li>
+    <li>{{gettext "I have properly cited or credited any content that I did not create myself."}}</li>
+    <li>{{gettext "If this story has any photos or videos of children (under 18), I have obtained the proper parent or guardian release forms (a sample release form is available here)"}}.</li>
 </ul>
 </script>
 
 <script type="text/x-handlebars-template" id="share-license-field-template">
-<input type="checkbox" name="license" value="license" /> {{#blockgettext}}I participate in Floodlight’s cooperative distribution by publishing my story under a Creative Commons license. This means that I remain the owner of this story, but that my content can be featured on the site and redistributed by others. Learn more about Creative Commons.{{/blockgettext}}    
+<input type="checkbox" name="license" value="license" /> {{gettext "I participate in Floodlight’s cooperative distribution by publishing my story under a Creative Commons license. This means that I remain the owner of this story, but that my content can be featured on the site and redistributed by others. Learn more about Creative Commons."}}    
 </script>
 
 <script type="text/x-handlebars-template" id="share-license-template">
@@ -386,14 +384,14 @@ In order to publish and share your story, you need to double-check a few legal d
 <p class="introduction">{{gettext "Label your story with topics and places so that people can easily discover it on Floodlight. The more information you add here, the more others can connect with your story."}}</p>
 <div id="taxonomy">
     <h3>{{gettext "Tags"}}</h3> 
-<p>{{#blockgettext}}For topics and places, choose from the list that appears when you click in the boxes below. Topics include categories like “Crime and Justice” or “Education.” Places include neighborhoods, cities and zip codes. Add as many places or topics as you want.{{/blockgettext}}</p>
-<p>{{#blockgettext}}If you are a member of an organization or project, you can also add those. Stories can be in multiple projects or organizations.{{/blockgettext}}</p>
+<p>{{gettext "For topics and places, choose from the list that appears when you click in the boxes below. Topics include categories like \"Crime and Justice\" or \"Education.\" Places include neighborhoods, cities and zip codes. Add as many places or topics as you want."}}</p>
+<p>{{gettext "If you are a member of an organization or project, you can also add those. Stories can be in multiple projects or organizations."}}</p>
 </div>
 </script>
 
 <script type="text/x-handlebars-template" id="add-location-template">
 <h3>{{gettext "Mapping"}}</h3>
-<p>{{#blockgettext}}Where did your story happen? Linking your story to an address will let people find it on a map. Add as many addresses as you want.{{/blockgettext}}</p>
+<p>{{gettext "Where did your story happen? Linking your story to an address will let people find it on a map. Add as many addresses as you want."}}</p>
 <form>
     <div id="address-search-container">
         <input id="address" name="address" type="text" placeholder="{{gettext "Enter an address"}}"/>
