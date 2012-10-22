@@ -291,8 +291,14 @@ storybase.models.Story = Backbone.Model.extend(
 
     /**
      * Copy selected properties from another story.
+     *
+     * @param {Object} story  Story model instance to use as the template
+     *   for this model
+     * @param {Object} sectionAttrs Attributes to set on each section
+     *   copied from the template story.  These override any attribute copied
+     *   from the template.
      */
-    fromTemplate: function(story) {
+    fromTemplate: function(story, sectionAttrs) {
       this.set('structure_type', story.get('structure_type'));
       this.set('summary', story.get('summary'));
       this.set('call_to_action', story.get('call_to_action'));
@@ -307,6 +313,9 @@ storybase.models.Story = Backbone.Model.extend(
         sectionCopy.set("layout_template", section.get("layout_template"));
         sectionCopy.set("template_section", section.get("section_id"));
         sectionCopy.set("help", section.get("help"));
+        if (!_.isUndefined(sectionAttrs)) {
+          sectionCopy.set(sectionAttrs);
+        }
         this.sections.push(sectionCopy);
       }, this);
     },

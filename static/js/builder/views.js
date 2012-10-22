@@ -47,6 +47,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
   options: {
     drawerEl: '#drawer-container',
     headerEl: '#header',
+    language: 'en',
     subNavContainerEl: '#subnav-bar-contents',
     subviewContainerEl: '#app',
     toolsContainerEl: '#title-bar-contents',
@@ -58,6 +59,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
     // Common options passed to sub-views
     var commonOptions = {
       dispatcher: this.options.dispatcher,
+      language: this.options.language,
       startOverUrl: this.options.startOverUrl,
       visibleSteps: this.options.visibleSteps
     };
@@ -1340,7 +1342,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     if (_.isUndefined(this.model)) {
       // Create a new story model instance
       this.model = new storybase.models.Story({
-        title: ""
+        title: "",
+        language: this.options.language
       });
     }
     if (this.options.relatedStories) {
@@ -1609,7 +1612,9 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
   initializeStoryFromTemplate: function() {
     console.info("Initializing sections");
-    this.model.fromTemplate(this.templateStory);
+    this.model.fromTemplate(this.templateStory, {
+      language: this.options.language
+    });
     this.dispatcher.trigger("ready:story", this.model);
   },
 
@@ -2318,7 +2323,8 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
       title: gettext('New Section'),
       layout: this.model.sections.at(0).get('layout'),
       root: true,
-      template_section: this.model.sections.at(0).get('template_section')
+      template_section: this.model.sections.at(0).get('template_section'),
+      language: this.options.language
     });
     var postSave = function(section) {
       var thumbnailView;
@@ -3096,7 +3102,10 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
 
     initialize: function() {
       console.debug("Initializing new section asset edit view");
-      var modelOptions = {};
+      this.modelOptions = {
+        language: this.options.language
+      }
+      var modelOptions = _.extend({}, this.modelOptions);
       this.container = this.options.container;
       this.dispatcher = this.options.dispatcher;
       this.assetTypes = this.options.assetTypes;
@@ -3432,7 +3441,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       // This view should no longer listen to events on this model
       this.unbindModelEvents();
       this.dispatcher.trigger('do:remove:sectionasset', this.section, this.model);
-      this.model = new storybase.models.Asset();
+      this.model = new storybase.models.Asset(this.modelOptions);
       // Listen to events on the new model
       this.bindModelEvents();
       this.setState('select').render();
@@ -4504,8 +4513,9 @@ storybase.builder.views.PublishView = Backbone.View.extend(
         licenseEndpoint: this.options.licenseEndpoint
       });
       this.featuredAssetView = new storybase.builder.views.FeaturedAssetView({
-        story: this.model,
-        dispatcher: this.dispatcher
+        dispatcher: this.dispatcher,
+        language: this.options.language,
+        story: this.model
       });
       this.subviews = [this.legalView, this.licenseView, this.featuredAssetView];
       this.updateTodo(null, false);
@@ -4791,6 +4801,7 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
     getForm: function() {
       var form = new Backbone.Form({
         model: new storybase.models.Asset({
+          language: this.options.language,
           type: 'image'
         })
       });
