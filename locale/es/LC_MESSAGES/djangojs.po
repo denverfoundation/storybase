@@ -632,31 +632,16 @@ msgstr ""
 msgid "To add a section, move your mouse between two existing sections and click \"Add a section.\""
 msgstr ""
 
-msgid "Publish/Share"
-msgstr ""
-
 msgid "Post your story to Floodlight and your social networks."
-msgstr ""
-
-msgid "Review"
 msgstr ""
 
 msgid "Make sure your story is ready to go with spellcheck and other tools."
 msgstr ""
 
-msgid "Tag"
-msgstr ""
-
 msgid "Label your story with topics and places so that people can easily discover it on Floodlight."
 msgstr ""
 
-msgid "Add Data"
-msgstr ""
-
 msgid "Upload or link to source data referenced in your story’s charts, maps, graphs and visualizations."
-msgstr ""
-
-msgid "Build"
 msgstr ""
 
 msgid "Construct your story using text, photos, videos, data visualizations, and other materials."
@@ -690,9 +675,6 @@ msgid "Create a Connected Story to collect audience feedback"
 msgstr ""
 
 msgid "Click to edit the call to action"
-msgstr ""
-
-msgid "Call to Action"
 msgstr ""
 
 msgid "Edit your byline"
@@ -824,16 +806,10 @@ msgstr ""
 msgid "Add a new image"
 msgstr ""
 
-msgid "Cancel"
-msgstr ""
-
 msgid "Remove"
 msgstr ""
 
 msgid "Edit"
-msgstr ""
-
-msgid "Help"
 msgstr ""
 
 msgid "Select a"
@@ -843,9 +819,6 @@ msgid "Or, select a different"
 msgstr ""
 
 msgid "Click to add your"
-msgstr ""
-
-msgid "Click to edit title"
 msgstr ""
 
 msgid "Back to Connected Story List"
