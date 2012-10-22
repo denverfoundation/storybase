@@ -84,8 +84,27 @@ class TranslatedModel(models.Model):
     def set_translation_cache_item(self, code, obj):
         self._translation_cache[code] = obj
 
-    def get_languages(self):
-        """Get a list of translated languages for the model instance"""
+    @property
+    def language(self):
+        code = translation.get_language()
+        languages = self.get_languages()
+        if code in languages:
+            # There's a translation for the current active language
+            # return the active language
+            return code
+        elif settings.LANGUAGE_CODE in languages:
+            # There's no translation for the current active language
+            # but there is one for the default language.  Return
+            # the default language
+            return settings.LANGUAGE_CODE
+        elif languages:
+            # There's no translation for the default language either,
+            # but there is some translation.  Return the first translation
+            return languages[0]
+        else:
+            return None
+
+    def _get_translated_manager(self):
         # TODO: Refactor this so it doesn't repeat the code in 
         # __getattribute__
         try:
@@ -106,7 +125,11 @@ class TranslatedModel(models.Model):
                         break
             else:
                 raise
-        translated_manager = getattr(self, translation_set)
+        return getattr(self, translation_set)
+
+    def get_languages(self):
+        """Get a list of translated languages for the model instance"""
+        translated_manager = self._get_translated_manager()
         return [trans.language 
                 for trans in translated_manager.all()]
 
