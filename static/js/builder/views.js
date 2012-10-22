@@ -258,11 +258,11 @@ storybase.builder.views.AppView = Backbone.View.extend({
    * This has to be done dynamically because the header is different
    * heights based on different workflow steps. 
    */
-  adjustPadding: function($el) {
+  pushDown: function($el) {
     var $header = this.$(this.options.headerEl);
-    var origPadding = $el.css('padding-top');
+    var orig = $el.css('margin-top');
     var headerBottom = $header.offset().top + $header.outerHeight();
-    $el.css('padding-top', headerBottom);
+    $el.css('margin-top', headerBottom);
     return this;
   },
 
@@ -274,7 +274,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
     this.renderSubNavView(activeView);
     $container.empty();
     $container.append(activeView.render().$el);
-    this.adjustPadding($container);
+    this.pushDown($container);
     // Some views have things that only work when the element has been added
     // to the DOM. The pattern for handling this comes courtesy of
     // http://stackoverflow.com/questions/9350591/backbone-using-jquery-plugins-on-views
@@ -286,7 +286,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
     }
     this.toolsView.render();
     this.drawerView.setElement(this.options.drawerEl).render();
-    this.adjustPadding(this.drawerView.$el);
+    this.pushDown(this.drawerView.$el);
     return this;
   },
 
@@ -322,7 +322,8 @@ storybase.builder.views.AppView = Backbone.View.extend({
 });
 
 storybase.builder.views.DrawerButtonView = Backbone.View.extend({
-  tagName: 'button',
+  //tagName: 'button',
+  tagName: 'div',
 
   className: 'btn',
 
@@ -418,7 +419,7 @@ storybase.builder.views.DrawerView = Backbone.View.extend({
 
   addButton: function(button) {
     this._buttons[button.buttonId] = button;
-    this._buttonIds.push[button.buttonId];
+    this._buttonIds.push(button.buttonId);
   },
 
   removeButton: function(button) {
@@ -427,33 +428,12 @@ storybase.builder.views.DrawerView = Backbone.View.extend({
     this._buttons = _.omit(this._buttons, button.buttonId);
   },
 
-  /**
-   * Adjust the position of a rotated button element.
-   *
-   * @param {Array} $buttonEl jQuery object matching the button's element
-   *
-   * This is needed because the element maintains its original width
-   * even after the CSS rotation has been applied, thus creating
-   * whitespace to the right of the element. We need to make it fit neatly
-   * at the very right of the screen, so we have to move the element all
-   * the way over.
-   */
-  adjustButtonPos: function($buttonEl) {
-    var width = $buttonEl.width();
-    var height = $buttonEl.height();
-    // Convert the value returned by css() to an integer
-    var bottomPadding = parseInt($buttonEl.css('padding-bottom'), 10);
-    var topPadding = parseInt($buttonEl.css('padding-top'), 10);
-    // Move the element to the right with a negative margin
-    $buttonEl.css('margin-right', height - width + bottomPadding);
-    return $buttonEl;
-  },
-
   renderButtons: function() {
     var $controlsEl = this.$(this.options.controlsEl);
     _.each(this._buttons, function(button) {
-      this.adjustButtonPos(button.render().$el.appendTo($controlsEl));
+      button.render().$el.appendTo($controlsEl);
     }, this);
+    return this;
   },
 
   renderSubViews: function() {
@@ -461,6 +441,7 @@ storybase.builder.views.DrawerView = Backbone.View.extend({
     _.each(this._subviews, function(view) {
       $contentsEl.append(view.$el);
     }, this);
+    return this;
   },
 
   render: function() {
