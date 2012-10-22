@@ -574,3 +574,352 @@ msgstr ""
 #: static/js/builder/views.js:4789
 msgid "select the featured image from your own computer"
 msgstr ""
+
+msgid "Remove section"
+msgstr ""
+
+msgid "Add a section"
+msgstr ""
+
+msgid "Edit next section"
+msgstr ""
+
+msgid "Edit previous section"
+msgstr ""
+
+msgid "Examples"
+msgstr ""
+
+msgid "Tip"
+msgstr ""
+
+msgid "Best for"
+msgstr ""
+
+msgid "Recommended ingredients"
+msgstr ""
+
+msgid "Level"
+msgstr ""
+
+msgid "Time needed"
+msgstr ""
+
+msgid "You can <strong>customize</strong> some templates by adding and reordering sections, and you can always <strong>start over</strong> by choosing a new template."
+msgstr ""
+
+msgid "Some templates are better for video, some for data, and some for text. Some templates are short and sweet, others are lengthier and more involved. Below, we’ve given you some tips for picking a template based on the time it takes and the type of story you are telling. You can also get to know a template by exploring stories people have made with it."
+msgstr ""
+
+msgid "A template is a tried and true story structure you can populate with your own pictures, text, media, data and more."
+msgstr ""
+
+msgid "Choose a template to start building your story."
+msgstr ""
+
+msgid "You can get back to your story through the \"My Stories\" menu in \"My Account.\""
+msgstr ""
+
+msgid "Stories are saved automatically whenever you make changes, so you’ll be able to pick up exactly where you left off."
+msgstr ""
+
+msgid "To delete a section, click on the \"X\" that appears when you hover over it."
+msgstr ""
+
+msgid "To move a section, click on it and drag it to it's new position."
+msgstr ""
+
+msgid "To add a section, move your mouse between two existing sections and click \"Add a section.\""
+msgstr ""
+
+msgid "Publish/Share"
+msgstr ""
+
+msgid "Post your story to Floodlight and your social networks."
+msgstr ""
+
+msgid "Review"
+msgstr ""
+
+msgid "Make sure your story is ready to go with spellcheck and other tools."
+msgstr ""
+
+msgid "Tag"
+msgstr ""
+
+msgid "Label your story with topics and places so that people can easily discover it on Floodlight."
+msgstr ""
+
+msgid "Add Data"
+msgstr ""
+
+msgid "Upload or link to source data referenced in your story’s charts, maps, graphs and visualizations."
+msgstr ""
+
+msgid "Build"
+msgstr ""
+
+msgid "Construct your story using text, photos, videos, data visualizations, and other materials."
+msgstr ""
+
+msgid "Clicking on these tabs lets you switch between the different steps in the story building process. You can always move freely between the steps."
+msgstr ""
+
+msgid "Type in your own search terms."
+msgstr ""
+
+msgid "Search Keywords"
+msgstr ""
+
+msgid "delete"
+msgstr ""
+
+msgid "Add Address"
+msgstr ""
+
+msgid "Enter a name for this address (optional)"
+msgstr ""
+
+msgid "Make this a Connected Story"
+msgstr ""
+
+msgid "Give your readers a clear way to contribute by asking them to add a mini Photovoice story. Prompt your readers with a specific question they can answer through a photo and a caption. "
+msgstr ""
+
+msgid "Create a Connected Story to collect audience feedback"
+msgstr ""
+
+msgid "Click to edit the call to action"
+msgstr ""
+
+msgid "Call to Action"
+msgstr ""
+
+msgid "Edit your byline"
+msgstr ""
+
+msgid "Edit your title"
+msgstr ""
+
+msgid "Click to edit the summary"
+msgstr ""
+
+msgid "View agreement"
+msgstr ""
+
+msgid "You signed off on the legal agreement"
+msgstr ""
+
+msgid "In order to publish and share your story, you need to double-check a few legal details."
+msgstr ""
+
+msgid "Read the Floodlight Terms of Service"
+msgstr ""
+
+msgid "Congratulations, your story has been published. If you decide you'd like to view or unpublish your story, use the button below"
+msgstr ""
+
+msgid "Looks like you're all set. When you're ready click the \"Publish My Story\" button."
+msgstr ""
+
+msgid "Let your story be heard! Spread the word by sharing it with your social networks, printing a copy, or embeding it on your own website."
+msgstr ""
+
+msgid "Unpublish My Story"
+msgstr ""
+
+msgid "View my story"
+msgstr ""
+
+msgid "Preview Story"
+msgstr ""
+
+msgid "Congratulations on writing your story! We're checking things out right now and making sure everything looks good. Preview your story to see how it will look on Floodlight once it’s published."
+msgstr ""
+
+msgid "Download data"
+msgstr ""
+
+msgid "Source"
+msgstr ""
+
+msgid "Name this Address"
+msgstr ""
+
+msgid "optional"
+msgstr ""
+
+msgid "Search"
+msgstr ""
+
+msgid "Enter an address"
+msgstr ""
+
+msgid "Where did your story happen? Linking your story to an address will let people find it on a map. Add as many addresses as you want."
+msgstr ""
+
+msgid "Mapping"
+msgstr ""
+
+msgid "If you are a member of an organization or project, you can also add those. Stories can be in multiple projects or organizations."
+msgstr ""
+
+msgid "For topics and places, choose from the list that appears when you click in the boxes below. Topics include categories like \"Crime and Justice\" or \"Education.\" Places include neighborhoods, cities and zip codes. Add as many places or topics as you want."
+msgstr ""
+
+msgid "Tags"
+msgstr ""
+
+msgid "Label your story with topics and places so that people can easily discover it on Floodlight. The more information you add here, the more others can connect with your story."
+msgstr ""
+
+msgid "No"
+msgstr ""
+
+msgid "Yes, as long as others can share alike"
+msgstr ""
+
+msgid "Yes"
+msgstr ""
+
+msgid "Change license"
+msgstr ""
+
+msgid "I participate in Floodlight’s cooperative distribution by publishing my story under a Creative Commons license. This means that I remain the owner of this story, but that my content can be featured on the site and redistributed by others. Learn more about Creative Commons."
+msgstr ""
+
+msgid "If this story has any photos or videos of children (under 18), I have obtained the proper parent or guardian release forms (a sample release form is available here)"
+msgstr ""
+
+msgid "I have properly cited or credited any content that I did not create myself."
+msgstr ""
+
+msgid "The content in this story doesn’t violate copyright law or infringe on a third party’s trademark, trade secret, proprietary data or patent"
+msgstr ""
+
+msgid "I have the necessary ownership/rights/permissions to legally distribute the content in this story."
+msgstr ""
+
+msgid "Add as many data sets as you like."
+msgstr ""
+
+msgid "You can upload data sets from your computer if they are CSV or Excel files. You can link to data stored elsewhere on the web, like the Colorado Data Engine, Google Docs, or the U.S. Census Bureau."
+msgstr ""
+
+msgid "Providing the raw source data you used to make your story’s charts, maps and graphs encourages readers to dig deeper and discover their own stories in the data."
+msgstr ""
+
+msgid "You have no unused assets"
+msgstr ""
+
+msgid "Change"
+msgstr ""
+
+msgid "Set as featured image"
+msgstr ""
+
+msgid "Or select an image from your story"
+msgstr ""
+
+msgid "Add a new image"
+msgstr ""
+
+msgid "Cancel"
+msgstr ""
+
+msgid "Remove"
+msgstr ""
+
+msgid "Edit"
+msgstr ""
+
+msgid "Help"
+msgstr ""
+
+msgid "Select a"
+msgstr ""
+
+msgid "Or, select a different"
+msgstr ""
+
+msgid "Click to add your"
+msgstr ""
+
+msgid "Click to edit title"
+msgstr ""
+
+msgid "Back to Connected Story List"
+msgstr ""
+
+msgid "Click here to see the stories displayed as tiles"
+msgstr ""
+
+msgid "Tile"
+msgstr ""
+
+msgid "Click here to see a list of stories"
+msgstr ""
+
+msgid "List"
+msgstr ""
+
+msgid "Click here to view the stories on a map or search for stories near an address"
+msgstr ""
+
+msgid "Map"
+msgstr ""
+
+msgid "of"
+msgstr ""
+
+msgid "Show More"
+msgstr ""
+
+msgid "Topic"
+msgstr ""
+
+msgid "Filter stories by selecting one or more topics"
+msgstr ""
+
+msgid "Place"
+msgstr ""
+
+msgid "Filter stories by selecting one or more places"
+msgstr ""
+
+msgid "Organization"
+msgstr ""
+
+msgid "Filter stories by selecting an organization"
+msgstr ""
+
+msgid "Project"
+msgstr ""
+
+msgid "Filter stories by selecting a project"
+msgstr ""
+
+msgid "Language"
+msgstr ""
+
+msgid "Filter stories by language"
+msgstr ""
+
+msgid "Languages"
+msgstr ""
+
+msgid "The map no longer shows the Place filter you have set above. Do you want to remove this filter so that you can see updated results on the map?"
+msgstr ""
+
+msgid "Leave Filter Alone"
+msgstr ""
+
+msgid "Remove the Filter"
+msgstr ""
+
+msgid "Highlight stories near this address"
+msgstr ""
+
+msgid "Clear"
+msgstr ""
+
