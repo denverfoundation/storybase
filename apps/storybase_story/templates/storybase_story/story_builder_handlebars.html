@@ -242,11 +242,15 @@ Handlebars.js templates for story builder Backbone application
 </script>
 
 <script type="text/x-handlebars-template" id="unused-assets-template">
+{{#if assets}}
 <ul>
   {{#each assets}}
   <li class="unused-asset" data-asset-id="{{asset_id}}">{{#if thumbnail_url}}<img class="thumbnail" src="{{thumbnail_url}}" />{{/if}}{{display_title}} ({{type}})</li>
   {{/each}}
 </ul>
+{{else}}
+<p>{{gettext message="You have no unused assets"}}</p>
+{{/if}}
 </script>
 
 <script type="text/x-handlebars-template" id="data-template">

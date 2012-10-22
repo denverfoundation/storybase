@@ -3,6 +3,21 @@ Namespace.use('storybase.utils.capfirst');
 Namespace.use('storybase.utils.geocode');
 
 /**
+ * Default visible steps of the story builder workflow.  
+ *
+ * These are usually passed to AppView when it is initialized.  However,
+ * these defaults are provided to better document the behavior of the
+ * app and for testing independent of the server-side code.
+ */
+storybase.builder.views.VISIBLE_STEPS = {
+  'build': true,
+  'data': true, 
+  'tag': true,
+  'review': true,
+  'publish': true
+};
+
+/**
  * @name save:section
  * @event
  * @param Section section Event triggered when a section has successfully
@@ -35,6 +50,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
     subNavContainerEl: '#subnav-bar-contents',
     subviewContainerEl: '#app',
     toolsContainerEl: '#title-bar-contents',
+    visibleSteps: storybase.builder.views.VISIBLE_STEPS, 
     workflowContainerEl: '#workflow-bar-contents'
   },
 
@@ -179,6 +195,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
    * Set the active step of the workflow and re-render the view
    */
   updateStep: function(step) {
+    var activeView;
     // Checking that step is different from the active step is
     // required for the initial saving of the story.  The active view
     // has already been changed by ``this.setTemplate`` so we don't
@@ -187,6 +204,10 @@ storybase.builder.views.AppView = Backbone.View.extend({
     // workflowstep`` signal
     if (this.activeStep != step) {
       console.debug('Updating active step to ' + step);
+      activeView = this.getActiveView();
+      if (activeView && activeView.onHide) {
+        activeView.onHide();
+      }
       this.activeStep = step;
       this.render();
     }
@@ -305,10 +326,8 @@ storybase.builder.views.DrawerButtonView = Backbone.View.extend({
 
   className: 'btn',
 
-  events: function() {
-    return {
-      'click': this.options.callback
-    };
+  events: {
+    'click': 'handleClick'
   },
 
   initialize: function() {
@@ -323,10 +342,17 @@ storybase.builder.views.DrawerButtonView = Backbone.View.extend({
     this.delegateEvents();
     return this;
   },
+
+  handleClick: function(evt) {
+    this.dispatcher.trigger('do:toggle:drawer', this.options.parent);
+    if (this.options.callback) {
+      this.options.callback(evt);
+    }
+  },
 });
 
 /**
- * View to manage the slide-out drawer.
+ * View to toggle other views in a slide-out drawer.
  */
 storybase.builder.views.DrawerView = Backbone.View.extend({
   options: {
@@ -338,43 +364,56 @@ storybase.builder.views.DrawerView = Backbone.View.extend({
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
     this.dispatcher.on('register:drawerview', this.registerView, this);
+    this.dispatcher.on('unregister:drawerview', this.unregisterView, this);
+    this.dispatcher.on('do:toggle:drawer', this.toggle, this);
 
     this.template = Handlebars.compile(this.options.templateSource);
     this.buttonTemplate = Handlebars.compile(this.options.buttonTemplateSource);
+    // The state of the drawer
+    this._open = false;
     // Store the button views 
     this._buttons = {};
     // Store the order of buttons
     this._buttonIds = [];
-    this._subviews = [];
+    this._subviews = {};
   },
 
+  /**
+   * Register a view with the drawer.
+   *
+   * @param {Object} view Backbone view 
+   *
+   * The view must have the following properties:
+   *   drawerButton: an instance (or function returning an instance) of 
+   *     DrawerButtonView
+   *   drawerOpenEvents: a string with a space-separated list of events that
+   *     will open the drawer and show the view.  This provides a
+   *     means of showing a view in the drawer other than clicking the
+   *     drawer button.
+   *   drawerCloseEvents: a string with a space-separated list of events
+   *     that will close the drawer.  This provides a means of hiding a
+   *     view in a drawer other htan clicking the drawer button.
+   *   show: A method that shows the view
+   *   hide: A method that hides the view
+   */
   registerView: function(view) {
-    this.addButton(view.drawerButton());
-    _.each(view.drawerOpenEvents(), function(evt) {
-      this.dispatcher.on(evt, this.open, this);
+    this.addButton(_.result(view, 'drawerButton'));
+    this.dispatcher.on(_.result(view, 'drawerOpenEvents'), function() {
+      this.open(view);
     }, this);
-    _.each(view.drawerCloseEvents(), function(evt) {
-      this.dispatcher.on(evt, this.close, this);
+    this.dispatcher.on(_.result(view, 'drawerCloseEvents'), function() {
+      this.close(view);
     }, this);
-    this._subviews.push(view);
+    this._subviews[view.cid] = view;
+    this.render();
   },
 
   unregisterView: function(view) {
-    this.removeButton(view.drawerButton());
-    _.each(view.drawerOpenEvents(), function(evt) {
-      this.dispatcher.off(evt, this.open, this);
-    }, this);
-    _.each(view.drawerCloseEvents(), function(evt) {
-      this.dispatcher.off(evt, this.close, this);
-    }, this);
-    this._subviews = _.reject(this._subviews, function(subView) {
-      if (view.cid === subView.cid) {
-        return true;
-      }
-      else {
-        return false;
-      }
-    }, this);
+    this.removeButton(_.result(view, 'drawerButton'));
+    this.dispatcher.off(_.result(view, 'drawerOpenEvents'));
+    this.dispatcher.off(_.result(view, 'drawerCloseEvents'));
+    this._subviews = _.omit(this._subviews, view.cid);
+    this.render();
   },
 
   addButton: function(button) {
@@ -385,7 +424,7 @@ storybase.builder.views.DrawerView = Backbone.View.extend({
   removeButton: function(button) {
     // Remove this button from the list of buttons
     this._buttonIds = _.without(this._buttonIds, button.buttonId);
-    this._buttons = _.omit(this._buttonIds, button.buttonId);
+    this._buttons = _.omit(this._buttons, button.buttonId);
   },
 
   /**
@@ -431,20 +470,61 @@ storybase.builder.views.DrawerView = Backbone.View.extend({
     return this;
   },
 
-  open: function() {
-    this.$(this.options.contentsEl).show();
-    _.each(this._buttons, function(button, buttonId) {
-      button.$el.data('drawer-open', true);
-    });
-    this.dispatcher.trigger('open:drawer');
+  activeView: function(view) {
+    if (!_.isUndefined(view)) {
+      this._activeView = view;
+    }
+    return this._activeView;
   },
 
-  close: function() {
+  // Show the active view and hide all the other views
+  showActiveView: function(view) {
+    var activeView = this.activeView(view);
+    _.each(this._subviews, function(view) {
+      if (view.cid === activeView.cid) {
+        view.show();
+      }
+      else {
+        view.hide();
+      }
+    }, this);
+  },
+
+  open: function(view) {
+    this._open = true;
+    if (view) {
+      this.showActiveView(view);
+    }
+    this.$(this.options.contentsEl).show();
+    this.dispatcher.trigger('open:drawer');
+    return this;
+  },
+
+  close: function(view) {
+    this._open = false;
     this.$(this.options.contentsEl).hide();
-    _.each(this._buttons, function(button, buttonId) {
-      button.$el.data('drawer-open', false);
-    });
     this.dispatcher.trigger('close:drawer');
+    return this;
+  },
+
+  isOpen: function() {
+    return this._open;
+  },
+  
+  toggle: function(view) {
+    var activeView = this.activeView();
+    if (this.isOpen()) {
+      if (activeView.cid === view.cid) {
+        this.close();
+      }
+      else {
+        this.showActiveView(view);
+      }
+    }
+    else {
+      this.open(view);
+    }
+    return this;
   }
 });
 
@@ -456,26 +536,15 @@ storybase.builder.views.HelpDrawerMixin = {
         buttonId: 'help',
         title: gettext('Help'),
         text: gettext('Help'),
-        callback: function(evt) {
-          if ($(evt.target).data('drawer-open')) {
-            this.dispatcher.trigger('do:hide:help', true);
-          }
-          else {
-            this.dispatcher.trigger('do:show:help', true);
-          }
-        }
+        parent: this
       });
     }
     return this.drawerButtonView;
   },
 
-  drawerOpenEvents: function() {
-    return ['do:show:help'];
-  },
+  drawerOpenEvents: 'do:show:help',
 
-  drawerCloseEvents: function() {
-    return ['do:hide:help'];
-  }
+  drawerCloseEvents: 'do:hide:help'
 };
 
 storybase.builder.views.HelpView = Backbone.View.extend(
@@ -495,13 +564,7 @@ storybase.builder.views.HelpView = Backbone.View.extend(
       this.help = null;
       this.template = Handlebars.compile(this.options.templateSource);
 
-      // The help used to pop up automatically and be supressed based on a
-      // cookie.  That functionality is gone now, but keep this around in
-      // case we want to add it back.  Default to hiding the help. 
-      this.autoShow = false; 
-      if (!this.autoShow) {
-        this.$el.hide();
-      }
+      this.$el.hide();
 
       this.dispatcher.on('do:show:help', this.show, this);
       this.dispatcher.on('do:set:help', this.set, this);
@@ -511,26 +574,21 @@ storybase.builder.views.HelpView = Backbone.View.extend(
     /**
      * Show the help text.
      *
-     * @param boolean force Force showing the help, overriding
-     *     the value of this.autoShow.
      * @help object help Updated help information.  The object should have
      *     a body property and optionally a title property.
      *
      * @returns object This view.
      */
-    show: function(force, help) {
-      var show = this.autoShow || force;
+    show: function(help) {
       if (!_.isUndefined(help)) {
         // A new help object was sent with the signal, update
         // our internal value
-        this.help = help;
+        this.set(help);
       }
       if (this.help) {
         this.render();
-        if (show) {
-          this.delegateEvents();
-          this.$el.show();
-        }
+        this.delegateEvents();
+        this.$el.show();
       }
       return this;
     },
@@ -541,6 +599,7 @@ storybase.builder.views.HelpView = Backbone.View.extend(
 
     set: function(help) {
       this.help = help;
+      this.render();
     },
 
     render: function() {
@@ -894,13 +953,6 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
   _initItems: function() {
     return [
       {
-        id: 'assets',
-        title: gettext("Show a list of assets you removed from your story"),
-        text: gettext('Assets'),
-        callback: 'toggleAssetList',
-        visible: false
-      },
-      {
         id: 'preview',
         title: gettext("Preview your story in a new window"),
         text: gettext('Preview'),
@@ -932,16 +984,9 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
     this.activeStep = null;
     this.hasAssetList = false;
 
-    this.dispatcher.on('has:assetlist', this.toggleAssetsItem, this);
     this.dispatcher.on('ready:story', this.handleStorySave, this);
     this.dispatcher.on('save:story', this.handleStorySave, this);
     this.dispatcher.on("select:workflowstep", this.updateStep, this);
-  },
-
-  toggleAssetsItem: function(hasAssetList) {
-    this.hasAssetList = hasAssetList;
-    this.setVisibility('assets', this.hasAssetList && this.activeStep === 'build');
-    this.render();
   },
 
   previewStory: function(evt) {
@@ -952,14 +997,9 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
     evt.preventDefault();
   },
 
-  toggleAssetList: function(evt) {
-    evt.preventDefault();
-    this.dispatcher.trigger("toggle:assetlist");
-  },
-
   toggleHelp: function(evt) {
     evt.preventDefault();
-    this.dispatcher.trigger('do:show:help', true);
+    this.dispatcher.trigger('do:show:help');
   },
   
   handleStorySave: function(story) {
@@ -973,15 +1013,6 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
   },
 
   updateVisible: function() {
-    // The assets item should only be visible in the build Workflow
-    // step
-    if (this.activeStep === 'build') {
-      this.setVisibility('assets', this.hasAssetList);
-    }
-    else {
-      this.setVisibility('assets', false);
-    }
-
     if (this.activeStep !== 'selecttemplate') {
       this.setVisibility('start-over', true);
     }
@@ -1257,10 +1288,10 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         title: gettext("Get tips on how to make a great story."),
         description: gettext("Clicking the \"Help\" button shows you tips for the section you're currently editing."),
         onShow: function() {
-          that.dispatcher.trigger('do:show:help', true);
+          that.dispatcher.trigger('do:show:help');
         },
         onHide: function() {
-          that.dispatcher.trigger('do:hide:help', true);
+          that.dispatcher.trigger('do:hide:help');
         },
         next: 'tooltip-guider'
       });
@@ -1305,7 +1336,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   className: 'builder',
 
   options: {
-    titleEl: '.story-title'
+    titleEl: '.story-title',
+    visibleSteps: storybase.builder.views.VISIBLE_STEPS
   },
 
   initialize: function() {
@@ -1390,7 +1422,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
     this.dispatcher.on("select:template", this.setStoryTemplate, this);
     this.dispatcher.on("do:save:story", this.save, this);
-    this.dispatcher.on("toggle:assetlist", this.toggleAssetList, this);
     this.dispatcher.on("add:sectionasset", this.showSaved, this);
     this.dispatcher.on("save:section", this.showSaved, this);
     this.dispatcher.on("save:story", this.showSaved, this);
@@ -1531,6 +1562,12 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
     // Show the tour
     this._tour.show();
+
+    this.dispatcher.trigger("register:drawerview", this.unusedAssetView);
+  },
+
+  onHide: function() {
+    this.dispatcher.trigger("unregister:drawerview", this.unusedAssetView);
   },
 
   workflowNavView: function() {
@@ -1616,9 +1653,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     });
   },
 
-  toggleAssetList: function() {
-    this.unusedAssetView.$el.toggle(); 
-  },
 
   hasAssetList: function() {
     var hasAssets = false;
@@ -1672,7 +1706,6 @@ storybase.builder.views.LastSavedView = Backbone.View.extend({
 
   initialize: function() {
     this.lastSaved = !!this.options.lastSaved ? (_.isDate(this.options.lastSaved) ? this.options.lastSaved : new Date(this.options.lastSaved)) : null;
-    console.debug(!!this.options.lastSaved);
     this.dispatcher = this.options.dispatcher;
 
     this.dispatcher.on('save:section', this.updateLastSaved, this);
@@ -1718,58 +1751,89 @@ storybase.builder.views.LastSavedView = Backbone.View.extend({
   }
 });
 
+storybase.builder.views.UnusedAssetDrawerMixin = {
+  drawerButton: function() {
+    if (_.isUndefined(this.drawerButtonView)) {
+      this.drawerButtonView = new storybase.builder.views.DrawerButtonView({
+        dispatcher: this.dispatcher,
+        buttonId: 'unused-assets',
+        text: gettext('Assets'),
+        title: gettext("Show a list of assets you removed from your story"),
+        parent: this
+      });
+    }
+    return this.drawerButtonView;
+  },
+
+  drawerOpenEvents: 'do:show:assetlist',
+
+  drawerCloseEvents: 'do:hide:assetlist'
+};
+
 /** 
  * A list of assets associated with the story but not used in any section.
  */
-storybase.builder.views.UnusedAssetView = Backbone.View.extend({
-  tagName: 'div',
+storybase.builder.views.UnusedAssetView = Backbone.View.extend(
+  _.extend({}, storybase.builder.views.UnusedAssetDrawerMixin, {
+    tagName: 'div',
 
-  className: 'unused-assets',
+    id: 'unused-assets',
 
-  templateSource: $('#unused-assets-template').html(),
+    templateSource: $('#unused-assets-template').html(),
 
-  initialize: function() {
-    this.dispatcher = this.options.dispatcher;
-    this.template = Handlebars.compile(this.templateSource);
-    this.assets = this.options.assets;
+    initialize: function() {
+      this.dispatcher = this.options.dispatcher;
+      this.template = Handlebars.compile(this.templateSource);
+      this.assets = this.options.assets;
 
-    // When the assets are synced with the server, re-render this view
-    this.assets.on("add reset sync remove", this.render, this);
-    // When an asset is removed from a section, add it to this view
-    this.dispatcher.on("remove:sectionasset", this.addAsset, this);
-    this.assets.on("remove", this.handleRemove, this);
-  },
+      // When the assets are synced with the server, re-render this view
+      this.assets.on("add reset sync remove", this.render, this);
+      // When an asset is removed from a section, add it to this view
+      this.dispatcher.on("remove:sectionasset", this.addAsset, this);
+      this.dispatcher.on("do:show:assetlist", this.show, this);
+      this.dispatcher.on("do:hide:assetlist", this.hide, this);
+      this.assets.on("remove", this.handleRemove, this);
+    },
 
-  render: function() {
-    var assetsJSON = this.assets.toJSON();
-    assetsJSON = _.map(assetsJSON, function(assetJSON) {
-      // TODO: Better shortened version of asset
-      return assetJSON;
-    });
-    var context = {
-      assets: assetsJSON
-    };
-    this.$el.html(this.template(context));
-    this.$('.unused-asset').draggable({
-      revert: 'invalid' 
-    });
-    return this;
-  },
+    render: function() {
+      var assetsJSON = this.assets.toJSON();
+      assetsJSON = _.map(assetsJSON, function(assetJSON) {
+        // TODO: Better shortened version of asset
+        return assetJSON;
+      });
+      var context = {
+        assets: assetsJSON
+      };
+      this.$el.html(this.template(context));
+      this.$('.unused-asset').draggable({
+        revert: 'invalid' 
+      });
+      return this;
+    },
 
-  /**
-   * Event callback for when assets are removed from a section
-   */
-  addAsset: function(asset) {
-    this.assets.push(asset);
-  },
+    /**
+     * Event callback for when assets are removed from a section
+     */
+    addAsset: function(asset) {
+      this.assets.push(asset);
+    },
 
-  handleRemove: function() {
-    // If the last asset was removed, hide the element
-    if (!this.assets.length) {
-      this.$el.hide(); 
+    handleRemove: function() {
+      // If the last asset was removed, hide the element
+      if (!this.assets.length) {
+        this.$el.hide(); 
+      }
+    },
+
+    show: function() {
+      return this.$el.show();
+    },
+
+    hide: function() {
+      return this.$el.hide();
     }
-  }
-});
+  })
+);
 
 storybase.builder.views.RichTextEditorMixin = {
   toolbarTemplateSource: $('#editor-toolbar-template').html(),
@@ -2473,7 +2537,7 @@ storybase.builder.views.PseudoSectionEditView = Backbone.View.extend(
         console.debug("Showing editor for pseduo-section " + this.pseudoSectionId);
         this.$el.show();
         // For now, don't automatically show help
-        //this.dispatcher.trigger('do:show:help', false, this.help.toJSON()); 
+        //this.dispatcher.trigger('do:show:help', this.help.toJSON()); 
         this.dispatcher.trigger('do:set:help', this.help.toJSON());
       }
       else {
@@ -2806,7 +2870,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
       console.debug('showing section ' + section.get('title'));
       this.$el.show();
       // For now, don't show help automatically
-      //this.dispatcher.trigger('do:show:help', false, help); 
+      //this.dispatcher.trigger('do:show:help', help); 
       this.dispatcher.trigger('do:set:help', help);
     }
     else {
@@ -3417,8 +3481,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       }, this.options.help);
       var assetHelp = this.getAssetTypeHelp(this.options.suggestedType);
       help.body += assetHelp;
-      this.dispatcher.trigger('do:set:help', help);
-      this.dispatcher.trigger('do:show:help', true);
+      this.dispatcher.trigger('do:show:help', help);
     },
 
     handleDrop: function(evt, ui) {
