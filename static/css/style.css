@@ -645,9 +645,11 @@ body.story-builder .sections-clip{float:left;width:90%;margin:0 40px;padding:0 1
 body.story-builder .scroll-left,body.story-builder .scroll-right{position:absolute;top:40px;text-indent:-32000px;cursor:pointer;background:url(../img/builder/section-scroll-arrows.png);display:block;float:left;height:34px;width:22px;}body.story-builder .scroll-left:hover,body.story-builder .scroll-right:hover{background-position:0 -34px;}
 body.story-builder .scroll-right{background-position:0 68px;position:absolute;right:10px;}body.story-builder .scroll-right:hover{background-position:0 34px;}
 body.story-builder .sections{width:1500px;margin:0;padding:0;float:left;}
-body.story-builder .section-thumbnail-container{position:relative;display:block;float:left;list-style:none;}
+body.story-builder .section-thumbnail-container{position:relative;display:block;float:left;list-style:none;}body.story-builder .section-thumbnail-container em{background:url(../img/builder/section-selected.png) no-repeat left top;display:none;width:20px;height:12px;position:absolute;top:88px;left:60px;z-index:10;}
+body.story-builder .section-thumbnail-container.selected em{display:block;}
+body.story-builder .section-thumbnail-container.pseudo em{left:50px;}
 body.story-builder .section-thumbnail,body.story-builder .spacer{position:relative;float:left;height:75px;margin:10px 0;padding:1% 0;text-align:center;}
-body.story-builder .section-thumbnail{width:120px;border:1px solid #999999;border-radius:4px;-webkit-border-radius:4px;-moz-border-radius:4px;box-shadow:0 0 5px #999999;-moz-box-shadow:0 0 5px #999999;-webkit-box-shadow:0 0 5px #999999;cursor:pointer;background-color:#f0efef;color:#999999;}
+body.story-builder .section-thumbnail{width:120px;border:1px solid #b3b3b3;border-radius:4px;-webkit-border-radius:4px;-moz-border-radius:4px;box-shadow:0 0 5px #b3b3b3;-moz-box-shadow:0 0 5px #b3b3b3;-webkit-box-shadow:0 0 5px #b3b3b3;cursor:pointer;background-color:#f0efef;color:#999999;}
 body.story-builder .section-thumbnail .title{position:relative;font-size:12px;top:31.5px;}
 body.story-builder .spacer{width:20px;}
 body.story-builder .spacer:hover{width:120px;margin:8px;color:#fff;}
