@@ -58,7 +58,7 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
     def get_object_class(self, bundle=None, request=None, **kwargs):
         content_fields = ('body', 'image', 'url')
         num_content_fields = 0
-        delayed_upload_types = ('image', 'map') 
+        delayed_upload_types = ('image', 'map', 'chart') 
         for name in content_fields:
             if bundle.data.get(name):
                 num_content_fields = num_content_fields + 1
@@ -234,7 +234,7 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
         return bundle.obj.render(format="html")
 
     def dehydrate_thumbnail_url(self, bundle):
-        return bundle.obj.get_thumbnail_url(width=150, height=150)
+        return bundle.obj.get_thumbnail_url(width=222, height=222)
 
 class DataSetValidation(Validation):
     def is_valid(self, bundle, request=None, **kwargs):

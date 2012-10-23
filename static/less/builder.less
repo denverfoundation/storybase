@@ -328,7 +328,6 @@ a.btn.disabled {
 // Subnavigation Bar
 // Currently the only thing that ever goes in this is the section list
 #subnav-bar {
-  // TODO: Replace this with more-human-readable color variable
   background-color:@light-gray;
   width:100%;
 }
@@ -380,6 +379,7 @@ a.btn.disabled {
   position: absolute;
   right: 0;
   height: 100%;
+  z-index: 998;
 }
 
 .drawer-open #drawer-container {
@@ -420,10 +420,21 @@ a.btn.disabled {
 
 #drawer-contents {
   position: relative;
+  // TODO: Figure out scrolling strategy
+  max-height: 60%;
+  overflow: hidden;
+
+  &:hover {
+    overflow-y: scroll;
+  }
 }
 
 .drawer-open #drawer-contents {
   margin-left: 20%;
+}
+
+.dragging #drawer-contents {
+  overflow: visible; 
 }
 
 
@@ -473,30 +484,53 @@ a.btn.disabled {
 }
 
 // Unused Assets List
-
-#unused-assets a {
-  color: #fff;
-  font-weight: bold;
-}
+#unused-assets {}
 
 #unused-assets ul {
   list-style: none;
   padding: 0;
+  text-align: center;
 }
 
 .unused-asset {
+  width: 80%;
+  margin: 0 auto;
   cursor: pointer;
-  padding: 2px 0;
-}
+  padding: 10px 0;
+  border-bottom: 1px solid @light-gray;
 
-.unused-asset.ui-draggable-dragging {
-  color: #000;
-}
+  .body, .url {
+    text-align: left;
+  }
 
-.unused-asset .thumbnail {
-  margin: 2px;
-  width: 32px;
-  height: 32px;
+  &:last-child {
+    border-bottom: none;
+  }
+
+  // Uncomment this and add styles if we want specific styles for when
+  // the asset is being dragged
+  //&.ui-draggable-dragging {
+  //}
+
+  .thumbnail {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .default-thumbnail {
+    &:before {
+      font-family: FontAwesome;
+      font-size: 4em;
+    }
+    &.image:before { content: "\f03e"; }
+    &.audio:before { content: "\f025"; }
+    &.video:before { content: "\f03d"; }
+    &.map:before { content: "\f041"; }
+    &.table:before { content: "\f0ce"; }
+    &.quotation:before { content: "\f0e5"; }
+    &.text:before { content: "\f039"; }
+    &.chart:before { content: "\f080"; }
+  }
 }
 
 /* Story information editor */

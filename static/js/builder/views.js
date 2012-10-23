@@ -47,6 +47,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
   options: {
     drawerEl: '#drawer-container',
     headerEl: '#header',
+    language: 'en',
     subNavContainerEl: '#subnav-bar-contents',
     subviewContainerEl: '#app',
     toolsContainerEl: '#title-bar-contents',
@@ -58,6 +59,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
     // Common options passed to sub-views
     var commonOptions = {
       dispatcher: this.options.dispatcher,
+      language: this.options.language,
       startOverUrl: this.options.startOverUrl,
       visibleSteps: this.options.visibleSteps
     };
@@ -405,6 +407,11 @@ storybase.builder.views.DrawerView = Backbone.View.extend({
     this.dispatcher.on(_.result(view, 'drawerCloseEvents'), function() {
       this.close(view);
     }, this);
+    if (view.extraEvents) {
+      _.each(_.result(view, 'extraEvents'), function(fn, evt) {
+        this.dispatcher.on(evt, fn, this);
+      }, this);
+    }
     this._subviews[view.cid] = view;
     this.render();
   },
@@ -413,6 +420,9 @@ storybase.builder.views.DrawerView = Backbone.View.extend({
     this.removeButton(_.result(view, 'drawerButton'));
     this.dispatcher.off(_.result(view, 'drawerOpenEvents'));
     this.dispatcher.off(_.result(view, 'drawerCloseEvents'));
+    _.each(_.result(view, 'extraEvents'), function(fn, evt) {
+      this.dispatcher.off(evt, fn, this);
+    }, this);
     this._subviews = _.omit(this._subviews, view.cid);
     this.render();
   },
@@ -1340,7 +1350,8 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     if (_.isUndefined(this.model)) {
       // Create a new story model instance
       this.model = new storybase.models.Story({
-        title: ""
+        title: "",
+        language: this.options.language
       });
     }
     if (this.options.relatedStories) {
@@ -1609,7 +1620,9 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
   initializeStoryFromTemplate: function() {
     console.info("Initializing sections");
-    this.model.fromTemplate(this.templateStory);
+    this.model.fromTemplate(this.templateStory, {
+      language: this.options.language
+    });
     this.dispatcher.trigger("ready:story", this.model);
   },
 
@@ -1748,7 +1761,19 @@ storybase.builder.views.UnusedAssetDrawerMixin = {
 
   drawerOpenEvents: 'do:show:assetlist',
 
-  drawerCloseEvents: 'do:hide:assetlist'
+  drawerCloseEvents: 'do:hide:assetlist',
+
+  // Workaround for issue where draggable element is hidden when its
+  // container element has an overflow property that is not visible
+  extraEvents: {
+    'start:drag:asset': function() {
+      this.$el.addClass('dragging');
+    },
+
+    'stop:drag:asset': function() {
+      this.$el.removeClass('dragging');
+    },
+  }
 };
 
 /** 
@@ -1777,17 +1802,41 @@ storybase.builder.views.UnusedAssetView = Backbone.View.extend(
     },
 
     render: function() {
+      var that = this;
       var assetsJSON = this.assets.toJSON();
+      // Pluck specific attributes from the asset. This simplifies the
+      // logic in the template
       assetsJSON = _.map(assetsJSON, function(assetJSON) {
-        // TODO: Better shortened version of asset
-        return assetJSON;
+        var attrs = {
+          asset_id: assetJSON.asset_id,
+          type: assetJSON.type
+        };
+        if (assetJSON.thumbnail_url) {
+          attrs.thumbnail_url = assetJSON.thumbnail_url;
+        }
+        else if (assetJSON.body) {
+          attrs.body = assetJSON.body;
+        }
+
+        if (assetJSON.url) {
+          attrs.url = assetJSON.url;
+        }
+        return attrs;
       });
       var context = {
         assets: assetsJSON
       };
       this.$el.html(this.template(context));
       this.$('.unused-asset').draggable({
-        revert: 'invalid' 
+        revert: 'invalid',
+      // Workaround for issue where draggable element is hidden when its
+      // container element has an overflow property that is not visible
+        start: function() {
+          that.dispatcher.trigger("start:drag:asset")
+        },
+        stop: function() {
+          that.dispatcher.trigger("stop:drag:asset")
+        }
       });
       return this;
     },
@@ -2318,7 +2367,8 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
       title: gettext('New Section'),
       layout: this.model.sections.at(0).get('layout'),
       root: true,
-      template_section: this.model.sections.at(0).get('template_section')
+      template_section: this.model.sections.at(0).get('template_section'),
+      language: this.options.language
     });
     var postSave = function(section) {
       var thumbnailView;
@@ -3096,7 +3146,10 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
 
     initialize: function() {
       console.debug("Initializing new section asset edit view");
-      var modelOptions = {};
+      this.modelOptions = {
+        language: this.options.language
+      }
+      var modelOptions = _.extend({}, this.modelOptions);
       this.container = this.options.container;
       this.dispatcher = this.options.dispatcher;
       this.assetTypes = this.options.assetTypes;
@@ -3432,7 +3485,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       // This view should no longer listen to events on this model
       this.unbindModelEvents();
       this.dispatcher.trigger('do:remove:sectionasset', this.section, this.model);
-      this.model = new storybase.models.Asset();
+      this.model = new storybase.models.Asset(this.modelOptions);
       // Listen to events on the new model
       this.bindModelEvents();
       this.setState('select').render();
@@ -4504,8 +4557,9 @@ storybase.builder.views.PublishView = Backbone.View.extend(
         licenseEndpoint: this.options.licenseEndpoint
       });
       this.featuredAssetView = new storybase.builder.views.FeaturedAssetView({
-        story: this.model,
-        dispatcher: this.dispatcher
+        dispatcher: this.dispatcher,
+        language: this.options.language,
+        story: this.model
       });
       this.subviews = [this.legalView, this.licenseView, this.featuredAssetView];
       this.updateTodo(null, false);
@@ -4791,6 +4845,7 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
     getForm: function() {
       var form = new Backbone.Form({
         model: new storybase.models.Asset({
+          language: this.options.language,
           type: 'image'
         })
       });

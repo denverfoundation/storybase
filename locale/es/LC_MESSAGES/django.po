@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-31 23:40-0500\n"
+"POT-Creation-Date: 2012-10-22 10:15-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -34,21 +34,33 @@ msgstr ""
 msgid "StoryBase Homepage Stories"
 msgstr ""
 
-#: apps/cmsplugin_storybase/settings.py:17
-#: apps/storybase_story/templates/storybase_story/story_detail.html:63
-#: apps/storybase_user/admin.py:45 settings/defaults.py:267
+#: apps/cmsplugin_storybase/cms_plugins.py:50
+msgid "StoryBase Banner Stories"
+msgstr ""
+
+#: apps/cmsplugin_storybase/settings.py:25 templates/homepage.html:37
+#: templates/homepage.html.py:67
+msgid "Build a Story"
+msgstr ""
+
+#: apps/cmsplugin_storybase/settings.py:33 settings/defaults.py:335
+#: templates/base.html:114
+msgid "Explore"
+msgstr "Explora"
+
+#: apps/cmsplugin_storybase/settings.py:42
+#: apps/storybase_story/templates/storybase_story/story_detail.html:84
+#: apps/storybase_user/admin.py:81 settings/defaults.py:331
+#: templates/megamenu.html:29
 msgid "Organizations"
 msgstr ""
 
-#: apps/cmsplugin_storybase/settings.py:25
-#: apps/storybase_story/templates/storybase_story/story_detail.html:74
-#: apps/storybase_user/admin.py:46 settings/defaults.py:269
+#: apps/cmsplugin_storybase/settings.py:50
+#: apps/storybase_story/templates/storybase_story/story_detail.html:95
+#: apps/storybase_user/admin.py:82 settings/defaults.py:333
+#: templates/megamenu.html:38
 msgid "Projects"
 msgstr ""
-
-#: apps/cmsplugin_storybase/settings.py:33 settings/defaults.py:271
-msgid "Explore"
-msgstr "Explora"
 
 #: apps/cmsplugin_storybase/templates/homepage_organizations_plugin.html:3
 msgid "Featured Organizations"
@@ -59,6 +71,7 @@ msgid "View all Organizations"
 msgstr ""
 
 #: apps/cmsplugin_storybase/templates/homepage_projects_plugin.html:3
+#: templates/homepage.html:185
 msgid "Featured Projects"
 msgstr ""
 
@@ -67,6 +80,7 @@ msgid "View all Projects"
 msgstr ""
 
 #: apps/cmsplugin_storybase/templates/homepage_stories_plugin.html:3
+#: templates/homepage.html:189
 msgid "Featured Stories"
 msgstr ""
 
@@ -75,149 +89,102 @@ msgstr ""
 msgid "Explore %(storybase_site_name)s "
 msgstr "Explora %(storybase_site_name)s"
 
-msgid "Explore Floodlight"
-msgstr "Explora Floodlight"
-
-#: apps/storybase/views/generic.py:54
+#: apps/storybase/views/generic.py:55 apps/storybase_asset/api.py:384
+#: apps/storybase_story/views.py:144 apps/storybase_story/views.py:167
 #, python-format
 msgid "No %(verbose_name)s found matching the query"
 msgstr ""
 
-#: apps/storybase_action/models.py:15
-msgid "Your Name"
+#: apps/storybase_asset/api.py:387 apps/storybase_story/views.py:147
+msgid "You are not authorized to edit this story"
 msgstr ""
 
-#: apps/storybase_action/models.py:16
-msgid "Your Email"
-msgstr ""
-
-#: apps/storybase_action/models.py:17
-msgid "Your Phone Number"
-msgstr ""
-
-#: apps/storybase_action/models.py:19
-msgid "Your Message"
-msgstr ""
-
-#: apps/storybase_action/models.py:20
-msgid "Message Created"
-msgstr ""
-
-#: apps/storybase_action/models.py:23
-msgid "Message from "
-msgstr ""
-
-#: apps/storybase_action/models.py:31
-msgid "New message from"
-msgstr ""
-
-#: apps/storybase_action/views.py:34
-msgid "Thanks! Your message has been submitted to the site administrators"
-msgstr ""
-
-#: apps/storybase_action/views.py:41
-msgid "Please fill out all required information"
-msgstr ""
-
-#: apps/storybase_action/templates/storybase_action/sitecontactmessage_form.html:4
-#: templates/base.html:61
-msgid "Contact Us"
-msgstr ""
-
-#: apps/storybase_action/templates/storybase_action/sitecontactmessage_form.html:16
-msgid "Fields marked with a * are required"
-msgstr ""
-
-#: apps/storybase_action/templates/storybase_action/sitecontactmessage_form.html:19
-msgid "Submit"
-msgstr ""
-
-#: apps/storybase_asset/models.py:148
+#: apps/storybase_asset/models.py:210
 msgid "Associated Datasets"
 msgstr ""
 
-#: apps/storybase_asset/models.py:152 apps/storybase_asset/models.py:157
+#: apps/storybase_asset/models.py:214 apps/storybase_asset/models.py:219
 msgid "Download the data"
 msgstr ""
 
-#: apps/storybase_asset/models.py:159
+#: apps/storybase_asset/models.py:221
 msgid "View the data"
 msgstr ""
 
-#: apps/storybase_asset/models.py:171
-msgid "Attribution"
-msgstr ""
-
-#: apps/storybase_asset/models.py:433
+#: apps/storybase_asset/models.py:578
 msgid "Links to file"
 msgstr ""
 
-#: apps/storybase_geo/admin.py:84
+#: apps/storybase_geo/admin.py:94
 #, python-format
 msgid ""
 "You tried to set a parent with the wrong GeoLevel. You need to pick one with "
 "a GeoLevel of %s"
 msgstr ""
 
-#: apps/storybase_geo/models.py:18 apps/storybase_geo/models.py:31
-#: apps/storybase_geo/models.py:96 apps/storybase_taxonomy/admin.py:44
-#: apps/storybase_taxonomy/models.py:17
+#: apps/storybase_geo/models.py:19 apps/storybase_geo/models.py:58
+#: apps/storybase_geo/models.py:137 apps/storybase_taxonomy/admin.py:44
+#: apps/storybase_taxonomy/models.py:21
 msgid "Name"
 msgstr ""
 
-#: apps/storybase_geo/models.py:21
+#: apps/storybase_geo/models.py:22
 msgid "Parent"
 msgstr ""
 
-#: apps/storybase_geo/models.py:22 apps/storybase_taxonomy/models.py:18
+#: apps/storybase_geo/models.py:23 apps/storybase_taxonomy/models.py:22
 msgid "Slug"
 msgstr ""
 
-#: apps/storybase_geo/models.py:30
+#: apps/storybase_geo/models.py:57
 msgid "Location ID"
 msgstr ""
 
-#: apps/storybase_geo/models.py:32
+#: apps/storybase_geo/models.py:59
 msgid "Address"
 msgstr ""
 
-#: apps/storybase_geo/models.py:33
+#: apps/storybase_geo/models.py:60
 msgid "Address 2"
 msgstr ""
 
-#: apps/storybase_geo/models.py:34
+#: apps/storybase_geo/models.py:61
 msgid "City"
 msgstr ""
 
-#: apps/storybase_geo/models.py:35
+#: apps/storybase_geo/models.py:62
 msgid "State"
 msgstr ""
 
-#: apps/storybase_geo/models.py:37
+#: apps/storybase_geo/models.py:64
 msgid "Postal Code"
 msgstr ""
 
-#: apps/storybase_geo/models.py:38
+#: apps/storybase_geo/models.py:65
 msgid "Latitude"
 msgstr ""
 
-#: apps/storybase_geo/models.py:39
+#: apps/storybase_geo/models.py:66
 msgid "Longitude"
 msgstr ""
 
-#: apps/storybase_geo/models.py:40
+#: apps/storybase_geo/models.py:67
 msgid "Point"
 msgstr ""
 
-#: apps/storybase_geo/models.py:99
+#: apps/storybase_geo/models.py:75
+msgid "Raw Address"
+msgstr ""
+
+#: apps/storybase_geo/models.py:140
 msgid "GeoLevel"
 msgstr ""
 
-#: apps/storybase_geo/models.py:101
+#: apps/storybase_geo/models.py:142
 msgid "Boundary"
 msgstr ""
 
-#: apps/storybase_geo/models.py:102
+#: apps/storybase_geo/models.py:143
 msgid "Place ID"
 msgstr ""
 
@@ -231,106 +198,606 @@ msgstr ""
 msgid "You must provide a shapefile, name field  and boundary field argument"
 msgstr ""
 
-#: apps/storybase_story/models.py:35
+#: apps/storybase_help/models.py:38
+msgid "Help Item"
+msgstr ""
+
+#: apps/storybase_messaging/admin.py:32
+msgid "Subject"
+msgstr ""
+
+#: apps/storybase_messaging/management.py:12
+msgid "System Message"
+msgstr ""
+
+#: apps/storybase_messaging/management.py:13
+#, python-format
+msgid "Important information about %s"
+msgstr ""
+
+#: apps/storybase_messaging/models.py:37
+msgid "Your Name"
+msgstr ""
+
+#: apps/storybase_messaging/models.py:38
+msgid "Your Email"
+msgstr ""
+
+#: apps/storybase_messaging/models.py:39
+msgid "Your Phone Number"
+msgstr ""
+
+#: apps/storybase_messaging/models.py:41
+msgid "Your Message"
+msgstr ""
+
+#: apps/storybase_messaging/models.py:42
+msgid "Message Created"
+msgstr ""
+
+#: apps/storybase_messaging/models.py:45
+msgid "Message from "
+msgstr ""
+
+#: apps/storybase_messaging/models.py:57
+msgid "New message from"
+msgstr ""
+
+#: apps/storybase_messaging/views.py:32
+msgid "Thanks! Your message has been submitted to the site administrators"
+msgstr ""
+
+#: apps/storybase_messaging/views.py:39
+msgid "Please fill out all required information"
+msgstr ""
+
+#: apps/storybase_messaging/templates/storybase_messaging/sitecontactmessage_form.html:4
+#: templates/base.html:66 templates/base.html.py:118
+msgid "Contact Us"
+msgstr ""
+
+#: apps/storybase_messaging/templates/storybase_messaging/sitecontactmessage_form.html:16
+msgid "Fields marked with a * are required"
+msgstr ""
+
+#: apps/storybase_messaging/templates/storybase_messaging/sitecontactmessage_form.html:19
+#: apps/storybase_user/templates/storybase_user/account_extra_details.html:24
+msgid "Submit"
+msgstr ""
+
+#: apps/storybase_story/models.py:67
 msgid "Call to Action"
 msgstr ""
 
-#: apps/storybase_story/models.py:57
+#: apps/storybase_story/models.py:69
+msgid "Connected Story Prompt"
+msgstr ""
+
+#: apps/storybase_story/models.py:91
 msgid "structure"
 msgstr ""
 
-#: apps/storybase_story/models.py:70
+#: apps/storybase_story/models.py:106
 msgid "Assets to be displayed in teaser version of Story"
 msgstr ""
 
-#: apps/storybase_story/models.py:76 apps/storybase_user/models.py:39
+#: apps/storybase_story/models.py:112
+msgid "Story is a template"
+msgstr ""
+
+#: apps/storybase_story/models.py:115
+msgid "Story can have connected stories"
+msgstr ""
+
+#: apps/storybase_story/models.py:118
+msgid "Story whose structure was used to create this story"
+msgstr ""
+
+#: apps/storybase_story/models.py:119 apps/storybase_user/models.py:39
 #: apps/storybase_user/models.py:127
 msgid "Featured on homepage"
 msgstr ""
 
-#: apps/storybase_story/models.py:78
+#: apps/storybase_story/models.py:121
 msgid "Contact Information"
 msgstr ""
 
-#: apps/storybase_story/models.py:81
-#: apps/storybase_story/templates/storybase_story/story_detail.html:85
+#: apps/storybase_story/models.py:124
+#: apps/storybase_story/templates/storybase_story/story_detail.html:106
 msgid "Topics"
 msgstr ""
 
-#: apps/storybase_story/models.py:85
+#: apps/storybase_story/models.py:128
 msgid "Locations"
 msgstr ""
 
-#: apps/storybase_story/models.py:89
+#: apps/storybase_story/models.py:132
 msgid "Places"
 msgstr ""
 
+#: apps/storybase_story/models.py:171
+msgid "Untitled Story"
+msgstr ""
+
+#: apps/storybase_story/models.py:557
+msgid ""
+"The ordering of top-level sections relative to each other. Sections with "
+"lower weight values are shown before ones with higher weight values in lists."
+msgstr ""
+
+#: apps/storybase_story/models.py:562
+msgid ""
+"A section that provides default values for layout, asset types and help for "
+"this section."
+msgstr ""
+
+#: apps/storybase_story/models.py:772
+msgid "5 minutes"
+msgstr ""
+
+#: apps/storybase_story/models.py:773
+msgid "30 minutes"
+msgstr ""
+
+#: apps/storybase_story/models.py:776
+msgid "Beginner"
+msgstr ""
+
+#: apps/storybase_story/models.py:781
+msgid "The story that provides the structure for this template"
+msgstr ""
+
+#: apps/storybase_story/models.py:785
+msgid "The amount of time needed to create a story of this type"
+msgstr ""
+
+#: apps/storybase_story/models.py:789
+msgid ""
+"The level of storytelling experience suggested to create stories with this "
+"template"
+msgstr ""
+
+#: apps/storybase_story/models.py:792
+msgid "A human-readable unique identifier"
+msgstr ""
+
+#: apps/storybase_story/models.py:794
+msgid "Stories that are examples of this template"
+msgstr ""
+
+#: apps/storybase_story/models.py:826
+msgid "template"
+msgstr ""
+
+#: apps/storybase_story/models.py:875
+msgid "Default asset type"
+msgstr ""
+
+#: apps/storybase_story/models.py:877
+msgid "User can change the asset type from the default"
+msgstr ""
+
+#: apps/storybase_story/views.py:170
+msgid "This story does not allow connected stories"
+msgstr ""
+
 #: apps/storybase_story/structure/__init__.py:127
-#: apps/storybase_story/structure/__init__.py:162
-#: apps/storybase_story/templates/storybase_story/story_viewer.html:64
+#: apps/storybase_story/structure/__init__.py:174
+#: apps/storybase_story/templates/storybase_story/story_viewer.html:73
 msgid "Summary"
 msgstr ""
 
-#: apps/storybase_story/structure/__init__.py:139
-#: apps/storybase_story/structure/__init__.py:158
-#: apps/storybase_story/templates/storybase_story/story_detail.html:34
-#: apps/storybase_story/templates/storybase_story/story_viewer.html:76
+#: apps/storybase_story/structure/__init__.py:140
+#: apps/storybase_story/structure/__init__.py:170
+#: apps/storybase_story/templates/storybase_story/story_detail.html:62
+#: apps/storybase_story/templates/storybase_story/story_viewer.html:86
 msgid "How Can You Help?"
+msgstr ""
+
+#: apps/storybase_story/structure/__init__.py:153
+#: apps/storybase_story/structure/__init__.py:178
+#: apps/storybase_story/templates/storybase_story/story_detail.html:130
+#: apps/storybase_story/templates/storybase_story/story_viewer.html:98
+msgid "Connected Stories"
+msgstr ""
+
+#: apps/storybase_story/templates/admin/storybase_story/story/change_form.html:8
+msgid "Edit in Builder"
+msgstr ""
+
+#: apps/storybase_story/templates/storybase_story/connected_story.html:3
+#: apps/storybase_story/templates/storybase_story/story_detail.html:48
+#: apps/storybase_story/templates/storybase_story/story_viewer.html:67
+#: apps/storybase_story/templates/storybase_story/story_viewer.html:102
+msgid "By"
 msgstr ""
 
 #: apps/storybase_story/templates/storybase_story/simple_story_list.html:9
 msgid "Languages"
 msgstr ""
 
-#: apps/storybase_story/templates/storybase_story/story_detail.html:23
-#: apps/storybase_story/templates/storybase_story/story_viewer.html:59
-msgid "By"
+#: apps/storybase_story/templates/storybase_story/story_builder.html:20
+#: apps/storybase_story/templates/storybase_story/story_builder.html:64
+#: templates/base.html:113
+msgid "Story Builder"
 msgstr ""
 
-#: apps/storybase_story/templates/storybase_story/story_detail.html:29
+#: apps/storybase_story/templates/storybase_story/story_comments.html:26
+#: templates/registration/password_reset_complete.html:12
+msgid "Log in"
+msgstr ""
+
+#: apps/storybase_story/templates/storybase_story/story_comments.html:26
+msgid "or"
+msgstr ""
+
+#: apps/storybase_story/templates/storybase_story/story_comments.html:26
+msgid "register"
+msgstr ""
+
+#: apps/storybase_story/templates/storybase_story/story_comments.html:26
+msgid "to comment"
+msgstr ""
+
+#: apps/storybase_story/templates/storybase_story/story_detail.html:54
 msgid "View Story"
 msgstr ""
 
-#: apps/storybase_story/templates/storybase_story/story_detail.html:37
+#: apps/storybase_story/templates/storybase_story/story_detail.html:63
 msgid ""
 "Wondering what you can do to help? The contributor has listed the following "
 "actions that you can take to help."
 msgstr ""
 
-#: apps/storybase_story/templates/storybase_story/story_detail.html:51
+#: apps/storybase_story/templates/storybase_story/story_detail.html:72
 msgid "Contributed by"
 msgstr ""
 
-#: apps/storybase_story/templates/storybase_story/story_detail.html:55
+#: apps/storybase_story/templates/storybase_story/story_detail.html:76
 msgid "Published"
 msgstr ""
 
-#: apps/storybase_story/templates/storybase_story/story_detail.html:59
+#: apps/storybase_story/templates/storybase_story/story_detail.html:80
 msgid "Updated"
 msgstr ""
 
-#: apps/storybase_story/templates/storybase_story/story_detail.html:96
+#: apps/storybase_story/templates/storybase_story/story_detail.html:117
+#: apps/storybase_user/templates/storybase_user/project_detail.html:42
 msgid "Contact Info"
+msgstr ""
+
+#: apps/storybase_story/templates/storybase_story/story_detail.html:132
+msgid "Contribute to this story"
+msgstr ""
+
+#: apps/storybase_story/templates/storybase_story/story_detail.html:135
+#, python-format
+msgid "View %(counter)s connected story"
+msgid_plural "View %(counter)s connected stories"
+msgstr[0] ""
+msgstr[1] ""
+
+#: apps/storybase_story/templates/storybase_story/story_detail.html:143
+msgid "Citizen Comments"
+msgstr ""
+
+#: apps/storybase_story/templates/storybase_story/story_viewer.html:91
+msgid "Click here to contribute to this story"
+msgstr ""
+
+#: apps/storybase_story/templatetags/story.py:58
+msgid "View Stories"
+msgstr ""
+
+#: apps/storybase_taxonomy/models.py:115
+msgid "Tag"
+msgstr ""
+
+#: apps/storybase_taxonomy/models.py:116
+msgid "Tags"
 msgstr ""
 
 #: apps/storybase_taxonomy/management/commands/loadtopics.py:24
 msgid "You must provide a CSV file and name field"
 msgstr ""
 
-#: apps/storybase_user/admin.py:40
+#: apps/storybase_user/admin.py:55
+msgid "Notifications"
+msgstr ""
+
+#: apps/storybase_user/admin.py:58
+msgid "Users will receive emails about these kind of events"
+msgstr ""
+
+#: apps/storybase_user/admin.py:76
 msgid "Personal info"
 msgstr ""
 
-#: apps/storybase_user/admin.py:41
+#: apps/storybase_user/admin.py:77
 msgid "Permissions"
 msgstr ""
 
-#: apps/storybase_user/admin.py:42
+#: apps/storybase_user/admin.py:78
 msgid "Important dates"
 msgstr ""
 
-#: apps/storybase_user/admin.py:43
+#: apps/storybase_user/admin.py:79
 msgid "Groups"
+msgstr ""
+
+#: apps/storybase_user/admin.py:83
+msgid "Stories"
+msgstr ""
+
+#: apps/storybase_user/views.py:36
+msgid "Updated notification settings"
+msgstr ""
+
+#: apps/storybase_user/views.py:70
+msgid "Your email address has been changed"
+msgstr ""
+
+#: apps/storybase_user/views.py:137
+msgid "Password changed"
+msgstr ""
+
+#: apps/storybase_user/auth/forms.py:16
+#: templates/registration/password_reset_form.html:14
+msgid "Email"
+msgstr ""
+
+#: apps/storybase_user/auth/forms.py:52
+msgid ""
+"Please enter a correct email address and password. Note that both fields are "
+"case-sensitive."
+msgstr ""
+
+#: apps/storybase_user/auth/forms.py:63
+#: apps/storybase_user/templates/storybase_user/password_change_form.html:31
+msgid "New password"
+msgstr ""
+
+#: apps/storybase_user/auth/forms.py:64
+msgid "New password confirmation"
+msgstr ""
+
+#: apps/storybase_user/auth/forms.py:106
+#: apps/storybase_user/registration/forms.py:15
+#: apps/storybase_user/templates/storybase_user/account_base.html:12
+msgid "Password"
+msgstr ""
+
+#: apps/storybase_user/auth/forms.py:107
+msgid ""
+"For your security, you must enter your password to change your email address"
+msgstr ""
+
+#: apps/storybase_user/auth/forms.py:108
+msgid "New email address"
+msgstr ""
+
+#: apps/storybase_user/auth/forms.py:109
+msgid "New email address confirmation"
+msgstr ""
+
+#: apps/storybase_user/auth/forms.py:130
+msgid "Your password was entered incorrectly. Please enter it again."
+msgstr ""
+
+#: apps/storybase_user/auth/forms.py:138
+msgid "The two email fields didn't match."
+msgstr ""
+
+#: apps/storybase_user/auth/forms.py:140
+msgid "A user with this email address already exists."
+msgstr ""
+
+#: apps/storybase_user/auth/utils.py:44
+#, python-format
+msgid "Password reset on %s"
+msgstr ""
+
+#: apps/storybase_user/auth/utils.py:55
+#, python-format
+msgid "Your %s account has been deactivated"
+msgstr ""
+
+#: apps/storybase_user/auth/utils.py:73
+#, python-format
+msgid "Your %s account information has been updated"
+msgstr ""
+
+#: apps/storybase_user/registration/forms.py:16
+#: apps/storybase_user/templates/storybase_user/password_change_form.html:36
+msgid "Password (again)"
+msgstr ""
+
+#: apps/storybase_user/registration/forms.py:38
+msgid "A first name is required"
+msgstr ""
+
+#: apps/storybase_user/registration/forms.py:41
+#: apps/storybase_user/social_auth/forms.py:10
+msgid "I agree to the terms of service"
+msgstr ""
+
+#: apps/storybase_user/registration/forms.py:42
+#: apps/storybase_user/social_auth/forms.py:12
+msgid "You must agree to the terms to register"
+msgstr ""
+
+#: apps/storybase_user/social_auth/forms.py:23
+msgid ""
+"This email address is already in use. You must first log in to your account "
+"with your password and then associate your social media account."
+msgstr ""
+
+#: apps/storybase_user/templates/admin/auth/change_list.html:6
+msgid "Export user information"
+msgstr ""
+
+#: apps/storybase_user/templates/registration/account_inactive_error_message.html:2
+#: templates/base.html:69
+msgid "Hi"
+msgstr ""
+
+#: apps/storybase_user/templates/registration/account_inactive_error_message.html:5
+#, python-format
+msgid ""
+"\n"
+"Your Floodlight account has been deactivated by the %(site_name)s "
+"administrators. If you would like to reactivate your account, please contact "
+"us at %(site_contact_email)s.\n"
+msgstr ""
+
+#: apps/storybase_user/templates/registration/account_inactive_error_message.html:11
+msgid "Thanks"
+msgstr ""
+
+#: apps/storybase_user/templates/registration/account_inactive_error_message.html:13
+#, python-format
+msgid "The %(site_name)s Team"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/account_base.html:10
+msgid ""
+"Manage your basic information, like email address and connected social media "
+"accounts"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/account_base.html:10
+#: apps/storybase_user/templates/storybase_user/account_stories.html:5
+#: apps/storybase_user/templates/storybase_user/password_change_form.html:5
+#: templates/account_menu.html:7 templates/base.html:117
+#: templates/megamenu.html:167
+msgid "My Account"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/account_base.html:12
+msgid "Change your password"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/account_base.html:13
+msgid "Control your settings for receiving updates from"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/account_base.html:13
+#: apps/storybase_user/templates/storybase_user/account_notifications.html:5
+#: apps/storybase_user/templates/storybase_user/account_notifications.html:7
+msgid "Notifications and Subscriptions"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/account_base.html:14
+msgid "Manage your stories and launch them in the Story Builder"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/account_base.html:14
+#: apps/storybase_user/templates/storybase_user/account_stories.html:7
+#: templates/megamenu.html:180
+msgid "My Stories"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/account_extra_details.html:5
+#: apps/storybase_user/templates/storybase_user/account_extra_details.html:8
+msgid "Provide additional information"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/account_extra_details.html:19
+#: templates/registration/registration_form.html:31
+msgid "I agree to the "
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/account_extra_details.html:19
+#: templates/registration/registration_form.html:31
+msgid "terms of service"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/account_notifications.html:15
+msgid "updates"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/account_notifications.html:16
+msgid "Email me with"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/account_notifications.html:19
+msgid "Updates about new Floodlight features, events and storytelling tips"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/account_notifications.html:23
+msgid "Administrative account updates"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/account_notifications.html:27
+msgid "A monthly digest of featured Floodlight stories"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/account_notifications.html:31
+msgid "Notifications about my stories"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/account_notifications.html:32
+msgid "Email me when"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/account_notifications.html:35
+msgid "One of my stories is featured on the Floodlight homepage or newsletter"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/account_notifications.html:39
+msgid "Someone comments on one of my stories"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/account_notifications.html:42
+msgid "Save"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/account_stories.html:14
+msgid "Title"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/account_stories.html:15
+msgid "Last Edited"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/account_stories.html:16
+msgid "Status"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/account_stories.html:26
+msgid "Build"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/account_stories.html:31
+msgid "You have no stories"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/account_summary.html:5
+msgid "Account Information"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/account_summary.html:7
+msgid "Account information for"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/account_summary.html:12
+msgid "Email Address"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/account_summary.html:17
+msgid "Change Email Address"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/account_summary.html:20
+msgid "Connected accounts"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/account_summary.html:23
+msgid "disconnect"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/account_summary.html:23
+msgid "connect"
 msgstr ""
 
 #: apps/storybase_user/templates/storybase_user/organization_list.html:25
@@ -338,33 +805,144 @@ msgstr ""
 msgid "More"
 msgstr ""
 
-#: config/atlas_dev/settings.py:49 settings/atlas_dev.py:49
-msgid "Because what you can't see, you can't change."
-msgstr "Usted no puede cambiar lo que no puedes ver."
+#: apps/storybase_user/templates/storybase_user/password_change_form.html:7
+msgid "Change Password"
+msgstr ""
 
-#: config/atlas_dev/settings.py:51 settings/atlas_dev.py:51
+#: apps/storybase_user/templates/storybase_user/password_change_form.html:16
+#: templates/admin/change_form.html:48
+msgid "Please correct the error below."
+msgid_plural "Please correct the errors below."
+msgstr[0] ""
+msgstr[1] ""
+
+#: apps/storybase_user/templates/storybase_user/password_change_form.html:20
+msgid ""
+"Please enter your old password, for security's sake, and then enter your new "
+"password twice so we can verify you typed it in correctly."
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/password_change_form.html:26
+msgid "Old password"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/password_change_form.html:42
+#: templates/registration/password_reset_confirm.html:19
+msgid "Change my password"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/project_detail.html:12
+#: config/atlas_dev/settings.py:120 config/atlas_staging/settings.py:135
+#: config/atlas_test/settings.py:133 config/staging/settings.py:135
 msgid "Contributing Organizations"
 msgstr ""
 
-#: config/atlas_dev/settings.py:53 settings/atlas_dev.py:53
+#: apps/storybase_user/templates/storybase_user/project_detail.html:51
+msgid "Project Contributors"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/project_detail.html:59
+msgid "Sponsoring Organizations"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/project_detail.html:70
+msgid "Featured Story"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/project_detail.html:80
+msgid "Recent Stories"
+msgstr ""
+
+#: apps/storybase_user/templates/storybase_user/project_detail.html:101
+msgid "View All Stories for This Project"
+msgstr ""
+
+#: apps/storybase_user/templatetags/projects.py:38
+msgid "View Projects"
+msgstr ""
+
+#: config/atlas_dev/settings.py:118 config/atlas_staging/settings.py:132
+#: config/atlas_test/settings.py:131 config/staging/settings.py:132
+msgid "Because what you can't see, you can't change."
+msgstr "Usted no puede cambiar lo que no puedes ver."
+
+#: config/atlas_dev/settings.py:122 config/atlas_staging/settings.py:137
+#: config/atlas_test/settings.py:135 config/staging/settings.py:137
 msgid "Special Projects"
 msgstr ""
 
-#: config/atlas_dev/settings.py:55 settings/atlas_dev.py:55
+#: config/atlas_dev/settings.py:124 config/atlas_staging/settings.py:139
+#: config/atlas_test/settings.py:137 config/staging/settings.py:139
 #, python-format
 msgid "Explore %s"
 msgstr "Explora %s"
 
-#: settings/defaults.py:233
+#: settings/defaults.py:286
 msgid "English"
 msgstr ""
 
-#: settings/defaults.py:234
+#: settings/defaults.py:287
 msgid "Spanish"
 msgstr ""
 
-#: settings/defaults.py:265
+#: settings/defaults.py:329
 msgid "Your site tagline"
+msgstr ""
+
+#: templates/404.html:6
+msgid ""
+"\n"
+"The requested page could not be found. \n"
+msgstr ""
+
+#: templates/500.html:6
+msgid ""
+"\n"
+"The server encountered an unexpected error.  We're working on it!\n"
+msgstr ""
+
+#: templates/account_menu.html:9 templates/megamenu.html:171
+msgid "My Dashboard"
+msgstr ""
+
+#: templates/account_menu.html:10 templates/megamenu.html:181
+msgid "Sign Out"
+msgstr ""
+
+#: templates/account_menu.html:14 templates/base.html:71
+#: templates/registration/activation_complete.html:8
+#: templates/registration/login.html:5 templates/registration/login.html:10
+#: templates/registration/login.html:28
+msgid "Sign In"
+msgstr ""
+
+#: templates/base.html:61
+msgid "Floodlight: Tell a Story. Transform Your Community"
+msgstr ""
+
+#: templates/base.html:67 templates/base.html.py:119
+msgid "Help"
+msgstr ""
+
+#: templates/base.html:103
+msgid "Copyright 2012 The Floodlight Project. All rights reserved."
+msgstr ""
+
+#: templates/base.html:112 templates/megamenu.html:4
+#: templates/admin/change_form.html:24
+msgid "Home"
+msgstr ""
+
+#: templates/base.html:115 templates/megamenu.html:49
+msgid "Grow Your Skills"
+msgstr ""
+
+#: templates/base.html:116 templates/megamenu.html:98
+msgid "About"
+msgstr ""
+
+#: templates/base.html:120
+msgid "Policies"
 msgstr ""
 
 #: templates/homepage.html:6 templates/homepage.html.py:10
@@ -378,56 +956,240 @@ msgid ""
 "more substantive, engaging and persuasive data-driven storytelling."
 msgstr ""
 
-#: templates/account/login.html:7 templates/account/login.html.py:12
-#: templates/account/login.html:47
-msgid "Sign In"
+#: templates/homepage.html:28
+msgid "Tell your story. Transform our community."
 msgstr ""
 
-#: templates/account/login.html:17
-#, python-format
+#: templates/homepage.html:31
 msgid ""
-"Please sign in with one\n"
-"of your existing third party accounts. Or, <a \n"
-"href=\"%(signup_url)s\">sign up</a> for a %(site_name)s account and sign in\n"
-"below:"
+"Your story matters. Without it, nothing happens. Floodlight will help you "
+"build, tell and share  powerful stories that will make community change "
+"possible."
 msgstr ""
 
-#: templates/account/login.html:28
-msgid "or"
+#: templates/homepage.html:31 templates/homepage.html.py:46
+msgid "Create your story now."
 msgstr ""
 
-#: templates/account/login.html:45
-msgid "Forgot Password?"
+#: templates/homepage.html:31 templates/homepage.html.py:46
+msgid "Or"
 msgstr ""
 
-#: templates/account/logout.html:5 templates/account/logout.html.py:8
-msgid "Signed Out"
+#: templates/homepage.html:31
+msgid "see the stories others are sharing."
 msgstr ""
 
-#: templates/account/logout.html:10
-msgid "You have signed out."
+#: templates/homepage.html:36 templates/homepage.html.py:53
+#, fuzzy
+msgid "Explore Stories"
+msgstr "Explora %s"
+
+#: templates/homepage.html:43
+msgid "Build a breakthrough story."
 msgstr ""
 
-#: templates/account/signup.html:6 templates/socialaccount/signup.html:6
-msgid "Signup"
+#: templates/homepage.html:46
+msgid ""
+"Take your storytelling to the next level. Create visually compelling stories "
+"with photos, videos, data and more. Learn how to tell better stories by "
+"leveraging public data in creative ways."
 msgstr ""
 
-#: templates/account/signup.html:9 templates/account/signup.html.py:24
-#: templates/socialaccount/signup.html:9
-#: templates/socialaccount/signup.html:22
-msgid "Sign Up"
+#: templates/homepage.html:46
+msgid "build your storytelling skills"
 msgstr ""
 
-#: templates/account/signup.html:14
-msgid "Already have an account?"
+#: templates/homepage.html:52 templates/homepage.html.py:68
+msgid "Your Story Matters"
 msgstr ""
 
-#: templates/account/signup.html:14
-msgid "Sign in"
+#: templates/homepage.html:59
+msgid "See and show your community in a new light."
 msgstr ""
 
-#: templates/admin/change_form.html:24
-msgid "Home"
+#: templates/homepage.html:62
+msgid ""
+"Explore the stories others are sharing and discover new meaning in your "
+"neighborhood. Floodlight is where stories become movements."
+msgstr ""
+
+#: templates/homepage.html:62
+#, fuzzy
+msgid "Because what we can’t see, we can’t change."
+msgstr "Usted no puede cambiar lo que no puedes ver."
+
+#: templates/homepage.html:77
+#, fuzzy
+msgid "Featured on Floodlight"
+msgstr "Explora Floodlight"
+
+#: templates/homepage.html:195
+msgid "Supporting Foundations"
+msgstr ""
+
+#: templates/megamenu.html:5
+msgid "Build a story"
+msgstr ""
+
+#: templates/megamenu.html:8
+msgid "Take your storytelling to the next level."
+msgstr ""
+
+#: templates/megamenu.html:10
+msgid ""
+"\n"
+"\t\t\t\t\t\tCreate an amazing story in minutes. Start by choosing a template "
+"-- like photo voice, explainer, or data story. Customize it with your text, "
+"photos, video, audio, data and more. Include a call to action to inspire "
+"your readers to get involved.\n"
+"\t\t\t\t\t\t"
+msgstr ""
+
+#: templates/megamenu.html:18
+msgid "Explore Floodlight"
+msgstr "Explora Floodlight"
+
+#: templates/megamenu.html:21
+msgid "Browse Stories"
+msgstr ""
+
+#: templates/megamenu.html:23
+msgid ""
+"\n"
+"\t\t\t\t\t\tBrowse and filter Floodlight stories by topic, location, "
+"language, project and organization.\n"
+"\t\t\t\t\t\t"
+msgstr ""
+
+#: templates/megamenu.html:31
+msgid ""
+"\n"
+"\t\t\t\t\t\tOrganizations are groups of people creating stories together. "
+"They can be non-profits, school groups, neighborhoods, or any storytellers "
+"who share a common goal.\n"
+"\t\t\t\t\t\t"
+msgstr ""
+
+#: templates/megamenu.html:35
+msgid "Create an Organization"
+msgstr ""
+
+#: templates/megamenu.html:40
+msgid ""
+"\n"
+"\t\t\t\t\t\tProjects are collections of stories about a common theme, place, "
+"issue, event or movement. They can be open to contributions from any "
+"Floodlight user, or constrained to a group of authors.\n"
+"\t\t\t\t\t\t"
+msgstr ""
+
+#: templates/megamenu.html:44
+msgid "Create a Project"
+msgstr ""
+
+#: templates/megamenu.html:52
+msgid "Learn how to be a better storyteller"
+msgstr ""
+
+#: templates/megamenu.html:54
+msgid ""
+"\n"
+"\t\t\t\t\t\tStorytelling comes naturally to all of us. But we can always "
+"improve with practice. Here you’ll find information about in-person "
+"trainings and online tools and tutorials to help you build your skills.\n"
+"\t\t\t\t\t\t"
+msgstr ""
+
+#: templates/megamenu.html:60
+msgid "Storytelling Workshops"
+msgstr ""
+
+#: templates/megamenu.html:62
+msgid "Online training materials"
+msgstr ""
+
+#: templates/megamenu.html:63
+msgid "Upcoming sessions"
+msgstr ""
+
+#: templates/megamenu.html:67
+msgid "Storytelling Tips"
+msgstr ""
+
+#: templates/megamenu.html:75
+msgid "Data Analysis and Visualization"
+msgstr ""
+
+#: templates/megamenu.html:88
+msgid "Resources"
+msgstr ""
+
+#: templates/megamenu.html:90
+msgid ""
+"\n"
+"\t\t\t\t\t\tHere you’ll find answers to commonly asked questions and links "
+"to commonly used tools, like photo release forms.\n"
+"\t\t\t\t\t\t"
+msgstr ""
+
+#: templates/megamenu.html:102
+msgid "What is Floodlight?"
+msgstr ""
+
+#: templates/megamenu.html:103
+msgid "The Vision"
+msgstr ""
+
+#: templates/megamenu.html:104
+msgid "Supporting Foundations and Partners"
+msgstr ""
+
+#: templates/megamenu.html:105
+msgid "How it Works"
+msgstr ""
+
+#: templates/megamenu.html:110
+msgid ""
+"\n"
+"\t\t\t\t\t\tYour story matters. Without it, nothing happens. Floodlight is a "
+"<strong>tool</strong> for creating meaningful stories on the web that are "
+"visually compelling, supported by facts and encourage community action. "
+"Floodlight is also a <strong>place</strong> to share stories and uncover "
+"connections between them.\n"
+"\t\t\t\t\t\t"
+msgstr ""
+
+#: templates/megamenu.html:116
+msgid "On Floodlight, you can&hellip;"
+msgstr ""
+
+#: templates/megamenu.html:118
+msgid ""
+"\n"
+"\t\t\t\t\t\t<strong>Build</strong> a breakthrough story using photos, "
+"videos, data and more.<br>\n"
+"\t\t\t\t\t\t<strong>Learn</strong> how to be a better storyteller through "
+"training and resources.<br>\n"
+"\t\t\t\t\t\t<strong>Read</strong> and contribute to the stories others are "
+"sharing.\n"
+"\t\t\t\t\t\t"
+msgstr ""
+
+#: templates/megamenu.html:127
+msgid ""
+"\n"
+"\t\t\t\t\t\tBy connecting <em>storytellers</em>, <em>story sharers</em> and "
+"<em>story readers</em>, Floodlight is a project to brighten, inform and "
+"transform community though the power of story.\n"
+"\t\t\t\t\t\t"
+msgstr ""
+
+#: templates/megamenu.html:172
+msgid "Communication Preferences"
+msgstr ""
+
+#: templates/megamenu.html:173
+msgid "My Password"
 msgstr ""
 
 #: templates/admin/change_form.html:27
@@ -443,12 +1205,6 @@ msgstr ""
 msgid "View on site"
 msgstr ""
 
-#: templates/admin/change_form.html:48
-msgid "Please correct the error below."
-msgid_plural "Please correct the errors below."
-msgstr[0] ""
-msgstr[1] ""
-
 #: templates/admin/edit_inline/select2_stacked.html:112
 #, python-format
 msgid "Add another %(verbose_name)s"
@@ -456,6 +1212,10 @@ msgstr ""
 
 #: templates/admin/edit_inline/select2_stacked.html:115
 msgid "Remove"
+msgstr ""
+
+#: templates/comments/form.html:24
+msgid "Post"
 msgstr ""
 
 #: templates/emailconfirmation/confirm_email.html:5
@@ -478,19 +1238,181 @@ msgstr ""
 msgid "In"
 msgstr "En"
 
-#: templates/socialaccount/account_inactive.html:5
-#: templates/socialaccount/account_inactive.html:8
-msgid "Account Inactive"
+#: templates/registration/activate.html:5
+msgid "There was a problem with your activation"
 msgstr ""
 
-#: templates/socialaccount/account_inactive.html:10
-msgid "This account is inactive."
+#: templates/registration/activate.html:8
+msgid ""
+"There was a problem activating your new account.  Please check that you "
+"correctly copied and pasted the activation link from your e-mail, or if you "
+"clicked on the link, try copying and pasting it.  If you're still not able "
+"to activate your account, please contact"
 msgstr ""
 
-#: templates/socialaccount/signup.html:11
+#: templates/registration/activation_complete.html:5
+msgid "Activation Complete"
+msgstr ""
+
+#: templates/registration/activation_complete.html:8
+msgid "Your account has been activated"
+msgstr ""
+
+#: templates/registration/login.html:12
+msgid "Don't have an account? Join now."
+msgstr ""
+
+#: templates/registration/login.html:15
+msgid "Sign in using your favorite social media account"
+msgstr ""
+
+#: templates/registration/login.html:18
+msgid "Sign in with"
+msgstr ""
+
+#: templates/registration/login.html:23
+#, fuzzy, python-format
+msgid "Or, sign in with your %(storybase_site_name)s account"
+msgstr "Explora %(storybase_site_name)s"
+
+#: templates/registration/login.html:32
+msgid "Forgot password?"
+msgstr ""
+
+#: templates/registration/logout.html:5 templates/registration/logout.html:8
+msgid "Logout"
+msgstr ""
+
+#: templates/registration/logout.html:9
+msgid "You have been logged out"
+msgstr ""
+
+#: templates/registration/password_reset_complete.html:5
+#: templates/registration/password_reset_complete.html:8
+msgid "Password reset complete"
+msgstr ""
+
+#: templates/registration/password_reset_complete.html:10
+msgid "Your password has been set.  You may go ahead and log in now."
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:5
+#: templates/registration/password_reset_form.html:5
+msgid "Reset Password"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:10
+msgid "Enter new password"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:12
+msgid ""
+"Please enter your new password twice so we can verify you typed it in "
+"correctly."
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:16
+msgid "New password:"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:18
+msgid "Confirm password:"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:24
+msgid "Password reset unsuccessful"
+msgstr ""
+
+#: templates/registration/password_reset_confirm.html:26
+msgid ""
+"The password reset link was invalid, possibly because it has already been "
+"used.  Please request a new password reset."
+msgstr ""
+
+#: templates/registration/password_reset_done.html:5
+msgid "Please check your email account"
+msgstr ""
+
+#: templates/registration/password_reset_done.html:8
+msgid "Password reset successful"
+msgstr ""
+
+#: templates/registration/password_reset_done.html:10
 #, python-format
 msgid ""
-"You are about to use your %(provider_name)s account to login to \n"
-"%(site_name)s. As a final step, please complete the following form:"
+"We've emailed you a link to reset your password. Contact us at "
+"%(storybase_contact_email)s if you have trouble or don't receive the email. "
 msgstr ""
 
+#: templates/registration/password_reset_email.html:2
+#, python-format
+msgid ""
+"\n"
+"Hi %(user_first_name)s,\n"
+"\n"
+"You requested to reset the passsword for the %(storybase_site_name)s account "
+"associated with this email address."
+msgstr ""
+
+#: templates/registration/password_reset_email.html:7
+msgid "Please go to the following page to reset your password:"
+msgstr ""
+
+#: templates/registration/password_reset_email.html:12
+#, python-format
+msgid ""
+"If you need further help, please contact us at %(storybase_contact_email)s."
+msgstr ""
+
+#: templates/registration/password_reset_email.html:14
+#, fuzzy, python-format
+msgid "The %(storybase_site_name)s Team"
+msgstr "Explora %(storybase_site_name)s"
+
+#: templates/registration/password_reset_form.html:8
+msgid "Enter your email address to reset your password"
+msgstr ""
+
+#: templates/registration/password_reset_form.html:10
+msgid ""
+"We will send an email to the address on your account with instructins on how "
+"to change your password"
+msgstr ""
+
+#: templates/registration/password_reset_form.html:14
+msgid "Reset my password"
+msgstr ""
+
+#: templates/registration/registration_complete.html:6
+msgid ""
+"Thanks for signing up! A confirmation email has been sent to you. Click the "
+"link in that email to verify your account."
+msgstr ""
+
+#: templates/registration/registration_form.html:5
+#: templates/registration/registration_form.html:8
+#: templates/registration/registration_form.html:36
+msgid "Sign Up"
+msgstr ""
+
+#: templates/registration/registration_form.html:10
+msgid "Already have an account?"
+msgstr ""
+
+#: templates/registration/registration_form.html:10
+msgid "Sign in here"
+msgstr ""
+
+#: templates/registration/registration_form.html:13
+#, python-format
+msgid "Join %(storybase_site_name)s using your favorite social media account"
+msgstr ""
+
+#: templates/registration/registration_form.html:16
+msgid "Sign up with"
+msgstr ""
+
+#: templates/registration/registration_form.html:21
+#, python-format
+msgid "Or, create an account directly with %(storybase_site_name)s"
+msgstr ""
