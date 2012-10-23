@@ -4,6 +4,7 @@ Collects additional information when registering the user
 
 """
 
+from django.conf import settings
 from django.contrib.auth import login
 
 from registration.backends.default import DefaultBackend
@@ -33,7 +34,7 @@ class ExtraInfoBackend(DefaultBackend):
         account activation.
         
         """
-        return ('/', (), {})
+        return (settings.LOGIN_REDIRECT_URL, (), {})
 
 
 def login_on_activation(sender, user, request, **kwargs):

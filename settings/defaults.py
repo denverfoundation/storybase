@@ -209,7 +209,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 AUTH_PROFILE_MODULE = 'storybase_user.UserProfile'
 
-LOGIN_REDIRECT_URL = '/accounts/'
+LOGIN_REDIRECT_URL = '/accounts/stories/'
 LOGOUT_URL = '/'
 
 AUTHENTICATION_BACKENDS = (
