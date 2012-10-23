@@ -71,6 +71,12 @@ storybase.builder.views.AppView = Backbone.View.extend({
     // This will get set by an event callback 
     this.activeStep = null; 
 
+    // Initialize a view for saving the story
+    this.saveButtonView = new storybase.builder.views.SaveButtonView({
+      dispatcher: this.options.dispatcher
+    });
+    $toolsContainerEl.append(this.saveButtonView.el);
+
     // Initialize a view for the tools menu
     this.toolsView = new storybase.builder.views.ToolsView(
       _.clone(commonOptions)
@@ -930,6 +936,42 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.WorkflowNavVi
 });
 
 /**
+ * Save button.
+ */
+storybase.builder.views.SaveButtonView = Backbone.View.extend({
+  tagName: 'button',
+
+  id: 'save-story',
+
+  options: {
+    text: gettext("Save")
+  },
+
+  events: {
+    'click': 'handleClick'
+  },
+
+  initialize: function() {
+    this.dispatcher = this.options.dispatcher
+   
+    this.$el.text(this.options.text);
+
+    // Button defaults to be hidden 
+    this.$el.hide();
+    // But is shown when we're sure there is a story to save 
+    this.dispatcher.on('ready:story', this.show, this);
+  },
+
+  handleClick: function(evt) {
+    this.dispatcher.trigger('do:save:story');
+  },
+
+  show: function() {
+    this.$el.show();
+  }
+});
+
+/**
  * Global tools menu.
  *
  * This includes things like "Help", "Exit"
@@ -1629,19 +1671,22 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   save: function() {
     console.info("Saving story");
     var that = this;
+    var isNew = this.model.isNew();
     this.model.save(null, {
       success: function(model, response) {
         that.dispatcher.trigger('save:story', model);
-        that.dispatcher.trigger('navigate', model.id + '/', {
-          trigger: true 
-        });
         model.saveSections();
         if (!that._relatedStoriesSaved) {
           model.saveRelatedStories();
         }
-        // Re-render the navigation view to enable the button
-        if (that.navView) {
-          that.navView.render();
+        if (isNew) {
+          that.dispatcher.trigger('navigate', model.id + '/', {
+            trigger: true 
+          });
+          // Re-render the navigation view to enable the button
+          if (that.navView) {
+            that.navView.render();
+          }
         }
       }
     });
