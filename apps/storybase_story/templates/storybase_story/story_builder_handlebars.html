@@ -119,7 +119,7 @@ Handlebars.js templates for story builder Backbone application
 
 <script type="text/x-handlebars-template" id="story-info-edit-template">
 <input class="story-title" name="title" value="{{title}}" placeholder="{{gettext "Edit your title"}}" />
-<input class="byline" name="byline" value="{{byline}}" placeholder="{{gettext "Edit your byline"}}" />
+<input class="byline" name="byline" value="{{byline}}" placeholder="{{gettext "Your Name and/or Organization. Examples: Jon Denzler; Laura Frank, I-News"}}" />
 <textarea name="summary" id="summary-textarea" class="summary" placeholder='{{gettext "Click to edit the summary"}}'>{{summary}}</textarea>
 </script>
 
@@ -305,9 +305,46 @@ Handlebars.js templates for story builder Backbone application
 </script>
 
 <script type="text/x-handlebars-template" id="review-template">
-<h2>Story Checklist</h2>
-<p>{{gettext "Congratulations on writing your story! We're checking things out right now and making sure everything looks good. Preview your story to see how it will look on Floodlight once it’s published."}}</p>
+<h2>{{gettext "Preview" }}</h2>
+<p>{{gettext "Congratulations on writing your story! Preview your story to see how it will look on Floodlight once it’s published."}}</p>
 <div class="centered btn-container"><a class="btn preview" href="#">{{gettext "Preview Story"}}</a></div>
+
+<h2>{{gettext "Story Checklist"}}</h2>
+<p>Here are a a few things to double-check before you publish.</p>
+
+<h3>{{gettext "Title and Summary"}}</h3>
+<ul>
+  <li>{{gettext "Is your title engaging and informative?"}}</li>
+  <li>{{gettext "Is your summary short (two sentences or shorter)?"}}</li>
+  <li>{{gettext "Do your title and summary pull whet readers’ appetites so that they’ll want to read the rest of your story?"}}</li>
+</ul>
+
+<h3>{{gettext "Pictures and Video"}}</h3>
+<ul>
+  <li>{{gettext "Does your story have visual elements, such as a picture or video?"}}</li>
+  <li>{{gettext "Do your pictures and videos have captions that give credit to the person who took them?"}}</li>
+</ul>
+
+<h3>{{gettext "Data"}}</h3>
+<ul>
+    <li>{{gettext "Does your story include any data tables?"}}</li>
+    <li>{{gettext "Does your story include any charts or graphs?"}}</li>
+    <li>{{gettext "Does your story include any maps?"}}</li>
+    <li>{{gettext "If you used a table, chart, graph, or map, did you clearly attribute the source of the data?"}}</li>
+    <li>{{gettext "Does your story have any source data that you linked to or uploaded?"}}</li>
+</ul>
+
+<h3>{{gettext "Call to Action"}}</h3>
+<ul>
+  <li>{{gettext "Did you include a clear, specific Call to Action?"}}</li>
+  <li>{{gettext "Does your Call to Action include links to other websites, when relevant?"}}</li>
+</ul>
+
+<h3>{{gettext "Tags"}}</h3>
+<ul>
+  <li>{{gettext "Did you tag your story with topics?"}}</li>
+  <li>{{gettext "Did you tag your story with locations?"}}</li>
+</ul>
 </script>
 
 <script type="text/x-handlebars-template" id="share-publish-template">
