@@ -301,13 +301,13 @@ Handlebars.js templates for story builder Backbone application
 {{else}}
 <p>There are no data sets for this story.</p>
 {{/if}}
-<div><a class="btn add-dataset" href="#">{{gettext "Add Data"}}</a></div>
+<div><button class="add-dataset" type="button">{{gettext "Add Data"}}</button></div>
 </script>
 
 <script type="text/x-handlebars-template" id="review-template">
 <h2>{{gettext "Preview" }}</h2>
 <p>{{gettext "Congratulations on writing your story! Preview your story to see how it will look on Floodlight once it’s published."}}</p>
-<div class="centered btn-container"><a class="btn preview" href="#">{{gettext "Preview Story"}}</a></div>
+<div class="centered btn-container"><button class="preview" type="button">{{gettext "Preview Story"}}</button></div>
 
 <h2>{{gettext "Story Checklist"}}</h2>
 <p>Here are a a few things to double-check before you publish.</p>
