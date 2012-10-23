@@ -161,7 +161,8 @@ storybase.builder.views.AppView = Backbone.View.extend({
       dispatcher: this.dispatcher,
       lastSaved: this.model ? this.model.get('last_edited'): null
     });
-    this.$workflowContainerEl.append(this.lastSavedView.render().el);
+    // TODO: Show the last saved view somewhere else
+    //this.$workflowContainerEl.append(this.lastSavedView.render().el);
 
     // Initialize the properties that store the last alert level
     // and message.

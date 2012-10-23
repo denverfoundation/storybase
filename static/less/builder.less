@@ -216,6 +216,11 @@ a.btn.disabled {
   }
 }
 
+// Common variables for items in the workflow bar
+@workflow-item-height: 34px;
+@workflow-item-margin-top: 10px;
+@workflow-item-font-size: 16px;
+
 #workflow-bar {
   height:56px;
   border-bottom:1px solid white;
@@ -226,18 +231,19 @@ a.btn.disabled {
   height:56px;
 }
 
+
 #workflow-step {
-  margin:10px auto;
+  margin: @workflow-item-margin-top auto;
   clear:both;
 
   li {
     color:@orange;
     list-style:decimal inside none;
     padding:0 19px;
-    height:34px;
+    height: @workflow-item-height;
     border-right:1px solid @almost-black;
     font-family:'Museo300Regular';
-    line-height:34px;
+    line-height: @workflow-item-height;
     position:relative;
     
     &:first-child {
@@ -279,7 +285,7 @@ a.btn.disabled {
       padding: 3px 0 1px (@icon-width * 2);
       height:@icon-height;
       font-family:'Museo300Regular';
-      font-size:16px;
+      font-size: @workflow-item-font-size;
       text-transform:uppercase;
       color:@dark-gray;
       text-decoration:none;
@@ -312,6 +318,47 @@ a.btn.disabled {
     cursor: default;
   }
 */
+}
+
+// Next/previous buttons for navigating between workflow steps
+.workflow-nav {
+  height: @workflow-item-height;
+  margin: @workflow-item-margin-top 20px;
+  // Need this to not make the div crazy wide when we hide the text of the
+  // buttons inside
+  overflow: hidden;
+  float: left;
+
+  .next, .prev {
+    height: @workflow-item-height;
+    font-size: @workflow-item-font-size;
+    line-height: @workflow-item-height;
+    display: inline-block;
+    color: @orange;
+    text-decoration: none;
+    overflow: hidden;
+
+    &:before {
+      font-family: FontAwesome; 
+      font-size: @workflow-item-font-size;
+      line-height: @workflow-item-height;
+    }
+
+    // Only show the icon and hide the text
+    .text {
+      position: absolute;
+      top: -9999px;
+      left: -9999px;
+    }
+  }
+
+  .next {
+    &:before { content: "\f054"; } 
+  }
+
+  .prev {
+    &:before { content: "\f053"; }
+  }
 }
 
 #last-saved {
