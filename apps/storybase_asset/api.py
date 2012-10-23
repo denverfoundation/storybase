@@ -58,7 +58,7 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
     def get_object_class(self, bundle=None, request=None, **kwargs):
         content_fields = ('body', 'image', 'url')
         num_content_fields = 0
-        delayed_upload_types = ('image', 'map') 
+        delayed_upload_types = ('image', 'map', 'chart') 
         for name in content_fields:
             if bundle.data.get(name):
                 num_content_fields = num_content_fields + 1
