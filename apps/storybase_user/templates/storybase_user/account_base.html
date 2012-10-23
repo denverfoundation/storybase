@@ -7,7 +7,7 @@
   <nav id="subnav">
       <ul class="navroot">
           <li class="selected has_children">
-          <a href="{% url account_summary %}" title="{% trans "Manage your basic information, like email address and connected social media accounts" %}" class="tooltip">{% trans "My Account" %}</a>
+          <a href="{% url account_summary %}" title="{% trans "Manage your basic information, like email address and connected social media accounts" %}" class="tooltip">{% trans "Account Information" %}</a>
               <ul>
                   <li><a href="{% url account_password %}" title="{% trans "Change your password" %}" class="tooltip">{% trans "Password" %}</a></li>
                   <li><a href="{% url account_notifications %}" title="{% trans "Control your settings for receiving updates from" %} {{ storybase_site_name }}" class="tooltip">{% trans "Notifications and Subscriptions" %}</a></li>
