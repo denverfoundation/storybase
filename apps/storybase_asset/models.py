@@ -31,6 +31,7 @@ ASSET_TYPES = (
   (u'audio', u'audio'),
   (u'video', u'video'),
   (u'map', u'map'),
+  (u'chart', u'chart'),
   (u'table', u'table'),
   (u'quotation', u'quotation'),
   (u'text', u'text'),
@@ -494,7 +495,7 @@ class LocalImageAsset(Asset):
         output.append(self.render_img_html(**kwargs))
         full_caption_html = self.full_caption_html()
         if full_caption_html:
-	    output.append(full_caption_html)
+            output.append(full_caption_html)
         output.append('</figure>')
             
         return mark_safe(u'\n'.join(output))
