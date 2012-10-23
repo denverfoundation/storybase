@@ -512,11 +512,13 @@ storybase.models.Asset = Backbone.Model.extend(
         'video': true,
         'map': true,
         'table': true,
+        'chart': true
       },
 
       image: {
         'image': true,
-        'map': true
+        'map': true,
+        'chart': true
       },
 
       body: {
@@ -524,6 +526,7 @@ storybase.models.Asset = Backbone.Model.extend(
         'quotation': true,
         'map': true,
         'table': true,
+        'chart': true
       },
 
       caption: {
@@ -532,11 +535,13 @@ storybase.models.Asset = Backbone.Model.extend(
         'video': true,
         'map': true,
         'table': true,
+        'chart': true
       },
 
       attribution: {
         'quotation': true,
-        'table': true
+        'table': true,
+        'chart': true
       },
 
 
