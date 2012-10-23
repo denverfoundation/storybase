@@ -161,8 +161,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
       dispatcher: this.dispatcher,
       lastSaved: this.model ? this.model.get('last_edited'): null
     });
-    // TODO: Show the last saved view somewhere else
-    //this.$workflowContainerEl.append(this.lastSavedView.render().el);
+    this.$workflowContainerEl.append(this.lastSavedView.render().el);
 
     // Initialize the properties that store the last alert level
     // and message.
@@ -235,7 +234,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
     // Update the workflow nav view
     this._activeWorkflowNavView = _.isUndefined(activeView.getWorkflowNavView) ? null: activeView.getWorkflowNavView();
     if (this._activeWorkflowNavView) {
-      this.$workflowContainerEl.append(this._activeWorkflowNavView.el);
+      this.workflowStepView.$el.after(this._activeWorkflowNavView.el);
     }
   },
 
