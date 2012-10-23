@@ -6,7 +6,8 @@ at a different root than the other URL patterns.
 
 """
 
-from django.conf.urls.defaults import *
+from django.conf import settings
+from django.conf.urls.defaults import patterns, url
 
 from storybase_user.auth.forms import (EmailAuthenticationForm,
                                        CustomContextPasswordResetForm,
@@ -31,5 +32,7 @@ urlpatterns = patterns('',
         'django.contrib.auth.views.password_reset_confirm',
         {'set_password_form': StrongSetPasswordForm},
         name='auth_password_reset_confirm'),
-    (r'^login/$', 'django.contrib.auth.views.login', {'authentication_form': EmailAuthenticationForm}),
+    url(r'^login/$', 'django.contrib.auth.views.login', {'authentication_form': EmailAuthenticationForm}),
+    url(r'^logout/$', 'django.contrib.auth.views.logout',
+        {'next_page': settings.LOGOUT_URL}),
 )
