@@ -1,6 +1,0 @@
-#!/bin/bash
-
-# TODO: Switch to something like django-compressor or django-pipeline for
-# compiling these assets.
-lessc static/less/layout.less > static/css/layout.css
-lessc static/less/builder.less > static/css/builder.css
