@@ -1,12 +1,26 @@
 (function($) {
   
+  var defaults = {
+    contextForOption: function() {
+      return {
+        className: $(this).attr('class') || '',
+        content: $(this).html() || ''
+      };
+    },
+    markupForContext: function(context) {
+      return '<li class="' + context.className + '">' + context.content + '</li>';
+    },
+    markupForOption: function() {
+      return defaults.markupForContext(defaults.contextForOption.apply(this));
+    },
+    
+    cols: 2,
+    slideUpDelay: 500
+  }; 
+  
   var methods = {
-    init: function(options) {
-      options = $.extend({
-        itemMarkup: {},
-        cols: 2,
-        slideUpDelay: 500
-      }, options);
+    init: function(pluginOptions) {
+      pluginOptions = $.extend(defaults, pluginOptions);
 
       // for each <select> in the jquery selection...
       this.each(function() {
@@ -14,23 +28,21 @@
 
         var $options = $select.find('option');
         var graphicItems = [];
-        var i = 0;
         var nOptions = $options.length;
 
         // for each <option> in the select, 
         $options.each(function() {
-          var optionContent = $(this).html();
-          var itemContainerClass = 'item' + ((i + 1) % options.cols == 0 ? ' last' : '');
-          itemContainerClass += (nOptions - i) <= options.cols ? ' bottom' : '';
-          if (optionContent in options.itemMarkup) {
-            var innerMarkup = $.isFunction(options.itemMarkup[optionContent]) ? options.itemMarkup[optionContent].apply(this) : options.itemMarkup[optionContent];
-            var graphicItem = $('\
-              <li class="' + itemContainerClass + '">' + innerMarkup + '</li>\
-            ');
-            graphicItem.data('graphic-select-option-value', $(this).prop('value'));
-            graphicItems.push(graphicItem);
-            i++;
+          var $graphicItem = $(pluginOptions.markupForOption.apply(this));
+          $graphicItem.data('graphic-select-option-value', $(this).prop('value'));
+          var itemContainerClasses = ['item'];
+          if ((graphicItems.length + 1) % pluginOptions.cols == 0) {
+            itemContainerClasses.push('last');
           }
+          if ((nOptions - graphicItems.length) <= pluginOptions.cols) {
+            itemContainerClasses.push('bottom');
+          }
+          $graphicItem.addClass(itemContainerClasses.join(' '));
+          graphicItems.push($graphicItem);
         });
 
         var $control = $('\
@@ -71,7 +83,7 @@
               .filter('option[value=' + $(this).data('graphic-select-option-value') + ']').attr('selected', 'selected');
             update();
             $('body').off('click.graphicSelect');
-            $control.find('.item-list').delay(options.slideUpDelay).slideUp('fast');
+            $control.find('.item-list').delay(pluginOptions.slideUpDelay).slideUp('fast');
           });
         });
 
