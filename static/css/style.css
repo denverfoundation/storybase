@@ -542,7 +542,6 @@ body.story-viewer .messages .success{color:green;}
 body.story-viewer table{border-collapse:collapse;border-spacing:0;}
 body.story-viewer td{vertical-align:top;}
 body.story-builder{}body.story-builder header{border-bottom:1px solid white;background:url(../img/builder/header-bg.png) repeat-x top left;}body.story-builder header>div{width:100%;position:relative;margin-left:auto;margin-right:auto;width:1020px;}
-body.story-builder header h1{background:url(../img/builder/builder-logo.png) no-repeat;text-indent:-32000px;width:315px;height:32px;margin-top:20px;}
 body.story-builder .view-container{margin-left:auto;margin-right:auto;width:1020px;}
 body.story-builder .btn-container{padding:2em 0;}
 body.story-builder .alert-success{background-color:#DFF0D8;border-color:#D6E9C6;color:#468847;}
@@ -564,7 +563,7 @@ body.story-builder #header{display:block;position:fixed;width:100%;z-index:999;}
 body.story-builder #header .nav{position:relative;float:left;}
 body.story-builder #header .nav>li{display:block-inline;float:left;}
 body.story-builder #header .nav>li>a{}
-body.story-builder #title-bar{background:#f7941e;overflow:hidden;height:63px;}body.story-builder #title-bar .title{color:#fff;float:left;font-size:20px;padding:8px 0 12px 0;line-height:1;}
+body.story-builder #title-bar{background:#f7941e;overflow:hidden;height:63px;}body.story-builder #title-bar .title{background:url(../img/builder/builder-logo.png) no-repeat;text-indent:-32000px;width:315px;height:32px;margin-top:20px;}
 body.story-builder #title-bar-contents{margin-left:auto;margin-right:auto;width:1020px;}
 body.story-builder #tools{position:absolute !important;right:0px;top:28px;font-family:'Museo300Regular';font-size:16px;}body.story-builder #tools li{padding:0 8px;list-style:none;}body.story-builder #tools li a{text-transform:uppercase;text-decoration:none;color:white;text-shadow:0 -1px 1px rgba(0, 0, 0, 0.3);}
 body.story-builder #workflow-bar{height:56px;border-bottom:1px solid white;}
