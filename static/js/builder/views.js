@@ -2941,6 +2941,8 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     else {
       this.assets.fetch();
     }
+    // not sure of best place for this 
+    this.$el.find(this.options.selectLayoutEl).graphicSelect();
     return this;
   },
 
