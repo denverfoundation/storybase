@@ -234,7 +234,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
     // Update the workflow nav view
     this._activeWorkflowNavView = _.isUndefined(activeView.getWorkflowNavView) ? null: activeView.getWorkflowNavView();
     if (this._activeWorkflowNavView) {
-      this.$workflowContainerEl.append(this._activeWorkflowNavView.el);
+      this.workflowStepView.$el.after(this._activeWorkflowNavView.el);
     }
   },
 
@@ -1629,19 +1629,22 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   save: function() {
     console.info("Saving story");
     var that = this;
+    var isNew = this.model.isNew();
     this.model.save(null, {
       success: function(model, response) {
         that.dispatcher.trigger('save:story', model);
-        that.dispatcher.trigger('navigate', model.id + '/', {
-          trigger: true 
-        });
         model.saveSections();
         if (!that._relatedStoriesSaved) {
           model.saveRelatedStories();
         }
-        // Re-render the navigation view to enable the button
-        if (that.navView) {
-          that.navView.render();
+        if (isNew) {
+          that.dispatcher.trigger('navigate', model.id + '/', {
+            trigger: true 
+          });
+          // Re-render the navigation view to enable the button
+          if (that.navView) {
+            that.navView.render();
+          }
         }
       }
     });
@@ -1698,17 +1701,44 @@ storybase.builder.views.LastSavedView = Backbone.View.extend({
 
   id: 'last-saved',
 
+  options: {
+    textId: 'last-saved-text',
+    buttonId: 'save-button'
+  },
+
+  events: function() {
+    var events = {};
+    events['click #' + this.options.buttonId] = 'handleClick';
+    return events;
+  },
+
   initialize: function() {
     this.lastSaved = !!this.options.lastSaved ? (_.isDate(this.options.lastSaved) ? this.options.lastSaved : new Date(this.options.lastSaved)) : null;
-    this.dispatcher = this.options.dispatcher;
 
+    this.dispatcher = this.options.dispatcher;
     this.dispatcher.on('save:section', this.updateLastSaved, this);
     this.dispatcher.on('save:story', this.updateLastSaved, this);
+    this.dispatcher.on('ready:story', this.showButton, this);
+
+    this.$textEl = $("<span></span>").attr('id', this.options.textId).appendTo(this.$el);
+    this.$buttonEl = $('<button type="button">' + gettext("Save") + '</button>')
+      .attr('id', this.options.buttonId)
+      .attr('title', gettext("Click to save your story"))
+      .hide()
+      .appendTo(this.$el);
+      if (jQuery().tooltipster) {
+        this.$buttonEl.tooltipster();
+      }
   },
 
   updateLastSaved: function() {
+    var that = this;
     this.lastSaved = new Date(); 
     this.render();
+    this.showText();
+    this.$textEl.fadeOut(20000, function() {
+      that.showButton();
+    });
   },
 
   /**
@@ -1737,9 +1767,28 @@ storybase.builder.views.LastSavedView = Backbone.View.extend({
            ":" + this.twoDigit(minute);
   },
 
+  showButton: function() {
+    this.$textEl.hide();
+    this.$buttonEl.show();
+    return this;
+  },
+
+  showText: function() {
+    this.$textEl.show();
+    this.$buttonEl.hide();
+    return this;
+  },
+
+  handleClick: function(evt) {
+    this.dispatcher.trigger('do:save:story');
+  },
+
   render: function() {
+    var lastSavedStr;
     if (this.lastSaved) {
-      this.$el.html(gettext('Last Saved') + ' ' + this.formatDate(this.lastSaved));
+      lastSavedStr = gettext('Last Saved') + ' ' + this.formatDate(this.lastSaved);
+      this.$textEl.html(lastSavedStr);
+      this.$buttonEl.attr('title', lastSavedStr);
     }
     return this;
   }

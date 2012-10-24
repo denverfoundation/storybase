@@ -169,7 +169,7 @@ Namespace('storybase.utils', {
  * @return {String} Translated string
  */
 Handlebars.registerHelper('gettext', function(message) {
-  return gettext(message);
+  return new Handlebars.SafeString(gettext(message));
 });
 
 /**
