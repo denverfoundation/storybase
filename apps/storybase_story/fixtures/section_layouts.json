@@ -54,6 +54,7 @@
                     "right"
                 ]
             ], 
+            "slug": "side-by-side",
             "template": "side_by_side.html"
         }
     }, 
@@ -66,7 +67,8 @@
                 [
                     "center"
                 ]
-            ], 
+            ],
+            "slug": "one-up",
             "template": "1up.html"
         }
     }, 
@@ -82,7 +84,8 @@
                 [
                     "bottom"
                 ]
-            ], 
+            ],
+            "slug": "above-below",
             "template": "above_below.html"
         }
     }, 
@@ -102,6 +105,7 @@
                     "middle"
                 ]
             ], 
+            "slug": "three-stacked",
             "template": "3_stacked.html"
         }
     }, 
