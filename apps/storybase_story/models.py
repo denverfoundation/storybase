@@ -826,7 +826,7 @@ class SectionLayout(TranslatedModel):
     template = models.CharField(_("template"), max_length=100, choices=TEMPLATE_CHOICES)
     containers = models.ManyToManyField('Container', related_name='layouts',
                                         blank=True)
-    slug = models.SlugField(blank=True)
+    slug = models.SlugField(unique=True)
 
     objects = SectionLayoutManager()
 
