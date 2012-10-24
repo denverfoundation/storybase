@@ -77,12 +77,8 @@
           }, function() {
             $(this).removeClass('hover');
           }).on('click', function() {
-            // note: using prop does not seem to update properly
-            $select
-              .find('option').removeAttr('selected')
-              .filter('option[value=' + $(this).data('graphic-select-option-value') + ']').attr('selected', 'selected');
-            // Explicitly trigger the change event on the source element
-            $select.trigger('change');
+            var value = $(this).data('graphic-select-option-value');
+            $select.val(value).trigger('change');
             update();
             $('body').off('click.graphicSelect');
             $control.find('.item-list').delay(pluginOptions.slideUpDelay).slideUp('fast');
