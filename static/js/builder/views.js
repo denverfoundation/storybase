@@ -2885,7 +2885,8 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
       return {
         name: layout.name,
         layout_id: layout.layout_id,
-        selected: that.model.get('layout') == layout.layout_id
+        selected: that.model.get('layout') == layout.layout_id,
+        slug: layout.slug
       };
     });
   },
