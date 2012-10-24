@@ -81,6 +81,8 @@
             $select
               .find('option').removeAttr('selected')
               .filter('option[value=' + $(this).data('graphic-select-option-value') + ']').attr('selected', 'selected');
+            // Explicitly trigger the change event on the source element
+            $select.trigger('change');
             update();
             $('body').off('click.graphicSelect');
             $control.find('.item-list').delay(pluginOptions.slideUpDelay).slideUp('fast');
