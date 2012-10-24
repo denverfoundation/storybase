@@ -469,18 +469,90 @@ a.btn.disabled {
 }
 
 .section-controls {
-  position: absolute;
-  padding: 1% 0;
   min-width: 755px;
   max-width: 1140px;
+  width: 940px;
+  top: 0; 
 }
 
-.section-controls {
-  width: 940px;
-  margin-left: auto;
-  margin-right: auto;
-  position: absolute;
-  top: 0;
+.graphic-select-container {
+  .widget {
+    font-size:14px;
+    color:white;
+    padding:10px;
+    border:none;
+    font-family: 'Museo300Regular';
+    width:314px;
+    border-radius:5px;
+    background:@gray;
+    z-index:301;
+    position:relative;
+    
+    .arrow {
+      display:block;
+      position:absolute;
+      width:8px;
+      height:5px;
+      background: url(../img/builder/popup-down-arrow.png) no-repeat top left;
+      right:12px;
+      top:48%;
+    }
+  }
+  .item-list {
+    padding:25px;
+    background:@light-gray;
+    border:1px solid @gray;
+    border-radius: 0 0 3px 3px;
+    width:278px;  // account for 2px border, left and right
+    overflow:hidden;
+    position:absolute;
+    z-index:300;  // *something* is covering it. sigh.
+    margin:-4px 2px 0;  // nudge it up under the popup widget
+    
+    
+    @item-height: 83px;
+    @item-next-d: @item-height * 2;
+    @item-selected-d: @item-height;
+    
+    .item {
+      list-style: none;
+      float:left;
+      margin:0 12px 16px 0;
+      opacity:.7;
+      
+      &.hover, &.selected {
+        opacity:1;
+        cursor:pointer;
+      }
+      
+      &.last {
+        margin-right:0;
+        &+.item {
+          clear:left;
+        }
+      }
+      &.bottom {
+        margin-bottom:0;
+      }
+      
+      span {
+        background:url(../img/builder/layouts.png) no-repeat left top;
+        text-indent:-32000px;
+        display:block;
+        width:133px;
+        height:@item-height;
+        
+        &.one-up { background-position:0 0; }
+        &.side-by-side { background-position:0 (@item-next-d * -1); }
+        &.above-below { background-position:0 (@item-next-d * -2); }
+        &.three-stacked { background-position:0 (@item-next-d * -3); }
+      }
+      &.selected .one-up { background-position:0 (-@item-selected-d); }
+      &.selected .side-by-side { background-position:0 ((@item-next-d * -1) - @item-selected-d); }
+      &.selected .above-below { background-position:0 ((@item-next-d * -2) - @item-selected-d); }
+      &.selected .three-stacked { background-position:0 ((@item-next-d * -3) - @item-selected-d); }
+    }
+  }
 }
 
 // Unused Assets List
@@ -888,6 +960,7 @@ a.btn.disabled {
   top: 2px;
   right: 4px;
   text-decoration: none;
+  color:@gray;
 }
 
 .section-thumbnail:hover .remove {

@@ -2891,6 +2891,16 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     else {
       this.assets.fetch();
     }
+    // not sure of best place for this 
+    this.$el.find(this.options.selectLayoutEl).graphicSelect({
+      itemMarkup: {
+        'Side by Side': '<span class="side-by-side">Side by Side</span>',
+        '1 Up': '<span class="one-up">1 Up</span>',
+        'Above/Below': '<span class="above-below">Above/Below</span>',
+        '3 Stacked': '<span class="three-stacked">3 Stacked</span>'
+      },
+      cols: 2
+    });
     return this;
   },
 
