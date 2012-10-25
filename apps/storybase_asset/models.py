@@ -43,6 +43,9 @@ For example, a map might actually be stored as an image, or it could be
 an HTML snippet.
 """
 
+CAPTION_TYPES = ('chart', 'image', 'map', 'table')
+"""Assets that display a caption"""
+
 class AssetPermission(PermissionMixin):
     """Permissions for the Asset model"""
     def user_can_change(self, user):
@@ -434,7 +437,7 @@ class HtmlAsset(Asset):
         output = []
         if self.title:
             output.append('<h3>%s</h3>' % (self.title))
-        if self.type in ('image', 'map', 'table'):
+        if self.type in CAPTION_TYPES:
             output.append('<figure>')
             output.append(self.body)
             full_caption_html = self.full_caption_html()
