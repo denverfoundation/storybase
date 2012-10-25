@@ -5,7 +5,7 @@
 }
 .content-page {
 	h3 span { position:relative; }
-	
+
 	/* generic content page: probably cms-driven */
 	&.generic {
 		padding-bottom:34px; 
@@ -13,30 +13,24 @@
 		
 		/* generic text content */
 		.content-block {
-		  .body-copy;
+			.body-copy;
+			.body-copy-lists;
+			
 			h2, h3, h4, h5 {
 				.plain-serif-text;
 				text-align:left;
 				background:none;
 				margin-bottom:0.2em;
-				color:@dark-gray;
+			}
+			h3, h4, h5 {
+			  color:@almost-black;
 			}
 			h4.first { 
 				font-size:(@top-header-size * .8);
 				line-height:27px;
+				color:@dark-gray;
 				.plain-serif-text;
 				.default-margin-bottom;
-			}
-
-			ul, ol {
-				padding-left: 20px;
-				margin-bottom: 1em;
-			}
-			ul li {
-				list-style-type: square;
-			}
-			ol li {
-				list-style-type: decimal;
 			}
 
 			p.pullquote {
