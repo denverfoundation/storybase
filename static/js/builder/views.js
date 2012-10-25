@@ -2264,7 +2264,6 @@ storybase.builder.views.PseudoSectionEditView = Backbone.View.extend(
     tagName: 'div',
 
     initialize: function() {
-      console.debug(this.options);
       this.dispatcher = this.options.dispatcher;
       this.help = this.options.help;
       this.template = Handlebars.compile(this.templateSource);
