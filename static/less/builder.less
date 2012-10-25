@@ -338,6 +338,15 @@ header {
   font-style: italic;
 }
 
+#save-button {
+  .button-style(gray);
+}
+
+button.preview {
+  font-size:1.5em;
+}
+
+
 // Subnavigation Bar
 // Currently the only thing that ever goes in this is the section list
 #subnav-bar {
@@ -387,6 +396,9 @@ header {
     a {
       color:@dark-gray;
       text-decoration:none;
+      &:hover {
+        color:@orange;
+      }
     }
   }
   

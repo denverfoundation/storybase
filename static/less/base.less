@@ -36,7 +36,8 @@
 @import "font-awesome.less";
 
 // mixins
-.button-style {
+
+.button-style(@_:gray) {
 	padding:8px;
 	background:#878787;
 	font-family: "Museo300Regular";
@@ -44,18 +45,38 @@
 	border-radius:4px;
 	border:none;
 	font-weight:normal;
-	color:#fbfaf2;
-
-	&:hover {
-		text-decoration:none;
-		background: @orange;
-		color:#fff;	
-	}
+	color:white;
+	cursor:pointer;
+	text-shadow:0 -1px 0 rgba(0, 0, 0, .4);
 
 	&.right {
 		margin-left:8px;
 	}
 }
+
+.button-style(hot) {
+  background:@orange;
+  &:hover {
+    text-decoration:none;
+    background:darken(desaturate(@orange, 20%), 20%);
+  }
+}
+.button-style(cool) {
+  background:@highlight-blue;
+  &:hover {
+    text-decoration:none;
+    background:darken(desaturate(@highlight-blue, 20%), 20%);
+  }
+}
+
+.button-style(gray) {
+  background:@medium-gray;
+  &:hover {
+    text-decoration:none;
+    background:@orange;
+  }
+}
+
 
 .rounded-corners (@radius: 5px) {
 	border-radius: @radius;
@@ -139,6 +160,10 @@ body, button, input, select, textarea {
 
 body, html { height: 100%; }
 
+button {
+  .button-style(hot);
+}
+
 body.base-template {
 
     .plain-serif-text;
@@ -187,7 +212,7 @@ body.base-template {
 	}
 
 	#main a.button {
-		.button-style;
+		.button-style(cool);
 		display:inline-block;
 	}
 }
