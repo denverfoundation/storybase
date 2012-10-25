@@ -49,11 +49,20 @@ storybase.builder.views.AppView = Backbone.View.extend({
     drawerEl: '#drawer-container',
     headerEl: '#header',
     language: 'en',
+    partials: {
+      'help-icon': $('#help-icon-partial').html()
+    },
     subNavContainerEl: '#subnav-bar-contents',
     subviewContainerEl: '#app',
     toolsContainerEl: '#title-bar-contents',
     visibleSteps: storybase.builder.views.VISIBLE_STEPS, 
     workflowContainerEl: '#workflow-bar-contents'
+  },
+
+  registerPartials: function() {
+    _.each(this.options.partials, function(tmplSrc, name) {
+      Handlebars.registerPartial(name, tmplSrc);
+    });
   },
 
   initialize: function() {
@@ -67,6 +76,10 @@ storybase.builder.views.AppView = Backbone.View.extend({
     var buildViewOptions;
     var $toolsContainerEl = this.$(this.options.toolsContainerEl);
     this.$workflowContainerEl = this.$(this.options.workflowContainerEl);
+
+    // Register some partials used across views with Handlebars
+    this.registerPartials();
+
     this.dispatcher = this.options.dispatcher;
     // The currently active step of the story building process
     // This will get set by an event callback 
@@ -2942,8 +2955,12 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     else {
       this.assets.fetch();
     }
-    // not sure of best place for this 
+    // Turn the basic select element into a fancy graphical selection
+    // widget
     this.$el.find(this.options.selectLayoutEl).graphicSelect();
+    // Delegate events so our event bindings work after we've removed
+    // this element from the DOM
+    this.delegateEvents();
     return this;
   },
 

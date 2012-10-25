@@ -51,40 +51,31 @@ header {
   border-color: #EED3D7;
 }
 
-/* Help Modal */
-
-#simplemodal-container {
-  background-color: #fff;
-  width: 66%;
-  height: 66%;
+// Reset button styles
+// Use this for buttons that you don't want to show up as a button
+.button-reset () {
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  width: auto;
+  text-align: center;
 }
 
-#simplemodal-wrap {
-  overflow-x: hidden;
-  overflow-y: scroll;
-}
-
-#simplemodal-data {
-  padding: 10px;
-}
-
-.help .close {
+// Class/mixin for hiding the text inside an element
+// I often use this to hide text in an icon button
+.hide-text {
   position: absolute;
-  display: block;
-  right: 20px;
+  top: -9999px;
+  left: -9999px;
 }
 
-.help .continue {
-  position: absolute;
+// Clickable help icon
+button.help {
+  .button-reset;
   display: block;
-  top: 0px;
-  right: 20px;
-  margin-top: -10px;
-}
-
-.help-modal-controls {
-  position: relative;
-  margin-top: 10px;
+  cursor: pointer;
+  font-size: 18px;
 }
 
 /* Rich Text Editor */
@@ -312,9 +303,7 @@ header {
 
     // Only show the icon and hide the text
     .text {
-      position: absolute;
-      top: -9999px;
-      left: -9999px;
+      .hide-text;
     }
   }
 
@@ -379,10 +368,11 @@ button.preview {
   text-align: center;
 }
 
+// Main container for builder views
+
 #app {
   height: 100%;
-  // TODO: Adjust this
-  width: 90%;
+  width: 100%;
   float: left;
   // NOTE: The padding-top of this element gets set dynamically depending
   // on the height of #header
@@ -426,6 +416,7 @@ button.preview {
 #drawer-controls {
   float: left;
   height: 100%;
+  border-right: solid 2px @highlight-blue; 
 
   .btn {
     display: block;
@@ -475,6 +466,27 @@ button.preview {
   overflow: visible; 
 }
 
+// General builder styles
+
+@builder-input-border-width: 1px;
+@builder-input-padding: 12px;
+
+.builder {
+  input, textarea {
+    .sans-serif-text;
+    box-shadow:inset 0 0 3px #ccc;
+    border: @builder-input-border-width solid #bbb;
+    padding: @builder-input-padding;
+    border-radius: 5px;
+    color:#888;
+    font-size:16px;
+  }
+  
+  .edit-section input.story-title {
+    font-weight:bold;
+  }
+}
+
 
 /* Story Template List */
 
@@ -507,8 +519,18 @@ button.preview {
   margin-top: 0.5% !important;
 }
 
-.full-width {
+.full-width () {
   width: 100%;
+  // Use border-box so that our borders and paddings cut into our width
+  // instead of adding to it
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box; 
+  box-sizing: border-box;
+}
+
+.full-width-important {
+  .full-width;
+  width: 100% !important;
 }
 
 .section-controls {
@@ -517,6 +539,7 @@ button.preview {
   width: 940px;
   top: 0; 
 }
+
 
 .graphic-select-container {
   .widget {
@@ -673,7 +696,7 @@ button.preview {
     // Override the element width that gets set by the Javascript plugin
     // so the element adapts as the container width changes (e.g. to 
     // accomodate the drawer)
-    width: 100% !important;
+    .full-width-important;
   }
 }
 
@@ -695,22 +718,20 @@ button.preview {
   height: 300px;
 }
 
-/* Section Editor */
-
+// Section Editor
 
 .edit-section {
-  @horizontal-padding: 2%;
   position: relative;
-  width: 100% - 2 * @horizontal-padding; 
   margin-left: auto;
   margin-right: auto;
+  // TODO: Pick a more consistent padding
+  padding-top: 2%;
+  width: 85%;
   height: 70%;
-  padding: 2% @horizontal-padding 1% @horizontal-padding;
 
   .section-title {
     margin-top: 15px;
-    width: 100%; 
-    max-width: @section-width;
+    .full-width;
   }
 }
 
@@ -719,6 +740,7 @@ button.preview {
   height: 90%;
   .vertical-space;
   padding-bottom: 2%;
+  width: 100%;
 
   .wysihtml5-sandbox {
     border: none !important;
@@ -729,7 +751,6 @@ button.preview {
   // In builder, make overflow visible so help can be positioned to the
   // left or right of the block
   width: 100%;
-  max-width: @section-width; 
   overflow: visible;
 }
 
@@ -764,12 +785,12 @@ button.preview {
 .storybase-container-placeholder .help {
   display: block;
   position: absolute;
-  left: -38px;
+  left: -24px;
 }
 
 .storybase-container-placeholder#right .help {
   left: auto;
-  right: -38px;
+  right: -24px;
 }
 
 .asset-help-container {
@@ -1151,21 +1172,5 @@ input[name=address] {
     list-style: none outside none;
 
     .asset { padding: 8px 0; }
-  }
-}
-
-.builder {
-  input, textarea {
-    .sans-serif-text;
-    box-shadow:inset 0 0 3px #ccc;
-    border:1px solid #bbb;
-    padding:12px;
-    border-radius: 5px;
-    color:#888;
-    font-size:16px;
-  }
-  
-  .edit-section input.story-title {
-    font-weight:bold;
   }
 }
