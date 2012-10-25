@@ -1,5 +1,24 @@
 <html>
+    <head>
+        <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline -->
+        <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
+        <script>window.jQuery || document.write('<script src="{{ STATIC_URL }}js/libs/jquery-1.7.2.min.js"><\/script>')</script>
+        <script>
+	// Save the up-to-date version of jQuery to avoid conflicts with other
+	// jQueries loaded by Django/Django CMS
+	var jqLatest = jQuery;
+	</script>
+    </head>
     <body>
         {{content|safe}}
+        <script type="text/javascript">
+        (function ($) {
+	  $('a').click(function(evt) {
+            console.debug('got here');
+	    window.open($(evt.target).attr('href'));
+	    return false;
+          });
+        })(jQuery);
+        </script>
     </body>
 </html>
