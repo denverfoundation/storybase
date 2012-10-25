@@ -72,50 +72,74 @@
 // this should probably just be on the body ... not sure if the body
 // is arial/sans-serif for a reason.
 .plain-serif-text {
-	font-family:'Times New Roman', Georgia, Serif;
+  font-family:'Times New Roman', Georgia, Serif;
+//  font-family:Georgia, 'Times New Roman', serif;
+}
+
+.sans-serif-text {
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+.body-copy {
+  .plain-serif-text;
+  font-size:@body-copy-size;
+  color:@body-copy-color; 
+  line-height:1.1em;
+  p {
+    margin-bottom: 1em;
+    a {
+      color:@highlight-blue;
+      &:visited {
+        color:@visited-blue;
+      }
+    }
+  }
+}
+
+// museo as opposed to serif
+.styled-header(@align: center) {
+  text-align:@align;
+  font-family: 'Museo300Regular';
+  font-weight:normal;
 }
 
 .line-through-header {
-	background:url('../img/h3-line.png') repeat-x 0 8px; 
-	margin-bottom:10px;
-	
-	span {
-		background:#fff; 
-		padding-left:16px; 
-		padding-right:16px;
-	}
+  background:url('../img/h3-line.png') repeat-x 0 8px; 
+  margin-bottom:10px;
+  
+  span {
+    background:#fff; 
+    padding-left:16px; 
+    padding-right:16px;
+  }
 }
 
 // global stuff
 
 html { font-size: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
 
-body, button, input, select, textarea { font-family: sans-serif; color: #444; }
+body, button, input, select, textarea { 
+  .body-copy;
+}
 
 * { margin: 0; padding: 0; outline: 0; }
 
 body, html { height: 100%; }
 
 body.base-template {
-	
+
+    .plain-serif-text;
     font-size: @body-copy-size;
     line-height: 1.3;
-    font-family: arial, sans-serif;
     color: #000;
     background:url('../img/body.jpg') repeat-x 0 0;
     min-width: 100%;
     overflow-y:scroll;
 
-	.basic-header {
-		text-align:center;
-		font-family: 'Museo300Regular';
-		font-weight:normal;
-	}
-
-	h1 { font-size:@top-header-size; color:@dark-gray; .basic-header; .line-through-header; }
-	h2 { font-size:(@top-header-size * .8); color:@dark-gray; .basic-header; }
-	h3 { font-size:(@top-header-size * .7); color:@medium-gray; .basic-header; }
-	h4 { font-size:(@top-header-size * .6); color:@medium-gray; .basic-header; }
+	h1 { font-size:@top-header-size; color:@dark-gray; .styled-header; .line-through-header; }
+	h2 { font-size:(@top-header-size * .8); color:@dark-gray; .styled-header; }
+	h3 { font-size:(@top-header-size * .7); color:@medium-gray; .styled-header; }
+	h4 { font-size:(@top-header-size * .6); color:@medium-gray; .styled-header; }
 	h5 { font-size:(@top-header-size * .5); color:@highlight-blue; font-family: 'MuseoSlab500Regular'; font-weight:normal;}
 
 	// based on "everything" comp, text content
