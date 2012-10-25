@@ -167,8 +167,12 @@ Handlebars.js templates for story builder Backbone application
 <div class="section-edit-layout">{{{layout_template}}}</div>
 </script>
 
+<script type="text/x-handlebars-template" id="help-icon-partial">
+    <button type="button" class="help"><i class="icon-question-sign"></i><span class="hide-text">{{gettext "Help"}}</span></button>
+</script>
+
 <script type="text/x-handlebars-template" id="section-asset-select-type-template">
-<a href="#" class="help">{{gettext "Help"}}</a></li>
+{{>help-icon}}
 <div class="wrapper">
     {{#if defaultType}}
     <p><a href="#" class="asset-type" data-asset-type="{{{defaultType.type}}}">{{gettext "Click to add your"}} {{{defaultType.name}}}</a></p>
@@ -191,14 +195,14 @@ Handlebars.js templates for story builder Backbone application
 </script>
 
 <script type="text/x-handlebars-template" id="section-asset-edit-template">
-<a href="#" class="help">{{gettext "Help"}}</a></li>
+{{>help-icon}}
 <div class="wrapper">
 <h3>{{model.type}}</h3>
 </div>
 </script>
 
 <script type="text/x-handlebars-template" id="section-asset-display-template">
-<a href="#" class="help">{{gettext "Help"}}</a></li>
+{{>help-icon}}
 <div class="wrapper">
 <ul class="section-asset-controls">
     <li><a href="#" class="edit">{{gettext "Edit"}}</a></li>

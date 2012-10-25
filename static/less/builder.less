@@ -51,6 +51,34 @@ header {
   border-color: #EED3D7;
 }
 
+// Reset button styles
+// Use this for buttons that you don't want to show up as a button
+.button-reset () {
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  width: auto;
+  text-align: center;
+}
+
+// Class/mixin for hiding the text inside an element
+// I often use this to hide text in an icon button
+.hide-text {
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+}
+
+// Clickable help icon
+button.help {
+  .button-reset;
+  display: block;
+  cursor: pointer;
+  font-size: 18px;
+}
+
+// TODO: Remove these
 /* Help Modal */
 
 #simplemodal-container {
@@ -312,9 +340,7 @@ header {
 
     // Only show the icon and hide the text
     .text {
-      position: absolute;
-      top: -9999px;
-      left: -9999px;
+      .hide-text;
     }
   }
 
@@ -518,6 +544,7 @@ header {
   width: 940px;
   top: 0; 
 }
+
 
 .graphic-select-container {
   .widget {
@@ -763,12 +790,12 @@ header {
 .storybase-container-placeholder .help {
   display: block;
   position: absolute;
-  left: -38px;
+  left: -24px;
 }
 
 .storybase-container-placeholder#right .help {
   left: auto;
-  right: -38px;
+  right: -24px;
 }
 
 .asset-help-container {
