@@ -553,12 +553,6 @@ body.story-builder .centered{text-align:center;}
 body.story-builder .error input{background-color:#F2DEDE;border-color:#EED3D7;}
 body.story-builder .hide-text{position:absolute;top:-9999px;left:-9999px;}
 body.story-builder button.help{border:none;background:none;padding:0;margin:0;width:auto;text-align:center;display:block;cursor:pointer;font-size:18px;}
-body.story-builder #simplemodal-container{background-color:#fff;width:66%;height:66%;}
-body.story-builder #simplemodal-wrap{overflow-x:hidden;overflow-y:scroll;}
-body.story-builder #simplemodal-data{padding:10px;}
-body.story-builder .help .close{position:absolute;display:block;right:20px;}
-body.story-builder .help .continue{position:absolute;display:block;top:0px;right:20px;margin-top:-10px;}
-body.story-builder .help-modal-controls{position:relative;margin-top:10px;}
 body.story-builder .wysihtml5-toolbar{position:relative;padding:0 0 20px 0;}
 body.story-builder [[object Object]]{position:absolute;top:20px;width:100%;}
 body.story-builder [[object Object]]{cursor:pointer;}
