@@ -45,6 +45,7 @@ storybase.builder.views.VISIBLE_STEPS = {
  */
 storybase.builder.views.AppView = Backbone.View.extend({
   options: {
+    alertsEl: '#alerts',
     drawerEl: '#drawer-container',
     headerEl: '#header',
     language: 'en',
@@ -304,7 +305,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
   },
 
   showAlert: function(level, msg) {
-    var $el = this.$('.alerts');
+    var $el = this.$(this.options.alertsEl);
     var numAlerts = $el.children().length;
     var view = new storybase.builder.views.AlertView({
       level: level,
