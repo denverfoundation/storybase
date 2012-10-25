@@ -371,10 +371,11 @@ header {
   text-align: center;
 }
 
+// Main container for builder views
+
 #app {
   height: 100%;
-  // TODO: Adjust this
-  width: 90%;
+  width: 100%;
   float: left;
   // NOTE: The padding-top of this element gets set dynamically depending
   // on the height of #header
@@ -450,6 +451,26 @@ header {
   overflow: visible; 
 }
 
+// General builder styles
+
+@builder-input-border-width: 1px;
+@builder-input-padding: 12px;
+
+.builder {
+  input, textarea {
+    box-shadow:inset 0 0 3px #ccc;
+    border: @builder-input-border-width solid #bbb;
+    padding: @builder-input-padding;
+    border-radius: 5px;
+    color:#888;
+    font-size:16px;
+  }
+  
+  .edit-section input.story-title {
+    font-weight:bold;
+  }
+}
+
 
 /* Story Template List */
 
@@ -477,8 +498,18 @@ header {
   margin-top: 0.5% !important;
 }
 
-.full-width {
+.full-width () {
   width: 100%;
+  // Use border-box so that our borders and paddings cut into our width
+  // instead of adding to it
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box; 
+  box-sizing: border-box;
+}
+
+.full-width-important {
+  .full-width;
+  width: 100% !important;
 }
 
 .section-controls {
@@ -643,7 +674,7 @@ header {
     // Override the element width that gets set by the Javascript plugin
     // so the element adapts as the container width changes (e.g. to 
     // accomodate the drawer)
-    width: 100% !important;
+    .full-width-important;
   }
 }
 
@@ -665,22 +696,20 @@ header {
   height: 300px;
 }
 
-/* Section Editor */
-
+// Section Editor
 
 .edit-section {
-  @horizontal-padding: 2%;
   position: relative;
-  width: 100% - 2 * @horizontal-padding; 
   margin-left: auto;
   margin-right: auto;
+  // TODO: Pick a more consistent padding
+  padding-top: 2%;
+  width: 85%;
   height: 70%;
-  padding: 2% @horizontal-padding 1% @horizontal-padding;
 
   .section-title {
     margin-top: 15px;
-    width: 100%; 
-    max-width: @section-width;
+    .full-width;
   }
 }
 
@@ -689,6 +718,7 @@ header {
   height: 90%;
   .vertical-space;
   padding-bottom: 2%;
+  width: 100%;
 
   .wysihtml5-sandbox {
     border: none !important;
@@ -699,7 +729,6 @@ header {
   // In builder, make overflow visible so help can be positioned to the
   // left or right of the block
   width: 100%;
-  max-width: @section-width; 
   overflow: visible;
 }
 
@@ -1123,17 +1152,3 @@ input[name=address] {
   }
 }
 
-.builder {
-  input, textarea {
-    box-shadow:inset 0 0 3px #ccc;
-    border:1px solid #bbb;
-    padding:12px;
-    border-radius: 5px;
-    color:#888;
-    font-size:16px;
-  }
-  
-  .edit-section input.story-title {
-    font-weight:bold;
-  }
-}
