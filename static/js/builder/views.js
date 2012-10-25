@@ -2942,8 +2942,12 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     else {
       this.assets.fetch();
     }
-    // not sure of best place for this 
+    // Turn the basic select element into a fancy graphical selection
+    // widget
     this.$el.find(this.options.selectLayoutEl).graphicSelect();
+    // Delegate events so our event bindings work after we've removed
+    // this element from the DOM
+    this.delegateEvents();
     return this;
   },
 
