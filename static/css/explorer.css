@@ -290,7 +290,6 @@ ul#view-selector li a {
 #story-list li.story p,
 #map-container .leaflet-popup .story p,
 #show-more {
-	font-family:Georgia, 'Times New Roman', Serif;
 	font-size:12px; 
 	color:#5a5a5a;
 }
