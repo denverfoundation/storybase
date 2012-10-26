@@ -1,0 +1,23 @@
+{% load verbatim %}
+
+{% comment %}
+Handlebars templates for rendering Backbone views.
+{% endcomment %}
+
+{% verbatim %}
+<script type="text/x-handlebars-template" id="navigation-template">
+    {{#if showing_connected_story}}
+    <a class="connected" href="#sections/connected-stories">{{gettext "Back to Connected Story List"}}</a>
+    {{else}}
+    {{#addl_links}}
+    <a id="{{id}}" href="{{href}}">{{text}}</a>
+    {{/addl_links}}
+    {{#previous_section}}
+    <a class="previous" href="#sections/{{id}}" title="{{title}}">previous</a>
+    {{/previous_section}}
+    {{#next_section}}
+    <a class="next" href="#sections/{{id}}" title="{{title}}">next</a>
+    {{/next_section}}
+    {{/if}}
+</script>
+{% endverbatim %}
