@@ -550,6 +550,17 @@ body.story-viewer .messages .success{color:green;}
 body.story-viewer table{border-collapse:collapse;border-spacing:0;}
 body.story-viewer td{vertical-align:top;}
 body.story-builder{}body.story-builder header{border-bottom:1px solid white;background:url(../img/builder/header-bg.png) repeat-x top left;}body.story-builder header>div{width:100%;position:relative;margin-left:auto;margin-right:auto;width:1020px;}
+body.story-builder fieldset{border:none;}
+body.story-builder .bbf-form>fieldset>ul{margin:0 !important;padding:0 !important;}
+body.story-builder li.bbf-field{list-style-type:none !important;}
+body.story-builder .field-body .bbf-editor{margin-left:0;width:100%;}
+body.story-builder .bbf-field .bbf-editor{margin-left:0;width:100%;}
+body.story-builder .bbf-field label{float:none;width:100%;font-weight:bold;}
+body.story-builder .bbf-help{margin-bottom:1em;}
+body.story-builder .bbf-error .bbf-help{color:#ee6666;}
+body.story-builder .bbf-error input{border-color:#ee6666;}
+body.story-builder ul.select2-choices{margin:0 !important;padding:0 !important;}
+body.story-builder li.select2-search-field{list-style-type:none !important;}
 body.story-builder .view-container{margin-left:auto;margin-right:auto;width:1020px;}
 body.story-builder .btn-container{padding:2em 0;}
 body.story-builder .alert-success{background-color:#DFF0D8;border-color:#D6E9C6;color:#468847;}
@@ -666,10 +677,6 @@ body.story-builder .storybase-container-placeholder [name=body]{height:150px;}
 body.story-builder .section-asset-controls{display:none;top:0;right:0;position:absolute;margin:0;padding:10px 10px 0 0;text-align:right;list-style:none outside none;background-color:#fff;z-index:999;}
 body.story-builder .storybase-container-placeholder:hover .section-asset-controls{display:block;}
 body.story-builder .section-asset-controls li{display:inline-block;}
-body.story-builder .bbf-form ul{margin:0;padding:0;}
-body.story-builder .field-body .bbf-editor{margin-left:0;width:100%;}
-body.story-builder .bbf-field .bbf-editor{margin-left:0;width:100%;}
-body.story-builder .bbf-field label{float:none;width:100%;font-weight:bold;}
 body.story-builder #section-list{position:relative;overflow:hidden;min-height:108px;}
 body.story-builder #toggle-section-list{display:block;float:left;padding:10px;font-weight:bold;text-decoration:none;color:#fff;}
 body.story-builder .opened #toggle-section-list::after{content:' - ';}

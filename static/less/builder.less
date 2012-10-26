@@ -11,6 +11,64 @@ header {
   }
 }
 
+// QUESTION: Should this be the default style?
+fieldset {
+  border: none;
+}
+
+.unindented-list () {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.bbf-form > fieldset > ul {
+  .unindented-list;
+}
+
+// LI shouldn't have a bullet
+li.bbf-field {
+  list-style-type: none !important;
+}
+
+.field-body .bbf-editor {
+  margin-left: 0;
+  width: 100%;
+}
+
+.bbf-field .bbf-editor {
+  margin-left: 0;
+  width: 100%;
+}
+
+.bbf-field label {
+  float: none;
+  width: 100%;
+  font-weight: bold;
+}
+
+.bbf-help {
+  margin-bottom: @body-copy-margin-bottom; 
+}
+
+.bbf-error .bbf-help {
+  color: @error-color;
+}
+
+.bbf-error input {
+  border-color: @error-color;
+}
+
+// Select2 also uses an li for some of its elements
+ul.select2-choices {
+  .unindented-list;
+}
+
+li.select2-search-field {
+  list-style-type: none !important;
+}
+
+
+
 .view-container {
   .container_12;
 }
@@ -826,26 +884,6 @@ button.preview {
   display: inline-block;
 }
 
-.bbf-form ul {
-  margin: 0;
-  padding: 0;
-}
-
-.field-body .bbf-editor {
-  margin-left: 0;
-  width: 100%;
-}
-
-.bbf-field .bbf-editor {
-  margin-left: 0;
-  width: 100%;
-}
-
-.bbf-field label {
-  float: none;
-  width: 100%;
-  font-weight: bold;
-}
 
 // Table of contents thumbnails
 

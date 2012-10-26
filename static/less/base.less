@@ -101,13 +101,15 @@
   font-family: Helvetica, Arial, sans-serif;
 }
 
+@body-copy-margin-bottom: 1em;
+
 .body-copy {
   .plain-serif-text;
   font-size:@body-copy-size;
   color:@body-copy-color; 
   line-height:1.1em;
   p {
-    margin-bottom: 1em;
+    margin-bottom: @body-copy-margin-bottom;
     a {
       color:@highlight-blue;
       &:visited {
@@ -120,7 +122,7 @@
 .body-copy-lists {
   ul, ol {
     padding-left: 20px;
-    margin-bottom: 1em;
+    margin-bottom: @body-copy-margin-bottom;
   }
   ul li {
     list-style-type: square;
