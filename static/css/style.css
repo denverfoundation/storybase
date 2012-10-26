@@ -66,10 +66,10 @@ body{min-width:1020px;}
 .clearfix{zoom:1;}
 .section-width{width:100%;margin-left:auto;margin-right:auto;}
 .section-title{font-size:30px;width:100%;margin-left:auto;margin-right:auto;}
-.section-layout{overflow:hidden;font-size:13px;width:100%;margin-left:auto;margin-right:auto;}.section-layout.side-by-side .left,.section-layout.side-by-side .right{height:489px;width:49%;float:left;}
+.section-layout{overflow:hidden;font-size:13px;width:100%;margin-left:auto;margin-right:auto;}.section-layout.side-by-side .left,.section-layout.side-by-side .right{width:49%;float:left;}
 .section-layout.side-by-side .left{margin-left:0;margin-right:1%;}
 .section-layout.side-by-side .right{margin-left:1%;margin-right:0;}
-.section-layout.one-up .center{position:relative;height:805px;width:100%;margin:2 0%;}
+.section-layout.one-up .center{position:relative;width:100%;margin:2 0%;}
 .section-layout img,.section-layout iframe{max-width:100%;}
 @font-face{font-family:'MuseoSlab500Regular';src:url('../css/font-face/museo_slab_500-webfont.eot');src:url('../css/font-face/museo_slab_500-webfont.eot?#iefix') format('embedded-opentype'),url('../css/font-face/museo_slab_500-webfont.woff') format('woff'),url('../css/font-face/museo_slab_500-webfont.ttf') format('truetype'),url('../css/font-face/museo_slab_500-webfont.svg#MuseoSlab500Regular') format('svg');font-weight:normal;font-style:normal;}@font-face{font-family:'Museo300Regular';src:url('../css/font-face/museo300-regular-webfont.eot');src:url('../css/font-face/museo300-regular-webfont.eot?#iefix') format('embedded-opentype'),url('../css/font-face/museo300-regular-webfont.woff') format('woff'),url('../css/font-face/museo300-regular-webfont.ttf') format('truetype'),url('../css/font-face/museo300-regular-webfont.svg#Museo300Regular') format('svg');font-weight:normal;font-style:normal;}@font-face{font-family:'FontAwesome';src:url('../css/font-face/fontawesome-webfont.eot');src:url('../css/font-face/fontawesome-webfont.eot?#iefix') format('embedded-opentype'),url('../css/font-face/fontawesome-webfont.woff') format('woff'),url('../css/font-face/fontawesome-webfont.ttf') format('truetype'),url('../css/font-face/fontawesome-webfont.svg#FontAwesome') format('svg');font-weight:normal;font-style:normal;}[class^="icon-"]:before,[class*=" icon-"]:before{font-family:FontAwesome;font-weight:normal;font-style:normal;display:inline-block;text-decoration:inherit;}
 a [class^="icon-"],a [class*=" icon-"]{display:inline-block;text-decoration:inherit;}
