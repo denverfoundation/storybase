@@ -53,8 +53,14 @@ class StoryIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
         return len(obj.points)
 
     def index_queryset(self):
+        """
+        Get the default QuerySet to index when doing a full update.
+
+        Excludes unpublish stories, template stories, and connected stories.
+        """
         return Story.objects.filter(status__exact='published',
-                                    is_template=False)
+                                    is_template=False)\
+                            .exclude(source__relation_type='connected')
 
     def should_update(self, instance, **kwargs):
         """
@@ -76,6 +82,9 @@ class StoryIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
             return True
 
         if instance.is_template == True:
+            return True
+
+        if instance.is_connected() == True:
             return True
 
         return False
