@@ -165,12 +165,11 @@ Namespace('storybase.utils', {
 
 /**
  * Translate a string in a template using Django's gettext Javascript API.
- * @param {object} options Hash of options. Should contain one key,
- *     'message' which is the string to be translated.
- * @return {string} Translated string
+ * @param {String} message The string to be translated 
+ * @return {String} Translated string
  */
-Handlebars.registerHelper('gettext', function(options) {
-  return gettext(options.hash.message);
+Handlebars.registerHelper('gettext', function(message) {
+  return new Handlebars.SafeString(gettext(message));
 });
 
 /**

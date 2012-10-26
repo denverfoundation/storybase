@@ -32,8 +32,6 @@
   <!-- CSS: implied media=all -->
   <!-- CSS concatenated and minified via ant build script-->
 
-  <!-- custom 1000px grid based on 960 grid, http://960.gs -->
-  {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/grid.css">{% endaddtoblock %}
   {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/flexslider.css">{% endaddtoblock %}
   <!-- These styles make use of the awesome Font Awesome - http://fortawesome.github.com/Font-Awesome/ -->
   {% if debug %}
@@ -74,11 +72,16 @@
 					{% endif %}
 				</ul>
 				<div class="cl">&nbsp;</div>
+                {# TODO: Enable search #} 
+                {% comment %}
 				<form id="search" action="" method="post">
 					<input type="text" class="field" value="" />
 					<input type="submit" class="submit" value="" />
 					<div class="cl">&nbsp;</div>
 				</form>
+                {% endcomment %}
+                {# HACK: Take up the same amount of space as the search form #}
+                <div id="search-placeholder"></div>
 			</div>
 			<div class="cl">&nbsp;</div>
 		</div>

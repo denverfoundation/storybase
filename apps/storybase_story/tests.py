@@ -1757,6 +1757,7 @@ class StoryResourceTest(ResourceTestCase):
                                 'contact_info',
                                 'created',
                                 'featured_asset_url',
+                                'language',
                                 'languages', 
                                 'last_edited',
                                 'license',
@@ -1848,6 +1849,10 @@ class StoryResourceTest(ResourceTestCase):
         self.assertEqual(created_story.status, post_data['status'])
         self.assertEqual(created_story.get_languages(), [post_data['language']])
         self.assertEqual(created_story.author, self.user)
+        # Check that the language returned in the response is the 
+        # same as the post
+        self.assertEqual(self.deserialize(response)['language'],
+                         post_data['language'])
         # Check that the story id is returned by the endpoint
         returned_story_id = response['location'].split('/')[-2]
         self.assertEqual(created_story.story_id, returned_story_id)

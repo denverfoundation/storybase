@@ -19,6 +19,29 @@ class TranslatedModel(models.Model):
         super(TranslatedModel, self).__init__(*args, **kwargs)
         self._translation_cache = {}
 
+    def _get_translated_manager(self):
+        """Get the manager for the translation objects"""
+        get = lambda p:super(TranslatedModel, self).__getattribute__(p)
+        try:
+            translation_set = getattr(self, 'translation_set')
+        except AttributeError:
+            # Try the subclass
+            subclass_attrs = [rel.var_name 
+                              for rel 
+                              in self._meta.get_all_related_objects()
+                              if isinstance(rel.field, OneToOneField)
+                              and issubclass(rel.field.model,
+                                             self.__class__)]
+            for attr in subclass_attrs:
+                if hasattr(self, attr):
+                    subclass = get(attr)
+                    if subclass:
+                        translation_set = subclass.translation_set
+                        break
+            else:
+                raise
+        return get(translation_set)
+
     def __getattribute__(self, name):
         """ Getter that searches for fields on the translation model class
 
@@ -28,27 +51,8 @@ class TranslatedModel(models.Model):
         get = lambda p:super(TranslatedModel, self).__getattribute__(p)
         translated_fields = get('translated_fields') 
         if name in translated_fields:
-            try:
-                translation_set = get('translation_set')
-            except AttributeError:
-                # Try the subclass
-                subclass_attrs = [rel.var_name 
-                                  for rel 
-                                  in self._meta.get_all_related_objects()
-                                  if isinstance(rel.field, OneToOneField)
-                                  and issubclass(rel.field.model,
-                                                 self.__class__)]
-                for attr in subclass_attrs:
-                    if hasattr(self, attr):
-                        subclass = get(attr)
-                        if subclass:
-                            translation_set = subclass.translation_set
-                            break
-                else:
-                    raise
-
             code = translation.get_language()
-            translated_manager = get(translation_set)
+            translated_manager = self._get_translated_manager()
             try:
                 translated_object = None
                 translated_object = self._translation_cache[code]
@@ -84,29 +88,29 @@ class TranslatedModel(models.Model):
     def set_translation_cache_item(self, code, obj):
         self._translation_cache[code] = obj
 
+    @property
+    def language(self):
+        code = translation.get_language()
+        languages = self.get_languages()
+        if code in languages:
+            # There's a translation for the current active language
+            # return the active language
+            return code
+        elif settings.LANGUAGE_CODE in languages:
+            # There's no translation for the current active language
+            # but there is one for the default language.  Return
+            # the default language
+            return settings.LANGUAGE_CODE
+        elif languages:
+            # There's no translation for the default language either,
+            # but there is some translation.  Return the first translation
+            return languages[0]
+        else:
+            return None
+
     def get_languages(self):
         """Get a list of translated languages for the model instance"""
-        # TODO: Refactor this so it doesn't repeat the code in 
-        # __getattribute__
-        try:
-            translation_set = getattr(self, 'translation_set')
-        except AttributeError:
-            # Try the subclass
-            subclass_attrs = [rel.var_name 
-                              for rel 
-                              in self._meta.get_all_related_objects()
-                              if isinstance(rel.field, OneToOneField)
-                              and issubclass(rel.field.model,
-                                             self.__class__)]
-            for attr in subclass_attrs:
-                if hasattr(self, attr):
-                    subclass = getattr(self, attr)
-                    if subclass:
-                        translation_set = subclass.translation_set
-                        break
-            else:
-                raise
-        translated_manager = getattr(self, translation_set)
+        translated_manager = self._get_translated_manager()
         return [trans.language 
                 for trans in translated_manager.all()]
 

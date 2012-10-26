@@ -4,15 +4,14 @@ Handlebars.js templates for story builder Backbone application
 
 {% load  verbatim %}
 {% verbatim %}
+<script type="text/x-handlebars-template" id="drawer-template">
+<div id="drawer-controls"></div>
+<div id="drawer-contents"></div>
+</script>
+
 <script type="text/x-handlebars-template" id="help-template">
-<a class="simplemodal-close close" href="#">{{gettext message="Close"}}</a>
 <h3>{{title}}</h3>
 {{{body}}}
-<div class="help-modal-controls">
-    <input name="auto-show-help" class="auto-show-help" type="checkbox" {{#if autoShow}}checked="checked"{{/if}}/>
-    <label for="auto-show-help">Show these suggestions for each screen</label>
-    <a class="simplemodal-close continue btn" href="#">{{gettext message="Continue"}}</a>
-</div>
 </script>
 
 <script type="text/x-handlebars-template" id="clickable-item-template">
@@ -20,18 +19,18 @@ Handlebars.js templates for story builder Backbone application
 </script>
 
 <script type="text/x-handlebars-template" id="workflow-item-template">
-    <li><a id="{{id}}" class="tooltip {{class}}" href="{{href}}" title="{{title}}">{{text}}</a></li>
+    <li class="{{class}}"><a id="{{id}}" class="tooltip" href="{{href}}" title="{{title}}">{{text}}</a><em></em></li>
 </script>
 
 <script type="text/x-handlebars-template" id="workflow-nav-item-template">
-<a id="{{id}}" class="{{class}} btn" href="{{href}}">{{text}}</a>
+    <a id="{{id}}" title="{{title}}" class="{{class}}" href="{{href}}"><span class="text">{{text}}</span></a>
 </script>
 
 <script type="text/x-handlebars-template" id="story-template-list-template">
-<h2>{{gettext message="Choose a template to start building your story."}}</h2>
-<p>{{gettext message="A template is a tried and true story structure you can populate with your own pictures, text, media, data and more."}}</p>
-<p>{{gettext message="Some templates are better for video, some for data, and some for text. Some templates are short and sweet, others are lengthier and more involved. Below, we’ve given you some tips for picking a template based on the time it takes and the type of story you are telling. You can also get to know a template by exploring stories people have made with it."}}</p>
-<p>{{#blockgettext}}You can <strong>customize</strong> some templates by adding and reordering sections, and you can always <strong>start over</strong> by choosing a new template.{{/blockgettext}}</p>
+<h2>{{gettext "Choose a template to start building your story."}}</h2>
+<p>{{gettext "A template is a tried and true story structure you can populate with your own pictures, text, media, data and more."}}</p>
+<p>{{gettext "Some templates are better for video, some for data, and some for text. Some templates are short and sweet, others are lengthier and more involved. Below, we’ve given you some tips for picking a template based on the time it takes and the type of story you are telling. You can also get to know a template by exploring stories people have made with it."}}</p>
+<p>{{gettext "You can <strong>customize</strong> some templates by adding and reordering sections, and you can always <strong>start over</strong> by choosing a new template."}}</p>
 </script>
 
 <script type="text/x-handlebars-template" id="story-template-template">
@@ -41,33 +40,32 @@ Handlebars.js templates for story builder Backbone application
 {{/if}}
 <p>{{description}}</p>
 <dl>
-    <dt>{{gettext message="Time needed"}}</dt>
+    <dt>{{gettext "Time needed"}}</dt>
     <dd>{{time_needed}}</dd>
     {{#if level}}
-    <dt>{{gettext message="Level"}}</dt>
+    <dt>{{gettext "Level"}}</dt>
     <dd>{{level}}</dd>
     {{/if}}
     {{#if ingredients}}
-    <dt>{{gettext message="Recommended ingredients"}}</dt>
+    <dt>{{gettext "Recommended ingredients"}}</dt>
     <dd>{{ingredients}}</dd>
     {{/if}}
     {{#if best_for}}
-    <dt>{{gettext message="Best for"}}</dt>
+    <dt>{{gettext "Best for"}}</dt>
     <dd>{{best_for}}</dd>
     {{/if}}
     {{#if tip}}
-    <dt>{{gettext message="Tip"}}</dt>
+    <dt>{{gettext "Tip"}}</dt>
     <dd>{{tip}}</dd>
     {{/if}}
     {{#if examples}}
-    <dt>{{gettext message="Examples"}}</dt>
+    <dt>{{gettext "Examples"}}</dt>
     <dd>{{#each examples}}<a href="{{this.url}}">{{this.title}}</a> {{/each}}</dd>
     {{/if}}
 </dl>
 </script>
 
 <script type="text/x-handlebars-template" id="section-list-template">
-    <a id="toggle-section-list" href="#" title="{{gettext message="You can hide or reveal the table of contents bar by clicking here"}}" class="tooltip"></a>
 <div class="sections-container">
     <a class="scroll-left"><</a>
     <div class="sections-clip">
@@ -78,21 +76,22 @@ Handlebars.js templates for story builder Backbone application
 </script>
 
 <script type="text/x-handlebars-template" id="section-nav-template">
-{{#if prevId}}<a id="{{prevId}}" class="prev" href="#">{{gettext message="Edit previous section"}}</a>{{/if}}
-{{#if nextId}}<a id="{{nextId}}" class="next" href="#">{{gettext message="Edit next section"}}</a>{{/if}}
+{{#if prevId}}<a id="{{prevId}}" class="prev" href="#">{{gettext "Edit previous section"}}</a>{{/if}}
+{{#if nextId}}<a id="{{nextId}}" class="next" href="#">{{gettext "Edit next section"}}</a>{{/if}}
 </script>
 
 <script type="text/x-handlebars-template" id="section-thumbnail-template">
 {{#if index}}
-<div class="spacer"><div><a class="add-section tooltip" data-index="{{index}}" title='{{gettext message="Add a section"}}' href="#">+</a></div></div>
+<div class="spacer"><div><a class="add-section tooltip" data-index="{{index}}" title='{{gettext "Add a section"}}' href="#">+</a></div></div>
 {{/if}}
 <div class="section-thumbnail{{#if isNew}} new{{/if}}"{{#if tooltip}} title="{{tooltip}}"{{/if}}>
-{{#if id}}<a class="remove" href="#" title='{{gettext message="Remove section"}}'>x</a>{{/if}}
+{{#if id}}<a class="remove" href="#" title='{{gettext "Remove section"}}'>x</a>{{/if}}
 <div class="title">{{ title }}</div>
 </div>
 {{#if nextIndex}}
-<div class="spacer"><div><a class="add-section tooltip" data-index="{{nextIndex}}" title='{{gettext message="Add a section"}}' href="#">+</a></div></div>
+<div class="spacer"><div><a class="add-section tooltip" data-index="{{nextIndex}}" title='{{gettext "Add a section"}}' href="#">+</a></div></div>
 {{/if}}
+<em></em>
 </script>
 
 <script type="text/x-handlebars-template" id="editor-toolbar-template">
@@ -119,30 +118,30 @@ Handlebars.js templates for story builder Backbone application
 </script>
 
 <script type="text/x-handlebars-template" id="story-info-edit-template">
-<h2 class="story-title editable" data-input-name="title">{{title}}</h2>
-<p class="byline editable" data-input-name="byline">{{byline}}</p>
-<textarea name="summary" id="summary-textarea" class="summary" placeholder='{{gettext message="Click to edit the summary"}}'>{{summary}}</textarea>
+<input class="story-title" name="title" value="{{title}}" placeholder="{{gettext "Edit your title"}}" />
+<input class="byline" name="byline" value="{{byline}}" placeholder="{{gettext "Your Name and/or Organization. Examples: Jon Denzler; Laura Frank, I-News"}}" />
+<textarea name="summary" id="summary-textarea" class="summary" placeholder='{{gettext "Click to edit the summary"}}'>{{summary}}</textarea>
 </script>
 
 <script type="text/x-handlebars-template" id="story-info-edit-inline-template">
 {{#if prompt}}<p class="prompt">{{prompt}}</p>{{/if}}
-<h2 class="story-title editable" data-input-name="title">{{title}}</h2>
-<p class="byline editable" data-input-name="byline">{{byline}}</p>
+<input class="story-title" name="title" value="{{title}}" placeholder="{{gettext "Edit your title"}}" />
+<input class="byline" name="byline" value="{{byline}}" placeholder="{{gettext "Edit your byline"}}" />
 </script>
 
 <script type="text/x-handlebars-template" id="story-call-to-action-edit-template">
-<h2>{{gettext message="Call to Action"}}</h2>
+<h2>{{gettext "Call to Action"}}</h2>
 <form>
     <div class="section-layout side-by-side">
         <div class="left">
-            <textarea class="call-to-action" name="call_to_action" placeholder='{{gettext message="Click to edit the call to action"}}'>{{call_to_action}}</textarea>
+            <textarea class="call-to-action" name="call_to_action" placeholder='{{gettext "Click to edit the call to action"}}'>{{call_to_action}}</textarea>
         </div>
         <div class="right">
-            <h3>{{gettext message="Create a Connected Story to collect audience feedback"}}</h3>
-            <p>{{#blockgettext}}Give your readers a clear way to contribute by asking them to add a mini Photovoice story. Prompt your readers with a specific question they can answer through a photo and a caption. {{/blockgettext}}</p>
+            <h3>{{gettext "Create a Connected Story to collect audience feedback"}}</h3>
+            <p>{{gettext "Give your readers a clear way to contribute by asking them to add a mini Photovoice story. Prompt your readers with a specific question they can answer through a photo and a caption. "}}</p>
             <div>
                 <input class="connected" name="allow_connected" type="checkbox" {{#if allow_connected}}checked="checked" {{/if}}/>
-                <label for="allow_connected">{{gettext message="Make this a Connected Story"}}</label> 
+                <label for="allow_connected">{{gettext "Make this a Connected Story"}}</label> 
             </div>
             <div>
                 <textarea class="connected-prompt" name="connected_prompt" placeholder="TODO: Add placeholder for connected stories prompt"{{#unless allow_connected}} style="display: none"{{/unless}}>{{connected_prompt}}</textarea>
@@ -157,29 +156,33 @@ Handlebars.js templates for story builder Backbone application
     {{#if showLayoutSelection}}
     <select name="layout" class="layout">
     {{#each layouts}}
-    <option value="{{layout_id}}"{{#if selected}} selected="selected"{{/if}}>{{name}}</option>
+    <option value="{{layout_id}}"{{#if selected}} selected="selected"{{/if}} class="{{slug}}">{{name}}</option>
     {{/each}}
     </select>
     {{/if}}
 </div>
 {{#if showSectionTitles}}
-<h2 class="section-title editable" data-input-name="title">{{title}}</h2>
+<input class="section-title" name="title" value="{{title}}" placeholder="{{gettext "Click to edit title"}}"/>
 {{/if}}
 <div class="section-edit-layout">{{{layout_template}}}</div>
 </script>
 
+<script type="text/x-handlebars-template" id="help-icon-partial">
+    <button type="button" class="help"><i class="icon-question-sign"></i><span class="hide-text">{{gettext "Help"}}</span></button>
+</script>
+
 <script type="text/x-handlebars-template" id="section-asset-select-type-template">
-<a href="#" class="help">{{gettext message="Help"}}</a></li>
+{{>help-icon}}
 <div class="wrapper">
     {{#if defaultType}}
-    <p><a href="#" class="asset-type" data-asset-type="{{{defaultType.type}}}">{{gettext message="Click to add your"}} {{{defaultType.name}}}</a></p>
+    <p><a href="#" class="asset-type" data-asset-type="{{{defaultType.type}}}">{{gettext "Click to add your"}} {{{defaultType.name}}}</a></p>
     {{/if}}
     {{#if assetTypes}}
     <p>
     {{#if defaultType}}
-    {{gettext message="Or, select a different:"}}
+    {{gettext "Or, select a different"}}:
     {{else}}
-    {{gettext message="Select a:"}}
+    {{gettext "Select a"}}:
     {{/if}}
     </p>
     <ul class="asset-types">
@@ -192,29 +195,21 @@ Handlebars.js templates for story builder Backbone application
 </script>
 
 <script type="text/x-handlebars-template" id="section-asset-edit-template">
-<a href="#" class="help">{{gettext message="Help"}}</a></li>
+{{>help-icon}}
 <div class="wrapper">
 <h3>{{model.type}}</h3>
 </div>
 </script>
 
 <script type="text/x-handlebars-template" id="section-asset-display-template">
-<a href="#" class="help">{{gettext message="Help"}}</a></li>
+{{>help-icon}}
 <div class="wrapper">
 <ul class="section-asset-controls">
-    <li><a href="#" class="edit">{{gettext message="Edit"}}</a></li>
-    <li><a href="#" class="remove">{{gettext message="Remove"}}</a></li>
+    <li><a href="#" class="edit">{{gettext "Edit"}}</a></li>
+    <li><a href="#" class="remove">{{gettext "Remove"}}</a></li>
 </ul>
 {{{model.content}}}
 </div>
-</script>
-
-<script type="text/x-handlebars-template" id="section-asset-help-template">
-{{#if title}}<h3>{{title}}</h3>{{/if}}
-{{{body}}}
-{{#if typeHelp}}
-<p><strong>{{{typeHelp}}}</strong></p>
-{{/if}}
 </script>
 
 <script type="text/x-handlebars-template" id="asset-uploadprogress-template">
@@ -227,16 +222,16 @@ Handlebars.js templates for story builder Backbone application
 
 <script type="text/x-handlebars-template" id="featured-asset-select-template">
 <p>
-  {{#if model}}<button type="reset" class="cancel">{{gettext message="Cancel"}}</button>{{/if}}
-  <button type="button" class="add">{{gettext message="Add a new image"}}</button>
+  {{#if model}}<button type="reset" class="cancel">{{gettext "Cancel"}}</button>{{/if}}
+  <button type="button" class="add">{{gettext "Add a new image"}}</button>
 </p>
 {{#if assets}}
-{{gettext message="Or select an image from your story"}}
+{{gettext "Or select an image from your story"}}
 </p>
 <ul class="assets">
   {{#each assets}}
   <li class="asset">
-  <img class="thumbnail" src="{{thumbnail_url}}" /><button type="button" class="select-asset" data-asset-id="{{asset_id}}">{{gettext message="Set as featured image"}}</button>
+  <img class="thumbnail" src="{{thumbnail_url}}" /><button type="button" class="select-asset" data-asset-id="{{asset_id}}">{{gettext "Set as featured image"}}</button>
   </li> 
   {{/each}}
 </ul>
@@ -245,24 +240,44 @@ Handlebars.js templates for story builder Backbone application
 
 <script type="text/x-handlebars-template" id="featured-asset-display-template">
 <ul class="featured-asset-controls">
-    <li><button type="button" class="change">{{gettext message="Change"}}</button></li>
+    <li><button type="button" class="change">{{gettext "Change"}}</button></li>
 </ul>
 {{{model.content}}}
 </script>
 
 <script type="text/x-handlebars-template" id="unused-assets-template">
+{{#if assets}}
 <ul>
   {{#each assets}}
-  <li class="unused-asset" data-asset-id="{{asset_id}}">{{#if thumbnail_url}}<img class="thumbnail" src="{{thumbnail_url}}" />{{/if}}{{display_title}} ({{type}})</li>
+  <li class="unused-asset {{type}}" data-asset-id="{{asset_id}}">
+    {{#if thumbnail_url}}
+    <img class="thumbnail" src="{{thumbnail_url}}" />
+    {{else}}
+    {{/if}}
+    {{#if body}}
+    <div class="body">{{firstparagraph body}}</body>
+    {{/if}}
+    {{#unless body}}
+    {{#unless thumbnail_url}}
+    <div class="default-thumbnail {{type}}" />
+    {{/unless}}
+    {{/unless}}
+    {{#if url}}
+    <div class="url">{{url}}</div>
+    {{/if}}
+  </li>
   {{/each}}
 </ul>
+{{else}}
+<p>{{gettext "You have no unused assets"}}</p>
+{{/if}}
 </script>
 
 <script type="text/x-handlebars-template" id="data-template">
 <h2>Data Sets</h2>
-<p>{{gettext message="Providing the raw source data you used to make your story’s charts, maps and graphs encourages readers to dig deeper and discover their own stories in the data."}}</p>
-<p>{{gettext message="You can upload data sets from your computer if they are CSV or Excel files. You can link to data stored elsewhere on the web, like the Colorado Data Engine, Google Docs, or the U.S. Census Bureau."}}</p>
-<p>{{gettext message="Add as many data sets as you like."}}</p>
+<p>{{gettext "Providing the raw source data you used to make your story’s charts, maps and graphs encourages readers to dig deeper and discover their own stories in the data."}}</p>
+<p>{{gettext "You can upload data sets from your computer if they are CSV or Excel files. You can link to data stored elsewhere on the web, like the Colorado Data Engine, Google Docs, or the U.S. Census Bureau."}}</p>
+<p>{{gettext "Add as many data sets as you like."}}</p>
 {{#if datasets.length}}
 <table class="datasets">
     <thead>
@@ -277,9 +292,9 @@ Handlebars.js templates for story builder Backbone application
             <td>
                 <p class="title">{{title}}</p>
 		{{#if source}}
-		<p class="source">{{gettext message="Source"}}: {{source}}</p>
+		<p class="source">{{gettext "Source"}}: {{source}}</p>
 		{{/if}}
-		<p class="url"><a href="{{download_url}}">{{gettext message="Download data"}}</a></p>
+		<p class="url"><a href="{{download_url}}">{{gettext "Download data"}}</a></p>
             </td>
             <td><a class="delete-dataset" data-dataset-id="{{dataset_id}}" href="#">Delete</a></td>
 
@@ -290,30 +305,68 @@ Handlebars.js templates for story builder Backbone application
 {{else}}
 <p>There are no data sets for this story.</p>
 {{/if}}
-<div><a class="btn add-dataset" href="#">{{gettext message="Add Data"}}</a></div>
+<div><button class="add-dataset" type="button">{{gettext "Add Data"}}</button></div>
 </script>
 
 <script type="text/x-handlebars-template" id="review-template">
-<h2>Story Checklist</h2>
-<p>{{gettext message="Congratulations on writing your story! We're checking things out right now and making sure everything looks good. Preview your story to see how it will look on Floodlight once it’s published."}}</p>
-<div class="centered btn-container"><a class="btn preview" href="#">{{gettext message="Preview Story"}}</a></div>
+<h2>{{gettext "Preview" }}</h2>
+<p>{{gettext "Congratulations on writing your story! Preview your story to see how it will look on Floodlight once it’s published."}}</p>
+<div class="centered btn-container"><button class="preview" type="button">{{gettext "Preview Story"}}</button></div>
+
+<h2>{{gettext "Story Checklist"}}</h2>
+<p>Here are a a few things to double-check before you publish.</p>
+
+<h3>{{gettext "Title and Summary"}}</h3>
+<ul>
+  <li>{{gettext "Is your title engaging and informative?"}}</li>
+  <li>{{gettext "Is your summary short (two sentences or shorter)?"}}</li>
+  <li>{{gettext "Do your title and summary pull whet readers’ appetites so that they’ll want to read the rest of your story?"}}</li>
+</ul>
+
+<h3>{{gettext "Pictures and Video"}}</h3>
+<ul>
+  <li>{{gettext "Does your story have visual elements, such as a picture or video?"}}</li>
+  <li>{{gettext "Do your pictures and videos have captions that give credit to the person who took them?"}}</li>
+</ul>
+
+<h3>{{gettext "Data"}}</h3>
+<ul>
+    <li>{{gettext "Does your story include any data tables?"}}</li>
+    <li>{{gettext "Does your story include any charts or graphs?"}}</li>
+    <li>{{gettext "Does your story include any maps?"}}</li>
+    <li>{{gettext "If you used a table, chart, graph, or map, did you clearly attribute the source of the data?"}}</li>
+    <li>{{gettext "Does your story have any source data that you linked to or uploaded?"}}</li>
+</ul>
+
+<h3>{{gettext "Call to Action"}}</h3>
+<ul>
+  <li>{{gettext "Did you include a clear, specific Call to Action?"}}</li>
+  <li>{{gettext "Does your Call to Action include links to other websites, when relevant?"}}</li>
+</ul>
+
+<h3>{{gettext "Tags"}}</h3>
+<ul>
+  <li>{{gettext "Did you tag your story with topics?"}}</li>
+  <li>{{gettext "Did you tag your story with locations?"}}</li>
+</ul>
 </script>
 
 <script type="text/x-handlebars-template" id="share-publish-template">
+<!-- TODO: Replace these classes with our grid instead of 1140 classes -->
 <div class="row">
     <div class="left eightcol">
         <h2 class="title">Publish and Share Your Story</h2>
         <div class="publish-todo"></div>
         <div class="publish-buttons centered btn-container">
             <button class="publish" type="button" disabled="disabled" style="display: none;">Publish My Story</button>
-            <a href="{{url}}" class="view-story" style="display: none;">{{gettext message="View my story"}}</a>
-            <button type="button" class="unpublish" style="display: none;">{{gettext message="Unpublish My Story"}}</button>
+            <a href="{{url}}" class="view-story" style="display: none;">{{gettext "View my story"}}</a>
+            <button type="button" class="unpublish" style="display: none;">{{gettext "Unpublish My Story"}}</button>
         </div>
     </div> <!-- /.tencol -->
     <div class="right fourcol last">
         {{#if showSharing}}
         <div class="publish-sharing" style="display: none">
-            <p>{{#blockgettext}}Let your story be heard! Spread the word by sharing it with your social networks, printing a copy, or embeding it on your own website.{{/blockgettext}}</p>
+            <p>{{gettext "Let your story be heard! Spread the word by sharing it with your social networks, printing a copy, or embeding it on your own website."}}</p>
             <div class="story-url-wrapper"><input id="story-url" type="text" value="{{url}}" /></div>
             <div class="addthis_toolbox addthis_default_style addthis_32x32_style"
                 addthis:url="{{url}}" addthis:title="{{title}}">
@@ -331,85 +384,83 @@ Handlebars.js templates for story builder Backbone application
 </script>
 
 <script type="text/x-handlebars-template" id="publish-ready-msg-template">
-<p>{{gettext message="Looks like you're all set. When you're ready click the \"Publish My Story\" button."}}</p>
+<p>{{gettext "Looks like you're all set. When you're ready click the \"Publish My Story\" button."}}</p>
 </script>
 
 <script type="text/x-handlebars-template" id="publish-published-msg-template">
-<p>{{gettext message="Congratulations, your story has been published. If you decide you'd like to view or unpublish your story, use the button below"}}</p>
+<p>{{gettext "Congratulations, your story has been published. If you decide you'd like to view or unpublish your story, use the button below"}}</p>
 </script>
 
 <script type="text/x-handlebars-template" id="share-legal-template">
 <h3>{{title}}</h3>
 {{#if showForm}}
-<p class="introduction">{{#blockgettext}}
-In order to publish and share your story, you need to double-check a few legal details.
-{{/blockgettext}}<a href="#">{{gettext message="Read the Floodlight Terms of Service"}}</a>.</p>
+<p class="introduction">{{gettext "In order to publish and share your story, you need to double-check a few legal details."}} <a href="#">{{gettext "Read the Floodlight Terms of Service"}}</a>.</p>
 {{else}}
 <p>
-{{gettext message="You signed off on the legal agreement"}}
-<button type="button" class="view-agreement">{{gettext message="View agreement"}}</button>
+{{gettext "You signed off on the legal agreement"}}
+<button type="button" class="view-agreement">{{gettext "View agreement"}}</button>
 </p>
 {{/if}}
 </script>
 
 <script type="text/x-handlebars-template" id="share-permission-field-template">
-<input type="checkbox" name="permission" value="permission" /> {{gettext message="I have the necessary ownership/rights/permissions to legally distribute the content in this story."}}
+<input type="checkbox" name="permission" value="permission" /> {{gettext "I have the necessary ownership/rights/permissions to legally distribute the content in this story."}}
 <ul>
-    <li>{{#blockgettext}}The content in this story doesn’t violate copyright law or infringe on a third party’s trademark, trade secret, proprietary data or patent{{/blockgettext}}.</li>
-    <li>{{#blockgettext}}I have properly cited or credited any content that I did not create myself.{{/blockgettext}}</li>
-    <li>{{#blockgettext}}If this story has any photos or videos of children (under 18), I have obtained the proper parent or guardian release forms (a sample release form is available here){{/blockgettext}}.</li>
+    <li>{{gettext "The content in this story doesn’t violate copyright law or infringe on a third party’s trademark, trade secret, proprietary data or patent"}}.</li>
+    <li>{{gettext "I have properly cited or credited any content that I did not create myself."}}</li>
+    <li>{{gettext "If this story has any photos or videos of children (under 18), I have obtained the proper parent or guardian release forms (a sample release form is available here)"}}.</li>
 </ul>
 </script>
 
 <script type="text/x-handlebars-template" id="share-license-field-template">
-<input type="checkbox" name="license" value="license" /> {{#blockgettext}}I participate in Floodlight’s cooperative distribution by publishing my story under a Creative Commons license. This means that I remain the owner of this story, but that my content can be featured on the site and redistributed by others. Learn more about Creative Commons.{{/blockgettext}}    
+<input type="checkbox" name="license" value="license" /> {{gettext "I participate in Floodlight’s cooperative distribution by publishing my story under a Creative Commons license. This means that I remain the owner of this story, but that my content can be featured on the site and redistributed by others. Learn more about Creative Commons."}}    
 </script>
 
 <script type="text/x-handlebars-template" id="share-license-template">
 <h3>{{title}}</h3>
 {{#unless showForm}}
 <div id="cc-license"></div>
-<button type="button" class="change-license">{{gettext message="Change license"}}</button>
+<button type="button" class="change-license">{{gettext "Change license"}}</button>
 {{/unless}}
 </script>
 
 <script type="text/x-handlebars-template" id="share-cc-commercial-template">
 <label for="cc-allow-commercial">Allow commercial uses of your work?</label>
-<input type="radio" name="cc-allow-commercial" value="y" /> {{gettext message="Yes"}} 
-<input type="radio" name="cc-allow-commercial" value="n" /> {{gettext message="No"}}
+<input type="radio" name="cc-allow-commercial" value="y" /> {{gettext "Yes"}} 
+<input type="radio" name="cc-allow-commercial" value="n" /> {{gettext "No"}}
 </script>
 
 <script type="text/x-handlebars-template" id="share-cc-derivatives-template">
 <label for="cc-allow-commercial">Allow modifications of your work?</label>
-<input type="radio" name="cc-allow-modification" value="y" /> {{gettext message="Yes"}} 
-<input type="radio" name="cc-allow-modification" value="sa" /> {{gettext message="Yes, as long as others can share alike"}} 
-<input type="radio" name="cc-allow-modification" value="n" /> {{gettext message="No"}}
+<input type="radio" name="cc-allow-modification" value="y" /> {{gettext "Yes"}} 
+<input type="radio" name="cc-allow-modification" value="sa" /> {{gettext "Yes, as long as others can share alike"}} 
+<input type="radio" name="cc-allow-modification" value="n" /> {{gettext "No"}}
 </script>
 
 <script type="text/x-handlebars-template" id="share-taxonomy-template">
-<p class="introduction">{{gettext message="Label your story with topics and places so that people can easily discover it on Floodlight. The more information you add here, the more others can connect with your story."}}</p>
+<p class="introduction">{{gettext "Label your story with topics and places so that people can easily discover it on Floodlight. The more information you add here, the more others can connect with your story."}}</p>
 <div id="taxonomy">
-    <h3>{{gettext message="Tags"}}</h3> 
-<p>{{#blockgettext}}For topics and places, choose from the list that appears when you click in the boxes below. Topics include categories like “Crime and Justice” or “Education.” Places include neighborhoods, cities and zip codes. Add as many places or topics as you want.{{/blockgettext}}</p>
-<p>{{#blockgettext}}If you are a member of an organization or project, you can also add those. Stories can be in multiple projects or organizations.{{/blockgettext}}</p>
+    <h3>{{gettext "Tags"}}</h3> 
+<p>{{gettext "For topics and places, choose from the list that appears when you click in the boxes below. Topics include categories like \"Crime and Justice\" or \"Education.\" Places include neighborhoods, cities and zip codes. Add as many places or topics as you want."}}</p>
+<p>{{gettext "If you are a member of an organization or project, you can also add those. Stories can be in multiple projects or organizations."}}</p>
 </div>
 </script>
 
 <script type="text/x-handlebars-template" id="add-location-template">
-<h3>{{gettext message="Mapping"}}</h3>
-<p>{{#blockgettext}}Where did your story happen? Linking your story to an address will let people find it on a map. Add as many addresses as you want.{{/blockgettext}}</p>
+<h3>{{gettext "Mapping"}}</h3>
+<p>{{gettext "Where did your story happen? Linking your story to an address will let people find it on a map. Add as many addresses as you want."}}</p>
 <form>
     <div id="address-search-container">
-        <input id="address" name="address" type="text" placeholder="{{gettext message="Enter an address"}}"/>
-        <input id="search-address" name="search" type="button" value="{{gettext message="Search"}}"/>
+        <input id="address" name="address" type="text" placeholder="{{gettext "Enter an address"}}"/>
+        <input id="search-address" name="search" type="button" value="{{gettext "Search"}}"/>
     </div>
     <div id="map"></div>
     <div id="found-address"></div>
     <div id="address-name-container">
-        <label for="address-name">{{gettext message="Name this Address"}} ({{gettext message="optional"}})</label><br />
-    <input id="address-name" name="address-name" type="text" placeholder="{{gettext message="Enter a name for this address (optional)"}}"/>
+        <label for="address-name">{{gettext "Name this Address"}} ({{gettext "optional"}})</label><br />
+    <input id="address-name" name="address-name" type="text" placeholder="{{gettext "Enter a name for this address (optional)"}}"/>
     </div>
-    <input id="do-add-location" type="submit" value="{{gettext message="Add Address"}}"/>
+    <input id="do-add-location" type="submit" value="{{gettext "Add Address"}}"/>
 </form>
 <ul id="locations"></ul>
 </script>
@@ -418,37 +469,37 @@ In order to publish and share your story, you need to double-check a few legal d
     <li>
       {{#if name}}{{name}}<br />{{/if}}
       {{raw}}
-      <a data-location-id="{{location_id}}" class="delete" href="#">{{gettext message="delete"}}
+      <a data-location-id="{{location_id}}" class="delete" href="#">{{gettext "delete"}}
     </li>
 </script>
 
 <script type="text/x-handlebars-template" id="tags-template">
-<h3>{{gettext message="Search Keywords"}}</h3>
-<p>{{gettext message="Type in your own search terms."}}</p>
+<h3>{{gettext "Search Keywords"}}</h3>
+<p>{{gettext "Type in your own search terms."}}</p>
 <form>
     <input id="tags" name="tags" type="hidden" style="width: 300px"/>
 </form>
 </script>
 
 <script type="text/x-handlebars-template" id="workflow-step-guider-template">
-<p>{{gettext message="Clicking on these tabs lets you switch between the different steps in the story building process. You can always move freely between the steps."}}</p>
+<p>{{gettext "Clicking on these tabs lets you switch between the different steps in the story building process. You can always move freely between the steps."}}</p>
 <ol>
-    <li><strong>{{gettext message="Build"}}</strong> - {{gettext message="Construct your story using text, photos, videos, data visualizations, and other materials."}}</li>
-    <li><strong>{{gettext message="Add Data"}}</strong> - {{gettext message="Upload or link to source data referenced in your story’s charts, maps, graphs and visualizations."}}</li>
-    <li><strong>{{gettext message="Tag"}}</strong> - {{gettext message="Label your story with topics and places so that people can easily discover it on Floodlight."}}</li>
-    <li><strong>{{gettext message="Review"}}</strong> - {{gettext message="Make sure your story is ready to go with spellcheck and other tools."}}</li>
-    <li><strong>{{gettext message="Publish/Share"}}</strong> - {{gettext message="Post your story to Floodlight and your social networks."}}</li>
+    <li><strong>{{gettext "Build"}}</strong> - {{gettext "Construct your story using text, photos, videos, data visualizations, and other materials."}}</li>
+    <li><strong>{{gettext "Add Data"}}</strong> - {{gettext "Upload or link to source data referenced in your story’s charts, maps, graphs and visualizations."}}</li>
+    <li><strong>{{gettext "Tag"}}</strong> - {{gettext "Label your story with topics and places so that people can easily discover it on Floodlight."}}</li>
+    <li><strong>{{gettext "Review"}}</strong> - {{gettext "Make sure your story is ready to go with spellcheck and other tools."}}</li>
+    <li><strong>{{gettext "Publish/Share"}}</strong> - {{gettext "Post your story to Floodlight and your social networks."}}</li>
 </ol>
 </script>
 
 <script type="text/x-handlebars-template" id="section-manipulation-guider-template">
-<p>{{gettext message="To add a section, move your mouse between two existing sections and click \"Add a section.\""}}</p>
-<p>{{gettext message="To move a section, click on it and drag it to it's new position."}}</p>
-<p>{{gettext message="To delete a section, click on the \"X\" that appears when you hover over it."}}</p>
+<p>{{gettext "To add a section, move your mouse between two existing sections and click \"Add a section.\""}}</p>
+<p>{{gettext "To move a section, click on it and drag it to it's new position."}}</p>
+<p>{{gettext "To delete a section, click on the \"X\" that appears when you hover over it."}}</p>
 </script>
 
 <script type="text/x-handlebars-template" id="exit-guider-template">
-<p>{{gettext message="Stories are saved automatically whenever you make changes, so you’ll be able to pick up exactly where you left off."}}</p>
-<p>{{gettext message="You can get back to your story through the \"My Stories\" menu in \"My Account.\""}}</p>
+<p>{{gettext "Stories are saved automatically whenever you make changes, so you’ll be able to pick up exactly where you left off."}}</p>
+<p>{{gettext "You can get back to your story through the \"My Stories\" menu in \"My Account.\""}}</p>
 </script>
 {% endverbatim %}

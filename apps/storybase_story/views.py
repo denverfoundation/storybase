@@ -297,7 +297,10 @@ class StoryBuilderView(DetailView):
         return resource.serialize(None, to_be_serialized, 'application/json')
 
     def get_layouts_json(self):
-        to_be_serialized = [{'name': layout.name, 'layout_id': layout.layout_id} for layout in SectionLayout.objects.all()]
+        to_be_serialized = [{'name': layout.name,
+                             'layout_id': layout.layout_id,
+                             'slug': layout.slug} for layout
+                            in SectionLayout.objects.all()]
         return json.dumps(to_be_serialized)
 
     def get_asset_types_json(self):

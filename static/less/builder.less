@@ -1,30 +1,18 @@
 
-/* Common Styles */
+// Common Styles
+header {
+  border-bottom:1px solid white;
+  background:url(../img/builder/header-bg.png) repeat-x top left;
 
-.btn {
-  border-radius: 4px;
-  font-size: 13px;
-  text-decoration: none;
-  line-height: 18px;
-  padding: 4px 10px;
-  vertical-align: middle;
-  text-align: center;
-  cursor: pointer;
-  background-color: #F5F5F5;
-  background-image: -moz-linear-gradient(center top , #FFFFFF, #E6E6E6);
-  background-repeat: repeat-x;
-  border-color: #E6E6E6 #E6E6E6 #B3B3B3;
-  display: inline-block;
-  border-color: rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.1) rgba(0, 0, 0, 0.25);
-  border-style: solid;
-  border-width: 1px;
-  box-shadow: 0 1px 0 rgba(255, 255, 255, 0.2) inset, 0 1px 2px rgba(0, 0, 0, 0.05);
-  color: #333333;
+  > div {
+    width:100%;
+    position:relative;
+    .container_12;
+  }
 }
 
-.btn.disabled {
-  cursor: default;
-  opacity: 0.65;
+.view-container {
+  .container_12;
 }
 
 .btn-container {
@@ -57,64 +45,37 @@
   text-align: center;
 }
 
-.editable {
-  border: solid 1px #20C6FD;
-  padding: 0.5%;
-}
-
-.editable-important {
-  border: solid 1px #20C6FD !important;
-  padding: 0.5% !important;
-}
-
-.editable:hover {
-  border-color: #FE9703;
-}
-
-.editable-important-hover {
-  border-color: #FE9703 !important;
-}
-
 .error input {
   // TODO: User global error input styles
   background-color: #F2DEDE;
   border-color: #EED3D7;
 }
 
-/* Help Modal */
-
-#simplemodal-container {
-  background-color: #fff;
-  width: 66%;
-  height: 66%;
+// Reset button styles
+// Use this for buttons that you don't want to show up as a button
+.button-reset () {
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  width: auto;
+  text-align: center;
 }
 
-#simplemodal-wrap {
-  overflow-x: hidden;
-  overflow-y: scroll;
-}
-
-#simplemodal-data {
-  padding: 10px;
-}
-
-.help .close {
+// Class/mixin for hiding the text inside an element
+// I often use this to hide text in an icon button
+.hide-text {
   position: absolute;
-  display: block;
-  right: 20px;
+  top: -9999px;
+  left: -9999px;
 }
 
-.help .continue {
-  position: absolute;
+// Clickable help icon
+button.help {
+  .button-reset;
   display: block;
-  top: 0px;
-  right: 20px;
-  margin-top: -10px;
-}
-
-.help-modal-controls {
-  position: relative;
-  margin-top: 10px;
+  cursor: pointer;
+  font-size: 18px;
 }
 
 /* Rich Text Editor */
@@ -134,44 +95,36 @@
   cursor: pointer;
 }
 
-/* Navigation Bar */
+// Header
 
-.navbar {
-  background-color: #000;
-  color: #fff;
-  right: 0;
-  left: 0;
-  top: 0;
-  margin-bottom: 0;
-}
-
-.navbar .row {
-  position: relative;
-}
-
-.navbar .title {
-  float: left;
-  font-size: 20px;
-  padding: 8px 0 12px 0;
-  line-height: 1;
-}
-
-.navbar .nav {
-  position: relative;
+#header {
   display: block;
+  position: fixed;
+  width: 100%;
+  z-index: 999;
+}
+
+#header .nav {
+  position: relative;
+/*  display: block;*/
   float: left;
+/*
   list-style: none;
   margin: 0 0 0 10px;
   padding: 0;
+*/
 }
 
-.navbar .nav > li {
-  display: block;
+#header .nav > li {
+  display: block-inline;
   float: left;
+/*  
   line-height: 18px;
+*/
 }
 
-.navbar .nav > li > a {
+#header .nav > li > a {
+/*
   display: block;
   float: none;
   padding: 10px 10px 11px;
@@ -179,36 +132,225 @@
   color: #fff;
   font-weight: bold;
   text-decoration: none;
+*/
 }
 
-.tools {
+// Title Bar
+
+#title-bar {
+  background: #f7941e;
+  overflow: hidden;
+  height:63px;
+
+  .title {
+    background:url(../img/builder/builder-logo.png) no-repeat;
+    text-indent:-32000px;
+    width:315px;
+    height:32px;
+    margin-top:20px;
+  }
+}
+
+#title-bar-contents {
+  .container_12;
+}
+
+#tools {
   position: absolute !important;
-  right: 0;
+  right: 0px;
+  top: 28px;
+  font-family:'Museo300Regular';
+  font-size:16px;
+  li {
+    padding:0 8px;
+    list-style:none;
+    a {
+      text-transform:uppercase;
+      text-decoration:none;
+      color:white;
+      text-shadow:0 -1px 1px rgba(0, 0, 0, .3);
+    }
+  }
 }
 
-.workflow-step .selected {
-  background-color: #fff;
-  color: #000 !important;
+// Common variables for items in the workflow bar
+@workflow-item-height: 34px;
+@workflow-item-margin-top: 10px;
+@workflow-item-font-size: 16px;
+
+#workflow-bar {
+  height:56px;
+  border-bottom:1px solid white;
+}
+
+#workflow-bar-contents {
+  .container_12;
+  height:56px;
+}
+
+
+#workflow-step {
+  margin: @workflow-item-margin-top auto;
+  clear:both;
+
+  li {
+    color:@orange;
+    list-style:decimal inside none;
+    padding:0 19px;
+    height: @workflow-item-height;
+    border-right:1px solid @almost-black;
+    font-family:'Museo300Regular';
+    line-height: @workflow-item-height;
+    position:relative;
+    
+    &:first-child {
+      border-left:1px solid @almost-black;
+    }
+
+    @icon-height:23px;
+    @icon-width:20px;
+    @icon-highlight-d:23px;
+    @icon-next-d:(@icon-highlight-d * 2);
+    // where n is the index of the appropriate icon in the sprite
+    .workflow-icon (@n) {
+      background: url(../img/builder/workflow-step-icons.png) no-repeat (@icon-width / 2) (-@n * @icon-next-d);
+    }
+    .workflow-icon-selected (@n) {
+      background: url(../img/builder/workflow-step-icons.png) no-repeat (@icon-width / 2) ((-@n * @icon-next-d) - @icon-highlight-d);
+    }
+    
+    em {
+      display:none;
+      background:url(../img/builder/step-selected.png) no-repeat left top;
+      width:12px;
+      height:6px;
+      position:absolute;
+      top:46px;
+      left:48%;
+      z-index:10;
+    }
+    
+    a {
+      .workflow-icon(0);
+      &#build { .workflow-icon(0); }
+      &#data { .workflow-icon(1); }
+      &#tag { .workflow-icon(2); }
+      &#review { .workflow-icon(3); }
+      &#publish { .workflow-icon(4); }
+
+      display:block-inline;
+      padding: 3px 0 1px (@icon-width * 2);
+      height:@icon-height;
+      font-family:'Museo300Regular';
+      font-size: @workflow-item-font-size;
+      text-transform:uppercase;
+      color:@dark-gray;
+      text-decoration:none;
+    }
+    
+    &.selected {
+      em {
+        display:block;
+      }
+      a {
+        color:#fff;
+        &#build { .workflow-icon-selected(0); }
+        &#data { .workflow-icon-selected(1); }
+        &#tag { .workflow-icon-selected(2); }
+        &#review { .workflow-icon-selected(3); }
+        &#publish { .workflow-icon-selected(4); }
+      }
+    }
+  }
+/*
+  .selected {
+    background-color: #fff;
+    color: #000 !important;
+    font-style: italic;
+  }
+
+  .disabled,
+  .tools .disabled {
+    font-weight: normal !important;
+    cursor: default;
+  }
+*/
+}
+
+// Next/previous buttons for navigating between workflow steps
+.workflow-nav {
+  height: @workflow-item-height;
+  margin: @workflow-item-margin-top 20px;
+  // Need this to not make the div crazy wide when we hide the text of the
+  // buttons inside
+  overflow: hidden;
+  float: left;
+
+  .next, .prev {
+    height: @workflow-item-height;
+    font-size: @workflow-item-font-size;
+    line-height: @workflow-item-height;
+    display: inline-block;
+    color: @orange;
+    text-decoration: none;
+    overflow: hidden;
+
+    &:before {
+      font-family: FontAwesome; 
+      font-size: @workflow-item-font-size;
+      line-height: @workflow-item-height;
+    }
+
+    // Only show the icon and hide the text
+    .text {
+      .hide-text;
+    }
+  }
+
+  .next {
+    &:before { content: "\f054"; } 
+  }
+
+  .prev {
+    &:before { content: "\f053"; }
+  }
+}
+
+#last-saved {
+  height: @workflow-item-height;
+  width: 100px;
+  margin: @workflow-item-margin-top 10px;
+  font-size: 12px;
+  float: left;
+  color: #fff;
+  line-height: @workflow-item-height / 2;
   font-style: italic;
+  font-family: 'Times New Roman', Georgia, serif;
 }
 
-.workflow-step .disabled,
-.tools .disabled {
-  font-weight: normal !important;
-  cursor: default;
+// Subnavigation Bar
+// Currently the only thing that ever goes in this is the section list
+#subnav-bar {
+  background-color:@light-gray;
+  width:100%;
+}
+
+#subnav-bar-contents {
+  .container_12;
 }
 
 /* Main Application Container */
+
+#builder {
+  height: 100%;
+}
 
 #builder .navbar {
   position: fixed;
   z-index: 999;
 }
 
-#builder .alerts {
-  /* Make sure alerts are shown below the navbar */
-  top: 40px;
-  position: fixed;
+#builder #alerts {
   width: 100%;
   z-index: 1001;
 }
@@ -218,15 +360,112 @@
   text-align: center;
 }
 
+// Main container for builder views
+
 #app {
   height: 100%;
-  /* Make space for the navbar */
-  padding-top: 80px;
+  width: 100%;
+  float: left;
+  // NOTE: The padding-top of this element gets set dynamically depending
+  // on the height of #header
 }
+
+.drawer-open #app {
+  // Shrink the main app width when the drawer is open
+  width: 70%;
+}
+
+// Drawer
+#drawer-container {
+  position: absolute;
+  right: 0;
+  height: 100%;
+  z-index: 998;
+}
+
+.drawer-open #drawer-container {
+  // Make the drawer container wider when the drawer is open
+  width: 30%;
+}
+
+#drawer-controls {
+  float: left;
+  height: 100%;
+  border-right: solid 2px @highlight-blue; 
+
+  .btn {
+    display: block;
+    margin-bottom: 70px;
+    border: none;
+    padding: 8px 14px;
+    color: white;
+    font-family: 'Museo300Regular';
+    font-size:16px;
+    background-color: @highlight-blue;
+    border-radius: 4px 4px 0 0;
+    text-align: center;
+    cursor: pointer;
+    // Rotate 90 degrees counter-clockwise from the bottom-right corner
+    transform-origin: 100% 100%;
+    -webkit-transform-origin: 100% 100%;
+    -moz-transform-origin: 100% 100%;
+    -ms-transform-origin: 100% 100%;
+    -o-transform-origin: 100% 100%;
+    transform: rotate(-90deg);
+    -webkit-transform: rotate(-90deg);
+    -moz-transform: rotate(-90deg);
+    -ms-transform: rotate(-90deg);
+    -o-transform: rotate(-90deg);
+    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+  }
+}
+
+#drawer-contents {
+  position: relative;
+  // TODO: Figure out scrolling strategy
+  max-height: 60%;
+  overflow: hidden;
+  display: none;
+
+  &:hover {
+    overflow-y: scroll;
+  }
+}
+
+.drawer-open #drawer-contents {
+  display: block;
+  margin-left: 20%;
+}
+
+.dragging #drawer-contents {
+  overflow: visible; 
+}
+
+// General builder styles
+
+@builder-input-border-width: 1px;
+@builder-input-padding: 12px;
+
+.builder {
+  input, textarea {
+    box-shadow:inset 0 0 3px #ccc;
+    border: @builder-input-border-width solid #bbb;
+    padding: @builder-input-padding;
+    border-radius: 5px;
+    color:#888;
+    font-size:16px;
+  }
+  
+  .edit-section input.story-title {
+    font-weight:bold;
+  }
+}
+
 
 /* Story Template List */
 
 .story-templates {
+  .container_12;
   list-style: none
 }
 
@@ -249,77 +488,154 @@
   margin-top: 0.5% !important;
 }
 
-.full-width {
+.full-width () {
   width: 100%;
+  // Use border-box so that our borders and paddings cut into our width
+  // instead of adding to it
+  -webkit-box-sizing: border-box;
+  -moz-box-sizing: border-box; 
+  box-sizing: border-box;
 }
 
-.builder {
-  position: relative;
-  height: 100%;
+.full-width-important {
+  .full-width;
+  width: 100% !important;
 }
 
 .section-controls {
-  position: absolute;
-  padding: 1% 0;
   min-width: 755px;
   max-width: 1140px;
-}
-
-.section-controls {
   width: 940px;
-  margin-left: auto;
-  margin-right: auto;
-  position: absolute;
-  top: 0;
+  top: 0; 
 }
 
-.last-saved {
-  position: fixed;
-  bottom: 0;
-  width: 100%;
-  padding-top: 2px;
-  padding-bottom: 2px;
-  background-color: @control-color-1; 
-  color: #fff;
-  z-index: 999;
+
+.graphic-select-container {
+  .widget {
+    font-size:14px;
+    color:white;
+    padding:10px;
+    border:none;
+    font-family: 'Museo300Regular';
+    width:314px;
+    border-radius:5px;
+    background:@gray;
+    z-index:301;
+    position:relative;
+    
+    .arrow {
+      display:block;
+      position:absolute;
+      width:8px;
+      height:5px;
+      background: url(../img/builder/popup-down-arrow.png) no-repeat top left;
+      right:12px;
+      top:48%;
+    }
+  }
+  .item-list {
+    padding:25px;
+    background:@light-gray;
+    border:1px solid @gray;
+    border-radius: 0 0 3px 3px;
+    width:278px;  // account for 2px border, left and right
+    overflow:hidden;
+    position:absolute;
+    z-index:300;  // *something* is covering it. sigh.
+    margin:-4px 2px 0;  // nudge it up under the popup widget
+    
+    
+    @item-height: 83px;
+    @item-next-d: @item-height * 2;
+    @item-selected-d: @item-height;
+    
+    .item {
+      list-style: none;
+      float:left;
+      margin:0 12px 16px 0;
+      opacity:.7;
+      background:url(../img/builder/layouts.png) no-repeat left top;
+      text-indent:-32000px;
+      display:block;
+      width:133px;
+      height:@item-height;
+      
+      
+      &.hover, &.selected {
+        opacity:1;
+        cursor:pointer;
+      }
+      
+      &.last {
+        margin-right:0;
+        &+.item {
+          clear:left;
+        }
+      }
+      &.bottom {
+        margin-bottom:0;
+      }
+      
+      &.one-up { background-position:0 0; }
+      &.side-by-side { background-position:0 (@item-next-d * -1); }
+      &.above-below { background-position:0 (@item-next-d * -2); }
+      &.three-stacked { background-position:0 (@item-next-d * -3); }
+      &.selected.one-up { background-position:0 (-@item-selected-d); }
+      &.selected.side-by-side { background-position:0 ((@item-next-d * -1) - @item-selected-d); }
+      &.selected.above-below { background-position:0 ((@item-next-d * -2) - @item-selected-d); }
+      &.selected.three-stacked { background-position:0 ((@item-next-d * -3) - @item-selected-d); }
+    }
+  }
 }
 
-/* Unused Assets List */
+// Unused Assets List
+#unused-assets {}
 
-.unused-assets {
-  position: absolute;
-  top: 0;
-  right: 0;
-  width: 25%;
-  padding: 0 2%;
-  background-color: #000;
-  color: #fff;
-  z-index: 9999;
-}
-
-.unused-assets a {
-  color: #fff;
-  font-weight: bold;
-}
-
-.unused-assets ul {
+#unused-assets ul {
   list-style: none;
   padding: 0;
+  text-align: center;
 }
 
 .unused-asset {
+  width: 80%;
+  margin: 0 auto;
   cursor: pointer;
-  padding: 2px 0;
-}
+  padding: 10px 0;
+  border-bottom: 1px solid @light-gray;
 
-.unused-asset.ui-draggable-dragging {
-  color: #000;
-}
+  .body, .url {
+    text-align: left;
+  }
 
-.unused-asset .thumbnail {
-  margin: 2px;
-  width: 32px;
-  height: 32px;
+  &:last-child {
+    border-bottom: none;
+  }
+
+  // Uncomment this and add styles if we want specific styles for when
+  // the asset is being dragged
+  //&.ui-draggable-dragging {
+  //}
+
+  .thumbnail {
+    max-width: 100%;
+    margin: 0 auto;
+  }
+
+  .default-thumbnail {
+    &:before {
+      font-family: FontAwesome;
+      font-size: 4em;
+    }
+    &.image:before { content: "\f03e"; }
+    &.audio:before { content: "\f025"; }
+    &.video:before { content: "\f03d"; }
+    &.map:before { content: "\f041"; }
+    &.table:before { content: "\f0ce"; }
+    &.quotation:before { content: "\f0e5"; }
+    &.text:before { content: "\f039"; }
+    &.chart:before { content: "\f080"; }
+  }
 }
 
 /* Story information editor */
@@ -345,12 +661,11 @@
 
 .edit-story-info {
   .wysihtml5-sandbox {
-    .editable-important;
     .vertical-space-important;
-  }
-
-  .wysihtml5-sandbox:hover {
-    .editable-important-hover;
+    // Override the element width that gets set by the Javascript plugin
+    // so the element adapts as the container width changes (e.g. to 
+    // accomodate the drawer)
+    .full-width-important;
   }
 }
 
@@ -358,12 +673,7 @@
 
 .edit-call-to-action {
   .wysihtml5-sandbox {
-    .editable-important;
     .vertical-space-important;
-  }
-
-  .wysihtml5-sandbox:hover {
-    .editable-important-hover;
   }
 }
 
@@ -377,20 +687,20 @@
   height: 300px;
 }
 
-/* Section Editor */
-
+// Section Editor
 
 .edit-section {
   position: relative;
-  width: @section-width;
   margin-left: auto;
   margin-right: auto;
+  // TODO: Pick a more consistent padding
+  padding-top: 2%;
+  width: 85%;
   height: 70%;
-  padding: 2% 2% 1% 2%;
 
   .section-title {
     margin-top: 15px;
-    width: 930px;
+    .full-width;
   }
 }
 
@@ -399,6 +709,7 @@
   height: 90%;
   .vertical-space;
   padding-bottom: 2%;
+  width: 100%;
 
   .wysihtml5-sandbox {
     border: none !important;
@@ -408,6 +719,7 @@
 #builder .section-layout {
   // In builder, make overflow visible so help can be positioned to the
   // left or right of the block
+  width: 100%;
   overflow: visible;
 }
 
@@ -442,12 +754,12 @@
 .storybase-container-placeholder .help {
   display: block;
   position: absolute;
-  left: -38px;
+  left: -24px;
 }
 
 .storybase-container-placeholder#right .help {
   left: auto;
-  right: -38px;
+  right: -24px;
 }
 
 .asset-help-container {
@@ -505,14 +817,11 @@
 // Table of contents thumbnails
 
 @section-thumbnail-height: 75px;
-@opened-padding: 39px;
-@closed-padding: 5px;
 
 #section-list {
   position: relative;
-  z-index: 999;
-  background-color: @control-color-1;
   overflow: hidden;
+  min-height: 108px;
 }
 
 #toggle-section-list {
@@ -537,35 +846,43 @@
   width: 75%;
   float: left;
   overflow: hidden;
-  background-color: @control-color-1;
-  padding: 0 10px;
+  padding: 8px 0 0;
   text-align: center;
 }
 
 .sections-clip {
   float: left;
   width: 90%;
-  margin: 0 20px;
+  margin: 0 40px;
   padding: 0 10px;
   overflow: auto;
 }
 
+@scroll-arrow-height: 34px;
+@scroll-arrow-hover-d: @scroll-arrow-height;
 .scroll-left, .scroll-right {
+  position:absolute;
+  top:40px;
+  text-indent: -32000px;
+  cursor:pointer;
+  background:url(../img/builder/section-scroll-arrows.png);
   display: block;
   float: left;
-  line-height: 100px;
-  cursor: pointer;
-  color: #fff;
-  font-weight: bold;
-}
-
-.scroll-left:hover, .scroll-right:hover {
-  color: #fff;
+  height:@scroll-arrow-height;
+  width:22px;
+  &:hover {
+    background-position:0 (-@scroll-arrow-hover-d);
+  }
 }
 
 .scroll-right {
+  background-position: 0 (@scroll-arrow-height * 2);
   position: absolute;
   right: 10px;
+  
+  &:hover {
+    background-position: 0 ((@scroll-arrow-height * 2) - @scroll-arrow-hover-d);
+  }
 }
 
 .sections {
@@ -580,6 +897,28 @@
   display: block;
   float: left;
   list-style: none;
+  
+  em {
+      background: url(../img/builder/section-selected.png) no-repeat left top;
+      display:none;
+      width:20px;
+      height:12px;
+      position:absolute;
+      top:86px;
+      left:60px;
+      z-index:10;
+  }
+  
+  .spacer + em {
+    left:70px;
+  }
+  
+  &.selected em {
+    display:block;
+  }
+  &.pseudo em {
+    left:50px;
+  }
 }
 
 .section-thumbnail, .spacer {
@@ -587,19 +926,23 @@
   float: left;
   height: 75px;
   margin: 10px 0;
-  padding: 1% 0;
   text-align: center;
 }
 
 .section-thumbnail {
   width: 120px;
-  border: 1px solid #000;
-  background-color: #fff;
+  border: 1px solid lighten(@medium-gray, 10%);
+  .rounded-corners(4px);
+  .box-shadow(0, 0, 5px, lighten(@medium-gray, 10%));
   cursor: pointer;
+  background-color: @light-gray;
+  color: @medium-gray;
 }
 
 .section-thumbnail .title {
-  padding: 22% 0;
+  position:relative;
+  font-size: 12px;
+  top: ((@section-thumbnail-height / 2) - 6);
 }
 
 .spacer {
@@ -632,14 +975,10 @@
 
 
 .section-thumbnail-container.pseudo .section-thumbnail {
-  background-color: #C8C8C8;
-  color: #fff;
 }
 
 .section-thumbnail-container.selected .section-thumbnail {
-  box-shadow: 0 0 5px rgba(0, 0, 255, 1);
-  -webkit-box-shadow: 0 0 5px rgba(0, 0, 255, 1);
-  -moz-box-shadow: 0 0 5px rgba(0, 0, 255, 1);
+  background-color:white;
 }
 
 .section-thumbnail.new {
@@ -652,67 +991,18 @@
   top: 2px;
   right: 4px;
   text-decoration: none;
+  color:@gray;
 }
 
 .section-thumbnail:hover .remove {
   display: block;
 }
 
-#section-nav {
-  float: left;
-  width: 65%;
-  height: 30px;
-  padding-left: 20px;
-  padding-top: @opened-padding;
-  font-weight: bold;
+// Add Data View
+.data-view {
+  .container_12;
 }
 
-#section-list.closed #section-nav {
-  padding-top: 10px;
-}
-
-#section-nav a {
-  color: #fff;
-}
-
-#section-nav .prev::before {
-  content: ' < ';
-}
-
-#section-nav .next::after {
-  content: ' > ';
-}
-
-#section-list .workflow-nav {
-  float: left;
-  width: auto !important;
-  position: absolute;
-  right: 20px;
-  padding-top: @opened-padding;
-}
-
-#section-list.closed .workflow-nav {
-  padding-top: @closed-padding;
-}
-
-/* Builder Navigation Buttons */
-
-#nav-container {
-  position: fixed;
-  width: 100%;
-  top: 40px;
-  background-color: @control-color-1;
-  z-index: 999;
-}
-
-.workflow-nav {
-  position: relative;
-  height: 35px;
-  padding-top: @closed-padding;
-  text-align: right;
-}
-
-/* Add Data View */
 .datasets {
   margin: 2% 0;
   width: 100%;
@@ -852,3 +1142,4 @@ input[name=address] {
     .asset { padding: 8px 0; }
   }
 }
+
