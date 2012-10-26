@@ -194,6 +194,24 @@ Handlebars.js templates for story builder Backbone application
 </div>
 </script>
 
+<script type="text/x-handlebars-template" id="image-help-template">
+<p>{{gettext "Click on \"Add your image,\" then enter a URL or upload an image from your computer. If you’d like to add a different type of asset, click Cancel."}}</p>
+</script>
+
+<script type="text/x-handlebars-template" id="text-help-template">
+<p>{{gettext "Click on \"Add your text,\" and start typing. If you’d like to add a different type of asset, click below."}}</p>
+</script>
+
+<script type="text/x-handlebars-template" id="video-help-template">
+<p>{{gettext "To embed a video from YouTube or Vimeo, find the video on YouTube or Vimeo, copy the URL from your browser or the service's share widget, and paste it in the URL field."}}</p>
+
+<p>{{gettext "Make sure you use the link and not the embed code. An embed code looks something like this"}}:</p>
+
+<code>
+&lt;iframe src="http://player.vimeo.com/video/43671182" width="500" height="281" frameborder="0"&gt;&lt;/iframe&gt;
+</code>
+</script>
+
 <script type="text/x-handlebars-template" id="section-asset-edit-template">
 {{>help-icon}}
 <div class="wrapper">
