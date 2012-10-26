@@ -64,9 +64,9 @@ body{min-width:1020px;}
 .clearfix:before,.clearfix:after{content:'\0020';display:block;overflow:hidden;visibility:hidden;width:0;height:0;}
 .clearfix:after{clear:both;}
 .clearfix{zoom:1;}
-.section-width{width:940px;margin-left:auto;margin-right:auto;}
-.section-title{font-size:30px;width:940px;margin-left:auto;margin-right:auto;}
-.section-layout{overflow:hidden;font-size:13px;width:940px;margin-left:auto;margin-right:auto;}.section-layout.side-by-side .left,.section-layout.side-by-side .right{height:489px;width:49%;float:left;}
+.section-width{width:100%;margin-left:auto;margin-right:auto;}
+.section-title{font-size:30px;width:100%;margin-left:auto;margin-right:auto;}
+.section-layout{overflow:hidden;font-size:13px;width:100%;margin-left:auto;margin-right:auto;}.section-layout.side-by-side .left,.section-layout.side-by-side .right{height:489px;width:49%;float:left;}
 .section-layout.side-by-side .left{margin-left:0;margin-right:1%;}
 .section-layout.side-by-side .right{margin-left:1%;margin-right:0;}
 .section-layout.one-up .center{position:relative;height:805px;width:100%;margin:2 0%;}
@@ -666,7 +666,7 @@ body.story-builder .call-to-action{width:100%;height:250px;}
 body.story-builder .connected-prompt{width:100%;height:300px;}
 body.story-builder .edit-section{position:relative;margin-left:auto;margin-right:auto;padding-top:2%;width:85%;height:70%;}body.story-builder .edit-section .section-title{margin-top:15px;width:100%;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;box-sizing:border-box;}
 body.story-builder .section-edit-layout{position:relative;height:90%;margin-top:0.5%;padding-bottom:2%;width:100%;}body.story-builder .section-edit-layout .wysihtml5-sandbox{border:none !important;}
-body.story-builder #builder .section-layout{width:100%;overflow:visible;}
+body.story-builder #builder .section-layout{overflow:visible;}
 body.story-builder .storybase-container-placeholder{position:relative;}body.story-builder .storybase-container-placeholder .wrapper{border:solid 1px #c8c8c8;overflow:hidden;height:94%;min-height:400px;}
 body.story-builder .storybase-container-placeholder.select .wrapper{padding:2%;}
 body.story-builder .storybase-container-placeholder.display{height:auto;min-height:40px;}
