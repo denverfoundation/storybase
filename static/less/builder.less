@@ -67,8 +67,6 @@ li.select2-search-field {
   list-style-type: none !important;
 }
 
-
-
 .view-container {
   .container_12;
 }
@@ -451,13 +449,16 @@ button.preview {
       }
     }
   }
-  
-  
 }
 
+// Containers need to shrink when the drawer is open
 .drawer-open #app {
   // Shrink the main app width when the drawer is open
   width: 70%;
+}
+
+.drawer-open .view-container {
+  width: 98%;
 }
 
 // Drawer
