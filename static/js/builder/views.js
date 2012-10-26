@@ -463,7 +463,7 @@ storybase.builder.views.DrawerView = Backbone.View.extend({
   renderSubViews: function() {
     var $contentsEl = this.$(this.options.contentsEl);
     _.each(this._subviews, function(view) {
-      $contentsEl.append(view.$el);
+      $contentsEl.append(view.render().$el);
     }, this);
     return this;
   },
