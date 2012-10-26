@@ -621,7 +621,7 @@ body.story-builder #drawer-container{position:absolute;right:0;height:100%;z-ind
 body.story-builder .drawer-open #drawer-container{width:30%;}
 body.story-builder #drawer-controls{float:left;height:100%;border-right:solid 2px #20c6fd;}body.story-builder #drawer-controls .btn{display:block;margin-bottom:70px;border:none;padding:8px 14px;color:white;font-family:'Museo300Regular';font-size:16px;background-color:#20c6fd;border-radius:4px 4px 0 0;text-align:center;cursor:pointer;transform-origin:100% 100%;-webkit-transform-origin:100% 100%;-moz-transform-origin:100% 100%;-ms-transform-origin:100% 100%;-o-transform-origin:100% 100%;transform:rotate(-90deg);-webkit-transform:rotate(-90deg);-moz-transform:rotate(-90deg);-ms-transform:rotate(-90deg);-o-transform:rotate(-90deg);filter:progid:dximagetransform.microsoft.basicimage(rotation=3);}
 body.story-builder #drawer-contents{position:relative;max-height:60%;overflow:hidden;display:none;}body.story-builder #drawer-contents:hover{overflow-y:scroll;}
-body.story-builder .drawer-open #drawer-contents{display:block;margin-left:20%;}
+body.story-builder .drawer-open #drawer-contents{display:block;padding:1em;}
 body.story-builder .dragging #drawer-contents{overflow:visible;}
 body.story-builder .builder input,body.story-builder .builder textarea{font-family:Helvetica,Arial,sans-serif;box-shadow:inset 0 0 3px #ccc;border:1px solid #bbbbbb;padding:12px;border-radius:5px;color:#888;font-size:16px;}
 body.story-builder .builder .edit-section input.story-title{font-weight:bold;}
