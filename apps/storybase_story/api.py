@@ -795,15 +795,6 @@ class StoryTemplateResource(TranslatedModelResource):
         except NoReverseMatch:
             return ''
 
-    def get_object_list(self, request):
-        objects = super(StoryTemplateResource, self).get_object_list(request)
-        connected_template_slug = getattr(settings, 'STORYBASE_CONNECTED_STORY_TEMPLATE', None)
-        # If a connected story template has been defined, don't show
-        # it in the list of available templates
-        if connected_template_slug:
-            objects = objects.exclude(slug=connected_template_slug)
-        return objects 
-
     def dehydrate_examples(self, bundle):
         if bundle.obj.examples:
             return [{'title': story.title, 'url': story.get_absolute_url()}
