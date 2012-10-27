@@ -42,7 +42,7 @@
     <div id="app">
         <header id="header">
           <h1 class="title">{{ story.title }}</h1>
-          <p>{% trans "By" %} <span class="byline">{% if story.byline %}{{ story.byline }}{% else %}{{ story.contributor_name }}{% endif %}</span></p>
+          <p class="byline">{% trans "By" %} {% if story.byline %}{{ story.byline }}{% else %}{{ story.contributor_name }}{% endif %}</p>
         </header>
 
         <div id="body">

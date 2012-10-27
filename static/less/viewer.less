@@ -1,9 +1,18 @@
-// TODO: Move these to global scope?
-.sans-serif-font () {
-  font-family: sans-serif;
-}
 
 .story-viewer {
+  // Padding for header/footer bars
+  @bar-padding: 10px;
+  @footer-background-color: #000;
+
+  // TODO: Move these to global scope?
+  .sans-serif-font () {
+    font-family: sans-serif;
+  }
+
+  .museo-font () {
+    font-family: 'Museo300Regular';
+  }
+
   background-color: #fff;
 
   h1, h2 {
@@ -41,21 +50,23 @@
 
   #header {
     position: fixed;
-    height: 12%;
     width: 100%;
-    background-color: #CCC;
-    padding: 1%;
+    padding: @bar-padding;
     z-index: 9999;
 
-    h1 {
-      margin: 0;
-      padding: 0.25% 0;
-      font-size: 1.2em;
+    color: #fff;
+    background-color: #000;
+
+    .title {
+      .museo-font;
+      padding: 2px 0;
+      font-size: 28.8px;
     }
     
-    p {
+    .byline {
       margin: 0;
-      padding: 0 0 0.25% 0;
+      padding: 0 0 2px 0;
+      font-style: italic;
     }
     
     .section-title {
@@ -101,14 +112,12 @@
     padding: 0;
   }
 
-  @footer-padding: 10px;
-  @footer-background-color: #000;
 
   #footer {
     position: fixed;
     bottom: 0;
     width: 100%;
-    padding: @footer-padding;
+    padding: @bar-padding;
     background-color: @footer-background-color; 
     z-index: 9999;
 
@@ -116,7 +125,7 @@
       position: absolute;
       right: 0;
       top: 0;
-      padding: @footer-padding 30px 0 0;
+      padding: @bar-padding 30px 0 0;
     }
   }
 
@@ -131,7 +140,7 @@
     position: fixed;
     left: 0;
     bottom: 0;
-    padding: @footer-padding;
+    padding: @bar-padding;
     min-width: 200px;
     overflow: hidden; 
 
@@ -142,7 +151,7 @@
       display: none;
       overflow-x: hidden;
       overflow-y: auto;
-      margin-bottom: @footer-padding;
+      margin-bottom: @bar-padding;
 
       a {
         color: #fff;
