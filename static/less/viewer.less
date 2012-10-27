@@ -291,20 +291,6 @@
      list-style-type: none;
   }
 
-  /* Story viewer modal */
-
-  #simplemodal-container {
-    border: 4px solid rgb(119, 119, 119);
-  }
-
-  #simplemodal-container #modal-controls {
-    position: absolute;
-    right: 0;
-    padding: 0 2%;
-  }
-
-
-
   /* Organization/Project list */
 
   .organization-list,
@@ -390,7 +376,8 @@
   #modal-controls {
     position: absolute;
     top: 0;
-    right: 0;
+    // Need this to clear the scroll-bar
+    right: @viewer-bar-padding;
     padding: @viewer-bar-padding;
 
     text-align: right;
