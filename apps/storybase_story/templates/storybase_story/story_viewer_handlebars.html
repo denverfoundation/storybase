@@ -13,11 +13,11 @@ Handlebars templates for rendering Backbone views.
     <a id="{{id}}" href="{{href}}">{{text}}</a>
     {{/addl_links}}
     {{#previous_section}}
-    <a class="previous" href="#sections/{{id}}" title="{{title}}"><i class="icon-chevron-left"></i> previous</a>
+    <a class="previous" href="#sections/{{id}}" title="{{title}}"><i class="icon-chevron-left"></i> Previous</a>
     {{/previous_section}}
     {{#if previous_section}}{{#if next_section}}|{{/if}}{{/if}}
     {{#next_section}}
-    <a class="next" href="#sections/{{id}}" title="{{title}}">next <i class="icon-chevron-right"></i></a>
+    <a class="next" href="#sections/{{id}}" title="{{title}}">Next <i class="icon-chevron-right"></i></a>
     {{/next_section}}
     {{/if}}
 </script>
