@@ -1,4 +1,4 @@
-{% load i18n sekizai_tags verbatim story %}
+{% load i18n sekizai_tags story %}
 <!doctype html>
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
 <!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
@@ -35,28 +35,7 @@
          For optimal performance, use a custom Modernizr build: www.modernizr.com/download/ -->
     <script src="{{ STATIC_URL }}js/libs/modernizr-2.0.6.min.js"></script>
 
-    {% comment %}
-    Handlebars templates for rendering Backbone views.
-    {% endcomment %}
-
-    {% verbatim %}
-    <script type="text/x-handlebars-template" id="navigation-template">
-        {{#if showing_connected_story}}
-        <a class="connected" href="#sections/connected-stories">{{gettext "Back to Connected Story List"}}</a>
-        {{else}}
-        {{#addl_links}}
-        <a id="{{id}}" href="{{href}}">{{text}}</a>
-        {{/addl_links}}
-        {{#previous_section}}
-        <a class="previous" href="#sections/{{id}}" title="{{title}}">previous</a>
-        {{/previous_section}}
-        {{#next_section}}
-        <a class="next" href="#sections/{{id}}" title="{{title}}">next</a>
-        {{/next_section}}
-        {{/if}}
-    </script>
-    {% endverbatim %}
-
+    {% include "storybase_story/story_viewer_handlebars.html" %}
   </head>
 
   <body class="story-viewer">
@@ -111,10 +90,13 @@
           {% endif %}
         </div>
 
-        <nav id="toc">{{ story.structure.render_toc }}</nav>
 
         <footer>
-          <a id="toggle-toc" href="#">Toggle Table of Contents</a>
+          <nav id="toc">
+            {{ story.structure.render_toc }}
+            <button id="toggle-toc">Table of Contents <i class="icon-caret-up"></i></button>
+          </nav>
+            
           {% with addthis_url=story.get_full_url %}
           {% include "addthis_widget_small.html" %}
           {% endwith %}
@@ -143,11 +125,6 @@
     <script type="text/javascript">
     $(document).ready(function() {
 	var storyStructureType = '{{ story.structure_type }}';
-        $('#toggle-toc').click(function(event) {
-            event.preventDefault();
-            $('#toc').slideToggle();
-        });
-
         Namespace('storybase.viewer');
         var story = new storybase.models.Story({{ story.structure.to_json }});
         var sections = new storybase.collections.Sections;

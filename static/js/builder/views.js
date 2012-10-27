@@ -463,7 +463,7 @@ storybase.builder.views.DrawerView = Backbone.View.extend({
   renderSubViews: function() {
     var $contentsEl = this.$(this.options.contentsEl);
     _.each(this._subviews, function(view) {
-      $contentsEl.append(view.$el);
+      $contentsEl.append(view.render().$el);
     }, this);
     return this;
   },
@@ -3562,15 +3562,18 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
     },
 
     assetTypeHelp: {
-      image: gettext('Click on "Add your image," then enter a URL or upload an image from your computer. If you’d like to add a different type of asset, click below.'),
-      text: gettext('Click on “Add your text,” and start typing. If you’d like to add a different type of asset, click below.')
-      // TODO: Add help text for other items
+      image: Handlebars.compile($('#image-help-template').html()),
+      text: Handlebars.compile($('#text-help-template').html()), 
+      video: Handlebars.compile($('#video-help-template').html())
     },
 
     getAssetTypeHelp: function(type) {
       var help = this.assetTypeHelp[type]; 
-      if (_.isUndefined(help)) {
-        help = "TODO: Add help text!";
+      if (_.isFunction(help)) {
+        help = help();
+      }
+      else {
+        help = gettext("There isn't help for this type of asset yet, or you haven't selected an asset type.");
       }
       return help;
     },
@@ -3583,7 +3586,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
         title: "",
         body: ""
       }, this.options.help);
-      var assetHelp = this.getAssetTypeHelp(this.options.suggestedType);
+      var assetHelp = this.getAssetTypeHelp(this.model.get('type'));
       help.body += assetHelp;
       this.dispatcher.trigger('do:show:help', help);
     },

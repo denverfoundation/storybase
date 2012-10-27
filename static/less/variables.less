@@ -9,22 +9,12 @@
 
 @layout-padding: 10px;
 
-// The width of a section in the builder and viewer
-@section-width: 940px;
-
-// The height of an individual asset in a layout
-// Use a 16:9 aspect ratio, making the dimensions 940x529
-@container-height: round((@section-width * (9/16)) - @layout-padding - @heading-font-size);  
-// For big images, make the container height use a 4:3 aspect ratio, the
-// size of many digital cameras. Make sure to add height to make room for
-// the caption.
-@container-height-tall: @section-width * (3/4) + 100px;
-
 // Colors
 @control-color-1: #666;
 @control-color-1-transparent: rgba(102, 102, 102, 0.5);
 
 @almost-black: #3b3b3b;
+@body-copy-color:#444;
 @dark-gray: #5a5a5a;
 @gray: #777777;
 @medium-gray: #999999;
@@ -37,4 +27,8 @@
 
 // @todo: reconcile template header size with header size above:
 @top-header-size:36px;
-@body-copy-size:13px;
+
+// note: Times New Roman is visually smaller than Georgia.
+// if the body copy font family is Georgia, this should probably
+// be at 13px or so.
+@body-copy-size:14px;

@@ -11,6 +11,62 @@ header {
   }
 }
 
+// QUESTION: Should this be the default style?
+fieldset {
+  border: none;
+}
+
+.unindented-list () {
+  margin: 0 !important;
+  padding: 0 !important;
+}
+
+.bbf-form > fieldset > ul {
+  .unindented-list;
+}
+
+// LI shouldn't have a bullet
+li.bbf-field {
+  list-style-type: none !important;
+}
+
+.field-body .bbf-editor {
+  margin-left: 0;
+  width: 100%;
+}
+
+.bbf-field .bbf-editor {
+  margin-left: 0;
+  width: 100%;
+}
+
+.bbf-field label {
+  float: none;
+  width: 100%;
+  font-weight: bold;
+}
+
+.bbf-help {
+  margin-bottom: @body-copy-margin-bottom; 
+}
+
+.bbf-error .bbf-help {
+  color: @error-color;
+}
+
+.bbf-error input {
+  border-color: @error-color;
+}
+
+// Select2 also uses an li for some of its elements
+ul.select2-choices {
+  .unindented-list;
+}
+
+li.select2-search-field {
+  list-style-type: none !important;
+}
+
 .view-container {
   .container_12;
 }
@@ -51,17 +107,6 @@ header {
   border-color: #EED3D7;
 }
 
-// Reset button styles
-// Use this for buttons that you don't want to show up as a button
-.button-reset () {
-  border: none;
-  background: none;
-  padding: 0;
-  margin: 0;
-  width: auto;
-  text-align: center;
-}
-
 // Class/mixin for hiding the text inside an element
 // I often use this to hide text in an icon button
 .hide-text {
@@ -74,6 +119,7 @@ header {
 button.help {
   .button-reset;
   display: block;
+  color: @dark-gray;
   cursor: pointer;
   font-size: 18px;
 }
@@ -325,8 +371,16 @@ button.help {
   color: #fff;
   line-height: @workflow-item-height / 2;
   font-style: italic;
-  font-family: 'Times New Roman', Georgia, serif;
 }
+
+#save-button {
+  .button-style(gray);
+}
+
+button.preview {
+  font-size:1.5em;
+}
+
 
 // Subnavigation Bar
 // Currently the only thing that ever goes in this is the section list
@@ -368,11 +422,31 @@ button.help {
   float: left;
   // NOTE: The padding-top of this element gets set dynamically depending
   // on the height of #header
+
+  .body-copy;
+  .body-copy-lists;
+  h1, h2, h3, h4, h5 {
+    .styled-header(left);
+    margin:0.6em 0;
+    color:@dark-gray;
+    a {
+      color:@dark-gray;
+      text-decoration:none;
+      &:hover {
+        color:@orange;
+      }
+    }
+  }
 }
 
+// Containers need to shrink when the drawer is open
 .drawer-open #app {
   // Shrink the main app width when the drawer is open
   width: 70%;
+}
+
+.drawer-open .view-container {
+  width: 98%;
 }
 
 // Drawer
@@ -428,13 +502,13 @@ button.help {
   display: none;
 
   &:hover {
-    overflow-y: scroll;
+    overflow-y: auto;
   }
 }
 
 .drawer-open #drawer-contents {
   display: block;
-  margin-left: 20%;
+  padding: 1em;
 }
 
 .dragging #drawer-contents {
@@ -448,6 +522,7 @@ button.help {
 
 .builder {
   input, textarea {
+    .sans-serif-text;
     box-shadow:inset 0 0 3px #ccc;
     border: @builder-input-border-width solid #bbb;
     padding: @builder-input-padding;
@@ -466,7 +541,12 @@ button.help {
 
 .story-templates {
   .container_12;
-  list-style: none
+  list-style: none;
+  padding-top:30px;
+  
+  dl dt {
+    font-weight:bold;
+  }
 }
 
 .story-templates li {
@@ -717,9 +797,8 @@ button.help {
 }
 
 #builder .section-layout {
-  // In builder, make overflow visible so help can be positioned to the
+  // In builder, make overflow visible so help icon can be positioned to the
   // left or right of the block
-  width: 100%;
   overflow: visible;
 }
 
@@ -793,26 +872,6 @@ button.help {
   display: inline-block;
 }
 
-.bbf-form ul {
-  margin: 0;
-  padding: 0;
-}
-
-.field-body .bbf-editor {
-  margin-left: 0;
-  width: 100%;
-}
-
-.bbf-field .bbf-editor {
-  margin-left: 0;
-  width: 100%;
-}
-
-.bbf-field label {
-  float: none;
-  width: 100%;
-  font-weight: bold;
-}
 
 // Table of contents thumbnails
 
@@ -893,6 +952,7 @@ button.help {
 }
 
 .section-thumbnail-container {
+  .sans-serif-text;
   position: relative;
   display: block;
   float: left;
@@ -1142,4 +1202,3 @@ input[name=address] {
     .asset { padding: 8px 0; }
   }
 }
-

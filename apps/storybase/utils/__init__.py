@@ -15,6 +15,19 @@ def get_language_name(language_code):
     return _(languages[language_code])
 
 
+def open_html_element(el, attrs={}):
+    chunks = []
+    chunks.append("<")
+    chunks.append(el)
+    for attr, value in attrs.iteritems():
+        chunks.append(' %s="%s"' % (attr, value))
+    chunks.append(">")
+    return "".join(chunks)
+
+def close_html_element(el):
+    return "</" + el + ">"
+
+
 def slugify(value):
     """
     Normalizes string, converts to lowercase, removes non-alpha characters,
