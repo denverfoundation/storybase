@@ -754,7 +754,7 @@ body.story-builder #featured-asset .assets{padding:0;list-style:none outside non
 .story-viewer #toc .story-toc li{padding:4px 2px;}
 .story-viewer #toc .story-toc li ul{padding-top:2px;}
 .story-viewer #toc .story-toc li li{padding:2px;}
-.story-viewer .story-nav{font-family:sans-serif;color:#fff;text-align:center;width:20%;margin-left:auto;margin-right:auto;padding:0;}.story-viewer .story-nav a{text-decoration:none;color:#fff;}.story-viewer .story-nav a:hover,.story-viewer .story-nav a:visited{color:#fff;}
+.story-viewer #story-nav{font-family:sans-serif;color:#fff;text-align:center;width:20%;margin-left:auto;margin-right:auto;padding:0;}.story-viewer #story-nav a{text-decoration:none;color:#fff;}.story-viewer #story-nav a:hover,.story-viewer #story-nav a:visited{color:#fff;}
 .story-viewer path.link{fill:none;stroke-width:2;stroke:#dddddd;}
 .story-viewer .node.active{fill:red;}
 .story-viewer section.story,.story-viewer section.actions{overflow:hidden;padding:2% 0 4% 0;}

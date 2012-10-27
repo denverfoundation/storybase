@@ -117,7 +117,7 @@ storybase.viewer.views.StoryHeader = Backbone.View.extend({
 storybase.viewer.views.StoryNavigation = Backbone.View.extend({
   tagName: 'nav',
 
-  className: 'story-nav',
+  id: 'story-nav',
 
   templateSource: $('#navigation-template').html(),
 
