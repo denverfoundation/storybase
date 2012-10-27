@@ -1,7 +1,7 @@
+// Padding for header/footer bars
+@viewer-bar-padding: 10px;
 
 .story-viewer {
-  // Padding for header/footer bars
-  @bar-padding: 10px;
   @footer-background-color: #000;
 
   // TODO: Move these to global scope?
@@ -51,7 +51,7 @@
   #header {
     position: fixed;
     width: 100%;
-    padding: @bar-padding;
+    padding: @viewer-bar-padding;
     z-index: 9999;
 
     color: #fff;
@@ -117,7 +117,7 @@
     position: fixed;
     bottom: 0;
     width: 100%;
-    padding: @bar-padding;
+    padding: @viewer-bar-padding;
     background-color: @footer-background-color; 
     z-index: 9999;
 
@@ -125,7 +125,7 @@
       position: absolute;
       right: 0;
       top: 0;
-      padding: @bar-padding 30px 0 0;
+      padding: @viewer-bar-padding 30px 0 0;
     }
   }
 
@@ -140,7 +140,7 @@
     position: fixed;
     left: 0;
     bottom: 0;
-    padding: @bar-padding;
+    padding: @viewer-bar-padding;
     min-width: 200px;
     overflow: hidden; 
 
@@ -151,7 +151,7 @@
       display: none;
       overflow-x: hidden;
       overflow-y: auto;
-      margin-bottom: @bar-padding;
+      margin-bottom: @viewer-bar-padding;
 
       a {
         color: #fff;
@@ -380,6 +380,25 @@
   legend {
     font-size: 1.5em;
   }
-  
 }
 
+// Story viewer modal window
+#story-viewer-modal {
+  #modal-controls {
+    position: absolute;
+    top: 0;
+    right: 0;
+    padding: @viewer-bar-padding;
+
+    text-align: right;
+    
+    a {
+      color: #fff;
+      text-decoration: none;
+    }
+  }
+
+  button.simplemodal-close {
+    .button-reset;
+  }
+}

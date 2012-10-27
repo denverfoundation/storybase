@@ -289,6 +289,7 @@ ul.icons li .icon-large:before,ul.icons li .icon-large:before{vertical-align:ini
 .icon-umbrella:before{content:"\f0e9";}
 .icon-paste:before{content:"\f0ea";}
 .icon-user-md:before{content:"\f200";}
+.hide-text{position:absolute;top:-9999px;left:-9999px;}
 .plain-serif-text{font-family:'Times New Roman',Georgia,Serif;}
 .sans-serif-text{font-family:Helvetica,Arial,sans-serif;}
 .body-copy{font-family:'Times New Roman',Georgia,Serif;font-size:14px;color:#444444;line-height:1.1em;}.body-copy p{margin-bottom:1em;}.body-copy p a{color:#20c6fd;}.body-copy p a:visited{color:#19a3d1;}
@@ -569,7 +570,6 @@ body.story-builder .alert-info{background-color:#D9EDF7;border-color:#BCE8F1;col
 body.story-builder .introduction{margin-top:1em;}
 body.story-builder .centered{text-align:center;}
 body.story-builder .error input{background-color:#F2DEDE;border-color:#EED3D7;}
-body.story-builder .hide-text{position:absolute;top:-9999px;left:-9999px;}
 body.story-builder button.help{border:none;background:none;padding:0;margin:0;width:auto;text-align:center;text-shadow:none;display:block;color:#5a5a5a;cursor:pointer;font-size:18px;}
 body.story-builder .wysihtml5-toolbar{position:relative;padding:0 0 20px 0;}
 body.story-builder [[object Object]]{position:absolute;top:20px;width:100%;}
@@ -788,6 +788,8 @@ body.story-builder #featured-asset .assets{padding:0;list-style:none outside non
 .story-viewer .attribution:before{content:'-- ';}
 .story-viewer fieldset{padding:5px 0;}
 .story-viewer legend{font-size:1.5em;}
+#story-viewer-modal #modal-controls{position:absolute;top:0;right:0;padding:10px;text-align:right;}#story-viewer-modal #modal-controls a{color:#fff;text-decoration:none;}
+#story-viewer-modal button.simplemodal-close{border:none;background:none;padding:0;margin:0;width:auto;text-align:center;text-shadow:none;}
 body.explorer{}body.explorer #explorer{position:relative;width:100%;}
 body.explorer .list-view .box{background:none;width:100%;padding-top:12px;padding-bottom:9px;border-top:1px dotted #7f7f7f;}
 body.explorer .list-view .box img{float:left;display:inline;margin-right:16px;width:160px;margin-top:8px;}
