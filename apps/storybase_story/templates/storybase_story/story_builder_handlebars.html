@@ -187,7 +187,7 @@ Handlebars.js templates for story builder Backbone application
     </p>
     <ul class="asset-types">
         {{#each assetTypes}}
-        <li><a href="#" class="asset-type" data-asset-type="{{type}}">{{name}}</a></li>
+        <li class="{{type}}"><a href="#" class="asset-type" data-asset-type="{{type}}">{{name}}</a></li>
         {{/each}}
     </ul>
     {{/if}}
