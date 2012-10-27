@@ -159,6 +159,14 @@
   }
 }
 
+.standard-headers {
+  h1 { font-size:@h1-size; color:@dark-gray; .styled-header; .line-through-header; }
+  h2 { font-size:@h2-size; color:@dark-gray; .styled-header; }
+  h3 { font-size:@h3-size; color:@medium-gray; .styled-header; }
+  h4 { font-size:@h4-size; color:@medium-gray; .styled-header; }
+  h5 { font-size:@h5-size; color:@highlight-blue; font-family: 'MuseoSlab500Regular'; font-weight:normal;}
+}
+
 // global stuff
 
 html { font-size: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
@@ -185,11 +193,7 @@ body.base-template {
     min-width: 100%;
     overflow-y:scroll;
 
-	h1 { font-size:@top-header-size; color:@dark-gray; .styled-header; .line-through-header; }
-	h2 { font-size:(@top-header-size * .8); color:@dark-gray; .styled-header; }
-	h3 { font-size:(@top-header-size * .7); color:@medium-gray; .styled-header; }
-	h4 { font-size:(@top-header-size * .6); color:@medium-gray; .styled-header; }
-	h5 { font-size:(@top-header-size * .5); color:@highlight-blue; font-family: 'MuseoSlab500Regular'; font-weight:normal;}
+    .standard-headers;
 
 	// based on "everything" comp, text content
 	// headers are relatively diminuitive.
