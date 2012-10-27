@@ -786,7 +786,7 @@ body.story-builder #featured-asset .assets{padding:0;list-style:none outside non
 .story-viewer #toc li{padding:3% 1%;}
 .story-viewer #toc li ul{padding-top:1%;}
 .story-viewer #toc li li{padding:1%;}
-.story-viewer .story-nav{position:absolute;left:50%;padding:0;}
+.story-viewer .story-nav{font-family:'Museo300Regular';font-size:16px;color:#fff;text-align:center;width:20%;margin-left:auto;margin-right:auto;padding:0;}.story-viewer .story-nav a{text-decoration:none;color:#fff;text-transform:uppercase;}.story-viewer .story-nav a:hover,.story-viewer .story-nav a:visited{color:#fff;}
 .story-viewer footer{height:2%;width:100%;position:fixed;bottom:0;padding:1%;background-color:#000;z-index:9999;}
 .story-viewer footer>a{float:left;display:block;}
 .story-viewer footer .addthis_toolbox{position:absolute;right:0;top:0;padding:1% 3% 0 0;}

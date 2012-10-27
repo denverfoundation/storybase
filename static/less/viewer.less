@@ -309,9 +309,27 @@
 }
 
 .story-viewer .story-nav {
-  position: absolute;
-  left: 50%;
+  font-family: 'Museo300Regular';
+  font-size: 16px;
+  color: #fff;
+  //position: absolute;
+  // TODO: Center this
+  //left: 50%;
+  text-align: center;
+  width: 20%;
+  margin-left: auto;
+  margin-right: auto;
   padding: 0;
+
+  a {
+    text-decoration: none;
+    color: #fff;
+    text-transform: uppercase;
+
+    &:hover, &:visited {
+      color: #fff;
+    }
+  }
 }
 
 .story-viewer footer {
