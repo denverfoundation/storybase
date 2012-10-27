@@ -151,10 +151,10 @@
 {% endblock %}
 
 {% block bodyend %}
-<div id="story-viewer" class="modal">
+<div id="story-viewer-modal" class="modal">
   <div id="modal-controls">
-      <a id="launch-viewer-window" href="{% url story_viewer slug=story.slug %}">View in new window</a>
-    <a class="simplemodal-close" href="#">Close</a>
+      <a id="launch-viewer-window" href="{% url story_viewer slug=story.slug %}" title="{%trans "View in new window"%}"><i class="icon-share"></i><span class="hide-text">{%trans "View in new window"%}</span></a>
+      <button class="simplemodal-close" title="{% trans "Close" %}"><i class="icon-remove-sign"></i><span class="hide-text">{% trans "Close" %}</span></button>
   </div>
   <iframe src="{% url story_viewer slug=story.slug %}"></iframe>
 </div>
@@ -168,22 +168,22 @@ $(document).ready(function () {
     $("#launch-story-viewer").click(function (event) {
         var width = $(window).width() * 0.9;
         var height = $(window).height() * 0.9;
-        $("#story-viewer").modal({
+        $("#story-viewer-modal").modal({
             opacity: 70,
             minHeight: height,
             minWidth: width,
             zIndex: 6000
         });
-        $("#story-viewer iframe").css("width", width); 
-        $("#story-viewer iframe").css("height", height); 
+        $("#story-viewer-modal iframe").css("width", width); 
+        $("#story-viewer-modal iframe").css("height", height); 
         return false;
     });
 
     // Launch the viewer in a new window
-    $("#story-viewer #modal-controls #launch-viewer-window").click(
+    $("#story-viewer-modal #modal-controls #launch-viewer-window").click(
         function (evt) {
             evt.preventDefault();
-            var viewerUrl = $(evt.target).attr('href');
+            var viewerUrl = $(evt.currentTarget).attr('href');
             window.open(viewerUrl, 'story-viewer', '');
             $.modal.close();
             return false

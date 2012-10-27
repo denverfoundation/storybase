@@ -29,7 +29,9 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
     this.navigationView = new storybase.viewer.views.StoryNavigation({
       sections: this.options.sections
     }); 
-    this.headerView = new storybase.viewer.views.StoryHeader();
+    // TODO: Decide whether to re-enable updating the section title in the
+    // header
+    //this.headerView = new storybase.viewer.views.StoryHeader();
     this.setSection(this.sections.at(0), {showActiveSection: false});
     _.bindAll(this, 'handleScroll');
     $(window).scroll(this.handleScroll);
@@ -48,7 +50,9 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
   // Update the active story section in the sub-views
   updateSubviewSections: function() {
     this.navigationView.setSection(this.activeSection);
-    this.headerView.setSection(this.activeSection);
+    // TODO: Decide whether to re-enable updating the section title in the
+    // header
+    //this.headerView.setSection(this.activeSection);
   },
 
   // Show the active section
@@ -92,8 +96,14 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
   }
 });
 
-// View for the story viewer header.
-// Updates the section heading title when the active section changes
+/**
+ * View for the story viewer header.
+ *
+ * Updates the section heading title when the active section changes
+ *
+ * Currently unused to conserve vertical space.
+ */
+/*
 storybase.viewer.views.StoryHeader = Backbone.View.extend({
   el: 'header',
 
@@ -112,6 +122,7 @@ storybase.viewer.views.StoryHeader = Backbone.View.extend({
     this.render();
   }
 });
+*/
 
 // View to provide previous/next buttons to navigate between sections
 storybase.viewer.views.StoryNavigation = Backbone.View.extend({
@@ -549,7 +560,9 @@ storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend
       addlLinks: [{text: gettext("Topic Map"), id: 'topic-map'}]
     });
     this.navigationView.setNextSection(firstSection);
-    this.headerView = new storybase.viewer.views.StoryHeader();
+    // TODO: Decide whether to re-enable updating the section title in the
+    // header
+    //this.headerView = new storybase.viewer.views.StoryHeader();
     this.initialView = new storybase.viewer.views.Spider({
       el: this.$('#body'),
       sections: this.options.sections,
@@ -591,7 +604,9 @@ storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend
   // Update the active story section in the sub-views
   updateSubviewSections: function() {
     this.navigationView.setSection(this.activeSection);
-    this.headerView.setSection(this.activeSection);
+    // TODO: Decide whether to re-enable updating the section title in the
+    // header
+    //this.headerView.setSection(this.activeSection);
     this.initialView.setSection(this.activeSection);
   },
 
