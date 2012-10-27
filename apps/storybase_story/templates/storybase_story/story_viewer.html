@@ -40,7 +40,7 @@
 
   <body class="story-viewer">
     <div id="app">
-        <header>
+        <header id="header">
           <h1 class="title">{{ story.title }}</h1>
           <p>{% trans "By" %} <span class="byline">{% if story.byline %}{{ story.byline }}{% else %}{{ story.contributor_name }}{% endif %}</span></p>
         </header>
@@ -90,8 +90,7 @@
           {% endif %}
         </div>
 
-
-        <footer>
+        <footer id="footer">
           <nav id="toc">
             {{ story.structure.render_toc }}
             <button id="toggle-toc">Table of Contents <i class="icon-caret-up"></i></button>

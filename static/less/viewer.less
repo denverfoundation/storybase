@@ -39,7 +39,7 @@
     font-family: georgia;
   }
 
-  header {
+  #header {
     position: fixed;
     height: 12%;
     width: 100%;
@@ -104,25 +104,20 @@
   @footer-padding: 10px;
   @footer-background-color: #000;
 
-  footer {
+  #footer {
     position: fixed;
     bottom: 0;
     width: 100%;
     padding: @footer-padding;
     background-color: @footer-background-color; 
     z-index: 9999;
-  }
 
-  footer > a {
-    float: left;
-    display: block;
-  }
-
-  footer .addthis_toolbox {
-    position: absolute;
-    right: 0;
-    top: 0;
-    padding: @footer-padding 30px 0 0;
+    .addthis_toolbox {
+      position: absolute;
+      right: 0;
+      top: 0;
+      padding: @footer-padding 30px 0 0;
+    }
   }
 
   #toggle-toc {
