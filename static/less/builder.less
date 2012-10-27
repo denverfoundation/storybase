@@ -564,7 +564,48 @@ button.preview {
   display: block;
   float: left;
   width: 30%;
-  padding: 1%;
+  padding-left:120px;
+  position:relative;
+  
+  p {
+    margin-bottom:1em !important;
+  }
+  
+  h3 {
+    height:1em;
+  }
+  
+  // bit tricky here. using the anchor inside the 
+  // header to display the image. makes the anchor target
+  // area overlap the containing li in an incomplete way.
+  // @todo: probably need to massage the markup to get this just
+  // right.
+  h3 a {
+    padding-left:120px;
+    margin-left:-120px !important;
+    margin-top:0;
+    height:80px;
+    position:absolute;
+    background:url(../img/builder/story-template-icons.png) no-repeat top left;
+  }
+  
+  @icon-height:80px;
+  @icon-next-d:@icon-height;
+  
+  &.data-story h3 a {
+    background-position: 0 0;
+  }
+  &.photo-voice h3 a {
+    background-position: 0 (-1 * @icon-next-d);
+  }
+  &.explainer h3 a {
+    background-position: 0 (-2 * @icon-next-d);
+  }
+  &.sandbox h3 a {
+    background-position: 0 (-3 * @icon-next-d);
+  }
+
+
 }
 
 // Story Builder View
