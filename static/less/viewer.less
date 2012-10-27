@@ -1,4 +1,6 @@
 .story-viewer {
+  background-color: #fff;
+
   h1, h2 {
     padding: 1.5% 0;
   }
@@ -30,6 +32,155 @@
   .intro {
     font-size: 2em;
     font-family: georgia;
+  }
+
+  header {
+    position: fixed;
+    height: 12%;
+    width: 100%;
+    background-color: #CCC;
+    padding: 1%;
+    z-index: 9999;
+
+    h1 {
+      margin: 0;
+      padding: 0.25% 0;
+      font-size: 1.2em;
+    }
+    
+    p {
+      margin: 0;
+      padding: 0 0 0.25% 0;
+    }
+    
+    .section-title {
+      font-size: 1em;
+      margin: 0;
+      padding: 0.25% 0;
+    }
+  }
+
+  #body {
+    position: absolute;
+    top: 0;
+    width: 100%;
+    padding-top: 8%;
+    padding-bottom: 4%;
+  }
+
+  .summary {
+    padding: 1%;
+  }
+
+  .section,
+  .connected-story {
+    padding: 1%;
+  }
+
+  .spider .sidebar {
+    float: left;
+    width: 18%;
+  }
+
+  .spider svg {
+    float: left;
+    position: fixed;
+  }
+
+  .spider .sidebar .summary,
+  .spider .sidebar .call-to-action {
+    padding: 0 6%;
+  }
+
+  .section .title {
+    padding: 0;
+  }
+
+  #toggle-toc {
+    .button-reset;
+    position: absolute;
+    color: #fff;
+  }
+
+  #toc {
+    position: fixed;
+    bottom: 5%;
+    padding: 1%;
+
+    display: none;
+    overflow-x: hidden;
+    overflow-y: auto;
+    background: none repeat scroll 0% 0% rgb(51, 51, 51);
+  }
+
+  #toc, #toc a {
+    color: #fff;
+  }
+
+  #toc li {
+    padding: 3% 1%;
+  }
+
+  #toc li ul {
+    padding-top: 1%;
+  }
+
+  #toc li li {
+    padding: 1%;
+  }
+
+  .story-nav {
+    font-family: sans-serif;
+    color: #fff;
+    //position: absolute;
+    // TODO: Center this
+    //left: 50%;
+    text-align: center;
+    width: 20%;
+    margin-left: auto;
+    margin-right: auto;
+    padding: 0;
+
+    a {
+      text-decoration: none;
+      color: #fff;
+
+      &:hover, &:visited {
+        color: #fff;
+      }
+    }
+  }
+
+  footer {
+    height: 2%;
+    width: 100%;
+    position: fixed;
+    bottom: 0;
+    padding: 1%;
+    background-color: #000;
+    z-index: 9999;
+  }
+
+  footer > a {
+    float: left;
+    display: block;
+  }
+
+  footer .addthis_toolbox {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: 1% 3% 0 0;
+  }
+
+  path.link {
+    fill: none;
+    stroke-width: 2;
+    stroke: #dddddd;
+  }
+
+  .node.active {
+    fill: red;
   }
   
   
@@ -215,151 +366,3 @@
   
 }
 
-.story-viewer {
-  background-color: #fff;
-}
-
-.story-viewer header {
-  position: fixed;
-  height: 12%;
-  width: 100%;
-  background-color: #CCC;
-  padding: 1%;
-  z-index: 9999;
-}
-
-.story-viewer header h1 {
-  margin: 0;
-  padding: 0.25% 0;
-  font-size: 1.2em;
-}
-
-.story-viewer header p {
-  margin: 0;
-  padding: 0 0 0.25% 0;
-}
-
-.story-viewer header .section-title {
-  font-size: 1em;
-  margin: 0;
-  padding: 0.25% 0;
-}
-
-.story-viewer #body {
-  position: absolute;
-  top: 0;
-  width: 100%;
-  padding-top: 8%;
-  padding-bottom: 4%;
-}
-
-.story-viewer .summary {
-  padding: 1%;
-}
-
-.story-viewer .section,
-.story-viewer .connected-story {
-  padding: 1%;
-}
-
-.story-viewer .spider .sidebar {
-  float: left;
-  width: 18%;
-}
-
-.story-viewer .spider svg {
-  float: left;
-  position: fixed;
-}
-
-.story-viewer .spider .sidebar .summary,
-.story-viewer .spider .sidebar .call-to-action {
-  padding: 0 6%;
-}
-
-.story-viewer .section .title {
-  padding: 0;
-}
-
-.story-viewer #toc {
-  position: fixed;
-  bottom: 6%;
-  padding: 1%;
-
-  display: none;
-  overflow-x: hidden;
-  overflow-y: scroll;
-  background: none repeat scroll 0% 0% rgb(51, 51, 51);
-}
-
-.story-viewer #toc, .story-viewer #toc a {
-  color: #fff;
-}
-
-.story-viewer #toc li {
-  padding: 3% 1%;
-}
-
-.story-viewer #toc li ul {
-  padding-top: 1%;
-}
-
-.story-viewer #toc li li {
-  padding: 1%;
-}
-
-.story-viewer .story-nav {
-  font-family: 'Museo300Regular';
-  font-size: 16px;
-  color: #fff;
-  //position: absolute;
-  // TODO: Center this
-  //left: 50%;
-  text-align: center;
-  width: 20%;
-  margin-left: auto;
-  margin-right: auto;
-  padding: 0;
-
-  a {
-    text-decoration: none;
-    color: #fff;
-    text-transform: uppercase;
-
-    &:hover, &:visited {
-      color: #fff;
-    }
-  }
-}
-
-.story-viewer footer {
-  height: 2%;
-  width: 100%;
-  position: fixed;
-  bottom: 0;
-  padding: 1%;
-  background-color: #000;
-  z-index: 9999;
-}
-
-.story-viewer footer > a {
-  float: left;
-  display: block;
-}
-
-.story-viewer footer .addthis_toolbox {
-  position: absolute;
-  right: 0;
-  top: 0;
-  padding: 1% 3% 0 0;
-}
-
-.story-viewer path.link {
-  fill: none;
-  stroke-width: 2;
-  stroke: #dddddd;
-}
-
-.story-viewer .node.active {
-  fill: red;
-}

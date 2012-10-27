@@ -7,6 +7,20 @@ Namespace('storybase.viewer');
 // It delegates rendering and events for the entire app to views
 // rendering more specific "widgets"
 storybase.viewer.views.ViewerApp = Backbone.View.extend({
+  options: {
+    tocEl: '#toc',
+    tocButtonEl: '#toggle-toc',
+    tocIconEl: '[class^="icon-"]',
+    tocOpenClass: 'icon-caret-down',
+    tocClosedClass: 'icon-caret-up'
+  },
+
+  events: function() {
+    var events = {};
+    events['click ' + this.options.tocButtonEl] = 'toggleToc';
+    return events;
+  },
+
   // Initialize the view
   initialize: function() {
     this.showingConnectedStory = false;
@@ -67,6 +81,14 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
   // Event handler for scroll event
   handleScroll: function(e) {
     // Do nothing. Subclasses might want to implement this to do some work
+  },
+
+  toggleToc: function(evt) {
+    var $tocEl = $(this.options.tocEl);
+    $tocEl.slideToggle();
+    $(evt.target).children(this.options.tocIconEl)
+                 .toggleClass(this.options.tocOpenClass)
+                 .toggleClass(this.options.tocClosedClass);
   }
 });
 

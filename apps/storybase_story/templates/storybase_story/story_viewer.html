@@ -93,7 +93,7 @@
         <nav id="toc">{{ story.structure.render_toc }}</nav>
 
         <footer>
-          <a id="toggle-toc" href="#">Toggle Table of Contents</a>
+            <button id="toggle-toc">Table of Contents <i class="icon-caret-up"></i></button>
           {% with addthis_url=story.get_full_url %}
           {% include "addthis_widget_small.html" %}
           {% endwith %}
@@ -122,11 +122,6 @@
     <script type="text/javascript">
     $(document).ready(function() {
 	var storyStructureType = '{{ story.structure_type }}';
-        $('#toggle-toc').click(function(event) {
-            event.preventDefault();
-            $('#toc').slideToggle();
-        });
-
         Namespace('storybase.viewer');
         var story = new storybase.models.Story({{ story.structure.to_json }});
         var sections = new storybase.collections.Sections;
