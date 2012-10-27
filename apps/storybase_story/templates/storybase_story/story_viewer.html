@@ -90,10 +90,13 @@
           {% endif %}
         </div>
 
-        <nav id="toc">{{ story.structure.render_toc }}</nav>
 
         <footer>
+          <nav id="toc">
+            {{ story.structure.render_toc }}
             <button id="toggle-toc">Table of Contents <i class="icon-caret-up"></i></button>
+          </nav>
+            
           {% with addthis_url=story.get_full_url %}
           {% include "addthis_widget_small.html" %}
           {% endwith %}

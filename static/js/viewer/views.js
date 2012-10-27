@@ -8,7 +8,7 @@ Namespace('storybase.viewer');
 // rendering more specific "widgets"
 storybase.viewer.views.ViewerApp = Backbone.View.extend({
   options: {
-    tocEl: '#toc',
+    tocEl: '#toc .story-toc',
     tocButtonEl: '#toggle-toc',
     tocIconEl: '[class^="icon-"]',
     tocOpenClass: 'icon-caret-down',

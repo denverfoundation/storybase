@@ -1,3 +1,8 @@
+// TODO: Move these to global scope?
+.sans-serif-font () {
+  font-family: sans-serif;
+}
+
 .story-viewer {
   background-color: #fff;
 
@@ -96,41 +101,75 @@
     padding: 0;
   }
 
+  @footer-padding: 10px;
+  @footer-background-color: #000;
+
+  footer {
+    position: fixed;
+    bottom: 0;
+    width: 100%;
+    padding: @footer-padding;
+    background-color: @footer-background-color; 
+    z-index: 9999;
+  }
+
+  footer > a {
+    float: left;
+    display: block;
+  }
+
+  footer .addthis_toolbox {
+    position: absolute;
+    right: 0;
+    top: 0;
+    padding: @footer-padding 30px 0 0;
+  }
+
   #toggle-toc {
     .button-reset;
-    position: absolute;
+    position: relative; 
     color: #fff;
   }
 
   #toc {
+    .sans-serif-font;
     position: fixed;
-    bottom: 5%;
-    padding: 1%;
+    left: 0;
+    bottom: 0;
+    padding: @footer-padding;
+    min-width: 200px;
+    overflow: hidden; 
 
-    display: none;
-    overflow-x: hidden;
-    overflow-y: auto;
-    background: none repeat scroll 0% 0% rgb(51, 51, 51);
-  }
-
-  #toc, #toc a {
     color: #fff;
-  }
+    background-color: @footer-background-color;
 
-  #toc li {
-    padding: 3% 1%;
-  }
+    .story-toc {
+      display: none;
+      overflow-x: hidden;
+      overflow-y: auto;
+      margin-bottom: @footer-padding;
 
-  #toc li ul {
-    padding-top: 1%;
-  }
+      a {
+        color: #fff;
+        text-decoration: none;
+      }
 
-  #toc li li {
-    padding: 1%;
+      li {
+        padding: 4px 2px;
+      }
+
+      li ul {
+        padding-top: 2px;
+      }
+
+      li li {
+        padding: 2px;
+      }
+    }
   }
 
   .story-nav {
-    font-family: sans-serif;
+    .sans-serif-font;
     color: #fff;
     //position: absolute;
     // TODO: Center this
@@ -151,30 +190,6 @@
     }
   }
 
-  footer {
-    // BOOKMARK
-    // TODO: Make this a pixel-based height
-    height: 2%;
-    width: 100%;
-    position: fixed;
-    bottom: 0;
-    padding: 1%;
-    background-color: #000;
-    z-index: 9999;
-  }
-
-  footer > a {
-    float: left;
-    display: block;
-  }
-
-  footer .addthis_toolbox {
-    position: absolute;
-    right: 0;
-    top: 0;
-    padding: 1% 3% 0 0;
-  }
-
   path.link {
     fill: none;
     stroke-width: 2;
@@ -184,7 +199,6 @@
   .node.active {
     fill: red;
   }
-  
   
   // from here down to end of .story-viewer block copied from old style.css. 
   // these are probably applicable in more places than in story-viewer.

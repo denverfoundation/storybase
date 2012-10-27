@@ -746,16 +746,15 @@ body.story-builder #featured-asset .assets{padding:0;list-style:none outside non
 .story-viewer .spider svg{float:left;position:fixed;}
 .story-viewer .spider .sidebar .summary,.story-viewer .spider .sidebar .call-to-action{padding:0 6%;}
 .story-viewer .section .title{padding:0;}
-.story-viewer #toggle-toc{border:none;background:none;padding:0;margin:0;width:auto;text-align:center;text-shadow:none;position:absolute;color:#fff;}
-.story-viewer #toc{position:fixed;bottom:5%;padding:1%;display:none;overflow-x:hidden;overflow-y:auto;background:none repeat scroll 0% 0% #333333;}
-.story-viewer #toc,.story-viewer #toc a{color:#fff;}
-.story-viewer #toc li{padding:3% 1%;}
-.story-viewer #toc li ul{padding-top:1%;}
-.story-viewer #toc li li{padding:1%;}
-.story-viewer .story-nav{font-family:sans-serif;color:#fff;text-align:center;width:20%;margin-left:auto;margin-right:auto;padding:0;}.story-viewer .story-nav a{text-decoration:none;color:#fff;}.story-viewer .story-nav a:hover,.story-viewer .story-nav a:visited{color:#fff;}
-.story-viewer footer{height:2%;width:100%;position:fixed;bottom:0;padding:1%;background-color:#000;z-index:9999;}
+.story-viewer footer{position:fixed;bottom:0;width:100%;padding:10px;background-color:#000000;z-index:9999;}
 .story-viewer footer>a{float:left;display:block;}
-.story-viewer footer .addthis_toolbox{position:absolute;right:0;top:0;padding:1% 3% 0 0;}
+.story-viewer footer .addthis_toolbox{position:absolute;right:0;top:0;padding:10px 30px 0 0;}
+.story-viewer #toggle-toc{border:none;background:none;padding:0;margin:0;width:auto;text-align:center;text-shadow:none;position:relative;color:#fff;}
+.story-viewer #toc{font-family:sans-serif;position:fixed;left:0;bottom:0;padding:10px;min-width:200px;overflow:hidden;color:#fff;background-color:#000000;}.story-viewer #toc .story-toc{display:none;overflow-x:hidden;overflow-y:auto;margin-bottom:10px;}.story-viewer #toc .story-toc a{color:#fff;text-decoration:none;}
+.story-viewer #toc .story-toc li{padding:4px 2px;}
+.story-viewer #toc .story-toc li ul{padding-top:2px;}
+.story-viewer #toc .story-toc li li{padding:2px;}
+.story-viewer .story-nav{font-family:sans-serif;color:#fff;text-align:center;width:20%;margin-left:auto;margin-right:auto;padding:0;}.story-viewer .story-nav a{text-decoration:none;color:#fff;}.story-viewer .story-nav a:hover,.story-viewer .story-nav a:visited{color:#fff;}
 .story-viewer path.link{fill:none;stroke-width:2;stroke:#dddddd;}
 .story-viewer .node.active{fill:red;}
 .story-viewer section.story,.story-viewer section.actions{overflow:hidden;padding:2% 0 4% 0;}
