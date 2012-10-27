@@ -25,25 +25,9 @@ fieldset {
   .unindented-list;
 }
 
-// LI shouldn't have a bullet
-li.bbf-field {
-  list-style-type: none !important;
-}
-
 .field-body .bbf-editor {
   margin-left: 0;
   width: 100%;
-}
-
-.bbf-field .bbf-editor {
-  margin-left: 0;
-  width: 100%;
-}
-
-.bbf-field label {
-  float: none;
-  width: 100%;
-  font-weight: bold;
 }
 
 .bbf-help {
@@ -449,6 +433,21 @@ button.preview {
       }
     }
   }
+  
+  input[type=reset], input[type=submit], input[type=cancel], 
+  button[type=reset], button[type=submit], button[type=cancel] {
+    margin-right:1em;
+    float:left;
+  }
+  input[type=reset], input[type=cancel],
+  button[type=reset], button[type=cancel] {
+    .button-style(gray);
+  }
+  input[type=submit],
+  button[type=submit] {
+    .button-style(hot);
+  }
+  
 }
 
 // Containers need to shrink when the drawer is open
@@ -584,9 +583,7 @@ button.preview {
   width: 100%;
   // Use border-box so that our borders and paddings cut into our width
   // instead of adding to it
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box; 
-  box-sizing: border-box;
+  .box-sizing(border-box);
 }
 
 .full-width-important {
@@ -884,6 +881,64 @@ button.preview {
   display: inline-block;
 }
 
+#app .bbf-form {
+  overflow:hidden;
+  padding:20px;
+  
+  fieldset {
+    border:none;
+  }
+  
+  .bbf-field {
+    list-style-type:none;
+    
+    label {
+      float: none;
+      width: 100%;
+    }
+    
+    .bbf-editor {
+      margin-left: 0;
+      width: 100%;
+      
+      input[type=text], input[type=password], textarea {
+        .box-sizing(border-box);
+        width:100%
+      }
+    }
+  }
+  
+  ul, ol {
+    margin: 0;
+    padding: 0;
+  }
+}
+
+
+.field-body .bbf-editor {
+  margin-left: 0;
+  width: 100%;
+}
+
+#app .caption {
+  overflow:hidden;
+  padding:.5em;
+  
+  form {
+    overflow:hidden;
+    textarea, button {
+      margin-bottom:1em;
+    }
+    textarea {
+      .box-sizing(border-box);
+      width:100%;
+    }
+    button {
+      float:right;
+      margin:0 0 1em 1em;
+    }
+  }
+}
 
 // Table of contents thumbnails
 

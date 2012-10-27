@@ -101,20 +101,29 @@
   font-family: Helvetica, Arial, sans-serif;
 }
 
+.box-sizing(@sizing) {
+  -webkit-box-sizing: @sizing;
+  -moz-box-sizing: @sizing;
+  -ms-box-sizing: @sizing;
+}
+
 @body-copy-margin-bottom: 1em;
 
 .body-copy {
   .plain-serif-text;
-  font-size:@body-copy-size;
+  font-size:@base-font-size;
   color:@body-copy-color; 
   line-height:1.1em;
   p {
     margin-bottom: @body-copy-margin-bottom;
-    a {
-      color:@highlight-blue;
-      &:visited {
-        color:@visited-blue;
-      }
+  }
+  dd p, dt p, li p {
+    margin-bottom:0;
+  }
+  a {
+    color:@highlight-blue;
+    &:visited {
+      color:@visited-blue;
     }
   }
 }
@@ -169,7 +178,7 @@ button {
 body.base-template {
 
     .plain-serif-text;
-    font-size: @body-copy-size;
+    font-size: @base-font-size;
     line-height: 1.3;
     color: #000;
     background:url('../img/body.jpg') repeat-x 0 0;

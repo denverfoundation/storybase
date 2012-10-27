@@ -3369,7 +3369,8 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
           cancel: gettext("Cancel"),
           submit: gettext("Save"),
           tooltip: gettext("Click to edit"),
-          placeholder: gettext("Click to edit caption")
+          placeholder: gettext("Click to edit caption"),
+          height: '2.8em'
         });
       }
       if (state === 'edit') {
