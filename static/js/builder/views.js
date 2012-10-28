@@ -1079,7 +1079,14 @@ storybase.builder.views.SelectStoryTemplateView = Backbone.View.extend({
 storybase.builder.views.StoryTemplateView = Backbone.View.extend({
   tagName: 'li',
 
-  className: 'template',
+  attributes: function() {
+    return {
+      // Use this instead of the className property so we can set the class
+      // dynamically when the view is instantiated based on the model's 
+      // slug
+      class: 'template ' + this.model.get('slug') 
+    };
+  },
 
   templateSource: $('#story-template-template').html(),
 
