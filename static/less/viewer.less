@@ -4,15 +4,6 @@
 .story-viewer {
   @footer-background-color: #000;
 
-  // TODO: Move these to global scope?
-  .sans-serif-font () {
-    font-family: sans-serif;
-  }
-
-  .museo-font () {
-    font-family: 'Museo300Regular';
-  }
-
   background-color: #fff;
 
   h1, h2 {
@@ -58,7 +49,7 @@
     background-color: #000;
 
     .title {
-      .museo-font;
+      .styled-header(left);
       padding: 2px 0;
       font-size: 28.8px;
     }
@@ -109,7 +100,7 @@
   }
 
   .section .title {
-    .sans-serif-font;
+    .sans-serif-text;
     font-size: 24px;
     font-weight: normal;
     color: @orange; 
@@ -139,7 +130,7 @@
   }
 
   #toc {
-    .sans-serif-font;
+    .sans-serif-text;
     position: fixed;
     left: 0;
     bottom: 0;
@@ -176,7 +167,7 @@
   }
 
   #story-nav {
-    .sans-serif-font;
+    .sans-serif-text;
     color: #fff;
     text-align: center;
     width: 20%;
