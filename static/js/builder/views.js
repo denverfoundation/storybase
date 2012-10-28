@@ -816,7 +816,7 @@ storybase.builder.views.WorkflowNavView = storybase.builder.views.ClickableItems
     var valid = _.isFunction(item.validate) ? item.validate() : true;
     var href;
     var route;
-    if (!$button.hasClass("disabled") && valid) { 
+    if (!$button.hasClass("disabled") && !$button.parent().hasClass("disabled") && valid) { 
       href = $button.attr("href");
       // Strip the base path of this app
       route = href.substr(storybase.builder.globals.APP_ROOT.length);
