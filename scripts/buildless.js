@@ -60,7 +60,7 @@ var parser = new(less.Parser)({
 
 parser.parse(lessData, function (error, tree) {
 	if (error) {
-		console.error(e);
+		console.error(error);
 	}
 	try {
 		fs.writeFileSync(pathToCompiledCSS, tree.toCSS({ compress: true }));
