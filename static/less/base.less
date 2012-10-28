@@ -85,6 +85,23 @@
   }
 }
 
+// CSS classes for button styles
+.button {
+  .button-style;
+
+  &.hot {
+    .button-style(hot);
+  }
+
+  &.cool {
+    .button-style(cool);
+  }
+
+  &.gray {
+    .button-style(gray);
+  }
+}
+
 // Reset button styles
 // Use this for buttons that you don't want to show up as a button
 .button-reset () {
@@ -95,6 +112,10 @@
   width: auto;
   text-align: center;
   text-shadow: none;
+}
+
+.button-container {
+  padding: 2em 0;
 }
 
 .rounded-corners (@radius: 5px) {
@@ -169,6 +190,10 @@
   }
 }
 
+.centered {
+  text-align: center;
+}
+
 // global stuff
 
 html { font-size: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
@@ -235,6 +260,14 @@ body.base-template {
 	#main a.button {
 		.button-style(cool);
 		display:inline-block;
+
+                &.hot {
+                  .button-style(hot);
+                }
+
+                &.gray {
+                  .button-style(gray);
+                }
 	}
 }
 
