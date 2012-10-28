@@ -24,25 +24,9 @@ fieldset {
   .unindented-list;
 }
 
-// LI shouldn't have a bullet
-li.bbf-field {
-  list-style-type: none !important;
-}
-
 .field-body .bbf-editor {
   margin-left: 0;
   width: 100%;
-}
-
-.bbf-field .bbf-editor {
-  margin-left: 0;
-  width: 100%;
-}
-
-.bbf-field label {
-  float: none;
-  width: 100%;
-  font-weight: bold;
 }
 
 .bbf-help {
@@ -231,7 +215,7 @@ button.help {
     font-family:'Museo300Regular';
     line-height: @workflow-item-height;
     position:relative;
-    
+   
     &:first-child {
       border-left:1px solid @almost-black;
     }
@@ -408,6 +392,7 @@ button.preview {
 
   .body-copy;
   .body-copy-lists;
+  .standard-headers;
   h1, h2, h3, h4, h5 {
     .styled-header(left);
     margin:0.6em 0;
@@ -418,8 +403,29 @@ button.preview {
       &:hover {
         color:@orange;
       }
+    }  
+  }
+  
+  p, ol, ul, dl {
+    &+h1, &+h2, &+h3, &+h4, &+h5 {
+      margin-top:1.2em;
     }
   }
+  
+  input[type=reset], input[type=submit], input[type=cancel], 
+  button[type=reset], button[type=submit], button[type=cancel] {
+    margin-right:1em;
+    float:left;
+  }
+  input[type=reset], input[type=cancel],
+  button[type=reset], button[type=cancel] {
+    .button-style(gray);
+  }
+  input[type=submit],
+  button[type=submit] {
+    .button-style(hot);
+  }
+  
 }
 
 // Containers need to shrink when the drawer is open
@@ -536,7 +542,48 @@ button.preview {
   display: block;
   float: left;
   width: 30%;
-  padding: 1%;
+  padding-left:120px;
+  position:relative;
+  
+  p {
+    margin-bottom:1em !important;
+  }
+  
+  h3 {
+    height:1em;
+  }
+  
+  // bit tricky here. using the anchor inside the 
+  // header to display the image. makes the anchor target
+  // area overlap the containing li in an incomplete way.
+  // @todo: probably need to massage the markup to get this just
+  // right.
+  h3 a {
+    padding-left:120px;
+    margin-left:-120px !important;
+    margin-top:0;
+    height:80px;
+    position:absolute;
+    background:url(../img/builder/story-template-icons.png) no-repeat top left;
+  }
+  
+  @icon-height:80px;
+  @icon-next-d:@icon-height;
+  
+  &.data-story h3 a {
+    background-position: 0 0;
+  }
+  &.photo-voice h3 a {
+    background-position: 0 (-1 * @icon-next-d);
+  }
+  &.explainer h3 a {
+    background-position: 0 (-2 * @icon-next-d);
+  }
+  &.sandbox h3 a {
+    background-position: 0 (-3 * @icon-next-d);
+  }
+
+
 }
 
 // Story Builder View
@@ -555,9 +602,7 @@ button.preview {
   width: 100%;
   // Use border-box so that our borders and paddings cut into our width
   // instead of adding to it
-  -webkit-box-sizing: border-box;
-  -moz-box-sizing: border-box; 
-  box-sizing: border-box;
+  .box-sizing(border-box);
 }
 
 .full-width-important {
@@ -799,7 +844,108 @@ button.preview {
 .storybase-container-placeholder.select {
   .wrapper {
     padding: 2%;
+    position:relative;
+    // Hide introductory text to asset containers
+    // We don't want to do this for now because it gets rid of the
+    // suggested asset message.
+    //p:first-child {
+    //  text-indent:-32000px;
+    //}
   }
+  ul.asset-types {
+    padding-top:50px;
+    position:relative;
+    width:100%;
+    margin:0 auto;
+    &:before {
+      //background: @visited-blue;
+      background:@light-gray;
+      color: white;
+      font-family:"FontAwesome";
+      content: "";
+      display: block;
+      font-size: 10em;
+      height: 1em;
+      line-height: 1.2em;
+      text-align: center;
+      width: 25%;
+      left:37.5%;
+      position:absolute;
+    }
+    
+    @item-y-offset:45px;
+    @item-height: 35px;
+    @item-margin: 10px;
+    @item-next-d: @item-height + @item-margin;
+    li {
+      position:absolute;
+      list-style:none !important;
+      
+      &.image, &.audio, &.video, &.map,
+      &.chart, &.table, &.quotation, &.text {
+        a {
+          text-decoration:none;
+          text-transform:uppercase;
+          font-family:"Museo300Regular";
+          color:@gray !important;
+          line-height:22px; // ???
+          &:after {
+            .rounded-corners(3px);
+            font-family:"FontAwesome";
+            font-size:@item-height * 0.7;
+            background:@dark-gray;
+            color: white;
+            display: block;
+            height: @item-height;
+            line-height: 1.65em; // ???
+            text-align: center;
+            width: @item-height;
+            position:absolute;
+            top:(@item-height * -0.25);
+          }
+          &:hover {
+            color:@orange !important;
+            &:after {
+              background:@orange;
+            }
+          }
+        }
+      }
+      
+      &.image, &.audio, &.video, &.map {
+        right:75%;
+        text-align:right;
+        a {
+          &:after {
+            right:(-1 * (@item-height + @item-margin));
+          }
+        }
+      }
+      &.chart, &.table, &.quotation, &.text {
+        left:75%;
+        a {
+          &:after {
+            left:(-1 * (@item-height + @item-margin));
+          }
+        }
+      }
+      &.image, &.chart { top: @item-y-offset + (0 * @item-next-d); }
+      &.audio, &.table { top: @item-y-offset + (1 * @item-next-d); }
+      &.video, &.quotation { top: @item-y-offset + (2 * @item-next-d); }
+      &.map, &.text { top: @item-y-offset + (3 * @item-next-d); }
+      
+      &.image a:after { content:""; }
+      &.audio a:after { content:""; }
+      &.video a:after { content:""; }
+      &.map a:after { content:""; }
+      
+      &.chart a:after { content: ""; }
+      &.table a:after { content: ""; }
+      &.quotation a:after { content: ""; }
+      &.text a:after { content: ""; }
+    }
+  }
+  
 }
 
 .storybase-container-placeholder.display {
@@ -855,6 +1001,64 @@ button.preview {
   display: inline-block;
 }
 
+#app .bbf-form {
+  overflow:hidden;
+  padding:20px;
+  
+  fieldset {
+    border:none;
+  }
+  
+  .bbf-field {
+    list-style-type:none;
+    
+    label {
+      float: none;
+      width: 100%;
+    }
+    
+    .bbf-editor {
+      margin-left: 0;
+      width: 100%;
+      
+      input[type=text], input[type=password], textarea {
+        .box-sizing(border-box);
+        width:100%
+      }
+    }
+  }
+  
+  ul, ol {
+    margin: 0;
+    padding: 0;
+  }
+}
+
+
+.field-body .bbf-editor {
+  margin-left: 0;
+  width: 100%;
+}
+
+#app .caption {
+  overflow:hidden;
+  padding:.5em;
+  
+  form {
+    overflow:hidden;
+    textarea, button {
+      margin-bottom:1em;
+    }
+    textarea {
+      .box-sizing(border-box);
+      width:100%;
+    }
+    button {
+      float:right;
+      margin:0 0 1em 1em;
+    }
+  }
+}
 
 // Table of contents thumbnails
 

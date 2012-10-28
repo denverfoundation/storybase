@@ -4,8 +4,17 @@
 @font-path: "../css/font-face";
 
 // Font sizes
-@base-font-size: 13px;
-@heading-font-size: 30px;
+// note: Times New Roman is visually smaller than Georgia.
+// if the body copy font family is Georgia, this should probably
+// be at 13px or so.
+@base-font-size:14px;
+@top-header-size:36px;
+@h1-size: @top-header-size;
+@h2-size: (@top-header-size * .8);
+@h3-size: (@top-header-size * .7);
+@h4-size: (@top-header-size * .6);
+@h5-size: (@top-header-size * .5);
+
 
 @layout-padding: 10px;
 
@@ -25,10 +34,4 @@
 @orange: #fe9703;
 @error-color: #e66;
 
-// @todo: reconcile template header size with header size above:
-@top-header-size:36px;
 
-// note: Times New Roman is visually smaller than Georgia.
-// if the body copy font family is Georgia, this should probably
-// be at 13px or so.
-@body-copy-size:14px;

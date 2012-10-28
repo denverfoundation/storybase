@@ -141,20 +141,29 @@
   font-family: Helvetica, Arial, sans-serif;
 }
 
+.box-sizing(@sizing) {
+  -webkit-box-sizing: @sizing;
+  -moz-box-sizing: @sizing;
+  -ms-box-sizing: @sizing;
+}
+
 @body-copy-margin-bottom: 1em;
 
 .body-copy {
   .plain-serif-text;
-  font-size:@body-copy-size;
+  font-size:@base-font-size;
   color:@body-copy-color; 
   line-height:1.1em;
   p {
     margin-bottom: @body-copy-margin-bottom;
-    a {
-      color:@highlight-blue;
-      &:visited {
-        color:@visited-blue;
-      }
+  }
+  dd p, dt p, li p {
+    margin-bottom:0;
+  }
+  a {
+    color:@highlight-blue;
+    &:visited {
+      color:@visited-blue;
     }
   }
 }
@@ -190,6 +199,14 @@
   }
 }
 
+.standard-headers {
+  h1 { font-size:@h1-size; color:@dark-gray; .styled-header; .line-through-header; }
+  h2 { font-size:@h2-size; color:@dark-gray; .styled-header; }
+  h3 { font-size:@h3-size; color:@medium-gray; .styled-header; }
+  h4 { font-size:@h4-size; color:@medium-gray; .styled-header; }
+  h5 { font-size:@h5-size; color:@highlight-blue; font-family: 'MuseoSlab500Regular'; font-weight:normal;}
+}
+
 .centered {
   text-align: center;
 }
@@ -213,18 +230,14 @@ button {
 body.base-template {
 
     .plain-serif-text;
-    font-size: @body-copy-size;
+    font-size: @base-font-size;
     line-height: 1.3;
     color: #000;
     background:url('../img/body.jpg') repeat-x 0 0;
     min-width: 100%;
     overflow-y:scroll;
 
-	h1 { font-size:@top-header-size; color:@dark-gray; .styled-header; .line-through-header; }
-	h2 { font-size:(@top-header-size * .8); color:@dark-gray; .styled-header; }
-	h3 { font-size:(@top-header-size * .7); color:@medium-gray; .styled-header; }
-	h4 { font-size:(@top-header-size * .6); color:@medium-gray; .styled-header; }
-	h5 { font-size:(@top-header-size * .5); color:@highlight-blue; font-family: 'MuseoSlab500Regular'; font-weight:normal;}
+    .standard-headers;
 
 	// based on "everything" comp, text content
 	// headers are relatively diminuitive.
