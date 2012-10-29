@@ -63,24 +63,21 @@
         </div>
     </div>
 </section>
-{# TODO: Implement featured stories for projects #}
-{% comment %}
-{% if project.featured_story %}
-{% with project.featured_story as featured_story %}
+{% if project.featured %}
+{% with project.featured as featured %}
 <section class="featured-story content-block">
     <h3>{% trans "Featured Story" %}</h3>
     <div class="grid_2 alpha">
         <a href="#"><img src="/static/img/image3.jpg" title="temp asset" ></a>
     </div>
     <div class="grid_8 omega">
-        <h4><a href="{{ featured_story.get_absolute_url }}">{{ featured_story.title }}</a></h4>
-        {{ featured_story.summary|safe|linebreaks }}
+        <h4><a href="{{ featured.get_absolute_url }}">{{ featured.title }}</a></h4>
+        {{ featured.summary|safe|linebreaks }}
     </div>
 </section>
 {% endwith %}
 {% endif %}
-{% endcomment %}
-{% if project.curated_stories.all %} 
+{% if project.recent_list %} 
 <section class="recent-stories content-block last">
     <h3>{% trans "Recent Stories" %}</h3>
     <ul>
