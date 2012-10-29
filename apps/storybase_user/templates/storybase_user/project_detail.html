@@ -1,6 +1,6 @@
 {% extends "twocol.html" %}
 
-{% load i18n sekizai_tags menu_tags story projects %}
+{% load i18n sekizai_tags menu_tags story projects storybase_user_tags %}
 
 {% block head_title %}{{ project.name }}{{ block.super }}{% endblock %}
 
@@ -15,6 +15,7 @@
    <ul class="navroot">{% show_menu 1 %}</ul>
 </nav>
 {% endcomment %}
+{% include "addthis_widget_small.html" %}
 {% endblock %}
 
 {% block twocol-content %}
@@ -32,71 +33,72 @@
         <section class="object-featured-asset">
             <img src="/static/img/image3.jpg" title="temp asset">
         </section>
-        {% include "addthis_widget.html" %}
     </div>
     <div class="object-metadata grid_10">
-        <section class="grid_3 alpha">
-            <h4>{% trans "Contact Info" %}</h4>
-            <addr>
-                370 17th Street, Suite 5300<br>
-                Denver, CO 80202<br>
-                (303) 825-6246<br>
-                <a href="http://www.piton.org">www.piton.org</a><br>
-            </addr>
-        </section>
-        <section class="grid_3">
+        <div class="grid_3 alpha">
+        {% comment %}
+        Nothing here for now. @bpawlak had put a contact address in here,
+        but this doesn't make sense for projects.
+        {% endcomment %}
+        </div>
+        <div class="grid_3">
+            {% if project.members.all %}
             <h4>{% trans "Project Contributors" %}</h4>
             <ul>
-                <li><a href="#">Author Name</a></li>
-                <li><a href="#">Author Name</a></li>
-                <li><a href="#">Author Name</a></li>
+                {% for member in project.members.all %}    
+                <li>{% format_user_name member %}</li>
+                {% endfor %}
             </ul>
-        </section>
-        <section class="grid_3 omega">
+            {% endif %}
+        </div>
+        <div class="grid_3 omega">
+            {% if project.organizations.all %}
             <h4>{% trans "Sponsoring Organizations" %}</h4>
             <ul>
-                <li><a href="#">Organization Name</a></li>
-                <li><a href="#">Organization Name</a></li>
-                <li><a href="#">Organization Name</a></li>
+                {% for organization in project.organizations.all %}
+                <li><a href="{{ organization.get_absolute_url }}">{{ organization.name }}</a></li>
+                {% endfor %}
             </ul>
-        </section>
-        </dl>
+            {% endif %}
+        </div>
     </div>
 </section>
+{# TODO: Implement featured stories for projects #}
+{% comment %}
+{% if project.featured_story %}
+{% with project.featured_story as featured_story %}
 <section class="featured-story content-block">
     <h3>{% trans "Featured Story" %}</h3>
     <div class="grid_2 alpha">
         <a href="#"><img src="/static/img/image3.jpg" title="temp asset" ></a>
     </div>
     <div class="grid_8 omega">
-        <h4><a href="#">Story Title</a></h4>
-        Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+        <h4><a href="{{ featured_story.get_absolute_url }}">{{ featured_story.title }}</a></h4>
+        {{ featured_story.summary|safe|linebreaks }}
     </div>
 </section>
+{% endwith %}
+{% endif %}
+{% endcomment %}
+{% if project.curated_stories.all %} 
 <section class="recent-stories content-block last">
     <h3>{% trans "Recent Stories" %}</h3>
     <ul>
+        {% for story in project.recent_list %}
         <li>
             <div class="grid_1 alpha">
                 <a href="#"><img src="/static/img/image3.jpg" title="temp asset"></a>
             </div>
             <div class="grid_9 omega">
-                <h4><a href="#">Story Title</a></h4>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
+                <h4><a href="{{ story.get_absolute_url }}">{{ story.title }}</a></h4>
+                {{ story.summary|safe|linebreaks }}
             </div>
         </li>
-        <li>
-            <div class="grid_1 alpha">
-                <a href="#"><img src="/static/img/image3.jpg" title="temp asset"></a>
-            </div>
-            <div class="grid_9 omega">
-                <h4><a href="#">Story Title</a></h4>
-                Lorem ipsum dolor sit amet, consectetur adipisicing elit, sed do eiusmod tempor incididunt ut labore et dolore magna aliqua. Ut enim ad minim veniam, quis nostrud exercitation ullamco laboris nisi ut aliquip ex ea commodo consequat. Duis aute irure dolor in reprehenderit in voluptate velit esse cillum dolore eu fugiat nulla pariatur. Excepteur sint occaecat cupidatat non proident, sunt in culpa qui officia deserunt mollit anim id est laborum.
-            </div>
-        </li>
+        {% endfor %}
     </ul>
-    <a class="button" href="#">{% trans "View All Stories for This Project" %}</a>
+    <a class="button" href="{% url explore_stories %}?project={{ project.project_id }}">{% trans "View All Stories for This Project" %}</a>
 </section>
+{% endif %}
 {% endblock %}
 
 {% comment %}
