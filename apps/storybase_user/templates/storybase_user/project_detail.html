@@ -9,14 +9,12 @@
 {% block content_page_class %}object-detail project{% endblock %}
 
 {% block sidebar %}
-<h4>{% trans "Contributing Organizations" %}</h4>
-<ul class="contributing-organizations">
-    {% for organization in project.organizations.all %}
-      <li>{{ organization.name }}</li>
-    {% endfor %}
-    <li>one</li>
-    <li>two</li>
-</ul>
+{# TODO: Replace this with sub-nav.  The old markup looked like this: #}
+{% comment %}
+<nav id="subnav">
+   <ul class="navroot">{% show_menu 1 %}</ul>
+</nav>
+{% endcomment %}
 {% endblock %}
 
 {% block twocol-content %}
