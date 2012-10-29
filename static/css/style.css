@@ -424,13 +424,10 @@ body.base-template .breadcrumbs ul li.first a{color:#fe9703;}
 body.base-template .breadcrumbs ul li,body.base-template .breadcrumbs ul li a{font-size:14px;color:#3b3b3b;font-family:'MuseoSlab500Regular';line-height:37px;}
 body.base-template ul.messages{border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px;font-family:'Times New Roman',Georgia,Serif;border:1px solid #bbb;padding:10px;margin:20px 0;color:#f0efef;font-size:16px;}
 body.base-template ul.messages li.error{color:#ee6666;}
-body.base-template ul.social{list-style:none;padding-top:12px;}
-body.base-template ul.social li{float:left;display:inline;padding-right:10px;}
-body.base-template ul.social li a{width:24px;height:24px;float:left;display:inline;background:url('../img/social.png') no-repeat 0 0;font-size:0;line-height:0;text-indent:-4000px;}
-body.base-template ul.social li a:hover{opacity:0.7;}
-body.base-template ul.social li.icon1 a{background-position:0 0;}
-body.base-template ul.social li.icon2 a{background-position:-34px 0;}
-body.base-template ul.social li.icon3 a{background-position:-67px 0;}
+body.base-template ul.social{list-style:none;padding-top:12px;}body.base-template ul.social li{float:left;display:inline;padding-right:10px;}body.base-template ul.social li a{width:24px;height:24px;float:left;display:inline;background:url('../img/social.png') no-repeat 0 0;font-size:0;line-height:0;text-indent:-4000px;}body.base-template ul.social li a:hover{opacity:0.7;}
+body.base-template ul.social li.rss a{background-position:0 0;}
+body.base-template ul.social li.twitter a{background-position:-34px 0;}
+body.base-template ul.social li.facebook a{background-position:-67px 0;}
 body.base-template #slideContainer .back{width:26px;height:46px;background:url('../img/slider-arrows3.png') no-repeat 0 0;display:block;font-size:0;line-height:0;text-indent:-4000px;position:absolute;top:74px;left:76px;z-index:500;}
 body.base-template #slideContainer .forward{width:26px;height:46px;background:url('../img/slider-arrows3.png') no-repeat right 0;display:block;font-size:0;line-height:0;text-indent:-4000px;position:absolute;top:74px;right:0;z-index:500;}
 body.base-template #main .flexslider-holder{overflow:hidden;}

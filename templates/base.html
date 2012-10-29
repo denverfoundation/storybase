@@ -107,9 +107,14 @@
 			<div class="left">
 				<p>{% trans "Copyright 2012 The Floodlight Project. All rights reserved." %}</p>
 				<ul class="social">
-					<li class="icon1"><a href="#">rss</a></li>
-					<li class="icon2"><a href="#">twitter</a></li>
-					<li class="icon3"><a href="#">facebook</a></li>
+                    {# TODO: Enable Facebook/RSS icons when they're ready #}
+                    {% comment %}
+					<li class="rss"><a href="#">rss</a></li>
+                    {% endcomment %}
+                    <li class="twitter"><a href="http://twitter.com/floodlightstory" title="{% trans "Twitter" %}">{% trans "Twitter" %}</a></li>
+                    {% comment %}
+					<li class="facebook"><a href="#">facebook</a></li>
+                    {% endcomment %}
 				</ul>
 			</div>
 			<div class="right">
