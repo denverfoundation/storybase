@@ -1203,7 +1203,7 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         position: 6,
         title: gettext("This is your table of contents."),
         // TODO: Remove reference to "Story Sections" tab
-        description: gettext('This bar shows the sections in your story. You can hide the bar by clicking on the tab that says "Story Sections."'),
+        description: gettext('This bar shows the sections in your story.'),
         prev: 'workflow-step-guider',
         next: 'section-thumbnail-guider'
       });
