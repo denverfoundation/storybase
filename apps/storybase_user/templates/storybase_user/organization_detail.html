@@ -1,34 +1,20 @@
-{% extends "twocol.html" %}
+{% extends "storybase_user/detail_base.html" %}
 
-{% load i18n sekizai_tags menu_tags %}
+{% load i18n %}
 
-{% block head_title %}{{ organization.name }}{{ block.super }}{% endblock %}
+{% block content_page_class %}{{ block.super }} project{% endblock %}
 
-{% block body_title %}{{ organization.name }}{% endblock %}
+{% block metadata_center_title %}{% trans "Organization Contributors" %}{% endblock %}
 
-{% block primary_content %}
-{% if organization.website_url %}
-<h3>Website URL</h3>
-<p><a href="{{ organization.website_url }}">{{ organization.website_url }}</a></p>
-{% endif %}
-
-{% if organization.description %}
-<h3>Description</h3>
-{{ organization.description|safe|linebreaks }}
-{% endif %}
-
-{% if organization.members.count %}
-<h3>Members</h3>
-<ul class="members">
-{% for member in organization.members.all %}
-  <li>{{ member.username }}</li>
-{% endfor %}
+{% block metadata_omega %}
+{% if object.projects.all %}
+<h4>{% trans "Project" %}</h4>
+<ul>
+    {% for project in object.projects.all %}
+    <li><a href="{{ project.get_absolute_url }}">{{ project.name }}</a></li>
+    {% endfor %}
 </ul>
 {% endif %}
-
-<h3>Created</h3>
-<p><time class="created">{{ organization.created|date:"F j, Y" }}</time></p>
-
-<h3>Last Edited</h3>
-<p><time class="last-edited">{{ organization.last_edited|date:"F j, Y g:i A" }} </time></p>
 {% endblock %}
+
+{% block explore_button %}<a class="button" href="{% url explore_stories %}?organizations={{ object.organization_id }}">{% trans "View All Stories for This Organization" %}</a>{% endblock %}

@@ -1,0 +1,102 @@
+{% extends "twocol.html" %}
+
+{% load i18n storybase_user_tags %}
+
+{% block head_title %}{{ object.name }}{{ block.super }}{% endblock %}
+
+{% block body_title %}{{ object.name }}{% endblock %}
+
+{% block content_page_class %}object-detail{% endblock %}
+
+{% block sidebar %}
+{# TODO: Replace this with sub-nav.  The old markup looked like this: #}
+{% comment %}
+<nav id="subnav">
+   <ul class="navroot">{% show_menu 1 %}</ul>
+</nav>
+{% endcomment %}
+{% include "addthis_widget_small.html" %}
+{% endblock %}
+
+{% block twocol-content %}
+<section class="object-summary content-block">
+    <div class="grid_7 alpha">
+        <section class="summary">
+            {% if object.description %}
+                {{ object.description|safe|linebreaks }}
+            {% endif %}
+        </section>
+    </div>
+
+    <div class="grid_3 omega">
+        {# TODO: wire in real asset #}
+        <section class="object-featured-asset">
+            <img src="/static/img/image3.jpg" title="temp asset">
+        </section>
+    </div>
+    <div class="object-metadata grid_10">
+        <div class="grid_3 alpha">
+        {% block metadata_alpha %}
+        {% endblock %}
+        </div>
+        <div class="grid_3">
+            {% block metadata_center %}    
+            {% if object.members.all %}
+            <h4>{% block metadata_center_title %}{% trans "Contributors" %}{% endblock %}</h4>
+            <ul>
+                {% for member in object.members.all %}    
+                <li>{% format_user_name member %}</li>
+                {% endfor %}
+            </ul>
+            {% endif %}
+            {% endblock %}
+        </div>
+        <div class="grid_3 omega">
+            {% block metadata_omega %}
+            {% endblock %}
+        </div>
+    </div>
+</section>
+{% block featured %}
+{% if object.featured %}
+{% with object.featured as featured %}
+<section class="featured-story content-block">
+    <h3>{% trans "Featured Story" %}</h3>
+    <div class="grid_2 alpha">
+        <a href="#"><img src="/static/img/image3.jpg" title="temp asset" ></a>
+    </div>
+    <div class="grid_8 omega">
+        <h4><a href="{{ featured.get_absolute_url }}">{{ featured.title }}</a></h4>
+        {{ featured.summary|safe|linebreaks }}
+    </div>
+</section>
+{% endwith %}
+{% endif %}
+{% endblock %}
+{% block recent %}
+{% if object.recent_list %} 
+<section class="recent-stories content-block last">
+    <h3>{% trans "Recent Stories" %}</h3>
+    <ul>
+        {% for story in object.recent_list %}
+        <li>
+            <div class="grid_1 alpha">
+                <a href="#"><img src="/static/img/image3.jpg" title="temp asset"></a>
+            </div>
+            <div class="grid_9 omega">
+                <h4><a href="{{ story.get_absolute_url }}">{{ story.title }}</a></h4>
+                {{ story.summary|safe|linebreaks }}
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+    {% block explore_button %}<a class="button" href="#">{% trans "View All Stories for This Object" %}</a>{% endblock %}
+</section>
+{% endif %}
+{% endblock %}
+{% endblock %}
+
+{% block extrajs %}
+<script src="{{ STATIC_URL }}js/libs/jquery.cycle.all.min.js"></script>
+<script src="{{ STATIC_URL }}js/libs/jquery.flexslider.js" type="text/javascript"></script>
+{% endblock %}
