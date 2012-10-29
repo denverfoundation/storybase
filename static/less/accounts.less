@@ -1,12 +1,19 @@
 
 // based on being included inside a body.base-template block. 
 // not awesome have that hidden dependency, but ...
-&.accounts.login {
+&.accounts.login, &.accounts.register {
 	h2 {
 		text-align:left;
 		margin-bottom:20px;
 	}
 	ul {
 		margin-bottom: 20px;
+	}
+	
+	#main form {
+		width:50%;
+		input[type=text], input[type=password] {
+			width: 40%;
+		}
 	}
 }

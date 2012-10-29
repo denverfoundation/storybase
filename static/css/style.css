@@ -491,7 +491,7 @@ body.base-template .content-page.object-detail.project .recent-stories li{margin
 body.base-template .content-page section.content-block{padding-bottom:40px;border-bottom:1px solid #ccc;margin-bottom:20px;overflow:hidden;}body.base-template .content-page section.content-block.last{border-bottom:none;}
 body.base-template .faq-section,body.base-template .faq-question{color:#fe9703 !important;}
 body.base-template .faq-question{cursor:pointer;}body.base-template .faq-question:before{padding-right:0.66em;}
-body.base-template form{overflow:hidden;}body.base-template form .form-text{font-family:'Times New Roman',Georgia,Serif;font-size:14px;color:#555555;}
+body.base-template form{overflow:hidden;position:relative;}body.base-template form .form-text{font-family:'Times New Roman',Georgia,Serif;font-size:14px;color:#555555;}
 body.base-template form .soft-edge-style{border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px;font-family:'Times New Roman',Georgia,Serif;font-size:14px;color:#555555;box-shadow:inset 0 0 3px #ccc;border:1px solid #aaaaaa;padding:5px;}
 body.base-template form ul.errorlist li{font-family:'Times New Roman',Georgia,Serif;color:#ee6666;}
 body.base-template form p{font-family:'Times New Roman',Georgia,Serif;font-size:14px;color:#555555;margin-bottom:8px;clear:both;line-height:30px;overflow:hidden;}body.base-template form p label,body.base-template form p label+input{display:block;float:left;width:24%;}
@@ -505,8 +505,9 @@ body.base-template form span.helptext{display:block;clear:left;}
 body.base-template .comments-list{padding:0;}
 body.base-template .comment{margin:5px 0;padding:5px;}
 body.base-template .comment-user-name{font-weight:bold;}
-body.base-template.accounts.login h2{text-align:left;margin-bottom:20px;}
-body.base-template.accounts.login ul{margin-bottom:20px;}
+body.base-template.accounts.login h2,body.base-template.accounts.register h2{text-align:left;margin-bottom:20px;}
+body.base-template.accounts.login ul,body.base-template.accounts.register ul{margin-bottom:20px;}
+body.base-template.accounts.login #main form,body.base-template.accounts.register #main form{width:50%;}body.base-template.accounts.login #main form input[type=text],body.base-template.accounts.register #main form input[type=text],body.base-template.accounts.login #main form input[type=password],body.base-template.accounts.register #main form input[type=password]{width:40%;}
 body.base-template .shell{width:1000px;margin:0 auto;position:relative;}
 body.base-template #header{height:165px;position:relative;z-index:2501;}
 body.base-template #container{width:100%;}
@@ -874,7 +875,7 @@ body.explorer #proximity-search-form #proximity-search-address{width:80%;}
 body.explorer #filter-proxy{display:none;}body.explorer #filter-proxy.shown{display:block;}
 body.explorer #filters .field{margin-right:6px;}
 body.explorer #filters .field:first-child{margin-left:3px;}
-body.explorer #filters .field.last{margin-right:3px;}
+body.explorer #filters .field.last{margin-right:0px;}
 body.explorer #filters .select2-container{background:url('../img/filter-link.png') no-repeat 0 0;min-width:180px;width:191px;display:block;font-size:13px;color:#fbfaf2;font-family:'MuseoSlab500Regular';text-shadow:0 -1px 0 #605f5f;line-height:34px;height:34px;padding-right:7px;}
 body.explorer .select2-result-label{font-family:'MuseoSlab500Regular';}
 body.explorer #filters .select2-default{color:#fbfaf2 !important;}
