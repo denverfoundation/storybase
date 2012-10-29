@@ -29,7 +29,7 @@ class CuratedStory(models.Model):
         verbose_name = "story"
 
 
-class FeaturedMixin(object):
+class FeaturedStoriesMixin(object):
     """
     Mixin that provides some utility methods for populating the
     featured stories sections of templates
@@ -41,7 +41,7 @@ class FeaturedMixin(object):
         return self.get_featured_queryset().order_by('-last_edited')[:1]
 
 
-class RecentMixin(object):
+class RecentStoriesMixin(object):
     """
     Mixin that provides some utility methods for populating the recent
     stories section of templates
@@ -53,7 +53,7 @@ class RecentMixin(object):
         return self.get_recent_queryset().order_by('-last_edited')[:count]
         
 
-class Organization(RecentMixin, FeaturedMixin,
+class Organization(RecentStoriesMixin, FeaturedStoriesMixin,
                    TranslatedModel, TimestampedModel):
     """ An organization or a community group that users and stories can be associated with. """
     organization_id = UUIDField(auto=True)
@@ -137,7 +137,7 @@ def add_story_to_organization(sender, instance, **kwargs):
             story.organizations.add(instance)
             story.save()
 
-class Project(RecentMixin, FeaturedMixin, TranslatedModel, TimestampedModel):
+class Project(RecentStoriesMixin, FeaturedStoriesMixin, TranslatedModel, TimestampedModel):
     """ 
     A project that collects related stories.  
     
