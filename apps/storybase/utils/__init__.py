@@ -15,6 +15,19 @@ def get_language_name(language_code):
     return _(languages[language_code])
 
 
+def open_html_element(el, attrs={}):
+    chunks = []
+    chunks.append("<")
+    chunks.append(el)
+    for attr, value in attrs.iteritems():
+        chunks.append(' %s="%s"' % (attr, value))
+    chunks.append(">")
+    return "".join(chunks)
+
+def close_html_element(el):
+    return "</" + el + ">"
+
+
 def slugify(value):
     """
     Normalizes string, converts to lowercase, removes non-alpha characters,
@@ -135,20 +148,6 @@ def import_class(import_path):
                         
     return getattr(module, class_name)
 
-
-def add_tzinfo(dt, tzname=settings.TIME_ZONE):
-    """
-    Return a timezone aware version of a datetime object, taking into
-    account daylight savings time
-
-    Arguments:
-    dt     -- A timezone naive datetime.datetime object
-    tzname -- A timezone name, e.g. 'America/Chicago'. Defaults to 
-              settings.TIME_ZONE
-    
-    """
-    tz = pytz.timezone(settings.TIME_ZONE).localize(dt).tzinfo
-    return dt.replace(tzinfo=tz)
 
 def get_site_name(request=None):
     """

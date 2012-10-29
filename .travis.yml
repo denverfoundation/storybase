@@ -11,26 +11,8 @@ postgres:
   adapter: postgresql
   database: atlas_travis
   username: postgres
-before_install:
-  - "sudo apt-get update"
-  - "sudo apt-get install gdal-bin libproj-dev postgis postgresql-9.1-postgis"
-#  - "sudo apt-get install openjdk-6-jdk solr-jetty" 
-  - "sudo apt-get install solr-jetty"
-  - "sudo sed -i.bak -r -e \"s/^#JAVA_HOME=/JAVA_HOME=\/usr\/lib\/jvm\/java-7-oracle/g\" /etc/default/jetty"
-  - "sudo cat /etc/default/jetty"
-  - "sudo bash ./scripts/create_template_postgis-debian.sh"
-before_script:
-  - "sudo bash ./scripts/apply_django_patches /home/vagrant/virtualenv/python2.7/lib/python2.7/site-packages/django"
-  - "fab --set run_local=True install_solr upgrade_to_solr3 install_solr_2155"
-  - "fab --set run_local=True install_solr_config:instance=travis,solr_multicore=,project_root=`pwd`"
-  - "fab --set run_local=True enable_jetty_start"
-  - "createdb -T template_postgis atlas_travis -U postgres"
-  - "python manage.py build_solr_schema --settings=settings.travis > config/travis/solr/schema.xml"
-  - "sudo cp config/travis/solr/schema.xml /usr/local/share/solr3/conf/"
-  - "fab --set run_local=True update_solr_jetty_config"
-  - "sudo service jetty restart"
-  - "export DISPLAY=:99.0"
-  - "sh -e /etc/init.d/xvfb start"
+before_install: ./scripts/ci_before_install.sh
+before_script: ./scripts/ci_before_script.sh
 branches:
   only:
     - master

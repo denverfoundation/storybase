@@ -3,6 +3,10 @@
 // variables
 @import "variables.less";
 
+@import "grid.less";
+// Layout for story section content in the builder/viewer
+@import "story_layout.less";
+
 // fonts
 @font-face {
     font-family: 'MuseoSlab500Regular';
@@ -29,8 +33,19 @@
 
 }
 
+@import "font-awesome.less";
+
 // mixins
-.button-style {
+
+// Class/mixin for hiding the text inside an element
+// I often use this to hide text in an icon button
+.hide-text {
+  position: absolute;
+  top: -9999px;
+  left: -9999px;
+}
+
+.button-style(@_:gray) {
 	padding:8px;
 	background:#878787;
 	font-family: "Museo300Regular";
@@ -38,17 +53,69 @@
 	border-radius:4px;
 	border:none;
 	font-weight:normal;
-	color:#fbfaf2;
-
-	&:hover {
-		text-decoration:none;
-		background: @orange;
-		color:#fff;	
-	}
+	color:white;
+	cursor:pointer;
+	text-shadow:0 -1px 0 rgba(0, 0, 0, .4);
 
 	&.right {
 		margin-left:8px;
 	}
+}
+
+.button-style(hot) {
+  background:@orange;
+  &:hover {
+    text-decoration:none;
+    background:darken(desaturate(@orange, 20%), 20%);
+  }
+}
+.button-style(cool) {
+  background:@highlight-blue;
+  &:hover {
+    text-decoration:none;
+    background:darken(desaturate(@highlight-blue, 20%), 20%);
+  }
+}
+
+.button-style(gray) {
+  background:@medium-gray;
+  &:hover {
+    text-decoration:none;
+    background:@orange;
+  }
+}
+
+// CSS classes for button styles
+.button {
+  .button-style;
+
+  &.hot {
+    .button-style(hot);
+  }
+
+  &.cool {
+    .button-style(cool);
+  }
+
+  &.gray {
+    .button-style(gray);
+  }
+}
+
+// Reset button styles
+// Use this for buttons that you don't want to show up as a button
+.button-reset () {
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  width: auto;
+  text-align: center;
+  text-shadow: none;
+}
+
+.button-container {
+  padding: 2em 0;
 }
 
 .rounded-corners (@radius: 5px) {
@@ -57,54 +124,120 @@
 	-moz-border-radius: @radius;
 }
 
+.box-shadow (@x: 0, @y: 0, @blur: 1px, @color: #000) {
+  box-shadow: @arguments;
+  -moz-box-shadow: @arguments;
+  -webkit-box-shadow: @arguments;
+}
+
 // this should probably just be on the body ... not sure if the body
 // is arial/sans-serif for a reason.
 .plain-serif-text {
-	font-family:'Times New Roman', Georgia, Serif;
+  font-family:'Times New Roman', Georgia, Serif;
+//  font-family:Georgia, 'Times New Roman', serif;
+}
+
+.sans-serif-text {
+  font-family: Helvetica, Arial, sans-serif;
+}
+
+.box-sizing(@sizing) {
+  -webkit-box-sizing: @sizing;
+  -moz-box-sizing: @sizing;
+  -ms-box-sizing: @sizing;
+}
+
+@body-copy-margin-bottom: 1em;
+
+.body-copy {
+  .plain-serif-text;
+  font-size:@base-font-size;
+  color:@body-copy-color; 
+  line-height:1.1em;
+  p {
+    margin-bottom: @body-copy-margin-bottom;
+  }
+  dd p, dt p, li p {
+    margin-bottom:0;
+  }
+  a {
+    color:@highlight-blue;
+    &:visited {
+      color:@visited-blue;
+    }
+  }
+}
+
+.body-copy-lists {
+  ul, ol {
+    padding-left: 20px;
+    margin-bottom: @body-copy-margin-bottom;
+  }
+  ul li {
+    list-style-type: square;
+  }
+  ol li {
+    list-style-type: decimal;
+  }
+}
+
+// museo as opposed to serif
+.styled-header(@align: center) {
+  text-align:@align;
+  font-family: 'Museo300Regular';
+  font-weight:normal;
 }
 
 .line-through-header {
-	background:url('../img/h3-line.png') repeat-x 0 8px; 
-	margin-bottom:10px;
-	
-	span {
-		background:#fff; 
-		padding-left:16px; 
-		padding-right:16px;
-	}
+  background:url('../img/h3-line.png') repeat-x 0 8px; 
+  margin-bottom:10px;
+  
+  span {
+    background:#fff; 
+    padding-left:16px; 
+    padding-right:16px;
+  }
+}
+
+.standard-headers {
+  h1 { font-size:@h1-size; color:@dark-gray; .styled-header; .line-through-header; }
+  h2 { font-size:@h2-size; color:@dark-gray; .styled-header; }
+  h3 { font-size:@h3-size; color:@medium-gray; .styled-header; }
+  h4 { font-size:@h4-size; color:@medium-gray; .styled-header; }
+  h5 { font-size:@h5-size; color:@highlight-blue; font-family: 'MuseoSlab500Regular'; font-weight:normal;}
+}
+
+.centered {
+  text-align: center;
 }
 
 // global stuff
 
 html { font-size: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
 
-body, button, input, select, textarea { font-family: sans-serif; color: #444; }
+body, button, input, select, textarea { 
+  .body-copy;
+}
 
 * { margin: 0; padding: 0; outline: 0; }
 
 body, html { height: 100%; }
 
+button {
+  .button-style(hot);
+}
+
 body.base-template {
-	
-    font-size: 12px;
+
+    .plain-serif-text;
+    font-size: @base-font-size;
     line-height: 1.3;
-    font-family: arial, sans-serif;
     color: #000;
     background:url('../img/body.jpg') repeat-x 0 0;
     min-width: 100%;
     overflow-y:scroll;
 
-	.basic-header {
-		text-align:center;
-		font-family: 'Museo300Regular';
-		font-weight:normal;
-	}
-
-	h1 { font-size:@top-header-size; color:@dark-gray; .basic-header; .line-through-header; }
-	h2 { font-size:(@top-header-size * .8); color:@dark-gray; .basic-header; }
-	h3 { font-size:(@top-header-size * .7); color:@light-gray; .basic-header; }
-	h4 { font-size:(@top-header-size * .6); color:@light-gray; .basic-header; }
-	h5 { font-size:(@top-header-size * .5); color:@highlight-blue; font-family: 'MuseoSlab500Regular'; font-weight:normal;}
+    .standard-headers;
 
 	// based on "everything" comp, text content
 	// headers are relatively diminuitive.
@@ -118,18 +251,12 @@ body.base-template {
 		h5 { font-size:(@top-header-size * .3); }
 	}
 
-	h1 a, h2 a, h3 a, h4 a, h5 a {
-		color:@highlight-blue;
-	}
-
-	// links are more often intended to be highlight-blue than this 
-	// color. not sure why this is set. may be worth just making 
-	// highlight-blue the default.
-	a { color: #0252aa; text-decoration: none; cursor: pointer; }
+	a { color: @highlight-blue; text-decoration: none; cursor: pointer; }
 	a:hover { text-decoration: underline; }
+	a:visited { color: @visited-blue; }
+	a.secondary { color: @secondary-highlight-blue; }
 	a img { border: 0; }
 
-	input, textarea, select { font-size: 12px; font-family: arial, sans-serif; }
 	textarea { overflow: auto; }
 
 	.cl { display: block; height: 0; font-size: 0; line-height: 0; text-indent: -4000px; clear: both; }
@@ -144,8 +271,16 @@ body.base-template {
 	}
 
 	#main a.button {
-		.button-style;
+		.button-style(cool);
 		display:inline-block;
+
+                &.hot {
+                  .button-style(hot);
+                }
+
+                &.gray {
+                  .button-style(gray);
+                }
 	}
 }
 
@@ -166,7 +301,7 @@ body.base-template {
 	@import "template-layout.less";
 }
 
-body.story-builder, 
+
 body.story-viewer {
 	
 	// the html5 boilerplate code is currently relied upon in story builder and viewer.
@@ -174,8 +309,6 @@ body.story-viewer {
 	// @todo: clean this up
 	margin: 0; font-size: 13px; line-height: 1.231;
 	@import "html5-boilerplate.less";
-	
-	@import "layout.less";
 }
 
 body.story-builder {

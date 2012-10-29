@@ -7,6 +7,20 @@ Namespace('storybase.viewer');
 // It delegates rendering and events for the entire app to views
 // rendering more specific "widgets"
 storybase.viewer.views.ViewerApp = Backbone.View.extend({
+  options: {
+    tocEl: '#toc .story-toc',
+    tocButtonEl: '#toggle-toc',
+    tocIconEl: '[class^="icon-"]',
+    tocOpenClass: 'icon-caret-down',
+    tocClosedClass: 'icon-caret-up'
+  },
+
+  events: function() {
+    var events = {};
+    events['click ' + this.options.tocButtonEl] = 'toggleToc';
+    return events;
+  },
+
   // Initialize the view
   initialize: function() {
     this.showingConnectedStory = false;
@@ -15,7 +29,9 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
     this.navigationView = new storybase.viewer.views.StoryNavigation({
       sections: this.options.sections
     }); 
-    this.headerView = new storybase.viewer.views.StoryHeader();
+    // TODO: Decide whether to re-enable updating the section title in the
+    // header
+    //this.headerView = new storybase.viewer.views.StoryHeader();
     this.setSection(this.sections.at(0), {showActiveSection: false});
     _.bindAll(this, 'handleScroll');
     $(window).scroll(this.handleScroll);
@@ -34,7 +50,9 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
   // Update the active story section in the sub-views
   updateSubviewSections: function() {
     this.navigationView.setSection(this.activeSection);
-    this.headerView.setSection(this.activeSection);
+    // TODO: Decide whether to re-enable updating the section title in the
+    // header
+    //this.headerView.setSection(this.activeSection);
   },
 
   // Show the active section
@@ -67,11 +85,25 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
   // Event handler for scroll event
   handleScroll: function(e) {
     // Do nothing. Subclasses might want to implement this to do some work
+  },
+
+  toggleToc: function(evt) {
+    var $tocEl = $(this.options.tocEl);
+    $tocEl.slideToggle();
+    $(evt.target).children(this.options.tocIconEl)
+                 .toggleClass(this.options.tocOpenClass)
+                 .toggleClass(this.options.tocClosedClass);
   }
 });
 
-// View for the story viewer header.
-// Updates the section heading title when the active section changes
+/**
+ * View for the story viewer header.
+ *
+ * Updates the section heading title when the active section changes
+ *
+ * Currently unused to conserve vertical space.
+ */
+/*
 storybase.viewer.views.StoryHeader = Backbone.View.extend({
   el: 'header',
 
@@ -90,12 +122,13 @@ storybase.viewer.views.StoryHeader = Backbone.View.extend({
     this.render();
   }
 });
+*/
 
 // View to provide previous/next buttons to navigate between sections
 storybase.viewer.views.StoryNavigation = Backbone.View.extend({
   tagName: 'nav',
 
-  className: 'story-nav',
+  id: 'story-nav',
 
   templateSource: $('#navigation-template').html(),
 
@@ -527,7 +560,9 @@ storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend
       addlLinks: [{text: gettext("Topic Map"), id: 'topic-map'}]
     });
     this.navigationView.setNextSection(firstSection);
-    this.headerView = new storybase.viewer.views.StoryHeader();
+    // TODO: Decide whether to re-enable updating the section title in the
+    // header
+    //this.headerView = new storybase.viewer.views.StoryHeader();
     this.initialView = new storybase.viewer.views.Spider({
       el: this.$('#body'),
       sections: this.options.sections,
@@ -569,7 +604,9 @@ storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend
   // Update the active story section in the sub-views
   updateSubviewSections: function() {
     this.navigationView.setSection(this.activeSection);
-    this.headerView.setSection(this.activeSection);
+    // TODO: Decide whether to re-enable updating the section title in the
+    // header
+    //this.headerView.setSection(this.activeSection);
     this.initialView.setSection(this.activeSection);
   },
 

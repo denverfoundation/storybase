@@ -5,6 +5,7 @@ from django.conf import settings
 #from ajax_select import urls as ajax_select_urls
 from tastypie.api import Api
 
+from storybase.api import CreativeCommonsLicenseGetProxyView
 from storybase_asset.urls import urlpatterns as asset_urlpatterns
 from storybase_messaging.urls import urlpatterns as messaging_urlpatterns
 from storybase_user.urls import urlpatterns as user_urlpatterns
@@ -34,6 +35,10 @@ v0_1_api.register(TagResource())
 urlpatterns += patterns('', 
     # REST API
     (r'^api/', include(v0_1_api.urls)),
+    # Proxy for Creative Commons endpoint
+    url(r"^api/%s/license/get/" % v0_1_api.api_name,
+        CreativeCommonsLicenseGetProxyView.as_view(),
+        name="api_cc_license_get"),
 )
 
 # Include storybase_user URL patterns

@@ -19,7 +19,7 @@ from taggit.managers import TaggableManager
 from uuidfield.fields import UUIDField
 
 from storybase.fields import ShortTextField
-from storybase.models import (LicensedModel, PermissionMixin, 
+from storybase.models import (TzDirtyFieldsMixin, LicensedModel, PermissionMixin,
     PublishedModel, TimestampedModel, TranslatedModel, TranslationModel,
     set_date_on_published)
 from storybase.utils import unique_slugify
@@ -77,7 +77,7 @@ class StoryTranslation(TranslationModel):
         return self.title
 
 
-class Story(TranslatedModel, LicensedModel, PublishedModel, 
+class Story(TzDirtyFieldsMixin, TranslatedModel, LicensedModel, PublishedModel,
             TimestampedModel, StoryPermission):
     """Metadata for a story
 
@@ -450,8 +450,18 @@ def add_assets(sender, **kwargs):
             instance.assets.add(obj)
         instance.save()
 
+
+def set_asset_license(sender, instance, **kwargs):
+    changed_fields = instance.get_dirty_fields().keys()
+    if 'license' in changed_fields:
+        # Update all assets' licenses to that of the Story's if a
+        # license hasn't already been set.
+        instance.assets.filter(license='').update(license=instance.license)
+
+
 # Hook up some signal handlers
 pre_save.connect(set_date_on_published, sender=Story)
+pre_save.connect(set_asset_license, sender=Story)
 post_save.connect(set_story_slug, sender=StoryTranslation)
 m2m_changed.connect(update_last_edited, sender=Story.organizations.through)
 m2m_changed.connect(update_last_edited, sender=Story.projects.through)
@@ -816,6 +826,7 @@ class SectionLayout(TranslatedModel):
     template = models.CharField(_("template"), max_length=100, choices=TEMPLATE_CHOICES)
     containers = models.ManyToManyField('Container', related_name='layouts',
                                         blank=True)
+    slug = models.SlugField(unique=True)
 
     objects = SectionLayoutManager()
 

@@ -6,7 +6,7 @@
 
 // Fixed-width, centered "slide"
 .section-width {
-  width: @section-width;
+  width: 100%; 
   margin-left: auto;
   margin-right: auto;
 }
@@ -14,18 +14,16 @@
 // Styles
 
 .section-title {
-  font-size: @heading-font-size;
+  font-size: @top-header-size;
   .section-width;
 }
 
 .section-layout {
   overflow: hidden;
-  font-size: @base-font-size;
   .section-width;
 
   &.side-by-side {
     .left, .right {
-      height: @container-height; 
       width: 49%;
       float: left;
     }
@@ -44,7 +42,6 @@
   &.one-up {
     .center {
       position: relative;
-      height: @container-height-tall; 
       width: 100%;
       margin: 2 0%;
     }

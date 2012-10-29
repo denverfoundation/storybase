@@ -2,6 +2,13 @@
 // this selector is assuming that this file is being included *within* a body.base-template {} less block.
 // this is less than ideal; no pun intended.
 &.homepage {
+	ul, ol {
+		padding:0;
+		li {
+			list-style:none;
+		}
+	}
+
 	.intro {
 		padding-top:25px; 
 		padding-bottom:55px;
@@ -14,7 +21,6 @@
 			font-size:18px; 
 			color:#666666; 
 			text-align:center; 
-			font-family:Georgia, 'Times New Roman', Serif;
 			
 			a { color:@orange; }
 		}

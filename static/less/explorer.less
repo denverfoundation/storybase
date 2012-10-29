@@ -13,7 +13,8 @@
 #filters.sticky {
   position: fixed;
   top: 0;
-  background-color: #333;
+  background-color: #fff;
+  box-shadow:0 3px 6px #bbb;
   color: #fff;
 }
 
@@ -118,8 +119,21 @@
 	z-index: 1000;
 }
 
+#filter-proxy {	
+	display:none;
+	&.shown {
+		display:block;
+	}
+}
+
 #filters .field {
 	margin-right:6px;
+}
+#filters .field:first-child {
+	margin-left:3px;
+}
+#filters .field.last {
+	margin-right:0px;
 }
 
 #filters .select2-container {
@@ -186,7 +200,6 @@ h6.story-count {
 	color: #666666;
 	display: inline;
 	float: left;
-	font-family: Georgia,'Times New Roman',Serif;
 	font-size: 22px;
 	font-style: italic;
 	font-weight: normal;
@@ -268,6 +281,11 @@ ul#view-selector li a {
 	color:#03ccfe;
 	line-height:16px;
 }
+#map-container .leaflet-popup-content-wrapper, 
+#map-container .leaflet-popup-tip {
+	overflow:hidden;
+	padding:0 0 25px 0;
+}
 #story-list.list li.story h3 {
 	padding-top:0;
 }
@@ -290,8 +308,7 @@ ul#view-selector li a {
 #story-list li.story p,
 #map-container .leaflet-popup .story p,
 #show-more {
-	font-family:Georgia, 'Times New Roman', Serif;
-	font-size:12px; 
+	.plain-serif-text;
 	color:#5a5a5a;
 }
 #story-list li.story p.cnt {

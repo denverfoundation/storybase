@@ -373,16 +373,8 @@ class DelayedAuthorizationResource(HookedModelResource):
 
 class TranslatedModelResource(HookedModelResource):
     """A version of ModelResource that handles our translation implementation"""
-    # This is a write-only field that we include to allow specifying the
-    # language when creating an object.  We remove it from the response in
-    # dehydrate()
     language = fields.CharField(attribute='language', default=settings.LANGUAGE_CODE)
     languages = fields.ListField(readonly=True)
-
-    def dehydrate(self, bundle):
-        # Remove the language field since it doesn't make sense in the response
-        del bundle.data['language']
-        return bundle
 
     def dehydrate_languages(self, bundle):
         return bundle.obj.get_language_info()

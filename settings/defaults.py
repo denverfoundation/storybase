@@ -133,6 +133,7 @@ TEMPLATE_DIRS = (
 CMS_TEMPLATES = (
     ('homepage.html', 'Home Page'),
     ('cms_twocol.html', 'Two Column'),
+    ('faq.html', 'FAQ'),
 )
 
 INSTALLED_APPS = (
@@ -208,7 +209,8 @@ TEMPLATE_CONTEXT_PROCESSORS = (
 
 AUTH_PROFILE_MODULE = 'storybase_user.UserProfile'
 
-LOGIN_REDIRECT_URL = '/accounts/'
+LOGIN_REDIRECT_URL = '/accounts/stories/'
+LOGOUT_URL = '/'
 
 AUTHENTICATION_BACKENDS = (
     'social_auth.backends.twitter.TwitterBackend',

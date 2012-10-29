@@ -5,6 +5,7 @@ import json
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.http import Http404
 from django.utils.decorators import method_decorator
@@ -296,7 +297,10 @@ class StoryBuilderView(DetailView):
         return resource.serialize(None, to_be_serialized, 'application/json')
 
     def get_layouts_json(self):
-        to_be_serialized = [{'name': layout.name, 'layout_id': layout.layout_id} for layout in SectionLayout.objects.all()]
+        to_be_serialized = [{'name': layout.name,
+                             'layout_id': layout.layout_id,
+                             'slug': layout.slug} for layout
+                            in SectionLayout.objects.all()]
         return json.dumps(to_be_serialized)
 
     def get_asset_types_json(self):
@@ -408,7 +412,11 @@ class StoryBuilderView(DetailView):
             # Show the sharing view
             'showSharing': True,
             # Show the builder tour
-            'showTour': True
+            'showTour': True,
+            # Endpoint for fetching license information
+            'licenseEndpoint': reverse("api_cc_license_get"),
+            # Site name (used for re-writing title)
+            'siteName': settings.STORYBASE_SITE_NAME,
         }
         if (self.template_object and  self.template_object.slug == settings.STORYBASE_CONNECTED_STORY_TEMPLATE):
             # TODO: If these settings apply in cases other than just

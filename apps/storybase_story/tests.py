@@ -1,6 +1,7 @@
 # vim: set fileencoding=utf-8 :
 """Unit tests for storybase_story app"""
 
+import datetime
 import json
 from time import sleep
 
@@ -10,6 +11,7 @@ from django.http import HttpRequest
 from django.test import TestCase
 from django.utils import simplejson
 
+from tastypie.bundle import Bundle
 from tastypie.test import ResourceTestCase
 
 from storybase.admin import toggle_featured
@@ -22,10 +24,10 @@ from storybase_help.models import create_help
 from storybase_story.api import (SectionAssetResource, SectionResource, 
                                  StoryResource)
 from storybase_story.forms import SectionRelationAdminForm
-from storybase_story.models import (Container, Story, StoryTranslation, 
+from storybase_story.models import (Container, Story, StoryTranslation,
     Section, SectionAsset, SectionLayout, SectionRelation, StoryTemplate,
     StoryRelation,
-    create_story, create_section)
+    create_story, create_section, set_asset_license)
 from storybase_story.templatetags.story import container
 from storybase_story.views import StoryBuilderView
 from storybase_taxonomy.models import Category, create_category
@@ -252,6 +254,7 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
                          "/stories/%s/build-connected/%s/" % 
                          (story.slug, story2.story_id))
 
+    # TODO: Move this sot StorySignalsTest
     def test_add_assets_signal(self):
         """
         Test that an asset is also added to the assets relation
@@ -364,6 +367,43 @@ class StoryPermissionTest(TestCase):
         perm = "change"
         self.assertTrue(self.story.has_perm(self.user1, perm))
         self.assertFalse(self.story.has_perm(self.user2, perm))
+
+
+class StorySignalsTest(TestCase):
+    """Tests for signals sent by the Story model"""
+    def test_set_asset_license(self):
+        """Test the set_asset_license signal handler"""
+
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status='published')
+        asset = create_html_asset(type='text', title='Test Asset', 
+                                  body='Test content')
+        story.assets.add(asset)
+        story.save()
+        self.assertEqual(story.license, '')
+        self.assertEqual(asset.license, '')
+        story.license = 'CC BY-NC-SA'
+        set_asset_license(sender=Story, instance=story)
+        asset = Asset.objects.get(pk=asset.pk)
+        self.assertEqual(asset.license, story.license)
+
+    def test_set_asset_license_connected(self):
+        """
+        Test that the set_asset_licsense handler works when the
+        a Story is saved.
+        """
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status='published')
+        asset = create_html_asset(type='text', title='Test Asset', 
+                                  body='Test content')
+        story.assets.add(asset)
+        story.save()
+        self.assertEqual(story.license, '')
+        self.assertEqual(asset.license, '')
+        story.license = 'CC BY-NC-SA'
+        story.save()
+        asset = Asset.objects.get(pk=asset.pk)
+        self.assertEqual(asset.license, story.license)
 
 
 class StoryAdminTest(TestCase):
@@ -1717,6 +1757,7 @@ class StoryResourceTest(ResourceTestCase):
                                 'contact_info',
                                 'created',
                                 'featured_asset_url',
+                                'language',
                                 'languages', 
                                 'last_edited',
                                 'license',
@@ -1808,6 +1849,10 @@ class StoryResourceTest(ResourceTestCase):
         self.assertEqual(created_story.status, post_data['status'])
         self.assertEqual(created_story.get_languages(), [post_data['language']])
         self.assertEqual(created_story.author, self.user)
+        # Check that the language returned in the response is the 
+        # same as the post
+        self.assertEqual(self.deserialize(response)['language'],
+                         post_data['language'])
         # Check that the story id is returned by the endpoint
         returned_story_id = response['location'].split('/')[-2]
         self.assertEqual(created_story.story_id, returned_story_id)
@@ -2020,6 +2065,17 @@ class StoryResourceTest(ResourceTestCase):
         story_ids = [story['story_id'] for story in self.deserialize(resp)['objects']]
         self.assertIn(story1.story_id, story_ids)
         self.assertIn(story2.story_id, story_ids)
+
+    def test_dehydrate_last_edited_return_tz_aware(self):
+        """
+        Test that the dehydrate_last_edited method returns a
+        timezone-aware value.
+        """
+        bundle = Bundle(data={
+            'last_edited': datetime.datetime(2012, 7, 24, 19, 0, 0, 0)
+        })
+        resource = StoryResource()
+        self.assertEqual('-0500', resource.dehydrate_last_edited(bundle).strftime('%z'))
 
 
 class SectionResourceTest(ResourceTestCase):

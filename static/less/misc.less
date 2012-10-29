@@ -22,14 +22,30 @@ ul.messages li.error {
 	color:@error-color;
 }
 
-ul.social { list-style:none; padding-top:12px;  }
-ul.social li { float:left; display:inline; padding-right:10px;  }
-ul.social li a { width:24px; height:24px; float:left; display:inline; background:url('../img/social.png') no-repeat 0 0; font-size: 0; line-height: 0; text-indent: -4000px;  }
-ul.social li a:hover { opacity:0.7; }
-ul.social li.icon1 a { background-position:0 0; }
-ul.social li.icon2 a { background-position:-34px 0; }
-ul.social li.icon3 a { background-position:-67px 0; }
+ul.social { 
+  list-style:none; padding-top:12px;  
 
+  li {
+    float:left; display:inline; padding-right:10px; 
+    
+    a { 
+      width:24px; 
+      height:24px; 
+      float:left; 
+      display:inline; 
+      background:url('../img/social.png') no-repeat 0 0; 
+      font-size: 0; 
+      line-height: 0; 
+      text-indent: -4000px;  
+
+      &:hover { opacity:0.7; }
+    }
+
+    &.rss a  { background-position:0 0; }
+    &.twitter a { background-position:-34px 0; }
+    &.facebook a { background-position:-67px 0; }
+  }
+}
 
 #slideContainer .back { width:26px; height:46px; background:url('../img/slider-arrows3.png') no-repeat 0 0; display:block; font-size: 0; line-height: 0; text-indent: -4000px; position:absolute; top:74px; left:76px; z-index: 500; }
 #slideContainer .forward {  width:26px; height:46px; background:url('../img/slider-arrows3.png') no-repeat right 0; display:block; font-size: 0; line-height: 0; text-indent: -4000px; position:absolute; top:74px; right:0; z-index: 500; }
@@ -44,7 +60,7 @@ ul.social li.icon3 a { background-position:-67px 0; }
 #main .full-width { padding-bottom:27px;  overflow:visible !important; margin-top:20px;  }
 #main .full-width .image { width:335px; float:left; display:inline;  padding-left:76px;   }
 #main .text { margin-top:4px; float:right; display:inline; width:490px;   padding-right:76px;   }
-#main .text p { font-size:12px; line-height:16px; color:#5a5a5a; .plain-serif-text; }
+#main .text p { color:#5a5a5a; .plain-serif-text; }
 #main .text p.byline { font-size:12px; color:@gray; font-style:italic; display:block; padding-bottom:10px;  }
 #main .text p.more a { font-size:14px; color:@orange;  font-family: 'MuseoSlab500Regular'; display:block; margin-top:15px;  }
 
@@ -59,9 +75,6 @@ p.byline { overflow: hidden; font-style:italic; }
 	font-size:18px; 
 	color:@highlight-blue; 
 	padding-top:10px;
-	a {
-		color:@highlight-blue;
-	}
 }
 
 #main .col ul .text,

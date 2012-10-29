@@ -209,6 +209,7 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     this.$el.prepend(this.counterView.el);
     this.filterView.render();
     this.$el.prepend(this.filterView.el);
+    this.$el.prepend('<div id="filter-proxy"></div>');
     this.filterView.setInitialProperties();
     this.$el.append(this.storyListView.el);
     this.$el.append(this.mapView.el);
@@ -636,10 +637,12 @@ storybase.explorer.views.Filters = Backbone.View.extend({
   scrollWindow: function(ev) {
     var scrollTop = $(window).scrollTop();
     if (scrollTop > this.initialOffset.top) {
+      $('#filter-proxy').addClass('shown').height(this.$el.outerHeight() + 'px');
       this.$el.addClass('sticky');
       this.$el.width(this.initialWidth);
     }
     else {
+      $('#filter-proxy').removeClass('shown');
       this.$el.removeClass('sticky');
     }
   }

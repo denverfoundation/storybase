@@ -6,6 +6,10 @@ from django.db import models
 class LicensedModel(models.Model):
     """Abstract base class for models with a license"""
     # Class "constants"
+    # For now, we don't set a default value on the field so we
+    # can differentiate between the state where the user has
+    # selected the license and when they haven't.  If we did set a
+    # default, this would be it
     DEFAULT_LICENSE = 'CC BY-NC-SA'
 
     LICENSES = (
@@ -20,7 +24,7 @@ class LicensedModel(models.Model):
 
     # Fields
     license = models.CharField(max_length=25, choices=LICENSES,
-                               default=DEFAULT_LICENSE)
+                               blank=True)
 
     class Meta:
         """Model metadata options"""

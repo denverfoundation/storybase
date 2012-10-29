@@ -16,10 +16,9 @@
 
     <meta name="description" content="">
     <meta name="author" content="">
-    <title>{%trans "Story Builder" %}</title>
 
-    {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/1140.css">{% endaddtoblock %}
-    {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/backbone-forms/templates/default.css">{% endaddtoblock %}
+    <title>{{ storybase_site_name }} | {% trans "Story Builder" %}</title>
+
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/select2/select2.css">{% endaddtoblock %}
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/leaflet/leaflet.css">{% endaddtoblock %}
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/guiders/guiders-1.2.8.css">{% endaddtoblock %}
@@ -56,14 +55,22 @@
 
   <body class="story-builder">
     <div id="builder">
-        <header class="navbar container">
-            <div class="row">
-                <h1 class="title">{{ storybase_site_name }} {% trans "Story Builder" %}</h1>
+        <header id="header">
+            <div id="title-bar">
+                <div id="title-bar-contents">
+                    <h1 class="title">{{ storybase_site_name }} {% trans "Story Builder" %}</h1>
+                </div>
             </div>
+            <div id="workflow-bar">
+                <div id="workflow-bar-contents"></div>
+            </div>
+            <div id="subnav-bar">
+                <div id="subnav-bar-contents"></div>
+            </div>
+            <div id="alerts"></div>
         </header>
-        <div id="alerts" class="alerts"></div>
-        <div id="nav-container"></div>
         <div id="app"></div>
+        <div id="drawer-container"></div>
     </div>
 
     <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline -->
@@ -77,9 +84,8 @@
     <script src="{{ STATIC_URL }}js/libs/json2.js"></script>
     <script src="{{ STATIC_URL }}js/libs/backbone-min.js"></script>
     <script src="{{ STATIC_URL }}js/libs/handlebars-1.0.0.beta.6.js"></script>
-    <script src="{{ STATIC_URL }}js/libs/backbone-forms/backbone-forms.min.js"></script>
     <!-- Default styles for backbone forms templates are included above -->
-    <script defer src="{{ STATIC_URL }}js/libs/jquery.simplemodal.1.4.2.min.js"></script>
+    <script src="{{ STATIC_URL }}js/libs/backbone-forms/backbone-forms.min.js"></script>
     <!-- TODO: Finalize editor matching views -->
     <script src="{{ STATIC_URL}}js/libs/wysihtml5/advanced.js"></script>
     <script src="{{ STATIC_URL}}js/libs/wysihtml5/wysihtml5-0.3.0.min.js"></script>
@@ -90,6 +96,8 @@
     <script src="{{ STATIC_URL }}js/libs/jquery.cookie.js"></script>
     <script src="{{ STATIC_URL }}js/libs/guiders/guiders-1.2.8.js"></script>
     <script src="{{ STATIC_URL }}js/libs/tooltipster-1.2/js/jquery.tooltipster.min.js"></script>
+
+    <script src="{{ STATIC_URL }}js/builder/jquery.graphicselect.js"></script>
 
     <script src="{{ STATIC_URL }}js/utils.js"></script>
     <script src="{{ STATIC_URL }}js/forms.js"></script>
@@ -114,6 +122,7 @@
             el: $('#builder'),
             dispatcher: storybase.builder.globals.dispatcher,
             help: new Backbone.Collection,
+            language: '{{ LANGUAGE_CODE }}',
             layouts: {{ layouts_json }},
             organizations: {{ organizations_json }},
             places: {{ places_json }},

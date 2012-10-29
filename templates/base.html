@@ -32,9 +32,8 @@
   <!-- CSS: implied media=all -->
   <!-- CSS concatenated and minified via ant build script-->
 
-  <!-- custom 1000px grid based on 960 grid, http://960.gs -->
-  {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/grid.css">{% endaddtoblock %}
   {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/flexslider.css">{% endaddtoblock %}
+  <!-- These styles make use of the awesome Font Awesome - http://fortawesome.github.com/Font-Awesome/ -->
   {% if debug %}
   {% addtoblock "css" %}<link rel="stylesheet/less" type="text/css" href="{{ STATIC_URL }}less/base.less">{% endaddtoblock %}
   {% else %}
@@ -65,7 +64,7 @@
 				<ul class="top-nav">
 					<li>{% language_chooser %}</li>
                     <li><a href="{% url contact %}">{% trans "Contact Us" %}</a></li>
-                    <li><a href="#">{% trans "Help" %}</a></li>
+                    <li><a href="{% page_url "help" %}">{% trans "Help" %}</a></li>
 					{% if user.is_authenticated %}
                     <li><a href="{% url account_summary %}">{% trans "Hi" %}, {{ user.first_name }}</a></li>
 					{% else %}
@@ -73,11 +72,16 @@
 					{% endif %}
 				</ul>
 				<div class="cl">&nbsp;</div>
+                {# TODO: Enable search #} 
+                {% comment %}
 				<form id="search" action="" method="post">
 					<input type="text" class="field" value="" />
 					<input type="submit" class="submit" value="" />
 					<div class="cl">&nbsp;</div>
 				</form>
+                {% endcomment %}
+                {# HACK: Take up the same amount of space as the search form #}
+                <div id="search-placeholder"></div>
 			</div>
 			<div class="cl">&nbsp;</div>
 		</div>
@@ -103,20 +107,27 @@
 			<div class="left">
 				<p>{% trans "Copyright 2012 The Floodlight Project. All rights reserved." %}</p>
 				<ul class="social">
-					<li class="icon1"><a href="#">rss</a></li>
-					<li class="icon2"><a href="#">twitter</a></li>
-					<li class="icon3"><a href="#">facebook</a></li>
+                    {# TODO: Enable Facebook/RSS icons when they're ready #}
+                    {% comment %}
+					<li class="rss"><a href="#">rss</a></li>
+                    {% endcomment %}
+                    <li class="twitter"><a href="http://twitter.com/floodlightstory" title="{% trans "Twitter" %}">{% trans "Twitter" %}</a></li>
+                    {% comment %}
+					<li class="facebook"><a href="#">facebook</a></li>
+                    {% endcomment %}
 				</ul>
 			</div>
 			<div class="right">
 				<ul>
-					<li><a href="#"></a>{% trans "Home" %}</li>
-					<li><a href="#">{% trans "About" %}</a></li>
-					<li><a href="#">{% trans "Explore Floodlight" %}</a></li>
-					<li><a href="#">{% trans "Get Involved" %}</a></li>
-					<li class="middle"><a href="#">{% trans "News &amp; Updates" %}</a></li>
-                    <li class="last"><a href="{% page_url "policies" %}">{% trans "Privacy Policy" %}</a></li>
-					<li class="last"><a href="#">{% trans "Licensing Information" %}</a></li>
+					<li><a href="/"></a>{% trans "Home" %}</li>
+                    <li><a href="{% page_url "story-builder-landing" %}">{% trans "Story Builder" %}</a></li>
+                    <li><a href="{% url explore_stories %}">{% trans "Explore" %} {{ storybase_site_name }}</a></li>
+                    <li><a href="{% page_url "grow-your-skills" %}">{% trans "Grow Your Skills" %}</a></li>
+                    <li><a href="{% page_url "about" %}">{% trans "About" %}</a></li>
+                    <li class="middle"><a href="{% url account_summary %}">{% trans "My Account" %}</a></li>
+                    <li class="last"><a href="{% url contact %}">{% trans "Contact Us" %}</a></li>
+                    <li class="last"><a href="{% page_url "help" %}">{% trans "Help" %}</a></li>
+                    <li class="last"><a href="{% page_url "policies" %}">{{ storybase_site_name|default:"Floodlight" }} {% trans "Policies" %}</a></li>
 				</ul>
 			</div>
 			<div class="cl">&nbsp;</div>

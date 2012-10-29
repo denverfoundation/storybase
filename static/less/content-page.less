@@ -5,7 +5,7 @@
 }
 .content-page {
 	h3 span { position:relative; }
-	
+
 	/* generic content page: probably cms-driven */
 	&.generic {
 		padding-bottom:34px; 
@@ -13,37 +13,22 @@
 		
 		/* generic text content */
 		.content-block {
-			p, ul, ol {
-				font-size:12px; 
-				color:#5a5a5a; 
-				line-height:16px;
-				font-family:Georgia, 'Times New Roman', Serif;
-				margin-bottom: 20px;
-				
-				a {
-					color:@highlight-blue;
-				}
-			}
-			ul, ol {
-				padding-left: 20px;
-			}
-			ul li {
-				list-style-type: square;
-			}
-			ol li {
-				list-style-type: decimal;
-			}
+			.body-copy;
+			.body-copy-lists;
 			
 			h2, h3, h4, h5 {
 				.plain-serif-text;
 				text-align:left;
 				background:none;
-				margin-bottom:0;
-				color:@gray;
+				margin-bottom:0.2em;
+			}
+			h3, h4, h5 {
+			  color:@almost-black;
 			}
 			h4.first { 
 				font-size:(@top-header-size * .8);
 				line-height:27px;
+				color:@dark-gray;
 				.plain-serif-text;
 				.default-margin-bottom;
 			}
@@ -77,11 +62,9 @@
 				}
 			}
 			p { 
-				font-size:12px; 
 				color:#5a5a5a; 
 				line-height:16px; 
 				padding-bottom:12px;
-				font-family:Georgia, 'Times New Roman', Serif;
 				a {
 					color:@highlight-blue;
 				}
@@ -91,7 +74,6 @@
 					font-family: 'MuseoSlab500Regular';
 				}
 				strong { 
-					font-family:Georgia, 'Times New Roman', Serif; 
 					font-size:14px; 
 					color:#666;
 				}
@@ -154,8 +136,6 @@
 			list-style:disc !important;
 		}
 		.object-metadata {
-			font-family:Georgia, 'Times New Roman', Serif; 
-			font-size:12px; 
 			color:#444;
 			margin: 20px 0;
 			
@@ -188,3 +168,20 @@
 		}
 	}
 }
+
+// Help Page
+.faq-section, .faq-question {
+  color: @orange !important;
+}
+
+.faq-question {
+  // Eventually these might toggle expanding/collapsing the
+  // answer, so make the cursor a pointer so it appears like a
+  // link
+  cursor: pointer;
+
+  &:before {
+    padding-right: 0.66em;
+  }
+}
+

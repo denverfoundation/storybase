@@ -55,6 +55,7 @@ describe('SectionEditView view', function() {
         }
       });
       var Story = Backbone.Model.extend({
+        assets: new Backbone.Collection,
         url: function() {
           return '/api/0.1/stories/357c5885c4e844cb8a4cd4eebe912a1c/';
         }
@@ -142,8 +143,9 @@ describe('SectionAssetEditView view', function() {
     ];
     this.dispatcher = _.clone(Backbone.Events);
     this.view = new storybase.builder.views.SectionAssetEditView({
-       dispatcher: this.dispatcher,
        assetTypes: this.assetTypes,
+       dispatcher: this.dispatcher,
+       story: new Backbone.Model
     });
   });
 
@@ -356,3 +358,139 @@ describe('SectionAssetEditView view', function() {
   });
 });
 
+describe('DrawerButtonView', function() {
+  beforeEach(function() {
+    this.dispatcher = _.clone(Backbone.Events);
+    this.parentView = new Backbone.View;
+    this.view = new storybase.builder.views.DrawerButtonView({
+      callback: function(evt) {
+        return true;
+      },
+      dispatcher: this.dispatcher,
+      parent: this.parentView
+    });
+  });
+
+  describe('when clicking on the button', function() {
+    beforeEach(function() {
+      this.spy = sinon.spy();
+      this.dispatcher.on('do:toggle:drawer', this.spy);
+      this.view.$el.trigger('click');
+    });
+
+    it('triggers a "do:toggle:drawer" event with the parent view as an argument', function() {
+      expect(this.spy.calledWith(this.parentView)).toBeTruthy();
+    });
+  });
+});
+
+describe('DrawerView', function() {
+  beforeEach(function() {
+    var MockInDrawerView = Backbone.View.extend({
+      initialize: function() {
+        this.dispatcher = this.options.dispatcher;
+      },
+      drawerButton: function() {
+        return new storybase.builder.views.DrawerButtonView({
+          dispatcher: this.dispatcher,
+          buttonId: this.options.testViewId,
+          title: this.options.testViewId,
+          text: this.options.testViewId,
+          callback: function(evt) {
+            return true;
+          },
+          parent: this
+        });
+      },
+      drawerOpenEvents: '',
+      drawerCloseEvents: '',
+      show: function() {},
+      hide: function() {}
+    });
+    this.dispatcher = _.clone(Backbone.Events);
+    this.inDrawer1 = new MockInDrawerView({
+      testViewId: 'test',
+    });
+    this.inDrawer2 = new MockInDrawerView({
+      testViewId: 'test2',
+    });
+    this.view = new storybase.builder.views.DrawerView({
+      dispatcher: this.dispatcher
+    });
+    this.view.registerView(this.inDrawer1);
+    this.view.registerView(this.inDrawer2);
+  });
+
+  describe('when closed', function() {
+    beforeEach(function() {
+      this.view.close();
+    });
+
+    describe('and receiving a "do:toggle:drawer" event', function() {
+      beforeEach(function() {
+        this.dispatcher.trigger('do:toggle:drawer', this.inDrawer1);
+      });
+
+      it('should set the drawer state to open', function() {
+        expect(this.view.isOpen()).toBeTruthy();
+      });
+
+      it('the drawer contents element should be visible', function() {
+        var $contentsEl = this.view.$(this.view.options.contentsEl);
+        expect($contentsEl.css('display')).toNotEqual('none');
+      });
+
+      it('the active view should be the one passed with the event', function() {
+        expect(this.view.activeView().cid).toEqual(this.inDrawer1.cid);
+      });
+    });
+  });
+
+  describe('when opened', function() {
+    describe('with a view', function() {
+      beforeEach(function() {
+        this.view.open(this.inDrawer1);
+        expect(this.view.isOpen()).toBeTruthy();
+        this.activeView = this.view.activeView();
+      });
+
+      describe('and receiving a "do:toggle:drawer" event with the active view', function() {
+        beforeEach(function() {
+          this.dispatcher.trigger('do:toggle:drawer', this.inDrawer1);
+        });
+
+        it('should set the drawer state to closed', function() {
+          expect(this.view.isOpen()).toBeFalsy();
+        });
+
+        it('the drawer contents element should be hidden', function() {
+          var $contentsEl = this.view.$(this.view.options.contentsEl);
+          expect($contentsEl.css('display')).toEqual('none');
+        });
+
+        it('the active view should remain unchanged', function() {
+          expect(this.view.activeView().cid).toEqual(this.activeView.cid);
+        });
+      });
+
+      describe('and receiving a "do:toggle:drawer" event with a different view', function() {
+        beforeEach(function() {
+          this.dispatcher.trigger('do:toggle:drawer', this.inDrawer2);
+        });
+
+        it('the drawer state should remain open', function() {
+          expect(this.view.isOpen()).toBeTruthy();
+        });
+
+        it('the drawer contents element should be visible', function() {
+          var $contentsEl = this.view.$(this.view.options.contentsEl);
+          expect($contentsEl.css('display')).toNotEqual('none');
+        });
+
+        it('the active view should be the one passed with the event', function() {
+          expect(this.view.activeView().cid).toEqual(this.inDrawer2.cid);
+        });
+      });
+    });
+  });
+});

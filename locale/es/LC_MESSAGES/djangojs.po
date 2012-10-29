@@ -8,7 +8,7 @@ msgid ""
 msgstr ""
 "Project-Id-Version: PACKAGE VERSION\n"
 "Report-Msgid-Bugs-To: \n"
-"POT-Creation-Date: 2012-05-31 23:40-0500\n"
+"POT-Creation-Date: 2012-10-22 10:16-0500\n"
 "PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
 "Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
 "Language-Team: LANGUAGE <LL@li.org>\n"
@@ -98,6 +98,9 @@ msgstr ""
 
 #: sitestatic/admin/js/admin/DateTimeShortcuts.js:91
 #: sitestatic/admin/js/admin/DateTimeShortcuts.js:188
+#: sitestatic/js/builder/views.js:3008 sitestatic/js/builder/views.js:3015
+#: static/js/builder/views.js:3231 static/js/builder/views.js.py:3238
+#: static/js/builder/views.js:4822
 msgid "Cancel"
 msgstr ""
 
@@ -138,10 +141,758 @@ msgstr ""
 msgid "Are you sure you want to delete this plugin?"
 msgstr ""
 
-#: static/js/viewer/views.js:466
+#: sitestatic/js/builder/views.js:523 static/js/builder/views.js:824
+msgid ""
+"Construct your story using text, photos, videos, data visualizations, and "
+"other materials"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:524 static/js/builder/views.js:825
+msgid "Build"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:533 static/js/builder/views.js:834
+msgid ""
+"Upload or link to source data referenced in your story’s charts, maps, "
+"graphs and visualizations"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:534 static/js/builder/views.js:835
+msgid "Add Data"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:544 static/js/builder/views.js:845
+msgid ""
+"Label your story with topics and places so that people can easily discover "
+"it on Floodlight"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:545 sitestatic/js/builder/views.js:3310
+#: static/js/builder/views.js:846 static/js/builder/views.js.py:3510
+msgid "Tag"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:556 static/js/builder/views.js:857
+msgid "Make sure your story is ready to go"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:557 static/js/builder/views.js:858
+#: static/js/builder/views.js.py:3742
+msgid "Review"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:567 static/js/builder/views.js:868
+msgid "Post your story to Floodlight and your social networks"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:568 static/js/builder/views.js:869
+msgid "Publish/Share"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:627
+msgid "Get storytelling tips for the section you're currently editing"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:628 static/js/builder/views.js:510
+#: static/js/builder/views.js.py:511
+msgid "Help"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:634 static/js/builder/views.js:1731
+msgid "Show a list of assets you removed from your story"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:635 static/js/builder/views.js:1730
+msgid "Assets"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:641 static/js/builder/views.js:930
+msgid "Preview your story in a new window"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:642 static/js/builder/views.js:931
+msgid "Preview"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:649 static/js/builder/views.js:938
+msgid "Leave your story and start a new one with a different template"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:650 static/js/builder/views.js:939
+msgid "Start Over"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:656 static/js/builder/views.js:945
+msgid ""
+"Leave the Story Builder and go back to the homepage. You can always return "
+"later"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:657 static/js/builder/views.js:946
+msgid "Exit"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:876 sitestatic/js/builder/views.js.py:894
+#: sitestatic/js/builder/views.js:914 sitestatic/js/builder/views.js.py:933
+#: sitestatic/js/builder/views.js:952 sitestatic/js/builder/views.js.py:971
+#: sitestatic/js/builder/views.js:989 static/js/builder/views.js:1142
+#: static/js/builder/views.js.py:1160 static/js/builder/views.js:1180
+#: static/js/builder/views.js.py:1199 static/js/builder/views.js:1218
+#: static/js/builder/views.js.py:1237 static/js/builder/views.js:1255
+#: static/js/builder/views.js.py:1360 static/js/builder/views.js:1370
+#: static/js/builder/views.js.py:3511 static/js/builder/views.js:3679
+#: static/js/builder/views.js.py:3743
+msgid "Next"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:881 static/js/builder/views.js:1147
+msgid "Building a story takes five simple steps."
+msgstr ""
+
+#: sitestatic/js/builder/views.js:890 sitestatic/js/builder/views.js.py:910
+#: sitestatic/js/builder/views.js:929 sitestatic/js/builder/views.js.py:948
+#: sitestatic/js/builder/views.js:967 sitestatic/js/builder/views.js.py:985
+#: static/js/builder/views.js:1156 static/js/builder/views.js.py:1176
+#: static/js/builder/views.js:1195 static/js/builder/views.js.py:1214
+#: static/js/builder/views.js:1233 static/js/builder/views.js.py:1251
+#: static/js/builder/views.js:1275
+msgid "Prev"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:899 static/js/builder/views.js:1165
+msgid "This is your table of contents."
+msgstr ""
+
+#: sitestatic/js/builder/views.js:901 static/js/builder/views.js:1167
+msgid ""
+"This bar shows the sections in your story. You can hide the bar by clicking "
+"on the tab that says \"Story Sections.\""
+msgstr ""
+
+#: sitestatic/js/builder/views.js:919 static/js/builder/views.js:1185
+msgid "Select the section you want to edit."
+msgstr ""
+
+#: sitestatic/js/builder/views.js:920 static/js/builder/views.js:1186
+msgid ""
+"Click on a section to edit it. The section you are actively editing is "
+"highlighted."
+msgstr ""
+
+#: sitestatic/js/builder/views.js:938 static/js/builder/views.js:1204
+msgid "You can also add, move or delete sections."
+msgstr ""
+
+#: sitestatic/js/builder/views.js:957 static/js/builder/views.js:1223
+msgid "Preview your story at any time."
+msgstr ""
+
+#: sitestatic/js/builder/views.js:958 static/js/builder/views.js:1224
+msgid "Clicking here lets you preview your story in a new window"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:976 static/js/builder/views.js:1242
+msgid "You can leave your story at any time and come back later."
+msgstr ""
+
+#: sitestatic/js/builder/views.js:995 static/js/builder/views.js:1261
+msgid "Get tips on how to make a great story."
+msgstr ""
+
+#: sitestatic/js/builder/views.js:996 static/js/builder/views.js:1262
+msgid ""
+"Clicking the \"Help\" button shows you tips for the section you're currently "
+"editing."
+msgstr ""
+
+#: sitestatic/js/builder/views.js:1009 static/js/builder/views.js:1279
+msgid "Close"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:1016 static/js/builder/views.js:1286
+msgid "Need even more tips?"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:1017 static/js/builder/views.js:1287
+msgid ""
+"You can find out more about many of the buttons and links by hovering over "
+"them with your mouse. You can also hover over the “Help” icons."
+msgstr ""
+
+#: sitestatic/js/builder/views.js:1085 static/js/builder/views.js:1359
+msgid "Add Data to Your Story"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:1093 sitestatic/js/builder/views.js:3474
+#: static/js/builder/views.js:1369 static/js/builder/views.js.py:3678
+msgid "Publish My Story"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:1319 static/js/builder/views.js:1595
+msgid "Failed fetching container templates"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:1366
+msgid "Floodlight Story Builder"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:1383 static/js/builder/views.js:1656
+msgid "You must give your story a title"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:1390 static/js/builder/views.js:1663
+msgid "You didn't fill out all the assets in the template"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:1888 static/js/builder/views.js:2166
+msgid "Story Information"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:1889 static/js/builder/views.js:2167
+msgid ""
+"This section has basic information people will see when browsing stories on "
+"the site"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:1899 static/js/builder/views.js:2177
+msgid "Call to Action"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:1900 static/js/builder/views.js:2178
+msgid "Inspire your readers to act after they read your story"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:1964
+msgid "You can hide or reveal the table of contents bar by clicking here"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:2009 static/js/builder/views.js:2269
+msgid "Error removing section"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:2014 static/js/builder/views.js:2274
+msgid "Are you sure you want to delete the section"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:2024 static/js/builder/views.js:2284
+msgid "You must have at least one section"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:2045 static/js/builder/views.js:2305
+msgid "New Section"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:2333 sitestatic/js/builder/views.js:2334
+#: sitestatic/js/builder/views.js:2381 sitestatic/js/builder/views.js:2382
+#: sitestatic/js/builder/views.js:2595 sitestatic/js/builder/views.js:2596
+msgid "Click to edit title"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:2338 sitestatic/js/builder/views.js:2339
+#: sitestatic/js/builder/views.js:2386 sitestatic/js/builder/views.js:2387
+msgid "Click to edit byline"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:2763 static/js/builder/views.js:2992
+msgid ""
+"The assets in the section you removed aren't gone forever.  You can re-add "
+"them from the asset list"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:2782 static/js/builder/views.js:3011
+msgid "The section  \""
+msgstr ""
+
+#: sitestatic/js/builder/views.js:2903 static/js/builder/views.js:3126
+msgid "or"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:2905 static/js/builder/views.js:3128
+msgid "enter"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:2905 static/js/builder/views.js:3128
+msgid "URL"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:2908 static/js/builder/views.js:3131
+msgid "select an image from your own computer to be included in your story."
+msgstr ""
+
+#: sitestatic/js/builder/views.js:2915 static/js/builder/views.js:3138
+msgid "enter the quotation text"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:2918 static/js/builder/views.js:3141
+msgid "paste the embed code for the"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:3009 static/js/builder/views.js:3232
+msgid "Save"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:3010 static/js/builder/views.js:3233
+msgid "Click to edit"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:3011 static/js/builder/views.js:3234
+msgid "Click to edit caption"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:3015 static/js/builder/views.js:3238
+#: static/js/builder/views.js.py:4822
+msgid "Save Changes"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:3126 static/js/builder/views.js:3356
+msgid "Uploading"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:3196 static/js/builder/views.js:3426
+msgid ""
+"Click on \"Add your image,\" then enter a URL or upload an image from your "
+"computer. If you’d like to add a different type of asset, click below."
+msgstr ""
+
+#: sitestatic/js/builder/views.js:3197 static/js/builder/views.js:3427
+msgid ""
+"Click on “Add your text,” and start typing. If you’d like to add a different "
+"type of asset, click below."
+msgstr ""
+
+#: sitestatic/js/builder/views.js:3305 static/js/builder/views.js:3503
+#: static/js/builder/views.js.py:4512
+msgid "Continue Writing Story"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:3328 static/js/builder/views.js:3529
+msgid "Data set name"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:3329 static/js/builder/views.js:3530
+msgid "Data source"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:3330 static/js/builder/views.js:3531
+msgid "Link to a data set"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:3331 static/js/builder/views.js:3532
+msgid "Or, upload a data file from your computer"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:3469 static/js/builder/views.js:3671
+msgid "Back to Tag"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:3530 static/js/forms.js:61
+msgid "You must check this checkbox"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:3968 static/js/builder/views.js:3987
+msgid "Searching ..."
+msgstr ""
+
+#: sitestatic/js/builder/views.js:3976 static/js/builder/views.js:3995
+msgid "No address found"
+msgstr ""
+
+#: sitestatic/js/builder/views.js:4487 static/js/builder/views.js:4899
+msgid "Error saving the featured image"
+msgstr ""
+
+#: sitestatic/js/viewer/views.js:491 static/js/viewer/views.js:491
 msgid "Topic Map"
 msgstr ""
 
-#: static/js/viewer/views.js:485
+#: sitestatic/js/viewer/views.js:510 static/js/viewer/views.js:510
 msgid "Read more"
 msgstr ""
+
+#: static/js/builder/views.js:1718
+msgid "Last Saved"
+msgstr ""
+
+#: static/js/builder/views.js:3504 static/js/builder/views.js.py:3672
+#: static/js/builder/views.js:3736 static/js/builder/views.js.py:4504
+#: static/js/builder/views.js:4513
+msgid "Previous"
+msgstr ""
+
+#: static/js/builder/views.js:3735
+msgid "Back to Add Data"
+msgstr ""
+
+#: static/js/builder/views.js:3781
+msgid "Click to select topics"
+msgstr ""
+
+#: static/js/builder/views.js:3786
+msgid "Click to select places"
+msgstr ""
+
+#: static/js/builder/views.js:3791
+msgid "Click to select organizations"
+msgstr ""
+
+#: static/js/builder/views.js:3796
+msgid "Click to select projects"
+msgstr ""
+
+#: static/js/builder/views.js:4308
+msgid "You selected the "
+msgstr ""
+
+#: static/js/builder/views.js:4308
+msgid "license."
+msgstr ""
+
+#: static/js/builder/views.js:4338
+msgid "Select a license"
+msgstr ""
+
+#: static/js/builder/views.js:4425
+msgid "Select License"
+msgstr ""
+
+#: static/js/builder/views.js:4503
+msgid "Back to Review"
+msgstr ""
+
+#: static/js/builder/views.js:4640
+msgid "You need to "
+msgstr ""
+
+#: static/js/builder/views.js:4710
+msgid "Select a featured image"
+msgstr ""
+
+#: static/js/builder/views.js:4786
+msgid "enter the featured image URL"
+msgstr ""
+
+#: static/js/builder/views.js:4789
+msgid "select the featured image from your own computer"
+msgstr ""
+
+msgid "Remove section"
+msgstr ""
+
+msgid "Add a section"
+msgstr ""
+
+msgid "Edit next section"
+msgstr ""
+
+msgid "Edit previous section"
+msgstr ""
+
+msgid "Examples"
+msgstr ""
+
+msgid "Tip"
+msgstr ""
+
+msgid "Best for"
+msgstr ""
+
+msgid "Recommended ingredients"
+msgstr ""
+
+msgid "Level"
+msgstr ""
+
+msgid "Time needed"
+msgstr ""
+
+msgid "You can <strong>customize</strong> some templates by adding and reordering sections, and you can always <strong>start over</strong> by choosing a new template."
+msgstr ""
+
+msgid "Some templates are better for video, some for data, and some for text. Some templates are short and sweet, others are lengthier and more involved. Below, we’ve given you some tips for picking a template based on the time it takes and the type of story you are telling. You can also get to know a template by exploring stories people have made with it."
+msgstr ""
+
+msgid "A template is a tried and true story structure you can populate with your own pictures, text, media, data and more."
+msgstr ""
+
+msgid "Choose a template to start building your story."
+msgstr ""
+
+msgid "You can get back to your story through the \"My Stories\" menu in \"My Account.\""
+msgstr ""
+
+msgid "Stories are saved automatically whenever you make changes, so you’ll be able to pick up exactly where you left off."
+msgstr ""
+
+msgid "To delete a section, click on the \"X\" that appears when you hover over it."
+msgstr ""
+
+msgid "To move a section, click on it and drag it to it's new position."
+msgstr ""
+
+msgid "To add a section, move your mouse between two existing sections and click \"Add a section.\""
+msgstr ""
+
+msgid "Post your story to Floodlight and your social networks."
+msgstr ""
+
+msgid "Make sure your story is ready to go with spellcheck and other tools."
+msgstr ""
+
+msgid "Label your story with topics and places so that people can easily discover it on Floodlight."
+msgstr ""
+
+msgid "Upload or link to source data referenced in your story’s charts, maps, graphs and visualizations."
+msgstr ""
+
+msgid "Construct your story using text, photos, videos, data visualizations, and other materials."
+msgstr ""
+
+msgid "Clicking on these tabs lets you switch between the different steps in the story building process. You can always move freely between the steps."
+msgstr ""
+
+msgid "Type in your own search terms."
+msgstr ""
+
+msgid "Search Keywords"
+msgstr ""
+
+msgid "delete"
+msgstr ""
+
+msgid "Add Address"
+msgstr ""
+
+msgid "Enter a name for this address (optional)"
+msgstr ""
+
+msgid "Make this a Connected Story"
+msgstr ""
+
+msgid "Give your readers a clear way to contribute by asking them to add a mini Photovoice story. Prompt your readers with a specific question they can answer through a photo and a caption. "
+msgstr ""
+
+msgid "Create a Connected Story to collect audience feedback"
+msgstr ""
+
+msgid "Click to edit the call to action"
+msgstr ""
+
+msgid "Edit your byline"
+msgstr ""
+
+msgid "Edit your title"
+msgstr ""
+
+msgid "Click to edit the summary"
+msgstr ""
+
+msgid "View agreement"
+msgstr ""
+
+msgid "You signed off on the legal agreement"
+msgstr ""
+
+msgid "In order to publish and share your story, you need to double-check a few legal details."
+msgstr ""
+
+msgid "Read the Floodlight Terms of Service"
+msgstr ""
+
+msgid "Congratulations, your story has been published. If you decide you'd like to view or unpublish your story, use the button below"
+msgstr ""
+
+msgid "Looks like you're all set. When you're ready click the \"Publish My Story\" button."
+msgstr ""
+
+msgid "Let your story be heard! Spread the word by sharing it with your social networks, printing a copy, or embeding it on your own website."
+msgstr ""
+
+msgid "Unpublish My Story"
+msgstr ""
+
+msgid "View my story"
+msgstr ""
+
+msgid "Preview Story"
+msgstr ""
+
+msgid "Congratulations on writing your story! We're checking things out right now and making sure everything looks good. Preview your story to see how it will look on Floodlight once it’s published."
+msgstr ""
+
+msgid "Download data"
+msgstr ""
+
+msgid "Source"
+msgstr ""
+
+msgid "Name this Address"
+msgstr ""
+
+msgid "optional"
+msgstr ""
+
+msgid "Search"
+msgstr ""
+
+msgid "Enter an address"
+msgstr ""
+
+msgid "Where did your story happen? Linking your story to an address will let people find it on a map. Add as many addresses as you want."
+msgstr ""
+
+msgid "Mapping"
+msgstr ""
+
+msgid "If you are a member of an organization or project, you can also add those. Stories can be in multiple projects or organizations."
+msgstr ""
+
+msgid "For topics and places, choose from the list that appears when you click in the boxes below. Topics include categories like \"Crime and Justice\" or \"Education.\" Places include neighborhoods, cities and zip codes. Add as many places or topics as you want."
+msgstr ""
+
+msgid "Tags"
+msgstr ""
+
+msgid "Label your story with topics and places so that people can easily discover it on Floodlight. The more information you add here, the more others can connect with your story."
+msgstr ""
+
+msgid "No"
+msgstr ""
+
+msgid "Yes, as long as others can share alike"
+msgstr ""
+
+msgid "Yes"
+msgstr ""
+
+msgid "Change license"
+msgstr ""
+
+msgid "I participate in Floodlight’s cooperative distribution by publishing my story under a Creative Commons license. This means that I remain the owner of this story, but that my content can be featured on the site and redistributed by others. Learn more about Creative Commons."
+msgstr ""
+
+msgid "If this story has any photos or videos of children (under 18), I have obtained the proper parent or guardian release forms (a sample release form is available here)"
+msgstr ""
+
+msgid "I have properly cited or credited any content that I did not create myself."
+msgstr ""
+
+msgid "The content in this story doesn’t violate copyright law or infringe on a third party’s trademark, trade secret, proprietary data or patent"
+msgstr ""
+
+msgid "I have the necessary ownership/rights/permissions to legally distribute the content in this story."
+msgstr ""
+
+msgid "Add as many data sets as you like."
+msgstr ""
+
+msgid "You can upload data sets from your computer if they are CSV or Excel files. You can link to data stored elsewhere on the web, like the Colorado Data Engine, Google Docs, or the U.S. Census Bureau."
+msgstr ""
+
+msgid "Providing the raw source data you used to make your story’s charts, maps and graphs encourages readers to dig deeper and discover their own stories in the data."
+msgstr ""
+
+msgid "You have no unused assets"
+msgstr ""
+
+msgid "Change"
+msgstr ""
+
+msgid "Set as featured image"
+msgstr ""
+
+msgid "Or select an image from your story"
+msgstr ""
+
+msgid "Add a new image"
+msgstr ""
+
+msgid "Remove"
+msgstr ""
+
+msgid "Edit"
+msgstr ""
+
+msgid "Select a"
+msgstr ""
+
+msgid "Or, select a different"
+msgstr ""
+
+msgid "Click to add your"
+msgstr ""
+
+msgid "Back to Connected Story List"
+msgstr ""
+
+msgid "Click here to see the stories displayed as tiles"
+msgstr ""
+
+msgid "Tile"
+msgstr ""
+
+msgid "Click here to see a list of stories"
+msgstr ""
+
+msgid "List"
+msgstr ""
+
+msgid "Click here to view the stories on a map or search for stories near an address"
+msgstr ""
+
+msgid "Map"
+msgstr ""
+
+msgid "of"
+msgstr ""
+
+msgid "Show More"
+msgstr ""
+
+msgid "Topic"
+msgstr ""
+
+msgid "Filter stories by selecting one or more topics"
+msgstr ""
+
+msgid "Place"
+msgstr ""
+
+msgid "Filter stories by selecting one or more places"
+msgstr ""
+
+msgid "Organization"
+msgstr ""
+
+msgid "Filter stories by selecting an organization"
+msgstr ""
+
+msgid "Project"
+msgstr ""
+
+msgid "Filter stories by selecting a project"
+msgstr ""
+
+msgid "Language"
+msgstr ""
+
+msgid "Filter stories by language"
+msgstr ""
+
+msgid "Languages"
+msgstr ""
+
+msgid "The map no longer shows the Place filter you have set above. Do you want to remove this filter so that you can see updated results on the map?"
+msgstr ""
+
+msgid "Leave Filter Alone"
+msgstr ""
+
+msgid "Remove the Filter"
+msgstr ""
+
+msgid "Highlight stories near this address"
+msgstr ""
+
+msgid "Clear"
+msgstr ""
+

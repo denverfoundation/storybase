@@ -31,6 +31,7 @@ ASSET_TYPES = (
   (u'audio', u'audio'),
   (u'video', u'video'),
   (u'map', u'map'),
+  (u'chart', u'chart'),
   (u'table', u'table'),
   (u'quotation', u'quotation'),
   (u'text', u'text'),
@@ -41,6 +42,9 @@ These represent what an asset is and not neccessarily how it is stored.
 For example, a map might actually be stored as an image, or it could be
 an HTML snippet.
 """
+
+CAPTION_TYPES = ('chart', 'image', 'map', 'table')
+"""Assets that display a caption"""
 
 class AssetPermission(PermissionMixin):
     """Permissions for the Asset model"""
@@ -321,6 +325,12 @@ class ExternalAsset(Asset):
             # Some other error occurred with the oEmbed
             # TODO: Show a default image
             output.append(self.render_link_html())
+        except ValueError:
+            # ValueError is raised when JSON of response couldn't
+            # be decoded, e.g. when offline
+            # Some other error occurred with the oEmbed
+            # TODO: Show a default image
+            output.append(self.render_link_html())
 
         full_caption_html = self.full_caption_html()
         if full_caption_html:
@@ -351,7 +361,7 @@ class ExternalAsset(Asset):
                     self._thumbnail_url = resource_data.get('url')
                 else:
                     self._thumbnail_url = resource_data.get('thumbnail_url')
-            except (ProviderNotFoundException):
+            except ProviderNotFoundException:
                 if self.type == 'image':
                     # There isn't an oEmbed provider for the URL. Just use the
                     # raw image URL.
@@ -359,11 +369,13 @@ class ExternalAsset(Asset):
                 else:
                     self._thumbnail_url = None
             except ProviderException:
-                # There was some other error. Set the return value to
-                # None
-                self._thumbnail_url = None
+                # Do nothing, return value gets set in finally clause
+                pass 
+            except ValueError:
+                # Do nothing, return value gets set in finally clause
+                pass 
             finally:
-                url = self._thumbnail_url
+                url = getattr(self, '_thumbnail_url', None)
 
         return url
 
@@ -425,7 +437,7 @@ class HtmlAsset(Asset):
         output = []
         if self.title:
             output.append('<h3>%s</h3>' % (self.title))
-        if self.type in ('image', 'map', 'table'):
+        if self.type in CAPTION_TYPES:
             output.append('<figure>')
             output.append(self.body)
             full_caption_html = self.full_caption_html()
@@ -486,7 +498,7 @@ class LocalImageAsset(Asset):
         output.append(self.render_img_html(**kwargs))
         full_caption_html = self.full_caption_html()
         if full_caption_html:
-	    output.append(full_caption_html)
+            output.append(full_caption_html)
         output.append('</figure>')
             
         return mark_safe(u'\n'.join(output))

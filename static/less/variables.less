@@ -1,33 +1,37 @@
 // Global variables for CSS properties
 
+// Paths
+@font-path: "../css/font-face";
+
 // Font sizes
-@base-font-size: 13px;
-@heading-font-size: 30px;
+// note: Times New Roman is visually smaller than Georgia.
+// if the body copy font family is Georgia, this should probably
+// be at 13px or so.
+@base-font-size:14px;
+@top-header-size:36px;
+@h1-size: @top-header-size;
+@h2-size: (@top-header-size * .8);
+@h3-size: (@top-header-size * .7);
+@h4-size: (@top-header-size * .6);
+@h5-size: (@top-header-size * .5);
+
 
 @layout-padding: 10px;
-
-// The width of a section in the builder and viewer
-@section-width: 940px;
-
-// The height of an individual asset in a layout
-// Use a 16:9 aspect ratio, making the dimensions 940x529
-@container-height: round((@section-width * (9/16)) - @layout-padding - @heading-font-size);  
-// For big images, make the container height use a 4:3 aspect ratio, the
-// size of many digital cameras. Make sure to add height to make room for
-// the caption.
-@container-height-tall: @section-width * (3/4) + 100px;
 
 // Colors
 @control-color-1: #666;
 @control-color-1-transparent: rgba(102, 102, 102, 0.5);
 
 @almost-black: #3b3b3b;
+@body-copy-color:#444;
 @dark-gray: #5a5a5a;
 @gray: #777777;
-@light-gray: #999999;
+@medium-gray: #999999;
+@light-gray: #f0efef;
 @highlight-blue: #20c6fd;
+@secondary-highlight-blue: #0252aa;
+@visited-blue: desaturate(darken(@highlight-blue, 10%), 20%);
 @orange: #fe9703;
 @error-color: #e66;
 
-// @todo: reconcile template header size with header size above:
-@top-header-size:36px;
+

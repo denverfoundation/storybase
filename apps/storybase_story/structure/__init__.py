@@ -3,6 +3,8 @@ from django.utils import simplejson
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
+from storybase.utils import open_html_element, close_html_element
+
 class StructureManager(object):
     def __init__(self):
         self._registry = {}
@@ -177,10 +179,35 @@ class BaseStructure(object):
         """Return a link to the connected stories section in the viewer"""
         return "<a href=\"#sections/connected-stories\">%s</a>" % _("Connected Stories")
 
-    def render_toc(self, format='html'):
+    def render_toc(self, format='html', **kwargs):
         """Return a rendered table of contents for a story"""
-        raise NotImplemented
+        # TODO: Perhaps its better to implement this with templates/
+        # template tags, or put this functionality in the Backbone app
+        container_el = kwargs.get('container_el', 'ul')
+        container_attrs = kwargs.get('container_attrs', {'class': 'story-toc'})
+        item_el = kwargs.get('item_el', 'li')
+        item_attrs = kwargs.get('item_attrs', {})
 
+        output = []
+        output.append(open_html_element(container_el, container_attrs))
+        if self.story.summary:
+            output.append("%s%s%s" % (
+                          open_html_element(item_el, item_attrs),
+                          self.summary_toc_link(),
+                          close_html_element(item_el)))
+        for root_section in self.story.sections.filter(root=True) \
+                                               .order_by('weight'):
+            output.append(self.render_toc_section(root_section))
+        if self.story.call_to_action:
+            output.append("%s%s%s" % (
+                          open_html_element(item_el, item_attrs),
+                          self.call_to_action_toc_link(),
+                          close_html_element(item_el)))
+        if self.story.allow_connected and self.story.connected_stories:
+            output.append("<li>%s</li>" % self.connected_toc_link())
+        output.append(close_html_element(container_el))
+
+        return mark_safe(u'\n'.join(output))
 
 
 class SpiderStructure(BaseStructure):
@@ -188,38 +215,23 @@ class SpiderStructure(BaseStructure):
     name = 'Spider'
     id = 'spider'
 
-    def render_toc(self, format='html', **kwargs):
-        """Return a rendered table of contents for a story"""
-        # TODO: Perhaps its better to implement this with templates/
-        # template tags, or put this functionality in the Backbone app
-        def render_toc_section(section):
-            output = []
-            output.append("<li>")
-            output.append("<a href='#sections/%s'>%s</a>" %
-                          (section.section_id, section.title))
-            if section.children.count():
-                output.append("<ul>")
-                for child in section.children.order_by('weight'):
-                    output.append(render_toc_section(child))
-                output.append("</ul>")
-            output.append("</li>")
-            return u'\n'.join(output)
-
-        html_class = kwargs.get('html_class', None)
+    def render_toc_section(self, section, **kwargs):
+        container_el = kwargs.get('container_el', 'ul')
+        container_attrs = kwargs.get('container_attrs', {})
+        item_el = kwargs.get('item_el', 'li')
+        item_attrs = kwargs.get('item_attrs', {})
         output = []
-        html_class_str = ''
-        if html_class is not None:
-            html_class_str = " class='%s'" % html_class
-        output.append("<ul%s>" % html_class_str)
-        if self.story.summary:
-            output.append("<li>%s</li>" % self.summary_toc_link())
-        for root_section in self.story.sections.filter(root=True) \
-                                               .order_by('weight'):
-            output.append(render_toc_section(root_section))
-        if self.story.call_to_action:
-            output.append("<li>%s</li>" % self.call_to_action_toc_link())
-        output.append("</ul>")
-        return mark_safe(u'\n'.join(output))
+        output.append(open_html_element(item_el, item_attrs))
+        output.append("<a href='#sections/%s'>%s</a>" %
+                      (section.section_id, section.title))
+        if section.children.count():
+            output.append(open_html_element(container_el))
+            for child in section.children.order_by('weight'):
+                output.append(self.render_toc_section(child, **kwargs))
+            output.append(close_html_element(container_el))
+        output.append(close_html_element(item_el))
+        return u'\n'.join(output)
+
 
 
 class LinearStructure(BaseStructure):
@@ -227,35 +239,18 @@ class LinearStructure(BaseStructure):
     name = 'Linear'
     id = 'linear'
 
-    def render_toc(self, format='html', **kwargs):
-        """Return a rendered table of contents for a story"""
-        # TODO: Perhaps its better to implement this with templates/
-        # template tags, or put this functionality in the Backbone app
-        def render_toc_section(section):
-            output = []
-            output.append("<li><a href='#sections/%s'>%s</a></li>" %
-                          (section.section_id, section.title))
-            for child in section.children.order_by('weight'):
-                output.append(render_toc_section(child))
-            return u'\n'.join(output)
-
-        html_class = kwargs.get('html_class', None)
+    def render_toc_section(self, section, **kwargs):
+        item_el = kwargs.get('item_el', 'li')
+        item_attrs = kwargs.get('item_attrs', {})
         output = []
-        html_class_str = ''
-        if html_class is not None:
-            html_class_str = " class='%s'" % html_class
-        output.append("<ul%s>" % html_class_str)
-        if self.story.summary:
-            output.append("<li>%s</li>" % self.summary_toc_link())
-        for root_section in self.story.sections.filter(root=True) \
-                                               .order_by('weight'):
-            output.append(render_toc_section(root_section))
-        if self.story.call_to_action or self.story.allow_connected:
-            output.append("<li>%s</li>" % self.call_to_action_toc_link())
-        if self.story.allow_connected and self.story.connected_stories:
-            output.append("<li>%s</li>" % self.connected_toc_link())
-        output.append("</ul>")
-        return mark_safe(u'\n'.join(output))
+        output.append("%s<a href='#sections/%s'>%s</a>%s" % (
+                      open_html_element(item_el, item_attrs),
+                      section.section_id, section.title,
+                      close_html_element(item_el)))
+        for child in section.children.order_by('weight'):
+            output.append(self.render_toc_section(child, **kwargs))
+        return u'\n'.join(output)
+
 
 manager = StructureManager()
 manager.register(SpiderStructure)

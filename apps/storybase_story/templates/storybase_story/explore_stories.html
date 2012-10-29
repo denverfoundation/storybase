@@ -12,23 +12,23 @@ Handlebars templates for rendering Backbone views.
 {% verbatim %}
 <script type="text/x-handlebars-template" id="explorer-template">
 <ul id="view-selector">
-    <li class="tile-view active"><a class="select-tile-view" href="#" title="{{gettext message="Click here to see the stories displayed as tiles"}}"><span>{{gettext message="Tile"}}<span></a></li>
-            <li class="list-view"><a class="select-list-view" href="#" title="{{gettext message="Click here to see a list of stories"}}"><span>{{gettext message="List"}}<span></a></li>
-                    <li class="map-view"><a class="select-map-view" href="#" title="{{gettext message="Click here to view the stories on a map or search for stories near an address"}}"><span>{{gettext message="Map"}}<span></a></li>
+    <li class="tile-view active"><a class="select-tile-view" href="#" title="{{gettext "Click here to see the stories displayed as tiles"}}"><span>{{gettext "Tile"}}<span></a></li>
+            <li class="list-view"><a class="select-list-view" href="#" title="{{gettext "Click here to see a list of stories"}}"><span>{{gettext "List"}}<span></a></li>
+                    <li class="map-view"><a class="select-map-view" href="#" title="{{gettext "Click here to view the stories on a map or search for stories near an address"}}"><span>{{gettext "Map"}}<span></a></li>
 </ul>
 </script>
 
 <script type="text/x-handlebars-template" id="story-count-template">
-  <h6 class="story-count">{{count}} {{gettext message="of"}} {{total}} {{#blockgettext}}Stor{{pluralize count suffix="y,ies"}} Shown{{/blockgettext}}</h6>
+  <h6 class="story-count">{{count}} {{gettext "of"}} {{total}} {{#blockgettext}}Stor{{pluralize count suffix="y,ies"}} Shown{{/blockgettext}}</h6>
   {{#if showMore }}
-  <a id="show-more" href="#">{{gettext message="Show More"}}</a>
+  <a id="show-more" href="#">{{gettext "Show More"}}</a>
   {{/if}}
 </script>
 
 <script type="text/x-handlebars-template" id="filters-template">
 <div class="field">
-<label for="topics">{{gettext message="Topic"}}</label>
-<select name="topics" data-placeholder="{{gettext message="Topic"}}" title="{{gettext message="Filter stories by selecting one or more topics"}}">
+<label for="topics">{{gettext "Topic"}}</label>
+<select name="topics" data-placeholder="{{gettext "Topic"}}" title="{{gettext "Filter stories by selecting one or more topics"}}">
   <option></option>
   {{#topics}}
   <option value="{{id}}"{{#if selected}}selected{{/if}}>{{name}}</option>
@@ -37,8 +37,8 @@ Handlebars templates for rendering Backbone views.
 </div>
 
 <div class="field">
-<label for="places">{{gettext message="Place"}}</label>
-<select name="places" data-placeholder="{{gettext message="Place"}}" title="{{gettext message="Filter stories by selecting one or more places"}}">
+<label for="places">{{gettext "Place"}}</label>
+<select name="places" data-placeholder="{{gettext "Place"}}" title="{{gettext "Filter stories by selecting one or more places"}}">
   <option></option>
   {{#places}}
   <option value="{{id}}"{{#if selected}}selected{{/if}}>{{name}}</option>
@@ -47,8 +47,8 @@ Handlebars templates for rendering Backbone views.
 </div>
 
 <div class="field">
-<label for="organizations">{{gettext message="Organization"}}</label>
-<select name="organizations" data-placeholder="{{gettext message="Organization"}}" title="{{gettext message="Filter stories by selecting an organization"}}">
+<label for="organizations">{{gettext "Organization"}}</label>
+<select name="organizations" data-placeholder="{{gettext "Organization"}}" title="{{gettext "Filter stories by selecting an organization"}}">
   <option></option>
   {{#organizations}}
   <option value="{{id}}"{{#if selected}}selected{{/if}}>{{name}}</option>
@@ -57,8 +57,8 @@ Handlebars templates for rendering Backbone views.
 </div>
 
 <div class="field">
-<label for="projects">{{gettext message="Project"}}</label>
-<select name="projects" data-placeholder="{{gettext message="Project"}}" title="{{gettext message="Filter stories by selecting a project"}}">
+<label for="projects">{{gettext "Project"}}</label>
+<select name="projects" data-placeholder="{{gettext "Project"}}" title="{{gettext "Filter stories by selecting a project"}}">
   <option></option>
   {{#projects}}
   <option value="{{id}}"{{#if selected}}selected{{/if}}>{{name}}</option>
@@ -66,9 +66,9 @@ Handlebars templates for rendering Backbone views.
 </select>
 </div>
 
-<div class="field">
-<label for="languages">{{gettext message="Language"}}</label>
-<select name="languages" data-placeholder="{{gettext message="Language"}}" title="{{gettext message="Filter stories by language"}}">
+<div class="field last">
+<label for="languages">{{gettext "Language"}}</label>
+<select name="languages" data-placeholder="{{gettext "Language"}}" title="{{gettext "Filter stories by language"}}">
   <option></option>
   {{#languages}}
   <option value="{{id}}"{{#if selected}}selected{{/if}}>{{name}}</option>
@@ -94,11 +94,11 @@ Handlebars templates for rendering Backbone views.
   <p class="byline">{{byline}}</p>
   {{firstparagraph summary}}
   <dl class="story-attributes">
-    <dt><p>{{gettext message="Languages"}}</p></dt>
+    <dt><p>{{gettext "Languages"}}</p></dt>
     <dd>
       <ul class="languages">
         {{#each languages}}
-        <li><p><a href="{{url}}" class="language-{{id}}">{{name}}</a></p></li>
+        <li><p><a href="{{url}}" class="secondary language-{{id}}">{{name}}</a></p></li>
         {{/each}}
       </ul>
     </dd>
@@ -127,15 +127,15 @@ Handlebars templates for rendering Backbone views.
 </script>
 
 <script type="text/x-handlebars-template" id="map-move-popup-template">
-<p>{{gettext message="The map no longer shows the Place filter you have set above. Do you want to remove this filter so that you can see updated results on the map?"}}</p>
-<p><input id="keep-place-filters" type="button" value="{{gettext message="Leave Filter Alone"}}" /> <input id="clear-place-filters" type="button" value="{{gettext message="Remove the Filter"}}" /></p>
+<p>{{gettext "The map no longer shows the Place filter you have set above. Do you want to remove this filter so that you can see updated results on the map?"}}</p>
+<p><input id="keep-place-filters" type="button" value="{{gettext "Leave Filter Alone"}}" /> <input id="clear-place-filters" type="button" value="{{gettext "Remove the Filter"}}" /></p>
 </script>
 
 <script type="text/x-handlebars-template" id="proximity-search-template">
 <div id="proximity-search-form">
-    <input id="{{field_id}}" type="text" placeholder="{{gettext message="Highlight stories near this address"}}" />
-    <input id="{{button_id}}" type="button" value="{{gettext message="Search"}}" />
-    <input id="{{clear_button_id}}" type="button" value="{{gettext message="Clear"}}" />
+    <input id="{{field_id}}" type="text" placeholder="{{gettext "Highlight stories near this address"}}" />
+    <input id="{{button_id}}" type="button" value="{{gettext "Search"}}" />
+    <input id="{{clear_button_id}}" type="button" value="{{gettext "Clear"}}" />
 </div>
 </script>
 
@@ -152,7 +152,6 @@ Handlebars templates for rendering Backbone views.
 {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/leaflet/leaflet.css">{% endaddtoblock %}
 {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/select2/select2.css">{% endaddtoblock %}
 {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/tooltipster-1.2/css/tooltipster.css">{% endaddtoblock %}
-{% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/explorer.css">{% endaddtoblock %}
 
 
 <h1><span>{{ storybase_explore_title }}</span></h1>
