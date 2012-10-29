@@ -25,6 +25,7 @@ from storybase.models import (LicensedModel, PublishedModel,
     TimestampedModel, TranslatedModel, TranslationModel,
     PermissionMixin, set_date_on_published)
 from storybase_asset.oembed import bootstrap_providers
+from storybase_asset.utils import img_el
 
 ASSET_TYPES = (
   (u'image', u'image'),
@@ -164,13 +165,13 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
     def get_img_url(self):
         raise NotImplemented
 
-    def render_img_html(self, url=None, **kwargs):
+    def render_img_html(self, url=None, attrs={}):
         """Render an image tag for this asset""" 
-        html_class = kwargs.get('html_class', '')
-        template = '<img src="%s" alt="%s" class="%s" />'
         if url is None:
             url = self.get_img_url()
-        return mark_safe(template % (url, self.title, html_class))
+        el_attrs = dict(src=url, alt=self.title)
+        el_attrs.update(attrs)
+        return mark_safe(img_el(el_attrs))
 
     def render_thumbnail(self, width=0, height=0, format='html',
                          **kwargs):
@@ -206,8 +207,8 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
                   "style='height: %dpx; width: %dpx'>"
                   "Asset Thumbnail</div>" % (html_class, height, width))
         if url is not None: 
-            output = self.render_img_html(url,
-                html_class="asset-thumbnail " + html_class)
+            output = self.render_img_html(url, {
+                'class': "asset-thumbnail " + html_class})
             
         return mark_safe(output)
 
