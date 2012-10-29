@@ -1,6 +1,6 @@
 {% extends "twocol.html" %}
 
-{% load i18n storybase_user_tags %}
+{% load i18n storybase_tags storybase_user_tags %}
 
 {% block head_title %}{{ object.name }}{{ block.super }}{% endblock %}
 
@@ -20,7 +20,7 @@
 
 {% block twocol-content %}
 <section class="object-summary content-block">
-    <div class="grid_7 alpha">
+    <div class="grid_4 alpha">
         <section class="summary">
             {% if object.description %}
                 {{ object.description|safe|linebreaks }}
@@ -28,10 +28,9 @@
         </section>
     </div>
 
-    <div class="grid_3 omega">
-        {# TODO: wire in real asset #}
+    <div class="grid_6 omega">
         <section class="object-featured-asset">
-            <img src="/static/img/image3.jpg" title="temp asset">
+            {% featured_asset object 335 %}
         </section>
     </div>
     <div class="object-metadata grid_10">
@@ -62,10 +61,10 @@
 {% with object.featured as featured %}
 <section class="featured-story content-block">
     <h3>{% trans "Featured Story" %}</h3>
-    <div class="grid_2 alpha">
-        <a href="#"><img src="/static/img/image3.jpg" title="temp asset" ></a>
+    <div class="grid_3 alpha">
+        <a href="{{ featured.get_absolute_url }}">{% featured_asset featured 222 %}</a>
     </div>
-    <div class="grid_8 omega">
+    <div class="grid_7 omega">
         <h4><a href="{{ featured.get_absolute_url }}">{{ featured.title }}</a></h4>
         {{ featured.summary|safe|linebreaks }}
     </div>
@@ -80,10 +79,10 @@
     <ul>
         {% for story in object.recent_list %}
         <li>
-            <div class="grid_1 alpha">
-                <a href="#"><img src="/static/img/image3.jpg" title="temp asset"></a>
+            <div class="grid_2 alpha">
+                <a href="{{ story.get_absolute_url }}">{% featured_asset story 150 %}</a>
             </div>
-            <div class="grid_9 omega">
+            <div class="grid_8 omega">
                 <h4><a href="{{ story.get_absolute_url }}">{{ story.title }}</a></h4>
                 {{ story.summary|safe|linebreaks }}
             </div>

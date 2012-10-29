@@ -193,7 +193,7 @@ class OrganizationTranslationInline(StorybaseStackedInline):
 
 class OrganizationAdmin(StorybaseModelAdmin):
     search_fields = ['name']
-    filter_horizontal = ['members']
+    filter_horizontal = ['members', 'featured_assets']
     readonly_fields = ['created', 'last_edited', 'organization_id']
     inlines = [OrganizationTranslationInline,]
     prefix_inline_classes = ['OrganizationTranslationInline']
@@ -213,7 +213,7 @@ class ProjectStoryInline(admin.TabularInline):
 
 class ProjectAdmin(StorybaseModelAdmin):
     search_fields = ['name']
-    filter_horizontal = ['members', 'organizations']
+    filter_horizontal = ['members', 'organizations', 'featured_assets']
     list_filter = ('on_homepage',)
     readonly_fields = ['created', 'last_edited', 'project_id']
     inlines = [ProjectStoryInline, ProjectTranslationInline]

@@ -38,7 +38,45 @@ class FeaturedStoriesMixin(object):
         return self.curated_stories.all()
 
     def featured(self):
-        return self.get_featured_queryset().order_by('-last_edited')[:1]
+        try:
+            return self.get_featured_queryset().order_by('-last_edited')[0]
+        except IndexError:
+            return None
+
+
+class FeaturedAssetsMixin(object):
+    def get_featured_asset(self):
+        """Return the featured asset"""
+        if self.featured_assets.count():
+            # Return the first featured asset.  We have the ability of 
+            # selecting multiple featured assets.  Perhaps in the future
+            # allow for specifying a particular feature asset or randomly
+            # displaying one.
+            return self.featured_assets.select_subclasses()[0]
+
+        return None
+
+    def render_featured_asset(self, format='html', width=500, height=0):
+        """Render a representation of the story's featured asset"""
+        featured_asset = self.get_featured_asset()
+        if featured_asset is None:
+            # No featured assets
+            # TODO: Display default image
+            return ''
+        else:
+            # TODO: Pick default size for image
+            # Note that these dimensions are the size that the resized
+            # image will fit in, not the actual dimensions of the image
+            # that will be generated
+            # See http://easy-thumbnails.readthedocs.org/en/latest/usage/#thumbnail-options
+            thumbnail_options = {
+                'width': width,
+                'height': height
+            }
+            if format == 'html':
+                thumbnail_options.update({'html_class': 'featured-asset'})
+            return featured_asset.render_thumbnail(format=format, 
+                                                   **thumbnail_options)
 
 
 class RecentStoriesMixin(object):
@@ -53,8 +91,8 @@ class RecentStoriesMixin(object):
         return self.get_recent_queryset().order_by('-last_edited')[:count]
         
 
-class Organization(RecentStoriesMixin, FeaturedStoriesMixin,
-                   TranslatedModel, TimestampedModel):
+class Organization(FeaturedAssetsMixin, RecentStoriesMixin,
+                   FeaturedStoriesMixin, TranslatedModel, TimestampedModel):
     """ An organization or a community group that users and stories can be associated with. """
     organization_id = UUIDField(auto=True)
     slug = models.SlugField(blank=True)
@@ -63,6 +101,9 @@ class Organization(RecentStoriesMixin, FeaturedStoriesMixin,
     curated_stories = models.ManyToManyField('storybase_story.Story', related_name='curated_in_organizations', blank=True, through='OrganizationStory')
     on_homepage = models.BooleanField(_("Featured on homepage"),
 		                      default=False)
+    featured_assets = models.ManyToManyField('storybase_asset.Asset',
+       related_name='featured_in_organizations', blank=True,
+       help_text=_("Assets to be displayed in teaser version of this Organization"))
 
     objects = FeaturedManager()
 
@@ -137,7 +178,8 @@ def add_story_to_organization(sender, instance, **kwargs):
             story.organizations.add(instance)
             story.save()
 
-class Project(RecentStoriesMixin, FeaturedStoriesMixin, TranslatedModel, TimestampedModel):
+class Project(FeaturedAssetsMixin, RecentStoriesMixin, FeaturedStoriesMixin,
+              TranslatedModel, TimestampedModel):
     """ 
     A project that collects related stories.  
     
@@ -151,6 +193,9 @@ class Project(RecentStoriesMixin, FeaturedStoriesMixin, TranslatedModel, Timesta
     curated_stories = models.ManyToManyField('storybase_story.Story', related_name='curated_in_projects', blank=True, through='ProjectStory')
     on_homepage = models.BooleanField(_("Featured on homepage"),
 		                      default=False)
+    featured_assets = models.ManyToManyField('storybase_asset.Asset',
+       related_name='featured_in_projects', blank=True,
+       help_text=_("Assets to be displayed in teaser version of this Project"))
 
     objects = FeaturedManager()
 
