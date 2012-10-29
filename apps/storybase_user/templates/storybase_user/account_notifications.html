@@ -9,7 +9,7 @@
 {% block twocol-content %}
 {% include "messages.html" %}
         
-<form method="post">
+<form method="post" class="lengthy-labels">
     {% csrf_token %}
     <fieldset>
         <legend>{{ storybase_site_name }} {% trans "updates" %}</legend>
