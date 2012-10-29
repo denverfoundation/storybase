@@ -96,7 +96,7 @@
         </li>
         {% endfor %}
     </ul>
-    <a class="button" href="{% url explore_stories %}?project={{ project.project_id }}">{% trans "View All Stories for This Project" %}</a>
+    <a class="button" href="{% url explore_stories %}?projects={{ project.project_id }}">{% trans "View All Stories for This Project" %}</a>
 </section>
 {% endif %}
 {% endblock %}
