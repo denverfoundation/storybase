@@ -1298,7 +1298,7 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         position: 6,
         id: 'help-guider',
         title: gettext("Get tips on how to make a great story."),
-        description: gettext("Clicking the \"Help\" button shows you tips for the section you're currently editing."),
+        description: gettext("Clicking the \"Help\" button shows you tips for the section you're currently editing. You can also click on the \"?\" icon next to an asset to find more help."),
         onShow: function() {
           that.dispatcher.trigger('do:show:help');
         },
@@ -1323,7 +1323,7 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         offset: { left: 0, top: 20 },
         id: 'tooltip-guider',
         title: gettext("Need even more tips?"),
-        description: gettext("You can find out more about many of the buttons and links by hovering over them with your mouse. You can also hover over the “Help” icons."),
+        description: gettext("You can find out more about many of the buttons and links by hovering over them with your mouse."),
         onShow: function() {
           $('.workflow-step #build').triggerHandler('mouseover');
         },
