@@ -7,7 +7,6 @@ from tastypie.api import Api
 
 from storybase.api import CreativeCommonsLicenseGetProxyView
 from storybase_asset.urls import urlpatterns as asset_urlpatterns
-from storybase_messaging.urls import urlpatterns as messaging_urlpatterns
 from storybase_user.urls import urlpatterns as user_urlpatterns
 from storybase_story.urls import urlpatterns as story_urlpatterns
 from storybase_asset.api import AssetResource, DataSetResource
@@ -44,7 +43,7 @@ urlpatterns += patterns('',
 # Include storybase_user URL patterns
 # Use this pattern instead of include since we want to put the URLs
 # at the top-level
-urlpatterns += messaging_urlpatterns + user_urlpatterns + story_urlpatterns + asset_urlpatterns 
+urlpatterns += user_urlpatterns + story_urlpatterns + asset_urlpatterns 
 
 urlpatterns += patterns('',
     # Examples:
@@ -56,7 +55,7 @@ urlpatterns += patterns('',
     # the custom login form
     (r'^accounts/', include('storybase_user.account_urls')),
 
-#    (r'^$', include('storybase_messaging.urls')),
+    (r'^messaging/', include('storybase_messaging.urls')),
 
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
