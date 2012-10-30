@@ -1175,7 +1175,7 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
     if (showTour) { 
       guiders.createGuider({
         id: 'workflow-step-guider',
-        attachTo: '.workflow-step #build',
+        attachTo: '#workflow-step #build',
         buttons: [
           {
             name: gettext("Next"),
@@ -1247,7 +1247,7 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
       });
       guiders.createGuider({
         id: 'preview-guider',
-        attachTo: '.tools .preview',
+        attachTo: '#tools .preview',
         buttons: [
           {
             name: gettext("Prev"),
@@ -1266,7 +1266,7 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
       });
       guiders.createGuider({
         id: 'exit-guider',
-        attachTo: '.tools .exit',
+        attachTo: '#tools .exit',
         buttons: [
           {
             name: gettext("Prev"),
@@ -1284,7 +1284,7 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         next: 'help-guider'
       });
       guiders.createGuider({
-        attachTo: '.tools .help',
+        attachTo: '#drawer-controls [title="Help"]',
         buttons: [
           {
             name: gettext("Prev"),
@@ -1308,7 +1308,7 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         next: 'tooltip-guider'
       });
       guiders.createGuider({
-        attachTo: '.workflow-step #build',
+        attachTo: '#workflow-step #build',
         buttons: [
           {
             name: gettext("Prev"),
@@ -1325,7 +1325,7 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         title: gettext("Need even more tips?"),
         description: gettext("You can find out more about many of the buttons and links by hovering over them with your mouse."),
         onShow: function() {
-          $('.workflow-step #build').triggerHandler('mouseover');
+          $('#workflow-step #build').triggerHandler('mouseover');
         },
         onHide: function() {
           // Set a cookie so the user doesn't see the builder tour again
@@ -1334,7 +1334,7 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
             // Don't show the tour for a very long time
             expires: 365
           });
-          $('.workflow-step #build').triggerHandler('mouseout');
+          $('#workflow-step #build').triggerHandler('mouseout');
         }
       });
       guiders.show('workflow-step-guider');
