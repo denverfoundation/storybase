@@ -112,6 +112,19 @@
 							</dd>
 							{% endif %}
 
+                            {% if story.datasets.count %}
+                            <dt>{% trans "Data Sets" %}</dt>
+                            <dd>
+                                <ul class="datasets">
+                                    {% for ds in story.datasets.select_subclasses.all %}
+                                      <li{% if forloop.last %} class="last"{% endif %}>
+                                      {{ ds.title }} <a href="{{ ds.download_url }}" title="{% trans "Access the data" %}"><i class="icon-download-alt"></i></a>
+                                      </li>
+                                    {% endfor %}
+                                </ul>
+                            </dd>
+                            {% endif %}
+
 							{% if story.contact_info %}
 							<dt>{% trans "Contact Info" %}</dt>
 							<dd>
