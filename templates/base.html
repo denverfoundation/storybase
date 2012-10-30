@@ -63,7 +63,7 @@
 			<div class="header-right">
 				<ul class="top-nav">
 					<li>{% language_chooser %}</li>
-                    <li><a href="{% url contact %}">{% trans "Contact Us" %}</a></li>
+                    <li><a href="{% page_url "contact" %}">{% trans "Contact Us" %}</a></li>
                     <li><a href="{% page_url "help" %}">{% trans "Help" %}</a></li>
 					{% if user.is_authenticated %}
                     <li><a href="{% url account_summary %}">{% trans "Hi" %}, {{ user.first_name }}</a></li>
@@ -125,7 +125,7 @@
                     <li><a href="{% page_url "grow-your-skills" %}">{% trans "Grow Your Skills" %}</a></li>
                     <li><a href="{% page_url "about" %}">{% trans "About" %}</a></li>
                     <li class="middle"><a href="{% url account_summary %}">{% trans "My Account" %}</a></li>
-                    <li class="last"><a href="{% url contact %}">{% trans "Contact Us" %}</a></li>
+                    <li class="last"><a href="{% url page_url "contact" %}">{% trans "Contact Us" %}</a></li>
                     <li class="last"><a href="{% page_url "help" %}">{% trans "Help" %}</a></li>
                     <li class="last"><a href="{% page_url "policies" %}">{{ storybase_site_name|default:"Floodlight" }} {% trans "Policies" %}</a></li>
 				</ul>
