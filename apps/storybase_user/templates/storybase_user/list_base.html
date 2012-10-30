@@ -13,7 +13,7 @@
     </div>
     <div class="grid_7 omega">
         <h2><a href="{{ object.get_absolute_url }}">{{ object.name }}</a></h2>
-        {{ object.description|safe|linebreaks }}
+        <div class="description">{{ object.description|safe|linebreaks }}</div>
     </div>
   </li>
   {% endfor %}

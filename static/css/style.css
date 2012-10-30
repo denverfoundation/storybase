@@ -485,6 +485,7 @@ body.base-template .content-page.object-detail.project .featured-story img{width
 body.base-template .content-page.object-detail.project .recent-stories ul{margin-bottom:30px;}
 body.base-template .content-page.object-detail.project .recent-stories li{margin-bottom:10px;overflow:hidden;}body.base-template .content-page.object-detail.project .recent-stories li img{margin-top:8px;width:100%;}
 body.base-template .content-page.object-list .object-list li{overflow:hidden;}body.base-template .content-page.object-list .object-list li h2,body.base-template .content-page.object-list .object-list li h3,body.base-template .content-page.object-list .object-list li h4{text-align:left;}
+body.base-template .content-page.object-list .object-list .description p{margin-bottom:1em;}
 body.base-template .content-page section.content-block{padding-bottom:40px;border-bottom:1px solid #ccc;margin-bottom:20px;overflow:hidden;}body.base-template .content-page section.content-block.last{border-bottom:none;}
 body.base-template .faq-section,body.base-template .faq-question{color:#fe9703 !important;}
 body.base-template .faq-question{cursor:pointer;}body.base-template .faq-question:before{padding-right:0.66em;}
