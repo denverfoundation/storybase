@@ -34,7 +34,7 @@ def featured_projects(count=4, img_width=335):
     template = get_template('storybase/featured_object.html')
     context = Context({
         "objects": objects,
-        "more_link_text": _("View Projects"),
+        "more_link_text": _("View All Projects"),
         "more_link_url": reverse("project_list"),
     })
     return template.render(context)

@@ -55,7 +55,7 @@ def featured_stories(count=4, img_width=335):
     template = get_template('storybase/featured_object.html')
     context = Context({
         "objects": objects,
-        "more_link_text": _("View Stories"),
+        "more_link_text": _("View All Stories"),
         "more_link_url": reverse("explore_stories"),
     })
     return template.render(context)
