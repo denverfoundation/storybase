@@ -1,26 +1,26 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-#, fuzzy
+# 
+# Translators:
+#   <jbrock@piton.org>, 2012.
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Atlas\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-10-22 10:16-0500\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2012-10-29 22:21+0000\n"
+"Last-Translator: pitonfoundation <jbrock@piton.org>\n"
+"Language-Team: Spanish (http://www.transifex.com/projects/p/atlas/language/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Language: es\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: sitestatic/admin/js/SelectFilter2.js:77
 msgid "Clear all"
-msgstr ""
+msgstr "Borrar todo"
 
 #: sitestatic/admin/js/actions.js:18
 msgid "%(sel)s of %(cnt)s selected"
@@ -32,69 +32,69 @@ msgstr[1] ""
 msgid ""
 "You have unsaved changes on individual editable fields. If you run an "
 "action, your unsaved changes will be lost."
-msgstr ""
+msgstr "x"
 
 #: sitestatic/admin/js/actions.js:121 sitestatic/admin/js/actions.min.js:6
 msgid ""
 "You have selected an action, but you haven't saved your changes to "
 "individual fields yet. Please click OK to save. You'll need to re-run the "
 "action."
-msgstr ""
+msgstr "x"
 
 #: sitestatic/admin/js/actions.js:123 sitestatic/admin/js/actions.min.js:6
 msgid ""
 "You have selected an action, and you haven't made any changes on individual "
 "fields. You're probably looking for the Go button rather than the Save "
 "button."
-msgstr ""
+msgstr "x"
 
 #: sitestatic/admin/js/calendar.js:24 sitestatic/admin/js/dateparse.js:32
 msgid ""
-"January February March April May June July August September October November "
-"December"
-msgstr ""
+"January February March April May June July August September October November"
+" December"
+msgstr "Enero Febrero Marzo Abril Mayo Junio Julio Agosto Septiembre Octubre Noviembre Diciembre"
 
 #: sitestatic/admin/js/calendar.js:25
 msgid "S M T W T F S"
-msgstr ""
+msgstr "Dom Lun Mar Mier Jue Vier Sab"
 
 #: sitestatic/admin/js/collapse.js:9 sitestatic/admin/js/collapse.js.py:21
 #: sitestatic/admin/js/collapse.min.js:1
 msgid "Show"
-msgstr ""
+msgstr "Mostrar"
 
 #: sitestatic/admin/js/collapse.js:16 sitestatic/admin/js/collapse.min.js:1
 msgid "Hide"
-msgstr ""
+msgstr "Esconder"
 
 #: sitestatic/admin/js/dateparse.js:33
 msgid "Sunday Monday Tuesday Wednesday Thursday Friday Saturday"
-msgstr ""
+msgstr "Lunes Martes Miércoles Jueves Viernes Sábado Domingo"
 
 #: sitestatic/admin/js/admin/DateTimeShortcuts.js:49
 #: sitestatic/admin/js/admin/DateTimeShortcuts.js:84
 msgid "Now"
-msgstr ""
+msgstr "Ahora"
 
 #: sitestatic/admin/js/admin/DateTimeShortcuts.js:53
 msgid "Clock"
-msgstr ""
+msgstr "Reloj"
 
 #: sitestatic/admin/js/admin/DateTimeShortcuts.js:80
 msgid "Choose a time"
-msgstr ""
+msgstr "Seleccione un tiempo"
 
 #: sitestatic/admin/js/admin/DateTimeShortcuts.js:85
 msgid "Midnight"
-msgstr ""
+msgstr "Medianoche"
 
 #: sitestatic/admin/js/admin/DateTimeShortcuts.js:86
 msgid "6 a.m."
-msgstr ""
+msgstr "6 a.m."
 
 #: sitestatic/admin/js/admin/DateTimeShortcuts.js:87
 msgid "Noon"
-msgstr ""
+msgstr "Mediodía"
 
 #: sitestatic/admin/js/admin/DateTimeShortcuts.js:91
 #: sitestatic/admin/js/admin/DateTimeShortcuts.js:188
@@ -102,24 +102,24 @@ msgstr ""
 #: static/js/builder/views.js:3231 static/js/builder/views.js.py:3238
 #: static/js/builder/views.js:4822
 msgid "Cancel"
-msgstr ""
+msgstr "Cancelar"
 
 #: sitestatic/admin/js/admin/DateTimeShortcuts.js:133
 #: sitestatic/admin/js/admin/DateTimeShortcuts.js:182
 msgid "Today"
-msgstr ""
+msgstr "Hoy"
 
 #: sitestatic/admin/js/admin/DateTimeShortcuts.js:137
 msgid "Calendar"
-msgstr ""
+msgstr "Calendario"
 
 #: sitestatic/admin/js/admin/DateTimeShortcuts.js:180
 msgid "Yesterday"
-msgstr ""
+msgstr "Ayer"
 
 #: sitestatic/admin/js/admin/DateTimeShortcuts.js:184
 msgid "Tomorrow"
-msgstr ""
+msgstr "Mañana"
 
 #: sitestatic/cms/js/change_form.js:31
 msgid ""
@@ -131,96 +131,96 @@ msgstr ""
 msgid ""
 "Not all plugins are saved. Are you sure you want to save the page?\n"
 "All unsaved plugin content will tried to save."
-msgstr ""
+msgstr "x"
 
 #: sitestatic/cms/js/change_form.js:127
 msgid "Are you sure you want to change tabs without saving the page first?"
-msgstr ""
+msgstr "x"
 
 #: sitestatic/cms/js/plugin_editor.js:132
 msgid "Are you sure you want to delete this plugin?"
-msgstr ""
+msgstr "x"
 
 #: sitestatic/js/builder/views.js:523 static/js/builder/views.js:824
 msgid ""
 "Construct your story using text, photos, videos, data visualizations, and "
 "other materials"
-msgstr ""
+msgstr "Construye tu historia utilizando texto, imágenes/fotos, videos, visualización de datos y otros materiales"
 
 #: sitestatic/js/builder/views.js:524 static/js/builder/views.js:825
 msgid "Build"
-msgstr ""
+msgstr "Editar"
 
 #: sitestatic/js/builder/views.js:533 static/js/builder/views.js:834
 msgid ""
 "Upload or link to source data referenced in your story’s charts, maps, "
 "graphs and visualizations"
-msgstr ""
+msgstr "Cargar o agregar enlace para hacer referencia de la fuente de datos en los gráficos, tablas, mapas y visualizaciones"
 
 #: sitestatic/js/builder/views.js:534 static/js/builder/views.js:835
 msgid "Add Data"
-msgstr ""
+msgstr "Agregar datos"
 
 #: sitestatic/js/builder/views.js:544 static/js/builder/views.js:845
 msgid ""
 "Label your story with topics and places so that people can easily discover "
 "it on Floodlight"
-msgstr ""
+msgstr "Etiqueta tu historia con temas y lugares para que las personas puedan descubrirla fácilmente en Floodlight"
 
 #: sitestatic/js/builder/views.js:545 sitestatic/js/builder/views.js:3310
 #: static/js/builder/views.js:846 static/js/builder/views.js.py:3510
 msgid "Tag"
-msgstr ""
+msgstr "Tag"
 
 #: sitestatic/js/builder/views.js:556 static/js/builder/views.js:857
 msgid "Make sure your story is ready to go"
-msgstr ""
+msgstr "Asegúrate que tu historia está lista"
 
 #: sitestatic/js/builder/views.js:557 static/js/builder/views.js:858
 #: static/js/builder/views.js.py:3742
 msgid "Review"
-msgstr ""
+msgstr "Revisar"
 
 #: sitestatic/js/builder/views.js:567 static/js/builder/views.js:868
 msgid "Post your story to Floodlight and your social networks"
-msgstr ""
+msgstr "Publica tu historia en Floodlight y comparte con tus redes sociales"
 
 #: sitestatic/js/builder/views.js:568 static/js/builder/views.js:869
 msgid "Publish/Share"
-msgstr ""
+msgstr "Publicar/Compartir"
 
 #: sitestatic/js/builder/views.js:627
 msgid "Get storytelling tips for the section you're currently editing"
-msgstr ""
+msgstr "Obtén consejos de como narrar historias para la sessión que estas editando actualmente"
 
 #: sitestatic/js/builder/views.js:628 static/js/builder/views.js:510
 #: static/js/builder/views.js.py:511
 msgid "Help"
-msgstr ""
+msgstr "Ayuda"
 
 #: sitestatic/js/builder/views.js:634 static/js/builder/views.js:1731
 msgid "Show a list of assets you removed from your story"
-msgstr ""
+msgstr "x"
 
 #: sitestatic/js/builder/views.js:635 static/js/builder/views.js:1730
 msgid "Assets"
-msgstr ""
+msgstr "Assets"
 
 #: sitestatic/js/builder/views.js:641 static/js/builder/views.js:930
 msgid "Preview your story in a new window"
-msgstr ""
+msgstr "Vista preliminar de tu historia en una nueva ventana"
 
 #: sitestatic/js/builder/views.js:642 static/js/builder/views.js:931
 msgid "Preview"
-msgstr ""
+msgstr "Vista previa"
 
 #: sitestatic/js/builder/views.js:649 static/js/builder/views.js:938
 msgid "Leave your story and start a new one with a different template"
-msgstr ""
+msgstr "Abandona tu historia y comienza una nueva con un fomato distinto"
 
 #: sitestatic/js/builder/views.js:650 static/js/builder/views.js:939
 msgid "Start Over"
-msgstr ""
+msgstr "Empezar de nuevo"
 
 #: sitestatic/js/builder/views.js:656 static/js/builder/views.js:945
 msgid ""
@@ -230,7 +230,7 @@ msgstr ""
 
 #: sitestatic/js/builder/views.js:657 static/js/builder/views.js:946
 msgid "Exit"
-msgstr ""
+msgstr "Salir"
 
 #: sitestatic/js/builder/views.js:876 sitestatic/js/builder/views.js.py:894
 #: sitestatic/js/builder/views.js:914 sitestatic/js/builder/views.js.py:933
@@ -243,11 +243,11 @@ msgstr ""
 #: static/js/builder/views.js.py:3511 static/js/builder/views.js:3679
 #: static/js/builder/views.js.py:3743
 msgid "Next"
-msgstr ""
+msgstr "Próximo"
 
 #: sitestatic/js/builder/views.js:881 static/js/builder/views.js:1147
 msgid "Building a story takes five simple steps."
-msgstr ""
+msgstr "Crear una historia toma cinco pasos sencillos. "
 
 #: sitestatic/js/builder/views.js:890 sitestatic/js/builder/views.js.py:910
 #: sitestatic/js/builder/views.js:929 sitestatic/js/builder/views.js.py:948
@@ -261,7 +261,7 @@ msgstr ""
 
 #: sitestatic/js/builder/views.js:899 static/js/builder/views.js:1165
 msgid "This is your table of contents."
-msgstr ""
+msgstr "Esta es tu tabla de contenidos."
 
 #: sitestatic/js/builder/views.js:901 static/js/builder/views.js:1167
 msgid ""
@@ -271,47 +271,47 @@ msgstr ""
 
 #: sitestatic/js/builder/views.js:919 static/js/builder/views.js:1185
 msgid "Select the section you want to edit."
-msgstr ""
+msgstr "Seleccione la sección que deseas editar"
 
 #: sitestatic/js/builder/views.js:920 static/js/builder/views.js:1186
 msgid ""
 "Click on a section to edit it. The section you are actively editing is "
 "highlighted."
-msgstr ""
+msgstr "Haz click sobre la sección para editarla.  La sección que estas actualmente editando está resaltada."
 
 #: sitestatic/js/builder/views.js:938 static/js/builder/views.js:1204
 msgid "You can also add, move or delete sections."
-msgstr ""
+msgstr "Tu puedes también agregar, mover o borrar secciones."
 
 #: sitestatic/js/builder/views.js:957 static/js/builder/views.js:1223
 msgid "Preview your story at any time."
-msgstr ""
+msgstr "Vista preliminar de su historia en cualquier momento."
 
 #: sitestatic/js/builder/views.js:958 static/js/builder/views.js:1224
 msgid "Clicking here lets you preview your story in a new window"
-msgstr ""
+msgstr "Al hacer click aquí puedes ver la vista preliminar de tu historia en una nueva ventana. "
 
 #: sitestatic/js/builder/views.js:976 static/js/builder/views.js:1242
 msgid "You can leave your story at any time and come back later."
-msgstr ""
+msgstr "Puedes abandonar tu historia en cualquier momento y regresar después. "
 
 #: sitestatic/js/builder/views.js:995 static/js/builder/views.js:1261
 msgid "Get tips on how to make a great story."
-msgstr ""
+msgstr "Obtén consejos acerca de como crear una gran historia. "
 
 #: sitestatic/js/builder/views.js:996 static/js/builder/views.js:1262
 msgid ""
-"Clicking the \"Help\" button shows you tips for the section you're currently "
-"editing."
+"Clicking the \"Help\" button shows you tips for the section you're currently"
+" editing."
 msgstr ""
 
 #: sitestatic/js/builder/views.js:1009 static/js/builder/views.js:1279
 msgid "Close"
-msgstr ""
+msgstr "Cerrar"
 
 #: sitestatic/js/builder/views.js:1016 static/js/builder/views.js:1286
 msgid "Need even more tips?"
-msgstr ""
+msgstr "¿Necesitas aún más consejos?"
 
 #: sitestatic/js/builder/views.js:1017 static/js/builder/views.js:1287
 msgid ""
@@ -321,32 +321,32 @@ msgstr ""
 
 #: sitestatic/js/builder/views.js:1085 static/js/builder/views.js:1359
 msgid "Add Data to Your Story"
-msgstr ""
+msgstr "Agrega Data a tu Historia"
 
 #: sitestatic/js/builder/views.js:1093 sitestatic/js/builder/views.js:3474
 #: static/js/builder/views.js:1369 static/js/builder/views.js.py:3678
 msgid "Publish My Story"
-msgstr ""
+msgstr "Publica mi Historia"
 
 #: sitestatic/js/builder/views.js:1319 static/js/builder/views.js:1595
 msgid "Failed fetching container templates"
-msgstr ""
+msgstr "x"
 
 #: sitestatic/js/builder/views.js:1366
 msgid "Floodlight Story Builder"
-msgstr ""
+msgstr "Editor Floodlight"
 
 #: sitestatic/js/builder/views.js:1383 static/js/builder/views.js:1656
 msgid "You must give your story a title"
-msgstr ""
+msgstr "Tu debes darle un titulo a tu historia."
 
 #: sitestatic/js/builder/views.js:1390 static/js/builder/views.js:1663
 msgid "You didn't fill out all the assets in the template"
-msgstr ""
+msgstr "x"
 
 #: sitestatic/js/builder/views.js:1888 static/js/builder/views.js:2166
 msgid "Story Information"
-msgstr ""
+msgstr "Información de la historia"
 
 #: sitestatic/js/builder/views.js:1889 static/js/builder/views.js:2167
 msgid ""
@@ -356,11 +356,11 @@ msgstr ""
 
 #: sitestatic/js/builder/views.js:1899 static/js/builder/views.js:2177
 msgid "Call to Action"
-msgstr ""
+msgstr "Activos"
 
 #: sitestatic/js/builder/views.js:1900 static/js/builder/views.js:2178
 msgid "Inspire your readers to act after they read your story"
-msgstr ""
+msgstr "Inspira a tus lectores a tomar acción después de leer tu historia."
 
 #: sitestatic/js/builder/views.js:1964
 msgid "You can hide or reveal the table of contents bar by clicking here"
@@ -368,25 +368,25 @@ msgstr ""
 
 #: sitestatic/js/builder/views.js:2009 static/js/builder/views.js:2269
 msgid "Error removing section"
-msgstr ""
+msgstr "Error al remover sessión"
 
 #: sitestatic/js/builder/views.js:2014 static/js/builder/views.js:2274
 msgid "Are you sure you want to delete the section"
-msgstr ""
+msgstr "¿Estás segura que quieres borrar esta sessión?"
 
 #: sitestatic/js/builder/views.js:2024 static/js/builder/views.js:2284
 msgid "You must have at least one section"
-msgstr ""
+msgstr "Debes tener por lo menos una sessión"
 
 #: sitestatic/js/builder/views.js:2045 static/js/builder/views.js:2305
 msgid "New Section"
-msgstr ""
+msgstr "Nueva sección"
 
 #: sitestatic/js/builder/views.js:2333 sitestatic/js/builder/views.js:2334
 #: sitestatic/js/builder/views.js:2381 sitestatic/js/builder/views.js:2382
 #: sitestatic/js/builder/views.js:2595 sitestatic/js/builder/views.js:2596
 msgid "Click to edit title"
-msgstr ""
+msgstr "Haz click para agregar el titulo"
 
 #: sitestatic/js/builder/views.js:2338 sitestatic/js/builder/views.js:2339
 #: sitestatic/js/builder/views.js:2386 sitestatic/js/builder/views.js:2387
@@ -405,7 +405,7 @@ msgstr ""
 
 #: sitestatic/js/builder/views.js:2903 static/js/builder/views.js:3126
 msgid "or"
-msgstr ""
+msgstr "o"
 
 #: sitestatic/js/builder/views.js:2905 static/js/builder/views.js:3128
 msgid "enter"
@@ -413,11 +413,11 @@ msgstr ""
 
 #: sitestatic/js/builder/views.js:2905 static/js/builder/views.js:3128
 msgid "URL"
-msgstr ""
+msgstr "URL"
 
 #: sitestatic/js/builder/views.js:2908 static/js/builder/views.js:3131
 msgid "select an image from your own computer to be included in your story."
-msgstr ""
+msgstr "Seleciona una imagen en tu computadora para ser incluída como parte de tu historia."
 
 #: sitestatic/js/builder/views.js:2915 static/js/builder/views.js:3138
 msgid "enter the quotation text"
@@ -429,11 +429,11 @@ msgstr ""
 
 #: sitestatic/js/builder/views.js:3009 static/js/builder/views.js:3232
 msgid "Save"
-msgstr ""
+msgstr "Guardar"
 
 #: sitestatic/js/builder/views.js:3010 static/js/builder/views.js:3233
 msgid "Click to edit"
-msgstr ""
+msgstr "Haz click para editar"
 
 #: sitestatic/js/builder/views.js:3011 static/js/builder/views.js:3234
 msgid "Click to edit caption"
@@ -442,7 +442,7 @@ msgstr ""
 #: sitestatic/js/builder/views.js:3015 static/js/builder/views.js:3238
 #: static/js/builder/views.js.py:4822
 msgid "Save Changes"
-msgstr ""
+msgstr "Guardar cambios"
 
 #: sitestatic/js/builder/views.js:3126 static/js/builder/views.js:3356
 msgid "Uploading"
@@ -456,8 +456,8 @@ msgstr ""
 
 #: sitestatic/js/builder/views.js:3197 static/js/builder/views.js:3427
 msgid ""
-"Click on “Add your text,” and start typing. If you’d like to add a different "
-"type of asset, click below."
+"Click on “Add your text,” and start typing. If you’d like to add a different"
+" type of asset, click below."
 msgstr ""
 
 #: sitestatic/js/builder/views.js:3305 static/js/builder/views.js:3503
@@ -491,7 +491,7 @@ msgstr ""
 
 #: sitestatic/js/builder/views.js:3968 static/js/builder/views.js:3987
 msgid "Searching ..."
-msgstr ""
+msgstr "Buscando ..."
 
 #: sitestatic/js/builder/views.js:3976 static/js/builder/views.js:3995
 msgid "No address found"
@@ -503,11 +503,11 @@ msgstr ""
 
 #: sitestatic/js/viewer/views.js:491 static/js/viewer/views.js:491
 msgid "Topic Map"
-msgstr ""
+msgstr "Mapa Tópico"
 
 #: sitestatic/js/viewer/views.js:510 static/js/viewer/views.js:510
 msgid "Read more"
-msgstr ""
+msgstr "Leer más"
 
 #: static/js/builder/views.js:1718
 msgid "Last Saved"
@@ -525,7 +525,7 @@ msgstr ""
 
 #: static/js/builder/views.js:3781
 msgid "Click to select topics"
-msgstr ""
+msgstr "Haga click para seleccionar los tópicos"
 
 #: static/js/builder/views.js:3786
 msgid "Click to select places"
@@ -557,15 +557,15 @@ msgstr ""
 
 #: static/js/builder/views.js:4503
 msgid "Back to Review"
-msgstr ""
+msgstr "Volver a Revisar"
 
 #: static/js/builder/views.js:4640
 msgid "You need to "
-msgstr ""
+msgstr "Tu necesitas"
 
 #: static/js/builder/views.js:4710
 msgid "Select a featured image"
-msgstr ""
+msgstr "Seleccione una imagen"
 
 #: static/js/builder/views.js:4786
 msgid "enter the featured image URL"
@@ -576,60 +576,77 @@ msgid "select the featured image from your own computer"
 msgstr ""
 
 msgid "Remove section"
-msgstr ""
+msgstr "Remover sessión"
 
 msgid "Add a section"
-msgstr ""
+msgstr "Agregue una sessión"
 
 msgid "Edit next section"
-msgstr ""
+msgstr "Edite la próxima sessión"
 
 msgid "Edit previous section"
-msgstr ""
+msgstr "Edite la sessión anterior"
 
 msgid "Examples"
-msgstr ""
+msgstr "Ejemplos"
 
 msgid "Tip"
-msgstr ""
+msgstr "Consejo"
 
 msgid "Best for"
-msgstr ""
+msgstr "Ideal para"
 
 msgid "Recommended ingredients"
-msgstr ""
+msgstr "Elementos recomendados"
 
 msgid "Level"
-msgstr ""
+msgstr "Nivel"
 
 msgid "Time needed"
-msgstr ""
+msgstr "Tiempo necesario"
 
-msgid "You can <strong>customize</strong> some templates by adding and reordering sections, and you can always <strong>start over</strong> by choosing a new template."
-msgstr ""
+msgid ""
+"You can <strong>customize</strong> some templates by adding and reordering "
+"sections, and you can always <strong>start over</strong> by choosing a new "
+"template."
+msgstr "También puedes <strong>personalizar</strong> algunas plantillas agregando y reordenando secciones, o en cualquier momento <strong>empezar de nuevo</strong> eligiendo una nueva plantilla."
 
-msgid "Some templates are better for video, some for data, and some for text. Some templates are short and sweet, others are lengthier and more involved. Below, we’ve given you some tips for picking a template based on the time it takes and the type of story you are telling. You can also get to know a template by exploring stories people have made with it."
-msgstr ""
+msgid ""
+"Some templates are better for video, some for data, and some for text. Some "
+"templates are short and sweet, others are lengthier and more involved. "
+"Below, we’ve given you some tips for picking a template based on the time it"
+" takes and the type of story you are telling. You can also get to know a "
+"template by exploring stories people have made with it."
+msgstr "Algunas plantillas son más adecuadas para video, otras para datos y otras para texto. Algunas son breves y sencillas; otras, más largas y complicadas. Abajo aparecen algunos consejos para que elijas una plantilla de acuerdo con el tiempo que lleve llenarla y el tipo de historia que desees contar. Puedes familiarizarte con una plantilla leyendo historias que otras personas han elaborado utilizándola."
 
-msgid "A template is a tried and true story structure you can populate with your own pictures, text, media, data and more."
-msgstr ""
+msgid ""
+"A template is a tried and true story structure you can populate with your "
+"own pictures, text, media, data and more."
+msgstr "Una plantilla es una estructura de relato de uso real y probado que puedes llenar con fotografías, texto, medios, datos y otros elementos."
 
 msgid "Choose a template to start building your story."
+msgstr "Selecciona una plantilla para empezar a elaborar tu historia."
+
+msgid ""
+"You can get back to your story through the \"My Stories\" menu in \"My "
+"Account.\""
 msgstr ""
 
-msgid "You can get back to your story through the \"My Stories\" menu in \"My Account.\""
+msgid ""
+"Stories are saved automatically whenever you make changes, so you’ll be able"
+" to pick up exactly where you left off."
 msgstr ""
 
-msgid "Stories are saved automatically whenever you make changes, so you’ll be able to pick up exactly where you left off."
-msgstr ""
-
-msgid "To delete a section, click on the \"X\" that appears when you hover over it."
+msgid ""
+"To delete a section, click on the \"X\" that appears when you hover over it."
 msgstr ""
 
 msgid "To move a section, click on it and drag it to it's new position."
 msgstr ""
 
-msgid "To add a section, move your mouse between two existing sections and click \"Add a section.\""
+msgid ""
+"To add a section, move your mouse between two existing sections and click "
+"\"Add a section.\""
 msgstr ""
 
 msgid "Post your story to Floodlight and your social networks."
@@ -638,121 +655,154 @@ msgstr ""
 msgid "Make sure your story is ready to go with spellcheck and other tools."
 msgstr ""
 
-msgid "Label your story with topics and places so that people can easily discover it on Floodlight."
+msgid ""
+"Label your story with topics and places so that people can easily discover "
+"it on Floodlight."
 msgstr ""
 
-msgid "Upload or link to source data referenced in your story’s charts, maps, graphs and visualizations."
+msgid ""
+"Upload or link to source data referenced in your story’s charts, maps, "
+"graphs and visualizations."
 msgstr ""
 
-msgid "Construct your story using text, photos, videos, data visualizations, and other materials."
+msgid ""
+"Construct your story using text, photos, videos, data visualizations, and "
+"other materials."
 msgstr ""
 
-msgid "Clicking on these tabs lets you switch between the different steps in the story building process. You can always move freely between the steps."
+msgid ""
+"Clicking on these tabs lets you switch between the different steps in the "
+"story building process. You can always move freely between the steps."
 msgstr ""
 
 msgid "Type in your own search terms."
-msgstr ""
+msgstr "Ingrese sus propios términos de busqueda."
 
 msgid "Search Keywords"
-msgstr ""
+msgstr "Busque palabras claves"
 
 msgid "delete"
-msgstr ""
+msgstr "Borrar"
 
 msgid "Add Address"
-msgstr ""
+msgstr "Agregue dirección"
 
 msgid "Enter a name for this address (optional)"
-msgstr ""
+msgstr "Agregue un nombre para esta dirección (opcional)"
 
 msgid "Make this a Connected Story"
 msgstr ""
 
-msgid "Give your readers a clear way to contribute by asking them to add a mini Photovoice story. Prompt your readers with a specific question they can answer through a photo and a caption. "
-msgstr ""
+msgid ""
+"Give your readers a clear way to contribute by asking them to add a mini "
+"Photovoice story. Prompt your readers with a specific question they can "
+"answer through a photo and a caption. "
+msgstr "Señala a tus lectores una forma clara de contribuir pidiéndoles que agreguen una minihistoria en Photovoice. Házles una pregunta específica que puedan responder con una foto o una leyenda."
 
 msgid "Create a Connected Story to collect audience feedback"
-msgstr ""
+msgstr "Historia conectada: Reúne comentarios de la audiencia"
 
 msgid "Click to edit the call to action"
-msgstr ""
+msgstr "Haz click para editar la invitación a tomar acción"
 
 msgid "Edit your byline"
 msgstr ""
 
 msgid "Edit your title"
-msgstr ""
+msgstr "Edita tu titulo"
 
 msgid "Click to edit the summary"
-msgstr ""
+msgstr "Haz click para editar el resumen"
 
 msgid "View agreement"
-msgstr ""
+msgstr "Vea los Términos de Uso Legal"
 
 msgid "You signed off on the legal agreement"
-msgstr ""
+msgstr "Usted esta de acuerdo con los términos de uso legal"
 
-msgid "In order to publish and share your story, you need to double-check a few legal details."
+msgid ""
+"In order to publish and share your story, you need to double-check a few "
+"legal details."
 msgstr ""
 
 msgid "Read the Floodlight Terms of Service"
+msgstr "Lea los Términos de Uso Legal de Floodlight"
+
+msgid ""
+"Congratulations, your story has been published. If you decide you'd like to "
+"view or unpublish your story, use the button below"
 msgstr ""
 
-msgid "Congratulations, your story has been published. If you decide you'd like to view or unpublish your story, use the button below"
+msgid ""
+"Looks like you're all set. When you're ready click the \"Publish My Story\" "
+"button."
 msgstr ""
 
-msgid "Looks like you're all set. When you're ready click the \"Publish My Story\" button."
-msgstr ""
-
-msgid "Let your story be heard! Spread the word by sharing it with your social networks, printing a copy, or embeding it on your own website."
+msgid ""
+"Let your story be heard! Spread the word by sharing it with your social "
+"networks, printing a copy, or embeding it on your own website."
 msgstr ""
 
 msgid "Unpublish My Story"
 msgstr ""
 
 msgid "View my story"
-msgstr ""
+msgstr "Ve mi historia"
 
 msgid "Preview Story"
-msgstr ""
+msgstr "Vista preliminar de tu historia"
 
-msgid "Congratulations on writing your story! We're checking things out right now and making sure everything looks good. Preview your story to see how it will look on Floodlight once it’s published."
+msgid ""
+"Congratulations on writing your story! We're checking things out right now "
+"and making sure everything looks good. Preview your story to see how it will"
+" look on Floodlight once it’s published."
 msgstr ""
 
 msgid "Download data"
-msgstr ""
+msgstr "Descargue la data"
 
 msgid "Source"
-msgstr ""
+msgstr "Fuente"
 
 msgid "Name this Address"
 msgstr ""
 
 msgid "optional"
-msgstr ""
+msgstr "opcional"
 
 msgid "Search"
-msgstr ""
+msgstr "Buscar"
 
 msgid "Enter an address"
-msgstr ""
+msgstr "Agrega una dirección"
 
-msgid "Where did your story happen? Linking your story to an address will let people find it on a map. Add as many addresses as you want."
+msgid ""
+"Where did your story happen? Linking your story to an address will let "
+"people find it on a map. Add as many addresses as you want."
 msgstr ""
 
 msgid "Mapping"
 msgstr ""
 
-msgid "If you are a member of an organization or project, you can also add those. Stories can be in multiple projects or organizations."
+msgid ""
+"If you are a member of an organization or project, you can also add those. "
+"Stories can be in multiple projects or organizations."
 msgstr ""
 
-msgid "For topics and places, choose from the list that appears when you click in the boxes below. Topics include categories like \"Crime and Justice\" or \"Education.\" Places include neighborhoods, cities and zip codes. Add as many places or topics as you want."
+msgid ""
+"For topics and places, choose from the list that appears when you click in "
+"the boxes below. Topics include categories like \"Crime and Justice\" or "
+"\"Education.\" Places include neighborhoods, cities and zip codes. Add as "
+"many places or topics as you want."
 msgstr ""
 
 msgid "Tags"
 msgstr ""
 
-msgid "Label your story with topics and places so that people can easily discover it on Floodlight. The more information you add here, the more others can connect with your story."
+msgid ""
+"Label your story with topics and places so that people can easily discover "
+"it on Floodlight. The more information you add here, the more others can "
+"connect with your story."
 msgstr ""
 
 msgid "No"
@@ -767,28 +817,46 @@ msgstr ""
 msgid "Change license"
 msgstr ""
 
-msgid "I participate in Floodlight’s cooperative distribution by publishing my story under a Creative Commons license. This means that I remain the owner of this story, but that my content can be featured on the site and redistributed by others. Learn more about Creative Commons."
+msgid ""
+"I participate in Floodlight’s cooperative distribution by publishing my "
+"story under a Creative Commons license. This means that I remain the owner "
+"of this story, but that my content can be featured on the site and "
+"redistributed by others. Learn more about Creative Commons."
 msgstr ""
 
-msgid "If this story has any photos or videos of children (under 18), I have obtained the proper parent or guardian release forms (a sample release form is available here)"
+msgid ""
+"If this story has any photos or videos of children (under 18), I have "
+"obtained the proper parent or guardian release forms (a sample release form "
+"is available here)"
 msgstr ""
 
-msgid "I have properly cited or credited any content that I did not create myself."
+msgid ""
+"I have properly cited or credited any content that I did not create myself."
 msgstr ""
 
-msgid "The content in this story doesn’t violate copyright law or infringe on a third party’s trademark, trade secret, proprietary data or patent"
+msgid ""
+"The content in this story doesn’t violate copyright law or infringe on a "
+"third party’s trademark, trade secret, proprietary data or patent"
 msgstr ""
 
-msgid "I have the necessary ownership/rights/permissions to legally distribute the content in this story."
+msgid ""
+"I have the necessary ownership/rights/permissions to legally distribute the "
+"content in this story."
 msgstr ""
 
 msgid "Add as many data sets as you like."
 msgstr ""
 
-msgid "You can upload data sets from your computer if they are CSV or Excel files. You can link to data stored elsewhere on the web, like the Colorado Data Engine, Google Docs, or the U.S. Census Bureau."
+msgid ""
+"You can upload data sets from your computer if they are CSV or Excel files. "
+"You can link to data stored elsewhere on the web, like the Colorado Data "
+"Engine, Google Docs, or the U.S. Census Bureau."
 msgstr ""
 
-msgid "Providing the raw source data you used to make your story’s charts, maps and graphs encourages readers to dig deeper and discover their own stories in the data."
+msgid ""
+"Providing the raw source data you used to make your story’s charts, maps and"
+" graphs encourages readers to dig deeper and discover their own stories in "
+"the data."
 msgstr ""
 
 msgid "You have no unused assets"
@@ -828,60 +896,64 @@ msgid "Click here to see the stories displayed as tiles"
 msgstr ""
 
 msgid "Tile"
-msgstr ""
+msgstr "Titulo"
 
 msgid "Click here to see a list of stories"
-msgstr ""
+msgstr "Haz click aquí para ver una lista de historias"
 
 msgid "List"
-msgstr ""
+msgstr "Lista"
 
-msgid "Click here to view the stories on a map or search for stories near an address"
-msgstr ""
+msgid ""
+"Click here to view the stories on a map or search for stories near an "
+"address"
+msgstr "Haz click aquí para ver las historias en un mapa o buscar aquellas historias cercanas a tu dirección"
 
 msgid "Map"
-msgstr ""
+msgstr "Mapa"
 
 msgid "of"
-msgstr ""
+msgstr "de"
 
 msgid "Show More"
-msgstr ""
+msgstr "Mostrar más"
 
 msgid "Topic"
-msgstr ""
+msgstr "Tema"
 
 msgid "Filter stories by selecting one or more topics"
-msgstr ""
+msgstr "Filtra historias seleccionando uno o más temas"
 
 msgid "Place"
-msgstr ""
+msgstr "Lugar"
 
 msgid "Filter stories by selecting one or more places"
-msgstr ""
+msgstr "Filtra historias seleccionando uno o más lugares"
 
 msgid "Organization"
-msgstr ""
+msgstr "Organización"
 
 msgid "Filter stories by selecting an organization"
 msgstr ""
 
 msgid "Project"
-msgstr ""
+msgstr "Projecto"
 
 msgid "Filter stories by selecting a project"
 msgstr ""
 
 msgid "Language"
-msgstr ""
+msgstr "Idioma"
 
 msgid "Filter stories by language"
 msgstr ""
 
 msgid "Languages"
-msgstr ""
+msgstr "Idiomas"
 
-msgid "The map no longer shows the Place filter you have set above. Do you want to remove this filter so that you can see updated results on the map?"
+msgid ""
+"The map no longer shows the Place filter you have set above. Do you want to "
+"remove this filter so that you can see updated results on the map?"
 msgstr ""
 
 msgid "Leave Filter Alone"
@@ -895,4 +967,3 @@ msgstr ""
 
 msgid "Clear"
 msgstr ""
-

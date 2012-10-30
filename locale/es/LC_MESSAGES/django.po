@@ -1,22 +1,22 @@
 # SOME DESCRIPTIVE TITLE.
 # Copyright (C) YEAR THE PACKAGE'S COPYRIGHT HOLDER
 # This file is distributed under the same license as the PACKAGE package.
-# FIRST AUTHOR <EMAIL@ADDRESS>, YEAR.
-#
-#, fuzzy
+# 
+# Translators:
+#   <jbrock@piton.org>, 2012.
 msgid ""
 msgstr ""
-"Project-Id-Version: PACKAGE VERSION\n"
+"Project-Id-Version: Atlas\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-10-22 10:15-0500\n"
-"PO-Revision-Date: YEAR-MO-DA HO:MI+ZONE\n"
-"Last-Translator: FULL NAME <EMAIL@ADDRESS>\n"
-"Language-Team: LANGUAGE <LL@li.org>\n"
-"Language: \n"
+"PO-Revision-Date: 2012-10-23 20:59+0000\n"
+"Last-Translator: pitonfoundation <jbrock@piton.org>\n"
+"Language-Team: Spanish (http://www.transifex.com/projects/p/atlas/language/es/)\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"Plural-Forms: nplurals=2; plural=(n != 1)\n"
+"Language: es\n"
+"Plural-Forms: nplurals=2; plural=(n != 1);\n"
 
 #: apps/cmsplugin_storybase/cms_plugins.py:14
 msgid "StoryBase Story"
@@ -41,12 +41,12 @@ msgstr ""
 #: apps/cmsplugin_storybase/settings.py:25 templates/homepage.html:37
 #: templates/homepage.html.py:67
 msgid "Build a Story"
-msgstr ""
+msgstr "Elabora una historia"
 
 #: apps/cmsplugin_storybase/settings.py:33 settings/defaults.py:335
 #: templates/base.html:114
 msgid "Explore"
-msgstr "Explora"
+msgstr ""
 
 #: apps/cmsplugin_storybase/settings.py:42
 #: apps/storybase_story/templates/storybase_story/story_detail.html:84
@@ -87,7 +87,7 @@ msgstr ""
 #: apps/cmsplugin_storybase/templates/homepage_stories_plugin.html:6
 #, python-format
 msgid "Explore %(storybase_site_name)s "
-msgstr "Explora %(storybase_site_name)s"
+msgstr ""
 
 #: apps/storybase/views/generic.py:55 apps/storybase_asset/api.py:384
 #: apps/storybase_story/views.py:144 apps/storybase_story/views.py:167
@@ -118,8 +118,8 @@ msgstr ""
 #: apps/storybase_geo/admin.py:94
 #, python-format
 msgid ""
-"You tried to set a parent with the wrong GeoLevel. You need to pick one with "
-"a GeoLevel of %s"
+"You tried to set a parent with the wrong GeoLevel. You need to pick one with"
+" a GeoLevel of %s"
 msgstr ""
 
 #: apps/storybase_geo/models.py:19 apps/storybase_geo/models.py:58
@@ -217,7 +217,7 @@ msgstr ""
 
 #: apps/storybase_messaging/models.py:37
 msgid "Your Name"
-msgstr ""
+msgstr "Tu nombre"
 
 #: apps/storybase_messaging/models.py:38
 msgid "Your Email"
@@ -254,11 +254,11 @@ msgstr ""
 #: apps/storybase_messaging/templates/storybase_messaging/sitecontactmessage_form.html:4
 #: templates/base.html:66 templates/base.html.py:118
 msgid "Contact Us"
-msgstr ""
+msgstr "Contáctanos"
 
 #: apps/storybase_messaging/templates/storybase_messaging/sitecontactmessage_form.html:16
 msgid "Fields marked with a * are required"
-msgstr ""
+msgstr "* Campos obligatorios"
 
 #: apps/storybase_messaging/templates/storybase_messaging/sitecontactmessage_form.html:19
 #: apps/storybase_user/templates/storybase_user/account_extra_details.html:24
@@ -267,7 +267,7 @@ msgstr ""
 
 #: apps/storybase_story/models.py:67
 msgid "Call to Action"
-msgstr ""
+msgstr "Llamada a la acción"
 
 #: apps/storybase_story/models.py:69
 msgid "Connected Story Prompt"
@@ -322,7 +322,8 @@ msgstr ""
 #: apps/storybase_story/models.py:557
 msgid ""
 "The ordering of top-level sections relative to each other. Sections with "
-"lower weight values are shown before ones with higher weight values in lists."
+"lower weight values are shown before ones with higher weight values in "
+"lists."
 msgstr ""
 
 #: apps/storybase_story/models.py:562
@@ -333,15 +334,15 @@ msgstr ""
 
 #: apps/storybase_story/models.py:772
 msgid "5 minutes"
-msgstr ""
+msgstr "5 minutos"
 
 #: apps/storybase_story/models.py:773
 msgid "30 minutes"
-msgstr ""
+msgstr "30 minutos"
 
 #: apps/storybase_story/models.py:776
 msgid "Beginner"
-msgstr ""
+msgstr "Principiante"
 
 #: apps/storybase_story/models.py:781
 msgid "The story that provides the structure for this template"
@@ -385,7 +386,7 @@ msgstr ""
 #: apps/storybase_story/structure/__init__.py:174
 #: apps/storybase_story/templates/storybase_story/story_viewer.html:73
 msgid "Summary"
-msgstr ""
+msgstr "Resumen"
 
 #: apps/storybase_story/structure/__init__.py:140
 #: apps/storybase_story/structure/__init__.py:170
@@ -420,20 +421,20 @@ msgstr ""
 #: apps/storybase_story/templates/storybase_story/story_builder.html:64
 #: templates/base.html:113
 msgid "Story Builder"
-msgstr ""
+msgstr "Editor"
 
 #: apps/storybase_story/templates/storybase_story/story_comments.html:26
 #: templates/registration/password_reset_complete.html:12
 msgid "Log in"
-msgstr ""
+msgstr "Entrar"
 
 #: apps/storybase_story/templates/storybase_story/story_comments.html:26
 msgid "or"
-msgstr ""
+msgstr "o"
 
 #: apps/storybase_story/templates/storybase_story/story_comments.html:26
 msgid "register"
-msgstr ""
+msgstr "registrarse"
 
 #: apps/storybase_story/templates/storybase_story/story_comments.html:26
 msgid "to comment"
@@ -491,7 +492,7 @@ msgstr ""
 
 #: apps/storybase_taxonomy/models.py:115
 msgid "Tag"
-msgstr ""
+msgstr "Tag"
 
 #: apps/storybase_taxonomy/models.py:116
 msgid "Tags"
@@ -544,12 +545,12 @@ msgstr ""
 #: apps/storybase_user/auth/forms.py:16
 #: templates/registration/password_reset_form.html:14
 msgid "Email"
-msgstr ""
+msgstr "C. elec."
 
 #: apps/storybase_user/auth/forms.py:52
 msgid ""
-"Please enter a correct email address and password. Note that both fields are "
-"case-sensitive."
+"Please enter a correct email address and password. Note that both fields are"
+" case-sensitive."
 msgstr ""
 
 #: apps/storybase_user/auth/forms.py:63
@@ -565,7 +566,7 @@ msgstr ""
 #: apps/storybase_user/registration/forms.py:15
 #: apps/storybase_user/templates/storybase_user/account_base.html:12
 msgid "Password"
-msgstr ""
+msgstr "Contraseña"
 
 #: apps/storybase_user/auth/forms.py:107
 msgid ""
@@ -610,7 +611,7 @@ msgstr ""
 #: apps/storybase_user/registration/forms.py:16
 #: apps/storybase_user/templates/storybase_user/password_change_form.html:36
 msgid "Password (again)"
-msgstr ""
+msgstr "Repetir contraseña"
 
 #: apps/storybase_user/registration/forms.py:38
 msgid "A first name is required"
@@ -619,7 +620,7 @@ msgstr ""
 #: apps/storybase_user/registration/forms.py:41
 #: apps/storybase_user/social_auth/forms.py:10
 msgid "I agree to the terms of service"
-msgstr ""
+msgstr "Acepto las condiciones de servicio"
 
 #: apps/storybase_user/registration/forms.py:42
 #: apps/storybase_user/social_auth/forms.py:12
@@ -645,9 +646,7 @@ msgstr ""
 #, python-format
 msgid ""
 "\n"
-"Your Floodlight account has been deactivated by the %(site_name)s "
-"administrators. If you would like to reactivate your account, please contact "
-"us at %(site_contact_email)s.\n"
+"Your Floodlight account has been deactivated by the %(site_name)s administrators. If you would like to reactivate your account, please contact us at %(site_contact_email)s.\n"
 msgstr ""
 
 #: apps/storybase_user/templates/registration/account_inactive_error_message.html:11
@@ -661,8 +660,8 @@ msgstr ""
 
 #: apps/storybase_user/templates/storybase_user/account_base.html:10
 msgid ""
-"Manage your basic information, like email address and connected social media "
-"accounts"
+"Manage your basic information, like email address and connected social media"
+" accounts"
 msgstr ""
 
 #: apps/storybase_user/templates/storybase_user/account_base.html:10
@@ -671,7 +670,7 @@ msgstr ""
 #: templates/account_menu.html:7 templates/base.html:117
 #: templates/megamenu.html:167
 msgid "My Account"
-msgstr ""
+msgstr "Mi Cuenta"
 
 #: apps/storybase_user/templates/storybase_user/account_base.html:12
 msgid "Change your password"
@@ -705,12 +704,12 @@ msgstr ""
 #: apps/storybase_user/templates/storybase_user/account_extra_details.html:19
 #: templates/registration/registration_form.html:31
 msgid "I agree to the "
-msgstr ""
+msgstr "Acepto las"
 
 #: apps/storybase_user/templates/storybase_user/account_extra_details.html:19
 #: templates/registration/registration_form.html:31
 msgid "terms of service"
-msgstr ""
+msgstr "condiciones de servicio"
 
 #: apps/storybase_user/templates/storybase_user/account_notifications.html:15
 msgid "updates"
@@ -754,7 +753,7 @@ msgstr ""
 
 #: apps/storybase_user/templates/storybase_user/account_stories.html:14
 msgid "Title"
-msgstr ""
+msgstr "Título"
 
 #: apps/storybase_user/templates/storybase_user/account_stories.html:15
 msgid "Last Edited"
@@ -766,7 +765,7 @@ msgstr ""
 
 #: apps/storybase_user/templates/storybase_user/account_stories.html:26
 msgid "Build"
-msgstr ""
+msgstr "Editar"
 
 #: apps/storybase_user/templates/storybase_user/account_stories.html:31
 msgid "You have no stories"
@@ -782,7 +781,7 @@ msgstr ""
 
 #: apps/storybase_user/templates/storybase_user/account_summary.html:12
 msgid "Email Address"
-msgstr ""
+msgstr "C. elec."
 
 #: apps/storybase_user/templates/storybase_user/account_summary.html:17
 msgid "Change Email Address"
@@ -818,8 +817,8 @@ msgstr[1] ""
 
 #: apps/storybase_user/templates/storybase_user/password_change_form.html:20
 msgid ""
-"Please enter your old password, for security's sake, and then enter your new "
-"password twice so we can verify you typed it in correctly."
+"Please enter your old password, for security's sake, and then enter your new"
+" password twice so we can verify you typed it in correctly."
 msgstr ""
 
 #: apps/storybase_user/templates/storybase_user/password_change_form.html:26
@@ -864,7 +863,7 @@ msgstr ""
 #: config/atlas_dev/settings.py:118 config/atlas_staging/settings.py:132
 #: config/atlas_test/settings.py:131 config/staging/settings.py:132
 msgid "Because what you can't see, you can't change."
-msgstr "Usted no puede cambiar lo que no puedes ver."
+msgstr ""
 
 #: config/atlas_dev/settings.py:122 config/atlas_staging/settings.py:137
 #: config/atlas_test/settings.py:135 config/staging/settings.py:137
@@ -875,7 +874,7 @@ msgstr ""
 #: config/atlas_test/settings.py:137 config/staging/settings.py:139
 #, python-format
 msgid "Explore %s"
-msgstr "Explora %s"
+msgstr ""
 
 #: settings/defaults.py:286
 msgid "English"
@@ -903,26 +902,26 @@ msgstr ""
 
 #: templates/account_menu.html:9 templates/megamenu.html:171
 msgid "My Dashboard"
-msgstr ""
+msgstr "Mi tablero de control"
 
 #: templates/account_menu.html:10 templates/megamenu.html:181
 msgid "Sign Out"
-msgstr ""
+msgstr "Salir"
 
 #: templates/account_menu.html:14 templates/base.html:71
 #: templates/registration/activation_complete.html:8
 #: templates/registration/login.html:5 templates/registration/login.html:10
 #: templates/registration/login.html:28
 msgid "Sign In"
-msgstr ""
+msgstr "Entrar"
 
 #: templates/base.html:61
 msgid "Floodlight: Tell a Story. Transform Your Community"
-msgstr ""
+msgstr "Floodlight: Cuenta una historia. Transforma la comunidad."
 
 #: templates/base.html:67 templates/base.html.py:119
 msgid "Help"
-msgstr ""
+msgstr "Ayuda"
 
 #: templates/base.html:103
 msgid "Copyright 2012 The Floodlight Project. All rights reserved."
@@ -931,15 +930,15 @@ msgstr ""
 #: templates/base.html:112 templates/megamenu.html:4
 #: templates/admin/change_form.html:24
 msgid "Home"
-msgstr ""
+msgstr "Inicio"
 
 #: templates/base.html:115 templates/megamenu.html:49
 msgid "Grow Your Skills"
-msgstr ""
+msgstr "Desarrolla Tus Habilidades"
 
 #: templates/base.html:116 templates/megamenu.html:98
 msgid "About"
-msgstr ""
+msgstr "Acerca de"
 
 #: templates/base.html:120
 msgid "Policies"
@@ -958,231 +957,208 @@ msgstr ""
 
 #: templates/homepage.html:28
 msgid "Tell your story. Transform our community."
-msgstr ""
+msgstr "Cuenta una historia. Transforma la comunidad."
 
 #: templates/homepage.html:31
 msgid ""
 "Your story matters. Without it, nothing happens. Floodlight will help you "
 "build, tell and share  powerful stories that will make community change "
 "possible."
-msgstr ""
+msgstr "Tu historia importa. Sin ella no sucede nada. Floodlight te ayudará a elaborar, contar y\ncompartir historias impactantes que hagan posible el cambio comunitario."
 
 #: templates/homepage.html:31 templates/homepage.html.py:46
 msgid "Create your story now."
-msgstr ""
+msgstr "Crea una historia ahora."
 
 #: templates/homepage.html:31 templates/homepage.html.py:46
 msgid "Or"
-msgstr ""
+msgstr "O"
 
 #: templates/homepage.html:31
 msgid "see the stories others are sharing."
-msgstr ""
+msgstr "lee las historias que otros cuentan."
 
 #: templates/homepage.html:36 templates/homepage.html.py:53
-#, fuzzy
 msgid "Explore Stories"
-msgstr "Explora %s"
+msgstr ""
 
 #: templates/homepage.html:43
 msgid "Build a breakthrough story."
-msgstr ""
+msgstr "Elabora una historia reveladora."
 
 #: templates/homepage.html:46
 msgid ""
-"Take your storytelling to the next level. Create visually compelling stories "
-"with photos, videos, data and more. Learn how to tell better stories by "
+"Take your storytelling to the next level. Create visually compelling stories"
+" with photos, videos, data and more. Learn how to tell better stories by "
 "leveraging public data in creative ways."
-msgstr ""
+msgstr "Lleva tu narración al siguiente nivel. Crea historias visualmente atractivas con fotos, videos,\ndatos y otros recursos."
 
 #: templates/homepage.html:46
 msgid "build your storytelling skills"
-msgstr ""
+msgstr "desarrolla tus habilidades narrativas."
 
 #: templates/homepage.html:52 templates/homepage.html.py:68
 msgid "Your Story Matters"
-msgstr ""
+msgstr "Tu historia importa"
 
 #: templates/homepage.html:59
 msgid "See and show your community in a new light."
-msgstr ""
+msgstr "Ve y muestra tu comunidad bajo una nueva luz."
 
 #: templates/homepage.html:62
 msgid ""
 "Explore the stories others are sharing and discover new meaning in your "
 "neighborhood. Floodlight is where stories become movements."
-msgstr ""
+msgstr "Explora las historias que otros cuentan y descubre un nuevo significado en tu comunidad. En Floodlight, las historias se convierten en movimientos."
 
 #: templates/homepage.html:62
-#, fuzzy
 msgid "Because what we can’t see, we can’t change."
-msgstr "Usted no puede cambiar lo que no puedes ver."
+msgstr ""
 
 #: templates/homepage.html:77
-#, fuzzy
 msgid "Featured on Floodlight"
-msgstr "Explora Floodlight"
+msgstr ""
 
 #: templates/homepage.html:195
 msgid "Supporting Foundations"
-msgstr ""
+msgstr "Fundaciones Patrocinadoras"
 
 #: templates/megamenu.html:5
 msgid "Build a story"
-msgstr ""
+msgstr "Elabora una historia"
 
 #: templates/megamenu.html:8
 msgid "Take your storytelling to the next level."
-msgstr ""
+msgstr "Take your storytelling to the next level. "
 
 #: templates/megamenu.html:10
 msgid ""
 "\n"
-"\t\t\t\t\t\tCreate an amazing story in minutes. Start by choosing a template "
-"-- like photo voice, explainer, or data story. Customize it with your text, "
-"photos, video, audio, data and more. Include a call to action to inspire "
-"your readers to get involved.\n"
+"\t\t\t\t\t\tCreate an amazing story in minutes. Start by choosing a template -- like photo voice, explainer, or data story. Customize it with your text, photos, video, audio, data and more. Include a call to action to inspire your readers to get involved.\n"
 "\t\t\t\t\t\t"
-msgstr ""
+msgstr "\nCrea una historia asombrosa en unos cuantos minutos. Empieza eligiendo una plantilla - por ej., una historia basada en fotovoz, una explicación o datos. Personalízala con texto, fotos, video, audio, datos y otross recursos que elijas. Incluye una llamada de atención para inspirar a tus lectores a involucrarse en la historia."
 
 #: templates/megamenu.html:18
 msgid "Explore Floodlight"
-msgstr "Explora Floodlight"
+msgstr ""
 
 #: templates/megamenu.html:21
 msgid "Browse Stories"
-msgstr ""
+msgstr "Hojea historias"
 
 #: templates/megamenu.html:23
 msgid ""
 "\n"
-"\t\t\t\t\t\tBrowse and filter Floodlight stories by topic, location, "
-"language, project and organization.\n"
+"\t\t\t\t\t\tBrowse and filter Floodlight stories by topic, location, language, project and organization.\n"
 "\t\t\t\t\t\t"
-msgstr ""
+msgstr "\nHojea y filtra historias en Floodlight por tema, lugar, proyecto y organización."
 
 #: templates/megamenu.html:31
 msgid ""
 "\n"
-"\t\t\t\t\t\tOrganizations are groups of people creating stories together. "
-"They can be non-profits, school groups, neighborhoods, or any storytellers "
-"who share a common goal.\n"
+"\t\t\t\t\t\tOrganizations are groups of people creating stories together. They can be non-profits, school groups, neighborhoods, or any storytellers who share a common goal.\n"
 "\t\t\t\t\t\t"
-msgstr ""
+msgstr "\nLas organziaciones son grupos de personas que colaboran para crear historias. Pueden ser organizaciones sin fines de lucro, grupos escolares, vecindarios o culesquiera narradores que compartan un objetivo."
 
 #: templates/megamenu.html:35
 msgid "Create an Organization"
-msgstr ""
+msgstr "Crea una organización"
 
 #: templates/megamenu.html:40
 msgid ""
 "\n"
-"\t\t\t\t\t\tProjects are collections of stories about a common theme, place, "
-"issue, event or movement. They can be open to contributions from any "
-"Floodlight user, or constrained to a group of authors.\n"
+"\t\t\t\t\t\tProjects are collections of stories about a common theme, place, issue, event or movement. They can be open to contributions from any Floodlight user, or constrained to a group of authors.\n"
 "\t\t\t\t\t\t"
-msgstr ""
+msgstr "\nLos proyectos son recopilaciones de historias sobre un tema, un lugar, un problema, un suceso o un movimiento en común. Pueden estar abiertos a contribuciones de cualquier usuario de Floodlight o restruingidos a un grupo de autores."
 
 #: templates/megamenu.html:44
 msgid "Create a Project"
-msgstr ""
+msgstr "Creat un proyecto"
 
 #: templates/megamenu.html:52
 msgid "Learn how to be a better storyteller"
-msgstr ""
+msgstr "Mejora tu narrativa"
 
 #: templates/megamenu.html:54
 msgid ""
 "\n"
-"\t\t\t\t\t\tStorytelling comes naturally to all of us. But we can always "
-"improve with practice. Here you’ll find information about in-person "
-"trainings and online tools and tutorials to help you build your skills.\n"
+"\t\t\t\t\t\tStorytelling comes naturally to all of us. But we can always improve with practice. Here you’ll find information about in-person trainings and online tools and tutorials to help you build your skills.\n"
 "\t\t\t\t\t\t"
-msgstr ""
+msgstr "\nPor naturaleza, todos tenemos aptitudes narrativas. Pero siempre podemos mejorar con la práctica. Aquí encontrarás información sobre capacitación presencial y herramientas y tutoriales en línea que te ayudarán a desarrollar esas aptitudes."
 
 #: templates/megamenu.html:60
 msgid "Storytelling Workshops"
-msgstr ""
+msgstr "Talleres de narrativa"
 
 #: templates/megamenu.html:62
 msgid "Online training materials"
-msgstr ""
+msgstr "Materiales de capacitación en línea"
 
 #: templates/megamenu.html:63
 msgid "Upcoming sessions"
-msgstr ""
+msgstr "Sesiones próximas"
 
 #: templates/megamenu.html:67
 msgid "Storytelling Tips"
-msgstr ""
+msgstr "Consejos para narrar historias"
 
 #: templates/megamenu.html:75
 msgid "Data Analysis and Visualization"
-msgstr ""
+msgstr "Análisis y visualización de datos"
 
 #: templates/megamenu.html:88
 msgid "Resources"
-msgstr ""
+msgstr "Recursos"
 
 #: templates/megamenu.html:90
 msgid ""
 "\n"
-"\t\t\t\t\t\tHere you’ll find answers to commonly asked questions and links "
-"to commonly used tools, like photo release forms.\n"
+"\t\t\t\t\t\tHere you’ll find answers to commonly asked questions and links to commonly used tools, like photo release forms.\n"
 "\t\t\t\t\t\t"
-msgstr ""
+msgstr "\nAquí encontrarás respuestas a preguntas frecuentes y vínculos a herramientas de uso común, como formularios de publicación de fotos."
 
 #: templates/megamenu.html:102
 msgid "What is Floodlight?"
-msgstr ""
+msgstr "¿Qué es Floodlight?"
 
 #: templates/megamenu.html:103
 msgid "The Vision"
-msgstr ""
+msgstr "Nuestra Visión"
 
 #: templates/megamenu.html:104
 msgid "Supporting Foundations and Partners"
-msgstr ""
+msgstr "Fundaciones Patrocinadoras y Socios"
 
 #: templates/megamenu.html:105
 msgid "How it Works"
-msgstr ""
+msgstr "Cómo Funciona"
 
 #: templates/megamenu.html:110
 msgid ""
 "\n"
-"\t\t\t\t\t\tYour story matters. Without it, nothing happens. Floodlight is a "
-"<strong>tool</strong> for creating meaningful stories on the web that are "
-"visually compelling, supported by facts and encourage community action. "
-"Floodlight is also a <strong>place</strong> to share stories and uncover "
-"connections between them.\n"
+"\t\t\t\t\t\tYour story matters. Without it, nothing happens. Floodlight is a <strong>tool</strong> for creating meaningful stories on the web that are visually compelling, supported by facts and encourage community action. Floodlight is also a <strong>place</strong> to share stories and uncover connections between them.\n"
 "\t\t\t\t\t\t"
-msgstr ""
+msgstr "\nTu historia importa. Sin ella no sucede nada. Floodlight es una <strong>herramienta</strong> para crear en la Web historias elocuentes visualmenne atractivas, fundadas en hechos y que fomenten la acción comunitaria. Floodlight también es un <strong>lugar</strong> para compartir historias y descubrir conexiones entre ellas."
 
 #: templates/megamenu.html:116
 msgid "On Floodlight, you can&hellip;"
-msgstr ""
+msgstr "En Floodlight, puedes&hellip;"
 
 #: templates/megamenu.html:118
 msgid ""
 "\n"
-"\t\t\t\t\t\t<strong>Build</strong> a breakthrough story using photos, "
-"videos, data and more.<br>\n"
-"\t\t\t\t\t\t<strong>Learn</strong> how to be a better storyteller through "
-"training and resources.<br>\n"
-"\t\t\t\t\t\t<strong>Read</strong> and contribute to the stories others are "
-"sharing.\n"
+"\t\t\t\t\t\t<strong>Build</strong> a breakthrough story using photos, videos, data and more.<br>\n"
+"\t\t\t\t\t\t<strong>Learn</strong> how to be a better storyteller through training and resources.<br>\n"
+"\t\t\t\t\t\t<strong>Read</strong> and contribute to the stories others are sharing.\n"
 "\t\t\t\t\t\t"
-msgstr ""
+msgstr "\n<strong>Elaborar</strong> una historia reveladora con fotos, videos, datos y otros recursos.<br>\n<strong>Aprender a</strong> desarrollar tus aptitudes narrativas haciendo uso de capacitación y recursos.<br>\n<strong>Leer</strong> historias de otros y <strong>contribuir</strong> a ellas."
 
 #: templates/megamenu.html:127
 msgid ""
 "\n"
-"\t\t\t\t\t\tBy connecting <em>storytellers</em>, <em>story sharers</em> and "
-"<em>story readers</em>, Floodlight is a project to brighten, inform and "
-"transform community though the power of story.\n"
+"\t\t\t\t\t\tBy connecting <em>storytellers</em>, <em>story sharers</em> and <em>story readers</em>, Floodlight is a project to brighten, inform and transform community though the power of story.\n"
 "\t\t\t\t\t\t"
-msgstr ""
+msgstr "\nFloodlight es un proyecto que conecta a <em>personas que narran</em>, <em>comparten</em> y <em>leen historias</em>, con el afán de iluminar, informar y transformar a la comunidad utilizando la fuerza de la narrativa."
 
 #: templates/megamenu.html:172
 msgid "Communication Preferences"
@@ -1226,8 +1202,8 @@ msgstr ""
 #: templates/emailconfirmation/confirm_email.html:11
 #, python-format
 msgid ""
-"You have confirmed that <a href=\"mailto:%(email)s\">%(email)s</a> is an e-"
-"mail address for user '%(user)s'."
+"You have confirmed that <a href=\"mailto:%(email)s\">%(email)s</a> is an "
+"e-mail address for user '%(user)s'."
 msgstr ""
 
 #: templates/emailconfirmation/confirm_email.html:13
@@ -1236,7 +1212,7 @@ msgstr ""
 
 #: templates/menu/language_chooser.html:4
 msgid "In"
-msgstr "En"
+msgstr ""
 
 #: templates/registration/activate.html:5
 msgid "There was a problem with your activation"
@@ -1271,13 +1247,13 @@ msgid "Sign in with"
 msgstr ""
 
 #: templates/registration/login.html:23
-#, fuzzy, python-format
+#, python-format
 msgid "Or, sign in with your %(storybase_site_name)s account"
-msgstr "Explora %(storybase_site_name)s"
+msgstr ""
 
 #: templates/registration/login.html:32
 msgid "Forgot password?"
-msgstr ""
+msgstr "¿Olvidaste tu contraseña?"
 
 #: templates/registration/logout.html:5 templates/registration/logout.html:8
 msgid "Logout"
@@ -1350,8 +1326,7 @@ msgid ""
 "\n"
 "Hi %(user_first_name)s,\n"
 "\n"
-"You requested to reset the passsword for the %(storybase_site_name)s account "
-"associated with this email address."
+"You requested to reset the passsword for the %(storybase_site_name)s account associated with this email address."
 msgstr ""
 
 #: templates/registration/password_reset_email.html:7
@@ -1365,9 +1340,9 @@ msgid ""
 msgstr ""
 
 #: templates/registration/password_reset_email.html:14
-#, fuzzy, python-format
+#, python-format
 msgid "The %(storybase_site_name)s Team"
-msgstr "Explora %(storybase_site_name)s"
+msgstr ""
 
 #: templates/registration/password_reset_form.html:8
 msgid "Enter your email address to reset your password"
@@ -1375,8 +1350,8 @@ msgstr ""
 
 #: templates/registration/password_reset_form.html:10
 msgid ""
-"We will send an email to the address on your account with instructins on how "
-"to change your password"
+"We will send an email to the address on your account with instructins on how"
+" to change your password"
 msgstr ""
 
 #: templates/registration/password_reset_form.html:14
@@ -1393,11 +1368,11 @@ msgstr ""
 #: templates/registration/registration_form.html:8
 #: templates/registration/registration_form.html:36
 msgid "Sign Up"
-msgstr ""
+msgstr "Registrarse"
 
 #: templates/registration/registration_form.html:10
 msgid "Already have an account?"
-msgstr ""
+msgstr "¿Ya eres un narrador en Floodlight?"
 
 #: templates/registration/registration_form.html:10
 msgid "Sign in here"
