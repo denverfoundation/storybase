@@ -57,6 +57,11 @@ USE_I18N = True
 # calendars according to the current locale
 USE_L10N = True
 
+# Search for translations in the project-wide locale folder
+LOCALE_PATHS = (
+    os.path.join(PROJECT_PATH, 'locale'),
+)
+
 # Absolute filesystem path to the directory that will hold user-uploaded files.
 # Example: "/home/media/media.lawrence.com/media/"
 MEDIA_ROOT = os.path.join(PROJECT_PATH, "media")
