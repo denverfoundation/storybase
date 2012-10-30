@@ -23,7 +23,7 @@ from storybase.models import (TzDirtyFieldsMixin, LicensedModel, PermissionMixin
     PublishedModel, TimestampedModel, TranslatedModel, TranslationModel,
     set_date_on_published)
 from storybase.utils import unique_slugify
-from storybase_asset.models import Asset, DataSet, ASSET_TYPES
+from storybase_asset.models import (Asset, DataSet, ASSET_TYPES, FeaturedAssetsMixin)
 from storybase_help.models import Help
 from storybase_user.models import Organization, Project
 from storybase_user.utils import format_user_name
@@ -77,7 +77,8 @@ class StoryTranslation(TranslationModel):
         return self.title
 
 
-class Story(TzDirtyFieldsMixin, TranslatedModel, LicensedModel, PublishedModel,
+class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
+            TranslatedModel, LicensedModel, PublishedModel,
             TimestampedModel, StoryPermission):
     """Metadata for a story
 
@@ -227,46 +228,6 @@ class Story(TzDirtyFieldsMixin, TranslatedModel, LicensedModel, PublishedModel,
         # No image assets either
         return None
 
-    def render_featured_asset(self, format='html', width=500, height=0):
-        """Render a representation of the story's featured asset"""
-        featured_asset = self.get_featured_asset()
-        if featured_asset is None:
-            # No featured assets
-            # TODO: Display default image
-            return ''
-        else:
-            # TODO: Pick default size for image
-            # Note that these dimensions are the size that the resized
-            # image will fit in, not the actual dimensions of the image
-            # that will be generated
-            # See http://easy-thumbnails.readthedocs.org/en/latest/usage/#thumbnail-options
-            thumbnail_options = {
-                'width': width,
-                'height': height
-            }
-            if format == 'html':
-                thumbnail_options.update({'html_class': 'featured-asset'})
-            return featured_asset.render_thumbnail(format=format, 
-                                                   **thumbnail_options)
-
-    def featured_asset_thumbnail_url(self, include_host=True):
-        """Return the URL of the featured asset's thumbnail
-
-        Returns None if the asset cannot be converted to a thumbnail image.
-
-        """
-        featured_asset = self.get_featured_asset()
-        if featured_asset is None:
-            # No featured assets
-            return None
-        else:
-            thumbnail_options = {
-                'width': 240,
-                'height': 240,
-                'include_host': include_host
-            }
-            return featured_asset.get_thumbnail_url(**thumbnail_options)
-
     def render_story_structure(self, format='html'):
         """Render a representation of the Story structure"""
         output = []
@@ -397,6 +358,9 @@ class Story(TzDirtyFieldsMixin, TranslatedModel, LicensedModel, PublishedModel,
             return ""
 
         return connected_to[0].connected_prompt
+
+    def get_default_img_url_choices(self):
+        return settings.STORYBASE_DEFAULT_STORY_IMAGES
 
 
 def set_story_slug(sender, instance, **kwargs):

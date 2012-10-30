@@ -515,7 +515,6 @@ class LocalImageAsset(Asset):
         thumbnail = thumbnailer.get_thumbnail(thumbnail_options)
         host = "http://%s" % (Site.objects.get_current().domain) if include_host else ""
         return "%s%s" % (host, thumbnail.url)
-                               
 
 
 # Hook up some signals so the publication date gets changed
@@ -523,6 +522,83 @@ class LocalImageAsset(Asset):
 pre_save.connect(set_date_on_published, sender=ExternalAsset)
 pre_save.connect(set_date_on_published, sender=HtmlAsset)
 pre_save.connect(set_date_on_published, sender=LocalImageAsset)
+
+
+class FeaturedAssetsMixin(object):
+    """
+    Mixins for models that have a featured asset
+    
+    Models mixing in this class should have a ManyToMany field
+    named ``featured_assets``.  This field is not defined in this mixin mostly
+    because I couldn't think of a clever way to set the reverse name the way
+    I wanted.
+    """
+    def get_featured_asset(self):
+        """Return the featured asset"""
+        if self.featured_assets.count():
+            # Return the first featured asset.  We have the ability of 
+            # selecting multiple featured assets.  Perhaps in the future
+            # allow for specifying a particular feature asset or randomly
+            # displaying one.
+            return self.featured_assets.select_subclasses()[0]
+
+        return None
+
+    def get_default_img_url(self, width, height):
+        choices = self.get_default_img_url_choices()
+        lgst_width = 0
+        lgst_src = 0
+        for img_width, url in choices.iteritems():
+            if img_width <= width: 
+                lgst_src = url
+                if img_width > lgst_width:
+                    lgst_width = img_width
+        return lgst_src
+
+    def render_default_img_html(self, width=500, height=0, attrs={}):
+        url = self.get_default_img_url(width, height)
+        el_attrs = dict(src=url)
+        el_attrs.update(attrs)
+        return mark_safe(img_el(el_attrs))
+
+    def render_featured_asset(self, format='html', width=500, height=0):
+        """Render a representation of the story's featured asset"""
+        featured_asset = self.get_featured_asset()
+        if featured_asset is None:
+            # No featured assets
+            return self.render_default_img_html(width, height)
+        else:
+            # TODO: Pick default size for image
+            # Note that these dimensions are the size that the resized
+            # image will fit in, not the actual dimensions of the image
+            # that will be generated
+            # See http://easy-thumbnails.readthedocs.org/en/latest/usage/#thumbnail-options
+            thumbnail_options = {
+                'width': width,
+                'height': height
+            }
+            if format == 'html':
+                thumbnail_options.update({'html_class': 'featured-asset'})
+            return featured_asset.render_thumbnail(format=format, 
+                                                   **thumbnail_options)
+
+    def featured_asset_thumbnail_url(self, include_host=True):
+        """Return the URL of the featured asset's thumbnail
+
+        Returns None if the asset cannot be converted to a thumbnail image.
+
+        """
+        featured_asset = self.get_featured_asset()
+        if featured_asset is None:
+            # No featured assets
+            return self.get_default_img_url(width=222, height=222)
+        else:
+            thumbnail_options = {
+                'width': 240,
+                'height': 240,
+                'include_host': include_host
+            }
+            return featured_asset.get_thumbnail_url(**thumbnail_options)
 
 
 class DataSetPermission(PermissionMixin):
@@ -740,3 +816,5 @@ def create_external_dataset(title, url, description='',
         language=language)
     translation.save()
     return obj
+
+

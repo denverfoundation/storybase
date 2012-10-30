@@ -14,6 +14,7 @@ from storybase.managers import FeaturedManager
 from storybase.models import (TimestampedModel, TranslatedModel,
                               TranslationModel)
 from storybase.utils import unique_slugify
+from storybase_asset.models import FeaturedAssetsMixin
 
 ADMIN_GROUP_NAME = getattr(settings, 'ADMIN_GROUP_NAME', 'CA Admin')
 """Default name of the administrator group"""
@@ -42,41 +43,6 @@ class FeaturedStoriesMixin(object):
             return self.get_featured_queryset().order_by('-last_edited')[0]
         except IndexError:
             return None
-
-
-class FeaturedAssetsMixin(object):
-    def get_featured_asset(self):
-        """Return the featured asset"""
-        if self.featured_assets.count():
-            # Return the first featured asset.  We have the ability of 
-            # selecting multiple featured assets.  Perhaps in the future
-            # allow for specifying a particular feature asset or randomly
-            # displaying one.
-            return self.featured_assets.select_subclasses()[0]
-
-        return None
-
-    def render_featured_asset(self, format='html', width=500, height=0):
-        """Render a representation of the story's featured asset"""
-        featured_asset = self.get_featured_asset()
-        if featured_asset is None:
-            # No featured assets
-            # TODO: Display default image
-            return ''
-        else:
-            # TODO: Pick default size for image
-            # Note that these dimensions are the size that the resized
-            # image will fit in, not the actual dimensions of the image
-            # that will be generated
-            # See http://easy-thumbnails.readthedocs.org/en/latest/usage/#thumbnail-options
-            thumbnail_options = {
-                'width': width,
-                'height': height
-            }
-            if format == 'html':
-                thumbnail_options.update({'html_class': 'featured-asset'})
-            return featured_asset.render_thumbnail(format=format, 
-                                                   **thumbnail_options)
 
 
 class RecentStoriesMixin(object):
@@ -139,6 +105,9 @@ class Organization(FeaturedAssetsMixin, RecentStoriesMixin,
 
         """
         return self.curated_stories.order_by('organizationstory__weight', '-organizationstory__added')
+
+    def get_default_img_url_choices(self):
+        return settings.STORYBASE_DEFAULT_ORGANIZATION_IMAGES
 
 
 class OrganizationTranslation(TranslationModel, TimestampedModel):
@@ -231,6 +200,10 @@ class Project(FeaturedAssetsMixin, RecentStoriesMixin, FeaturedStoriesMixin,
 
         """
         return self.curated_stories.order_by('projectstory__weight', '-projectstory__added')
+
+    def get_default_img_url_choices(self):
+        return settings.STORYBASE_DEFAULT_PROJECT_IMAGES
+
 
 class ProjectTranslation(TranslationModel):
     project = models.ForeignKey('Project')

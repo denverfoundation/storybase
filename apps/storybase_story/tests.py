@@ -278,7 +278,7 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
         story = create_story(title="Test Story", summary="Test Summary",
                              byline="Test Byline", status='published')
         self.assertEqual(story.assets.count(), 0)
-        self.assertEqual(story.render_featured_asset(), '')
+        self.assertEqual(story.render_featured_asset(), '<img src="/static/img/default-image-story-335x200.png" />')
 
     def test_get_featured_asset_thumbnail_url_empty(self):
         """
@@ -289,7 +289,7 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
         story = create_story(title="Test Story", summary="Test Summary",
                              byline="Test Byline", status='published')
         self.assertEqual(story.assets.count(), 0)
-        self.assertEqual(story.featured_asset_thumbnail_url(), None)
+        self.assertEqual(story.featured_asset_thumbnail_url(), '/static/img/default-image-story-222x132.png')
 
     def test_unique_slug(self):
         """
