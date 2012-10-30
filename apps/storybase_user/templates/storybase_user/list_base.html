@@ -1,0 +1,21 @@
+{% extends "twocol.html" %}
+
+{% load i18n storybase_tags %}
+
+{% block content_page_class %}object-list{% endblock %}
+
+{% block twocol-content %}
+<ul class="object-list">
+  {% for object in objects %}
+  <li>
+    <div class="grid_3 alpha">
+        <a href="{{ object.get_absolute_url }}">{% featured_asset object 222 %}</a>
+    </div>
+    <div class="grid_7 omega">
+        <h2><a href="{{ object.get_absolute_url }}">{{ object.name }}</a></h2>
+        {{ object.description|safe|linebreaks }}
+    </div>
+  </li>
+  {% endfor %}
+</ul>
+{% endblock %}

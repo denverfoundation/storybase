@@ -1,29 +1,15 @@
-{% extends "twocol.html" %}
+{% extends "storybase_user/list_base.html" %}
 
-{% load i18n sekizai_tags menu_tags %}
+{% load i18n %}
 
 {% block head_title %}{{ storybase_organization_list_title }}{{ block.super }}{% endblock %}
 
 {% block body_title %}{{ storybase_organization_list_title }}{% endblock%}
 
-{% block intro %}
-<p class="intro">
-Introductory paragraph that can be used not only for SEO purposes, but also 
-to give a high-level description of what this section of the site is about.
-</p>
-<p>
-cancel my subscription I saw it on Mediagazer crowdfunding trolls hyperhyperlocal fair use news.me open source, TweetDeck The Printing Press as an Agent of Change synergize right-sizing trolls I love the Weather & Opera section Journal Register vast wasteland, Quora eHow monetization open newsroom tools gutter. hyperhyperhyperlocal Journal Register every dog loves food hyperlocal explainer hashtag monetization Jeff Jarvis put the paper to bed every dog loves food Nick Denton, Fuego Voice of San Diego ProPublica West Seattle Blog AOL Paul Steiger future of context paywall but what's the business model free as in beer, the notional night cops reporter in Des Moines Robin Sloan process vs. product CPC metered model column-inch future monetization Sulzberger. 
-</p>
-{% endblock %}
+{% block content_page_class %}{{ block.super }} organization{% endblock %}
 
-{% block primary_content %}
-<ul class="organization-list">
-  {% for organization in organizations %}
-  <li class="organization">
-    <h3><a href="{{ organization.get_absolute_url }}">{{ organization.name }}</a></h3>
-    <p class="description">{{ organization.description|truncatewords_html:100|safe }}</p>
-    <a class="more" href="{{ organization.get_absolute_url }}">{% trans "More" %}</a>
-  </li>
-  {% endfor %}
-</ul>
+{% block twocol-content %}
+{% with objects=organizations %}
+{{ block.super }}
+{% endwith %}
 {% endblock %}
