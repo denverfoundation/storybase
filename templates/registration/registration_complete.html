@@ -1,8 +1,14 @@
 {% extends "base.html" %}
 
-{% load cms_tags sekizai_tags menu_tags i18n %}
+{% load i18n %}
+
+{% block head_title %}{% trans "Thanks for signing up" %}{% endblock %}
+
 
 {% block base_content %}
-<p>{% trans "Thanks for signing up! A confirmation email has been sent to you. Click the link in that email to verify your account." %}</p>
+<h1><span>{% trans "Thanks for signing up" %}</span></h1>
 
+<p>{% trans "There’s one last step before you can begin creating stories on Floodlight. We’ve sent you a confirmation email. Click the link in that email to verify your account and log in." %}</p>
+
+<p>{% trans "If for some reason you don’t receive an email (make sure you check your spam filter), contact us at help@floodlightproject.org." %}</p>
 {% endblock %}
