@@ -1204,12 +1204,26 @@ button.preview {
   cursor: pointer;
   background-color: @light-gray;
   color: @medium-gray;
-}
-
-.section-thumbnail .title {
-  position:relative;
-  font-size: 12px;
-  top: ((@section-thumbnail-height / 2) - 6);
+  
+  .title {
+    position:relative;
+    font-size: 12px;
+    top: ((@section-thumbnail-height / 2) - 6);
+  }
+  
+  .remove {
+    display: none;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    text-decoration: none;
+    .remove-icon(14px, @gray);
+    font-size:0;
+  }
+  &:hover .remove {
+    display: block;
+  }
+  
 }
 
 .spacer {
@@ -1250,19 +1264,6 @@ button.preview {
 
 .section-thumbnail.new {
   margin: 10px;
-}
-
-.section-thumbnail .remove {
-  display: none;
-  position: absolute;
-  top: 2px;
-  right: 4px;
-  text-decoration: none;
-  color:@gray;
-}
-
-.section-thumbnail:hover .remove {
-  display: block;
 }
 
 // Add Data View
