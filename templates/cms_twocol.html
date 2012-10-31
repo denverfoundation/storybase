@@ -22,7 +22,24 @@
 	<p>Welcome to Floodlight&mdash;a community-powered storytelling project designed to drive social change by giving individuals and organizations the skills and tools to generate visually-compelling, data-supported stories that inspire people to act and illuminate community issues.</p>
 	{% endplaceholder %}
 </section>
-{% placeholder twocol-content-below or %}{% endplaceholder %}
+
+{% block bottom-left-col %}
+<div class="page-pull grid_5 alpha">
+	{% placeholder page-pull-1 %}
+</div>
+{% endblock bottom-left-col %}
+{% block bottom-right-col %}
+<div class="page-pull grid_5 omega">
+	{% placeholder page-pull-2 %}
+</div>
+{% endblock bottom-right-col %}
+
+{% block bottom-single-col %}
+<div class="page-pull grid_10 alpha omega">
+	{% placeholder page-pull-3 %}
+</div>
+{% endblock %}
+
 
 
 {% endblock twocol-content %}
