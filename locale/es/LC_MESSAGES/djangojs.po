@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Atlas\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-10-22 10:16-0500\n"
-"PO-Revision-Date: 2012-10-29 22:21+0000\n"
+"PO-Revision-Date: 2012-10-30 23:50+0000\n"
 "Last-Translator: pitonfoundation <jbrock@piton.org>\n"
 "Language-Team: Spanish (http://www.transifex.com/projects/p/atlas/language/es/)\n"
 "MIME-Version: 1.0\n"
@@ -226,7 +226,7 @@ msgstr "Empezar de nuevo"
 msgid ""
 "Leave the Story Builder and go back to the homepage. You can always return "
 "later"
-msgstr ""
+msgstr "Abandonar el Story Builder y regresar a la página de inicio.  Tu siempre puedes regresar luego."
 
 #: sitestatic/js/builder/views.js:657 static/js/builder/views.js:946
 msgid "Exit"
@@ -257,7 +257,7 @@ msgstr "Crear una historia toma cinco pasos sencillos. "
 #: static/js/builder/views.js:1233 static/js/builder/views.js.py:1251
 #: static/js/builder/views.js:1275
 msgid "Prev"
-msgstr ""
+msgstr "Anterior"
 
 #: sitestatic/js/builder/views.js:899 static/js/builder/views.js:1165
 msgid "This is your table of contents."
@@ -267,7 +267,7 @@ msgstr "Esta es tu tabla de contenidos."
 msgid ""
 "This bar shows the sections in your story. You can hide the bar by clicking "
 "on the tab that says \"Story Sections.\""
-msgstr ""
+msgstr "Esta barra muestra las sessiones de tu historia.  Tu puedes escander la barra al hacer click "
 
 #: sitestatic/js/builder/views.js:919 static/js/builder/views.js:1185
 msgid "Select the section you want to edit."
@@ -682,7 +682,7 @@ msgid "Search Keywords"
 msgstr "Busque palabras claves"
 
 msgid "delete"
-msgstr "Borrar"
+msgstr "borrar"
 
 msgid "Add Address"
 msgstr "Agregue dirección"
