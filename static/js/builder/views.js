@@ -46,6 +46,7 @@ storybase.builder.views.VISIBLE_STEPS = {
 storybase.builder.views.AppView = Backbone.View.extend({
   options: {
     alertsEl: '#alerts',
+    browserSupportMessage: "This site works best on a recent version of <a href='http://www.mozilla.org/firefox/' title='Mozilla Firefox'>Firefox</a> or <a href='http://www.google.com/chrome/' title='Google Chrome'>Chrome</a>.  We're working to support more browsers. Until then, many features might not work right for you.",
     drawerEl: '#drawer-container',
     headerEl: '#header',
     language: 'en',
@@ -304,7 +305,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
     this.drawerView.setElement(this.options.drawerEl).render();
     this.pushDown(this.drawerView.$el);
     if (!this.checkBrowserSupport()) {
-      this.showAlert('error', this.options.siteName + " works best on a recent version of <a href='http://www.mozilla.org/firefox/' title='Mozilla Firefox'>Firefox</a> or <a href='http://www.google.com/chrome/' title='Google Chrome'>Chrome</a>.  We're working to support more browsers. Until then, many features might not work right for you.", null);
+      this.showAlert('error', this.options.browserSupportMessage, null);
     }
     return this;
   },
