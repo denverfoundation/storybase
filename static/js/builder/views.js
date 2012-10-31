@@ -303,6 +303,9 @@ storybase.builder.views.AppView = Backbone.View.extend({
     this.toolsView.render();
     this.drawerView.setElement(this.options.drawerEl).render();
     this.pushDown(this.drawerView.$el);
+    if (!this.checkBrowserSupport()) {
+      this.showAlert('error', this.options.siteName + " works best on a recent version of <a href='http://www.mozilla.org/firefox/' title='Mozilla Firefox'>Firefox</a> or <a href='http://www.google.com/chrome/' title='Google Chrome'>Chrome</a>.  We're working to support more browsers. Until then, many features might not work right for you.", null);
+    }
     return this;
   },
 
@@ -317,7 +320,17 @@ storybase.builder.views.AppView = Backbone.View.extend({
     this.showAlert('error', msg);
   },
 
-  showAlert: function(level, msg) {
+  /**
+   * Show an alert message.
+   *
+   * @param {String} level Message level. Used to style the message.
+   * @param {String} msg Message text.
+   * @param {Integer|null} [timeout=15000] Milliseconds to show the message
+   *   before it is hidden. If null, the message remains visible.
+   *
+   */
+  showAlert: function(level, msg, timeout) {
+    timeout = _.isUndefined(timeout) ? 15000 : timeout;
     var $el = this.$(this.options.alertsEl);
     var numAlerts = $el.children().length;
     var view = new storybase.builder.views.AlertView({
@@ -328,12 +341,46 @@ storybase.builder.views.AppView = Backbone.View.extend({
     // if it's different.
     if (!(level === this.lastLevel && msg === this.lastMessage && numAlerts > 0)) {
       $el.prepend(view.render().el);
-      view.$el.fadeOut(15000, function() {
-        $(this).remove();
-      });
+      if (timeout) {
+        view.$el.fadeOut(timeout, function() {
+          $(this).remove();
+        });
+      }
     }
     this.lastLevel = level;
     this.lastMessage = msg;
+  },
+
+  /**
+   * Check support for various required browser features.
+   *
+   * @returns {Boolean} true if all required browser features are present,
+   *   otherwise, false.
+   *
+   * Eventually, support for these features should be worked around, at least
+   * for IE9, but for launch, we decided to just show a message.
+   *
+   */
+  checkBrowserSupport: function() {
+    // Check for the various File API support.
+    if (window.File && window.FileReader && window.FileList && window.Blob) {
+      // Great success! All the File APIs are supported.
+    }
+    else {
+      // The File APIs are not fully supported in this browser
+      return false;
+    }
+
+    // Check for pushState support
+    if (history.pushState) {
+      // pushState supported
+    }
+    else {
+      return false;
+    }
+
+    // If we haven't returned yet, we have support for everything needed
+    return true;
   }
 });
 
