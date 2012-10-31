@@ -110,11 +110,13 @@ button.help {
 
 // Header
 
+@header-z-index: 999;
+
 #header {
   display: block;
   position: fixed;
   width: 100%;
-  z-index: 999;
+  z-index: @header-z-index;
 }
 
 #header .nav {
@@ -146,6 +148,15 @@ button.help {
   font-weight: bold;
   text-decoration: none;
 */
+}
+
+#builder #alerts {
+  width: 100%;
+}
+
+#builder .alert {
+  padding: 1%;
+  text-align: center;
 }
 
 // Title Bar
@@ -371,15 +382,6 @@ button.preview {
   z-index: 999;
 }
 
-#builder #alerts {
-  width: 100%;
-  z-index: 1001;
-}
-
-#builder .alert {
-  padding: 1%;
-  text-align: center;
-}
 
 // Main container for builder views
 
