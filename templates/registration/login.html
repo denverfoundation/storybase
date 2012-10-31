@@ -33,3 +33,17 @@
 </ul>
 
 {% endblock %}
+
+{% block extrajs %}
+<script type="text/javascript">
+(function ($) {
+  $(document).ready(function() {
+    var browserSupportMessage = "{{ storybase_browser_support_msg|safe }}";
+    var $contentEl = $("#main .shell");
+    if (!(Modernizr.filereader && Modernizr.history)) {
+      $("<div>" + browserSupportMessage + "</div>").appendTo($contentEl);
+    }
+  });
+})(jQuery);
+</script>
+{% endblock %}
