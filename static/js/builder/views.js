@@ -363,8 +363,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
    */
   checkBrowserSupport: function() {
     // Check for the various File API support.
-    if (window.File && window.FileReader && window.FileList && window.Blob) {
-      // Great success! All the File APIs are supported.
+    if (Modernizr.filereader) {
     }
     else {
       // The File APIs are not fully supported in this browser
@@ -372,7 +371,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
     }
 
     // Check for pushState support
-    if (history.pushState) {
+    if (Modernizr.history) {
       // pushState supported
     }
     else {
