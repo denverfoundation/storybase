@@ -22,7 +22,7 @@ context:
         <div class="text">
             <h5><a href="{{ object.url }}" title="{{ object.title }}">{{ object.title }}</a></h5>
             <p class="byline">{% if object.author %}<span class="author">{{ object.author }}</span> {% endif %}<span class="date">{{ object.date|date:"F j, Y" }}</span></p>
-            <p>{{ object.excerpt }}</p>
+            <div class="excerpt">{{ object.excerpt|safe }}</div>
             <p class="more"><a href="{{ more_link_url }}">{{ more_link_text }}</a></p>
         </div>
     </li>
