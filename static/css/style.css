@@ -402,6 +402,7 @@ body.base-template.homepage .intro .flexslider .flex-direction-nav{display:none 
 body.base-template.homepage h2{background:url('../img/h3-line.png') repeat-x 0 8px;margin-bottom:10px;}body.base-template.homepage h2 span{background:#fff;padding-left:16px;padding-right:16px;}
 body.base-template.homepage .bottom .flexslider .flex-control-nav,body.base-template.homepage .bottom .flexslider .flex-direction-nav{display:none !important;}
 body.base-template.homepage .featured-stories img,body.base-template.homepage .featured-projects img{margin:0 auto;}
+body.base-template.homepage .featured-stories p,body.base-template.homepage .featured-projects p{margin-bottom:1em;}
 body.base-template.homepage .images{width:100%;position:relative;overflow:hidden;display:none;}body.base-template.homepage .images a{float:left;display:inline;position:relative;margin-bottom:-4px;position:relative;}body.base-template.homepage .images a:hover{text-decoration:none;}
 body.base-template.homepage .images a img{display:block;}
 body.base-template.homepage .images a span.overlay{background:url('../img/image-overlay.png') 0 0;display:block;position:absolute;top:0;left:0;width:100%;height:100%;}
@@ -432,8 +433,8 @@ body.base-template ul.social li.twitter a{background-position:-34px 0;}
 body.base-template ul.social li.facebook a{background-position:-67px 0;}
 body.base-template #slideContainer .back{width:26px;height:46px;background:url('../img/slider-arrows3.png') no-repeat 0 0;display:block;font-size:0;line-height:0;text-indent:-4000px;position:absolute;top:74px;left:76px;z-index:500;}
 body.base-template #slideContainer .forward{width:26px;height:46px;background:url('../img/slider-arrows3.png') no-repeat right 0;display:block;font-size:0;line-height:0;text-indent:-4000px;position:absolute;top:74px;right:0;z-index:500;}
-body.base-template p.byline{font-size:0.9em;color:#777777;font-style:italic;padding-bottom:0.9em;overflow:hidden;}
-body.base-template a.more{color:#fe9703;font-family:'MuseoSlab500Regular';display:block;margin-top:15px;}
+body.base-template p.byline{font-size:0.9em;color:#777777;font-style:italic;margin-bottom:0.9em;overflow:hidden;}
+body.base-template a.more{color:#fe9703;font-family:'MuseoSlab500Regular';margin-top:15px;}
 body.base-template #main .col h4{background:url('../img/h3-line.png') repeat-x 0 8px;margin-bottom:10px;margin-bottom:20px;}body.base-template #main .col h4 span{background:#fff;padding-left:16px;padding-right:16px;}
 body.base-template #main .col h4 span{background:#fff;padding-right:10px;padding-left:10px;}
 body.base-template #main .col ul{width:335px;margin:0 auto;}
