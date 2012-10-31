@@ -130,11 +130,23 @@
   -webkit-box-shadow: @arguments;
 }
 
-// this should probably just be on the body ... not sure if the body
-// is arial/sans-serif for a reason.
+.remove-icon(@size, @color) {
+  cursor:pointer;
+  color:@color;
+  &:hover {
+    color:darken(@color, 20%);
+  }
+  &:after {
+    font-family: "FontAwesome";
+    content:"\f057";
+    font-size:@size;
+    width:@size;
+    height:@size;
+  }
+}
+
 .plain-serif-text {
   font-family:'Times New Roman', Georgia, Serif;
-//  font-family:Georgia, 'Times New Roman', serif;
 }
 
 .sans-serif-text {
