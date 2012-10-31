@@ -113,6 +113,7 @@
         var helpData = {{ help_json }};
         var options = _.extend({
             assetTypes: {{ asset_types_json }},
+            browserSupportMessage: "{{ storybase_browser_support_msg|safe }}",
             containerTemplates: new storybase.builder.collections.ContainerTemplates,
             el: $('#builder'),
             dispatcher: storybase.builder.globals.dispatcher,

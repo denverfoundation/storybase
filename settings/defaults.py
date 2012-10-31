@@ -375,3 +375,7 @@ STORYBASE_DEFAULT_USER_IMAGES = {
     222: STATIC_URL + 'img/default-image-user-222x132.png',
     335: STATIC_URL + 'img/default-image-user-335x200.png',
 }
+
+# Browser support message that will be shown if a user's browser lacks
+# support for certain features required by the site.
+STORYBASE_BROWSER_SUPPORT_MSG = "This site works best in a recent version of <a href='http://www.mozilla.org/firefox/' title='Mozilla Firefox'>Firefox</a> or <a href='http://www.google.com/chrome/' title='Google Chrome'>Chrome</a>. If you are using an older browser, we recommend updating to the latest version."
