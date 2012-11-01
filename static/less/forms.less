@@ -44,6 +44,15 @@ form {
 	ul.errorlist li {
 		.plain-serif-text;
 		color:@error-color;
+
+                p {
+                  color: @error-color;
+                  // TODO: Replace this with some default line-height
+                  // variable
+                  // Override the giant 30px line-height from some style
+                  // upstream
+                  line-height: 1.3em;
+                }
 	}
 
 	p, div.form-row, div.form-field-container {
