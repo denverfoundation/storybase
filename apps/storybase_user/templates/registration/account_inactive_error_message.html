@@ -1,11 +1,12 @@
 {% load i18n %}
 <p>{% trans "Hi"%} {{ name }},</p>
 
-<p>
-{% blocktrans %}
-Your Floodlight account has been deactivated by the {{ site_name }} administrators. If you would like to reactivate your account, please contact us at {{ site_contact_email }}.
-{% endblocktrans %}
-</p>
+<p>{% trans "It looks like you still need to activate your account by confirming your email address. We emailed you a link when you first signed up. Click on the link in that message and you will be all set to log in." %}</p>
+
+<p>{% blocktrans %}If you can’t find the email we sent you or have further questions, contact us at {{ site_contact_email }}.{% endblocktrans %}</p>
+
+<p>{% blocktrans %}If you've already activated your account, it may have been deactivated by the {{ site_name }} administrators. If you would like to reactivate your account, please contact us at {{ site_contact_email }}.
+{% endblocktrans %}</p>
 
 <p>
 {% trans "Thanks" %},<br />
