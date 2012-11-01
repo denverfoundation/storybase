@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import patterns, include, url
+from django.conf.urls.defaults import handler500, patterns, include, url
 from django.contrib import admin
 from django.conf import settings
 
@@ -15,6 +15,9 @@ from storybase_geo.api import (GeocoderResource, GeoLevelResource,
 from storybase_help.api import (HelpResource)
 from storybase_story.api import StoryResource
 from storybase_taxonomy.api import TagResource
+
+# Override default error handler with one that uses RequestContext
+handler500 = 'storybase.views.defaults.server_error'
 
 admin.autodiscover()
 
