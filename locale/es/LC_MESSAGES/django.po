@@ -1212,7 +1212,7 @@ msgstr ""
 
 #: templates/menu/language_chooser.html:4
 msgid "In"
-msgstr ""
+msgstr "En"
 
 #: templates/registration/activate.html:5
 msgid "There was a problem with your activation"
