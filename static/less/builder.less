@@ -1204,12 +1204,26 @@ button.preview {
   cursor: pointer;
   background-color: @light-gray;
   color: @medium-gray;
-}
-
-.section-thumbnail .title {
-  position:relative;
-  font-size: 12px;
-  top: ((@section-thumbnail-height / 2) - 6);
+  
+  .title {
+    position:relative;
+    font-size: 12px;
+    top: ((@section-thumbnail-height / 2) - 6);
+  }
+  
+  .remove {
+    display: none;
+    position: absolute;
+    top: 4px;
+    right: 4px;
+    text-decoration: none;
+    .remove-icon(14px, @gray);
+    font-size:0;
+  }
+  &:hover .remove {
+    display: block;
+  }
+  
 }
 
 .spacer {
@@ -1250,19 +1264,6 @@ button.preview {
 
 .section-thumbnail.new {
   margin: 10px;
-}
-
-.section-thumbnail .remove {
-  display: none;
-  position: absolute;
-  top: 2px;
-  right: 4px;
-  text-decoration: none;
-  color:@gray;
-}
-
-.section-thumbnail:hover .remove {
-  display: block;
 }
 
 // Add Data View
@@ -1408,4 +1409,68 @@ input[name=address] {
 
     .asset { padding: 8px 0; }
   }
+}
+
+
+// a mixin for guider styles
+@guider-text-color: darken(@highlight-blue, 20%);
+.guider-text {
+  .plain-serif-text;
+  font-size:@base-font-size;
+  color:@guider-text-color;
+}
+
+.guider {
+  border-color:@highlight-blue;
+  background:lighten(@highlight-blue, 40%);
+  padding:20px;
+  .box-shadow(0, 0, 8px, rgba(0, 0, 0, 0.4));
+  .guider-text;
+  
+  h1, h2, h3, h4, h5 {
+    .styled-header(left);
+    line-height:1em;
+    margin-bottom:1em;
+    color:@guider-text-color;
+  }
+  
+  ol, ul {
+    padding-left:1em;
+  }
+  
+  .guider_content {
+    p {
+      .guider-text;
+      margin-bottom:1em;
+    }
+  }
+  
+  a.guider_button {
+    .button-style(cool);
+    font-size:17px;
+  }
+  
+  .guider_content {
+    padding-top:10px;
+  }
+  
+  .guider_arrow {
+      background:none;
+      top:-11px;
+      text-shadow:0 -1px 0 @highlight-blue;
+      font-size:54px;
+      color:lighten(@highlight-blue, 40%);
+      font-family: "FontAwesome";
+    &.guider_arrow_up:after {
+      content: "\f0d8";
+    }
+  }
+  
+  .guider_close {
+    .remove-icon(26px, @highlight-blue);
+    position:absolute;
+    top:-10px;
+    right:-10px;
+  }
+  
 }
