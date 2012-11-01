@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Atlas\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-10-22 10:15-0500\n"
-"PO-Revision-Date: 2012-10-30 15:15+0000\n"
+"PO-Revision-Date: 2012-10-31 22:58+0000\n"
 "Last-Translator: pitonfoundation <jbrock@piton.org>\n"
 "Language-Team: Spanish (http://www.transifex.com/projects/p/atlas/language/es/)\n"
 "MIME-Version: 1.0\n"
@@ -24,19 +24,19 @@ msgstr "x"
 
 #: apps/cmsplugin_storybase/cms_plugins.py:23
 msgid "StoryBase Homepage Projects"
-msgstr "x"
+msgstr ""
 
 #: apps/cmsplugin_storybase/cms_plugins.py:32
 msgid "StoryBase Homepage Organizations"
-msgstr "x"
+msgstr ""
 
 #: apps/cmsplugin_storybase/cms_plugins.py:41
 msgid "StoryBase Homepage Stories"
-msgstr "x"
+msgstr ""
 
 #: apps/cmsplugin_storybase/cms_plugins.py:50
 msgid "StoryBase Banner Stories"
-msgstr "x"
+msgstr ""
 
 #: apps/cmsplugin_storybase/settings.py:25 templates/homepage.html:37
 #: templates/homepage.html.py:67
@@ -46,7 +46,7 @@ msgstr "Elabora una historia"
 #: apps/cmsplugin_storybase/settings.py:33 settings/defaults.py:335
 #: templates/base.html:114
 msgid "Explore"
-msgstr "x"
+msgstr ""
 
 #: apps/cmsplugin_storybase/settings.py:42
 #: apps/storybase_story/templates/storybase_story/story_detail.html:84
@@ -130,7 +130,7 @@ msgstr ""
 
 #: apps/storybase_geo/models.py:22
 msgid "Parent"
-msgstr "x"
+msgstr ""
 
 #: apps/storybase_geo/models.py:23 apps/storybase_taxonomy/models.py:22
 msgid "Slug"
@@ -138,15 +138,15 @@ msgstr ""
 
 #: apps/storybase_geo/models.py:57
 msgid "Location ID"
-msgstr "x"
+msgstr ""
 
 #: apps/storybase_geo/models.py:59
 msgid "Address"
-msgstr "x"
+msgstr ""
 
 #: apps/storybase_geo/models.py:60
 msgid "Address 2"
-msgstr "x"
+msgstr ""
 
 #: apps/storybase_geo/models.py:61
 msgid "City"
@@ -162,53 +162,53 @@ msgstr ""
 
 #: apps/storybase_geo/models.py:65
 msgid "Latitude"
-msgstr "x"
+msgstr ""
 
 #: apps/storybase_geo/models.py:66
 msgid "Longitude"
-msgstr "x"
+msgstr ""
 
 #: apps/storybase_geo/models.py:67
 msgid "Point"
-msgstr "x"
+msgstr ""
 
 #: apps/storybase_geo/models.py:75
 msgid "Raw Address"
-msgstr "x"
+msgstr ""
 
 #: apps/storybase_geo/models.py:140
 msgid "GeoLevel"
-msgstr "x"
+msgstr ""
 
 #: apps/storybase_geo/models.py:142
 msgid "Boundary"
-msgstr "x"
+msgstr ""
 
 #: apps/storybase_geo/models.py:143
 msgid "Place ID"
-msgstr "x"
+msgstr ""
 
 #: apps/storybase_geo/management/commands/loadplacerelations.py:29
 msgid ""
 "You must provide a CSV file, child field, parent field, lookup field and "
 "child geolevel argument"
-msgstr "x"
+msgstr ""
 
 #: apps/storybase_geo/management/commands/loadplaces.py:25
 msgid "You must provide a shapefile, name field  and boundary field argument"
-msgstr "x"
+msgstr ""
 
 #: apps/storybase_help/models.py:38
 msgid "Help Item"
-msgstr "x"
+msgstr ""
 
 #: apps/storybase_messaging/admin.py:32
 msgid "Subject"
-msgstr "x"
+msgstr ""
 
 #: apps/storybase_messaging/management.py:12
 msgid "System Message"
-msgstr "x"
+msgstr ""
 
 #: apps/storybase_messaging/management.py:13
 #, python-format
@@ -279,19 +279,19 @@ msgstr ""
 
 #: apps/storybase_story/models.py:106
 msgid "Assets to be displayed in teaser version of Story"
-msgstr "x"
+msgstr ""
 
 #: apps/storybase_story/models.py:112
 msgid "Story is a template"
-msgstr "x"
+msgstr ""
 
 #: apps/storybase_story/models.py:115
 msgid "Story can have connected stories"
-msgstr "x"
+msgstr ""
 
 #: apps/storybase_story/models.py:118
 msgid "Story whose structure was used to create this story"
-msgstr "x"
+msgstr ""
 
 #: apps/storybase_story/models.py:119 apps/storybase_user/models.py:39
 #: apps/storybase_user/models.py:127
@@ -324,13 +324,13 @@ msgid ""
 "The ordering of top-level sections relative to each other. Sections with "
 "lower weight values are shown before ones with higher weight values in "
 "lists."
-msgstr "x"
+msgstr ""
 
 #: apps/storybase_story/models.py:562
 msgid ""
 "A section that provides default values for layout, asset types and help for "
 "this section."
-msgstr "x"
+msgstr ""
 
 #: apps/storybase_story/models.py:772
 msgid "5 minutes"
@@ -346,41 +346,41 @@ msgstr "Principiante"
 
 #: apps/storybase_story/models.py:781
 msgid "The story that provides the structure for this template"
-msgstr "x"
+msgstr ""
 
 #: apps/storybase_story/models.py:785
 msgid "The amount of time needed to create a story of this type"
-msgstr "x"
+msgstr ""
 
 #: apps/storybase_story/models.py:789
 msgid ""
 "The level of storytelling experience suggested to create stories with this "
 "template"
-msgstr "x"
+msgstr ""
 
 #: apps/storybase_story/models.py:792
 msgid "A human-readable unique identifier"
-msgstr "x"
+msgstr ""
 
 #: apps/storybase_story/models.py:794
 msgid "Stories that are examples of this template"
-msgstr "x"
+msgstr ""
 
 #: apps/storybase_story/models.py:826
 msgid "template"
-msgstr "x"
+msgstr ""
 
 #: apps/storybase_story/models.py:875
 msgid "Default asset type"
-msgstr "x"
+msgstr ""
 
 #: apps/storybase_story/models.py:877
 msgid "User can change the asset type from the default"
-msgstr "x"
+msgstr ""
 
 #: apps/storybase_story/views.py:170
 msgid "This story does not allow connected stories"
-msgstr "x"
+msgstr ""
 
 #: apps/storybase_story/structure/__init__.py:127
 #: apps/storybase_story/structure/__init__.py:174
@@ -500,7 +500,7 @@ msgstr ""
 
 #: apps/storybase_taxonomy/management/commands/loadtopics.py:24
 msgid "You must provide a CSV file and name field"
-msgstr "x"
+msgstr ""
 
 #: apps/storybase_user/admin.py:55
 msgid "Notifications"
@@ -508,7 +508,7 @@ msgstr ""
 
 #: apps/storybase_user/admin.py:58
 msgid "Users will receive emails about these kind of events"
-msgstr "x"
+msgstr ""
 
 #: apps/storybase_user/admin.py:76
 msgid "Personal info"
@@ -886,7 +886,7 @@ msgstr ""
 
 #: settings/defaults.py:329
 msgid "Your site tagline"
-msgstr "x"
+msgstr ""
 
 #: templates/404.html:6
 msgid ""
@@ -946,14 +946,14 @@ msgstr ""
 
 #: templates/homepage.html:6 templates/homepage.html.py:10
 msgid "The Citizen Atlas"
-msgstr "x"
+msgstr ""
 
 #: templates/homepage.html:7 templates/homepage.html.py:11
 msgid ""
 "The Citizen Atlas is a powerful story-building website that enables "
 "community change makers to inspire action and advance their issues through "
 "more substantive, engaging and persuasive data-driven storytelling."
-msgstr "x"
+msgstr ""
 
 #: templates/homepage.html:28
 msgid "Tell your story. Transform our community."
@@ -1013,11 +1013,11 @@ msgstr "Explora las historias que otros cuentan y descubre un nuevo significado 
 
 #: templates/homepage.html:62
 msgid "Because what we can’t see, we can’t change."
-msgstr "x"
+msgstr ""
 
 #: templates/homepage.html:77
 msgid "Featured on Floodlight"
-msgstr "x"
+msgstr ""
 
 #: templates/homepage.html:195
 msgid "Supporting Foundations"
@@ -1040,7 +1040,7 @@ msgstr "\nCrea una historia asombrosa en unos cuantos minutos. Empieza eligiendo
 
 #: templates/megamenu.html:18
 msgid "Explore Floodlight"
-msgstr "x"
+msgstr ""
 
 #: templates/megamenu.html:21
 msgid "Browse Stories"
@@ -1208,7 +1208,7 @@ msgstr ""
 
 #: templates/emailconfirmation/confirm_email.html:13
 msgid "Invalid confirmation key."
-msgstr "x"
+msgstr ""
 
 #: templates/menu/language_chooser.html:4
 msgid "In"

@@ -9,7 +9,7 @@ msgstr ""
 "Project-Id-Version: Atlas\n"
 "Report-Msgid-Bugs-To: \n"
 "POT-Creation-Date: 2012-10-22 10:16-0500\n"
-"PO-Revision-Date: 2012-10-30 23:50+0000\n"
+"PO-Revision-Date: 2012-10-31 22:51+0000\n"
 "Last-Translator: pitonfoundation <jbrock@piton.org>\n"
 "Language-Team: Spanish (http://www.transifex.com/projects/p/atlas/language/es/)\n"
 "MIME-Version: 1.0\n"
@@ -32,21 +32,21 @@ msgstr[1] ""
 msgid ""
 "You have unsaved changes on individual editable fields. If you run an "
 "action, your unsaved changes will be lost."
-msgstr "x"
+msgstr ""
 
 #: sitestatic/admin/js/actions.js:121 sitestatic/admin/js/actions.min.js:6
 msgid ""
 "You have selected an action, but you haven't saved your changes to "
 "individual fields yet. Please click OK to save. You'll need to re-run the "
 "action."
-msgstr "x"
+msgstr ""
 
 #: sitestatic/admin/js/actions.js:123 sitestatic/admin/js/actions.min.js:6
 msgid ""
 "You have selected an action, and you haven't made any changes on individual "
 "fields. You're probably looking for the Go button rather than the Save "
 "button."
-msgstr "x"
+msgstr ""
 
 #: sitestatic/admin/js/calendar.js:24 sitestatic/admin/js/dateparse.js:32
 msgid ""
@@ -125,21 +125,21 @@ msgstr "Mañana"
 msgid ""
 "Are you sure you want to change the %(field_name)s without saving the page "
 "first?"
-msgstr ""
+msgstr "Seguro que deseas cambiar %(field_name)s sin salvar los cambios de la página primero?"
 
 #: sitestatic/cms/js/change_form.js:69
 msgid ""
 "Not all plugins are saved. Are you sure you want to save the page?\n"
 "All unsaved plugin content will tried to save."
-msgstr "x"
+msgstr ""
 
 #: sitestatic/cms/js/change_form.js:127
 msgid "Are you sure you want to change tabs without saving the page first?"
-msgstr "x"
+msgstr ""
 
 #: sitestatic/cms/js/plugin_editor.js:132
 msgid "Are you sure you want to delete this plugin?"
-msgstr "x"
+msgstr ""
 
 #: sitestatic/js/builder/views.js:523 static/js/builder/views.js:824
 msgid ""
@@ -200,7 +200,7 @@ msgstr "Ayuda"
 
 #: sitestatic/js/builder/views.js:634 static/js/builder/views.js:1731
 msgid "Show a list of assets you removed from your story"
-msgstr "x"
+msgstr ""
 
 #: sitestatic/js/builder/views.js:635 static/js/builder/views.js:1730
 msgid "Assets"
@@ -303,7 +303,7 @@ msgstr "Obtén consejos acerca de como crear una gran historia. "
 msgid ""
 "Clicking the \"Help\" button shows you tips for the section you're currently"
 " editing."
-msgstr ""
+msgstr "El botón de Ayuda te muestra consejos para la sessión que estas actualmente editando. "
 
 #: sitestatic/js/builder/views.js:1009 static/js/builder/views.js:1279
 msgid "Close"
@@ -317,7 +317,7 @@ msgstr "¿Necesitas aún más consejos?"
 msgid ""
 "You can find out more about many of the buttons and links by hovering over "
 "them with your mouse. You can also hover over the “Help” icons."
-msgstr ""
+msgstr "Para aprender más acerca de los distintos botones y enlaces coloca el cursor sobre los mismos.  También puedes colocar el cursor sobre el ícono de \"Ayuda\"."
 
 #: sitestatic/js/builder/views.js:1085 static/js/builder/views.js:1359
 msgid "Add Data to Your Story"
@@ -330,7 +330,7 @@ msgstr "Publica mi Historia"
 
 #: sitestatic/js/builder/views.js:1319 static/js/builder/views.js:1595
 msgid "Failed fetching container templates"
-msgstr "x"
+msgstr ""
 
 #: sitestatic/js/builder/views.js:1366
 msgid "Floodlight Story Builder"
@@ -342,7 +342,7 @@ msgstr "Tu debes darle un titulo a tu historia."
 
 #: sitestatic/js/builder/views.js:1390 static/js/builder/views.js:1663
 msgid "You didn't fill out all the assets in the template"
-msgstr "x"
+msgstr ""
 
 #: sitestatic/js/builder/views.js:1888 static/js/builder/views.js:2166
 msgid "Story Information"
@@ -352,7 +352,7 @@ msgstr "Información de la historia"
 msgid ""
 "This section has basic information people will see when browsing stories on "
 "the site"
-msgstr ""
+msgstr "Esta sessión contiene información básica que las usuarios verán cuando estén navegando las historias en la página"
 
 #: sitestatic/js/builder/views.js:1899 static/js/builder/views.js:2177
 msgid "Call to Action"
@@ -364,7 +364,7 @@ msgstr "Inspira a tus lectores a tomar acción después de leer tu historia."
 
 #: sitestatic/js/builder/views.js:1964
 msgid "You can hide or reveal the table of contents bar by clicking here"
-msgstr ""
+msgstr "Click aquí para esconder o mostrar la barra de la tabla de contenidos "
 
 #: sitestatic/js/builder/views.js:2009 static/js/builder/views.js:2269
 msgid "Error removing section"
@@ -391,17 +391,17 @@ msgstr "Haz click para agregar el titulo"
 #: sitestatic/js/builder/views.js:2338 sitestatic/js/builder/views.js:2339
 #: sitestatic/js/builder/views.js:2386 sitestatic/js/builder/views.js:2387
 msgid "Click to edit byline"
-msgstr ""
+msgstr "Haz click aquí para editar el la firma del autor"
 
 #: sitestatic/js/builder/views.js:2763 static/js/builder/views.js:2992
 msgid ""
 "The assets in the section you removed aren't gone forever.  You can re-add "
 "them from the asset list"
-msgstr ""
+msgstr "Los componentes en la sessión que removistes no han sido borrados permanentemente. Los puedes rescatar de la lista de componentes. "
 
 #: sitestatic/js/builder/views.js:2782 static/js/builder/views.js:3011
 msgid "The section  \""
-msgstr ""
+msgstr "La sessión \""
 
 #: sitestatic/js/builder/views.js:2903 static/js/builder/views.js:3126
 msgid "or"
@@ -409,7 +409,7 @@ msgstr "o"
 
 #: sitestatic/js/builder/views.js:2905 static/js/builder/views.js:3128
 msgid "enter"
-msgstr ""
+msgstr "ingresar"
 
 #: sitestatic/js/builder/views.js:2905 static/js/builder/views.js:3128
 msgid "URL"
@@ -421,11 +421,11 @@ msgstr "Seleciona una imagen en tu computadora para ser incluída como parte de 
 
 #: sitestatic/js/builder/views.js:2915 static/js/builder/views.js:3138
 msgid "enter the quotation text"
-msgstr ""
+msgstr "ingresa el texto de la cita"
 
 #: sitestatic/js/builder/views.js:2918 static/js/builder/views.js:3141
 msgid "paste the embed code for the"
-msgstr ""
+msgstr "pegar el 'embed code\" para la "
 
 #: sitestatic/js/builder/views.js:3009 static/js/builder/views.js:3232
 msgid "Save"
@@ -437,7 +437,7 @@ msgstr "Haz click para editar"
 
 #: sitestatic/js/builder/views.js:3011 static/js/builder/views.js:3234
 msgid "Click to edit caption"
-msgstr ""
+msgstr "Haz click aquí para editar la leyenda"
 
 #: sitestatic/js/builder/views.js:3015 static/js/builder/views.js:3238
 #: static/js/builder/views.js.py:4822
@@ -446,48 +446,48 @@ msgstr "Guardar cambios"
 
 #: sitestatic/js/builder/views.js:3126 static/js/builder/views.js:3356
 msgid "Uploading"
-msgstr ""
+msgstr "Cargando"
 
 #: sitestatic/js/builder/views.js:3196 static/js/builder/views.js:3426
 msgid ""
 "Click on \"Add your image,\" then enter a URL or upload an image from your "
 "computer. If you’d like to add a different type of asset, click below."
-msgstr ""
+msgstr "Haz click sobre \"Agrega tu imagen,\" luego ingrese el URL o descargue una imagen de tu computadora.  Si deseas agregar un elemento distinto haz click abajo."
 
 #: sitestatic/js/builder/views.js:3197 static/js/builder/views.js:3427
 msgid ""
 "Click on “Add your text,” and start typing. If you’d like to add a different"
 " type of asset, click below."
-msgstr ""
+msgstr "Haz click sobre \"Agrega tu texto,\" y comienza a tipear. Si deseas agregar un elemento distinto haz click abajo."
 
 #: sitestatic/js/builder/views.js:3305 static/js/builder/views.js:3503
 #: static/js/builder/views.js.py:4512
 msgid "Continue Writing Story"
-msgstr ""
+msgstr "Continue escribiendo la historia"
 
 #: sitestatic/js/builder/views.js:3328 static/js/builder/views.js:3529
 msgid "Data set name"
-msgstr ""
+msgstr "Nombre del archivo de datos"
 
 #: sitestatic/js/builder/views.js:3329 static/js/builder/views.js:3530
 msgid "Data source"
-msgstr ""
+msgstr "Fuente de datos"
 
 #: sitestatic/js/builder/views.js:3330 static/js/builder/views.js:3531
 msgid "Link to a data set"
-msgstr ""
+msgstr "Enlace al archivo de datos"
 
 #: sitestatic/js/builder/views.js:3331 static/js/builder/views.js:3532
 msgid "Or, upload a data file from your computer"
-msgstr ""
+msgstr "o, carga el archivo de datos desde tu computadora"
 
 #: sitestatic/js/builder/views.js:3469 static/js/builder/views.js:3671
 msgid "Back to Tag"
-msgstr ""
+msgstr "Volver a el paso de etiquetar"
 
 #: sitestatic/js/builder/views.js:3530 static/js/forms.js:61
 msgid "You must check this checkbox"
-msgstr ""
+msgstr "Debes completar esta casilla"
 
 #: sitestatic/js/builder/views.js:3968 static/js/builder/views.js:3987
 msgid "Searching ..."
@@ -495,11 +495,11 @@ msgstr "Buscando ..."
 
 #: sitestatic/js/builder/views.js:3976 static/js/builder/views.js:3995
 msgid "No address found"
-msgstr ""
+msgstr "No se consiguió la dirección"
 
 #: sitestatic/js/builder/views.js:4487 static/js/builder/views.js:4899
 msgid "Error saving the featured image"
-msgstr ""
+msgstr "Error al guardar la imagen selecionada"
 
 #: sitestatic/js/viewer/views.js:491 static/js/viewer/views.js:491
 msgid "Topic Map"
@@ -511,17 +511,17 @@ msgstr "Leer más"
 
 #: static/js/builder/views.js:1718
 msgid "Last Saved"
-msgstr ""
+msgstr "Ultima vez que se salvó"
 
 #: static/js/builder/views.js:3504 static/js/builder/views.js.py:3672
 #: static/js/builder/views.js:3736 static/js/builder/views.js.py:4504
 #: static/js/builder/views.js:4513
 msgid "Previous"
-msgstr ""
+msgstr "Anterior"
 
 #: static/js/builder/views.js:3735
 msgid "Back to Add Data"
-msgstr ""
+msgstr "Volver a agregar datos"
 
 #: static/js/builder/views.js:3781
 msgid "Click to select topics"
@@ -529,31 +529,31 @@ msgstr "Haga click para seleccionar los tópicos"
 
 #: static/js/builder/views.js:3786
 msgid "Click to select places"
-msgstr ""
+msgstr "Haz click para seleccionar un lugar"
 
 #: static/js/builder/views.js:3791
 msgid "Click to select organizations"
-msgstr ""
+msgstr "Haz click para seleccionar organizaciones"
 
 #: static/js/builder/views.js:3796
 msgid "Click to select projects"
-msgstr ""
+msgstr "Haz click para seleccionar projectos"
 
 #: static/js/builder/views.js:4308
 msgid "You selected the "
-msgstr ""
+msgstr "Seleccionastes la "
 
 #: static/js/builder/views.js:4308
 msgid "license."
-msgstr ""
+msgstr "licensia"
 
 #: static/js/builder/views.js:4338
 msgid "Select a license"
-msgstr ""
+msgstr "Seleccione una licensia"
 
 #: static/js/builder/views.js:4425
 msgid "Select License"
-msgstr ""
+msgstr "Seleccione licensia"
 
 #: static/js/builder/views.js:4503
 msgid "Back to Review"
@@ -569,11 +569,11 @@ msgstr "Seleccione una imagen"
 
 #: static/js/builder/views.js:4786
 msgid "enter the featured image URL"
-msgstr ""
+msgstr "seleccione una imagen en un URL"
 
 #: static/js/builder/views.js:4789
 msgid "select the featured image from your own computer"
-msgstr ""
+msgstr "seleccione una imagen en su computadora"
 
 msgid "Remove section"
 msgstr "Remover sessión"
@@ -630,19 +630,19 @@ msgstr "Selecciona una plantilla para empezar a elaborar tu historia."
 msgid ""
 "You can get back to your story through the \"My Stories\" menu in \"My "
 "Account.\""
-msgstr ""
+msgstr "Puedes volver a tu historia desde el menu de \"Mis historias\" ubicado en \"Mi Cuenta\"."
 
 msgid ""
 "Stories are saved automatically whenever you make changes, so you’ll be able"
 " to pick up exactly where you left off."
-msgstr ""
+msgstr "Las historias son guardadas automáticamente cada vez que hagas un cambio, así podrás comenzar de nuevo donde lo dejastes la última vez."
 
 msgid ""
 "To delete a section, click on the \"X\" that appears when you hover over it."
-msgstr ""
+msgstr "Para borrar una sessión, haz click en la \"x\" que aparece cuando pones el cursor sobre la misma."
 
 msgid "To move a section, click on it and drag it to it's new position."
-msgstr ""
+msgstr "Para mover una sessión, haz click sobre la misma y arrástrala a la nueva posición."
 
 msgid ""
 "To add a section, move your mouse between two existing sections and click "
