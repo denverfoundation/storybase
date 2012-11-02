@@ -1,6 +1,7 @@
 """Common context processors used across StoryBase apps"""
 
 from django.conf import settings
+from django.contrib.sites.models import Site, RequestSite
 from django.utils import simplejson
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
@@ -26,3 +27,16 @@ def conf(request):
     
 
     return context
+
+def site(request):
+    """
+    Add site info to request context
+
+    From http://djangosnippets.org/snippets/1197/
+    """
+    site_info = {'protocol': request.is_secure() and 'https' or 'http'}
+    if Site._meta.installed:
+        site_info['domain'] = Site.objects.get_current().domain
+    else:
+        site_info['domain'] = RequestSite(request).domain
+    return site_info

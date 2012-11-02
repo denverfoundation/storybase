@@ -210,6 +210,7 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'sekizai.context_processors.sekizai',
     'social_auth.context_processors.social_auth_by_name_backends',
     'storybase.context_processors.conf',
+    'storybase.context_processors.site',
 )
 
 AUTH_PROFILE_MODULE = 'storybase_user.UserProfile'
@@ -330,6 +331,7 @@ ADMIN_GROUP_NAME = 'CA Admin'
 #DEFAULT_FROM_EMAIL = ''
 # The name of the site
 STORYBASE_SITE_NAME = "Your Storybase Site"
+STORYBASE_SITE_DESCRIPTION = ugettext("A powerful story-building website that enables community change makers to inspire action and advance their issues through more substantive, engaging and persuasive data-driven storytelling.")
 # The tagline of the site
 STORYBASE_SITE_TAGLINE = ugettext("Your site tagline")
 # The title of the organization list view
