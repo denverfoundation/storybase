@@ -1,15 +1,12 @@
-Atlas
-=====
+Floodlight
+==========
 
-There isn't a whole lot going on here yet.  The most recent updates will be in the `develop` branch.
+What is Floodlight?
+-------------------
 
+This is the code base behind Floodlight, a powerful story-building website that enables community change makers to inspire action and advance their issues through more substantive, engaging and persuasive data-driven storytelling.
 
-What is Atlas?
---------------
-
-Code for the Citizen Atlas and Story Base, a community storytelling site and tool.
-
-For more information, see http://www.storybase.org/
+For more information, see http://www.floodlightproject.org/
 
 On the shoulders of giants
 --------------------------
