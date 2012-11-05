@@ -415,7 +415,7 @@ class UploadView(SingleObjectMixin, View):
             setattr(self.object, file_field, file_model)
             self.object.save()
 
-        return django_http.HttpResponse()
+        return django_http.HttpResponse("File successfully uploaded")
 
     @csrf_exempt
     def dispatch(self, *args, **kwargs):

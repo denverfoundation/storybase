@@ -2104,39 +2104,113 @@ storybase.builder.views.FileUploadMixin = {
     options = _.isUndefined(options) ? {} : options;
     var that = this;
     var url = model.url() + 'upload/';
-    var formData = new FormData;
     var settings;
-    formData.append(fileField, file);
-    settings = {
-      type: "POST",
-      data: formData,
-      cache: false,
-      contentType: false,
-      processData: false,
-      xhr: function() {
-        var newXhr = $.ajaxSettings.xhr();
-        if (newXhr.upload && options.progressHandler) {
-          newXhr.upload.addEventListener('progress', options.progressHandler, false);
-        }
-        return newXhr;
-      },
-      beforeSend: function() {
-        if (options.beforeSend) {
-          options.beforeSend();
-        }
-      },
-      success: function() {
-        model.fetch({
-          success: function(model, response) {
-            if (options.success) {
-              options.success(model, response);
-            }
+
+    if (file) {
+      formData = new FormData;
+      formData.append(fileField, file);
+      settings = {
+        type: "POST",
+        data: formData,
+        cache: false,
+        contentType: false,
+        processData: false,
+        xhr: function() {
+          var newXhr = $.ajaxSettings.xhr();
+          if (newXhr.upload && options.progressHandler) {
+            newXhr.upload.addEventListener('progress', options.progressHandler, false);
           }
-        });
+          return newXhr;
+        },
+        beforeSend: function() {
+          if (options.beforeSend) {
+            options.beforeSend();
+          }
+        },
+        success: function() {
+          model.fetch({
+            success: function(model, response) {
+              if (options.success) {
+                options.success(model, response);
+              }
+            }
+          });
+        }
+      };
+      var jqXHR = $.ajax(url, settings);
+      return jqXHR;
+    }
+    else {
+      // A file object was not available, likely because the browser doesn't
+      // support the File API.  Try uploading via an IFRAME
+      if (options.form) {
+        this.uploadFileIframe(model, options.form, url, options); 
       }
+    }
+  },
+
+  uploadFileIframe: function(model, form, url, options) {
+    // Get a jQuery object for the form 
+    var $form = $(form);
+    var timeout = 250;
+    var loadHandler = function(evt) {
+      var iframe = evt.target; 
+      var content;
+
+      if (iframe.detachEvent) {
+        iframe.detachEvent("onload", loadHandler);
+      }
+      else {
+        iframe.removeEventListener("load", loadHandler);
+      }
+
+      if (iframe.contentDocument) {
+        content = iframe.contentDocument.body.innerHTML;
+      }
+      else if (iframe.contentWindow) {
+        content = iframe.contentWindow.document.body.innerHTML;
+      }
+      else if (iframe.document) {
+        content = iframe.document.body.innerHTML;
+      }
+      model.fetch({
+        success: function(model, response) {
+          if (options.success) {
+            options.success(model, response);
+          }
+        }
+      });
+      setTimeout(function() {
+        iframe.parentNode.removeChild(iframe);
+      }, timeout);
     };
-    var jqXHR = $.ajax(url, settings);
-    return jqXHR;
+    // Create a hidden iframe and append it to the DOM
+    // We append it to the body rather than the form's parent element because
+    // the form's parent element gets removed before the form can post
+    var iframe = document.createElement('iframe');
+    iframe.setAttribute('id', 'storybase-upload-iframe');
+    iframe.setAttribute('name', 'storybase-upload-iframe');
+    iframe.setAttribute('width', '0');
+    iframe.setAttribute('height', '0');
+    iframe.setAttribute('border', '0');
+    iframe.setAttribute('style', "width: 0; height: 0; border: none;");
+    document.body.appendChild(iframe);
+    window.frames['storybase-upload-iframe'].name = 'storybase-upload-iframe';
+
+    if (iframe.addEventListener) {
+      iframe.addEventListener('load', loadHandler, true);
+    }
+    if (iframe.attachEvent) {
+      iframe.attachEvent('onload', loadHandler);
+    }
+
+    $form.attr('target', 'storybase-upload-iframe');
+    $form.attr('action', url);
+    $form.attr('method', 'POST');
+    $form.attr('enctype', "multipart/form-data");
+    $form.attr('encoding', "multipart/form-data");
+ 
+    form.submit();
   }
 };
 
@@ -3522,8 +3596,13 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       }
       this.model.save(attributes, {
         success: function(model) {
-          that.setState('display');
-          that.render();
+          // When uploading files, we'll let the upload handler re-render
+          // This is mostly because we need to keep the form element for
+          // IFRAME-based uploads
+          if (!options.deferRender) {
+            that.setState('display');
+            that.render();
+          }
           if (isNew) {
             // Model was new before saving
             that.dispatcher.trigger("do:add:sectionasset", that.section,
@@ -3564,11 +3643,17 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       if (!errors) {
         var data = this.form.getValue();
         if (data.image) {
+          // We were able to retrieve the file via the File API
           file = data.image;
+        }
+
+        if (!data.url) {
           // Set a callback for saving the model that will upload the
           // image.
+          options.deferRender = true;
           options.success = function(model) {
             that.uploadFile(model, 'image', file, {
+              form: e.target, 
               progressHandler: that.handleUploadProgress,
               beforeSend: function() {
                 that.setState('upload');
@@ -3581,7 +3666,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
             });
           };
         }
-
+        
         // Delete the image property.  We've either retrieved it for
         // upload or it was empty (meaning we don't want to change the
         // image.
