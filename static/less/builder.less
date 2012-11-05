@@ -469,7 +469,12 @@ button.preview {
     -moz-transform: rotate(-90deg);
     -ms-transform: rotate(-90deg);
     -o-transform: rotate(-90deg);
-    filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
+    // TODO: Use modernizer to detect when a transform property isn't available
+    // and use this.  If it's just enabled by default, it makes the buttons 
+    // look wonky in IE9.
+    //
+    // This is for rotations in older versions of IE.
+    //filter: progid:DXImageTransform.Microsoft.BasicImage(rotation=3);
   }
 }
 
