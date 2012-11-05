@@ -169,7 +169,7 @@ class StoryUserAdmin(UserAdmin):
         filename = "userinfo_%s.csv" % (datetime.date.today().strftime("%Y%m%d"))
         response = HttpResponse(mimetype='text/csv')
         response['Content-Disposition'] = 'attachment; filename=%s' % (filename)
-        user_field_names = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active')
+        user_field_names = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'date_joined', 'last_login',)
         # TODO: See if I can use methods of the modeladmin as fields
         profile_field_names = ('notify_updates', 'notify_admin', 'notify_digest', 'notify_story_featured', 'notify_story_comment')
         writer = csv.writer(response)
