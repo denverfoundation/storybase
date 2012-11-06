@@ -46,6 +46,29 @@
 				float:right;
 				padding: 0 0 0 2%;
 			}
+			
+			// Help Page
+			.faq-section, .faq-question {
+				color: @orange !important;
+				padding:1em 0;
+			}
+
+			.faq-section {
+				.styled-header(left);
+			}
+
+			.faq-question {
+				// Eventually these might toggle expanding/collapsing the
+				// answer, so make the cursor a pointer so it appears like a
+				// link
+				cursor: pointer;
+				border-top:1px solid #ddd;
+				margin-bottom:0;
+
+				&:before {
+					padding-right: 0.66em;
+				}
+			}
 		}
 
 		.page-pull { 
@@ -184,28 +207,5 @@
 			border-bottom: none;
 		}
 	}
-}
-
-// Help Page
-.faq-section, .faq-question {
-  color: @orange !important;
-  padding:1em 0;
-}
-
-.faq-section {
-  .styled-header(left);
-}
-
-.faq-question {
-  // Eventually these might toggle expanding/collapsing the
-  // answer, so make the cursor a pointer so it appears like a
-  // link
-  cursor: pointer;
-  border-top:1px solid #ddd;
-  margin-bottom:0;
-
-  &:before {
-    padding-right: 0.66em;
-  }
 }
 
