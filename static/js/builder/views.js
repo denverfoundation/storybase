@@ -5125,18 +5125,24 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
      */
     processForm: function(e) {
       e.preventDefault();
+      var form = e.target;
       var errors = this.form.validate();
       var file;
+      var url;
       var options = {};
       var that = this;
       if (!errors) {
         this.form.commit();
         file = this.form.model.get('image');
-        if (file) {
+        url =  this.form.model.get('url');
+        if (file || !url) {
+          // Don't re-render until after the upload has finished
+          options.deferRender = true;
           // Set a callback for saving the model that will upload the
           // image.
           options.success = function(model) {
             that.uploadFile(model, 'image', file, {
+              form: form,
               progressHandler: that.handleUploadProgress,
               beforeSend: function() {
                 that.setState('upload');
@@ -5175,8 +5181,10 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
       model.save(null, {
         success: function(model) {
           that.model = model;
-          that.setState('display');
-          that.render();
+          if (!options.deferRender) {
+            that.setState('display');
+            that.render();
+          }
           that.story.assets.add(model);
           that.story.setFeaturedAsset(model);
           that.dispatcher.trigger('select:featuredasset', model);
