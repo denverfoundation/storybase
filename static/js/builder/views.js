@@ -3864,7 +3864,7 @@ storybase.builder.views.DataView = Backbone.View.extend(
       var errors = this.form.validate();
       if (!errors) {
         var formData = this.form.getValue();
-        this.addDataSet(formData);
+        this.addDataSet(formData, evt.target);
       }
       else {
         // Remove any previous error messages
@@ -3878,7 +3878,7 @@ storybase.builder.views.DataView = Backbone.View.extend(
       }
     },
 
-    addDataSet: function(attrs) {
+    addDataSet: function(attrs, form) {
       var that = this;
       var file = null;
       if (attrs.file) {
@@ -3888,8 +3888,9 @@ storybase.builder.views.DataView = Backbone.View.extend(
       this.collection.create(attrs, {
         success: function(model, response) {
           that.trigger('save:dataset', model);
-          if (file) {
+          if (file || !attrs.url) {
             that.uploadFile(model, 'file', file, {
+              form: form,
               success: function(model, response) {
                 that.dispatcher.trigger('alert', 'success', "Data set added");
                 that.render();
