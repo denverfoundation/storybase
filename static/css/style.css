@@ -886,9 +886,9 @@ body.explorer #filters .field.last{margin-right:0px;}
 body.explorer #filters .select2-container{background:url('../img/filter-link.png') no-repeat 0 0;min-width:180px;width:191px;display:block;font-size:13px;color:#fbfaf2;font-family:'MuseoSlab500Regular';text-shadow:0 -1px 0 #605f5f;line-height:34px;height:34px;padding-right:7px;}
 body.explorer .select2-result-label{font-family:'MuseoSlab500Regular';}
 body.explorer #filters .select2-default{color:#fbfaf2 !important;}
-body.explorer #filters .select2-container .select2-choice,body.explorer #filters .select2-dropdown-open .select2-choice{background:none;background-image:none;border:0px;color:#fbfaf2;line-height:inherit;height:34px;border-radius:0;padding-left:11px;}
-body.explorer #filters .select2-container .select2-choice div{background:none;border:none;}
-body.explorer #filters .select2-container .select2-choice div b{background:none;}
+body.explorer #filters .select2-container .select2-choice,body.explorer #filters .select2-dropdown-open .select2-choice{background:none;background-image:none;filter:none;border:0px;color:#fbfaf2;line-height:inherit;height:34px;border-radius:0;padding-left:11px;}
+body.explorer #filters .select2-container .select2-choice div{background:none;border:none;filter:none;}
+body.explorer #filters .select2-container .select2-choice div b{background:none;filter:none;}
 body.explorer .select2-drop .select2-drop-active{border:none !important;}
 body.explorer #filters .field label{display:none;}
 body.explorer #filters .select2-container .select2-choice abbr{right:22px;top:11px;background-image:url(../img/select2.png);}
