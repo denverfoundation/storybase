@@ -189,6 +189,11 @@
 // Help Page
 .faq-section, .faq-question {
   color: @orange !important;
+  padding:1em 0;
+}
+
+.faq-section {
+  .styled-header(left);
 }
 
 .faq-question {
@@ -196,6 +201,8 @@
   // answer, so make the cursor a pointer so it appears like a
   // link
   cursor: pointer;
+  border-top:1px solid #ddd;
+  margin-bottom:0;
 
   &:before {
     padding-right: 0.66em;
