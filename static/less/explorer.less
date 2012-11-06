@@ -352,4 +352,20 @@ ul#view-selector li a {
 .select2-container .select2-choice span {
 	margin-right:40px;
 }
-/* end */
+
+#loading {
+  width: 100%;
+  text-align: center;
+
+  .text, .spinner { 
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .spinner {
+    position: relative !important;
+    // This seems to need a width, otherwise, the margin won't work
+    width: 1px;
+    margin-left: 15px;
+  }
+}

@@ -930,6 +930,8 @@ body.explorer #map-container{clear:both;margin-bottom:50px;}
 body.explorer .leaflet-popup-content p{margin:0;}
 body.explorer .load-more a{width:110px;height:34px;background:url('../img/load-more.png') no-repeat 0 0;display:block;margin:20px auto 170px;}
 body.explorer .select2-container .select2-choice span{margin-right:40px;}
+body.explorer #loading{width:100%;text-align:center;}body.explorer #loading .text,body.explorer #loading .spinner{display:inline-block;vertical-align:middle;}
+body.explorer #loading .spinner{position:relative !important;width:1px;margin-left:15px;}
 .ir{display:block;border:0;text-indent:-999em;overflow:hidden;background-color:transparent;background-repeat:no-repeat;text-align:left;direction:ltr;}
 .ir br{display:none;}
 .hidden{display:none !important;visibility:hidden;}
