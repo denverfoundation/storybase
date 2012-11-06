@@ -5053,6 +5053,12 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
 
     setState: function(state) {
       this._state = state;
+      if (this._state === 'add' && !this.form.model.isNew()) {
+        this.form.model = new storybase.models.Asset({
+          language: this.options.language,
+          type: 'image'
+        });
+      }
       return this;
     },
 
