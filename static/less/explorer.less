@@ -357,18 +357,30 @@ ul#view-selector li a {
 }
 
 #loading {
-  width: 100%;
+  left:33%;
   text-align: center;
+  background: rgba(255, 255, 255, 0.7);
+  .rounded-corners(10px);
+  .box-shadow-inset(0, 0, 5px, rgba(0, 0, 0, 0.3));
+  font-size: 2em;
+  margin: 20px auto;
+  padding: 30px;
+  text-align: center;
+  width: 33%;
+  color:@gray;
 
   .text, .spinner { 
     display: inline-block;
     vertical-align: middle;
   }
 
+  .text {
+    position:relative;
+    left:-20px;
+  }
   .spinner {
     position: relative !important;
-    // This seems to need a width, otherwise, the margin won't work
-    width: 1px;
-    margin-left: 15px;
+    left:20px;
+    opacity:0.5;
   }
 }
