@@ -6,6 +6,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core import urlresolvers
+from django.core.cache import cache
 from django.db import models
 from django.db.models.signals import post_save, pre_save, m2m_changed
 from django.template.loader import render_to_string
@@ -22,7 +23,7 @@ from storybase.fields import ShortTextField
 from storybase.models import (TzDirtyFieldsMixin, LicensedModel, PermissionMixin,
     PublishedModel, TimestampedModel, TranslatedModel, TranslationModel,
     set_date_on_published)
-from storybase.utils import unique_slugify
+from storybase.utils import key_from_instance, unique_slugify
 from storybase_asset.models import (Asset, DataSet, ASSET_TYPES, FeaturedAssetsMixin)
 from storybase_help.models import Help
 from storybase_user.models import Organization, Project
@@ -293,6 +294,13 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
         otherwise try to find centroids of related places.
 
         """
+        key = key_from_instance(self, 'points')
+        points = cache.get(key, None)
+
+        if points is not None:
+            print "CACHE HIT: %s: %s" % (key, points)
+            return points
+
         points = []
         if self.locations.count():
             points = [(loc.lat, loc.lng) for loc in self.locations.all()]
@@ -319,7 +327,9 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
                             break
 
             # TODO: Decide if we should check non-explicit places
-
+       
+        print "%s: %s" % (key, points)
+        cache.set(key, points)
         return points
 
     def natural_key(self):
