@@ -1413,9 +1413,18 @@ input[name=address] {
     .asset { 
       padding: 8px 0; 
 
-      img, button {
+      .image-wrapper, img, button {
         display: inline-block;
         vertical-align: middle;
+      }
+
+      img {
+        max-width: 100%;
+      }
+
+      .image-wrapper {
+        text-align: center;
+        width: 25%;
       }
     }
   }

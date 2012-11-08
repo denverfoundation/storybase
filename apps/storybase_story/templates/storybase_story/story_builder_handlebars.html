@@ -249,7 +249,8 @@ Handlebars.js templates for story builder Backbone application
 <ul class="assets">
   {{#each assets}}
   <li class="asset">
-  <img class="thumbnail" src="{{thumbnail_url}}" /><button type="button" class="select-asset" data-asset-id="{{asset_id}}">{{gettext "Set as featured image"}}</button>
+      <div class="image-wrapper"><img class="thumbnail" src="{{thumbnail_url}}" /></div>
+      <button type="button" class="select-asset" data-asset-id="{{asset_id}}">{{gettext "Set as featured image"}}</button>
   </li> 
   {{/each}}
 </ul>
