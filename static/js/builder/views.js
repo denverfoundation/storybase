@@ -4733,7 +4733,7 @@ storybase.builder.views.PublishView = Backbone.View.extend(
     events: {
       'click .publish': 'handlePublish',
       'click .unpublish': 'handleUnpublish',
-      'click .view-story': 'handleView'
+      'click a.popup': 'handleView'
     },
 
     options: {
