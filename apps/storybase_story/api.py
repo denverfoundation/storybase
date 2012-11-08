@@ -167,8 +167,8 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
         """
         Populate a list of place ids and names in the response objects
         """
-        return [{'id': place.place_id, 'name': place.name}
-                for place in bundle.obj.places.all()]
+        return [{'id': place['place_id'], 'name': place['name']}
+                for place in bundle.obj.places.values('place_id', 'name')]
 
     def dehydrate_points(self, bundle):
         """
