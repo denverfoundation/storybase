@@ -7,6 +7,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core.files import File
+from django.core.cache import cache
 from django.db import models
 from django.db.models.signals import pre_save, post_delete
 from django.utils.html import strip_tags
@@ -24,6 +25,7 @@ from storybase.fields import ShortTextField
 from storybase.models import (LicensedModel, PublishedModel,
     TimestampedModel, TranslatedModel, TranslationModel,
     PermissionMixin, set_date_on_published)
+from storybase.utils import key_from_instance
 from storybase_asset.oembed import bootstrap_providers
 from storybase_asset.utils import img_el
 
@@ -582,23 +584,37 @@ class FeaturedAssetsMixin(object):
             return featured_asset.render_thumbnail(format=format, 
                                                    **thumbnail_options)
 
+    def featured_asset_thumbnail_url_key(self, include_host=True):
+        extra = "fa_url"
+        if include_host:
+            extra = extra + "_host"
+        return key_from_instance(self, extra)
+
     def featured_asset_thumbnail_url(self, include_host=True):
         """Return the URL of the featured asset's thumbnail
 
         Returns None if the asset cannot be converted to a thumbnail image.
 
         """
+        key = self.featured_asset_thumbnail_url_key(include_host)
+        url = cache.get(key)
+        if url:
+            return url
+
+        # Cache miss
         featured_asset = self.get_featured_asset()
         if featured_asset is None:
             # No featured assets
-            return self.get_default_img_url(width=222, height=222)
+            url = self.get_default_img_url(width=222, height=222)
         else:
             thumbnail_options = {
                 'width': 240,
                 'height': 240,
                 'include_host': include_host
             }
-            return featured_asset.get_thumbnail_url(**thumbnail_options)
+            url = featured_asset.get_thumbnail_url(**thumbnail_options)
+        cache.set(key, url)
+        return url
 
 
 class DataSetPermission(PermissionMixin):
