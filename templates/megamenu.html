@@ -3,7 +3,7 @@
 	<ul> 
 		<li class="nodd"><a class="active" href="/">{% trans "Home"|upper %}</a></li>
         <li><a href="{% page_url "story-builder-landing" %}">{% trans "Build a story"|upper %}<em></em></a>
-			<div class="dd onecol">
+			<div class="dd threecol">
 				<div class="dd-col col1-2">
 					<h6><a href="{% page_url "story-builder-landing" %}">{% trans "Take your storytelling to the next level." %}</a></h6>
 					<p>
@@ -11,6 +11,10 @@
 						Create an amazing story in minutes. Start by choosing a template -- like photo voice, explainer, or data story. Customize it with your text, photos, video, audio, data and more. Include a call to action to inspire your readers to get involved.
 						{% endblocktrans %}
 					</p>
+					<p><a href="{% page_url "story-builder-landing" %}">{% trans "Learn more" %}&hellip;</a></p>
+				</div>
+				<div class="dd-col col3">
+					<a class="create-your-story" href="{% url story_builder %}">Create Your Story</a>
 				</div>
 				<div class="cl">&nbsp;</div>
 			</div>
