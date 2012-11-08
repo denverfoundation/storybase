@@ -161,6 +161,7 @@
 #filters .select2-dropdown-open .select2-choice {
 	background:none;
 	background-image:none;
+	filter:none;
 	border:0px;
 	color:#fbfaf2;
 	line-height:inherit;
@@ -171,9 +172,11 @@
 #filters .select2-container .select2-choice div {
 	background:none;
 	border:none;
+	filter:none;
 }
 #filters .select2-container .select2-choice div b {
 	background:none;
+	filter:none;
 }
 .select2-drop .select2-drop-active {
 	border:none !important;
@@ -352,4 +355,20 @@ ul#view-selector li a {
 .select2-container .select2-choice span {
 	margin-right:40px;
 }
-/* end */
+
+#loading {
+  width: 100%;
+  text-align: center;
+
+  .text, .spinner { 
+    display: inline-block;
+    vertical-align: middle;
+  }
+
+  .spinner {
+    position: relative !important;
+    // This seems to need a width, otherwise, the margin won't work
+    width: 1px;
+    margin-left: 15px;
+  }
+}

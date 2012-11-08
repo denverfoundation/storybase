@@ -329,10 +329,21 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
     return Boolean(this.nextUri);
   },
 
+  /**
+   * Retrieve more stories from the server via AJAX
+   *
+   * This is called both when the user scrolls to the bottom of the page
+   * and when the user explicitly clicks a "Show More" link.
+   *
+   * @param {function} callback Callback function that is executed after
+   *   stories have been successfully fetched from the server.
+   *
+   */
   getMoreStories: function(callback) {
       var that = this;
       if (this.hasMoreStories()) {
         this.isDuringAjax = true;
+        this.storyListView.showLoading();
         $.getJSON(this.nextUri, function(data) {
           that.nextUri = data.meta.next;
           _.each(data.objects, function(storyJSON) {
@@ -342,6 +353,7 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
             that.mapView.appendStory(story);
           });
           that.isDuringAjax = false;
+          that.storyListView.hideLoading();
           callback();
         });
       }
@@ -691,6 +703,39 @@ storybase.explorer.views.StoryList = Backbone.View.extend({
       top: height / 2, 
       left: this.$el.width() / 2
     }).spin(this.$el[0]);
+  },
+
+  /**
+   * Display a loading more message while data is loading
+   */
+  showLoading: function() {
+    if (_.isUndefined(this.$loadingEl)) {
+      this.$loadingEl = $('<div>').attr('id', 'loading')
+                                  .html('<span class="text">'+gettext("Loading more stories")+"</span>")
+                                  .insertAfter(this.$el);
+      if (window.Spinner) {
+        this.$loadingEl.append(new Spinner({
+          length: this.$loadingEl.innerHeight() / 4,
+          radius: this.$loadingEl.innerHeight() / 8,
+          width: 2
+        }).spin().el);
+      }
+    }
+    else {
+      this.$loadingEl.insertAfter(this.$el);
+    }
+
+    return this;
+  },
+
+  /**
+   * Hide the loading message.
+   */
+  hideLoading: function() {
+    if (this.$loadingEl) {
+      this.$loadingEl.remove();
+    }
+    return this;
   },
 
   reset: function(stories) {
