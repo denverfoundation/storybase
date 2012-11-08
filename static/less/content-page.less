@@ -49,12 +49,12 @@
 			
 			// Help Page
 			.faq-section, .faq-question {
-				color: @orange !important;
 				padding:1em 0;
 			}
 
 			.faq-section {
 				.styled-header(left);
+				color:@gray;
 			}
 
 			.faq-question {
@@ -64,6 +64,7 @@
 				cursor: pointer;
 				border-top:1px solid #ddd;
 				margin-bottom:0;
+				color: @orange;
 
 				&:before {
 					padding-right: 0.66em;
@@ -205,6 +206,19 @@
 		
 		&.last {
 			border-bottom: none;
+		}
+	}
+	
+	a.bab {
+		.button-style(hot);
+		font-size:2em;
+		padding:1.5em;
+		margin:1.5em 0;
+		display:block;
+		
+		&.right {
+			float: right;
+			margin-left:1.5em;
 		}
 	}
 }

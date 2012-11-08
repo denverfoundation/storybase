@@ -379,6 +379,8 @@ body.base-template .megamenu ul li .dd .dd-col.col2,body.base-template .megamenu
 body.base-template .megamenu ul li .dd .dd-col.col1,body.base-template .megamenu ul li .dd .dd-col.col2,body.base-template .megamenu ul li .dd .dd-col.col3{width:25%;}
 body.base-template .megamenu ul li .dd .dd-col.col1-2{width:50%;}
 body.base-template .megamenu ul li .dd .dd-col a{font-size:13px;color:#fe9703;padding:0 0 0 8px;position:relative;left:-8px;background-image:none;}
+body.base-template .megamenu ul li .dd .dd-col a.create-your-story{padding:8px;background:#878787;font-family:"Museo300Regular";font-size:14px;border-radius:4px;border:none;font-weight:normal;color:white !important;cursor:pointer;text-decoration:none;text-shadow:0 -1px 0 rgba(0, 0, 0, 0.4);background:#fe9703;vertical-align:middle;font-size:2em;margin:30px 0;display:block;}body.base-template .megamenu ul li .dd .dd-col a.create-your-story.right{margin-left:8px;}
+body.base-template .megamenu ul li .dd .dd-col a.create-your-story:hover{text-decoration:none;background:#8b5910;}
 body.base-template .megamenu ul li h6,body.base-template .megamenu ul li h6 a{font-size:16px !important;font-weight:normal;font-family:'MuseoSlab500Regular';background:none;display:block;margin-bottom:9px;}
 body.base-template .megamenu ul li h6 a{color:#fe9703;}
 body.base-template .megamenu ul li h6 a:hover{background:url('../img/h6-a-arrow.png') no-repeat 0 center !important;text-decoration:none;}
@@ -403,7 +405,7 @@ body.base-template.homepage h2{background:url('../img/h3-line.png') repeat-x 0 8
 body.base-template.homepage .bottom .flexslider .flex-control-nav,body.base-template.homepage .bottom .flexslider .flex-direction-nav{display:none !important;}
 body.base-template.homepage .featured-stories img,body.base-template.homepage .featured-projects img{margin:0 auto;}
 body.base-template.homepage .featured-stories p,body.base-template.homepage .featured-projects p,body.base-template.homepage .featured-stories div.excerpt,body.base-template.homepage .featured-projects div.excerpt{margin-bottom:1em;}
-body.base-template.homepage .images{width:100%;position:relative;overflow:hidden;display:none;}body.base-template.homepage .images a{float:left;display:inline;margin-bottom:-4px;position:relative;}body.base-template.homepage .images a:hover{text-decoration:none;}
+body.base-template.homepage .images{width:100%;position:relative;overflow:hidden;display:none;}body.base-template.homepage .images a{float:left;display:inline;position:relative;margin-bottom:-4px;position:relative;}body.base-template.homepage .images a:hover{text-decoration:none;}
 body.base-template.homepage .images a img{display:block;}
 body.base-template.homepage .images a span.overlay{background:url('../img/image-overlay.png') 0 0;display:block;position:absolute;top:0;left:0;width:100%;height:100%;}
 body.base-template.homepage .images a span.title{position:absolute;bottom:0;left:0;background:url('../img/transparent.png') 0 0;display:block;width:100%;display:none;}
@@ -443,7 +445,7 @@ body.base-template #main .col h5{font-size:18px;color:#20c6fd;padding-top:10px;}
 body.base-template #main .col ul .text,body.base-template #main .col .image{padding-left:76px;padding-right:76px;display:block;}
 body.base-template #main .bottom .left ul li a{font-size:14px;color:#fe9703;font-family:'MuseoSlab500Regular';padding-left:5px;padding-right:5px;line-height:21px;display:inline-block;}
 body.base-template #main .bottom .left ul li a.active{background:#fe9703;color:#fff;border-radius:4px;}
-body.base-template #main .bottom .text{width:370px;border-left:1px dotted #666666;float:right;display:inline;padding-right:0;padding-left:21px;}
+body.base-template #main .bottom .text{width:370px;padding-left:21px;border-left:1px dotted #666666;float:right;display:inline;padding-right:0;padding-left:21px;}
 body.base-template #main .bottom .image{width:300px;float:left;display:inline;}
 body.base-template .default-margin-bottom{margin-bottom:1em;}
 body.base-template .content-page{}body.base-template .content-page h3 span{position:relative;}
@@ -458,9 +460,9 @@ body.base-template .content-page.generic .content-block h3,body.base-template .c
 body.base-template .content-page.generic .content-block h4.first{font-size:28.8px;line-height:27px;color:#5a5a5a;font-family:'Times New Roman',Georgia,Serif;margin-bottom:1em;}
 body.base-template .content-page.generic .content-block p.pullquote{font-size:22px;float:left;font-style:italic;line-height:1.2em;color:#777777;width:48%;padding-right:2%;}
 body.base-template .content-page.generic .content-block p.pullquote.right{float:right;padding:0 0 0 2%;}
-body.base-template .content-page.generic .content-block .faq-section,body.base-template .content-page.generic .content-block .faq-question{color:#fe9703 !important;padding:1em 0;}
-body.base-template .content-page.generic .content-block .faq-section{text-align:left;font-family:'Museo300Regular';font-weight:normal;}
-body.base-template .content-page.generic .content-block .faq-question{cursor:pointer;border-top:1px solid #ddd;margin-bottom:0;}body.base-template .content-page.generic .content-block .faq-question:before{padding-right:0.66em;}
+body.base-template .content-page.generic .content-block .faq-section,body.base-template .content-page.generic .content-block .faq-question{padding:1em 0;}
+body.base-template .content-page.generic .content-block .faq-section{text-align:left;font-family:'Museo300Regular';font-weight:normal;color:#777777;}
+body.base-template .content-page.generic .content-block .faq-question{cursor:pointer;border-top:1px solid #ddd;margin-bottom:0;color:#fe9703;}body.base-template .content-page.generic .content-block .faq-question:before{padding-right:0.66em;}
 body.base-template .content-page.generic .page-pull{margin-bottom:31px !important;}body.base-template .content-page.generic .page-pull h1,body.base-template .content-page.generic .page-pull h2,body.base-template .content-page.generic .page-pull h3,body.base-template .content-page.generic .page-pull h4,body.base-template .content-page.generic .page-pull h5{text-align:left;}
 body.base-template .content-page.generic .page-pull h4{background:none !important;margin-bottom:10px !important;font-family:'MuseoSlab500Regular';}body.base-template .content-page.generic .page-pull h4 a{color:#fe9703;}
 body.base-template .content-page.generic .page-pull p{color:#5a5a5a;line-height:16px;padding-bottom:12px;}body.base-template .content-page.generic .page-pull p a{color:#20c6fd;}
@@ -487,6 +489,9 @@ body.base-template .content-page.object-list .object-list li{overflow:hidden;}bo
 body.base-template .content-page.object-list .object-list li img.featured-asset{max-width:100%;}
 body.base-template .content-page.object-list .object-list .description p{margin-bottom:1em;}
 body.base-template .content-page section.content-block{padding-bottom:40px;border-bottom:1px solid #ccc;margin-bottom:20px;overflow:hidden;}body.base-template .content-page section.content-block.last{border-bottom:none;}
+body.base-template .content-page a.bab{padding:8px;background:#878787;font-family:"Museo300Regular";font-size:14px;border-radius:4px;border:none;font-weight:normal;color:white !important;cursor:pointer;text-decoration:none;text-shadow:0 -1px 0 rgba(0, 0, 0, 0.4);background:#fe9703;font-size:2em;padding:1.5em;margin:1.5em 0;display:block;}body.base-template .content-page a.bab.right{margin-left:8px;}
+body.base-template .content-page a.bab:hover{text-decoration:none;background:#8b5910;}
+body.base-template .content-page a.bab.right{float:right;margin-left:1.5em;}
 body.base-template form{overflow:hidden;position:relative;}body.base-template form fieldset{border:none;}body.base-template form fieldset+fieldset{margin-top:1em;}
 body.base-template form fieldset legend{font-weight:bold;}
 body.base-template form.lengthy-labels label{line-height:1em;}
@@ -649,7 +654,7 @@ body.story-builder .drawer-open #app{width:70%;}
 body.story-builder .drawer-open .view-container{width:98%;}
 body.story-builder #drawer-container{position:absolute;right:0;height:100%;z-index:998;}
 body.story-builder .drawer-open #drawer-container{width:30%;}
-body.story-builder #drawer-controls{float:left;height:100%;border-right:solid 2px #20c6fd;}body.story-builder #drawer-controls .btn{display:block;margin-bottom:70px;border:none;padding:8px 14px;color:white;font-family:'Museo300Regular';font-size:16px;background-color:#20c6fd;border-radius:4px 4px 0 0;text-align:center;cursor:pointer;transform-origin:100% 100%;-webkit-transform-origin:100% 100%;-moz-transform-origin:100% 100%;-ms-transform-origin:100% 100%;-o-transform-origin:100% 100%;transform:rotate(-90deg);-webkit-transform:rotate(-90deg);-moz-transform:rotate(-90deg);-ms-transform:rotate(-90deg);-o-transform:rotate(-90deg);filter:progid:DXImageTransform.Microsoft.BasicImage(rotation=3);}
+body.story-builder #drawer-controls{float:left;height:100%;border-right:solid 2px #20c6fd;}body.story-builder #drawer-controls .btn{display:block;margin-bottom:70px;border:none;padding:8px 14px;color:white;font-family:'Museo300Regular';font-size:16px;background-color:#20c6fd;border-radius:4px 4px 0 0;text-align:center;cursor:pointer;transform-origin:100% 100%;-webkit-transform-origin:100% 100%;-moz-transform-origin:100% 100%;-ms-transform-origin:100% 100%;-o-transform-origin:100% 100%;transform:rotate(-90deg);-webkit-transform:rotate(-90deg);-moz-transform:rotate(-90deg);-ms-transform:rotate(-90deg);-o-transform:rotate(-90deg);filter:progid:dximagetransform.microsoft.basicimage(rotation=3);}
 body.story-builder #drawer-contents{position:relative;max-height:60%;overflow:hidden;display:none;}body.story-builder #drawer-contents:hover{overflow-y:auto;}
 body.story-builder .drawer-open #drawer-contents{display:block;padding:1em;}
 body.story-builder .dragging #drawer-contents{overflow:visible;}
@@ -935,8 +940,9 @@ body.explorer #map-container{clear:both;margin-bottom:50px;}
 body.explorer .leaflet-popup-content p{margin:0;}
 body.explorer .load-more a{width:110px;height:34px;background:url('../img/load-more.png') no-repeat 0 0;display:block;margin:20px auto 170px;}
 body.explorer .select2-container .select2-choice span{margin-right:40px;}
-body.explorer #loading{width:100%;text-align:center;}body.explorer #loading .text,body.explorer #loading .spinner{display:inline-block;vertical-align:middle;}
-body.explorer #loading .spinner{position:relative !important;width:1px;margin-left:15px;}
+body.explorer #loading{left:33%;text-align:center;background:rgba(255, 255, 255, 0.7);border-radius:10px;-webkit-border-radius:10px;-moz-border-radius:10px;box-shadow:inset 0 0 5px rgba(0, 0, 0, 0.3);-moz-box-shadow:inset 0 0 5px rgba(0, 0, 0, 0.3);-webkit-box-shadow:inset 0 0 5px rgba(0, 0, 0, 0.3);font-size:2em;margin:20px auto;padding:30px;text-align:center;width:33%;color:#777777;}body.explorer #loading .text,body.explorer #loading .spinner{display:inline-block;vertical-align:middle;}
+body.explorer #loading .text{position:relative;left:-20px;}
+body.explorer #loading .spinner{position:relative !important;left:20px;opacity:0.5;}
 .ir{display:block;border:0;text-indent:-999em;overflow:hidden;background-color:transparent;background-repeat:no-repeat;text-align:left;direction:ltr;}
 .ir br{display:none;}
 .hidden{display:none !important;visibility:hidden;}
