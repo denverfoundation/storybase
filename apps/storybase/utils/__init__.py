@@ -161,3 +161,12 @@ def get_site_name(request=None):
         current_site = get_current_site(request)
         site_name = current_site.name
     return site_name
+
+
+def key_from_instance(instance, extra=None):
+    """
+    Generate a cache key for a Django model instance
+    """
+    opts = instance._meta
+    key = '%s.%s:%s' % (opts.app_label, opts.module_name, instance.pk)
+    return key if extra is None else key + ":" + extra
