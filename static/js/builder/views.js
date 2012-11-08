@@ -4750,7 +4750,10 @@ storybase.builder.views.PublishView = Backbone.View.extend(
       todoEl: '.publish-todo',
       // Selector for the element (defined in templateSource) that
       // shows the sharing widgets
-      sharingEl: '.publish-sharing'
+      sharingEl: '.publish-sharing',
+      // Selector for the element (defined in templateSource) that 
+      // contains the subviews
+      subviewEl: '.left'
     },
 
     initialize: function() {
@@ -4957,7 +4960,7 @@ storybase.builder.views.PublishView = Backbone.View.extend(
       if (options.replace) {
         this.$el.html(this.template(context));
         _.each(this.subviews, function(view) {
-          this.$('.left').append(view.render().el);
+          this.$(this.options.subviewEl).append(view.render().el);
         }, this);
       }
       this.renderTodo();
