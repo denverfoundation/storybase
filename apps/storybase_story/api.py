@@ -220,9 +220,10 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
                        key=lambda language: language['name'])
 
     def _get_facet_choices_place_ids(self, items):
-        return [{ 'id': obj.place_id, 'name': obj.name }
+        return [{ 'id': obj['place_id'], 'name': obj['name'] }
                 for obj in Place.objects.filter(place_id__in=items)\
-                                        .order_by('name')]
+                                        .order_by('name')\
+                                        .values('place_id', 'name')]
 
     def explore_get_result_list(self, request):
         sqs = SearchQuerySet().models(Story)
