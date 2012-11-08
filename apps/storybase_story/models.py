@@ -209,23 +209,30 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
         """Return JSON representation of this object"""
         return mark_safe(simplejson.dumps(self.to_simple())) 
 
+    def get_default_featured_asset(self):
+        """
+        Return the first image asset.
+
+        """
+        # See if there are any image assets defined on the model
+        assets = self.assets.filter(type='image').select_subclasses()
+        if (assets.count()):
+            return assets[0]
+
+        # No image assets either
+        return None
+
     def get_featured_asset(self):
         """Return the featured asset"""
-        if self.featured_assets.count():
+        featured_assets = self.featured_assets.select_subclasses()
+        if featured_assets.count():
             # Return the first featured asset.  We have the ability of 
             # selecting multiple featured assets.  Perhaps in the future
             # allow for specifying a particular feature asset or randomly
             # displaying one.
-            return self.featured_assets.select_subclasses()[0]
+            return featured_assets[0]
 
-        # No featured assets have been defined. Try to default to the
-        # first image asset
-        assets = self.assets.filter(type='image').select_subclasses()
-        if (assets.count()):
-            # QUESTION: Should this be saved?
-            return assets[0]
-
-        # No image assets either
+        # No featured_assets found
         return None
 
     def render_story_structure(self, format='html'):
@@ -415,6 +422,17 @@ def add_assets(sender, **kwargs):
         instance.save()
 
 
+def set_default_featured_asset(sender, instance, **kwargs):
+    """
+    If a story is published and no featured asset has been specified,
+    set a default one.
+    """
+    if instance.status == 'published' and instance.featured_assets.count() == 0:
+        asset = instance.get_default_featured_asset()
+        if asset is not None:
+            instance.featured_assets.add(asset)
+
+
 def set_asset_license(sender, instance, **kwargs):
     changed_fields = instance.get_dirty_fields().keys()
     if 'license' in changed_fields:
@@ -425,6 +443,7 @@ def set_asset_license(sender, instance, **kwargs):
 
 # Hook up some signal handlers
 pre_save.connect(set_date_on_published, sender=Story)
+pre_save.connect(set_default_featured_asset, sender=Story)
 pre_save.connect(set_asset_license, sender=Story)
 post_save.connect(set_story_slug, sender=StoryTranslation)
 m2m_changed.connect(update_last_edited, sender=Story.organizations.through)
