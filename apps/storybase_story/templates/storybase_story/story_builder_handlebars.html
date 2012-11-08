@@ -377,7 +377,7 @@ Handlebars.js templates for story builder Backbone application
         <div class="publish-todo"></div>
         <div class="publish-buttons centered button-container">
             <button class="publish" type="button" disabled="disabled" style="display: none;">Publish My Story</button>
-            <a href="{{url}}" class="view-story" style="display: none;">{{gettext "View my story"}}</a>
+            <a href="{{url}}" class="view-story popup button hot" style="display: none;">{{gettext "View my story"}}</a>
             <button type="button" class="unpublish" style="display: none;">{{gettext "Unpublish My Story"}}</button>
         </div>
     </div> <!-- /.tencol -->
@@ -426,7 +426,7 @@ Handlebars.js templates for story builder Backbone application
 <ul>
     <li>{{gettext "The content in this story doesn’t violate copyright law or infringe on a third party’s trademark, trade secret, proprietary data or patent"}}.</li>
     <li>{{gettext "I have properly cited or credited any content that I did not create myself."}}</li>
-    <li>{{gettext "If this story has any photos or videos of children (under 18), I have obtained the proper parent or guardian release forms (a sample release form is available here)"}}.</li>
+    <li>{{gettext "If this story has any photos or videos of children (under 18), I have obtained the proper parent or guardian release forms."}}<br /><br />{{gettext "Note: You can download a sample release form as a <a href='https://docs.google.com/document/d/1wmLKCuDhK2rdgGnvQIJAG7X37yzpNlh7J6v0hGogVTg/edit' class='popup'>Google doc</a> or <a href='/media/filer/2012/11/07/sample_photo_release.docx'>Word doc</a>.  For more information about using photos or videos of people in your Floodlight stories, visit our <a href='/grow-your-skills/resources/' class='popup'>Resources page</a>."}}</li>
 </ul>
 </script>
 
