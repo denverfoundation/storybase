@@ -1407,7 +1407,17 @@ input[name=address] {
     padding: 0; 
     list-style: none outside none;
 
-    .asset { padding: 8px 0; }
+    // Override the default list bullet styles
+    li { list-style-type: none; }
+
+    .asset { 
+      padding: 8px 0; 
+
+      img, button {
+        display: inline-block;
+        vertical-align: middle;
+      }
+    }
   }
 }
 
