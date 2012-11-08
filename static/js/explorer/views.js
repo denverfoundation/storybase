@@ -715,9 +715,9 @@ storybase.explorer.views.StoryList = Backbone.View.extend({
                                   .insertAfter(this.$el);
       if (window.Spinner) {
         this.$loadingEl.append(new Spinner({
-          length: this.$loadingEl.innerHeight() / 4,
-          radius: this.$loadingEl.innerHeight() / 8,
-          width: 2
+          length: this.$loadingEl.innerHeight() / 10,
+          radius: this.$loadingEl.innerHeight() / 12,
+          width: 4
         }).spin().el);
       }
     }
