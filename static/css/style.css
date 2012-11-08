@@ -786,6 +786,7 @@ body.story-builder #found-address{width:200px;margin:0 0 10px 210px;}
 body.story-builder input[name=address]{width:250px;margin-bottom:10px;}
 body.story-builder #address-name-container{margin-bottom:10px;}
 body.story-builder #locations{margin:10px 0 0 0;padding:0;list-style:none;}
+body.story-builder .story-url-wrapper{margin-bottom:0.6em;}
 body.story-builder #story-url{width:300px;}
 body.story-builder .addthis_toolbox{display:inline-block;padding:0;}
 body.story-builder #featured-asset{position:relative;}body.story-builder #featured-asset img{max-width:50%;}
