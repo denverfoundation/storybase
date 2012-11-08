@@ -225,15 +225,15 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
     def get_featured_asset(self):
         """Return the featured asset"""
         featured_assets = self.featured_assets.select_subclasses()
-        if featured_assets.count():
+        try:
             # Return the first featured asset.  We have the ability of 
             # selecting multiple featured assets.  Perhaps in the future
             # allow for specifying a particular feature asset or randomly
             # displaying one.
             return featured_assets[0]
-
-        # No featured_assets found
-        return None
+        except IndexError:
+            # No featured_assets found
+            return None
 
     def render_story_structure(self, format='html'):
         """Render a representation of the Story structure"""
