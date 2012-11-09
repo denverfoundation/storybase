@@ -249,7 +249,8 @@ Handlebars.js templates for story builder Backbone application
 <ul class="assets">
   {{#each assets}}
   <li class="asset">
-  <img class="thumbnail" src="{{thumbnail_url}}" /><button type="button" class="select-asset" data-asset-id="{{asset_id}}">{{gettext "Set as featured image"}}</button>
+      <div class="image-wrapper"><img class="thumbnail" src="{{thumbnail_url}}" /></div>
+      <button type="button" class="select-asset" data-asset-id="{{asset_id}}">{{gettext "Set as featured image"}}</button>
   </li> 
   {{/each}}
 </ul>
@@ -370,9 +371,8 @@ Handlebars.js templates for story builder Backbone application
 </script>
 
 <script type="text/x-handlebars-template" id="share-publish-template">
-<!-- TODO: Replace these classes with our grid instead of 1140 classes -->
-<div class="row">
-    <div class="left eightcol">
+<div class="container_12">
+    <div class="left grid_8 alpha">
         <h2 class="title">Publish and Share Your Story</h2>
         <div class="publish-todo"></div>
         <div class="publish-buttons centered button-container">
@@ -380,10 +380,11 @@ Handlebars.js templates for story builder Backbone application
             <a href="{{url}}" class="view-story popup button hot" style="display: none;">{{gettext "View my story"}}</a>
             <button type="button" class="unpublish" style="display: none;">{{gettext "Unpublish My Story"}}</button>
         </div>
-    </div> <!-- /.tencol -->
-    <div class="right fourcol last">
+    </div>
+    <div class="right grid_4 omega">
         {{#if showSharing}}
         <div class="publish-sharing" style="display: none">
+            <h3>{{gettext "Let your story be heard!"}}</h3>
             <p>{{gettext "Let your story be heard! Spread the word by sharing it with your social networks, printing a copy, or embeding it on your own website."}}</p>
             <div class="story-url-wrapper"><input id="story-url" type="text" value="{{url}}" /></div>
             <div class="addthis_toolbox addthis_default_style addthis_32x32_style"
