@@ -106,7 +106,7 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
     use one of the model classes that inherits form Asset.
 
     """
-    asset_id = UUIDField(auto=True)
+    asset_id = UUIDField(auto=True, db_index=True)
     type = models.CharField(max_length=10, choices=ASSET_TYPES)
     attribution = models.TextField(blank=True)
     source_url = models.URLField(blank=True)
@@ -669,7 +669,7 @@ class DataSet(TranslatedModel, PublishedModel, TimestampedModel,
     instead use one of the model classes that inherits from DataSet.
 
     """
-    dataset_id = UUIDField(auto=True)
+    dataset_id = UUIDField(auto=True, db_index=True)
     source = models.TextField(blank=True)
     attribution = models.TextField(blank=True)
     links_to_file = models.BooleanField(_("Links to file"), default=True)

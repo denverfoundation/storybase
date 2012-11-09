@@ -87,7 +87,7 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
     media assets
 
     """
-    story_id = UUIDField(auto=True)
+    story_id = UUIDField(auto=True, db_index=True)
     slug = models.SlugField(blank=True)
     byline = models.TextField()
     structure_type = models.CharField(_("structure"), max_length=20,
@@ -539,7 +539,7 @@ class SectionTranslation(TranslationModel):
 class Section(node_factory('SectionRelation'), TranslatedModel, 
               SectionPermission):
     """ Section of a story """
-    section_id = UUIDField(auto=True)
+    section_id = UUIDField(auto=True, db_index=True)
     story = models.ForeignKey('Story', related_name='sections')
     # True if this section the root section of the story, either
     # the first section in a linear story, or the central node
@@ -767,7 +767,7 @@ class StoryTemplate(TranslatedModel):
         ('beginner', _("Beginner")),
     )
     
-    template_id = UUIDField(auto=True)
+    template_id = UUIDField(auto=True, db_index=True)
     story = models.ForeignKey('Story', blank=True, null=True,
         help_text=_("The story that provides the structure for this "
                     "template"))
@@ -813,7 +813,7 @@ class SectionLayout(TranslatedModel):
     TEMPLATE_CHOICES = [(name, name) for name 
                         in settings.STORYBASE_LAYOUT_TEMPLATES]
 
-    layout_id = UUIDField(auto=True)
+    layout_id = UUIDField(auto=True, db_index=True)
     template = models.CharField(_("template"), max_length=100, choices=TEMPLATE_CHOICES)
     containers = models.ManyToManyField('Container', related_name='layouts',
                                         blank=True)
