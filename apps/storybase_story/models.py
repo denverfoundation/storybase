@@ -12,7 +12,7 @@ from django.db.models.signals import post_save, pre_save, m2m_changed
 from django.template.loader import render_to_string
 from django.utils import simplejson
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import get_language, ugettext_lazy as _
 from django_dag.models import edge_factory, node_factory
 
 from taggit.managers import TaggableManager
@@ -275,6 +275,49 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
         # want to use Categories for categorizing things other than stories.
         topics = [{'name': topic.name, 'url': self.get_explore_url({'topics': [topic.pk]})} for topic in self.topics.all()]
         return topics
+
+    def get_related_list(self, field, id_field, name_field):
+        """
+        Get a list of id, name hashes for a ManyToMany field of this story
+
+        Uses the cache if possible
+        
+        Arguments:
+        field -- the name of the ManyToMany field of the model instance
+        id_field -- the name of the field on the related model that holds the
+                    id value
+        name_field -- the name of the field on the related model that holds the
+                      name value
+
+        This is mostly used to dehydrate ManyToMany fields in ``StoryResource``,
+        but is defined here to try to keep all knowledge fo the caching strategy
+
+        """
+        language = get_language() 
+        key = key_from_instance(self, field + ':' + language)
+        obj_list = cache.get(key, None)
+        if obj_list is not None:
+            return obj_list
+        manager = getattr(self, field)
+        obj_list = [{ 'id': getattr(obj, id_field), 'name': getattr(obj, name_field) }
+                    for obj in manager.all()]
+        cache.set(key, obj_list)
+
+    def topics_list(self):
+        """Get a list of id, name pairs for the Story's topics"""
+        return self.get_related_list('topics', 'pk', 'name')
+
+    def organizations_list(self):
+        """Get a list of id, name pairs for the Story's organizations"""
+        return self.get_related_list('organizations', 'organization_id', 'name')
+
+    def projects_list(self):
+        """Get a list of id, name pairs for the Story's projects"""
+        return self.get_related_list('projects', 'project_id', 'name')
+
+    def places_list(self):
+        """Get a list of id, name pairs for the Story's places"""
+        return self.get_related_list('places', 'place_id', 'name')
 
     @property
     def inherited_places(self):

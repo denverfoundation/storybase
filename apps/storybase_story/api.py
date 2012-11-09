@@ -2,7 +2,6 @@
 
 from django.conf import settings
 from django.conf.urls.defaults import url
-from django.core.cache import cache
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.urlresolvers import NoReverseMatch
 from django.db.models import Q
@@ -23,7 +22,7 @@ from tastypie.utils import dict_strip_unicode_keys, trailing_slash
 
 from storybase.api import (DelayedAuthorizationResource,
     HookedModelResource, LoggedInAuthorization, TranslatedModelResource)
-from storybase.utils import get_language_name, key_from_instance
+from storybase.utils import get_language_name
 from storybase_asset.api import AssetResource
 from storybase_geo.models import Place
 from storybase_help.models import Help
@@ -147,54 +146,25 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
 
     def dehydrate_topics(self, bundle):
         """Populate a list of topic ids and names in the response objects"""
-        key = key_from_instance(bundle.obj, 'topics')
-        topics = cache.get(key, None)
-        if topics is not None:
-            return topics
-
-        topics = [{ 'id': topic['pk'], 'name': topic['categorytranslation__name']}
-                  for topic in bundle.obj.topics.values('pk', 'categorytranslation__name')]
-        cache.set(key, topics)
-        return topics
+        return bundle.obj.topics_list()
 
     def dehydrate_organizations(self, bundle):
         """
         Populate a list of organization ids and names in the response objects
         """
-        key = key_from_instance(bundle.obj, 'organizations')
-        organizations = cache.get(key, None)
-        if organizations is not None:
-            return organizations
-        organizations = [{ 'id': organization['organization_id'], 'name': organization['organizationtranslation__name'] }
-                         for organization in bundle.obj.organizations.values('organization_id', 'organizationtranslation__name')]
-        cache.set(key, organizations)
-        return organizations
+        return bundle.obj.organizations_list()
 
     def dehydrate_projects(self, bundle):
         """
         Populate a list of project ids and names in the response objects
         """
-        key = key_from_instance(bundle.obj, 'projects')
-        projects = cache.get(key, None)
-        if projects is not None:
-            return projects
-        projects = [{ 'id': project['project_id'], 'name': project['projecttranslation__name'] }
-                for project in bundle.obj.projects.values('project_id', 'projecttranslation__name')]
-        cache.set(key, projects)
-        return projects
+        return bundle.obj.projects_list()
 
     def dehydrate_places(self, bundle):
         """
         Populate a list of place ids and names in the response objects
         """
-        key = key_from_instance(bundle.obj, 'projects')
-        places = cache.get(key, None)
-        if places is not None:
-            return places
-        places = [{'id': place['place_id'], 'name': place['name']}
-                  for place in bundle.obj.places.values('place_id', 'name')]
-        cache.set(key, places)
-        return places
+        return bundle.obj.places_list()
 
     def dehydrate_points(self, bundle):
         """
