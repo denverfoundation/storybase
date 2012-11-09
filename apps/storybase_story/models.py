@@ -298,7 +298,6 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
         points = cache.get(key, None)
 
         if points is not None:
-            print "CACHE HIT: %s: %s" % (key, points)
             return points
 
         points = []
@@ -328,7 +327,6 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
 
             # TODO: Decide if we should check non-explicit places
        
-        print "%s: %s" % (key, points)
         cache.set(key, points)
         return points
 
