@@ -18,6 +18,7 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
   events: function() {
     var events = {};
     events['click ' + this.options.tocButtonEl] = 'toggleToc';
+    events['resize figure img'] = 'handleImgResize';
     return events;
   },
 
@@ -44,6 +45,7 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
     this.navigationView.render();
     this.$('.summary').show();
     this.$('.section').show();
+    this.sizeFigCaptions();
     return this;
   },
 
@@ -85,6 +87,29 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
   // Event handler for scroll event
   handleScroll: function(e) {
     // Do nothing. Subclasses might want to implement this to do some work
+  },
+  
+  sizeFigCaptionForImg: function(imgEl) {
+    $(imgEl).next('figcaption').width($(imgEl).width());
+  },
+  
+  sizeFigCaptions: function() {
+    // we don't seem to get load events on images
+    // even under a hard refresh.
+    var view = this;
+    this.$('figure img').each(function() {
+      if (this.width) {
+        view.sizeFigCaptionForImg(this);
+      }
+      // however, set up a handler anyway.
+      $(this).on('load', function() {
+        view.sizeFigCaptionForImg(this);
+      });
+    });
+  },
+  
+  handleImgResize: function(event) {
+    this.sizeFigCaptionForImg(event.target);
   },
 
   toggleToc: function(evt) {
