@@ -6,6 +6,7 @@ import json
 from time import sleep
 
 from django.conf import settings
+from django.core.cache import cache
 from django.contrib.auth.models import User
 from django.http import HttpRequest
 from django.test import TestCase
@@ -371,6 +372,9 @@ class StoryPermissionTest(TestCase):
 
 class StorySignalsTest(TestCase):
     """Tests for signals sent by the Story model"""
+    def tearDown(self):
+        cache.clear()
+
     def test_set_asset_license(self):
         """Test the set_asset_license signal handler"""
 
@@ -404,6 +408,92 @@ class StorySignalsTest(TestCase):
         story.save()
         asset = Asset.objects.get(pk=asset.pk)
         self.assertEqual(asset.license, story.license)
+
+    def _test_invalidate_related_cache(self, field_name, cache_field_name,
+                                       related_method, related_instance,
+                                       language_key=True):
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status='published')
+        key = "storybase_story.story:%s:%s" % (story.pk, cache_field_name)
+        if language_key:
+            key = key + ":en"
+        test_value = "TEST"
+        cache.set(key, "TEST")
+        self.assertEqual(cache.get(key), test_value)
+        related = getattr(story, field_name)
+        fn = getattr(related, related_method)
+        if related_method in ("remove", "clear"):
+            related.add(related_instance)
+        else:
+            fn(related_instance)
+        story.save()
+        if related_method == "remove":
+            fn(related_instance)
+        elif related_method == "clear":
+            fn()
+        self.assertEqual(cache.get(key), None)
+
+    def test_invalidate_points_cache_add(self):
+        location = Location.objects.create(name="The Piton Foundation", lat=39.7438167, lng=-104.9884953)
+        self._test_invalidate_related_cache('locations', 'points', 'add',
+                                             location, False)
+
+    def test_invalidate_points_cache_remove(self):
+        location = Location.objects.create(name="The Piton Foundation", lat=39.7438167, lng=-104.9884953)
+        self._test_invalidate_related_cache('locations', 'points', 'remove',
+                                             location, False)
+
+    def test_invalidate_points_cache_clear(self):
+        location = Location.objects.create(name="The Piton Foundation", lat=39.7438167, lng=-104.9884953)
+        self._test_invalidate_related_cache('locations', 'points', 'clear',
+                                             location, False)
+
+    def test_invalidate_topics_cache_add(self):
+        topic = create_category(name="Schools")
+        self._test_invalidate_related_cache('topics', 'topics', 'add', topic)
+
+    def test_invalidate_topics_cache_remove(self):
+        topic = create_category(name="Schools")
+        self._test_invalidate_related_cache('topics', 'topics', 'remove', 
+                                            topic)
+
+    def test_invalidate_topics_cache_clear(self):
+        topic = create_category(name="Schools")
+        self._test_invalidate_related_cache('topics', 'topics', 'clear', topic)
+                                           
+    def test_invalidate_organizations_cache_add(self):
+        org = create_organization(name="Mile High Connects")
+        self._test_invalidate_related_cache('organizations', 'organizations',
+                                            'add', org)
+
+    def test_invalidate_organizations_cache_remove(self):
+        org = create_organization(name="Mile High Connects")
+        self._test_invalidate_related_cache('organizations', 'organizations',
+                                            'remove', org)
+
+    def test_invalidate_organizations_cache_clear(self):
+        org = create_organization(name="Mile High Connects")
+        self._test_invalidate_related_cache('organizations', 'organizations',
+                                            'clear', org)
+
+    def test_invalidate_projects_cache_add(self):
+        project = create_project(name="Soccer in the Corridor")
+        
+        self._test_invalidate_related_cache('projects', 'projects',
+                                            'add', project)
+
+    def test_invalidate_projects_cache_remove(self):
+        project = create_project(name="Soccer in the Corridor")
+        
+        self._test_invalidate_related_cache('projects', 'projects',
+                                            'remove', project)
+
+    def test_invalidate_projects_cache_clear(self):
+        project = create_project(name="Soccer in the Corridor")
+        
+        self._test_invalidate_related_cache('projects', 'projects',
+                                            'clear', project)
+
 
 
 class StoryAdminTest(TestCase):
