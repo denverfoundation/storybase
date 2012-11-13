@@ -6,6 +6,7 @@ import json
 from time import sleep
 
 from django.conf import settings
+from django.core.cache import cache
 from django.contrib.auth.models import User
 from django.http import HttpRequest
 from django.test import TestCase
@@ -404,6 +405,48 @@ class StorySignalsTest(TestCase):
         story.save()
         asset = Asset.objects.get(pk=asset.pk)
         self.assertEqual(asset.license, story.license)
+
+    def _test_invalidate_related_cache(self, field_name, cache_field_name,
+                                       related_method, related_instance):
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status='published')
+        key = "storybase_story.story:%s:%s:en" % (story.pk, cache_field_name)
+        test_value = "TEST"
+        cache.set(key, "TEST")
+        self.assertEqual(cache.get(key), test_value)
+        related = getattr(story, field_name)
+        fn = getattr(related, related_method)
+        fn(related_instance)
+        story.save()
+        self.assertEqual(cache.get(key), None)
+
+    def test_invalidate_points_cache(self):
+        location_attrs = {
+            "name": "The Piton Foundation",
+            "address": "370 17th St",
+            "address2": "#5300",
+            "city": "Denver",
+            "state": "CO",
+            "postcode": "80202",
+        }
+        location = Location.objects.create(**location_attrs) 
+        self._test_invalidate_related_cache('locations', 'points', 'add',
+                                             location)
+
+    def test_invalidate_topics_cache(self):
+        topic = create_category(name="Schools")
+        self._test_invalidate_related_cache('topics', 'topics', 'add', topic)
+                                           
+
+    def test_invalidate_organizations_cache(self):
+        org = create_organization(name="Mile High Connects")
+        self._test_invalidate_related_cache('organizations', 'organizations',
+                                            'add', org)
+
+    def test_invalidate_projects_cache(self):
+        # BOOKMARK
+        pass
+
 
 
 class StoryAdminTest(TestCase):

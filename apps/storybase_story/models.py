@@ -276,6 +276,10 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
         topics = [{'name': topic.name, 'url': self.get_explore_url({'topics': [topic.pk]})} for topic in self.topics.all()]
         return topics
 
+    def related_key(self, field, language):
+        """Get a cache key for a ManyToMany field for a particular language"""
+        return key_from_instance(self, field + ':' + language)
+
     def get_related_list(self, field, id_field, name_field):
         """
         Get a list of id, name hashes for a ManyToMany field of this story
@@ -294,7 +298,7 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
 
         """
         language = get_language() 
-        key = key_from_instance(self, field + ':' + language)
+        key = self.related_key(field, language) 
         obj_list = cache.get(key, None)
         if obj_list is not None:
             return obj_list
@@ -478,7 +482,8 @@ def set_default_featured_asset(sender, instance, **kwargs):
     If a story is published and no featured asset has been specified,
     set a default one.
     """
-    if instance.status == 'published' and instance.featured_assets.count() == 0:
+    if (instance.pk and instance.status == 'published' and 
+        instance.featured_assets.count() == 0):
         asset = instance.get_default_featured_asset()
         if asset is not None:
             instance.featured_assets.add(asset)
@@ -492,6 +497,44 @@ def set_asset_license(sender, instance, **kwargs):
         instance.assets.filter(license='').update(license=instance.license)
 
 
+def invalidate_related_cache(sender, instance, field_name, **kwargs):
+    """
+    Helper function for invalidating cached version of a Story's ManyToMany
+    field.
+
+    """
+    action = kwargs.get('action')
+    reverse = kwargs.get('reverse')
+    if action in ("post_add", "post_remove", "post_clear") and not reverse:
+        languages = getattr(settings, 'LANGUAGES', None)
+        if languages: 
+            keys = []
+            for (code, name) in settings.LANGUAGES:
+                keys.append(instance.related_key(field_name, code))
+            cache.delete_many(keys)
+
+
+def invalidate_points_cache(sender, instance, **kwargs): 
+    """Invalidate the cached version of a Story's ``locations`` field"""
+    invalidate_related_cache(sender, instance, 'points', **kwargs)
+
+
+def invalidate_topics_cache(sender, instance, **kwargs): 
+    """Invalidate the cached version of a Story's ``topics`` field"""
+    invalidate_related_cache(sender, instance, 'topics', **kwargs)
+
+
+def invalidate_organizations_cache(sender, instance, **kwargs): 
+    """Invalidate the cached version of Story's ``organizations`` field"""
+    invalidate_related_cache(sender, instance, 'organizations', **kwargs)
+
+
+def invalidate_projects_cache(sender, instance, **kwargs): 
+    """Invalidate the cached version of Story's ``projects`` field"""
+    invalidate_related_cache(sender, instance, 'projects', **kwargs)
+
+
+
 # Hook up some signal handlers
 pre_save.connect(set_date_on_published, sender=Story)
 pre_save.connect(set_default_featured_asset, sender=Story)
@@ -500,6 +543,10 @@ post_save.connect(set_story_slug, sender=StoryTranslation)
 m2m_changed.connect(update_last_edited, sender=Story.organizations.through)
 m2m_changed.connect(update_last_edited, sender=Story.projects.through)
 m2m_changed.connect(add_assets, sender=Story.featured_assets.through)
+m2m_changed.connect(invalidate_points_cache, sender=Story.locations.through)
+m2m_changed.connect(invalidate_topics_cache, sender=Story.topics.through)
+m2m_changed.connect(invalidate_projects_cache, sender=Story.projects.through)
+m2m_changed.connect(invalidate_organizations_cache, sender=Story.organizations.through)
 
 
 class StoryRelationPermission(PermissionMixin):
