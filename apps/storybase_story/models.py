@@ -276,9 +276,10 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
         topics = [{'name': topic.name, 'url': self.get_explore_url({'topics': [topic.pk]})} for topic in self.topics.all()]
         return topics
 
-    def related_key(self, field, language):
+    def related_key(self, field, language=""):
         """Get a cache key for a ManyToMany field for a particular language"""
-        return key_from_instance(self, field + ':' + language)
+        extra = field + ':' + language if language else field
+        return key_from_instance(self, extra)
 
     def get_related_list(self, field, id_field, name_field):
         """
@@ -341,7 +342,7 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
         otherwise try to find centroids of related places.
 
         """
-        key = key_from_instance(self, 'points')
+        key = self.related_key('points')
         points = cache.get(key, None)
 
         if points is not None:
@@ -497,7 +498,8 @@ def set_asset_license(sender, instance, **kwargs):
         instance.assets.filter(license='').update(license=instance.license)
 
 
-def invalidate_related_cache(sender, instance, field_name, **kwargs):
+def invalidate_related_cache(sender, instance, field_name, language_key=True,
+                             **kwargs):
     """
     Helper function for invalidating cached version of a Story's ManyToMany
     field.
@@ -506,17 +508,21 @@ def invalidate_related_cache(sender, instance, field_name, **kwargs):
     action = kwargs.get('action')
     reverse = kwargs.get('reverse')
     if action in ("post_add", "post_remove", "post_clear") and not reverse:
-        languages = getattr(settings, 'LANGUAGES', None)
-        if languages: 
-            keys = []
-            for (code, name) in settings.LANGUAGES:
-                keys.append(instance.related_key(field_name, code))
-            cache.delete_many(keys)
+        if not language_key:
+            cache.delete(instance.related_key(field_name))
+        else:
+            languages = getattr(settings, 'LANGUAGES', None)
+            if languages: 
+                keys = []
+                for (code, name) in settings.LANGUAGES:
+                    keys.append(instance.related_key(field_name, code))
+                cache.delete_many(keys)
 
 
 def invalidate_points_cache(sender, instance, **kwargs): 
     """Invalidate the cached version of a Story's ``locations`` field"""
-    invalidate_related_cache(sender, instance, 'points', **kwargs)
+    invalidate_related_cache(sender, instance, 'points', language_key=False,
+                             **kwargs)
 
 
 def invalidate_topics_cache(sender, instance, **kwargs): 

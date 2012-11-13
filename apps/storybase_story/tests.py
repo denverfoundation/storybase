@@ -372,6 +372,9 @@ class StoryPermissionTest(TestCase):
 
 class StorySignalsTest(TestCase):
     """Tests for signals sent by the Story model"""
+    def tearDown(self):
+        cache.clear()
+
     def test_set_asset_license(self):
         """Test the set_asset_license signal handler"""
 
@@ -407,10 +410,13 @@ class StorySignalsTest(TestCase):
         self.assertEqual(asset.license, story.license)
 
     def _test_invalidate_related_cache(self, field_name, cache_field_name,
-                                       related_method, related_instance):
+                                       related_method, related_instance,
+                                       language_key=True):
         story = create_story(title="Test Story", summary="Test Summary",
                              byline="Test Byline", status='published')
-        key = "storybase_story.story:%s:%s:en" % (story.pk, cache_field_name)
+        key = "storybase_story.story:%s:%s" % (story.pk, cache_field_name)
+        if language_key:
+            key = key + ":en"
         test_value = "TEST"
         cache.set(key, "TEST")
         self.assertEqual(cache.get(key), test_value)
@@ -430,17 +436,17 @@ class StorySignalsTest(TestCase):
     def test_invalidate_points_cache_add(self):
         location = Location.objects.create(name="The Piton Foundation", lat=39.7438167, lng=-104.9884953)
         self._test_invalidate_related_cache('locations', 'points', 'add',
-                                             location)
+                                             location, False)
 
     def test_invalidate_points_cache_remove(self):
         location = Location.objects.create(name="The Piton Foundation", lat=39.7438167, lng=-104.9884953)
         self._test_invalidate_related_cache('locations', 'points', 'remove',
-                                             location)
+                                             location, False)
 
     def test_invalidate_points_cache_clear(self):
         location = Location.objects.create(name="The Piton Foundation", lat=39.7438167, lng=-104.9884953)
         self._test_invalidate_related_cache('locations', 'points', 'clear',
-                                             location)
+                                             location, False)
 
     def test_invalidate_topics_cache_add(self):
         topic = create_category(name="Schools")
