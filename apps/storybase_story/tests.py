@@ -416,36 +416,77 @@ class StorySignalsTest(TestCase):
         self.assertEqual(cache.get(key), test_value)
         related = getattr(story, field_name)
         fn = getattr(related, related_method)
-        fn(related_instance)
+        if related_method in ("remove", "clear"):
+            related.add(related_instance)
+        else:
+            fn(related_instance)
         story.save()
+        if related_method == "remove":
+            fn(related_instance)
+        elif related_method == "clear":
+            fn()
         self.assertEqual(cache.get(key), None)
 
-    def test_invalidate_points_cache(self):
-        location_attrs = {
-            "name": "The Piton Foundation",
-            "address": "370 17th St",
-            "address2": "#5300",
-            "city": "Denver",
-            "state": "CO",
-            "postcode": "80202",
-        }
-        location = Location.objects.create(**location_attrs) 
+    def test_invalidate_points_cache_add(self):
+        location = Location.objects.create(name="The Piton Foundation", lat=39.7438167, lng=-104.9884953)
         self._test_invalidate_related_cache('locations', 'points', 'add',
                                              location)
 
-    def test_invalidate_topics_cache(self):
+    def test_invalidate_points_cache_remove(self):
+        location = Location.objects.create(name="The Piton Foundation", lat=39.7438167, lng=-104.9884953)
+        self._test_invalidate_related_cache('locations', 'points', 'remove',
+                                             location)
+
+    def test_invalidate_points_cache_clear(self):
+        location = Location.objects.create(name="The Piton Foundation", lat=39.7438167, lng=-104.9884953)
+        self._test_invalidate_related_cache('locations', 'points', 'clear',
+                                             location)
+
+    def test_invalidate_topics_cache_add(self):
         topic = create_category(name="Schools")
         self._test_invalidate_related_cache('topics', 'topics', 'add', topic)
-                                           
 
-    def test_invalidate_organizations_cache(self):
+    def test_invalidate_topics_cache_remove(self):
+        topic = create_category(name="Schools")
+        self._test_invalidate_related_cache('topics', 'topics', 'remove', 
+                                            topic)
+
+    def test_invalidate_topics_cache_clear(self):
+        topic = create_category(name="Schools")
+        self._test_invalidate_related_cache('topics', 'topics', 'clear', topic)
+                                           
+    def test_invalidate_organizations_cache_add(self):
         org = create_organization(name="Mile High Connects")
         self._test_invalidate_related_cache('organizations', 'organizations',
                                             'add', org)
 
-    def test_invalidate_projects_cache(self):
-        # BOOKMARK
-        pass
+    def test_invalidate_organizations_cache_remove(self):
+        org = create_organization(name="Mile High Connects")
+        self._test_invalidate_related_cache('organizations', 'organizations',
+                                            'remove', org)
+
+    def test_invalidate_organizations_cache_clear(self):
+        org = create_organization(name="Mile High Connects")
+        self._test_invalidate_related_cache('organizations', 'organizations',
+                                            'clear', org)
+
+    def test_invalidate_projects_cache_add(self):
+        project = create_project(name="Soccer in the Corridor")
+        
+        self._test_invalidate_related_cache('projects', 'projects',
+                                            'add', project)
+
+    def test_invalidate_projects_cache_remove(self):
+        project = create_project(name="Soccer in the Corridor")
+        
+        self._test_invalidate_related_cache('projects', 'projects',
+                                            'remove', project)
+
+    def test_invalidate_projects_cache_clear(self):
+        project = create_project(name="Soccer in the Corridor")
+        
+        self._test_invalidate_related_cache('projects', 'projects',
+                                            'clear', project)
 
 
 
