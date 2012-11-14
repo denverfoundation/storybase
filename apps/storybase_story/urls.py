@@ -8,7 +8,7 @@ from django.conf.urls.defaults import patterns, url
 
 #from storybase_story.forms import StoryFacetedSearchForm
 from storybase_story.views import (ExploreStoriesView, 
-    StoryBuilderView, StoryDetailView, StoryViewerView)
+    StoryBuilderView, StoryDetailView, StoryViewerView, StoryUpdateView)
 
 #sqs = SearchQuerySet().date_facet('pub_date', 
 #                                   start_date=datetime.date(2009, 1, 1),
@@ -32,6 +32,12 @@ urlpatterns = patterns('',
         StoryViewerView.as_view(), name='story_viewer_by_id'), 
     url(r'^stories/(?P<slug>[0-9a-z-]+)/viewer/$',
         StoryViewerView.as_view(), name='story_viewer'), 
+    url(r'^stories/(?P<slug>[0-9a-z-]+)/unpublish/$',  
+        StoryUpdateView.as_view(), {'status': 'draft'}, name='story_unpublish'), 
+    url(r'^stories/(?P<slug>[0-9a-z-]+)/publish/$',  
+        StoryUpdateView.as_view(), {'status': 'published'}, name='story_publish'),
+    url(r'^stories/(?P<slug>[0-9a-z-]+)/delete/$',  
+        StoryUpdateView.as_view(), {'status': 'deleted'}, name='story_delete'),
     url(r'stories/(?P<source_story_id>[0-9a-f]{32,32})/build-connected/$', StoryBuilderView.as_view(), {'template': settings.STORYBASE_CONNECTED_STORY_TEMPLATE}, name='connected_story_builder'),
     url(r'stories/(?P<source_slug>[0-9a-z-]+)/build-connected/$', StoryBuilderView.as_view(), {'template': settings.STORYBASE_CONNECTED_STORY_TEMPLATE}, name='connected_story_builder'),
     url(r'stories/(?P<source_story_id>[0-9a-f]{32,32})/build-connected/(?P<story_id>[0-9a-f]{32,32})/$', StoryBuilderView.as_view(), {'template': settings.STORYBASE_CONNECTED_STORY_TEMPLATE}, name='connected_story_builder'),

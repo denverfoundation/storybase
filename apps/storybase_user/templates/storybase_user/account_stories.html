@@ -22,7 +22,30 @@
         <tr>
             <td><a class="view"  href="{{ story.get_absolute_url }}">{{ story }}</a></td>
             <td>{{ story.last_edited }}</td>
-            <td>{{ story.status|capfirst }}</td>
+            <td>
+              {{ story.status|capfirst }}
+              {% if story.status == 'published' %}
+                <form action="{{ story.get_absolute_url }}unpublish/" method="post">
+                  {% csrf_token %}
+                  <input type="hidden" name="story_id" value="{{ story.story_id }}">
+                  <button type="submit">{% trans "Unpublish" %}</button>
+                </form>
+              {% endif %}
+              {% if story.status == 'draft' %}
+                <form action="{{ story.get_absolute_url }}publish/" method="post">
+                  {% csrf_token %}
+                  <input type="hidden" name="story_id" value="{{ story.story_id }}">
+                  <button type="submit">{% trans "Publish" %}</button>
+                </form>
+              {% endif %}
+              {% if story.status != 'deleted' %}
+                <form action="{{ story.get_absolute_url }}delete/" method="post">
+                  {% csrf_token %}
+                  <input type="hidden" name="story_id" value="{{ story.story_id }}">
+                  <button>{% trans "Delete" %}</button>
+                </form>
+              {% endif %}
+            </td>
             <td><a class="build" href="{{ story.builder_url }}">{% trans "Build" %}</a></td>
     </tbody>
     {% endfor %}

@@ -7,11 +7,11 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 from django.utils.decorators import method_decorator
 from django.template import Context
 from django.template.loader import get_template
-from django.views.generic import DetailView, TemplateView 
+from django.views.generic import View, DetailView, TemplateView 
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
@@ -119,6 +119,31 @@ class StoryViewerView(ModelIdDetailView):
     queryset = Story.objects.all()
     template_name = 'storybase_story/story_viewer.html'
 
+class StoryUpdateView(View):
+  """
+  Updates story status, redirects to My Stories.
+  TODO: post success notification.
+  """
+  
+  def update_story(self, obj_id, status):
+    if obj_id is not None:
+      queryset = Story.objects
+      filter_args = {'story_id': obj_id}
+      queryset = queryset.filter(**filter_args)
+      try:
+        obj = queryset.get()
+      except ObjectDoesNotExist:
+        raise Http404(_(u"No %(verbose_name)s found matching the query") % {'verbose_name': queryset.model._meta.verbose_name})
+      if not obj.has_perm(self.request.user, 'change'):
+          raise PermissionDenied(_(u"You are not authorized to edit this story"))
+      obj.status = status
+      obj.save()
+  
+  def post(self, request, *args, **kwargs):
+    if self.request.user.is_authenticated():
+      self.update_story(request.POST['story_id'], kwargs['status'])
+    return HttpResponseRedirect(reverse('account_stories'))
+    
 
 class StoryBuilderView(DetailView):
     """
