@@ -3,6 +3,7 @@ from django.conf import settings
 from django.template.defaultfilters import stringfilter
 
 from storybase import settings as storybase_settings
+from storybase.utils import full_url
 
 register = template.Library()
 
@@ -51,3 +52,8 @@ def storybase_conf(parser, token):
 @register.simple_tag
 def featured_asset(obj, width=500):
     return obj.render_featured_asset(format='html', width=width)
+
+
+@register.simple_tag
+def fullurl(path):
+    return full_url(path)

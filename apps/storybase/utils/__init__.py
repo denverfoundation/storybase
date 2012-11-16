@@ -161,3 +161,8 @@ def get_site_name(request=None):
         current_site = get_current_site(request)
         site_name = current_site.name
     return site_name
+
+
+def full_url(path, proto='http'):
+    current_site = get_current_site(None)
+    return "%s://%s%s" % (proto, current_site.domain, path)
