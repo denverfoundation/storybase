@@ -1,7 +1,9 @@
 from django.contrib.auth.models import User
+from django.contrib.sites.models import Site
 from django.test import TestCase
 
 from storybase.models import PermissionMixin
+from storybase.utils import full_url
 
 class ContextProcessorTest(TestCase):
     def test_conf(self):
@@ -61,3 +63,47 @@ class PermissionMixinTest(TestCase):
 
     def test_has_perm_unknown_perm(self):
         self.assertFalse(self.obj.has_perm(self.user, "foo"))
+
+
+class UtilsTestCase(TestCase):
+    """Test for utilities"""
+    def setUp(self):
+        Site.objects.all().delete()
+        self._site_name = "floodlightproject.org"
+        self._site_domain = "floodlightproject.org"
+        self._site = Site.objects.create(name=self._site_name,
+                                         domain=self._site_domain)
+
+    def test_full_url_path(self):
+        """Test that a full url is returned when a path is given"""
+        path = "/stories/asdas-3/"
+        self.assertEqual("http://floodlightproject.org/stories/asdas-3/",
+                         full_url(path))
+
+    def test_full_url_path_https(self):
+        """
+        Test that a full url is returned when a path is given and the 
+        scheme is specified.
+
+        """
+        path = "/stories/asdas-3/"
+        self.assertEqual("https://floodlightproject.org/stories/asdas-3/",
+                         full_url(path, 'https'))
+
+    def test_full_url_path_no_proto(self):
+        """
+        Test that a full url is returned when a blank scheme is specified
+        """
+        path = "/stories/asdas-3/"
+        self.assertEqual("//floodlightproject.org/stories/asdas-3/",
+                         full_url(path, None))
+
+    def test_full_url_passthrough(self):
+        """
+        Test that a full url is just passed through if the argument is
+        already a full URL
+
+        """
+        path = "http://floodlightproject.org/stories/asdas-3/"
+        self.assertEqual("http://floodlightproject.org/stories/asdas-3/",
+                         full_url(path))
