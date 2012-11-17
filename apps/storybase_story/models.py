@@ -179,14 +179,6 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
 
         return ('story_detail', [self.story_id])
 
-    def get_full_url(self):
-        """
-        Calculate the canonical URL for a Story, including its
-        domain name.
-        """
-        return "http://%s%s" % (Site.objects.get_current().domain,
-                                self.get_absolute_url())
-
     @property
     def contributor_name(self):
         """

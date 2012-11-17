@@ -67,6 +67,7 @@ class FullURLNode(Node):
 
         if self.asvar:
             context[self.asvar] = url
+            return ''
         else:
             return url
 
