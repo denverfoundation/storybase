@@ -54,7 +54,8 @@ class LocationPermission(PermissionMixin):
 
 class Location(LocationPermission, DirtyFieldsMixin, models.Model):
     """A location with a specific address or latitude and longitude"""
-    location_id = UUIDField(auto=True, verbose_name=_("Location ID"))
+    location_id = UUIDField(auto=True, verbose_name=_("Location ID"),
+                            db_index=True)
     name = ShortTextField(_("Name"), blank=True)
     address = ShortTextField(_("Address"), blank=True)
     address2 = ShortTextField(_("Address 2"), blank=True)
@@ -140,7 +141,7 @@ class Place(node_factory('PlaceRelation')):
                                  verbose_name=_("GeoLevel"))
     boundary = models.MultiPolygonField(blank=True, null=True,
                                         verbose_name=_("Boundary"))
-    place_id = UUIDField(auto=True, verbose_name=_("Place ID"))
+    place_id = UUIDField(auto=True, verbose_name=_("Place ID"), db_index=True)
 
     def __unicode__(self):
         return self.name

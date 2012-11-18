@@ -175,3 +175,12 @@ def full_url(urlstring, scheme='http'):
         # It's just a path, e.g. /stories/foo/
         current_site = get_current_site(None)
         return urlunsplit((scheme, current_site.domain, urlstring, None, None))
+
+
+def key_from_instance(instance, extra=None):
+    """
+    Generate a cache key for a Django model instance
+    """
+    opts = instance._meta
+    key = '%s.%s:%s' % (opts.app_label, opts.module_name, instance.pk)
+    return key if extra is None else key + ":" + extra

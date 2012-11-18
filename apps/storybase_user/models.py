@@ -60,7 +60,7 @@ class RecentStoriesMixin(object):
 class Organization(FeaturedAssetsMixin, RecentStoriesMixin,
                    FeaturedStoriesMixin, TranslatedModel, TimestampedModel):
     """ An organization or a community group that users and stories can be associated with. """
-    organization_id = UUIDField(auto=True)
+    organization_id = UUIDField(auto=True, db_index=True)
     slug = models.SlugField(blank=True)
     website_url = models.URLField(blank=True)
     members = models.ManyToManyField(User, related_name='organizations', blank=True)
@@ -154,7 +154,7 @@ class Project(FeaturedAssetsMixin, RecentStoriesMixin, FeaturedStoriesMixin,
     
     Users can also be related to projects.
     """
-    project_id = UUIDField(auto=True)
+    project_id = UUIDField(auto=True, db_index=True)
     slug = models.SlugField(blank=True)
     website_url = models.URLField(blank=True)
     organizations = models.ManyToManyField(Organization, related_name='projects', blank=True)
@@ -247,7 +247,7 @@ def add_story_to_project(sender, instance, **kwargs):
 class UserProfile(models.Model):
     user = models.OneToOneField(User)
 
-    profile_id = UUIDField(auto=True)
+    profile_id = UUIDField(auto=True, db_index=True)
 
     # Notification preferences
     # Right now these represent e-mail contact

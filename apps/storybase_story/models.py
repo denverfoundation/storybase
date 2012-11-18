@@ -6,12 +6,13 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core import urlresolvers
+from django.core.cache import cache
 from django.db import models
 from django.db.models.signals import post_save, pre_save, m2m_changed
 from django.template.loader import render_to_string
 from django.utils import simplejson
 from django.utils.safestring import mark_safe
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import get_language, ugettext_lazy as _
 from django_dag.models import edge_factory, node_factory
 
 from taggit.managers import TaggableManager
@@ -22,7 +23,7 @@ from storybase.fields import ShortTextField
 from storybase.models import (TzDirtyFieldsMixin, LicensedModel, PermissionMixin,
     PublishedModel, TimestampedModel, TranslatedModel, TranslationModel,
     set_date_on_published)
-from storybase.utils import unique_slugify
+from storybase.utils import key_from_instance, unique_slugify
 from storybase_asset.models import (Asset, DataSet, ASSET_TYPES, FeaturedAssetsMixin)
 from storybase_help.models import Help
 from storybase_user.models import Organization, Project
@@ -86,7 +87,7 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
     media assets
 
     """
-    story_id = UUIDField(auto=True)
+    story_id = UUIDField(auto=True, db_index=True)
     slug = models.SlugField(blank=True)
     byline = models.TextField()
     structure_type = models.CharField(_("structure"), max_length=20,
@@ -201,24 +202,31 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
         """Return JSON representation of this object"""
         return mark_safe(simplejson.dumps(self.to_simple())) 
 
-    def get_featured_asset(self):
-        """Return the featured asset"""
-        if self.featured_assets.count():
-            # Return the first featured asset.  We have the ability of 
-            # selecting multiple featured assets.  Perhaps in the future
-            # allow for specifying a particular feature asset or randomly
-            # displaying one.
-            return self.featured_assets.select_subclasses()[0]
+    def get_default_featured_asset(self):
+        """
+        Return the first image asset.
 
-        # No featured assets have been defined. Try to default to the
-        # first image asset
+        """
+        # See if there are any image assets defined on the model
         assets = self.assets.filter(type='image').select_subclasses()
         if (assets.count()):
-            # QUESTION: Should this be saved?
             return assets[0]
 
         # No image assets either
         return None
+
+    def get_featured_asset(self):
+        """Return the featured asset"""
+        featured_assets = self.featured_assets.select_subclasses()
+        try:
+            # Return the first featured asset.  We have the ability of 
+            # selecting multiple featured assets.  Perhaps in the future
+            # allow for specifying a particular feature asset or randomly
+            # displaying one.
+            return featured_assets[0]
+        except IndexError:
+            # No featured_assets found
+            return None
 
     def render_story_structure(self, format='html'):
         """Render a representation of the Story structure"""
@@ -260,6 +268,54 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
         topics = [{'name': topic.name, 'url': self.get_explore_url({'topics': [topic.pk]})} for topic in self.topics.all()]
         return topics
 
+    def related_key(self, field, language=""):
+        """Get a cache key for a ManyToMany field for a particular language"""
+        extra = field + ':' + language if language else field
+        return key_from_instance(self, extra)
+
+    def get_related_list(self, field, id_field, name_field):
+        """
+        Get a list of id, name hashes for a ManyToMany field of this story
+
+        Uses the cache if possible
+        
+        Arguments:
+        field -- the name of the ManyToMany field of the model instance
+        id_field -- the name of the field on the related model that holds the
+                    id value
+        name_field -- the name of the field on the related model that holds the
+                      name value
+
+        This is mostly used to dehydrate ManyToMany fields in ``StoryResource``,
+        but is defined here to try to keep all knowledge fo the caching strategy
+
+        """
+        language = get_language() 
+        key = self.related_key(field, language) 
+        obj_list = cache.get(key, None)
+        if obj_list is not None:
+            return obj_list
+        manager = getattr(self, field)
+        obj_list = [{ 'id': getattr(obj, id_field), 'name': getattr(obj, name_field) }
+                    for obj in manager.all()]
+        cache.set(key, obj_list)
+
+    def topics_list(self):
+        """Get a list of id, name pairs for the Story's topics"""
+        return self.get_related_list('topics', 'pk', 'name')
+
+    def organizations_list(self):
+        """Get a list of id, name pairs for the Story's organizations"""
+        return self.get_related_list('organizations', 'organization_id', 'name')
+
+    def projects_list(self):
+        """Get a list of id, name pairs for the Story's projects"""
+        return self.get_related_list('projects', 'project_id', 'name')
+
+    def places_list(self):
+        """Get a list of id, name pairs for the Story's places"""
+        return self.get_related_list('places', 'place_id', 'name')
+
     @property
     def inherited_places(self):
         """Get places related to this story, including parents"""
@@ -278,6 +334,12 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
         otherwise try to find centroids of related places.
 
         """
+        key = self.related_key('points')
+        points = cache.get(key, None)
+
+        if points is not None:
+            return points
+
         points = []
         if self.locations.count():
             points = [(loc.lat, loc.lng) for loc in self.locations.all()]
@@ -304,7 +366,8 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
                             break
 
             # TODO: Decide if we should check non-explicit places
-
+       
+        cache.set(key, points)
         return points
 
     def natural_key(self):
@@ -407,6 +470,18 @@ def add_assets(sender, **kwargs):
         instance.save()
 
 
+def set_default_featured_asset(sender, instance, **kwargs):
+    """
+    If a story is published and no featured asset has been specified,
+    set a default one.
+    """
+    if (instance.pk and instance.status == 'published' and 
+        instance.featured_assets.count() == 0):
+        asset = instance.get_default_featured_asset()
+        if asset is not None:
+            instance.featured_assets.add(asset)
+
+
 def set_asset_license(sender, instance, **kwargs):
     changed_fields = instance.get_dirty_fields().keys()
     if 'license' in changed_fields:
@@ -415,13 +490,61 @@ def set_asset_license(sender, instance, **kwargs):
         instance.assets.filter(license='').update(license=instance.license)
 
 
+def invalidate_related_cache(sender, instance, field_name, language_key=True,
+                             **kwargs):
+    """
+    Helper function for invalidating cached version of a Story's ManyToMany
+    field.
+
+    """
+    action = kwargs.get('action')
+    reverse = kwargs.get('reverse')
+    if action in ("post_add", "post_remove", "post_clear") and not reverse:
+        if not language_key:
+            cache.delete(instance.related_key(field_name))
+        else:
+            languages = getattr(settings, 'LANGUAGES', None)
+            if languages: 
+                keys = []
+                for (code, name) in settings.LANGUAGES:
+                    keys.append(instance.related_key(field_name, code))
+                cache.delete_many(keys)
+
+
+def invalidate_points_cache(sender, instance, **kwargs): 
+    """Invalidate the cached version of a Story's ``locations`` field"""
+    invalidate_related_cache(sender, instance, 'points', language_key=False,
+                             **kwargs)
+
+
+def invalidate_topics_cache(sender, instance, **kwargs): 
+    """Invalidate the cached version of a Story's ``topics`` field"""
+    invalidate_related_cache(sender, instance, 'topics', **kwargs)
+
+
+def invalidate_organizations_cache(sender, instance, **kwargs): 
+    """Invalidate the cached version of Story's ``organizations`` field"""
+    invalidate_related_cache(sender, instance, 'organizations', **kwargs)
+
+
+def invalidate_projects_cache(sender, instance, **kwargs): 
+    """Invalidate the cached version of Story's ``projects`` field"""
+    invalidate_related_cache(sender, instance, 'projects', **kwargs)
+
+
+
 # Hook up some signal handlers
 pre_save.connect(set_date_on_published, sender=Story)
+pre_save.connect(set_default_featured_asset, sender=Story)
 pre_save.connect(set_asset_license, sender=Story)
 post_save.connect(set_story_slug, sender=StoryTranslation)
 m2m_changed.connect(update_last_edited, sender=Story.organizations.through)
 m2m_changed.connect(update_last_edited, sender=Story.projects.through)
 m2m_changed.connect(add_assets, sender=Story.featured_assets.through)
+m2m_changed.connect(invalidate_points_cache, sender=Story.locations.through)
+m2m_changed.connect(invalidate_topics_cache, sender=Story.topics.through)
+m2m_changed.connect(invalidate_projects_cache, sender=Story.projects.through)
+m2m_changed.connect(invalidate_organizations_cache, sender=Story.organizations.through)
 
 
 class StoryRelationPermission(PermissionMixin):
@@ -504,7 +627,7 @@ class SectionTranslation(TranslationModel):
 class Section(node_factory('SectionRelation'), TranslatedModel, 
               SectionPermission):
     """ Section of a story """
-    section_id = UUIDField(auto=True)
+    section_id = UUIDField(auto=True, db_index=True)
     story = models.ForeignKey('Story', related_name='sections')
     # True if this section the root section of the story, either
     # the first section in a linear story, or the central node
@@ -732,7 +855,7 @@ class StoryTemplate(TranslatedModel):
         ('beginner', _("Beginner")),
     )
     
-    template_id = UUIDField(auto=True)
+    template_id = UUIDField(auto=True, db_index=True)
     story = models.ForeignKey('Story', blank=True, null=True,
         help_text=_("The story that provides the structure for this "
                     "template"))
@@ -778,7 +901,7 @@ class SectionLayout(TranslatedModel):
     TEMPLATE_CHOICES = [(name, name) for name 
                         in settings.STORYBASE_LAYOUT_TEMPLATES]
 
-    layout_id = UUIDField(auto=True)
+    layout_id = UUIDField(auto=True, db_index=True)
     template = models.CharField(_("template"), max_length=100, choices=TEMPLATE_CHOICES)
     containers = models.ManyToManyField('Container', related_name='layouts',
                                         blank=True)

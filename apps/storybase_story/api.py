@@ -1,6 +1,5 @@
 """REST API for Stories"""
 
-from django.conf import settings
 from django.conf.urls.defaults import url
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.urlresolvers import NoReverseMatch
@@ -146,35 +145,31 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
 
     def dehydrate_topics(self, bundle):
         """Populate a list of topic ids and names in the response objects"""
-        return [{ 'id': topic.pk, 'name': topic.name }
-                for topic in bundle.obj.topics.all()]
+        return bundle.obj.topics_list()
 
     def dehydrate_organizations(self, bundle):
         """
         Populate a list of organization ids and names in the response objects
         """
-        return [{ 'id': organization.organization_id, 'name': organization.name }
-                for organization in bundle.obj.organizations.all()]
+        return bundle.obj.organizations_list()
 
     def dehydrate_projects(self, bundle):
         """
         Populate a list of project ids and names in the response objects
         """
-        return [{ 'id': project.project_id, 'name': project.name }
-                for project in bundle.obj.projects.all()]
+        return bundle.obj.projects_list()
 
     def dehydrate_places(self, bundle):
         """
         Populate a list of place ids and names in the response objects
         """
-        return [{ 'id': place.place_id, 'name': place.name }
-                for place in bundle.obj.inherited_places]
+        return bundle.obj.places_list()
 
     def dehydrate_points(self, bundle):
         """
         Populate a list of geographic points in the response object
         """
-        return [point for point in bundle.obj.points]
+        return bundle.obj.points
 
     def dehydrate_last_edited(self, bundle):
         """
@@ -220,9 +215,10 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
                        key=lambda language: language['name'])
 
     def _get_facet_choices_place_ids(self, items):
-        return [{ 'id': obj.place_id, 'name': obj.name }
+        return [{ 'id': obj['place_id'], 'name': obj['name'] }
                 for obj in Place.objects.filter(place_id__in=items)\
-                                        .order_by('name')]
+                                        .order_by('name')\
+                                        .values('place_id', 'name')]
 
     def explore_get_result_list(self, request):
         sqs = SearchQuerySet().models(Story)
