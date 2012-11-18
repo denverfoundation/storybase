@@ -1,10 +1,12 @@
 from django import template
+from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.urlresolvers import reverse
 from django.template import Context
 from django.template.loader import get_template
 from django.utils.translation import ugettext as _
 
+from storybase.utils import full_url
 from storybase_asset.models import Asset
 from storybase_story.models import Story
 
@@ -59,3 +61,11 @@ def featured_stories(count=4, img_width=335):
         "more_link_url": reverse("explore_stories"),
     })
     return template.render(context)
+
+@register.inclusion_tag('storybase_story/story_embed.html')
+def story_embed(story):
+    return {
+        'story': story,
+        'storybase_site_name': settings.STORYBASE_SITE_NAME,
+        'widget_js_url': full_url(settings.STATIC_URL + 'js/widgets.min.js'),
+    }

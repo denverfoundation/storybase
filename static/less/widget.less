@@ -1,0 +1,60 @@
+@font-face {
+    font-family: 'Museo300Regular';
+    src: url('../css/font-face/museo300-regular-webfont.eot');
+    src: url('../css/font-face/museo300-regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../css/font-face/museo300-regular-webfont.woff') format('woff'),
+         url('../css/font-face/museo300-regular-webfont.ttf') format('truetype'),
+         url('../css/font-face/museo300-regular-webfont.svg#Museo300Regular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+// Embedable widget for story.
+// This matches the styles for the tile view of the story explorer
+// It might make sense to factor those styles out so that they can be
+// shared. 
+.storybase-story-embed {
+  width: 222px;
+  padding: 7px;
+  overflow: hidden;
+  background: #f3f3f3;
+  color: #5a5a5a;
+  font-family: 'Times New Roman', Georgia, Serif; 
+  font-size: 14px;
+
+  img { width: 222px; }
+
+  h3, dd, p, ul, li {
+    margin: 0;
+    padding: 0;
+  }
+
+  ul { list-style: none; }
+
+  h3 {
+    font-weight: bold; 
+    text-align: center; 
+  }
+
+  .story-link { 
+    color: #20C6FD;
+    font-size: 16px;
+    line-height: 16px;
+    padding-top: 8px;
+    font-family: 'Museo300Regular';
+    text-decoration: none;
+  }
+
+  .byline {
+    font-style: italic;
+    margin-bottom: 0.9em;
+  }
+
+  dt { font-weight: bold; }
+
+  .languages a {
+    color: #0252aa;
+    text-decoration: none;
+  }
+}

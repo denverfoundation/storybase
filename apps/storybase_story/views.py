@@ -490,3 +490,14 @@ class StoryBuilderView(DetailView):
         # We override the view's dispatch method so we can decorate
         # it to only allow access by logged-in users
         return super(StoryBuilderView, self).dispatch(*args, **kwargs)
+
+
+class StoryWidgetView(ModelIdDetailView):
+    """An embedable widget for a story"""
+    context_object_name = "story"
+    # You can only embed published stories
+    queryset = Story.objects.filter(status='published')
+    template_name = 'storybase_story/story_widget.html'
+
+
+
