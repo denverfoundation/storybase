@@ -8,7 +8,8 @@ from django.conf.urls.defaults import patterns, url
 
 #from storybase_story.forms import StoryFacetedSearchForm
 from storybase_story.views import (ExploreStoriesView, 
-    StoryBuilderView, StoryDetailView, StoryViewerView, StoryWidgetView)
+    StoryBuilderView, StoryDetailView, StoryViewerView, StoryUpdateView,
+    StoryWidgetView)
 
 #sqs = SearchQuerySet().date_facet('pub_date', 
 #                                   start_date=datetime.date(2009, 1, 1),
@@ -54,4 +55,10 @@ urlpatterns = patterns('',
         StoryWidgetView.as_view(), name='story_widget'),
     url(r'^stories/(?P<slug>[0-9a-z-]+)/widget/$',
         StoryWidgetView.as_view(), name='story_widget'),
+    url(r'^stories/(?P<slug>[0-9a-z-]+)/unpublish/$',  
+        StoryUpdateView.as_view(), {'status': 'draft'}, name='story_unpublish'), 
+    url(r'^stories/(?P<slug>[0-9a-z-]+)/publish/$',  
+        StoryUpdateView.as_view(), {'status': 'published'}, name='story_publish'),
+    url(r'^stories/(?P<slug>[0-9a-z-]+)/delete/$',  
+        StoryUpdateView.as_view(), {'status': 'deleted'}, name='story_delete'),
 )
