@@ -1,4 +1,4 @@
-{% load i18n sekizai_tags storybase_tags story %}
+{% load i18n sekizai_tags storybase_tags story storybase_addthis %}
 <!doctype html>
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
 <!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
@@ -92,9 +92,7 @@
           </nav>
 
           {% fullurl story.get_absolute_url as full_story_url %}
-          {% with addthis_url=full_story_url %}
-          {% include "addthis_widget_small.html" %}
-          {% endwith %}
+          {% addthis_widget full_story_url %}
         </footer>
     </div>
 

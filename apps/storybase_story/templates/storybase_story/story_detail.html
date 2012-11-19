@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n cms_tags menu_tags sekizai_tags storybase_tags %}
+{% load i18n cms_tags menu_tags sekizai_tags storybase_tags storybase_addthis %}
 
 {% block head_title %}{{ storybase_site_name }} | {{ story.title }}{% endblock %}
 
@@ -65,7 +65,7 @@
 				</div>
 				<div class="grid_6">
 					<section class="object-details">
-						{% include "addthis_widget.html" %}
+                        {% addthis_widget size="32x32" %}
 						<dl class="object-metadata">
 							{% if story.contributor_name %}
 							<dt>{% trans "Contributed by" %}</dt>

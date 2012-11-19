@@ -1,6 +1,6 @@
 {% extends "twocol.html" %}
 
-{% load i18n storybase_tags storybase_user_tags %}
+{% load i18n storybase_tags storybase_user_tags storybase_addthis %}
 
 {% block head_title %}{{ object.name }}{{ block.super }}{% endblock %}
 
@@ -15,7 +15,7 @@
    <ul class="navroot">{% show_menu 1 %}</ul>
 </nav>
 {% endcomment %}
-{% include "addthis_widget_small.html" %}
+{% addthis_widget %}
 {% endblock %}
 
 {% block twocol-content %}
