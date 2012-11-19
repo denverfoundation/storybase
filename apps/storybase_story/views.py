@@ -500,4 +500,16 @@ class StoryWidgetView(ModelIdDetailView):
     template_name = 'storybase_story/story_widget.html'
 
 
+class StoryShareWidgetView(ModelIdDetailView):
+    """
+    Widget for sharing a story
 
+    While ``StoryWidgetView`` provides the HTML for the widget embedded
+    in a partner website, this view provides the HTML for a popup window
+    of sharing tools.  It is designed to be fetched via an asynchronous 
+    request from JavaScript
+
+    """
+    context_object_name = "story"
+    queryset = Story.objects.filter(status='published')
+    template_name = 'storybase_story/story_share_widget.html'
