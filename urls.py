@@ -2,7 +2,6 @@ from django.conf.urls.defaults import handler500, patterns, include, url
 from django.contrib import admin
 from django.conf import settings
 
-#from ajax_select import urls as ajax_select_urls
 from tastypie.api import Api
 
 from storybase.api import CreativeCommonsLicenseGetProxyView
@@ -65,7 +64,6 @@ urlpatterns += patterns('',
 
     #url(r'^admin/lookups/', include(ajax_select_urls)),
     url(r'^admin/', include(admin.site.urls)),
-    
 
     # Make translations available in JavaScript
     (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', {}),
@@ -73,16 +71,17 @@ urlpatterns += patterns('',
     # Comments
     (r'^comments/', include('django.contrib.comments.urls')),
 
+    # Search via Haystack
+    (r'^search/', include('search_urls')),
+
     # 3rd-party apps
     (r'^tinymce/', include('tinymce.urls')),
     (r'^accounts/', include('storybase_user.registration.backends.extrainfo.urls')),
     (r'^accounts/', include('social_auth.urls')),
     (r'^notices/', include('notification.urls')),
 
-
     # django CMS URLs
     url(r'^', include('cms.urls')),
-
 )
 
 if settings.DEBUG:

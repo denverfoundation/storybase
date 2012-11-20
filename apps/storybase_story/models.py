@@ -4,7 +4,6 @@ from datetime import datetime
 
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.contrib.sites.models import Site
 from django.core import urlresolvers
 from django.core.cache import cache
 from django.db import models
@@ -416,6 +415,46 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
 
     def get_default_img_url_choices(self):
         return settings.STORYBASE_DEFAULT_STORY_IMAGES
+
+    def search_result_metadata(self):
+        """Helper method for providing search result metadata to template"""
+        metadata = []
+        languages = self.get_language_names()
+        topics = self.topics_list()
+        explore_url = urlresolvers.reverse('explore_stories')
+
+        if languages:
+            metadata.append({
+                'name': _("Languages"),
+                'values': [
+                    {
+                        'name': lang['name'],
+                        'url': "%s?languages=%s" % (explore_url, lang['id']), 
+                    }
+                    for lang in languages
+                ],
+            })
+
+        if topics:
+            metadata.append({
+                'name': _("Topics"),
+                'values': [
+                    {
+                        'name': topic['name'],
+                        'url': "%s?topics=%s" % (explore_url, topic['id']), 
+                    }
+                    for topic in topics 
+                ],
+            })
+
+        if self.tags.count():
+            metadata.append({
+                'name': _("Tags"),
+                'values': [{'name': tag.name} for tag in self.tags.all()],
+            })
+
+
+        return metadata
 
 
 def set_story_slug(sender, instance, **kwargs):

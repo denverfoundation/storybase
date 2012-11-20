@@ -1,0 +1,52 @@
+// Styles for search page
+// Styles for search form that appear in header are in header.less
+
+body.search {
+  h1 { margin-top: 0.5em; }
+  h2 {
+    margin: 0.5em 0;
+    text-align: left;
+  }
+}
+
+#search-page-form {
+  text-align: center;
+
+  #id_q {
+    width: 60%;
+  }
+}
+
+.search-result, .no-search-results { 
+  list-style-type: none;
+}
+
+.search-result {
+  display: block;
+  clear: left;
+  padding-top: 20px;
+
+  h3 { text-align: left !important; }
+
+  img {
+    float: left;
+    margin-right: 0.5em;
+  }
+
+  .metadata {
+    dt {
+      display: block;
+      float: left;
+
+      &:after {
+        content: ':';
+      }
+    }
+
+    dd {
+      clear: right;
+      padding-left: 0.5em;
+      overflow: hidden;
+    }
+  }
+}

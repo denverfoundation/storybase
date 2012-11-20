@@ -68,16 +68,11 @@
 					{% endif %}
 				</ul>
 				<div class="cl">&nbsp;</div>
-                {# TODO: Enable search #} 
-                {% comment %}
-				<form id="search" action="" method="post">
-					<input type="text" class="field" value="" />
+                <form id="search" action="{% url haystack_search %}" method="get">
+					<input id="id_q" type="text" name="q" class="field" />
 					<input type="submit" class="submit" value="" />
 					<div class="cl">&nbsp;</div>
 				</form>
-                {% endcomment %}
-                {# HACK: Take up the same amount of space as the search form #}
-                <div id="search-placeholder"></div>
 			</div>
 			<div class="cl">&nbsp;</div>
 		</div>
