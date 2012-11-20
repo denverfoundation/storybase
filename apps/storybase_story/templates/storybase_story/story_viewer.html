@@ -92,7 +92,10 @@
           </nav>
 
           {% fullurl story.get_absolute_url as full_story_url %}
+          <a href="#" class="storybase-share-widget" data-story-id="{{ story.slug }}">Share This Story</a>
+          {% comment %}
           {% addthis_widget full_story_url %}
+          {% endcomment %}
         </footer>
     </div>
 

@@ -148,6 +148,8 @@
 			$('.post-content .slides').cycle($(this).parent().index(), transition);
 			return false;
 		});
+		
+		$('.storybase-share-widget').storybaseShare();
 	});
 
 
