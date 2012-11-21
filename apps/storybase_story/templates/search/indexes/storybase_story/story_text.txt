@@ -2,5 +2,5 @@
 {{ object.author.get_full_name }}
 {{ object.byline }}
 {{ object.summary }}
-{% for topic in object.topics.all %}{{ topic.name }}{% endfor %}
-{% for tag in object.tags.all %}{{ tag.name }}{% endfor %}
+{% for topic in object.topics.all %}{{ topic.name }} {% endfor %}
+{% for tag in object.tags.all %}{{ tag.name }} {% endfor %}
