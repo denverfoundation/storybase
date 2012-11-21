@@ -421,10 +421,13 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
         metadata = []
         languages = self.get_language_names()
         topics = self.topics_list()
+        topics_tags = []
         explore_url = urlresolvers.reverse('explore_stories')
+        search_url = urlresolvers.reverse('haystack_search')
 
         if languages:
             metadata.append({
+                'id': 'languages',
                 'name': _("Languages"),
                 'values': [
                     {
@@ -436,23 +439,28 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
             })
 
         if topics:
-            metadata.append({
-                'name': _("Topics"),
-                'values': [
+            topics_tags.extend([
                     {
                         'name': topic['name'],
                         'url': "%s?topics=%s" % (explore_url, topic['id']), 
                     }
                     for topic in topics 
-                ],
-            })
+            ])
 
         if self.tags.count():
-            metadata.append({
-                'name': _("Tags"),
-                'values': [{'name': tag.name} for tag in self.tags.all()],
-            })
+            topics_tags.extend([
+                {
+                    'name': tag.name,
+                    'url': "%s?q=%s" % (search_url, tag.name),
+                }
+                for tag in self.tags.all()
+            ])
 
+        metadata.append({
+            'id': 'topics-tags',
+            'name': _("Topics/Tags"),
+            'values': topics_tags,
+        })
 
         return metadata
 

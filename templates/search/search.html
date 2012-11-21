@@ -32,8 +32,8 @@
         </div>
         <dl class="metadata">
             {% for md_type in result.object.search_result_metadata %}
-            <dt>{{ md_type.name }}</dt>
-            <dd>
+            <dt class="{{ md_type.id }}">{{ md_type.name }}</dt>
+            <dd class="{{ md_type.id }}">
             {% for md_item in md_type.values %}
                 {% if md_item.url %}<a href="{{ md_item.url }}" title="{{ md_item.name }}">{{ md_item.name }}</a>{% else %}{{ md_item.name }}{% endif %}{% if not forloop.last %}, {% endif %}
             {% endfor %}

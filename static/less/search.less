@@ -34,6 +34,10 @@ body.search {
   position: absolute;
   right: 0;
 
+  input[type="text"] {
+    text-align: right;
+  }
+
   .next, .prev {
     &:hover {
       text-decoration: none;
@@ -90,6 +94,19 @@ body.search {
       clear: right;
       padding-left: 0.5em;
       overflow: hidden;
+    }
+
+    // Hide the label for topics and tags
+    dt.topics-tags {
+      display: none;
+
+      &:after {
+        content: '';
+      }
+    }
+
+    dd.topics-tags {
+      padding-left: 0;
     }
   }
 }
