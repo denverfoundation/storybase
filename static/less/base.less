@@ -62,19 +62,20 @@
 	&.right {
 		margin-left:8px;
 	}
+	&:hover {
+		text-decoration:none !important;
+	}
 }
 
 .button-style(hot) {
   background:@orange;
   &:hover {
-    text-decoration:none;
     background:darken(desaturate(@orange, 20%), 20%);
   }
 }
 .button-style(cool) {
   background:@highlight-blue;
   &:hover {
-    text-decoration:none;
     background:darken(desaturate(@highlight-blue, 20%), 20%);
   }
 }
@@ -82,7 +83,6 @@
 .button-style(gray) {
   background:@medium-gray;
   &:hover {
-    text-decoration:none;
     background:@orange;
   }
 }
