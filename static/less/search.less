@@ -3,10 +3,22 @@
 
 body.search {
   h1 { margin-top: 0.5em; }
+}
+
+.results-header, .results-footer {
+  padding: 0.5em 0;
+}
+
+.results-header {
   h2 {
-    margin: 0.5em 0;
+    float: left;
     text-align: left;
   }
+}
+
+.results-footer {
+  // Clear the absolutely positioned child
+  min-height: 25px;
 }
 
 #search-page-form {
@@ -17,6 +29,26 @@ body.search {
   }
 }
 
+.results-paging {
+  position: absolute;
+  right: 0;
+
+  .next, .prev {
+    &:hover {
+      text-decoration: none;
+    }
+  }
+
+  .next span, .prev span {
+    display: none;
+
+  }
+}
+
+.search-pagination-form {
+  display: inline;
+}
+
 .search-result, .no-search-results { 
   list-style-type: none;
 }
@@ -25,6 +57,7 @@ body.search {
   display: block;
   clear: left;
   padding-top: 20px;
+  overflow: hidden;
 
   h3 { text-align: left !important; }
 
@@ -34,6 +67,7 @@ body.search {
   }
 
   .metadata {
+
     dt {
       display: block;
       float: left;

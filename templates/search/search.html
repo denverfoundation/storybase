@@ -16,7 +16,11 @@
 </form>
 
 {% if query %}
-<h2><span>{% trans "Search Results for" %} "{{ query }}"</span></h2>
+
+<div class="results-header">
+    <h2>{% trans "Search Results for" %} "{{ query }}"</h2>
+    {% include "search/paging.html" %}
+</div>
 
 <ol class="search-results">
 {% for result in page.object_list %}
@@ -42,13 +46,9 @@
 {% endfor %}
 </ol>
 
-{% if page.has_previous or page.has_next %}
-    <div>
-        {% if page.has_previous %}<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}">{% endif %}&laquo; Previous{% if page.has_previous %}</a>{% endif %}
-        |
-        {% if page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}">{% endif %}Next &raquo;{% if page.has_next %}</a>{% endif %}
-    </div>
-{% endif %}
+<div class="results-footer">
+    {% include "search/paging.html" %}
+</div>
 
 {% else %}
 {# Show some example queries to run, maybe query syntax, something else? #}
