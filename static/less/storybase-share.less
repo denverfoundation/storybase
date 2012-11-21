@@ -2,13 +2,14 @@
   .button-style(gray);
 }
 
-.share-popup {
+.storybase-share-popup {
   display: none;
   width: 280px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
   position: absolute;
   padding:0;
   background: white;
+  z-index:20000;
   
   .share-widget {
     padding:10px;
@@ -16,6 +17,9 @@
   
   dt {
     margin-top:0.5em;
+  }
+  input, textarea {
+    width:100%;
   }
   
   header {
