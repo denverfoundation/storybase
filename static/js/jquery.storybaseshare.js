@@ -19,10 +19,7 @@
   var instanceMethods = {
     open: function() {
       var align = this.options.alignment.split(' ');
-      console.log(this.$button.parent().get(0), this.$popup.parent().get(0));
       var positionMethod = (this.$button.parent().get(0) == this.$popup.parent().get(0)) ? 'position' : 'offset';
-      console.log('button offset:', this.$button[positionMethod]());
-      console.log('popup dimensions: ', this.popupDimensions);
       var position = {
         top: this.$button[positionMethod]().top + this.$button.outerHeight(),
         left: this.$button[positionMethod]().left
@@ -33,7 +30,6 @@
       if (align[1] == 'right') {
         position.left = this.$button[positionMethod]().left - this.popupDimensions.outerWidth + this.$button.outerWidth();
       }
-      console.log('position:', position);
       this.$popup.css(position).slideDown().on('click', '.close', this.close);
     },
     close: function() {
@@ -44,13 +40,21 @@
   // content cached per-story
   var widgetContent = {};
   
+  // only add addThis script tag once
+  var scriptAdded = false;
+  
   var fetchContent = function(storyID, instance) {
     if (!(storyID in widgetContent)) {
       $.ajax({
         url: instance.options.widgetUrl.replace('<id>', storyID),
         dataType: 'html',
         success: function(data, textStatus, jqXHR) {
-          widgetContent[storyID] = instance.options.header + data + instance.options.addThisScriptTag;
+          var content = instance.options.header + data;
+          if (!scriptAdded) {
+            content += instance.options.addThisScriptTag;
+            scriptAdded = true;
+          }
+          widgetContent[storyID] = content;
           loadContent(storyID, instance);
         },
         error: function(jqXHR, textStatus, errorThrown) {
