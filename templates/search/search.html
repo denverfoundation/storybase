@@ -1,7 +1,7 @@
 {% extends 'base.html' %}
 {% load i18n storybase_tags %}
 
-{% block head_title %}{% if query %}{% trans "Search Results" %}{% else %}{% trans "Search" %}{% endif %}{% endblock %}
+{% block head_title %}{% if query %}{% trans "Search Results for" %} "{{ query }}"{% else %}{% trans "Search" %}{% endif %}{% endblock %}
 
 {% block body_class %}search{% endblock %}
 
@@ -18,7 +18,7 @@
 {% if query %}
 
 <div class="results-header">
-    <h2>{% trans "Search Results for" %} "{{ query }}"</h2>
+  <h2>{{ paginator.count }} {% trans "Search Results for" %} "{{ query }}"</h2>
     {% include "search/paging.html" %}
 </div>
 
