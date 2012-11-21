@@ -944,7 +944,7 @@ body.explorer #loading{left:33%;background:rgba(255, 255, 255, 0.7);border-radiu
 body.explorer #loading .text{position:relative;left:-20px;}
 body.explorer #loading .spinner{position:relative !important;left:20px;opacity:0.5;}
 body.search h1{margin-top:0.5em;}
-.results-header,.results-footer{padding:0.5em 0;}
+.results-header,.results-footer{padding:0.5em 0;overflow:hidden;}
 .results-header h2{float:left;text-align:left;}
 .results-footer{min-height:25px;}
 #search-page-form{text-align:center;}#search-page-form #id_q{width:60%;}
