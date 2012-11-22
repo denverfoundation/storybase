@@ -91,6 +91,10 @@ class AssetTranslation(TranslationModel):
         abstract = True
         unique_together = (('asset', 'language')) 
 
+    def strings(self):
+        return None
+
+
 class Asset(TranslatedModel, LicensedModel, PublishedModel,
     TimestampedModel, AssetPermission):
     """A piece of content included in a story
@@ -253,7 +257,22 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
 
         return output
 
+    def strings(self):
+        """Print all the strings in all languages for this asset
         
+        This is meant to be used to help generate a document for full-text
+        search using Haystack.
+
+        """
+        strings = []
+        translations = getattr(self, self.translation_set)
+        for translation in translations.all():
+            trans_strings = translation.strings()
+            if trans_strings:
+                strings.append(trans_strings)
+
+        return " ".join(strings)
+
 
 class ExternalAssetTranslation(AssetTranslation):
     """Translatable fields for an Asset model instance"""
@@ -386,6 +405,9 @@ class ExternalAsset(Asset):
 class HtmlAssetTranslation(AssetTranslation):
     """Translatable fields for an HtmlAsset model instance"""
     body = models.TextField(blank=True)
+
+    def strings(self):
+        return strip_tags(self.body)
 
 
 class HtmlAsset(Asset):

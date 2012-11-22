@@ -416,6 +416,31 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
     def get_default_img_url_choices(self):
         return settings.STORYBASE_DEFAULT_STORY_IMAGES
 
+    def used_assets(self, asset_type=None):
+        """Return a queryset of assets actually used in story sections"""
+        assets = self.assets.exclude(sectionasset=None)
+
+        if asset_type:
+            assets = assets.filter(type=asset_type)
+
+        return assets.select_subclasses()
+
+    def asset_strings(self):
+        """Return all the text from a Story's assets as a single string
+        
+        This is meant to be used to help generate the document used to
+        index the story for full-text search using Haystack.
+
+        """ 
+        strings = []
+        # For now, only worry about text assets
+        for asset in self.used_assets(asset_type='text'):
+            s = asset.strings()
+            if s:
+                strings.append(s)
+
+        return " ".join(strings)
+
     def search_result_metadata(self):
         """Helper method for providing search result metadata to template"""
         metadata = []
