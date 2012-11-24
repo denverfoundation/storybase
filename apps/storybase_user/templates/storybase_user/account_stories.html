@@ -25,25 +25,13 @@
             <td>
               <span class="status">{{ story.status|capfirst }}</span>
               {% if story.status == 'published' %}
-                <form action="{{ story.get_absolute_url }}unpublish/" method="post">
-                  {% csrf_token %}
-                  <input type="hidden" name="story_id" value="{{ story.story_id }}">
-                  <button class="button gray publish" type="submit">{% trans "Unpublish" %}</button>
-                </form>
+                <a class="button gray" href="{{ story.get_absolute_url }}unpublish/">Unpublish</a>
               {% endif %}
               {% if story.status == 'draft' %}
-                <form action="{{ story.get_absolute_url }}publish/" method="post">
-                  {% csrf_token %}
-                  <input type="hidden" name="story_id" value="{{ story.story_id }}">
-                  <button class="button gray unpublish" type="submit">{% trans "Publish" %}</button>
-                </form>
+                <a class="button gray" href="{{ story.get_absolute_url }}publish/">Publish</a>
               {% endif %}
               {% if story.status != 'deleted' %}
-                <form action="{{ story.get_absolute_url }}delete/" method="post">
-                  {% csrf_token %}
-                  <input type="hidden" name="story_id" value="{{ story.story_id }}">
-                  <button class="button gray delete" type="submit">{% trans "Delete" %}</button>
-                </form>
+                <a class="button gray" href="{{ story.get_absolute_url }}delete/">Delete</a>
               {% endif %}
             </td>
             <td><a class="build" href="{{ story.builder_url }}">{% trans "Build" %}</a></td>
