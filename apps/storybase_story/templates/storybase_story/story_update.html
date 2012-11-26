@@ -1,0 +1,42 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block base_content %}
+
+{% if status == 'published' %}
+<h1><span>{% trans "Confirm Publish" %} "{{ story.title }}"</span></h1>
+<p>{% trans "Are you sure you want to publish" %} "{{ story.title }}"?</p>
+<form action="{{ story.get_absolute_url }}publish/" method="post">
+  {% csrf_token %}
+  <input type="hidden" name="story_id" value="{{ story.story_id }}">
+  <input type="hidden" name="result_url" value="{{ result_url }}">
+  <a class="button gray cancel" href="{{ previous_url }}">{% trans "Cancel" %}</a>
+  <button class="button hot publish" type="submit">{% trans "Publish" %}</button>
+</form>
+{% endif %}
+
+{% if status == 'draft' %}
+<h1><span>{% trans "Confirm Unpublish" %} "{{ story.title }}"</span></h1>
+<p>{% trans "Are you sure you want to unpublish" %} "{{ story.title }}"?</p>
+<form action="{{ story.get_absolute_url }}unpublish/" method="post">
+  {% csrf_token %}
+  <input type="hidden" name="story_id" value="{{ story.story_id }}">
+  <input type="hidden" name="result_url" value="{{ result_url }}">
+  <a class="button gray cancel" href="{{ previous_url }}">{% trans "Cancel" %}</a>
+  <button class="button hot unpublish" type="submit">{% trans "Unpublish" %}</button>
+</form>
+{% endif %}
+
+{% if status == 'deleted' %}
+<h1><span>{% trans "Confirm Delete" %} "{{ story.title }}"</span></h1>
+<p>{% trans "Are you sure you want to delete" %} "{{ story.title }}"?</p>
+<form action="{{ story.get_absolute_url }}delete/" method="post">
+  {% csrf_token %}
+  <input type="hidden" name="story_id" value="{{ story.story_id }}">
+  <input type="hidden" name="result_url" value="{{ result_url }}">
+  <a class="button gray cancel" href="{{ previous_url }}">{% trans "Cancel" %}</a>
+  <button class="button hot delete" type="submit">{% trans "Delete" %}</button>
+</form>
+{% endif %}
+
+{% endblock %}
