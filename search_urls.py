@@ -1,9 +1,9 @@
 from django.conf.urls.defaults import *
 from haystack.forms import SearchForm
-from haystack.views import SearchView
+from storybase.search.views import StorybaseSearchView
 
 urlpatterns = patterns('haystack.views',
-    url(r'^$', SearchView(
+    url(r'^$', StorybaseSearchView(
         form_class=SearchForm
     ), name='haystack_search'),
 )

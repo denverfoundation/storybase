@@ -4,13 +4,18 @@ from django.db.models import signals
 
 from haystack import indexes
 
+from storybase_asset.models import HtmlAssetTranslation
 from storybase_geo.models import Location
-from storybase_story.models import Story, StoryTranslation
+from storybase_story.models import (SectionAsset, SectionTranslation,
+                                    Story, StoryTranslation)
 
 logger = logging.getLogger('storybase')
 
 class GeoHashMultiValueField(indexes.MultiValueField):
     field_type = 'geohash'
+
+class TextSpellField(indexes.CharField):
+    field_type = 'textSpell'
 
 class StoryIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
@@ -27,6 +32,7 @@ class StoryIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
     place_ids = indexes.FacetMultiValueField()
     points = GeoHashMultiValueField()
     num_points = indexes.IntegerField()
+    suggestions = TextSpellField()
 
     def get_model(self):
         return Story
@@ -51,6 +57,11 @@ class StoryIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
 
     def prepare_num_points(self, obj):
         return len(obj.points)
+
+    def prepare(self, obj):
+        prepared_data = super(StoryIndex, self).prepare(obj)
+        prepared_data['suggestions'] = prepared_data['text']
+        return prepared_data
 
     def index_queryset(self):
         """
@@ -115,15 +126,66 @@ class StoryIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
         for story in instance.stories.all():
             self.update_object(story)
 
+    def section_translation_update_object(self, sender, instance, **kwargs):
+        """
+        Signal handler for updating story index when a related section
+        translation changes
+
+        This is needed because the section titles in all languages are part
+        of the document field of the index.
+
+        """
+        self.update_object(instance.section.story)
+
+    def asset_translation_update_object(self, sender, instance, **kwargs):
+        """
+        Signal handler for updating story index when a related text asset
+        translation changes
+
+        This is needed because the text from text assets is part of the
+        document field in the index.
+
+        """
+        stories = []
+        if instance.asset.type == 'text':
+            for section in instance.asset.sections.all():
+                # Should I use a set here to make this faster?
+                if section.story not in stories:
+                    stories.append(section.story)
+
+            for story in stories:
+                self.update_object(story)
+
+    def asset_relation_update_object(self, sender, instance, **kwargs):
+        """
+        Signal handler for when an asset to section relationship is 
+        created or destroyed.
+
+        This is needed because the text from assets is part of the 
+        document field of the index.
+
+        """
+        if instance.asset.type == 'text':
+            self.update_object(instance.section.story)
+    
     def _setup_save(self):
         super(StoryIndex, self)._setup_save()
         # Update object when many-to-many fields change
         signals.m2m_changed.connect(self.update_object, sender=self.get_model().organizations.through)
         signals.m2m_changed.connect(self.update_object, sender=self.get_model().projects.through)
+        signals.m2m_changed.connect(self.update_object, sender=self.get_model().tags.through)
         signals.m2m_changed.connect(self.update_object, sender=self.get_model().topics.through)
         signals.m2m_changed.connect(self.update_object, sender=self.get_model().locations.through)
         signals.m2m_changed.connect(self.update_object, sender=self.get_model().places.through)
 
+        signals.post_save.connect(self.asset_translation_update_object,
+                                  sender=HtmlAssetTranslation)
+        signals.post_save.connect(self.asset_relation_update_object,
+                                  sender=SectionAsset)
+        signals.post_delete.connect(self.asset_relation_update_object,
+                                    sender=SectionAsset)
+        signals.post_save.connect(self.section_translation_update_object,
+                                  sender=SectionTranslation)
         signals.post_save.connect(self.translation_update_object,
                                   sender=StoryTranslation)
         signals.post_save.connect(self.location_update_object,
@@ -134,9 +196,18 @@ class StoryIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
         signals.m2m_changed.disconnect(self.update_object, sender=self.get_model().organizations.through)
         signals.m2m_changed.disconnect(self.update_object, sender=self.get_model().projects.through)
         signals.m2m_changed.disconnect(self.update_object, sender=self.get_model().topics.through)
+        signals.m2m_changed.disconnect(self.update_object, sender=self.get_model().tags.through)
         signals.m2m_changed.disconnect(self.update_object, sender=self.get_model().locations.through)
         signals.m2m_changed.disconnect(self.update_object, sender=self.get_model().places.through)
 
+        signals.post_save.disconnect(self.asset_translation_update_object,
+                                     sender=HtmlAssetTranslation)
+        signals.post_delete.disconnect(self.asset_relation_update_object,
+                                       sender=SectionAsset)
+        signals.post_save.disconnect(self.asset_relation_update_object,
+                                     sender=SectionAsset)
+        signals.post_save.disconnect(self.section_translation_update_object,
+                                     sender=SectionTranslation)
         signals.post_save.disconnect(self.translation_update_object,
                                      sender=StoryTranslation)
         signals.post_save.disconnect(self.location_update_object,

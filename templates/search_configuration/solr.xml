@@ -46,7 +46,25 @@
     Use the SOLR-2155 add-on, which supports multi-valued fields.
     {% endcomment %}
     <fieldType name="geohash" class="solr2155.solr.schema.GeoHashField" length="12" />
- 
+    {% comment %}
+    A field type for a field that will contain spelling suggestions.
+    See http://wiki.apache.org/solr/SpellCheckingAnalysis
+    {% endcomment %}
+    <fieldType name="textSpell" class="solr.TextField" positionIncrementGap="100" omitNorms="true">
+      <analyzer type="index">
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+        <filter class="solr.StandardFilterFactory"/>
+      </analyzer>
+      <analyzer type="query">
+        <tokenizer class="solr.StandardTokenizerFactory"/>
+        <filter class="solr.SynonymFilterFactory" synonyms="synonyms.txt" ignoreCase="true" expand="true"/>
+        <filter class="solr.StopFilterFactory" ignoreCase="true" words="stopwords.txt"/>
+        <filter class="solr.LowerCaseFilterFactory"/>
+        <filter class="solr.StandardFilterFactory"/>
+      </analyzer>
+    </fieldType>
 
     <fieldType name="text_general" class="solr.TextField" positionIncrementGap="100">
       <analyzer type="index">
