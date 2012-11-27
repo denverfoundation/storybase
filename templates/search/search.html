@@ -47,6 +47,7 @@
         {% if suggestion %}
         {% trans "Did you mean" %} <a href="?q={{ suggestion|urlencode }}">{{ suggestion }}</a>?
         {% endif %}
+        {% trans "You can also find stories by" %} <a href="{% url explore_stories %}" title="{% trans "Explore" %} {{ storybase_site_name }}">{% trans "exploring" %} {{ storybase_site_name }}.</a>
     </li>
 {% endfor %}
 </ol>
