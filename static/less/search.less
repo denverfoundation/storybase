@@ -5,15 +5,22 @@ body.search {
   h1 { margin-top: 0.5em; }
 }
 
+#search-page-form {
+  margin: 2em 0;
+}
+
 .results-header, .results-footer {
   padding: 0.5em 0;
   overflow: hidden;
 }
 
 .results-header {
-  h2 {
+  h1, h2 {
+    margin: 0 !important;
     float: left;
-    text-align: left;
+    font-size: 28.8px !important;
+    text-align: left !important;
+    background: none !important;
   }
 }
 
@@ -94,19 +101,6 @@ body.search {
       clear: right;
       padding-left: 0.5em;
       overflow: hidden;
-    }
-
-    // Hide the label for topics and tags
-    dt.topics-tags {
-      display: none;
-
-      &:after {
-        content: '';
-      }
-    }
-
-    dd.topics-tags {
-      padding-left: 0;
     }
   }
 }

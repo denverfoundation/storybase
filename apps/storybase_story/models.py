@@ -482,8 +482,8 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
             ])
 
         metadata.append({
-            'id': 'topics-tags',
-            'name': _("Topics/Tags"),
+            'id': 'tags',
+            'name': _("Tags"),
             'values': topics_tags,
         })
 
