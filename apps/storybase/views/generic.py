@@ -31,11 +31,16 @@ class ModelIdDetailView(DetailView):
         return super(ModelIdDetailView, self).render_to_response(
             context, **response_kwargs)
 
+    def get_object_id_name(self):
+        """Retrieve the name of the object's custom id field"""
+        queryset = self.get_queryset()
+        module_name = queryset.model._meta.module_name
+        return '%s_id' % module_name
+
     def get_object(self):
         """Retrieve the object by it's model specific id instead of pk"""
         queryset = self.get_queryset()
-        module_name = queryset.model._meta.module_name
-        obj_id_name = '%s_id' % module_name
+        obj_id_name = self.get_object_id_name() 
         obj_id = self.kwargs.get(obj_id_name, None)
         slug = self.kwargs.get('slug', None)
         if slug is not None:
