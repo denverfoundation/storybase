@@ -17,16 +17,17 @@ class ModelIdDetailView(DetailView):
         return super(ModelIdDetailView, self).dispatch(*args, **kwargs)
 
     def render_to_response(self, context, **response_kwargs):
-	"""Handle language-aware paths"""
-        language_code = get_language()
+        """Handle language-aware paths"""
         obj = context.get(self.context_object_name)
-        available_languages = obj.get_languages()
-        if language_code not in available_languages:
-            alt_lang = settings.LANGUAGE_CODE
-            if alt_lang not in available_languages:
-                alt_lang = available_languages[0]
-            path = obj.get_absolute_url()
-            return redirect('/%s%s' % (alt_lang, path))
+        if hasattr(obj, 'get_languages'):
+            language_code = get_language()
+            available_languages = obj.get_languages()
+            if language_code not in available_languages:
+                alt_lang = settings.LANGUAGE_CODE
+                if alt_lang not in available_languages:
+                    alt_lang = available_languages[0]
+                path = obj.get_absolute_url()
+                return redirect('/%s%s' % (alt_lang, path))
 
         return super(ModelIdDetailView, self).render_to_response(
             context, **response_kwargs)
