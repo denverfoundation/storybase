@@ -25,16 +25,16 @@
             <td>
               <span class="status">{{ story.status|capfirst }}</span>
               {% if story.status == 'published' %}
-                <a class="button gray" href="{{ story.get_absolute_url }}unpublish/">Unpublish</a>
+                <a class="button gray unpublish" href="{{ story.get_absolute_url }}unpublish/">Unpublish</a>
               {% endif %}
               {% if story.status == 'draft' %}
-                <a class="button gray" href="{{ story.get_absolute_url }}publish/">Publish</a>
+                <a class="button gray publish" href="{{ story.get_absolute_url }}publish/">Publish</a>
               {% endif %}
               {% if story.status != 'deleted' %}
-                <a class="button gray" href="{{ story.get_absolute_url }}delete/">Delete</a>
+                <a class="button gray delete" href="{{ story.get_absolute_url }}delete/">Delete</a>
               {% endif %}
             </td>
-            <td><a class="build" href="{{ story.builder_url }}">{% trans "Build" %}</a></td>
+            <td><a class="button hot build" href="{{ story.builder_url }}">{% trans "Build" %}</a></td>
     </tbody>
     {% endfor %}
 </table>
