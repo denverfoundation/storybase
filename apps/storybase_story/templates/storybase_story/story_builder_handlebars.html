@@ -144,7 +144,7 @@ Handlebars.js templates for story builder Backbone application
                 <label for="allow_connected">{{gettext "Make this a Connected Story"}}</label> 
             </div>
             <div>
-                <textarea class="connected-prompt" name="connected_prompt" placeholder="TODO: Add placeholder for connected stories prompt"{{#unless allow_connected}} style="display: none"{{/unless}}>{{connected_prompt}}</textarea>
+                <textarea class="connected-prompt" name="connected_prompt" placeholder="{{gettext "Type your prompt here. Users will see this when creating their connected stories."}}"{{#unless allow_connected}} style="display: none"{{/unless}}>{{connected_prompt}}</textarea>
             </div>
         </div>
     </div>
