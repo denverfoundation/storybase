@@ -153,4 +153,4 @@
     
     return this;
   };
-})((typeof jqLatest == 'undefined') ? jQuery : jqLatest);
+})(jQuery);

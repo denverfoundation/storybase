@@ -144,6 +144,13 @@
   var jqLatest = jQuery;
   </script>
 
+  {% addtoblock "js" %}
+  <script>
+  // Before loading all of our jQuery plugins, switch jQuery to our recent version
+  jQuery = jqLatest;
+  $ = jQuery;
+  </script>
+  {% endaddtoblock %}
   {% addtoblock "js" %}<script defer src="{{ STATIC_URL }}js/plugins.js"></script>{% endaddtoblock %}
   {% addtoblock "js" %}<script src="{{ STATIC_URL }}js/functions.js"></script>{% endaddtoblock %}
   {% addtoblock "js" %}<script src="{{ STATIC_URL }}js/jquery.storybaseshare.js"></script>{% endaddtoblock %}
