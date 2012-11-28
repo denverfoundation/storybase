@@ -5,7 +5,7 @@
     {% trans "Page" %}
     <form class="search-pagination-form" method="get" action=".">
         <input type="hidden" name="q" value="{{ query }}" />
-        <input type="text" name="page" value="{{ page.number }}" size="3" />
+        <input type="text" name="page" value="{{ page.number }}" size="1" />
     </form>
     {% trans "of" %} {{ paginator.num_pages }}
     {% if page.has_next %}<a href="?q={{ query }}&amp;page={{ page.next_page_number }}" class="next icon-chevron-right" title="{% trans "Next" %}"><span>{% trans "Next" %}</span></a>{% endif %}
