@@ -13,9 +13,6 @@ class AddThisWidgetNode(Node):
         self.kwargs = kwargs
 
     def _get_template_context(self, url=None, size=None, include_js=True):
-        print url
-        print size
-        print include_js
         context = {
             'url': url,
             'include_js': include_js,
