@@ -1,4 +1,8 @@
 """"Common generic views"""
+try:
+    import shortuuid
+except ImportError:
+    shortuuid
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
@@ -38,12 +42,35 @@ class ModelIdDetailView(DetailView):
         module_name = queryset.model._meta.module_name
         return '%s_id' % module_name
 
+    def get_short_object_id_name(self):
+        return 'short_%s' % (self.get_object_id_name())
+
+    def get_short_object_id(self):
+        if not shortuuid:
+            return None
+
+        short_obj_id_name = self.get_short_object_id_name()
+        short_obj_id = self.kwargs.get(short_obj_id_name, None)
+
+        if short_obj_id is None:
+            return None 
+
+        return shortuuid.decode(short_obj_id).hex
+
+    def get_object_id(self):
+        obj_id_name = self.get_object_id_name() 
+        obj_id = self.kwargs.get(obj_id_name, None)
+        if obj_id is None:
+            obj_id = self.get_short_object_id()
+
+        return obj_id_name, obj_id
+
     def get_object(self):
         """Retrieve the object by it's model specific id instead of pk"""
         queryset = self.get_queryset()
-        obj_id_name = self.get_object_id_name() 
-        obj_id = self.kwargs.get(obj_id_name, None)
+        obj_id_name, obj_id = self.get_object_id()
         slug = self.kwargs.get('slug', None)
+
         if slug is not None:
             queryset = queryset.filter(slug=slug)
         elif obj_id is not None:

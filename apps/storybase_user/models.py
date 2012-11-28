@@ -1,5 +1,11 @@
 """Models representing people or groups of people"""
 
+try:
+    import shortuuid
+    import uuid
+except ImportError:
+    shortuuid = None
+
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
@@ -38,22 +44,44 @@ class FeaturedStoriesMixin(object):
     def get_featured_queryset(self):
         return self.curated_stories.all()
 
-    def featured(self):
+    def featured_story(self):
         try:
             return self.get_featured_queryset().order_by('-last_edited')[0]
         except IndexError:
             return None
 
 
-class RecentStoriesMixin(object):
+class StoriesMixin(object):
+    """
+    Mixin that provides some utility methods for populating the
+    stories section of templates
+
+    This provides a common interface for templates to access a model
+    instance's stories, even when they may be accessed through different
+    model fields.
+
+    """
+    def get_stories_queryset(self):
+        return self.stories.filter(status='published')
+
+    def all_stories(self):
+        return self.get_stories_queryset().order_by('-last_edited')
+
+
+class RecentStoriesMixin(StoriesMixin):
     """
     Mixin that provides some utility methods for populating the recent
     stories section of templates
+
+    This provides a common interface for templates to access a model
+    instance's stories, even when they may be accessed through different
+    model fields.
+
     """
     def get_recent_queryset(self):
-        return self.stories.all()
+        return self.get_stories_queryset()
 
-    def recent_list(self, count=3):
+    def recent_stories(self, count=3):
         return self.get_recent_queryset().order_by('-last_edited')[:count]
         
 
@@ -244,7 +272,7 @@ def add_story_to_project(sender, instance, **kwargs):
             story.save()
 
 
-class UserProfile(models.Model):
+class UserProfile(RecentStoriesMixin, models.Model):
     user = models.OneToOneField(User)
 
     profile_id = UUIDField(auto=True, db_index=True)
@@ -269,6 +297,24 @@ class UserProfile(models.Model):
 
     def __unicode__(self):
         return unicode(self.user)
+
+    @models.permalink
+    def get_absolute_url(self):
+        if shortuuid:
+            profile_uuid = uuid.UUID(self.profile_id)
+            return ('userprofile_detail', (), 
+                    {'short_profile_id': shortuuid.encode(profile_uuid)})
+
+        return ('userprofile_detail', (), 
+                {'profile_id': self.profile_id})
+
+    def name(self):
+        # Import needs to go here to prevent a circular import
+        from storybase_user.utils import format_user_name
+        return format_user_name(self.user)
+
+    def get_stories_queryset(self):
+        return self.user.stories.filter(status='published')
 
 
 def create_user_profile(sender, instance, created, **kwargs):

@@ -19,7 +19,8 @@
 {% endblock %}
 
 {% block twocol-content %}
-<section class="object-summary content-block">
+<section class="object-summary content-block {{ summary_class }}">
+   {% block summary_left %}
     <div class="grid_4 alpha">
         <section class="summary">
             {% if object.description %}
@@ -27,12 +28,16 @@
             {% endif %}
         </section>
     </div>
+    {% endblock %}
 
+    {% block summary_right %}
     <div class="grid_6 omega">
         <section class="object-featured-asset">
             {% featured_asset object 335 %}
         </section>
     </div>
+    {% endblock %}
+
     <div class="object-metadata grid_10">
         <div class="grid_3 alpha">
         {% block metadata_alpha %}
@@ -57,8 +62,8 @@
     </div>
 </section>
 {% block featured %}
-{% if object.featured %}
-{% with object.featured as featured %}
+{% if object.featured_story %}
+{% with object.featured_story as featured %}
 <section class="featured-story content-block">
     <h3>{% trans "Featured Story" %}</h3>
     <div class="grid_3 alpha">
@@ -73,11 +78,11 @@
 {% endif %}
 {% endblock %}
 {% block recent %}
-{% if object.recent_list %} 
-<section class="recent-stories content-block last">
-    <h3>{% trans "Recent Stories" %}</h3>
+{% if story_list %} 
+<section class="story-list content-block last">
+    <h3>{{ story_list_title}}</h3>
     <ul>
-        {% for story in object.recent_list %}
+        {% for story in story_list %}
         <li>
             <div class="grid_2 alpha">
                 <a href="{{ story.get_absolute_url }}">{% featured_asset story 150 %}</a>

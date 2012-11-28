@@ -91,7 +91,35 @@ class AccountSummaryView(TemplateView):
         return self.render_to_response(self.get_context_data())
 
 
-class OrganizationDetailView(ModelIdDetailView):
+class RelatedStoriesDetailView(ModelIdDetailView):
+    """
+    Base view for details of models with related stories
+    
+    Subclasses of this view are meant to be rendered with a template that 
+    inherits from the ``storybase_user/detail_base.html`` template.
+
+    """
+    def get_story_list(self):
+        """
+        Return a list of stories that will be displayed in the view
+        """
+        return self.object.recent_stories()
+
+    def get_story_list_title(self):
+        """
+        Return the title that will be displayed for the story list
+        """
+        return _("Recent Stories")
+
+    def get_context_data(self, **kwargs):
+        """Add related stories to template context"""
+        context = super(RelatedStoriesDetailView, self).get_context_data(**kwargs)
+        context['story_list'] = self.get_story_list()
+        context['story_list_title'] = self.get_story_list_title()
+        return context
+
+
+class OrganizationDetailView(RelatedStoriesDetailView):
     """Display details about an Organization"""
     context_object_name = "organization"
     queryset = Organization.objects.all()
@@ -103,7 +131,7 @@ class OrganizationListView(ListView):
     queryset = Organization.objects.all().order_by('organizationtranslation__name')
 
 
-class ProjectDetailView(ModelIdDetailView):
+class ProjectDetailView(RelatedStoriesDetailView):
     """Display details about a Project"""
     context_object_name = "project"
     queryset = Project.objects.all()
@@ -113,6 +141,40 @@ class ProjectListView(ListView):
     """Display a list of all Projects"""
     context_object_name = "projects"
     queryset = Project.objects.all().order_by('-last_edited')
+
+
+class UserProfileDetailView(RelatedStoriesDetailView):
+    context_object_name = "profile"
+    queryset = UserProfile.objects.all()
+
+    def get_object_id_name(self):
+        return 'profile_id'
+
+    def get_story_list(self):
+        """
+        Return a list of stories that will be displayed in the view
+        """
+        return self.object.all_stories()
+
+    def get_story_list_title(self):
+        """
+        Return the title that will be displayed for the story list
+        """
+        return _("Stories")
+
+    def get_context_data(self, **kwargs):
+        context = super(UserProfileDetailView, self).get_context_data(**kwargs)
+        user = self.object.user
+        if user.projects.count() == 0 and user.organizations.count() == 0:
+            # If there's no associated project or organization, there won't
+            # be any content in the generated HTML.  Give the container
+            # a class so we can hide the container with CSS. I'm taking
+            # this approach rather than adding logic to the template 
+            # because I imagine that we'll soon have some kind of user
+            # profile content like an image or blurb that will always be 
+            # visible and negate the need to hide the element.
+            context['summary_class'] = 'empty'
+        return context
 
 
 @csrf_protect

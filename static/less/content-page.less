@@ -140,7 +140,16 @@
 			color:#333;
 			margin-bottom:0;
 		}
-		
+
+                .object-summary {
+                        &.empty {
+                                // When there's no content in the object
+                                // summary, the container element shouldn't
+                                // take up any space.
+                                display: none;
+                        }
+                }
+
 		.object-featured-asset {
 		}
 		.object img { width:100%; }
@@ -167,12 +176,20 @@
 			dt { clear:left; margin-right:4px }
 			dt:after { content:": " }
 		}
-		
-		&.project .featured-story img { width: 100%; }
-		&.project .recent-stories ul { margin-bottom: 30px; }
-		&.project .recent-stories li { 
+		.featured-story img { width: 100%; }
+		.story-list ul { margin-bottom: 30px; }
+		.story-list li { 
 			margin-bottom: 10px; 
 			overflow:hidden;
+                        div {
+                                // HACK: Force div to have layout, even when
+                                // image is broken, so titles are aligned.
+                                // This might be an edge case in my 
+                                // development instance because stories
+                                // should at least get the default featured
+                                // image
+                                min-height: 1px; 
+                        }
 			img {
 				margin-top:8px; width: 100%;
 			}

@@ -51,3 +51,4 @@ micawber>=0.2.5
 # version is stale
 git+git://github.com/HonzaKral/django-threadedcomments.git
 lxml
+shortuuid
