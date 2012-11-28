@@ -66,7 +66,7 @@
       });
     }
     else {
-      loadContent(id, instance);
+      loadContent(storyID, instance);
     }
   };
   
