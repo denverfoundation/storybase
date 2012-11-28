@@ -7,7 +7,7 @@
 {% block body_title %}{%trans "My Stories" %}{% endblock %}
 
 {% block twocol-content %}
-{% if user.stories.count %}
+{% if stories_list.count %}
 <table class="account-stories">
     <thead>
         <tr>
@@ -15,26 +15,36 @@
             <th>{% trans "Last Edited" %}</th>
             <th>{% trans "Status" %}</th>
             <th></th>
+            <th></th>
+            <th></th>
         </tr>
     </thead>
     <tbody>
-    {% for story in user.stories.all %}
+    {% for story in stories_list %}
         <tr>
             <td><a class="view"  href="{{ story.get_absolute_url }}">{{ story }}</a></td>
-            <td>{{ story.last_edited }}</td>
+            <td class="last-edited">{{ story.last_edited }}</td>
             <td>
               <span class="status">{{ story.status|capfirst }}</span>
+            </td>
               {% if story.status == 'published' %}
-                <a class="button gray unpublish" href="{{ story.get_absolute_url }}unpublish/">Unpublish</a>
+                <td class="action">
+                  <a class="button gray unpublish" href="{{ story.get_absolute_url }}unpublish/">Unpublish</a>
+                </td>
               {% endif %}
               {% if story.status == 'draft' %}
-                <a class="button gray publish" href="{{ story.get_absolute_url }}publish/">Publish</a>
+                <td class="action">
+                  <a class="button gray publish" href="{{ story.get_absolute_url }}publish/">Publish</a>
+                </td>
               {% endif %}
               {% if story.status != 'deleted' %}
-                <a class="button gray delete" href="{{ story.get_absolute_url }}delete/">Delete</a>
+                <td class="action">
+                  <a class="button gray delete" href="{{ story.get_absolute_url }}delete/">Delete</a>
+                </td>
               {% endif %}
+            <td class="action">
+              <a class="button hot build" href="{{ story.builder_url }}">{% trans "Build" %}</a>
             </td>
-            <td><a class="button hot build" href="{{ story.builder_url }}">{% trans "Build" %}</a></td>
         </tr>
     {% endfor %}
     </tbody>
