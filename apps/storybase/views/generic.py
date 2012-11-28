@@ -2,7 +2,7 @@
 try:
     import shortuuid
 except ImportError:
-    shortuuid
+    shortuuid = None
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
