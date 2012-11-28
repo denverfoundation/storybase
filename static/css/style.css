@@ -702,7 +702,7 @@ body.story-builder .byline{margin-top:0.5%;width:100%;-webkit-box-sizing:border-
 body.story-builder .byline input{width:98% !important;}
 body.story-builder .summary{width:100%;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;-ms-box-sizing:border-box;min-height:400px;}
 body.story-builder .edit-story-info .wysihtml5-sandbox{margin-top:0.5% !important;width:100%;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;-ms-box-sizing:border-box;width:100% !important;}
-body.story-builder .edit-call-to-action .wysihtml5-sandbox{margin-top:0.5% !important;}
+body.story-builder .edit-call-to-action .wysihtml5-sandbox{margin-top:0.5% !important;width:90% !important;}
 body.story-builder .call-to-action{width:100%;height:250px;}
 body.story-builder .connected-prompt{width:100%;height:300px;}
 body.story-builder .edit-section{position:relative;margin-left:auto;margin-right:auto;padding-top:2%;width:85%;height:70%;}body.story-builder .edit-section .section-title{margin-top:15px;width:100%;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;-ms-box-sizing:border-box;}
