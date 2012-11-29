@@ -19,8 +19,9 @@ from storybase.fields import ShortTextField
 from storybase.managers import FeaturedManager
 from storybase.models import (TimestampedModel, TranslatedModel,
                               TranslationModel)
-from storybase.utils import unique_slugify
-from storybase_asset.models import FeaturedAssetsMixin
+from storybase.utils import full_url, unique_slugify
+from storybase_asset.models import (DefaultImageMixin, FeaturedAssetsMixin,
+    ImageRenderingMixin)
 
 ADMIN_GROUP_NAME = getattr(settings, 'ADMIN_GROUP_NAME', 'CA Admin')
 """Default name of the administrator group"""
@@ -272,6 +273,29 @@ def add_story_to_project(sender, instance, **kwargs):
             story.save()
 
 
+class ProfileImage(ImageRenderingMixin, DefaultImageMixin, object):
+    """
+    An Assset-like object that abstracts away the retrieval and rendering
+    of a user's profile image
+
+    """
+    def __init__(self, profile, *args, **kwargs):
+        self.title = "Profile image for %s" % (profile.name())
+        self.user = profile.user
+
+    def get_default_img_url_choices(self):
+        return settings.STORYBASE_DEFAULT_USER_IMAGES
+
+    def get_thumbnail_url(self, width=0, height=0, **kwargs):
+        # Go to Gravatar to retrieve the user's profile image
+        # If we provide a default image URL, Gravatar will fall
+        # back to this.
+        #default_url = full_url(self.get_default_img_url(width, height))
+        default_url = 'http://i.imgur.com/XFegc.jpg'
+        from storybase_user.utils import gravatar_url
+        return gravatar_url(self.user.email, default_url, width)
+
+
 class UserProfile(RecentStoriesMixin, models.Model):
     user = models.OneToOneField(User)
 
@@ -315,6 +339,16 @@ class UserProfile(RecentStoriesMixin, models.Model):
 
     def get_stories_queryset(self):
         return self.user.stories.filter(status='published')
+
+    def get_image(self):
+        if not hasattr(self, '_image'):
+            self._image = ProfileImage(self)
+
+        return self._image
+
+    def render_featured_asset(self, format='html', width=500, height=0):
+        image = self.get_image()
+        return image.render_thumbnail_html(width, height)
 
 
 def create_user_profile(sender, instance, created, **kwargs):
