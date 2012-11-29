@@ -162,21 +162,6 @@ class UserProfileDetailView(RelatedStoriesDetailView):
         """
         return _("Stories")
 
-    def get_context_data(self, **kwargs):
-        context = super(UserProfileDetailView, self).get_context_data(**kwargs)
-        user = self.object.user
-        if user.projects.count() == 0 and user.organizations.count() == 0:
-            # If there's no associated project or organization, there won't
-            # be any content in the generated HTML.  Give the container
-            # a class so we can hide the container with CSS. I'm taking
-            # this approach rather than adding logic to the template 
-            # because I imagine that we'll soon have some kind of user
-            # profile content like an image or blurb that will always be 
-            # visible and negate the need to hide the element.
-            context['summary_class'] = 'empty'
-        return context
-
-
 @csrf_protect
 @login_required
 def password_change(request,
