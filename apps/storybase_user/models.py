@@ -294,10 +294,11 @@ class ProfileImage(ImageRenderingMixin, DefaultImageMixin, object):
         if not fb_auths.count():
             return None
 
-        return "https://graph.facebook.com/%s/%picture?width=%d" % (
+        return "https://graph.facebook.com/%s/picture?width=%d" % (
             fb_auths[0].uid, width)
 
     def get_thumbnail_url(self, width=0, height=0, **kwargs):
+        # First, try to get the user's Facebook profile image
         url = self.facebook_image_url(width)
         if url:
             return url
