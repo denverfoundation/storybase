@@ -286,12 +286,26 @@ class ProfileImage(ImageRenderingMixin, DefaultImageMixin, object):
     def get_default_img_url_choices(self):
         return settings.STORYBASE_DEFAULT_USER_IMAGES
 
+    def facebook_image_url(self, width):
+        if not hasattr(self.user, 'social_auth'):
+            return None
+
+        fb_auths = self.user.social_auth.filter(provider='facebook')
+        if not fb_auths.count():
+            return None
+
+        return "https://graph.facebook.com/%s/%picture?width=%d" % (
+            fb_auths[0].uid, width)
+
     def get_thumbnail_url(self, width=0, height=0, **kwargs):
+        url = self.facebook_image_url(width)
+        if url:
+            return url
+
         # Go to Gravatar to retrieve the user's profile image
         # If we provide a default image URL, Gravatar will fall
         # back to this.
-        #default_url = full_url(self.get_default_img_url(width, height))
-        default_url = 'http://i.imgur.com/XFegc.jpg'
+        default_url = full_url(self.get_default_img_url(width, height))
         from storybase_user.utils import gravatar_url
         return gravatar_url(self.user.email, default_url, width)
 
