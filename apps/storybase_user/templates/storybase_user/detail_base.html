@@ -49,7 +49,7 @@
             <h4>{% block metadata_center_title %}{% trans "Contributors" %}{% endblock %}</h4>
             <ul>
                 {% for member in object.members.all %}    
-                <li>{% format_user_name member %}</li>
+                <li><a href="{{ member.get_profile.get_absolute_url }}" title="{% format_user_name member %}">{% format_user_name member %}</a></li>
                 {% endfor %}
             </ul>
             {% endif %}
