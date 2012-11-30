@@ -49,6 +49,62 @@ an HTML snippet.
 CAPTION_TYPES = ('chart', 'image', 'map', 'table')
 """Assets that display a caption"""
 
+
+class ImageRenderingMixin(object):
+    """
+    Mixin for rendering images in Asset-like objects
+    """
+    def get_img_url(self):
+        raise NotImplemented
+
+    def render_img_html(self, url=None, attrs={}):
+        """Render an image tag for this asset""" 
+        if url is None:
+            url = self.get_img_url()
+        el_attrs = dict(src=url, alt=self.title)
+        el_attrs.update(attrs)
+        return mark_safe(img_el(el_attrs))
+
+    def render_thumbnail(self, width=0, height=0, format='html',
+                         **kwargs):
+        """Render a thumbnail-sized viewable representation of an asset 
+
+        Arguments:
+        height -- Height of the thumbnail in pixels
+        width  -- Width of the thumbnail in pixels
+        format -- the format to render the asset. defaults to 'html' which
+                  is presently the only available option.
+
+        """
+        return getattr(self, "render_thumbnail_" + format).__call__(
+            width, height, **kwargs)
+
+    def get_thumbnail_url(self, width=0, height=0, **kwargs):
+        """Return the URL of the Asset's thumbnail"""
+        return None
+
+    def render_thumbnail_html(self, width=0, height=0, **kwargs):
+        """
+        Render HTML for a thumbnail-sized viewable representation of an 
+        asset 
+
+        Arguments:
+        height -- Height of the thumbnail in pixels
+        width  -- Width of the thumbnail in pixels
+
+        """
+        html_class = kwargs.get('html_class', '')
+        url = self.get_thumbnail_url(width, height)
+        output = ("<div class='asset-thumbnail %s' "
+                  "style='height: %dpx; width: %dpx'>"
+                  "Asset Thumbnail</div>" % (html_class, height, width))
+        if url is not None: 
+            output = self.render_img_html(url, {
+                'class': "asset-thumbnail " + html_class})
+            
+        return mark_safe(output)
+
+
 class AssetPermission(PermissionMixin):
     """Permissions for the Asset model"""
     def user_can_change(self, user):
@@ -77,6 +133,7 @@ class AssetPermission(PermissionMixin):
     def user_can_delete(self, user):
         return self.user_can_change(user)
 
+
 class AssetTranslation(TranslationModel):
     """
     Abstract base class for common translated metadata fields for Asset
@@ -95,8 +152,8 @@ class AssetTranslation(TranslationModel):
         return None
 
 
-class Asset(TranslatedModel, LicensedModel, PublishedModel,
-    TimestampedModel, AssetPermission):
+class Asset(ImageRenderingMixin, TranslatedModel, LicensedModel, 
+    PublishedModel, TimestampedModel, AssetPermission):
     """A piece of content included in a story
 
     An asset could be an image, a block of text, an embedded resource
@@ -167,56 +224,6 @@ class Asset(TranslatedModel, LicensedModel, PublishedModel,
             return getattr(self, "render_" + format).__call__(**kwargs)
         except AttributeError:
             return self.__unicode__()
-
-    def get_img_url(self):
-        raise NotImplemented
-
-    def render_img_html(self, url=None, attrs={}):
-        """Render an image tag for this asset""" 
-        if url is None:
-            url = self.get_img_url()
-        el_attrs = dict(src=url, alt=self.title)
-        el_attrs.update(attrs)
-        return mark_safe(img_el(el_attrs))
-
-    def render_thumbnail(self, width=0, height=0, format='html',
-                         **kwargs):
-        """Render a thumbnail-sized viewable representation of an asset 
-
-        Arguments:
-        height -- Height of the thumbnail in pixels
-        width  -- Width of the thumbnail in pixels
-        format -- the format to render the asset. defaults to 'html' which
-                  is presently the only available option.
-
-        """
-        return getattr(self, "render_thumbnail_" + format).__call__(
-            width, height, **kwargs)
-
-    def get_thumbnail_url(self, width=0, height=0, **kwargs):
-        """Return the URL of the Asset's thumbnail"""
-        return None
-
-    def render_thumbnail_html(self, width=0, height=0, **kwargs):
-        """
-        Render HTML for a thumbnail-sized viewable representation of an 
-        asset 
-
-        Arguments:
-        height -- Height of the thumbnail in pixels
-        width  -- Width of the thumbnail in pixels
-
-        """
-        html_class = kwargs.get('html_class', '')
-        url = self.get_thumbnail_url(width, height)
-        output = ("<div class='asset-thumbnail %s' "
-                  "style='height: %dpx; width: %dpx'>"
-                  "Asset Thumbnail</div>" % (html_class, height, width))
-        if url is not None: 
-            output = self.render_img_html(url, {
-                'class': "asset-thumbnail " + html_class})
-            
-        return mark_safe(output)
 
     def dataset_html(self, label=_("Associated Datasets")):
         """Return an HTML list of associated datasets"""
@@ -548,7 +555,34 @@ pre_save.connect(set_date_on_published, sender=HtmlAsset)
 pre_save.connect(set_date_on_published, sender=LocalImageAsset)
 
 
-class FeaturedAssetsMixin(object):
+class DefaultImageMixin(object):
+    """
+    Mixin for models that have some related image that needs a 
+    default value to fall back on
+    """
+    def get_default_img_url_choices(self):
+        # This should be implemented in the subclass
+        raise NotImplemented
+
+    def get_default_img_url(self, width, height):
+        choices = self.get_default_img_url_choices()
+        lgst_width = 0
+        lgst_src = 0
+        for img_width, url in choices.iteritems():
+            if img_width <= width: 
+                lgst_src = url
+                if img_width > lgst_width:
+                    lgst_width = img_width
+        return lgst_src
+
+    def render_default_img_html(self, width=500, height=0, attrs={}):
+        url = self.get_default_img_url(width, height)
+        el_attrs = dict(src=url)
+        el_attrs.update(attrs)
+        return mark_safe(img_el(el_attrs))
+
+
+class FeaturedAssetsMixin(DefaultImageMixin):
     """
     Mixins for models that have a featured asset
     
@@ -567,23 +601,6 @@ class FeaturedAssetsMixin(object):
             return self.featured_assets.select_subclasses()[0]
 
         return None
-
-    def get_default_img_url(self, width, height):
-        choices = self.get_default_img_url_choices()
-        lgst_width = 0
-        lgst_src = 0
-        for img_width, url in choices.iteritems():
-            if img_width <= width: 
-                lgst_src = url
-                if img_width > lgst_width:
-                    lgst_width = img_width
-        return lgst_src
-
-    def render_default_img_html(self, width=500, height=0, attrs={}):
-        url = self.get_default_img_url(width, height)
-        el_attrs = dict(src=url)
-        el_attrs.update(attrs)
-        return mark_safe(img_el(el_attrs))
 
     def render_featured_asset(self, format='html', width=500, height=0):
         """Render a representation of the story's featured asset"""
