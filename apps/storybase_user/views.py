@@ -43,6 +43,11 @@ class AccountNotificationsView(UpdateView):
 class AccountStoriesView(TemplateView):
     template_name = "storybase_user/account_stories.html"
 
+    def get_context_data(self, **kwargs):
+      context = super(AccountStoriesView, self).get_context_data(**kwargs)
+      context["stories_list"] = self.request.user.stories.exclude(status='deleted');
+      return context
+
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(AccountStoriesView, self).dispatch(*args, **kwargs)

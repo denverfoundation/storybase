@@ -514,6 +514,8 @@ body.base-template .comment-user-name{font-weight:bold;}
 body.base-template.accounts.login h2,body.base-template.accounts.register h2{text-align:left;margin-bottom:20px;}
 body.base-template.accounts.login ul,body.base-template.accounts.register ul{margin-bottom:20px;}
 body.base-template.accounts.login #main form,body.base-template.accounts.register #main form{width:50%;}body.base-template.accounts.login #main form input[type=text],body.base-template.accounts.register #main form input[type=text],body.base-template.accounts.login #main form input[type=password],body.base-template.accounts.register #main form input[type=password]{width:40%;}
+body.base-template table.account-stories td.last-edited{white-space:nowrap;}
+body.base-template table.account-stories td.action{text-align:center;}
 body.base-template .shell{width:1000px;margin:0 auto;position:relative;}
 body.base-template #header{height:165px;position:relative;z-index:2501;}
 body.base-template #container{width:100%;}
@@ -523,6 +525,13 @@ body.base-template #main .bottom{margin-bottom:209px;}body.base-template #main .
 body.base-template #main .bottom .right{width:721px;}
 body.base-template .content-page{overflow:hidden;}
 body.base-template .twocol .twocol-content{overflow:hidden;}
+table{border-spacing:0;border-collapse:collapse;font-family:'Times New Roman',Georgia,Serif;font-size:14px;color:#444444;line-height:1.1em;}table p{margin-bottom:1em;}
+table dd p,table dt p,table li p{margin-bottom:0;}
+table a{color:#20c6fd;}table a:visited{color:#19a3d1;}
+table thead{background:black;color:white;font-size:1em;text-align:left;font-family:'Museo300Regular';font-weight:normal;}table thead th{padding:1em;margin:0;border:0;}
+table tbody tr{border-bottom:1px solid white;background:#f0efef;}
+table tbody tr:nth-child(odd),table tbody tr.odd{background:#f8f8f8;}
+table tbody td{padding:1em;}
 body.story-viewer{margin:0;font-size:13px;line-height:1.231;}body.story-viewer article,body.story-viewer aside,body.story-viewer details,body.story-viewer figcaption,body.story-viewer figure,body.story-viewer footer,body.story-viewer header,body.story-viewer hgroup,body.story-viewer nav,body.story-viewer section{display:block;}
 body.story-viewer audio,body.story-viewer canvas,body.story-viewer video{display:inline-block;*display:inline;*zoom:1;}
 body.story-viewer audio:not([controls]){display:none;}
