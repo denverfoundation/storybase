@@ -92,7 +92,7 @@
           </nav>
 
           {% fullurl story.get_absolute_url as full_story_url %}
-          {% addthis_widget full_story_url %}
+          <a href="#" class="storybase-share-widget" data-story-id="{{ story.slug }}" data-options='{"appendeeSelector": "#footer", "alignment": "top right" }'>Share This Story</a>
         </footer>
     </div>
 
@@ -108,6 +108,7 @@
     <script src="{{ STATIC_URL }}js/libs/handlebars-1.0.0.beta.6.js"></script>
     <script src="{{ STATIC_URL }}js/libs/d3.v2.min.js"></script>
     <script src="{{ STATIC_URL }}js/libs/jquery.condense.js"></script>
+    <script src="{{ STATIC_URL }}js/jquery.storybaseshare.js"></script>
 
     <script src="{{ STATIC_URL }}js/models.js"></script>
     <script src="{{ STATIC_URL }}js/utils.js"></script>

@@ -57,23 +57,25 @@
 	cursor:pointer;
         text-decoration: none;
 	text-shadow:0 -1px 0 rgba(0, 0, 0, .4);
+	display:inline-block;
 
 	&.right {
 		margin-left:8px;
+	}
+	&:hover {
+		text-decoration:none !important;
 	}
 }
 
 .button-style(hot) {
   background:@orange;
   &:hover {
-    text-decoration:none;
     background:darken(desaturate(@orange, 20%), 20%);
   }
 }
 .button-style(cool) {
   background:@highlight-blue;
   &:hover {
-    text-decoration:none;
     background:darken(desaturate(@highlight-blue, 20%), 20%);
   }
 }
@@ -81,7 +83,6 @@
 .button-style(gray) {
   background:@medium-gray;
   &:hover {
-    text-decoration:none;
     background:@orange;
   }
 }
@@ -324,6 +325,8 @@ body.base-template {
 
 @import "tables.less";
 
+
+@import "storybase-share.less";
 
 body.story-viewer {
 	
