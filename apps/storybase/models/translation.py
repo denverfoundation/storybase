@@ -1,3 +1,5 @@
+import logging
+
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
@@ -73,7 +75,15 @@ class TranslatedModel(models.Model):
                         except ObjectDoesNotExist:
                             # If all else fails, get the first
                             # translation we know about
-                            translated_object = translated_manager.all()[0]
+                            try:
+			        translated_object = translated_manager.all()[0]
+                            except IndexError:
+                                # Massive fail. There aren't any translations
+                                # for some reason.  This shouldn't happen.
+                                # Log an error
+                                logger = logging.getLogger('storybase.models.translation')
+                                logger.error("No translations found for %s model with pk %s" % (self.__class__.__name__, self.pk))
+                                return None
 
             finally:
                 self._translation_cache[code] = translated_object
