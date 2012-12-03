@@ -1780,8 +1780,46 @@ storybase.builder.views.LastSavedView = Backbone.View.extend({
     return events;
   },
 
+  /**
+   * Make an ISO-8601 formatted string adhere to the 'strict' standard.
+   *
+   * In our case, this just means removing the microseconds from the 
+   * string.
+   */
+  _makeStrict: function(dateStr) {
+    var re = /\.\d+/;
+
+    return dateStr.replace(re, "");
+  },
+
+  /**
+   * Convert an ISO-8601 formatted date string into a Date object.
+   *
+   * Takes into account minor browser differences.
+   */
+  parseDate: function(date) {
+    var parsedDate;
+
+    if (_.isDate(date)) {
+      // If the argument is already a date object, just return it
+      return date;
+    }
+
+    // Otherwise, it's a string and we need to make a Date object out of it
+    parsedDate = new Date(date);
+    if (!isNaN(parsedDate.getTime())) {
+      // We successfully parsed the date string. Return the Date object
+      return parsedDate;
+    }
+
+    // The date wasn't successfully parsed, this is likely because the browser
+    // doesn't support microseconds in the ISO-8601 datestring as returned
+    // by the API (IE).
+    return new Date(this._makeStrict(date));
+  },
+
   initialize: function() {
-    this.lastSaved = !!this.options.lastSaved ? (_.isDate(this.options.lastSaved) ? this.options.lastSaved : new Date(this.options.lastSaved)) : null;
+    this.lastSaved = !!this.options.lastSaved ? this.parseDate(this.options.lastSaved) : null;
 
     this.dispatcher = this.options.dispatcher;
     this.dispatcher.on('save:section', this.updateLastSaved, this);
