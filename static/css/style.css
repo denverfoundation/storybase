@@ -482,7 +482,7 @@ body.base-template .content-page.object-detail .col{float:left;}body.base-templa
 body.base-template .content-page.object-detail .col.right{width:300px;}
 body.base-template .content-page.object-detail hr{border:0;height:1px;padding:7px 0;background:url('../img/h3-line.png') repeat-x;margin-bottom:20px;}
 body.base-template .content-page.object-detail h3,body.base-template .content-page.object-detail h4{background:none;text-align:left;font-family:'Museo300Regular';font-weight:normal;margin-bottom:12px;}
-body.base-template .content-page.object-detail h4{font-size:19px;color:#333;margin-bottom:0;}
+body.base-template .content-page.object-detail h4{font-size:18px;color:#333;margin-bottom:0;}
 body.base-template .content-page.object-detail .object img{width:100%;}
 body.base-template .content-page.object-detail .object #launch-story-viewer{margin:5px 0;font-size:16px;}
 body.base-template .content-page.object-detail .object+hr,body.base-template .content-page.object-detail .story-outreach{clear:left;}
