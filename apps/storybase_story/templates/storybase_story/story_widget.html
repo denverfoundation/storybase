@@ -22,16 +22,6 @@
                 <h3><a href="{{ viewer_url }}" title="{{ story.title }}" class="story-link" onclick="window.open('{{ viewer_url }}'); return false;">{{ story.title }}</a></h3>
                 <p class="byline">{{ story.byline }}</p>
                 {{ story.summary|firstparagraph|safe }}
-                <dl class="story-attributes">
-                    <dt><p>{% trans "Languages" %}</p></dt>
-                    <dd>
-                        <ul class="languages">
-                            {% for lang in story.get_language_urls %}
-                            <li><p><a href="{% fullurl lang.url %}" class="secondary language-{{ lang.id }}" onclick="window.open('{% fullurl lang.url %}'); return false;">{{ lang.name }}</a></p></li>
-                            {% endfor %} 
-                        </ul>
-                    </dd>
-                </dl>
                 <a href="{{ detail_url}}" title="{{ story.title }}" class="story-link" onclick="window.open('{{ detail_url }}'); return false;">{% trans "View this story on" %} {{ storybase_site_name }}</a>
             </div>
         </div>

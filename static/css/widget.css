@@ -2,7 +2,5 @@
 .storybase-story-embed h3,.storybase-story-embed dd,.storybase-story-embed p,.storybase-story-embed ul,.storybase-story-embed li{margin:0;padding:0;}
 .storybase-story-embed ul{list-style:none;}
 .storybase-story-embed h3{font-weight:bold;text-align:center;}
-.storybase-story-embed .story-link{color:#20C6FD;font-size:16px;line-height:16px;padding-top:8px;font-family:'Museo300Regular';text-decoration:none;}
+.storybase-story-embed .story-link{display:block;padding-top:8px;color:#20C6FD;font-size:16px;line-height:16px;font-family:'Museo300Regular';text-decoration:none;}
 .storybase-story-embed .byline{font-style:italic;margin-bottom:0.9em;}
-.storybase-story-embed dt{font-weight:bold;}
-.storybase-story-embed .languages a{color:#0252aa;text-decoration:none;}
