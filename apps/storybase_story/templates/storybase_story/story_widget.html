@@ -21,7 +21,7 @@
             <div>
                 <h3><a href="{{ viewer_url }}" title="{{ story.title }}" class="story-link" onclick="window.open('{{ viewer_url }}'); return false;">{{ story.title }}</a></h3>
                 <p class="byline">{{ story.byline }}</p>
-                {{ story.summary|firstparagraph|safe }}
+		<div class="summary">{{ story.summary|firstparagraph|safe }}</div>
                 <a href="{{ detail_url}}" title="{{ story.title }}" class="story-link" onclick="window.open('{{ detail_url }}'); return false;">{% trans "View this story on" %} {{ storybase_site_name }}</a>
             </div>
         </div>
