@@ -1,3 +1,5 @@
+import re
+
 from django.conf import settings
 from django.template import (Node, Library, TemplateSyntaxError, Variable,
                              VariableDoesNotExist)
@@ -15,6 +17,20 @@ def firstparagraph(value):
     return first_paragraph(value)
 # TODO: Figure out why is_safe isn't being honored
 firstparagraph.is_safe = True
+
+
+@register.filter
+def classname(value):
+    """Return the class name of an object"""
+    return value.__class__.__name__
+
+
+camel_re = re.compile('([a-z])([A-Z])')
+@register.filter
+def camelsplit(value):
+    """Split a camel-cased string into a list"""
+    return camel_re.sub(r'\1_\2', value).split('_')
+
 
 class StorybaseConfNode(Node):
     def __init__(self, attr):

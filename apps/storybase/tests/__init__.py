@@ -22,6 +22,24 @@ class ContextProcessorTest(TestCase):
         self.assertEqual(t.render(c), contact_email)
 
 
+class FilterTest(TestCase):
+    def test_classname(self):
+        """Test the classname filter"""
+        class MockClass(object):
+            pass
+        t = Template("{% load storybase_tags %}{{ object|classname }}")
+        c = Context({'object': MockClass(),})
+        output = "MockClass"
+        self.assertEqual(t.render(c), output)
+
+
+    def test_camelsplit(self):
+        t = Template("{% load storybase_tags %}{{ s|camelsplit|first }}") 
+        c = Context({'s': "UserProfile"})
+        output = "User"
+        self.assertEqual(t.render(c), output)
+
+
 class TemplateTagTest(TestCase):
     def setUp(self):
         Site.objects.all().delete()
