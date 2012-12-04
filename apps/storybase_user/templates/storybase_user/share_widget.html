@@ -1,0 +1,9 @@
+{% load storybase_tags storybase_addthis i18n %}<div class="share-widget">
+    {% fullurl object.get_absolute_url as object_url %}
+    <dl>
+      <dt>{% trans "Share on popular social networks" %}</dt>
+      <dd>{% addthis_widget url=object_url,size="32x32",include_js=False %}</dd>
+      <dt>{% trans "Copy a link to the" %} {{ object|classname|camelsplit|first|lower }}</dt>
+      <dd><input name="share-url" type="text" value="{{ object_url }}" /></dd>
+    </dl>
+</div>

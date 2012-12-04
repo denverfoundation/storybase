@@ -167,6 +167,29 @@ class UserProfileDetailView(RelatedStoriesDetailView):
         """
         return _("Stories")
 
+
+class ShareWidgetView(ModelIdDetailView):
+    """
+    Base view for Widget for sharing a project, organization or user
+    """
+    template_name = 'storybase_user/share_widget.html'
+
+
+class OrganizationShareWidgetView(ShareWidgetView):
+    model = Organization 
+
+
+class ProjectShareWidgetView(ShareWidgetView):
+    model = Project
+
+
+class UserProfileShareWidgetView(ShareWidgetView):
+    model = UserProfile
+
+    def get_object_id_name(self):
+        return 'profile_id'
+
+
 @csrf_protect
 @login_required
 def password_change(request,

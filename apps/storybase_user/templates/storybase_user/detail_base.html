@@ -1,6 +1,6 @@
 {% extends "twocol.html" %}
 
-{% load i18n storybase_tags storybase_user_tags storybase_addthis %}
+{% load i18n storybase_tags storybase_user_tags %}
 
 {% block head_title %}{{ object.name }}{{ block.super }}{% endblock %}
 
@@ -15,7 +15,7 @@
    <ul class="navroot">{% show_menu 1 %}</ul>
 </nav>
 {% endcomment %}
-{% addthis_widget %}
+<a href="#" class="storybase-share-widget" data-story-id="{{ object.slug }}" data-options='{"widgetUrl": "{{ object.get_absolute_url }}share-widget/"}'>{% trans "Share This" %} {{ object|classname|camelsplit|first }}</a>
 {% endblock %}
 
 {% block twocol-content %}
