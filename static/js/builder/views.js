@@ -1232,7 +1232,8 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         position: 6,
         title: gettext("Building a story takes five simple steps."),
         description: this.template['workflow-step-guider'](),
-        next: 'section-list-guider'
+        next: 'section-list-guider',
+        xButton: true
       });
       guiders.createGuider({
         id: 'section-list-guider',
@@ -1252,7 +1253,8 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         // TODO: Remove reference to "Story Sections" tab
         description: gettext('This bar shows the sections in your story.'),
         prev: 'workflow-step-guider',
-        next: 'section-thumbnail-guider'
+        next: 'section-thumbnail-guider',
+        xButton: true
       });
       guiders.createGuider({
         id: 'section-thumbnail-guider',
@@ -1271,7 +1273,8 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         title: gettext("Select the section you want to edit."),
         description: gettext("Click on a section to edit it. The section you are actively editing is highlighted."),
         prev: 'section-list-guider',
-        next: 'section-manipulation-guider'
+        next: 'section-manipulation-guider',
+        xButton: true
       });
       guiders.createGuider({
         id: 'section-manipulation-guider',
@@ -1290,7 +1293,8 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         title: gettext("You can also add, move or delete sections."),
         description: this.template['section-manipulation-guider'](),
         prev: 'section-thumbnail-guider',
-        next: 'preview-guider'
+        next: 'preview-guider',
+        xButton: true
       });
       guiders.createGuider({
         id: 'preview-guider',
@@ -1309,7 +1313,8 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         title: gettext("Preview your story at any time."),
         description: gettext("Clicking here lets you preview your story in a new window"),
         prev: 'section-manipulation-guider',
-        next: 'exit-guider'
+        next: 'exit-guider',
+        xButton: true
       });
       guiders.createGuider({
         id: 'exit-guider',
@@ -1328,7 +1333,8 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         title: gettext("You can leave your story at any time and come back later."),
         description: this.template['exit-guider'](),
         prev: 'preview-guider',
-        next: 'help-guider'
+        next: 'help-guider',
+        xButton: true
       });
       guiders.createGuider({
         attachTo: '#drawer-controls [title="Help"]',
@@ -1352,7 +1358,8 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         onHide: function() {
           that.dispatcher.trigger('do:hide:help');
         },
-        next: 'tooltip-guider'
+        next: 'tooltip-guider',
+        xButton: true
       });
       guiders.createGuider({
         attachTo: '#workflow-step #build',
@@ -1382,7 +1389,8 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
             expires: 365
           });
           $('#workflow-step #build').triggerHandler('mouseout');
-        }
+        },
+        xButton: true
       });
       guiders.show('workflow-step-guider');
     }

@@ -841,8 +841,8 @@ body.story-builder .guider a.guider_button:hover{text-decoration:none !important
 body.story-builder .guider a.guider_button:hover{background:#147fa3;}
 body.story-builder .guider .guider_content{padding-top:10px;}
 body.story-builder .guider .guider_arrow{background:none;top:-11px;text-shadow:0 -1px 0 #20c6fd;font-size:54px;color:#eafaff;font-family:"FontAwesome";}body.story-builder .guider .guider_arrow.guider_arrow_up:after{content:"\f0d8";}
-body.story-builder .guider .guider_close{cursor:pointer;color:#20c6fd;position:absolute;top:-10px;right:-10px;}body.story-builder .guider .guider_close:hover{color:#0289b5;}
-body.story-builder .guider .guider_close:after{font-family:"FontAwesome";content:"\f057";font-size:26px;width:26px;height:26px;}
+body.story-builder .guider .x_button{cursor:pointer;color:#20c6fd;position:absolute;top:0px;right:0px;}body.story-builder .guider .x_button:hover{color:#0289b5;}
+body.story-builder .guider .x_button:after{font-family:"FontAwesome";content:"\f057";font-size:26px;width:26px;height:26px;}
 .story-viewer{background-color:#fff;}.story-viewer h1,.story-viewer h2{padding:1.5% 0;}
 .story-viewer h2{font-size:2.5em;color:#555;}
 .story-viewer p{padding-bottom:1.5%;}
