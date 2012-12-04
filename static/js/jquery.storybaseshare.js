@@ -3,7 +3,7 @@
   var defaultOptions = {
     markup: '<h3>Loading&hellip;</h3>',
     storyID: null,
-    widgetUrl: '/stories/<id>/share-widget',
+    widgetUrl: '/stories/<id>/share-widget/',
     header: '<header>Sharing Options<span class="close"></span></header>',
     appendeeSelector: 'body',
     addThisScriptTag: '<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js?domready=1"></script>',
