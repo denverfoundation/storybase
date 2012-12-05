@@ -113,6 +113,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
     buildViewOptions = _.defaults({
       assetTypes: this.options.assetTypes,
       containerTemplates: this.options.containerTemplates,
+      forceTour: this.options.forceTour,
       layouts: this.options.layouts,
       help: this.options.help,
       prompt: this.options.prompt,
@@ -1215,11 +1216,67 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
     }, this);
   },
 
+  /**
+   * Checks if the tour should be shown
+   */
+  showTour: function() {
+    if (_.isUndefined(guiders)) {
+      return false;
+    }
+
+    if (this.options.forceTour) {
+      return true;
+    }
+  
+    if ($.cookie('storybase_show_builder_tour') === 'false') {
+      return false;
+    }
+
+    return this.options.showTour;
+  },
+
   show: function() {
     var that = this;
-    var showTour = _.isUndefined(guiders) ? false : ($.cookie('storybase_show_builder_tour') === 'false' ? false : true) && this.options.showTour;
+    /**
+     * Move a guider's element to the left or right.
+     */
+    var nudge = function($guiderEl, amount) {
+      var guiderElemLeft = parseInt($guiderEl.css("left").replace('px', ''));
+      var myGuiderArrow = $guiderEl.find(".guider_arrow");
+      var arrowElemLeft = parseInt(myGuiderArrow.css("left").replace('px', ''));
+      $guiderEl.css("left", (guiderElemLeft + amount) + "px");
+      myGuiderArrow.css("left", (arrowElemLeft - amount) + "px");
+    };
+    /**
+     * Detect if a guider's element falls outside of the window and push it
+     * in place if it does.
+     *
+     * This is meant to be bound to the guider element's 'guiders.show' event 
+     */
+    var nudgeIntoWindow = function() {
+      var $guiderEl = $(this);
+      var windowWidth = $(window).width();
+      var guiderOffset = $guiderEl.offset();
+      var guiderElemWidth = $guiderEl.outerWidth();
+      var isGuiderRight = (guiderOffset.left + guiderElemWidth > windowWidth);
+      var isGuiderLeft = (guiderOffset.left < 0);
+      // Check if the guider ends up to the left or to the right of the 
+      // window and nudge it over until it fits
+      if (isGuiderRight) {
+        nudge($guiderEl, windowWidth - guiderOffset.left - guiderElemWidth);
+      }
+      if (isGuiderLeft) {
+        nudge($guiderEl, 0 - guiderOffset.left);
+      }
+      // Unbind this event from the element
+      $guiderEl.unbind("guiders.show");
+    };
 
-    if (showTour) { 
+    var bindNudge = function(myGuider) {
+      $(myGuider.elem).bind("guiders.show", nudgeIntoWindow);
+    }; 
+    
+    if (this.showTour()) { 
       guiders.createGuider({
         id: 'workflow-step-guider',
         attachTo: '#workflow-step #build',
@@ -1233,7 +1290,8 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         title: gettext("Building a story takes five simple steps."),
         description: this.template['workflow-step-guider'](),
         next: 'section-list-guider',
-        xButton: true
+        xButton: true,
+        onShow: bindNudge 
       });
       guiders.createGuider({
         id: 'section-list-guider',
@@ -1254,7 +1312,8 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         description: gettext('This bar shows the sections in your story.'),
         prev: 'workflow-step-guider',
         next: 'section-thumbnail-guider',
-        xButton: true
+        xButton: true,
+        onShow: bindNudge
       });
       guiders.createGuider({
         id: 'section-thumbnail-guider',
@@ -1274,7 +1333,8 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         description: gettext("Click on a section to edit it. The section you are actively editing is highlighted."),
         prev: 'section-list-guider',
         next: 'section-manipulation-guider',
-        xButton: true
+        xButton: true,
+        onShow: bindNudge
       });
       guiders.createGuider({
         id: 'section-manipulation-guider',
@@ -1294,7 +1354,8 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         description: this.template['section-manipulation-guider'](),
         prev: 'section-thumbnail-guider',
         next: 'preview-guider',
-        xButton: true
+        xButton: true,
+        onShow: bindNudge
       });
       guiders.createGuider({
         id: 'preview-guider',
@@ -1314,7 +1375,8 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         description: gettext("Clicking here lets you preview your story in a new window"),
         prev: 'section-manipulation-guider',
         next: 'exit-guider',
-        xButton: true
+        xButton: true,
+        onShow: bindNudge
       });
       guiders.createGuider({
         id: 'exit-guider',
@@ -1334,7 +1396,8 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         description: this.template['exit-guider'](),
         prev: 'preview-guider',
         next: 'help-guider',
-        xButton: true
+        xButton: true,
+        onShow: bindNudge
       });
       guiders.createGuider({
         attachTo: '#drawer-controls [title="Help"]',
@@ -1352,10 +1415,11 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         id: 'help-guider',
         title: gettext("Get tips on how to make a great story."),
         description: gettext("Clicking the \"Help\" button shows you tips for the section you're currently editing. You can also click on the \"?\" icon next to an asset to find more help."),
-        onShow: function() {
+        onShow: function(myGuider) {
+          bindNudge(myGuider);
           that.dispatcher.trigger('do:show:help');
         },
-        onHide: function() {
+        onHide: function(myGuider) {
           that.dispatcher.trigger('do:hide:help');
         },
         next: 'tooltip-guider',
@@ -1378,7 +1442,8 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         id: 'tooltip-guider',
         title: gettext("Need even more tips?"),
         description: gettext("You can find out more about many of the buttons and links by hovering over them with your mouse."),
-        onShow: function() {
+        onShow: function(myGuider) {
+          bindNudge(myGuider);
           $('#workflow-step #build').triggerHandler('mouseover');
         },
         onHide: function() {
@@ -1420,6 +1485,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this._relatedStoriesSaved = false;
     this._tour = new storybase.builder.views.BuilderTour({
       dispatcher: this.dispatcher,
+      forceTour: this.options.forceTour,
       showTour: this.options.showTour
     });
 

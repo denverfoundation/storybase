@@ -460,6 +460,9 @@ class StoryBuilderView(DetailView):
             'showSharing': True,
             # Show the builder tour
             'showTour': True,
+            # Force showing the tour, even if the cookie has been set
+            'forceTour': getattr(settings, 'STORYBASE_FORCE_BUILDER_TOUR',
+                                 False),
             # Endpoint for fetching license information
             'licenseEndpoint': reverse("api_cc_license_get"),
             # Site name (used for re-writing title)
