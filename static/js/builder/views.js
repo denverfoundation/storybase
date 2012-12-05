@@ -747,7 +747,7 @@ storybase.builder.views.ClickableItemsView = Backbone.View.extend({
   },
 
   getItemClass: function(itemOptions) {
-    var cssClass = itemOptions.class || "";
+    var cssClass = itemOptions.className || "";
     var enabled = this.getPropertyValue(itemOptions, 'enabled', true);
     var selected = this.getPropertyValue(itemOptions, 'selected', false); 
 
@@ -765,7 +765,7 @@ storybase.builder.views.ClickableItemsView = Backbone.View.extend({
   renderItem: function(itemOptions) {
     this.$el.append(this.itemTemplate({
       id: itemOptions.id,
-      class: this.getItemClass(itemOptions),
+      className: this.getItemClass(itemOptions),
       title: itemOptions.title,
       text: itemOptions.text,
       href: this.getItemHref(itemOptions)
@@ -1131,7 +1131,7 @@ storybase.builder.views.StoryTemplateView = Backbone.View.extend({
       // Use this instead of the className property so we can set the class
       // dynamically when the view is instantiated based on the model's 
       // slug
-      class: 'template ' + this.model.get('slug') 
+      'class': 'template ' + this.model.get('slug') 
     };
   },
 
@@ -1451,7 +1451,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     if (this.options.visibleSteps.data) {
       navViewOptions.items.push({
         id: 'workflow-nav-data-fwd',
-        class: 'next',
+        className: 'next',
         title: gettext("Add Data to Your Story"),
         text: gettext("Next"),
         path: 'data/',
@@ -1461,7 +1461,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     else if (this.options.visibleSteps.publish) {
       navViewOptions.items.push({
         id: 'workflow-nav-publish-fwd',
-        class: 'next',
+        className: 'next',
         title: gettext("Publish My Story"),
         text: gettext("Next"),
         path: 'publish/',
@@ -3827,14 +3827,14 @@ storybase.builder.views.DataView = Backbone.View.extend(
         items: [
           {
             id: 'workflow-nav-build-back',
-            class: 'prev',
+            className: 'prev',
             title: gettext("Continue Writing Story"),
             text: gettext("Previous"),
             path: ''
           },
           {
             id: 'workflow-nav-tag-fwd',
-            class: 'next',
+            className: 'next',
             title: gettext("Tag"),
             text: gettext("Next"),
             path: 'tag/'
@@ -3996,14 +3996,14 @@ storybase.builder.views.ReviewView = Backbone.View.extend(
         items: [
           {
             id: 'workflow-nav-tag-back',
-            class: 'prev',
+            className: 'prev',
             title: gettext("Back to Tag"),
             text: gettext("Previous"),
             path: 'tag/'
           },
           {
             id: 'workflow-nav-publish-fwd',
-            class: 'next',
+            className: 'next',
             title: gettext("Publish My Story"),
             text: gettext("Next"),
             path: 'publish/'
@@ -4060,14 +4060,14 @@ storybase.builder.views.TaxonomyView = Backbone.View.extend(
         items: [
           {
             id: 'workflow-nav-data-back',
-            class: 'prev',
+            className: 'prev',
             title: gettext("Back to Add Data"),
             text: gettext("Previous"),
             path: 'data/'
           },
           {
             id: 'workflow-nav-review-fwd',
-            class: 'next',
+            className: 'next',
             title: gettext("Review"),
             text: gettext("Next"),
             path: 'review/'
@@ -4835,7 +4835,7 @@ storybase.builder.views.PublishView = Backbone.View.extend(
       if (this.options.visibleSteps.review) {
         navViewOptions.items.push({
           id: 'workflow-nav-build-back',
-          class: 'prev',
+          className: 'prev',
           title: gettext("Back to Review"),
           text: gettext("Previous"), 
           path: 'review/'
@@ -4844,7 +4844,7 @@ storybase.builder.views.PublishView = Backbone.View.extend(
       else {
         navViewOptions.items.push({
           id: 'workflow-nav-review-back',
-          class: 'prev',
+          className: 'prev',
           title: gettext("Continue Writing Story"),
           text: gettext("Previous"),
           path: ''
