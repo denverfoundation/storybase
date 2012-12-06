@@ -469,7 +469,7 @@ body.base-template .content-page.generic .content-block .faq-section{text-align:
 body.base-template .content-page.generic .content-block .faq-question{cursor:pointer;border-top:1px solid #ddd;margin-bottom:0;color:#fe9703;}body.base-template .content-page.generic .content-block .faq-question:before{padding-right:0.66em;}
 body.base-template .content-page.generic .page-pull{margin-bottom:31px !important;}body.base-template .content-page.generic .page-pull h1,body.base-template .content-page.generic .page-pull h2,body.base-template .content-page.generic .page-pull h3,body.base-template .content-page.generic .page-pull h4,body.base-template .content-page.generic .page-pull h5{text-align:left;}
 body.base-template .content-page.generic .page-pull h4{background:none !important;margin-bottom:10px !important;font-family:'MuseoSlab500Regular';}body.base-template .content-page.generic .page-pull h4 a{color:#fe9703;}
-body.base-template .content-page.generic .page-pull p{color:#5a5a5a;line-height:16px;padding-bottom:12px;}body.base-template .content-page.generic .page-pull p a{color:#20c6fd;}
+body.base-template .content-page.generic .page-pull p{color:#5a5a5a;padding-bottom:12px;}body.base-template .content-page.generic .page-pull p a{color:#20c6fd;}
 body.base-template .content-page.generic .page-pull p a.read-more{font-size:14px;color:#fe9703;font-family:'MuseoSlab500Regular';}
 body.base-template .content-page.generic .page-pull p strong{font-size:14px;color:#666;}
 body.base-template .content-page.object-detail a{color:#20c6fd;}
