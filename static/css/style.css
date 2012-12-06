@@ -326,6 +326,7 @@ body.base-template h2{font-size:28.8px;color:#5a5a5a;text-align:center;font-fami
 body.base-template h3{font-size:25.2px;color:#999999;text-align:center;font-family:'Museo300Regular';font-weight:normal;}
 body.base-template h4{font-size:21.599999999999998px;color:#999999;text-align:center;font-family:'Museo300Regular';font-weight:normal;}
 body.base-template h5{font-size:18px;color:#20c6fd;text-align:center;font-family:'Museo300Regular';font-weight:normal;}
+body.base-template h1,body.base-template h1,body.base-template h2,body.base-template h3,body.base-template h4,body.base-template h5{line-height:1.4em;}
 body.base-template .content-block h2{font-size:21.599999999999998px;}
 body.base-template .content-block h3{font-size:18px;}
 body.base-template .content-block h4{font-size:14.4px;}
@@ -610,6 +611,7 @@ body.story-builder #app h2{font-size:28.8px;color:#5a5a5a;text-align:center;font
 body.story-builder #app h3{font-size:25.2px;color:#999999;text-align:center;font-family:'Museo300Regular';font-weight:normal;}
 body.story-builder #app h4{font-size:21.599999999999998px;color:#999999;text-align:center;font-family:'Museo300Regular';font-weight:normal;}
 body.story-builder #app h5{font-size:18px;color:#20c6fd;text-align:center;font-family:'Museo300Regular';font-weight:normal;}
+body.story-builder #app h1,body.story-builder #app h1,body.story-builder #app h2,body.story-builder #app h3,body.story-builder #app h4,body.story-builder #app h5{line-height:1.4em;}
 body.story-builder #app h1,body.story-builder #app h2,body.story-builder #app h3,body.story-builder #app h4,body.story-builder #app h5{text-align:left;font-family:'Museo300Regular';font-weight:normal;margin:0.6em 0;color:#5a5a5a;}body.story-builder #app h1 a,body.story-builder #app h2 a,body.story-builder #app h3 a,body.story-builder #app h4 a,body.story-builder #app h5 a{color:#5a5a5a;text-decoration:none;}body.story-builder #app h1 a:hover,body.story-builder #app h2 a:hover,body.story-builder #app h3 a:hover,body.story-builder #app h4 a:hover,body.story-builder #app h5 a:hover{color:#fe9703;}
 body.story-builder #app p+h1,body.story-builder #app ol+h1,body.story-builder #app ul+h1,body.story-builder #app dl+h1,body.story-builder #app p+h2,body.story-builder #app ol+h2,body.story-builder #app ul+h2,body.story-builder #app dl+h2,body.story-builder #app p+h3,body.story-builder #app ol+h3,body.story-builder #app ul+h3,body.story-builder #app dl+h3,body.story-builder #app p+h4,body.story-builder #app ol+h4,body.story-builder #app ul+h4,body.story-builder #app dl+h4,body.story-builder #app p+h5,body.story-builder #app ol+h5,body.story-builder #app ul+h5,body.story-builder #app dl+h5{margin-top:1.2em;}
 body.story-builder #app input[type=reset],body.story-builder #app input[type=submit],body.story-builder #app input[type=cancel],body.story-builder #app button[type=reset],body.story-builder #app button[type=submit],body.story-builder #app button[type=cancel]{margin-right:1em;float:left;}
@@ -797,6 +799,7 @@ body.story-builder .guider .x_button:after{font-family:"FontAwesome";content:"\f
 .story-viewer #body h3{font-size:25.2px;color:#999999;text-align:left;font-family:'Museo300Regular';font-weight:normal;}
 .story-viewer #body h4{font-size:21.599999999999998px;color:#999999;text-align:left;font-family:'Museo300Regular';font-weight:normal;}
 .story-viewer #body h5{font-size:18px;color:#20c6fd;text-align:left;font-family:'Museo300Regular';font-weight:normal;}
+.story-viewer #body h1,.story-viewer #body h1,.story-viewer #body h2,.story-viewer #body h3,.story-viewer #body h4,.story-viewer #body h5{line-height:1.4em;}
 .story-viewer .summary{padding:1%;}
 .story-viewer .section,.story-viewer .connected-story{padding:1%;}
 .story-viewer .spider .sidebar{float:left;width:18%;}

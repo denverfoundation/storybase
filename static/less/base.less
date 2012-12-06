@@ -226,7 +226,12 @@
   h3 { font-size:@h3-size; color:@medium-gray; .styled-header(@align); }
   h4 { font-size:@h4-size; color:@medium-gray; .styled-header(@align); }
   h5 { font-size:@h5-size; color:@highlight-blue; .styled-header(@align); }
+  h1, h1, h2, h3, h4, h5 {
+    // explicit property seems neccesary to properly set line height using ems.
+    line-height:@base-line-height;
+  }
 }
+
 
 .centered {
   text-align: center;
