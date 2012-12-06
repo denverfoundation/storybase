@@ -12,14 +12,15 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic.base import TemplateView
-from django.views.generic.edit import UpdateView 
+from django.views.generic.edit import CreateView, UpdateView 
 from django.views.generic.list import ListView
 
 from storybase.views.generic import ModelIdDetailView
-from storybase_user.forms import UserNotificationsForm
+from storybase_user.forms import OrganizationModelForm, UserNotificationsForm
 from storybase_user.auth.forms import ChangeUsernameEmailForm
 from storybase_user.auth.utils import send_email_change_email
 from storybase_user.models import Organization, Project, UserProfile
+
 
 class AccountNotificationsView(UpdateView):
     model = UserProfile
@@ -188,6 +189,16 @@ class UserProfileShareWidgetView(ShareWidgetView):
 
     def get_object_id_name(self):
         return 'profile_id'
+
+
+class CreateOrganizationView(CreateView):
+    model = Organization
+    form_class = OrganizationModelForm
+    template_name = 'storybase_user/create_organization.html'
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(CreateOrganizationView, self).dispatch(*args, **kwargs)
 
 
 @csrf_protect
