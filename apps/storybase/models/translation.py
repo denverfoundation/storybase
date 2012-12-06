@@ -98,6 +98,37 @@ class TranslatedModel(models.Model):
     def set_translation_cache_item(self, code, obj):
         self._translation_cache[code] = obj
 
+    # TODO: Use this within the create_* functions in the different
+    # applications, e.g. storybase_story.models.create_story
+    def create_translation(self, language, **kwargs):
+        related_field_name = self.get_translation_fk_field_name()
+        trans_kwargs = {'language': language}
+        trans_kwargs.update(kwargs)
+        trans_kwargs[related_field_name] = self
+        return self.translation_class(**trans_kwargs)
+
+    # TODO: Use this in __getattribute__ above
+    def get_translation(self, language=None, create=False):
+        """
+        Get an instance of the translation model in the specified language
+
+        Keyword arguments:
+        language -- the language code of the desired language. Defaults to
+                    the currently active language.
+        create -- create a new model instance if one matching the requested
+                  language is not found
+        """
+        if language is None:
+            language = translation.get_language()
+        translated_manager = self._get_translated_manager()
+        try:
+            return translated_manager.get(language=language)
+        except ObjectDoesNotExist:
+            if create:
+                return self.create_translation(language)
+            else:
+                raise
+
     @property
     def language(self):
         code = translation.get_language()
@@ -145,9 +176,7 @@ class TranslatedModel(models.Model):
         """
         Get the name of the ForeignKey field on the translation class
         """
-        # TODO: Decide if it's better to just follow the convention and 
-        # look for a field that matches the lowercase version of the class'
-        # name, i.e. cls.__name__.lower()
+        # TODO: Cache this value after retrieving it the first time
         for field in cls.translation_class._meta.fields:
             if field.rel and field.rel.to == cls:
                 return field.name

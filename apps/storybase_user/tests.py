@@ -9,6 +9,7 @@ from django.utils import translation
 from storybase.utils import slugify
 from storybase_story.models import create_story
 from storybase_user.auth.forms import ChangeUsernameEmailForm
+from storybase_user.forms import OrganizationModelForm
 from storybase_user.models import (create_organization, create_project,
     Organization, OrganizationStory, OrganizationTranslation,
     Project, ProjectStory, ProjectTranslation,
@@ -239,6 +240,65 @@ class OrganizationModelTest(TestCase):
         self.assertEqual(stories.count(), 2)
         self.assertEqual(stories[0], story1)
         self.assertEqual(stories[1], story2)
+
+
+class OrganizationModelFormTest(TestCase):
+    def test_is_valid_invalid_no_name(self):
+        data = {}
+        f = OrganizationModelForm(data)
+        self.assertFalse(f.is_valid())
+
+    def test_is_valid_valid(self):
+        data = {
+            'name': 'Test Organization',
+            'description': 'Test organization description',
+        }
+        f = OrganizationModelForm(data)
+        self.assertTrue(f.is_valid())
+
+    def test_save(self):
+        data = {
+            'name': 'Test Organization',
+            'description': 'Test organization description',
+            'website_url': 'http://example.com/',
+        }
+        f = OrganizationModelForm(data)
+        f.save()
+        self.assertEqual(f.instance.name, data['name'])
+        self.assertEqual(f.instance.description, data['description'])
+        self.assertEqual(f.instance.website_url, data['website_url'])
+        org = Organization.objects.get(pk=f.instance.pk)
+        self.assertEqual(org.name, data['name'])
+        self.assertEqual(org.description, data['description'])
+        self.assertEqual(org.website_url, data['website_url'])
+
+    def test_update(self):
+        org = create_organization(name="Test Organization", 
+                description="Test organization description",
+                website_url="http://example.com/")
+        data = {
+            'name': 'Test Organization 2',
+            'description': 'Test organization description 2',
+            'website_url': 'http://example.com/2/',
+        }
+        f = OrganizationModelForm(data, instance=org)
+        f.save()
+        self.assertEqual(org.name, data['name'])
+        self.assertEqual(org.description, data['description'])
+        self.assertEqual(org.website_url, data['website_url'])
+        # Check that the changes were saved to the database
+        org = Organization.objects.get(pk=org.pk)
+        self.assertEqual(org.name, data['name'])
+        self.assertEqual(org.description, data['description'])
+        self.assertEqual(org.website_url, data['website_url'])
+
+
+    def test_as_p(self):
+        f = OrganizationModelForm()
+        html = f.as_p()
+        for field_name in ('name', 'description', 'website_url'):
+            self.assertIn('name="%s"' % (field_name), html)
+        
 
 class OrganizationApiTest(TestCase):
     def test_create_organization(self):

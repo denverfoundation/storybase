@@ -1,6 +1,14 @@
 from django.forms import ModelForm
 
-from storybase_user.models import UserProfile
+from storybase.forms import TranslatedModelForm
+from storybase_user.models import Organization, UserProfile
+
+class OrganizationModelForm(TranslatedModelForm):
+    class Meta:
+        model = Organization
+        fields = ('website_url',)
+        translated_fields = ('name', 'description',)
+
 
 class UserNotificationsForm(ModelForm):
     class Meta:
