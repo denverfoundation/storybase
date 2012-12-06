@@ -18,6 +18,14 @@ storybase.builder.views.VISIBLE_STEPS = {
 };
 
 /**
+ * Is the browser some version of Microsoft Internet Explorer?
+ *
+ * HACK: Browser detection is bad, but our work-around for #415 should only
+ * apply to MSIE and we can't determine this by feature detection.
+ */
+storybase.builder.views.MSIE = ($.browser !== undefined) && ($.browser.msie === true);
+
+/**
  * @name save:section
  * @event
  * @param Section section Event triggered when a section has successfully
@@ -1253,8 +1261,7 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
      *
      * This is meant to be bound to the guider element's 'guiders.show' event 
      */
-    var nudgeIntoWindow = function() {
-      var $guiderEl = $(this);
+    var nudgeIntoWindow = function($guiderEl) {
       var windowWidth = $(window).width();
       var guiderOffset = $guiderEl.offset();
       var guiderElemWidth = $guiderEl.outerWidth();
@@ -1273,7 +1280,9 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
     };
 
     var bindNudge = function(myGuider) {
-      $(myGuider.elem).bind("guiders.show", nudgeIntoWindow);
+      $(myGuider.elem).bind("guiders.show", function() {
+        nudgeIntoWindow($(this));
+      });
     }; 
     
     if (this.showTour()) { 
@@ -1458,6 +1467,15 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         xButton: true
       });
       guiders.show('workflow-step-guider');
+      // HACK: Workaround for #415.  In IE, re-nudge the first guider element
+      // after waiting a little bit. In some cases, the initial CSS change 
+      // above doesn't render properly. The pause seems to fix this.  Note
+      // that this uses the internal guiders API to get the element.
+      if (storybase.builder.views.MSIE) {
+        setTimeout(function() {
+          nudgeIntoWindow(guiders._guiderById('workflow-step-guider').elem);
+        }, 200);
+      }
     }
   }
 });
