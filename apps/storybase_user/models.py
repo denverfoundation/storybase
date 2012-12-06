@@ -84,7 +84,19 @@ class RecentStoriesMixin(StoriesMixin):
 
     def recent_stories(self, count=3):
         return self.get_recent_queryset().order_by('-last_edited')[:count]
+
         
+class OrganizationTranslation(TranslationModel, TimestampedModel):
+    organization = models.ForeignKey('Organization')
+    name = ShortTextField()
+    description = models.TextField(blank=True)
+
+    class Meta:
+        unique_together = (('organization', 'language'))
+
+    def __unicode__(self):
+        return self.name
+
 
 class Organization(FeaturedAssetsMixin, RecentStoriesMixin,
                    FeaturedStoriesMixin, TranslatedModel, TimestampedModel):
@@ -102,6 +114,7 @@ class Organization(FeaturedAssetsMixin, RecentStoriesMixin,
 
     objects = FeaturedManager()
 
+    translation_class = OrganizationTranslation
     translated_fields = ['name', 'description']
     translation_set = 'organizationtranslation_set'
 
@@ -139,17 +152,6 @@ class Organization(FeaturedAssetsMixin, RecentStoriesMixin,
         return settings.STORYBASE_DEFAULT_ORGANIZATION_IMAGES
 
 
-class OrganizationTranslation(TranslationModel, TimestampedModel):
-    organization = models.ForeignKey('Organization')
-    name = ShortTextField()
-    description = models.TextField(blank=True)
-
-    class Meta:
-        unique_together = (('organization', 'language'))
-
-    def __unicode__(self):
-        return self.name
-
 def set_organization_slug(sender, instance, **kwargs):
     """
     When an OrganizationTranslation is saved, set its Organization's slug if it
@@ -176,6 +178,19 @@ def add_story_to_organization(sender, instance, **kwargs):
             story.organizations.add(instance)
             story.save()
 
+
+class ProjectTranslation(TranslationModel):
+    project = models.ForeignKey('Project')
+    name = ShortTextField()
+    description = models.TextField(blank=True)
+
+    class Meta:
+        unique_together = (('project', 'language'))
+
+    def __unicode__(self):
+        return self.name
+
+
 class Project(FeaturedAssetsMixin, RecentStoriesMixin, FeaturedStoriesMixin,
               TranslatedModel, TimestampedModel):
     """ 
@@ -197,6 +212,7 @@ class Project(FeaturedAssetsMixin, RecentStoriesMixin, FeaturedStoriesMixin,
 
     objects = FeaturedManager()
 
+    translation_class = ProjectTranslation
     translated_fields = ['name', 'description']
     translation_set = 'projecttranslation_set'
 
@@ -233,17 +249,6 @@ class Project(FeaturedAssetsMixin, RecentStoriesMixin, FeaturedStoriesMixin,
     def get_default_img_url_choices(self):
         return settings.STORYBASE_DEFAULT_PROJECT_IMAGES
 
-
-class ProjectTranslation(TranslationModel):
-    project = models.ForeignKey('Project')
-    name = ShortTextField()
-    description = models.TextField(blank=True)
-
-    class Meta:
-        unique_together = (('project', 'language'))
-
-    def __unicode__(self):
-        return self.name
 
 def set_project_slug(sender, instance, **kwargs):
     """
