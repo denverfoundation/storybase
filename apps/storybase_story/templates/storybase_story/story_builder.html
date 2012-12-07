@@ -39,6 +39,12 @@
     <!-- end CSS-->
 
     <script src="{{ STATIC_URL }}js/libs/modernizr.custom.min.js"></script>
+    <script>
+    Modernizr.load({
+      test: Modernizr.input.placeholder,
+      nope: '{{ STATIC_URL }}js/libs/polyfill.placeholder.js'
+    })
+    </script>
 
     {% comment %}
     Handlebars templates for rendering Backbone views.

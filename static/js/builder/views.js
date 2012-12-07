@@ -3219,6 +3219,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     // Delegate events so our event bindings work after we've removed
     // this element from the DOM
     this.delegateEvents();
+    this.applyPolyfills();
     return this;
   },
 
@@ -3429,6 +3430,17 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
 
   getSection: function() {
     return this.model;
+  },
+  
+  /**
+   * Apply any available polyfills.
+   *
+   */
+  applyPolyfills: function() {
+    console.log('applying polyfills');
+    if (!Modernizr.input.placeholder) {
+      window.polyfills.placeholders();
+    }
   }
 });
 
