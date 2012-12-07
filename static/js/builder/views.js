@@ -3437,7 +3437,6 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
    *
    */
   applyPolyfills: function() {
-    console.log('applying polyfills');
     if (!Modernizr.input.placeholder) {
       window.polyfills.placeholders();
     }
