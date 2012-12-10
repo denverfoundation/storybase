@@ -535,12 +535,26 @@ class UtilityTest(TestCase):
 
 
 class CreateOrganizationViewTest(TestCase):
+    def _create_user(self, username, email, password):
+        try:
+            users = getattr(self, 'users')
+        except AttributeError:
+            users = self.users = {}
+
+        users[email] = User.objects.create_user(username, email, password)
+        return users[email]
+
+    def _get_user(self, email):
+        return self.users[email]
+
     def setUp(self):
-        self.path = '/create-organization/'
         self.username = 'test'
         self.password = 'test'
-        self.user = User.objects.create_user(self.username, 
-            'test@example.com', self.password)
+        self.user = self._create_user(self.username, "test@example.com",
+                self.password)
+        self._create_user("test2", "test2@example.com", "test2")
+        self._create_user("test3", "test3@example.com", "test3")
+        self.path = '/create-organization/'
         self.client = Client()
 
     def test_get_unauthenticated(self):
@@ -569,15 +583,21 @@ class CreateOrganizationViewTest(TestCase):
             'name': "Test Organization",
             'description': "Test Organization description",
             'website_url': "http://www.example.com/",
+            'members': "test2@example.com,test3@example.com,test4@example.com,\t\t\ntest5@example.com,sdadssafasfas",
         }
         self.assertEqual(Organization.objects.count(), 0)
         self.client.login(username=self.username, password=self.password)
         resp = self.client.post(self.path, data)
         self.assertEqual(Organization.objects.count(), 1)
         obj = Organization.objects.all()[0]
-        for key, val in data.items():
+        for key in ('name', 'description', 'website_url',):
+            val = data[key]
             obj_val = getattr(obj, key)
             self.assertEqual(obj_val, val)
+        self.assertEqual(obj.members.count(), 2)
+        for email in ("test2@example.com", "test3@example.com"):
+            u = self._get_user(email)
+            self.assertIn(u, obj.members.all())
 
     def test_post_invalid_no_name(self):
         """

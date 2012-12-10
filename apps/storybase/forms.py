@@ -1,6 +1,41 @@
+import re
+
+from django.contrib.auth.models import User
 from django.forms import ModelForm
+from django.forms.fields import CharField
+from django.forms.widgets import Textarea
 from django.forms.models import ModelFormMetaclass, modelform_factory
 from django.utils.copycompat import deepcopy
+
+COMMA_SPLIT_RE = re.compile(r'\s*,\s*')
+
+class UserEmailField(CharField):
+    """
+    Field that takes a comma-separated list of email addresses and 
+    returns a queryset of User model instances whose email fields match the
+    e-mail addresses passed as field data.
+    """
+    widget = Textarea
+
+    def split_value(self, value):
+        """
+        Split input value at commas and whitespace.
+        """
+        return COMMA_SPLIT_RE.split(value)
+
+    def clean(self, value):
+        """
+        Validates the given value and returns its "cleaned" value as an
+        appropriate Python object.
+
+        Raises ValidationError for any errors.
+        """
+        if not value:
+            return []
+
+        values = self.split_value(value)
+        return User.objects.filter(email__in=values)
+        
 
 class TranslatedModelFormMetaclass(ModelFormMetaclass):
     def __new__(cls, name, bases, attrs):

@@ -5,6 +5,7 @@ from django.template import Context, Template, RequestContext
 from django.test import TestCase
 
 from storybase.models import PermissionMixin
+from storybase.forms import UserEmailField 
 from storybase.utils import full_url
 
 class ContextProcessorTest(TestCase):
@@ -109,6 +110,27 @@ class PermissionMixinTest(TestCase):
 
     def test_has_perm_unknown_perm(self):
         self.assertFalse(self.obj.has_perm(self.user, "foo"))
+
+
+class UserEmailFieldTest(TestCase):
+    """Tests for UserEmailField form field"""
+    def test_split(self):
+        f = UserEmailField(required=False)
+        emails = ["test@example.com", "test2@example.com",
+                "test3@example.com", "test4@example.com", "test5@example.com"]
+        split_values = f.split_value("test@example.com, test2@example.com,test3@example.com,test4@example.com,\t\t\ntest5@example.com")
+        self.assertEqual(split_values, emails)
+
+    def test_clean(self):
+        u1 = User.objects.create_user("test", "test@example.com", "test")
+        u2 = User.objects.create_user("test2", "test2@example.com", "test2")
+        u3 = User.objects.create_user("test3", "test3@example.com", "test3")
+        f = UserEmailField(required=False)
+        users = f.clean("test@example.com, test2@example.com,test3@example.com,test4@example.com,\t\t\ntest5@example.com,sdadssafasfas")
+        self.assertEqual(len(users), 3)
+        self.assertIn(u1, users)
+        self.assertIn(u2, users)
+        self.assertIn(u3, users)
 
 
 class UtilsTestCase(TestCase):
