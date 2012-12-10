@@ -4,6 +4,7 @@ from time import sleep
 
 from django.contrib.auth.models import Group, User
 from django.test import TestCase
+from django.test.client import Client
 from django.utils import translation
 
 from storybase.utils import slugify
@@ -531,3 +532,63 @@ class UtilityTest(TestCase):
         self.assertTrue(is_admin(admin))
         self.assertTrue(is_admin(superuser))
         self.assertFalse(is_admin(nonadmin))
+
+
+class CreateOrganizationViewTest(TestCase):
+    def setUp(self):
+        self.path = '/create-organization/'
+        self.username = 'test'
+        self.password = 'test'
+        self.user = User.objects.create_user(self.username, 
+            'test@example.com', self.password)
+        self.client = Client()
+
+    def test_get_unauthenticated(self):
+        """
+        Test that the organization creation view cannot be accessed by an
+        unauthenticated user
+        """
+        resp = self.client.get(self.path)
+        self.assertEqual(resp.status_code, 302)
+
+    def test_get_authenticated(self):
+        """
+        Test that the organizaiton creation view can be accessed by an 
+        authenticated user
+        """
+        self.client.login(username=self.username, password=self.password)
+        resp = self.client.get(self.path)
+        self.assertEqual(resp.status_code, 200)
+
+    def test_post(self):
+        """
+        Test that posting valid data to the organization creation view
+        creates a new Organization
+        """
+        data = {
+            'name': "Test Organization",
+            'description': "Test Organization description",
+            'website_url': "http://www.example.com/",
+        }
+        self.assertEqual(Organization.objects.count(), 0)
+        self.client.login(username=self.username, password=self.password)
+        resp = self.client.post(self.path, data)
+        self.assertEqual(Organization.objects.count(), 1)
+        obj = Organization.objects.all()[0]
+        for key, val in data.items():
+            obj_val = getattr(obj, key)
+            self.assertEqual(obj_val, val)
+
+    def test_post_invalid_no_name(self):
+        """
+        Test that posting to the organization creation view with a missing
+        organization name does not create a new Organization
+        """
+        data = {
+            'description': "Test Organization description",
+            'website_url': "http://www.example.com/",
+        }
+        self.assertEqual(Organization.objects.count(), 0)
+        self.client.login(username=self.username, password=self.password)
+        resp = self.client.post(self.path, data)
+        self.assertEqual(Organization.objects.count(), 0)
