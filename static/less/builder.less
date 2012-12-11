@@ -1210,12 +1210,15 @@ button.preview {
   text-align: center;
 }
 
-.section-thumbnail {
-  width: 120px;
-  border: 1px solid lighten(@medium-gray, 10%);
+.section-thumbnail, .spacer:hover, .spacer.hover {
   .rounded-corners(4px);
   .box-shadow(0, 0, 5px, lighten(@medium-gray, 10%));
   cursor: pointer;
+}
+
+.section-thumbnail {
+  width: 120px;
+  border: 1px solid lighten(@medium-gray, 10%);
   background-color: @light-gray;
   color: @medium-gray;
   
@@ -1241,15 +1244,19 @@ button.preview {
 }
 
 .spacer {
-  width: 20px;
+  width: 10px;
+  margin: 10px 8px;
+  border: 1px solid lighten(@gray, 40%);
+  background:@light-gray;
+  .box-shadow-inset(0, 0, 4px, lighten(@gray, 40%));
+  .transition-duration(0.5s);
 }
 
-.spacer:hover {
-  width: 120px;
-  //border: 1px solid #000;
-  margin: 8px;
-  //background-color: #C8C8C8;
+.spacer:hover, .spacer.hover {
+  width: 30px;
   color: #fff;
+  border: 1px solid lighten(@almost-black, 10%);
+  background:lighten(@almost-black, 10%);
 }
 
 .spacer .add-section {
@@ -1261,11 +1268,11 @@ button.preview {
 
 .spacer div {
   display: none;
-  padding: 22% 0;
 }
 
-.spacer:hover div {
+.spacer:hover div, .spacer.hover div {
   display: block;
+  margin-top:30px;
 }
 
 
