@@ -1,5 +1,7 @@
 """Unit tests for users app"""
 
+import hashlib
+import os
 from time import sleep
 
 from django.contrib.auth.models import Group, User
@@ -7,6 +9,7 @@ from django.test import TestCase
 from django.test.client import Client
 from django.utils import translation
 
+from storybase.tests.base import FileCleanupMixin
 from storybase.utils import slugify
 from storybase_story.models import create_story
 from storybase_user.auth.forms import ChangeUsernameEmailForm
@@ -534,7 +537,7 @@ class UtilityTest(TestCase):
         self.assertFalse(is_admin(nonadmin))
 
 
-class CreateOrganizationViewTest(TestCase):
+class CreateOrganizationViewTest(FileCleanupMixin, TestCase):
     def _create_user(self, username, email, password):
         try:
             users = getattr(self, 'users')
@@ -547,7 +550,13 @@ class CreateOrganizationViewTest(TestCase):
     def _get_user(self, email):
         return self.users[email]
 
+    def assertFilesEqual(self, f1, f2):
+        hash1 = hashlib.md5(open(f1, 'read').read()).hexdigest()
+        hash2 = hashlib.md5(open(f2, 'read').read()).hexdigest()
+        self.assertEqual(hash1, hash2)
+
     def setUp(self):
+        super(CreateOrganizationViewTest, self).setUp()
         self.username = 'test'
         self.password = 'test'
         self.user = self._create_user(self.username, "test@example.com",
@@ -579,25 +588,38 @@ class CreateOrganizationViewTest(TestCase):
         Test that posting valid data to the organization creation view
         creates a new Organization
         """
-        data = {
-            'name': "Test Organization",
-            'description': "Test Organization description",
-            'website_url': "http://www.example.com/",
-            'members': "test2@example.com,test3@example.com,test4@example.com,\t\t\ntest5@example.com,sdadssafasfas",
-        }
-        self.assertEqual(Organization.objects.count(), 0)
-        self.client.login(username=self.username, password=self.password)
-        resp = self.client.post(self.path, data)
-        self.assertEqual(Organization.objects.count(), 1)
-        obj = Organization.objects.all()[0]
-        for key in ('name', 'description', 'website_url',):
-            val = data[key]
-            obj_val = getattr(obj, key)
-            self.assertEqual(obj_val, val)
-        self.assertEqual(obj.members.count(), 2)
-        for email in ("test2@example.com", "test3@example.com"):
-            u = self._get_user(email)
-            self.assertIn(u, obj.members.all())
+        image_filename = "test_image.jpg"
+        app_dir = os.path.dirname(os.path.abspath(__file__))
+        img_path = os.path.join(app_dir, "test_files", image_filename)
+        with open(img_path) as fp:
+            data = {
+                'name': "Test Organization",
+                'description': "Test Organization description",
+                'website_url': "http://www.example.com/",
+                'members': "test2@example.com,test3@example.com,test4@example.com,\t\t\ntest5@example.com,sdadssafasfas",
+                'image_0': fp,
+            }
+            self.assertEqual(Organization.objects.count(), 0)
+            self.client.login(username=self.username, password=self.password)
+            resp = self.client.post(self.path, data)
+            self.assertEqual(Organization.objects.count(), 1)
+            obj = Organization.objects.all()[0]
+            # The object attributes should match the posted data
+            for key in ('name', 'description', 'website_url',):
+                val = data[key]
+                obj_val = getattr(obj, key)
+                self.assertEqual(obj_val, val)
+            # The owner should match the logged-in user
+            # TODO: Implement this check
+            # The members should have emails that match the posted ones
+            self.assertEqual(obj.members.count(), 2)
+            for email in ("test2@example.com", "test3@example.com"):
+                u = self._get_user(email)
+                self.assertIn(u, obj.members.all())
+            # The featured asset should match the uploaded image
+            fa = obj.get_featured_asset()
+            self.add_file_to_cleanup(fa.image.file.path)
+            self.assertFilesEqual(fa.image.file.path, img_path)
 
     def test_post_invalid_no_name(self):
         """

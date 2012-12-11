@@ -1,12 +1,15 @@
+import sys
+
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
+from django.core.files import File
 from django.template import Context, Template, RequestContext
 from django.test import TestCase
 
 from storybase.models import PermissionMixin
 from storybase.forms import UserEmailField 
-from storybase.utils import full_url
+from storybase.utils import full_url, is_file
 
 class ContextProcessorTest(TestCase):
     def test_conf(self):
@@ -175,3 +178,11 @@ class UtilsTestCase(TestCase):
         path = "http://floodlightproject.org/stories/asdas-3/"
         self.assertEqual("http://floodlightproject.org/stories/asdas-3/",
                          full_url(path))
+
+    def test_is_file_true(self):
+        f = File(sys.stdout)
+        self.assertTrue(is_file(f))
+
+    def test_is_file_false(self):
+        s = u"This is a string, not a file"
+        self.assertFalse(is_file(s))

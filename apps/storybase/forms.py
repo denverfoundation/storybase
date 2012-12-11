@@ -2,10 +2,12 @@ import re
 
 from django.contrib.auth.models import User
 from django.forms import ModelForm
-from django.forms.fields import CharField
-from django.forms.widgets import Textarea
+from django.forms.fields import CharField, FileField, MultiValueField
+from django.forms.widgets import FileInput, Textarea, TextInput, MultiWidget
 from django.forms.models import ModelFormMetaclass, modelform_factory
 from django.utils.copycompat import deepcopy
+
+from storybase.utils import is_file
 
 COMMA_SPLIT_RE = re.compile(r'\s*,\s*')
 
@@ -35,6 +37,44 @@ class UserEmailField(CharField):
 
         values = self.split_value(value)
         return User.objects.filter(email__in=values)
+
+
+class FileOrUrlWidget(MultiWidget):
+    def __init__(self, attrs=None):
+        widgets = (FileInput(attrs=attrs),
+                   TextInput(attrs=attrs),
+        )
+        super(FileOrUrlWidget, self).__init__(widgets, attrs)
+
+    def decompress(self, value):
+        if value:
+            if is_file(value):
+                return [value, None]
+
+            return [None, value]
+
+        return [None, None]
+
+
+class FileOrUrlField(MultiValueField):
+    widget = FileOrUrlWidget
+
+    def __init__(self, *args, **kwargs):
+        fields = (
+            FileField(),
+            CharField(),
+        )
+        super(FileOrUrlField, self).__init__(fields, *args, **kwargs)
+
+    def compress(self, data_list):
+        # Return the file if its specified, otherwise return the URL
+        if data_list:
+            if data_list[0]:
+                return data_list[0]
+
+            return data_list[1]
+            
+        return None
         
 
 class TranslatedModelFormMetaclass(ModelFormMetaclass):
