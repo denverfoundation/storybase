@@ -191,11 +191,16 @@ class OrganizationTranslationInline(StorybaseStackedInline):
     extra = 1
 
 
+class OrganizationMembershipInline(admin.TabularInline):
+    model = Organization.members.through
+    extra = 0
+
+
 class OrganizationAdmin(StorybaseModelAdmin):
     search_fields = ['name']
     filter_horizontal = ['members', 'featured_assets']
     readonly_fields = ['created', 'last_edited', 'organization_id']
-    inlines = [OrganizationTranslationInline,]
+    inlines = [OrganizationTranslationInline, OrganizationMembershipInline]
     prefix_inline_classes = ['OrganizationTranslationInline']
 
 admin.site.register(Organization, OrganizationAdmin)
@@ -211,12 +216,18 @@ class ProjectStoryInline(admin.TabularInline):
     extra = 0
 
 
+class ProjectMembershipInline(admin.TabularInline):
+    model = Project.members.through
+    extra = 0
+
+
 class ProjectAdmin(StorybaseModelAdmin):
     search_fields = ['name']
     filter_horizontal = ['members', 'organizations', 'featured_assets']
     list_filter = ('on_homepage',)
     readonly_fields = ['created', 'last_edited', 'project_id']
-    inlines = [ProjectStoryInline, ProjectTranslationInline]
+    inlines = [ProjectMembershipInline, ProjectStoryInline, 
+            ProjectTranslationInline]
     prefix_inline_classes = ['ProjectTranslationInline']
     actions = [toggle_featured]
 

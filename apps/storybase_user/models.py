@@ -37,6 +37,21 @@ class CuratedStory(models.Model):
         verbose_name = "story"
 
 
+class Membership(models.Model):
+    """ Abstract base class for "through" model for associating Users with Projects and Organizations """
+    MEMBER_TYPE_CHOICES = (
+        ('member', _('Member')),
+        ('owner', _('Owner')),
+    )
+    user = models.ForeignKey('auth.User')
+    member_type = models.CharField(max_length=140,
+        choices=MEMBER_TYPE_CHOICES, default='member')
+    added = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        abstract = True
+
+
 class FeaturedStoriesMixin(object):
     """
     Mixin that provides some utility methods for populating the
@@ -85,6 +100,7 @@ class RecentStoriesMixin(StoriesMixin):
     def recent_stories(self, count=3):
         return self.get_recent_queryset().order_by('-last_edited')[:count]
 
+
         
 class OrganizationTranslation(TranslationModel, TimestampedModel):
     organization = models.ForeignKey('Organization')
@@ -104,7 +120,8 @@ class Organization(FeaturedAssetsMixin, RecentStoriesMixin,
     organization_id = UUIDField(auto=True, db_index=True)
     slug = models.SlugField(blank=True)
     website_url = models.URLField(blank=True)
-    members = models.ManyToManyField(User, related_name='organizations', blank=True)
+    members = models.ManyToManyField(User, related_name='organizations', 
+            blank=True, through='OrganizationMembership')
     curated_stories = models.ManyToManyField('storybase_story.Story', related_name='curated_in_organizations', blank=True, through='OrganizationStory')
     on_homepage = models.BooleanField(_("Featured on homepage"),
 		                      default=False)
@@ -166,6 +183,12 @@ def set_organization_slug(sender, instance, **kwargs):
 # Hook up some signal handlers
 post_save.connect(set_organization_slug, sender=OrganizationTranslation)
 
+
+class OrganizationMembership(Membership):
+    """Through class for Organization to Story relations"""
+    organization = models.ForeignKey('Organization')
+
+
 class OrganizationStory(CuratedStory):
     """ "Through" class for Organization to Story relations """
     organization = models.ForeignKey('Organization')
@@ -202,7 +225,8 @@ class Project(FeaturedAssetsMixin, RecentStoriesMixin, FeaturedStoriesMixin,
     slug = models.SlugField(blank=True)
     website_url = models.URLField(blank=True)
     organizations = models.ManyToManyField(Organization, related_name='projects', blank=True)
-    members = models.ManyToManyField(User, related_name='projects', blank=True) 
+    members = models.ManyToManyField(User, related_name='projects', 
+            blank=True, through='ProjectMembership')
     curated_stories = models.ManyToManyField('storybase_story.Story', related_name='curated_in_projects', blank=True, through='ProjectStory')
     on_homepage = models.BooleanField(_("Featured on homepage"),
 		                      default=False)
@@ -264,6 +288,9 @@ def set_project_slug(sender, instance, **kwargs):
 # Hook up some signal handlers
 post_save.connect(set_project_slug, sender=ProjectTranslation)
 
+class ProjectMembership(Membership):
+    """Through class for Project to User relations"""
+    project = models.ForeignKey('Project')
 
 class ProjectStory(CuratedStory):
     """ "Through" class for Project to Story relations """
