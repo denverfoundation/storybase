@@ -135,7 +135,7 @@ class OrganizationDetailView(RelatedStoriesDetailView):
 class OrganizationListView(ListView):
     """Display a list of all Organizations"""
     context_object_name = 'organizations'
-    queryset = Organization.objects.all().order_by('organizationtranslation__name')
+    queryset = Organization.objects.filter(status='published').order_by('organizationtranslation__name')
 
 
 class ProjectDetailView(RelatedStoriesDetailView):
@@ -147,7 +147,7 @@ class ProjectDetailView(RelatedStoriesDetailView):
 class ProjectListView(ListView):
     """Display a list of all Projects"""
     context_object_name = "projects"
-    queryset = Project.objects.all().order_by('-last_edited')
+    queryset = Project.objects.filter(status='published').order_by('-last_edited')
 
 
 class UserProfileDetailView(RelatedStoriesDetailView):

@@ -185,6 +185,24 @@ def set_organization_slug(sender, instance, **kwargs):
         unique_slugify(instance.organization, instance.name)
 	instance.organization.save()
 
+#def send_notifications(sender, instance, created, **kwargs):
+#    """
+#    Signal handler for sending notifications when a Project or Organization
+#    is created
+#    """
+#    if created and instance.status == 'pending':
+#        # TODO: Send email to admins
+#        return True 
+#
+#    dirty_fields = instance.get_dirty_fields()
+#    if ('status' in dirty_fields and dirty_fields['status'] == 'pending' and
+#        instance.status == 'published'):
+#        # Status changed from pending to published
+#        # TODO: Send email to owner
+#        return True
+#
+#    return False
+
 # Hook up some signal handlers
 post_save.connect(set_organization_slug, sender=OrganizationTranslation)
 
@@ -411,14 +429,15 @@ def create_user_profile(sender, instance, created, **kwargs):
 post_save.connect(create_user_profile, sender=User)
 
 
-def create_project(name, description='', website_url='', language=settings.LANGUAGE_CODE):
+def create_project(name, description='', website_url='',
+        language=settings.LANGUAGE_CODE, **kwargs):
     """ Convenience function for creating a Project 
     
     Allows for the creation of stories without having to explicitely
     deal with the translations.
 
     """
-    project = Project(website_url=website_url)
+    project = Project(website_url=website_url, **kwargs)
     project.save()
     project_translation = ProjectTranslation(
         name=name,
@@ -427,14 +446,15 @@ def create_project(name, description='', website_url='', language=settings.LANGU
     project_translation.save()
     return project
 
-def create_organization(name, description='', website_url='', language=settings.LANGUAGE_CODE):
+def create_organization(name, description='', website_url='', 
+        language=settings.LANGUAGE_CODE, **kwargs):
     """ Convenience function for creating an Organization
     
     Allows for the creation of organizations without having to explicitely
     deal with the translations.
 
     """
-    org = Organization(website_url=website_url)
+    org = Organization(website_url=website_url, **kwargs)
     org.save()
     org_translation = OrganizationTranslation(
         name=name,

@@ -3116,10 +3116,10 @@ class StoryOrganizationResourceTest(ResourceTestCase):
         byline = "Mile High Connects"
         self.story = create_story(title=title, summary=summary, byline=byline,
                                   status='published', author=self.user)
-        create_organization(name="Mile High Connects")
-        create_organization(name="Piton Foundation")
-        create_organization(name="Urban Land Conservancy")
-        create_organization(name="America Scores Denver")
+        create_organization(name="Mile High Connects", status="published")
+        create_organization(name="Piton Foundation", status="published")
+        create_organization(name="Urban Land Conservancy", status="published")
+        create_organization(name="America Scores Denver", status="published")
 
     def test_put_list_new(self):
         """Test that a story's categories can be set"""
@@ -3195,10 +3195,12 @@ class StoryProjectResourceTest(ResourceTestCase):
         byline = "Mile High Connects"
         self.story = create_story(title=title, summary=summary, byline=byline,
                                   status='published', author=self.user)
-        create_project(name="Finding a Bite: Food Access in the Children's Corridor")
-        create_project(name="Redeveloping The Holly: From Gang Violence to Hope")
-        create_project(name="Soccer in the Corridor")
-        create_project(name="Stories of Integration")
+        create_project(name="Finding a Bite: Food Access in the Children's Corridor",
+                status='published')
+        create_project(name="Redeveloping The Holly: From Gang Violence to Hope",
+                status='published')
+        create_project(name="Soccer in the Corridor", status='published')
+        create_project(name="Stories of Integration", status='published')
 
     def test_put_list_new(self):
         """Test that a story's categories can be set"""
