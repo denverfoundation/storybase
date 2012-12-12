@@ -2493,7 +2493,7 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
   templateSource: $('#section-list-template').html(),
 
   events: {
-    'click .spacer .add-section': 'clickAddSection',
+    'click .spacer': 'clickAddSection',
     'sortupdate': 'handleSort',
     'mousedown .scroll-right': 'scrollRight',
     'mousedown .scroll-left': 'scrollLeft',
