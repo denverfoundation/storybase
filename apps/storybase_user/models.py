@@ -17,8 +17,9 @@ from uuidfield.fields import UUIDField
 
 from storybase.fields import ShortTextField
 from storybase.managers import FeaturedManager
-from storybase.models import (TimestampedModel, TranslatedModel,
-                              TranslationModel)
+from storybase.models import (DirtyFieldsMixin, PublishedModel,
+        TimestampedModel, TranslatedModel, TranslationModel)
+                             
 from storybase.utils import full_url, unique_slugify
 from storybase_asset.models import (DefaultImageMixin, FeaturedAssetsMixin,
     ImageRenderingMixin)
@@ -114,11 +115,15 @@ class OrganizationTranslation(TranslationModel, TimestampedModel):
         return self.name
 
 
-class Organization(FeaturedAssetsMixin, RecentStoriesMixin,
-                   FeaturedStoriesMixin, TranslatedModel, TimestampedModel):
+class Organization(FeaturedAssetsMixin, RecentStoriesMixin, 
+        FeaturedStoriesMixin, DirtyFieldsMixin, PublishedModel, 
+        TranslatedModel, TimestampedModel):
     """ An organization or a community group that users and stories can be associated with. """
     organization_id = UUIDField(auto=True, db_index=True)
     slug = models.SlugField(blank=True)
+    contact_info = models.TextField(blank=True,
+            help_text=_("Contact information such as phone number and "
+                        "postal address for this Organization"))
     website_url = models.URLField(blank=True)
     members = models.ManyToManyField(User, related_name='organizations', 
             blank=True, through='OrganizationMembership')
@@ -215,7 +220,7 @@ class ProjectTranslation(TranslationModel):
 
 
 class Project(FeaturedAssetsMixin, RecentStoriesMixin, FeaturedStoriesMixin,
-              TranslatedModel, TimestampedModel):
+        DirtyFieldsMixin, PublishedModel, TranslatedModel, TimestampedModel):
     """ 
     A project that collects related stories.  
     
