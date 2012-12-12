@@ -15,8 +15,8 @@ from storybase_story.models import create_story
 from storybase_user.auth.forms import ChangeUsernameEmailForm
 from storybase_user.forms import OrganizationModelForm
 from storybase_user.models import (create_organization, create_project,
-    Organization, OrganizationStory, OrganizationTranslation,
-    Project, ProjectStory, ProjectTranslation,
+    Organization, OrganizationMembership, OrganizationStory, 
+    OrganizationTranslation, Project, ProjectStory, ProjectTranslation,
     ADMIN_GROUP_NAME)
 from storybase_user.utils import is_admin, get_admin_emails
 
@@ -610,9 +610,11 @@ class CreateOrganizationViewTest(FileCleanupMixin, TestCase):
                 obj_val = getattr(obj, key)
                 self.assertEqual(obj_val, val)
             # The owner should match the logged-in user
-            # TODO: Implement this check
+            self.assertEqual(OrganizationMembership.objects.filter(
+                    organization=obj, member_type='owner').count(),
+                    1)
             # The members should have emails that match the posted ones
-            self.assertEqual(obj.members.count(), 2)
+            self.assertEqual(obj.members.count(), 3)
             for email in ("test2@example.com", "test3@example.com"):
                 u = self._get_user(email)
                 self.assertIn(u, obj.members.all())

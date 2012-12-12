@@ -19,7 +19,8 @@ from storybase.views.generic import ModelIdDetailView
 from storybase_user.forms import OrganizationModelForm, UserNotificationsForm
 from storybase_user.auth.forms import ChangeUsernameEmailForm
 from storybase_user.auth.utils import send_email_change_email
-from storybase_user.models import Organization, Project, UserProfile
+from storybase_user.models import (Organization, OrganizationMembership,
+        Project, UserProfile)
 
 
 class AccountNotificationsView(UpdateView):
@@ -199,6 +200,12 @@ class CreateOrganizationView(CreateView):
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
         return super(CreateOrganizationView, self).dispatch(*args, **kwargs)
+
+    def form_valid(self, form):
+        response = super(CreateOrganizationView, self).form_valid(form)
+        OrganizationMembership.objects.create(user=self.request.user,
+                organization=self.object, member_type='owner')
+        return response
 
 
 @csrf_protect

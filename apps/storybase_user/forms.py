@@ -2,14 +2,13 @@ from django.conf import settings
 from django.forms import ModelForm
 from django.utils.translation import ugettext as _
 
-from filer.models import Image
-
 from storybase.utils import is_file
 from storybase.forms import (FileOrUrlField, TranslatedModelForm,
         UserEmailField)
 from storybase_asset.models import (create_local_image_asset,
         create_external_asset)
-from storybase_user.models import Organization, UserProfile
+from storybase_user.models import (Organization, OrganizationMembership,
+    UserProfile)
 
 class OrganizationModelForm(TranslatedModelForm):
     members = UserEmailField(required=False, 
@@ -22,11 +21,14 @@ class OrganizationModelForm(TranslatedModelForm):
 
     class Meta:
         model = Organization
-        fields = ('website_url', 'members',)
+        fields = ('website_url',)
         translated_fields = ('name', 'description',)
 
     def save(self, commit=True):
         instance = super(OrganizationModelForm, self).save(commit)
+        for user in self.cleaned_data.get('members'):
+            OrganizationMembership.objects.create(user=user,
+                    organization=instance, member_type='member')
         image_asset = None
         img_val = self.cleaned_data.get('image', None)
         if img_val: 
