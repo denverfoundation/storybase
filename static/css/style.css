@@ -421,7 +421,10 @@ body.base-template.homepage .page-nav span.sep{width:1px;height:42px;background:
 body.base-template.homepage .page-nav .left-nav{background:url('../img/left-arrow2.png') no-repeat 0 3px;padding-left:25px;}
 body.base-template.homepage .page-nav .right-nav{background:url('../img/right-arrow2.png') no-repeat right 3px;padding-right:25px;}
 body.base-template.homepage .featured-on-floodlight .slides li img{float:left;padding-left:76px;}
-body.base-template.homepage .featured-on-floodlight .slides li .featured-text{margin-left:435px;padding-right:76px;}body.base-template.homepage .featured-on-floodlight .slides li .featured-text p{margin-bottom:1em;}
+body.base-template.homepage .featured-on-floodlight .slides li .featured-text{margin-left:435px;padding-right:76px;}body.base-template.homepage .featured-on-floodlight .slides li .featured-text ul,body.base-template.homepage .featured-on-floodlight .slides li .featured-text ol{padding-left:20px;margin-bottom:1em;}
+body.base-template.homepage .featured-on-floodlight .slides li .featured-text ul li{list-style-type:square;}
+body.base-template.homepage .featured-on-floodlight .slides li .featured-text ol li{list-style-type:decimal;}
+body.base-template.homepage .featured-on-floodlight .slides li .featured-text p{margin-bottom:1em;}
 body.base-template.homepage .featured-on-floodlight .slides li .featured-text a.more{font-family:'MuseoSlab500Regular';color:#fe9703;}
 body.base-template .featured-wrapper{border:1px solid #CCC;padding:2%;background-color:#CCC;}
 body.base-template .featured-stories .featured-wrapper{background-color:#EEE;}
