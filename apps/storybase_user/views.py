@@ -202,6 +202,7 @@ class CreateOrganizationView(CreateView):
         return super(CreateOrganizationView, self).dispatch(*args, **kwargs)
 
     def form_valid(self, form):
+        form.instance.status = 'pending'
         response = super(CreateOrganizationView, self).form_valid(form)
         OrganizationMembership.objects.create(user=self.request.user,
                 organization=self.object, member_type='owner')

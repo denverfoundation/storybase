@@ -609,6 +609,8 @@ class CreateOrganizationViewTest(FileCleanupMixin, TestCase):
                 val = data[key]
                 obj_val = getattr(obj, key)
                 self.assertEqual(obj_val, val)
+            # The status should be 'pending'
+            self.assertEqual(obj.status, 'pending')
             # The owner should match the logged-in user
             self.assertEqual(OrganizationMembership.objects.filter(
                     organization=obj, member_type='owner').count(),
