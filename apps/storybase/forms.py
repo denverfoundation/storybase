@@ -1,11 +1,14 @@
 import re
 
 from django.contrib.auth.models import User
+from django.core.exceptions import ValidationError
 from django.forms import ModelForm
-from django.forms.fields import CharField, FileField, MultiValueField
+from django.forms.fields import (CharField, FileField, MultiValueField, 
+        URLField)
 from django.forms.widgets import FileInput, Textarea, TextInput, MultiWidget
 from django.forms.models import ModelFormMetaclass, modelform_factory
 from django.utils.copycompat import deepcopy
+from django.utils.translation import ugettext_lazy as _
 
 from storybase.utils import is_file
 
@@ -62,16 +65,17 @@ class FileOrUrlField(MultiValueField):
     def __init__(self, *args, **kwargs):
         fields = (
             FileField(),
-            CharField(),
+            URLField(),
         )
         super(FileOrUrlField, self).__init__(fields, *args, **kwargs)
 
     def compress(self, data_list):
-        # Return the file if its specified, otherwise return the URL
+        # Return the file if it's specified, otherwise return the URL
         if data_list:
             if data_list[0]:
                 return data_list[0]
-
+            
+            self.fields[1].run_validators(data_list[1])
             return data_list[1]
             
         return None

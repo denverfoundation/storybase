@@ -32,6 +32,9 @@ class OrganizationModelForm(TranslatedModelForm):
         if img_val: 
             if is_file(img_val):
                 image_asset = create_local_image_asset('image', img_val, img_val.name)
+            else:
+                image_asset = create_external_asset('image',
+                        url=img_val)
 
             instance.featured_assets.add(image_asset)
         return instance

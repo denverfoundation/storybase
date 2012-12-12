@@ -583,25 +583,25 @@ class CreateOrganizationViewTest(FileCleanupMixin, TestCase):
         resp = self.client.get(self.path)
         self.assertEqual(resp.status_code, 200)
 
-    def test_post(self):
+    def _do_test_post(self, extra_data={}, extra_test=None, data=None,
+            expect_create=True):
         """
-        Test that posting valid data to the organization creation view
-        creates a new Organization
+        Do the heavy lifting of POST tests
+
+        This makes the tests more DRY
         """
-        image_filename = "test_image.jpg"
-        app_dir = os.path.dirname(os.path.abspath(__file__))
-        img_path = os.path.join(app_dir, "test_files", image_filename)
-        with open(img_path) as fp:
+        if data is None:
             data = {
                 'name': "Test Organization",
                 'description': "Test Organization description",
                 'website_url': "http://www.example.com/",
                 'members': "test2@example.com,test3@example.com,test4@example.com,\t\t\ntest5@example.com,sdadssafasfas",
-                'image_0': fp,
             }
-            self.assertEqual(Organization.objects.count(), 0)
-            self.client.login(username=self.username, password=self.password)
-            resp = self.client.post(self.path, data)
+        data.update(extra_data)
+        self.assertEqual(Organization.objects.count(), 0)
+        self.client.login(username=self.username, password=self.password)
+        resp = self.client.post(self.path, data)
+        if expect_create:
             self.assertEqual(Organization.objects.count(), 1)
             obj = Organization.objects.all()[0]
             # The object attributes should match the posted data
@@ -616,10 +616,53 @@ class CreateOrganizationViewTest(FileCleanupMixin, TestCase):
             for email in ("test2@example.com", "test3@example.com"):
                 u = self._get_user(email)
                 self.assertIn(u, obj.members.all())
-            # The featured asset should match the uploaded image
+        else:
+            self.assertEqual(Organization.objects.count(), 0)
+        if extra_test:
+            extra_test(resp, obj)
+
+    def test_post(self):
+        """
+        Test that posting valid data to the organization creation view
+        creates a new Organization
+        """
+        self._do_test_post()
+
+    def test_post_image_file(self):
+        """
+        Test setting the Organization's image by uploading a file
+        """
+        image_filename = "test_image.jpg"
+        app_dir = os.path.dirname(os.path.abspath(__file__))
+        img_path = os.path.join(app_dir, "test_files", image_filename)
+        with open(img_path) as fp:
+            extra_data = {
+                'image_0': fp,
+            }
+            def extra_test(resp, obj):
+                # the featured asset should match the uploaded image
+                fa = obj.get_featured_asset()
+                self.add_file_to_cleanup(fa.image.file.path)
+                self.assertFilesEqual(fa.image.file.path, img_path)
+            self._do_test_post(extra_data, extra_test)
+
+    def test_post_image_url(self):
+        image_url = 'http://instagr.am/p/BUG/'
+        extra_data = {
+            'image_1': image_url,
+        }
+        def extra_test(resp, obj):
             fa = obj.get_featured_asset()
-            self.add_file_to_cleanup(fa.image.file.path)
-            self.assertFilesEqual(fa.image.file.path, img_path)
+            self.assertEqual(fa.url, image_url)
+        self._do_test_post(extra_data, extra_test)
+
+    def test_post_image_malformed_url(self):
+        image_url = 'http://asdasd'
+        extra_data = {
+            'image_1': image_url,
+        }
+        self._do_test_post(extra_data, expect_create=False)
+
 
     def test_post_invalid_no_name(self):
         """
@@ -630,7 +673,4 @@ class CreateOrganizationViewTest(FileCleanupMixin, TestCase):
             'description': "Test Organization description",
             'website_url': "http://www.example.com/",
         }
-        self.assertEqual(Organization.objects.count(), 0)
-        self.client.login(username=self.username, password=self.password)
-        resp = self.client.post(self.path, data)
-        self.assertEqual(Organization.objects.count(), 0)
+        self._do_test_post(data=data, expect_create=False)
