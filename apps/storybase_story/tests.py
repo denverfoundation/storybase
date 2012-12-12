@@ -33,7 +33,8 @@ from storybase_story.templatetags.story import container
 from storybase_story.views import StoryBuilderView
 from storybase_taxonomy.models import Category, create_category
 from storybase_user.models import (Organization, Project,
-                                   create_organization, create_project)
+        OrganizationMembership, ProjectMembership,
+        create_organization, create_project)
 
 
 class SectionRelationFormTest(TestCase):
@@ -3122,7 +3123,9 @@ class StoryOrganizationResourceTest(ResourceTestCase):
 
     def test_put_list_new(self):
         """Test that a story's categories can be set"""
-        self.user.organizations.add(*list(Organization.objects.all()))
+        for org in Organization.objects.all():
+            OrganizationMembership.objects.create(
+                    user=self.user, organization=org)
         self.user.save()
         self.story.save()
         self.assertEqual(self.story.organizations.count(), 0)
@@ -3139,7 +3142,9 @@ class StoryOrganizationResourceTest(ResourceTestCase):
 
     def test_put_list_replace(self):
         """Test that the organizations can be replaced by a new set"""
-        self.user.organizations.add(*list(Organization.objects.all()))
+        for org in Organization.objects.all():
+            OrganizationMembership.objects.create(
+                    user=self.user, organization=org)
         self.user.save()
         self.story.organizations.add(*list(Organization.objects.filter(organizationtranslation__name__in=("Urban Land Conservancy", "America Scores Denver"))))
         self.story.save()
@@ -3197,7 +3202,9 @@ class StoryProjectResourceTest(ResourceTestCase):
 
     def test_put_list_new(self):
         """Test that a story's categories can be set"""
-        self.user.projects.add(*list(Project.objects.all()))
+        for proj in Project.objects.all():
+            ProjectMembership.objects.create(user=self.user,
+                    project=proj)
         self.user.save()
         self.story.save()
         self.assertEqual(self.story.projects.count(), 0)
@@ -3214,7 +3221,9 @@ class StoryProjectResourceTest(ResourceTestCase):
 
     def test_put_list_replace(self):
         """Test that the projects can be replaced by a new set"""
-        self.user.projects.add(*list(Project.objects.all()))
+        for proj in Project.objects.all():
+            ProjectMembership.objects.create(user=self.user,
+                    project=proj)
         self.user.save()
         self.story.projects.add(*list(Project.objects.filter(projecttranslation__name__in=("Finding a Bite: Food Access in the Children's Corridor", "Redeveloping The Holly: From Gang Violence to Hope"))))
         self.story.save()

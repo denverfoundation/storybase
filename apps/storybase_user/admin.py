@@ -17,10 +17,9 @@ from storybase.admin import (StorybaseModelAdmin, StorybaseStackedInline,
 from storybase_story.models import Story
 from storybase_user.auth.utils import send_account_deactivate_email
 from storybase_user.models import (Organization, OrganizationTranslation, 
-                                   Project, ProjectStory,  ProjectTranslation,
-                                   UserProfile)
+        OrganizationMembership, Project, ProjectStory, ProjectTranslation,
+        ProjectMembership, UserProfile)
                                   
-
 if 'social_auth' in settings.INSTALLED_APPS:
     import social_auth
 else:
@@ -98,9 +97,11 @@ class StoryUserAdmin(UserAdmin):
             obj.projects.clear()
             obj.stories.clear()
             for organization in form.cleaned_data['organizations']:
-                obj.organizations.add(organization)
+                OrganizationMembership.objects.create(user=obj,
+                        organization=organization)
             for project in form.cleaned_data['projects']:
-                obj.projects.add(project)
+                ProjectMembership.objects.create(user=obj,
+                        project=project)
             for story in form.cleaned_data['stories']:
                 obj.stories.add(story)
 
