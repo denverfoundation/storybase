@@ -4,6 +4,7 @@ import hashlib
 import urllib
 
 from django.contrib.auth.models import User
+from django.core.mail import send_mail
 
 import storybase_user.models
 from storybase_user.models import Organization, Project, ADMIN_GROUP_NAME
@@ -23,6 +24,14 @@ def get_admin_emails():
         admin_qs = User.objects.filter(is_superuser=True)
 
     return admin_qs.values_list('email', flat=True)
+
+
+def send_admin_mail(subject, message, from_email, **kwargs):
+    """Wrapper for send_mail that sends email to all admins"""
+    admin_emails = get_admin_emails()
+    if admin_emails:
+        send_mail(subject, message, from_email, admin_emails, **kwargs)
+
 
 def bulk_create(model, hashes, name_field='name',
                 description_field='description'):

@@ -4,6 +4,7 @@ import hashlib
 import os
 from time import sleep
 
+from django.conf import settings
 from django.contrib.auth.models import Group, User
 from django.test import TestCase
 from django.test.client import Client
@@ -18,7 +19,7 @@ from storybase_user.models import (create_organization, create_project,
     Organization, OrganizationMembership, OrganizationStory, 
     OrganizationTranslation, Project, ProjectStory, ProjectTranslation,
     ADMIN_GROUP_NAME)
-from storybase_user.utils import is_admin, get_admin_emails
+from storybase_user.utils import is_admin, get_admin_emails, send_admin_mail
 
 class ChangeUsernameEmailFormTest(TestCase):
     """Tests for the change username/email form"""
@@ -481,6 +482,7 @@ class UtilityTest(TestCase):
     """Test for utility functions"""
     def setUp(self):
         self.admin_group = Group.objects.create(name=ADMIN_GROUP_NAME)
+
     def test_get_admin_emails(self):
         """Test get_admin_emails() returns a list of administrator emails"""
         admin1 = User.objects.create(username='admin1', password='password',
@@ -535,6 +537,28 @@ class UtilityTest(TestCase):
         self.assertTrue(is_admin(admin))
         self.assertTrue(is_admin(superuser))
         self.assertFalse(is_admin(nonadmin))
+
+    def test_send_admin_mail(self):
+        backend = getattr(settings, 'EMAIL_BACKEND', None)
+        if backend != 'django.core.mail.backends.locmem.EmailBackend':
+            self.fail("You must use the in-memory e-mail backend when "
+                      "running this test")
+
+        from_email = "test@example.com"
+        message_body = "Test message to admins"
+        subject = "Test admin email"
+        admin = User.objects.create(username='admin', 
+            password='password', email='admin@example.com')
+        admin.groups.add(self.admin_group)
+        admin.save()
+        send_admin_mail(subject, message_body, from_email)
+            
+        from django.core.mail import outbox
+        sent_email = outbox[0]
+        self.assertEqual(sent_email.from_email, from_email)
+        self.assertEqual(sent_email.subject, subject) 
+        self.assertIn(admin.email, sent_email.to)
+        self.assertIn(message_body, sent_email.body)
 
 
 class CreateOrganizationViewTest(FileCleanupMixin, TestCase):
@@ -678,3 +702,11 @@ class CreateOrganizationViewTest(FileCleanupMixin, TestCase):
             'website_url': "http://www.example.com/",
         }
         self._do_test_post(data=data, expect_create=False)
+
+
+#class ModelSignalsTest(TestCase):
+#    def test_send_notifications_org_created(self):
+#        """Test the send_notifications_signal"""
+#        # BOOKMARK
+#        self.fail()
+
