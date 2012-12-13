@@ -117,7 +117,7 @@ class MembershipUtilsMixin(object):
         
 class OrganizationTranslation(TranslationModel, TimestampedModel):
     organization = models.ForeignKey('Organization')
-    name = ShortTextField()
+    name = ShortTextField(verbose_name=_("Organization Name"))
     description = models.TextField(blank=True)
 
     class Meta:
@@ -137,7 +137,8 @@ class Organization(MembershipUtilsMixin, FeaturedAssetsMixin,
             help_text=_("Contact information such as phone number and "
                         "postal address for this Organization"),
             verbose_name=_("contact information"))
-    website_url = models.URLField(blank=True)
+    website_url = models.URLField(blank=True,
+            verbose_name=_("Website URL"))
     members = models.ManyToManyField(User, related_name='organizations', 
             blank=True, through='OrganizationMembership')
     curated_stories = models.ManyToManyField('storybase_story.Story', related_name='curated_in_organizations', blank=True, through='OrganizationStory')
@@ -244,7 +245,7 @@ def add_story_to_organization(sender, instance, **kwargs):
 
 class ProjectTranslation(TranslationModel):
     project = models.ForeignKey('Project')
-    name = ShortTextField()
+    name = ShortTextField(verbose_name=_("Project Name"))
     description = models.TextField(blank=True)
 
     class Meta:
@@ -264,7 +265,8 @@ class Project(MembershipUtilsMixin, FeaturedAssetsMixin, RecentStoriesMixin,
     """
     project_id = UUIDField(auto=True, db_index=True)
     slug = models.SlugField(blank=True)
-    website_url = models.URLField(blank=True)
+    website_url = models.URLField(blank=True,
+            verbose_name=_("Website URL"))
     organizations = models.ManyToManyField(Organization, related_name='projects', blank=True)
     members = models.ManyToManyField(User, related_name='projects', 
             blank=True, through='ProjectMembership')
