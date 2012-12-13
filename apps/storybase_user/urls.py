@@ -7,7 +7,7 @@ from django.conf.urls.defaults import *
 from storybase_user.views import (OrganizationDetailView, OrganizationListView,
     OrganizationShareWidgetView, ProjectDetailView, ProjectListView,
     ProjectShareWidgetView, UserProfileDetailView, UserProfileShareWidgetView,
-    CreateOrganizationView)
+    CreateOrganizationView, CreateProjectView)
    
 urlpatterns = patterns('',
     url(r'organizations/$', OrganizationListView.as_view(),
@@ -33,6 +33,8 @@ urlpatterns = patterns('',
         ProjectShareWidgetView.as_view(), name='project_share_widget'), 
     url(r'projects/(?P<slug>[0-9a-z-]+)/share-widget/$',
         ProjectShareWidgetView.as_view(), name='project_share_widget'), 
+    url(r'create-project/$', CreateProjectView.as_view(),
+        name='create_project'),
     url(r'users/(?P<profile_id>[0-9a-f]{32,32})/$', 
         UserProfileDetailView.as_view(), name='userprofile_detail'),
     url(r'users/(?P<profile_id>[0-9a-f]{32,32})/share-widget/$', 

@@ -1,10 +1,10 @@
 {% extends "base.html" %}
 {% load storybase_tags i18n %}
 
-{% block head_title %}{% trans "Create an Organization" %}{% endblock %}
+{% block head_title %}{% blocktrans with aan=model_name|an %}Create {{ aan }} {{ model_name }}{% endblocktrans %}{% endblock %}
 
 {% block base_content %}
-<h1><span>{% trans "Create an Organization" %}</span></h1>
+<h1><span>{% blocktrans with aan=model_name|an %}Create {{ aan }} {{ model_name }}{% endblocktrans %}</span></h1>
 <form method="post" enctype="multipart/form-data" class="lengthy-labels">{% csrf_token %}
   {{ form.as_p }}
   <input type="submit" value="{% trans "Save" %}" />

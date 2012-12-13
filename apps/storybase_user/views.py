@@ -18,11 +18,11 @@ from django.views.generic.list import ListView
 
 from storybase.views.generic import ModelIdDetailView
 from storybase.utils import full_url
-from storybase_user.forms import OrganizationModelForm, UserNotificationsForm
+from storybase_user.forms import (OrganizationModelForm, UserNotificationsForm,
+        ProjectModelForm)
 from storybase_user.auth.forms import ChangeUsernameEmailForm
 from storybase_user.auth.utils import send_email_change_email
-from storybase_user.models import (Organization, OrganizationMembership,
-        Project, UserProfile)
+from storybase_user.models import (Organization, Project, UserProfile)
 from storybase_user.utils import send_admin_mail
 
 
@@ -195,10 +195,8 @@ class UserProfileShareWidgetView(ShareWidgetView):
         return 'profile_id'
 
 
-class CreateOrganizationView(CreateView):
-    model = Organization
-    form_class = OrganizationModelForm
-    template_name = 'storybase_user/create_organization.html'
+class CreateStoryAggregatorView(CreateView):
+    template_name = 'storybase_user/create_organization_project.html'
 
     def send_create_notification(self, obj=None):
         if obj is None:
@@ -215,14 +213,34 @@ class CreateOrganizationView(CreateView):
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
-        return super(CreateOrganizationView, self).dispatch(*args, **kwargs)
+        return super(CreateStoryAggregatorView, self).dispatch(*args, **kwargs)
 
     def form_valid(self, form):
         form.instance.status = 'pending'
-        response = super(CreateOrganizationView, self).form_valid(form)
-        OrganizationMembership.objects.create(user=self.request.user,
-                organization=self.object, member_type='owner')
+        response = super(CreateStoryAggregatorView, self).form_valid(form)
+        through_field_name = self.model._meta.object_name.lower()
+        through_kwargs = {
+            'user': self.request.user,
+            through_field_name: self.object,
+            'member_type': 'owner',
+        }
+        self.model.members.through.objects.create(**through_kwargs)
         return response
+
+    def get_context_data(self, **kwargs):
+        context = super(CreateStoryAggregatorView, self).get_context_data(**kwargs)
+        context['model_name'] = self.model._meta.object_name
+        return context
+
+
+class CreateOrganizationView(CreateStoryAggregatorView):
+    model = Organization
+    form_class = OrganizationModelForm
+
+
+class CreateProjectView(CreateStoryAggregatorView):
+    model = Project
+    form_class = ProjectModelForm
 
 
 @csrf_protect
