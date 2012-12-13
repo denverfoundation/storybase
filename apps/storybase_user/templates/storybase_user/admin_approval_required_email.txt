@@ -1,0 +1,8 @@
+{% load storybase_tags i18n %}{{ owner.first_name }},
+
+{% blocktrans with obj_class=object|classname|lower obj_name=object.name %}
+A user has created a new {{ obj_class }} named "{{ obj_name }}".
+
+Before this is public, you must approve it by changing its status to
+"published".  You can do this at {{ admin_url }}. 
+{% endblocktrans %}

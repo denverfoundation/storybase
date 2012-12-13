@@ -18,8 +18,9 @@ from storybase_user.forms import OrganizationModelForm
 from storybase_user.models import (create_organization, create_project,
     Organization, OrganizationMembership, OrganizationStory, 
     OrganizationTranslation, Project, ProjectStory, ProjectTranslation,
-    ADMIN_GROUP_NAME)
+    ADMIN_GROUP_NAME, send_approval_notification)
 from storybase_user.utils import is_admin, get_admin_emails, send_admin_mail
+from storybase_user.views import CreateOrganizationView
 
 class ChangeUsernameEmailFormTest(TestCase):
     """Tests for the change username/email form"""
@@ -245,6 +246,18 @@ class OrganizationModelTest(TestCase):
         self.assertEqual(stories.count(), 2)
         self.assertEqual(stories[0], story1)
         self.assertEqual(stories[1], story2)
+
+    def test_owners(self):
+        org = create_organization(name='Mile High Connects',
+                status='published')
+        user1 = User.objects.create_user("test", "test@example.com", "test")
+        user2 = User.objects.create_user("test2", "test2@example.com", "test2")
+        OrganizationMembership.objects.create(user=user1, organization=org,
+                member_type='owner')
+        OrganizationMembership.objects.create(user=user2, organization=org,
+                member_type='member')
+        self.assertIn(user1, org.owners)
+        self.assertNotIn(user2, org.owners)
 
 
 class OrganizationModelFormTest(TestCase):
@@ -691,7 +704,6 @@ class CreateOrganizationViewTest(FileCleanupMixin, TestCase):
         }
         self._do_test_post(extra_data, expect_create=False)
 
-
     def test_post_invalid_no_name(self):
         """
         Test that posting to the organization creation view with a missing
@@ -703,10 +715,52 @@ class CreateOrganizationViewTest(FileCleanupMixin, TestCase):
         }
         self._do_test_post(data=data, expect_create=False)
 
+    def test_send_create_notification(self):
+        backend = getattr(settings, 'EMAIL_BACKEND', None)
+        if backend != 'django.core.mail.backends.locmem.EmailBackend':
+            self.fail("You must use the in-memory e-mail backend when "
+                      "running this test")
 
-#class ModelSignalsTest(TestCase):
-#    def test_send_notifications_org_created(self):
-#        """Test the send_notifications_signal"""
-#        # BOOKMARK
-#        self.fail()
+        admin_group = Group.objects.create(name=ADMIN_GROUP_NAME)
+        admin = User.objects.create(username='admin', 
+            password='password', email='admin@example.com')
+        admin.groups.add(admin_group)
+        view = CreateOrganizationView()
+        org = create_organization(name="Test Organization", status="pending")
+        view.send_create_notification(org)
+        from django.core.mail import outbox
+        sent_email = outbox[0]
+        self.assertIn(admin.email, sent_email.to)
+        self.assertIn(org.name, sent_email.body)
 
+
+class ModelSignalsTest(TestCase):
+    def setUp(self):
+        self.username = 'test'
+        self.password = 'test'
+        self.user = User.objects.create_user(self.username, 
+            'test@example.com', self.password)
+        self.admin_group = Group.objects.create(name=ADMIN_GROUP_NAME)
+        self.admin = User.objects.create(username='admin', 
+            password='password', email='admin@example.com')
+        self.admin.groups.add(self.admin_group)
+
+    def test_send_approval_notification_org(self):
+        """Test the send_notifications_signal"""
+        backend = getattr(settings, 'EMAIL_BACKEND', None)
+        if backend != 'django.core.mail.backends.locmem.EmailBackend':
+            self.fail("You must use the in-memory e-mail backend when "
+                      "running this test")
+
+        org = create_organization("Test Organization", status="pending")
+        OrganizationMembership.objects.create(organization=org,
+                user=self.user, member_type='owner')
+        org.status = 'published'
+        send_approval_notification(Organization, org, False)
+
+        from django.core.mail import outbox
+        sent_email = outbox[0]
+        self.assertIn(self.user.email, sent_email.to)
+        self.assertIn(org.name, sent_email.subject)
+        self.assertIn(org.name, sent_email.body)
+        self.assertIn(org.get_absolute_url(), sent_email.body)

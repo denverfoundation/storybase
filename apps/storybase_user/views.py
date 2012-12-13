@@ -1,5 +1,6 @@
 """Views"""
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
@@ -7,7 +8,7 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.template import Context, RequestContext
-from django.template.loader import get_template
+from django.template.loader import get_template, render_to_string
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_protect
@@ -16,11 +17,13 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 
 from storybase.views.generic import ModelIdDetailView
+from storybase.utils import full_url
 from storybase_user.forms import OrganizationModelForm, UserNotificationsForm
 from storybase_user.auth.forms import ChangeUsernameEmailForm
 from storybase_user.auth.utils import send_email_change_email
 from storybase_user.models import (Organization, OrganizationMembership,
         Project, UserProfile)
+from storybase_user.utils import send_admin_mail
 
 
 class AccountNotificationsView(UpdateView):
@@ -196,6 +199,19 @@ class CreateOrganizationView(CreateView):
     model = Organization
     form_class = OrganizationModelForm
     template_name = 'storybase_user/create_organization.html'
+
+    def send_create_notification(self, obj=None):
+        if obj is None:
+            obj = self.object
+        admin_url_name = "admin:%s_%s_change" % (obj._meta.app_label,
+                obj._meta.object_name.lower())
+        admin_url = full_url(reverse(admin_url_name, args=(obj.id,)))
+        message = render_to_string('storybase_user/admin_approval_required_email.txt',
+                { 'object': obj, 'admin_url': admin_url })
+        subject = "New %s %s needs your approval" % (
+                obj._meta.object_name, obj.name)
+        send_admin_mail(subject, message, settings.DEFAULT_FROM_EMAIL)
+        return True 
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):

@@ -8,10 +8,12 @@ except ImportError:
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.mail import send_mail
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
+from django.template.loader import render_to_string 
 
 from uuidfield.fields import UUIDField
 
@@ -102,6 +104,16 @@ class RecentStoriesMixin(StoriesMixin):
         return self.get_recent_queryset().order_by('-last_edited')[:count]
 
 
+class MembershipUtilsMixin(object):
+    @property
+    def owners(self):
+        member_type_arg = "%s__member_type" % (
+                self.members.through.__name__.lower())
+        filter_kwargs = {
+            member_type_arg: 'owner'
+        }
+        return self.members.filter(**filter_kwargs)
+
         
 class OrganizationTranslation(TranslationModel, TimestampedModel):
     organization = models.ForeignKey('Organization')
@@ -115,9 +127,9 @@ class OrganizationTranslation(TranslationModel, TimestampedModel):
         return self.name
 
 
-class Organization(FeaturedAssetsMixin, RecentStoriesMixin, 
-        FeaturedStoriesMixin, DirtyFieldsMixin, PublishedModel, 
-        TranslatedModel, TimestampedModel):
+class Organization(MembershipUtilsMixin, FeaturedAssetsMixin, 
+        RecentStoriesMixin, FeaturedStoriesMixin, DirtyFieldsMixin,
+        PublishedModel, TranslatedModel, TimestampedModel):
     """ An organization or a community group that users and stories can be associated with. """
     organization_id = UUIDField(auto=True, db_index=True)
     slug = models.SlugField(blank=True)
@@ -185,26 +197,30 @@ def set_organization_slug(sender, instance, **kwargs):
         unique_slugify(instance.organization, instance.name)
 	instance.organization.save()
 
-#def send_notifications(sender, instance, created, **kwargs):
-#    """
-#    Signal handler for sending notifications when a Project or Organization
-#    is created
-#    """
-#    if created and instance.status == 'pending':
-#        # TODO: Send email to admins
-#        return True 
-#
-#    dirty_fields = instance.get_dirty_fields()
-#    if ('status' in dirty_fields and dirty_fields['status'] == 'pending' and
-#        instance.status == 'published'):
-#        # Status changed from pending to published
-#        # TODO: Send email to owner
-#        return True
-#
-#    return False
+def send_approval_notification(sender, instance, created, **kwargs):
+    """
+    Signal handler for sending notifications when an admin has approved a 
+    Project or Organization
+    """
+    dirty_fields = instance.get_dirty_fields()
+    if ('status' in dirty_fields and dirty_fields['status'] == 'pending' and
+        instance.status == 'published'):
+        if instance.owners:
+            owner = instance.owners[0]
+            site_name = settings.STORYBASE_SITE_NAME
+            contact_email = settings.STORYBASE_CONTACT_EMAIL
+            subject = _("%s has been added on %s") % (instance.name, 
+                    site_name)
+            message = render_to_string('storybase_user/admin_approved_email.txt',
+                                       { 'object': instance, 'owner': owner,
+                                         'site_name': site_name,
+                                         'contact_email': contact_email, })
+            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [owner.email])
+
 
 # Hook up some signal handlers
 post_save.connect(set_organization_slug, sender=OrganizationTranslation)
+post_save.connect(send_approval_notification, sender=Organization)
 
 
 class OrganizationMembership(Membership):
@@ -237,8 +253,9 @@ class ProjectTranslation(TranslationModel):
         return self.name
 
 
-class Project(FeaturedAssetsMixin, RecentStoriesMixin, FeaturedStoriesMixin,
-        DirtyFieldsMixin, PublishedModel, TranslatedModel, TimestampedModel):
+class Project(MembershipUtilsMixin, FeaturedAssetsMixin, RecentStoriesMixin,
+        FeaturedStoriesMixin, DirtyFieldsMixin, PublishedModel,
+        TranslatedModel, TimestampedModel):
     """ 
     A project that collects related stories.  
     
@@ -310,6 +327,7 @@ def set_project_slug(sender, instance, **kwargs):
 
 # Hook up some signal handlers
 post_save.connect(set_project_slug, sender=ProjectTranslation)
+post_save.connect(send_approval_notification, sender=Project)
 
 class ProjectMembership(Membership):
     """Through class for Project to User relations"""

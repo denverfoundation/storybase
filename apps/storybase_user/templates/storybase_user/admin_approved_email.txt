@@ -1,0 +1,15 @@
+{% load storybase_tags i18n %}{{ owner.first_name }},
+
+{% fullurl object.get_absolute_url as obj_url %}
+{% blocktrans with obj_class=object|classname|lower obj_name=object.name %}
+Hello from the {{ site_name }} team. Per your request, we’ve created an {{ obj_class }} for {{ obj_name }} on {{ site_name }}.
+
+You can view your {{ obj_class }} here: {{ obj_url }}
+
+Your {{ site_name }} account is now listed as a member of your {{ obj_class }}, so when you create and publish stories on {{ site_name }} you will be able to add them to your {{ obj_class }} page. You can find instructions for how to do that here: http://floodlightproject.org/en/help/#projects-and-organizations
+
+Please contact us at {{ contact_email }} if you have any other questions.
+
+Happy storytelling,
+The {{ site_name }} Team
+{% endblocktrans %}
