@@ -4,6 +4,11 @@
 
 {% block content_page_class %}{{ block.super }} project{% endblock %}
 
+{% block sidebar %}
+{{ block.super }}
+<a class="button gray" href="{% url create_organization %}" title="{% trans "Create your own Organization" %}">{% trans "Create your own Organization" %}</a>
+{% endblock %}
+
 {% block metadata_center_title %}{% trans "Organization Contributors" %}{% endblock %}
 
 {% block metadata_omega %}

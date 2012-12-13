@@ -490,6 +490,7 @@ body.base-template .content-page.object-detail .featured-story img{width:100%;}
 body.base-template .content-page.object-detail .story-list ul{margin-bottom:30px;}
 body.base-template .content-page.object-detail .story-list li{margin-bottom:10px;overflow:hidden;}body.base-template .content-page.object-detail .story-list li div{min-height:1px;}
 body.base-template .content-page.object-detail .story-list li img{margin-top:8px;width:100%;}
+body.base-template .content-page.object-detail .sidebar a.button{display:block !important;margin-top:10px;}
 body.base-template .content-page.object-list .object-list li{overflow:hidden;}body.base-template .content-page.object-list .object-list li h2,body.base-template .content-page.object-list .object-list li h3,body.base-template .content-page.object-list .object-list li h4{text-align:left;}
 body.base-template .content-page.object-list .object-list li img.featured-asset{max-width:100%;}
 body.base-template .content-page.object-list .object-list .description p{margin-bottom:1em;}
