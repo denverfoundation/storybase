@@ -69,10 +69,16 @@ class CreateViewTestMixin(FileCleanupMixin):
         if data is None:
             data = self.get_default_data() 
         data.update(extra_data)
+        form_id = "create-%s-form" % (self.model._meta.object_name.lower())
         self.assertEqual(self.model.objects.count(), 0)
         self.client.login(username=self.username, password=self.password)
         resp = self.client.post(self.path, data)
         if expect_create:
+            # The request should succeed without a redirect
+            self.assertEqual(resp.status_code, 200)
+            # There shouldn't be a form in the response, because there's
+            # a success message
+            self.assertNotIn(form_id, resp.content)
             self.assertEqual(self.model.objects.count(), 1)
             obj = self.model.objects.all()[0]
             # The object attributes should match the posted data
@@ -96,8 +102,12 @@ class CreateViewTestMixin(FileCleanupMixin):
             for email in ("test2@example.com", "test3@example.com"):
                 u = self._get_user(email)
                 self.assertIn(u, obj.members.all())
+
         else:
             self.assertEqual(self.model.objects.count(), 0)
+            # There should be a form in the response (to allow correcting
+            # the invalid fields
+            self.assertIn(form_id, resp.content)
         if extra_test:
             extra_test(resp, obj)
 

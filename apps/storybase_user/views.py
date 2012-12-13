@@ -217,7 +217,7 @@ class CreateStoryAggregatorView(CreateView):
 
     def form_valid(self, form):
         form.instance.status = 'pending'
-        response = super(CreateStoryAggregatorView, self).form_valid(form)
+        self.object = form.save()
         through_field_name = self.model._meta.object_name.lower()
         through_kwargs = {
             'user': self.request.user,
@@ -225,11 +225,15 @@ class CreateStoryAggregatorView(CreateView):
             'member_type': 'owner',
         }
         self.model.members.through.objects.create(**through_kwargs)
-        return response
+        # The default behavior is to redirect to the URL provided by 
+        # self.get_success_url().  We just want to render a completed
+        # message to the user via the template.
+        return self.render_to_response(self.get_context_data())
 
     def get_context_data(self, **kwargs):
         context = super(CreateStoryAggregatorView, self).get_context_data(**kwargs)
         context['model_name'] = self.model._meta.object_name
+        context['list_url'] = reverse("%s_list" % (self.model._meta.object_name.lower()))
         return context
 
 
