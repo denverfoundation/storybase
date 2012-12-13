@@ -21,7 +21,7 @@ class OrganizationModelForm(TranslatedModelForm):
 
     class Meta:
         model = Organization
-        fields = ('website_url',)
+        fields = ('contact_info', 'website_url',)
         translated_fields = ('name', 'description',)
 
     def save(self, commit=True):

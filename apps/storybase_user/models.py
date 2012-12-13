@@ -135,7 +135,8 @@ class Organization(MembershipUtilsMixin, FeaturedAssetsMixin,
     slug = models.SlugField(blank=True)
     contact_info = models.TextField(blank=True,
             help_text=_("Contact information such as phone number and "
-                        "postal address for this Organization"))
+                        "postal address for this Organization"),
+            verbose_name=_("contact information"))
     website_url = models.URLField(blank=True)
     members = models.ManyToManyField(User, related_name='organizations', 
             blank=True, through='OrganizationMembership')
