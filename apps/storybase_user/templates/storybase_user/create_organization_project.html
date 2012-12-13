@@ -8,6 +8,7 @@
 <h1><span>{% blocktrans %}Create {{ aan }} {{ model_name }}{% endblocktrans %}</span></h1>
 {% if form %}
 <form id="create-{{ lc_model_name }}-form" method="post" enctype="multipart/form-data" class="lengthy-labels">{% csrf_token %}
+  <p class="instructions">{% trans "Fields marked with a * are required" %}</p>
   {{ form.as_p }}
   <input type="submit" value="{% blocktrans %}Create {{ model_name }}{% endblocktrans %}" />
 </form>

@@ -11,6 +11,8 @@ from storybase_user.models import (Organization, Project, UserProfile)
 
 
 class StoryAggregatorModelFormBase(TranslatedModelForm):
+    required_css_class = 'required'
+
     members = UserEmailField(required=False, 
             help_text=_("Enter a comma-separated list of email addresses "
                         "of the users you would like to add. "
