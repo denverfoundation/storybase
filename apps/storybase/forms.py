@@ -58,6 +58,19 @@ class FileOrUrlWidget(MultiWidget):
 
         return [None, None]
 
+    def format_output(self, rendered_widgets):
+        """
+        Given a list of rendered widgets (as strings), returns a Unicode string
+        representing the HTML for the whole lot.
+
+        """
+        output = []
+        output.append(u"<label class=\"sublabel\">%s</label>" % _("Select a file"))
+        output.append(rendered_widgets[0])
+        output.append(u"<label class=\"sublabel\">%s</label>" %  _("Or specify a URL"))
+        output.append(rendered_widgets[1])
+        return u''.join(output)
+
 
 class FileOrUrlField(MultiValueField):
     widget = FileOrUrlWidget
