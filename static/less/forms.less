@@ -115,11 +115,16 @@ form {
 
 // Create Project and Organization forms
 #create-organization-form, #create-project-form {
+  // Since inputs and textareas are intermixed, it looks better when they
+  // are the same width
+  @input-width: 40%;
+
   label + input {
     // Make containers to clear the inputs and textareas, they don't
     // with position: absolute;
     position: relative;
     margin-left: 0;
+    width: @input-width;
   }
 
   label + textarea {
@@ -128,6 +133,15 @@ form {
     // instead of below them.
     .form-align-margin;
     clear: none;
+    width: @input-width;
+  }
+
+  .helptext {
+    .form-align-margin;
+    line-height: 1em;
+    padding-top: 0.5em;
+    font-style: italic;
+    width: @input-width;
   }
 
   // .sublabel is the class given to labels for multi-value form fields
