@@ -9,7 +9,7 @@
 {% if form %}
 <form id="create-{{ lc_model_name }}-form" method="post" enctype="multipart/form-data" class="lengthy-labels">{% csrf_token %}
   {{ form.as_p }}
-  <input type="submit" value="{% trans "Save" %}" />
+  <input type="submit" value="{% blocktrans %}Create {{ model_name }}{% endblocktrans %}" />
 </form>
 {% else %}
 <p>{% blocktrans %}Thanks for creating {{ aan }} {{ lc_model_name }}.{% endblocktrans %}</p>
