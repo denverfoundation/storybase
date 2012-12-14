@@ -196,7 +196,7 @@ class UserProfileShareWidgetView(ShareWidgetView):
 
 
 class CreateStoryAggregatorView(CreateView):
-    template_name = 'storybase_user/create_organization_project.html'
+    template_name = 'storybase_user/create_organization_project_base.html'
 
     def send_create_notification(self, obj=None):
         if obj is None:
@@ -243,11 +243,13 @@ class CreateStoryAggregatorView(CreateView):
 class CreateOrganizationView(CreateStoryAggregatorView):
     model = Organization
     form_class = OrganizationModelForm
+    template_name = 'storybase_user/create_organization.html'
 
 
 class CreateProjectView(CreateStoryAggregatorView):
     model = Project
     form_class = ProjectModelForm
+    template_name = 'storybase_user/create_project.html'
 
 
 @csrf_protect
