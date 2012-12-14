@@ -4,6 +4,11 @@
 
 {% block content_page_class %}{{ block.super }} project{% endblock %}
 
+{% block sidebar %}
+{{ block.super }}
+<a class="button gray" href="{% url create_project %}" title="{% trans "Create your own Project" %}">{% trans "Create your own Project" %}</a>
+{% endblock %}
+
 {% block metadata_center_title %}{% trans "Project Contributors" %}{% endblock %}
 
 {% block metadata_omega %}

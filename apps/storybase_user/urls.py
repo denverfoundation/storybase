@@ -6,7 +6,8 @@ except ImportError:
 from django.conf.urls.defaults import *
 from storybase_user.views import (OrganizationDetailView, OrganizationListView,
     OrganizationShareWidgetView, ProjectDetailView, ProjectListView,
-    ProjectShareWidgetView, UserProfileDetailView, UserProfileShareWidgetView)
+    ProjectShareWidgetView, UserProfileDetailView, UserProfileShareWidgetView,
+    CreateOrganizationView, CreateProjectView)
    
 urlpatterns = patterns('',
     url(r'organizations/$', OrganizationListView.as_view(),
@@ -14,11 +15,15 @@ urlpatterns = patterns('',
     url(r'organizations/(?P<organization_id>[0-9a-f]{32,32})/$',
         OrganizationDetailView.as_view(), name='organization_detail_by_id'),
     url(r'organizations/(?P<slug>[0-9a-z-]+)/$',
-        OrganizationDetailView.as_view(), name='organization_detail'), 
+        OrganizationDetailView.as_view(), name='organization_detail'),
     url(r'organizations/(?P<organization_id>[0-9a-f]{32,32})/share-widget/$',
-        OrganizationShareWidgetView.as_view(), name='organization_share_widget'), 
+        OrganizationShareWidgetView.as_view(),
+        name='organization_share_widget'),
     url(r'organizations/(?P<slug>[0-9a-z-]+)/share-widget/$',
-        OrganizationShareWidgetView.as_view(), name='organization_share_widget'), 
+        OrganizationShareWidgetView.as_view(),
+        name='organization_share_widget'),
+    url(r'create-organization/$', CreateOrganizationView.as_view(),
+        name='create_organization'),
     url(r'projects/$', ProjectListView.as_view(), name='project_list'),
     url(r'projects/(?P<project_id>[0-9a-f]{32,32})/$',
         ProjectDetailView.as_view(), name='project_detail_by_id'), 
@@ -28,10 +33,13 @@ urlpatterns = patterns('',
         ProjectShareWidgetView.as_view(), name='project_share_widget'), 
     url(r'projects/(?P<slug>[0-9a-z-]+)/share-widget/$',
         ProjectShareWidgetView.as_view(), name='project_share_widget'), 
+    url(r'create-project/$', CreateProjectView.as_view(),
+        name='create_project'),
     url(r'users/(?P<profile_id>[0-9a-f]{32,32})/$', 
         UserProfileDetailView.as_view(), name='userprofile_detail'),
     url(r'users/(?P<profile_id>[0-9a-f]{32,32})/share-widget/$', 
-        UserProfileShareWidgetView.as_view(), name='userprofile_share_widget'),
+        UserProfileShareWidgetView.as_view(),
+        name='userprofile_share_widget'),
 )
 
 if shortuuid:

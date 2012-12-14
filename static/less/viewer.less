@@ -1,6 +1,12 @@
 // Padding for header/footer bars
 @viewer-bar-padding: 10px;
 
+.callout-section {
+  background:@light-gray;
+  border-top:1px solid darken(@light-gray, 10%);
+  border-bottom:1px solid darken(@light-gray, 10%);
+}
+
 .story-viewer {
   @footer-background-color: #000;
 
@@ -71,6 +77,10 @@
 
   .summary {
     padding: 1%;
+    .callout-section;
+  }
+  .call-to-action {
+    .callout-section;
   }
 
   .section,

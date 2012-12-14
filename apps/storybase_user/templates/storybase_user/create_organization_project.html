@@ -1,0 +1,22 @@
+{% extends "twocol.html" %}
+{% load storybase_tags i18n %}
+
+{% block head_title %}{% blocktrans with aan=model_name|an %}Create {{ aan }} {{ model_name }}{% endblocktrans %}{% endblock %}
+
+{% block base_content %}
+{% with lc_model_name=model_name|lower aan=model_name|an %}
+<h1><span>{% blocktrans %}Create {{ aan }} {{ model_name }}{% endblocktrans %}</span></h1>
+{% if form %}
+<form id="create-{{ lc_model_name }}-form" method="post" enctype="multipart/form-data" class="lengthy-labels">{% csrf_token %}
+  <p class="instructions">{% trans "Fields marked with a * are required" %}</p>
+  {{ form.as_p }}
+  <input type="submit" value="{% blocktrans %}Create {{ model_name }}{% endblocktrans %}" />
+</form>
+{% else %}
+<p>{% blocktrans %}Thanks for creating {{ aan }} {{ lc_model_name }}.{% endblocktrans %}</p>
+<p>{% blocktrans %}We’ll do a quick review to make sure everything looks good and send you a confirmation email when your {{ lc_model_name }} page is live in {{ storybase_site_name }}.{% endblocktrans %}</p>
+<p>{% blocktrans %}In the meantime you can <a href="{{ list_url }}" title="{{ model_name }}s">browse other {{ lc_model_name}}s</a> or <a href="/" title="{{ storybase_site_name}} Home">go to the home page</a>.{% endblocktrans %}
+{% endif %}
+{% endwith %}
+{% endblock %}
+

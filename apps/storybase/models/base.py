@@ -50,6 +50,7 @@ class PublishedModel(models.Model):
     """Abstract base class for models with publication information"""
     # Class-level "constants"
     STATUS = (
+        (u'pending', u'pending'),
         (u'draft', u'draft'),
         (u'published', u'published'),
     )

@@ -17,10 +17,9 @@ from storybase.admin import (StorybaseModelAdmin, StorybaseStackedInline,
 from storybase_story.models import Story
 from storybase_user.auth.utils import send_account_deactivate_email
 from storybase_user.models import (Organization, OrganizationTranslation, 
-                                   Project, ProjectStory,  ProjectTranslation,
-                                   UserProfile)
+        OrganizationMembership, Project, ProjectStory, ProjectTranslation,
+        ProjectMembership, UserProfile)
                                   
-
 if 'social_auth' in settings.INSTALLED_APPS:
     import social_auth
 else:
@@ -98,9 +97,11 @@ class StoryUserAdmin(UserAdmin):
             obj.projects.clear()
             obj.stories.clear()
             for organization in form.cleaned_data['organizations']:
-                obj.organizations.add(organization)
+                OrganizationMembership.objects.create(user=obj,
+                        organization=organization)
             for project in form.cleaned_data['projects']:
-                obj.projects.add(project)
+                ProjectMembership.objects.create(user=obj,
+                        project=project)
             for story in form.cleaned_data['stories']:
                 obj.stories.add(story)
 
@@ -191,11 +192,16 @@ class OrganizationTranslationInline(StorybaseStackedInline):
     extra = 1
 
 
+class OrganizationMembershipInline(admin.TabularInline):
+    model = Organization.members.through
+    extra = 0
+
+
 class OrganizationAdmin(StorybaseModelAdmin):
     search_fields = ['name']
     filter_horizontal = ['members', 'featured_assets']
     readonly_fields = ['created', 'last_edited', 'organization_id']
-    inlines = [OrganizationTranslationInline,]
+    inlines = [OrganizationTranslationInline, OrganizationMembershipInline]
     prefix_inline_classes = ['OrganizationTranslationInline']
 
 admin.site.register(Organization, OrganizationAdmin)
@@ -211,12 +217,18 @@ class ProjectStoryInline(admin.TabularInline):
     extra = 0
 
 
+class ProjectMembershipInline(admin.TabularInline):
+    model = Project.members.through
+    extra = 0
+
+
 class ProjectAdmin(StorybaseModelAdmin):
     search_fields = ['name']
     filter_horizontal = ['members', 'organizations', 'featured_assets']
     list_filter = ('on_homepage',)
     readonly_fields = ['created', 'last_edited', 'project_id']
-    inlines = [ProjectStoryInline, ProjectTranslationInline]
+    inlines = [ProjectMembershipInline, ProjectStoryInline, 
+            ProjectTranslationInline]
     prefix_inline_classes = ['ProjectTranslationInline']
     actions = [toggle_featured]
 
