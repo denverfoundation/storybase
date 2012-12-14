@@ -225,6 +225,9 @@ class CreateStoryAggregatorView(CreateView):
             'member_type': 'owner',
         }
         self.model.members.through.objects.create(**through_kwargs)
+        # Send a notification to the admins that the object has been
+        # created
+        self.send_create_notification()
         # The default behavior is to redirect to the URL provided by 
         # self.get_success_url().  We just want to render a completed
         # message to the user via the template.
