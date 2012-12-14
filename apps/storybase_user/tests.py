@@ -3,7 +3,9 @@
 from time import sleep
 
 from django.contrib.auth.models import Group, User
+from django.core import urlresolvers
 from django.test import TestCase
+from django.test.client import Client
 from django.utils import translation
 
 from storybase.utils import slugify
@@ -471,3 +473,64 @@ class UtilityTest(TestCase):
         self.assertTrue(is_admin(admin))
         self.assertTrue(is_admin(superuser))
         self.assertFalse(is_admin(nonadmin))
+
+
+class AccountStoriesViewTest(TestCase):
+    def setUp(self):
+        self.username = 'test'
+        self.password = 'test'
+        self.user = User.objects.create_user(self.username, 
+            'test@example.com', self.password)
+        self.path = "/accounts/stories/"
+        self.client = Client()
+        self.client.login(username=self.username, password=self.password)
+
+    def test_no_publish_button_for_never_published(self):
+        """
+        Test that no publish button shows up when a story has never been
+        published.
+        """
+        story = create_story(title='Story 1', summary='', byline='',
+                author=self.user)
+        publish_url = urlresolvers.reverse('story_publish', kwargs={
+            'slug': story.slug }) 
+        unpublish_url = urlresolvers.reverse('story_unpublish', kwargs={
+            'slug': story.slug }) 
+        resp = self.client.get(self.path)
+        self.assertNotIn(unpublish_url, resp.content)
+        self.assertNotIn(publish_url, resp.content)
+
+    def test_publish_button_for_once_published(self):
+        """
+        Test that a publish button appears when a story was published
+        at one time, but is now unpublished.
+        """
+        story = create_story(title='Story 1', summary='', byline='',
+                author=self.user)
+        story.status = 'published'
+        story.save()
+        story.status = 'draft'
+        story.save()
+        publish_url = urlresolvers.reverse('story_publish', kwargs={
+            'slug': story.slug }) 
+        unpublish_url = urlresolvers.reverse('story_unpublish', kwargs={
+            'slug': story.slug }) 
+        resp = self.client.get(self.path)
+        self.assertNotIn(unpublish_url, resp.content)
+        self.assertIn(publish_url, resp.content)
+
+    def test_unpublished_button_for_published(self):
+        """
+        Test that an unpublish button is available for published stories
+        """
+        story = create_story(title='Story 1', summary='', byline='',
+                author=self.user)
+        story.status = 'published'
+        story.save()
+        publish_url = urlresolvers.reverse('story_publish', kwargs={
+            'slug': story.slug }) 
+        unpublish_url = urlresolvers.reverse('story_unpublish', kwargs={
+            'slug': story.slug }) 
+        resp = self.client.get(self.path)
+        self.assertNotIn(publish_url, resp.content)
+        self.assertIn(unpublish_url, resp.content)
