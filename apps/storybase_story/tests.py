@@ -381,6 +381,15 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
         self.assertIn(body1, strings)
         self.assertNotIn(body2, strings)
 
+    def test_never_published(self):
+        story = create_story(title="Test Story", summary="Test Summary",
+            byline="Test Byline")
+        self.assertEqual(story.never_published, True)
+        story.status = 'published'
+        story.save()
+        self.assertEqual(story.never_published, False)
+
+
 
 class StoryPermissionTest(TestCase):
     """Test case for story permissions"""
