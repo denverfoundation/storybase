@@ -1,26 +1,19 @@
 // Padding for header/footer bars
 @viewer-bar-padding: 10px;
 
+.callout-section {
+  background:@light-gray;
+  border-top:1px solid darken(@light-gray, 10%);
+  border-bottom:1px solid darken(@light-gray, 10%);
+}
+
 .story-viewer {
   @footer-background-color: #000;
 
   background-color: #fff;
 
-  h1, h2 {
-    padding: 1.5% 0;
-  }
-
   h2 {
-    font-size: 2.5em;
     color: #555;
-  }
-
-  p {
-    padding-bottom: 1.5%;
-  }
-
-  small {
-    padding-bottom: 1.5%;
   }
 
   figure img {
@@ -74,6 +67,7 @@
 
   #body {
     .standard-headers(left);
+    .body-copy-lists;
     position: absolute;
     top: 0;
     width: 100%;
@@ -83,6 +77,10 @@
 
   .summary {
     padding: 1%;
+    .callout-section;
+  }
+  .call-to-action {
+    .callout-section;
   }
 
   .section,
