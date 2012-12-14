@@ -484,6 +484,7 @@ body.base-template .content-page.object-detail .object img{width:100%;}
 body.base-template .content-page.object-detail .object #launch-story-viewer{margin:5px 0;font-size:16px;}
 body.base-template .content-page.object-detail .object+hr,body.base-template .content-page.object-detail .story-outreach{clear:left;}
 body.base-template .content-page.object-detail .connected-stories dl{margin:10px;}
+body.base-template .content-page.object-detail .call-to-action{word-wrap:break-word;overflow-wrap:break-word;}
 body.base-template .content-page.object-detail .call-to-action ul{list-style:disc !important;}
 body.base-template .content-page.object-detail .object-metadata{color:#444;margin:20px 0;}body.base-template .content-page.object-detail .object-metadata dt,body.base-template .content-page.object-detail .object-metadata dd{float:left;}
 body.base-template .content-page.object-detail .object-metadata dt{clear:left;margin-right:4px;}
