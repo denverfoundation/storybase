@@ -1,10 +1,12 @@
 """Models representing people or groups of people"""
 
+from smtplib import SMTPException
 try:
     import shortuuid
     import uuid
 except ImportError:
     shortuuid = None
+
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -217,7 +219,15 @@ def send_approval_notification(sender, instance, created, **kwargs):
                                        { 'object': instance, 'owner': owner,
                                          'site_name': site_name,
                                          'contact_email': contact_email, })
-            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [owner.email])
+            try:
+                send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [owner.email])
+            except SMTPException:
+                # Since fail_silently=True is not passed to our call to
+                # send_mail, we need to catch the exception and log an
+                # error.
+                import logging
+                logger = logging.getLogger('storybase')
+                logger.error("Error sending approval e-mail to %s" % (owner.email))
 
 
 # Hook up some signal handlers
