@@ -567,7 +567,7 @@ class DefaultImageMixin(object):
     def get_default_img_url(self, width, height):
         choices = self.get_default_img_url_choices()
         lgst_width = 0
-        lgst_src = 0
+        lgst_src = None
         for img_width, url in choices.iteritems():
             if img_width <= width: 
                 lgst_src = url
