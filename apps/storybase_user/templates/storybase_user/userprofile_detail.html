@@ -5,12 +5,24 @@ Template for user profile page.
 
 {% load i18n storybase_tags %}
 
+{% block content_page_class %}{{ block.super }} user{% endblock %}
+
 {% block summary_left %}
-{# No content in this block for now #}
+<div class="grid_8 alpha">
+    <section class="summary">
+        {% if object.user == request.user %}
+        {% url account_summary as connected_account_url %}
+        <div class="alert alert-warning">
+            <h3>{% trans "Your Profile Image" %}</h3>
+            <p>{% blocktrans %}If you have <a href="{{ connected_account_url }}" title="Connected accounts">connected your Facebook account</a>, your Facebook profile image will be used for your {{ storybase_site_name }} profile.  Otherwise, your <a href="http://gravatar.com/" title="Gravatar">Gravatar</a> image will be used. If neither is available, a default image will be shown.{% endblocktrans %}</p>
+        </div>
+        {% endif %}
+    </section>
+</div>
 {% endblock %}
 
 {% block summary_right %}
-<div class="grid_6 omega">
+<div class="grid_2 omega">
     <section class="object-featured-asset">
         {% featured_asset object 150 %}
     </section>
