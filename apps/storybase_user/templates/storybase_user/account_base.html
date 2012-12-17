@@ -12,6 +12,7 @@
                   <li><a href="{% url account_password %}" title="{% trans "Change your password" %}" class="tooltip">{% trans "Password" %}</a></li>
                   <li><a href="{% url account_notifications %}" title="{% trans "Control your settings for receiving updates from" %} {{ storybase_site_name }}" class="tooltip">{% trans "Notifications and Subscriptions" %}</a></li>
                   <li><a href="{% url account_stories %}" title="{% trans "Manage your stories and launch them in the Story Builder" %}" class="tooltip">{% trans "My Stories" %}</a></li>
+                  <li><a href="{{ user.get_profile.get_absolute_url }}" title="{% trans "View your public profile" %}">{% trans "Public Profile" %}</a></li> 
               </ul>
           </li>
       </ul>
