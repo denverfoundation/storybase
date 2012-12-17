@@ -402,6 +402,7 @@ body.base-template .sidebar h1,body.base-template .sidebar h2,body.base-template
 body.base-template .sidebar .sibling-nav li{margin-bottom:8px;padding-right:17px;}body.base-template .sidebar .sibling-nav li a{font-size:18px;line-height:22px;font-family:'MuseoSlab500Regular';}
 body.base-template .sidebar .sibling-nav li.selected,body.base-template .sidebar .sibling-nav li.hover{background:url('../img/arrow-nav.png') no-repeat right center;}
 body.base-template .sidebar .sibling-nav li a:hover{text-decoration:none;}
+body.base-template .sidebar #subnav{margin-bottom:8px;}
 body.base-template.homepage ul,body.base-template.homepage ol{padding:0;}body.base-template.homepage ul li,body.base-template.homepage ol li{list-style:none;}
 body.base-template.homepage .intro{padding-top:25px;padding-bottom:55px;}body.base-template.homepage .intro h2{font-size:45px;background:none;}
 body.base-template.homepage .intro p{font-size:18px;color:#666666;text-align:center;}body.base-template.homepage .intro p a{color:#fe9703;}
