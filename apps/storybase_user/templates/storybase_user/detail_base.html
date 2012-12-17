@@ -41,6 +41,10 @@
     <div class="object-metadata grid_10">
         <div class="grid_3 alpha">
         {% block metadata_alpha %}
+        {% if object.website_url %}
+        <h4>{% block metadata_alpha_title %}{% trans "Website" %}{% endblock %}</h4>
+        <a href="{{ object.website_url }}" title="{{ object.name }} {% trans "Website" %}">{{ object.website_url }}</a>
+        {% endif %}
         {% endblock %}
         </div>
         <div class="grid_3">

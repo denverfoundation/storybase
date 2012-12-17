@@ -184,3 +184,8 @@ def key_from_instance(instance, extra=None):
     opts = instance._meta
     key = '%s.%s:%s' % (opts.app_label, opts.module_name, instance.pk)
     return key if extra is None else key + ":" + extra
+
+
+def is_file(data):
+    """Is the value a File object"""
+    return hasattr(data, 'read') and callable(data.read)

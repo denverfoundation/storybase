@@ -1225,6 +1225,41 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
   },
 
   /**
+   * Move a guider's element to the left or right.
+   */
+  nudge: function($guiderEl, amount) {
+    var guiderElemLeft = parseInt($guiderEl.css("left").replace('px', ''));
+    var myGuiderArrow = $guiderEl.find(".guider_arrow");
+    var arrowElemLeft = parseInt(myGuiderArrow.css("left").replace('px', ''));
+    $guiderEl.css("left", (guiderElemLeft + amount) + "px");
+    myGuiderArrow.css("left", (arrowElemLeft - amount) + "px");
+  },
+
+  /**
+   * Detect if a guider's element falls outside of the window and push it
+   * in place if it does.
+   *
+   * This is meant to be bound to the guider element's 'guiders.show' event 
+   */
+  nudgeIntoWindow: function($guiderEl) {
+    var windowWidth = $(window).width();
+    var guiderOffset = $guiderEl.offset();
+    var guiderElemWidth = $guiderEl.outerWidth();
+    var isGuiderRight = (guiderOffset.left + guiderElemWidth > windowWidth);
+    var isGuiderLeft = (guiderOffset.left < 0);
+    // Check if the guider ends up to the left or to the right of the 
+    // window and nudge it over until it fits
+    if (isGuiderRight) {
+      this.nudge($guiderEl, windowWidth - guiderOffset.left - guiderElemWidth);
+    }
+    if (isGuiderLeft) {
+      this.nudge($guiderEl, 0 - guiderOffset.left);
+    }
+    // Unbind this event from the element
+    $guiderEl.unbind("guiders.show");
+  },
+
+  /**
    * Checks if the tour should be shown
    */
   showTour: function() {
@@ -1245,43 +1280,10 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
 
   show: function() {
     var that = this;
-    /**
-     * Move a guider's element to the left or right.
-     */
-    var nudge = function($guiderEl, amount) {
-      var guiderElemLeft = parseInt($guiderEl.css("left").replace('px', ''));
-      var myGuiderArrow = $guiderEl.find(".guider_arrow");
-      var arrowElemLeft = parseInt(myGuiderArrow.css("left").replace('px', ''));
-      $guiderEl.css("left", (guiderElemLeft + amount) + "px");
-      myGuiderArrow.css("left", (arrowElemLeft - amount) + "px");
-    };
-    /**
-     * Detect if a guider's element falls outside of the window and push it
-     * in place if it does.
-     *
-     * This is meant to be bound to the guider element's 'guiders.show' event 
-     */
-    var nudgeIntoWindow = function($guiderEl) {
-      var windowWidth = $(window).width();
-      var guiderOffset = $guiderEl.offset();
-      var guiderElemWidth = $guiderEl.outerWidth();
-      var isGuiderRight = (guiderOffset.left + guiderElemWidth > windowWidth);
-      var isGuiderLeft = (guiderOffset.left < 0);
-      // Check if the guider ends up to the left or to the right of the 
-      // window and nudge it over until it fits
-      if (isGuiderRight) {
-        nudge($guiderEl, windowWidth - guiderOffset.left - guiderElemWidth);
-      }
-      if (isGuiderLeft) {
-        nudge($guiderEl, 0 - guiderOffset.left);
-      }
-      // Unbind this event from the element
-      $guiderEl.unbind("guiders.show");
-    };
 
     var bindNudge = function(myGuider) {
       $(myGuider.elem).bind("guiders.show", function() {
-        nudgeIntoWindow($(this));
+        that.nudgeIntoWindow($(this));
       });
     }; 
     
@@ -1473,7 +1475,7 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
       // that this uses the internal guiders API to get the element.
       if (storybase.builder.views.MSIE) {
         setTimeout(function() {
-          nudgeIntoWindow(guiders._guiderById('workflow-step-guider').elem);
+          that.nudgeIntoWindow(guiders._guiderById('workflow-step-guider').elem);
         }, 200);
       }
     }

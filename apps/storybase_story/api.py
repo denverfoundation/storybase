@@ -875,7 +875,7 @@ class StoryOrganizationResource(PutListSubResource):
 
         # Custom meta attributes
         related_attr = 'organizations'
-        related_queryset = Organization.objects.all()
+        related_queryset = Organization.objects.filter(status='published')
         related_id_name = 'organization_id'
 
     def alter_hydrated_object_list(self, request, object_list):
@@ -890,7 +890,7 @@ class StoryProjectResource(PutListSubResource):
 
         # Custom meta attributes
         related_attr = 'projects'
-        related_queryset = Project.objects.all()
+        related_queryset = Project.objects.filter(status='published')
         related_id_name = 'project_id'
 
     def alter_hydrated_object_list(self, request, object_list):

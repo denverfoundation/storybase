@@ -36,7 +36,7 @@
 						Organizations are groups of people creating stories together. They can be non-profits, school groups, neighborhoods, or any storytellers who share a common goal.
 						{% endblocktrans %}
 					</p>
-					<p><a href="{% page_url "project-organization" %}">{% trans "Create an Organization" %}</a></p>
+					<p><a href="{% url create_organization %}">{% trans "Create an Organization" %}</a></p>
 				</div>
 				<div class="dd-col col3">
                     <h6><a href="{% url project_list %}">{% trans "Projects" %}</a></h6>
@@ -45,7 +45,7 @@
 						Projects are collections of stories about a common theme, place, issue, event or movement. They can be open to contributions from any Floodlight user, or constrained to a group of authors.
 						{% endblocktrans %}
 					</p>
-					<p><a href="{% page_url "project-organization" %}">{% trans "Create a Project" %}</a></p>
+					<p><a href="{% url create_project %}">{% trans "Create a Project" %}</a></p>
 				</div>
 				<div class="cl">&nbsp;</div>
 			</div>

@@ -174,6 +174,7 @@
 .body-copy {
   .sans-serif-text;
   font-size:@base-font-size;
+  line-height:@base-line-height;
   color:@body-copy-color; 
   p {
     margin-bottom: @body-copy-margin-bottom;
@@ -212,6 +213,9 @@
   background:url('../img/h3-line.png') repeat-x 0 8px; 
   margin-bottom:10px;
   
+  // line-through effect looks best with 1em line height
+  line-height:1em;
+  
   span {
     background:#fff; 
     padding-left:16px; 
@@ -225,7 +229,20 @@
   h3 { font-size:@h3-size; color:@medium-gray; .styled-header(@align); }
   h4 { font-size:@h4-size; color:@medium-gray; .styled-header(@align); }
   h5 { font-size:@h5-size; color:@highlight-blue; .styled-header(@align); }
+  h1, h2, h3, h4, h5 {
+    // explicit property seems neccesary to properly set line height using ems.
+    line-height:@base-line-height;
+  }
+  
+  // if a header is following any other element, give the header
+  // a little extra top-margin.
+  * {
+    &+h1, &+h2, &+h3, &+h4, &+h5 {
+      margin-top:1.2em;
+    }
+  }
 }
+
 
 .centered {
   text-align: center;
@@ -251,7 +268,7 @@ body.base-template {
 
     .sans-serif-text;
     font-size: @base-font-size;
-    line-height: 1.3;
+    line-height:@base-line-height;
     color: @dark-gray;
     background:url('../img/body.jpg') repeat-x 0 0;
     min-width: 100%;

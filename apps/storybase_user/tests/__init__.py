@@ -2,6 +2,7 @@
 
 from time import sleep
 
+from django.conf import settings
 from django.contrib.auth.models import Group, User
 from django.test import TestCase
 from django.utils import translation
@@ -9,11 +10,14 @@ from django.utils import translation
 from storybase.utils import slugify
 from storybase_story.models import create_story
 from storybase_user.auth.forms import ChangeUsernameEmailForm
+from storybase_user.forms import OrganizationModelForm
 from storybase_user.models import (create_organization, create_project,
-    Organization, OrganizationStory, OrganizationTranslation,
-    Project, ProjectStory, ProjectTranslation,
-    ADMIN_GROUP_NAME)
-from storybase_user.utils import is_admin, get_admin_emails
+    Organization, OrganizationMembership, OrganizationStory, 
+    OrganizationTranslation, Project, ProjectStory, ProjectTranslation,
+    ADMIN_GROUP_NAME, send_approval_notification)
+from storybase_user.tests.base import CreateViewTestMixin
+from storybase_user.utils import is_admin, get_admin_emails, send_admin_mail
+from storybase_user.views import CreateOrganizationView, CreateProjectView
 
 class ChangeUsernameEmailFormTest(TestCase):
     """Tests for the change username/email form"""
@@ -240,6 +244,77 @@ class OrganizationModelTest(TestCase):
         self.assertEqual(stories[0], story1)
         self.assertEqual(stories[1], story2)
 
+    def test_owners(self):
+        org = create_organization(name='Mile High Connects',
+                status='published')
+        user1 = User.objects.create_user("test", "test@example.com", "test")
+        user2 = User.objects.create_user("test2", "test2@example.com", "test2")
+        OrganizationMembership.objects.create(user=user1, organization=org,
+                member_type='owner')
+        OrganizationMembership.objects.create(user=user2, organization=org,
+                member_type='member')
+        self.assertIn(user1, org.owners)
+        self.assertNotIn(user2, org.owners)
+
+
+class OrganizationModelFormTest(TestCase):
+    def test_is_valid_invalid_no_name(self):
+        data = {}
+        f = OrganizationModelForm(data)
+        self.assertFalse(f.is_valid())
+
+    def test_is_valid_valid(self):
+        data = {
+            'name': 'Test Organization',
+            'description': 'Test organization description',
+        }
+        f = OrganizationModelForm(data)
+        self.assertTrue(f.is_valid())
+
+    def test_save(self):
+        data = {
+            'name': 'Test Organization',
+            'description': 'Test organization description',
+            'website_url': 'http://example.com/',
+        }
+        f = OrganizationModelForm(data)
+        f.save()
+        self.assertEqual(f.instance.name, data['name'])
+        self.assertEqual(f.instance.description, data['description'])
+        self.assertEqual(f.instance.website_url, data['website_url'])
+        org = Organization.objects.get(pk=f.instance.pk)
+        self.assertEqual(org.name, data['name'])
+        self.assertEqual(org.description, data['description'])
+        self.assertEqual(org.website_url, data['website_url'])
+
+    def test_update(self):
+        org = create_organization(name="Test Organization", 
+                description="Test organization description",
+                website_url="http://example.com/")
+        data = {
+            'name': 'Test Organization 2',
+            'description': 'Test organization description 2',
+            'website_url': 'http://example.com/2/',
+        }
+        f = OrganizationModelForm(data, instance=org)
+        f.save()
+        self.assertEqual(org.name, data['name'])
+        self.assertEqual(org.description, data['description'])
+        self.assertEqual(org.website_url, data['website_url'])
+        # Check that the changes were saved to the database
+        org = Organization.objects.get(pk=org.pk)
+        self.assertEqual(org.name, data['name'])
+        self.assertEqual(org.description, data['description'])
+        self.assertEqual(org.website_url, data['website_url'])
+
+
+    def test_as_p(self):
+        f = OrganizationModelForm()
+        html = f.as_p()
+        for field_name in ('name', 'description', 'website_url'):
+            self.assertIn('name="%s"' % (field_name), html)
+        
+
 class OrganizationApiTest(TestCase):
     def test_create_organization(self):
 
@@ -417,6 +492,7 @@ class UtilityTest(TestCase):
     """Test for utility functions"""
     def setUp(self):
         self.admin_group = Group.objects.create(name=ADMIN_GROUP_NAME)
+
     def test_get_admin_emails(self):
         """Test get_admin_emails() returns a list of administrator emails"""
         admin1 = User.objects.create(username='admin1', password='password',
@@ -471,3 +547,97 @@ class UtilityTest(TestCase):
         self.assertTrue(is_admin(admin))
         self.assertTrue(is_admin(superuser))
         self.assertFalse(is_admin(nonadmin))
+
+    def test_send_admin_mail(self):
+        backend = getattr(settings, 'EMAIL_BACKEND', None)
+        if backend != 'django.core.mail.backends.locmem.EmailBackend':
+            self.fail("You must use the in-memory e-mail backend when "
+                      "running this test")
+
+        from_email = "test@example.com"
+        message_body = "Test message to admins"
+        subject = "Test admin email"
+        admin = User.objects.create(username='admin', 
+            password='password', email='admin@example.com')
+        admin.groups.add(self.admin_group)
+        admin.save()
+        send_admin_mail(subject, message_body, from_email)
+            
+        from django.core.mail import outbox
+        sent_email = outbox[0]
+        self.assertEqual(sent_email.from_email, from_email)
+        self.assertEqual(sent_email.subject, subject) 
+        self.assertIn(admin.email, sent_email.to)
+        self.assertIn(message_body, sent_email.body)
+
+
+class CreateOrganizationViewTest(CreateViewTestMixin, TestCase):
+    model = Organization
+    view_class = CreateOrganizationView
+
+    def create_model(self, name):
+        return create_organization(name=name, status="pending")
+
+    def setUp(self):
+        super(CreateOrganizationViewTest, self).setUp()
+        self.path = '/create-organization/'
+
+    def get_default_data(self):
+        return {
+            'name': "Test Organization",
+            'description': "Test Organization description",
+            'website_url': "http://www.example.com/",
+            'members': "test2@example.com,test3@example.com,test4@example.com,\t\t\ntest5@example.com,sdadssafasfas",
+        }
+
+
+class CreateProjectViewTest(CreateViewTestMixin, TestCase):
+    model = Project 
+    view_class = CreateProjectView
+
+    def create_model(self, name):
+        return create_project(name=name, status="pending")
+
+    def setUp(self):
+        super(CreateProjectViewTest, self).setUp()
+        self.path = '/create-project/'
+
+    def get_default_data(self):
+        return {
+            'name': "Test Project",
+            'description': "Test Project description",
+            'website_url': "http://www.example.com/",
+            'members': "test2@example.com,test3@example.com,test4@example.com,\t\t\ntest5@example.com,sdadssafasfas",
+        }
+
+
+class ModelSignalsTest(TestCase):
+    def setUp(self):
+        self.username = 'test'
+        self.password = 'test'
+        self.user = User.objects.create_user(self.username, 
+            'test@example.com', self.password)
+        self.admin_group = Group.objects.create(name=ADMIN_GROUP_NAME)
+        self.admin = User.objects.create(username='admin', 
+            password='password', email='admin@example.com')
+        self.admin.groups.add(self.admin_group)
+
+    def test_send_approval_notification_org(self):
+        """Test the send_notifications_signal"""
+        backend = getattr(settings, 'EMAIL_BACKEND', None)
+        if backend != 'django.core.mail.backends.locmem.EmailBackend':
+            self.fail("You must use the in-memory e-mail backend when "
+                      "running this test")
+
+        org = create_organization("Test Organization", status="pending")
+        OrganizationMembership.objects.create(organization=org,
+                user=self.user, member_type='owner')
+        org.status = 'published'
+        send_approval_notification(Organization, org, False)
+
+        from django.core.mail import outbox
+        sent_email = outbox[0]
+        self.assertIn(self.user.email, sent_email.to)
+        self.assertIn(org.name, sent_email.subject)
+        self.assertIn(org.name, sent_email.body)
+        self.assertIn(org.get_absolute_url(), sent_email.body)

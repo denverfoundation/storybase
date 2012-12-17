@@ -8,17 +8,20 @@ except ImportError:
 
 from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.mail import send_mail
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
+from django.template.loader import render_to_string 
 
 from uuidfield.fields import UUIDField
 
 from storybase.fields import ShortTextField
 from storybase.managers import FeaturedManager
-from storybase.models import (TimestampedModel, TranslatedModel,
-                              TranslationModel)
+from storybase.models import (DirtyFieldsMixin, PublishedModel,
+        TimestampedModel, TranslatedModel, TranslationModel)
+                             
 from storybase.utils import full_url, unique_slugify
 from storybase_asset.models import (DefaultImageMixin, FeaturedAssetsMixin,
     ImageRenderingMixin)
@@ -35,6 +38,21 @@ class CuratedStory(models.Model):
     class Meta:
         abstract = True
         verbose_name = "story"
+
+
+class Membership(models.Model):
+    """ Abstract base class for "through" model for associating Users with Projects and Organizations """
+    MEMBER_TYPE_CHOICES = (
+        ('member', _('Member')),
+        ('owner', _('Owner')),
+    )
+    user = models.ForeignKey('auth.User')
+    member_type = models.CharField(max_length=140,
+        choices=MEMBER_TYPE_CHOICES, default='member')
+    added = models.DateTimeField(auto_now_add=True)
+
+    class Meta:
+        abstract = True
 
 
 class FeaturedStoriesMixin(object):
@@ -84,15 +102,45 @@ class RecentStoriesMixin(StoriesMixin):
 
     def recent_stories(self, count=3):
         return self.get_recent_queryset().order_by('-last_edited')[:count]
-        
 
-class Organization(FeaturedAssetsMixin, RecentStoriesMixin,
-                   FeaturedStoriesMixin, TranslatedModel, TimestampedModel):
+
+class MembershipUtilsMixin(object):
+    @property
+    def owners(self):
+        member_type_arg = "%s__member_type" % (
+                self.members.through.__name__.lower())
+        filter_kwargs = {
+            member_type_arg: 'owner'
+        }
+        return self.members.filter(**filter_kwargs)
+
+        
+class OrganizationTranslation(TranslationModel, TimestampedModel):
+    organization = models.ForeignKey('Organization')
+    name = ShortTextField(verbose_name=_("Organization Name"))
+    description = models.TextField(blank=True)
+
+    class Meta:
+        unique_together = (('organization', 'language'))
+
+    def __unicode__(self):
+        return self.name
+
+
+class Organization(MembershipUtilsMixin, FeaturedAssetsMixin, 
+        RecentStoriesMixin, FeaturedStoriesMixin, DirtyFieldsMixin,
+        PublishedModel, TranslatedModel, TimestampedModel):
     """ An organization or a community group that users and stories can be associated with. """
     organization_id = UUIDField(auto=True, db_index=True)
     slug = models.SlugField(blank=True)
-    website_url = models.URLField(blank=True)
-    members = models.ManyToManyField(User, related_name='organizations', blank=True)
+    contact_info = models.TextField(blank=True,
+            help_text=_("Contact information such as phone number and "
+                        "postal address for this Organization"),
+            verbose_name=_("contact information"))
+    website_url = models.URLField(blank=True,
+            verbose_name=_("Website URL"))
+    members = models.ManyToManyField(User, related_name='organizations', 
+            blank=True, through='OrganizationMembership')
     curated_stories = models.ManyToManyField('storybase_story.Story', related_name='curated_in_organizations', blank=True, through='OrganizationStory')
     on_homepage = models.BooleanField(_("Featured on homepage"),
 		                      default=False)
@@ -102,6 +150,7 @@ class Organization(FeaturedAssetsMixin, RecentStoriesMixin,
 
     objects = FeaturedManager()
 
+    translation_class = OrganizationTranslation
     translated_fields = ['name', 'description']
     translation_set = 'organizationtranslation_set'
 
@@ -139,17 +188,6 @@ class Organization(FeaturedAssetsMixin, RecentStoriesMixin,
         return settings.STORYBASE_DEFAULT_ORGANIZATION_IMAGES
 
 
-class OrganizationTranslation(TranslationModel, TimestampedModel):
-    organization = models.ForeignKey('Organization')
-    name = ShortTextField()
-    description = models.TextField(blank=True)
-
-    class Meta:
-        unique_together = (('organization', 'language'))
-
-    def __unicode__(self):
-        return self.name
-
 def set_organization_slug(sender, instance, **kwargs):
     """
     When an OrganizationTranslation is saved, set its Organization's slug if it
@@ -161,8 +199,36 @@ def set_organization_slug(sender, instance, **kwargs):
         unique_slugify(instance.organization, instance.name)
 	instance.organization.save()
 
+def send_approval_notification(sender, instance, created, **kwargs):
+    """
+    Signal handler for sending notifications when an admin has approved a 
+    Project or Organization
+    """
+    dirty_fields = instance.get_dirty_fields()
+    if ('status' in dirty_fields and dirty_fields['status'] == 'pending' and
+        instance.status == 'published'):
+        if instance.owners:
+            owner = instance.owners[0]
+            site_name = settings.STORYBASE_SITE_NAME
+            contact_email = settings.STORYBASE_CONTACT_EMAIL
+            subject = _("%s has been added on %s") % (instance.name, 
+                    site_name)
+            message = render_to_string('storybase_user/admin_approved_email.txt',
+                                       { 'object': instance, 'owner': owner,
+                                         'site_name': site_name,
+                                         'contact_email': contact_email, })
+            send_mail(subject, message, settings.DEFAULT_FROM_EMAIL, [owner.email])
+
+
 # Hook up some signal handlers
 post_save.connect(set_organization_slug, sender=OrganizationTranslation)
+post_save.connect(send_approval_notification, sender=Organization)
+
+
+class OrganizationMembership(Membership):
+    """Through class for Organization to Story relations"""
+    organization = models.ForeignKey('Organization')
+
 
 class OrganizationStory(CuratedStory):
     """ "Through" class for Organization to Story relations """
@@ -176,8 +242,22 @@ def add_story_to_organization(sender, instance, **kwargs):
             story.organizations.add(instance)
             story.save()
 
-class Project(FeaturedAssetsMixin, RecentStoriesMixin, FeaturedStoriesMixin,
-              TranslatedModel, TimestampedModel):
+
+class ProjectTranslation(TranslationModel):
+    project = models.ForeignKey('Project')
+    name = ShortTextField(verbose_name=_("Project Name"))
+    description = models.TextField(blank=True)
+
+    class Meta:
+        unique_together = (('project', 'language'))
+
+    def __unicode__(self):
+        return self.name
+
+
+class Project(MembershipUtilsMixin, FeaturedAssetsMixin, RecentStoriesMixin,
+        FeaturedStoriesMixin, DirtyFieldsMixin, PublishedModel,
+        TranslatedModel, TimestampedModel):
     """ 
     A project that collects related stories.  
     
@@ -185,9 +265,11 @@ class Project(FeaturedAssetsMixin, RecentStoriesMixin, FeaturedStoriesMixin,
     """
     project_id = UUIDField(auto=True, db_index=True)
     slug = models.SlugField(blank=True)
-    website_url = models.URLField(blank=True)
+    website_url = models.URLField(blank=True,
+            verbose_name=_("Website URL"))
     organizations = models.ManyToManyField(Organization, related_name='projects', blank=True)
-    members = models.ManyToManyField(User, related_name='projects', blank=True) 
+    members = models.ManyToManyField(User, related_name='projects', 
+            blank=True, through='ProjectMembership')
     curated_stories = models.ManyToManyField('storybase_story.Story', related_name='curated_in_projects', blank=True, through='ProjectStory')
     on_homepage = models.BooleanField(_("Featured on homepage"),
 		                      default=False)
@@ -197,6 +279,7 @@ class Project(FeaturedAssetsMixin, RecentStoriesMixin, FeaturedStoriesMixin,
 
     objects = FeaturedManager()
 
+    translation_class = ProjectTranslation
     translated_fields = ['name', 'description']
     translation_set = 'projecttranslation_set'
 
@@ -234,17 +317,6 @@ class Project(FeaturedAssetsMixin, RecentStoriesMixin, FeaturedStoriesMixin,
         return settings.STORYBASE_DEFAULT_PROJECT_IMAGES
 
 
-class ProjectTranslation(TranslationModel):
-    project = models.ForeignKey('Project')
-    name = ShortTextField()
-    description = models.TextField(blank=True)
-
-    class Meta:
-        unique_together = (('project', 'language'))
-
-    def __unicode__(self):
-        return self.name
-
 def set_project_slug(sender, instance, **kwargs):
     """
     When an ProjectTranslation is saved, set its Project's slug if it
@@ -258,7 +330,11 @@ def set_project_slug(sender, instance, **kwargs):
 
 # Hook up some signal handlers
 post_save.connect(set_project_slug, sender=ProjectTranslation)
+post_save.connect(send_approval_notification, sender=Project)
 
+class ProjectMembership(Membership):
+    """Through class for Project to User relations"""
+    project = models.ForeignKey('Project')
 
 class ProjectStory(CuratedStory):
     """ "Through" class for Project to Story relations """
@@ -374,14 +450,15 @@ def create_user_profile(sender, instance, created, **kwargs):
 post_save.connect(create_user_profile, sender=User)
 
 
-def create_project(name, description='', website_url='', language=settings.LANGUAGE_CODE):
+def create_project(name, description='', website_url='',
+        language=settings.LANGUAGE_CODE, **kwargs):
     """ Convenience function for creating a Project 
     
     Allows for the creation of stories without having to explicitely
     deal with the translations.
 
     """
-    project = Project(website_url=website_url)
+    project = Project(website_url=website_url, **kwargs)
     project.save()
     project_translation = ProjectTranslation(
         name=name,
@@ -390,14 +467,15 @@ def create_project(name, description='', website_url='', language=settings.LANGU
     project_translation.save()
     return project
 
-def create_organization(name, description='', website_url='', language=settings.LANGUAGE_CODE):
+def create_organization(name, description='', website_url='', 
+        language=settings.LANGUAGE_CODE, **kwargs):
     """ Convenience function for creating an Organization
     
     Allows for the creation of organizations without having to explicitely
     deal with the translations.
 
     """
-    org = Organization(website_url=website_url)
+    org = Organization(website_url=website_url, **kwargs)
     org.save()
     org_translation = OrganizationTranslation(
         name=name,

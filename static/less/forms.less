@@ -1,4 +1,8 @@
 
+.form-align-margin() {
+  margin-left: 24%;
+} 
+
 form {
 	overflow:hidden;
 	position:relative;
@@ -67,7 +71,7 @@ form {
 		}
 		label + input {
 			position:absolute;
-			margin-left:24%;
+                        .form-align-margin;
 		}
 		
 		&.required label:after {
@@ -107,4 +111,54 @@ form {
 		clear:left;
 	}
 	
+}
+
+// Create Project and Organization forms
+#create-organization-form, #create-project-form {
+  // Since inputs and textareas are intermixed, it looks better when they
+  // are the same width
+  @input-width: 40%;
+
+  label + input {
+    // Make containers to clear the inputs and textareas, they don't
+    // with position: absolute;
+    position: relative;
+    margin-left: 0;
+    width: @input-width;
+  }
+
+  label + textarea {
+    // In this form, since the textareas and inputs are intermixed, it
+    // looks better if the textareas are also floated alongside the labels
+    // instead of below them.
+    .form-align-margin;
+    clear: none;
+    width: @input-width;
+  }
+
+  .helptext {
+    .form-align-margin;
+    line-height: 1em;
+    padding-top: 0.5em;
+    font-style: italic;
+    width: @input-width;
+  }
+
+  // .sublabel is the class given to labels for multi-value form fields
+  // These should be pushed over to the right along with the inputs
+  .sublabel {
+    width: auto;
+    float: none;
+    margin-bottom: 8px;
+  }
+
+  .sublabel + input {
+    float: none;
+    .form-align-margin;
+  }
+
+  input + .sublabel {
+    .form-align-margin;
+    margin-top: 8px;
+  }
 }

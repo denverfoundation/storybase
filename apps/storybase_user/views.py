@@ -1,5 +1,6 @@
 """Views"""
 
+from django.conf import settings
 from django.contrib import messages
 from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
@@ -7,19 +8,23 @@ from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
 from django.shortcuts import render_to_response
 from django.template import Context, RequestContext
-from django.template.loader import get_template
+from django.template.loader import get_template, render_to_string
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic.base import TemplateView
-from django.views.generic.edit import UpdateView 
+from django.views.generic.edit import CreateView, UpdateView 
 from django.views.generic.list import ListView
 
 from storybase.views.generic import ModelIdDetailView
-from storybase_user.forms import UserNotificationsForm
+from storybase.utils import full_url
+from storybase_user.forms import (OrganizationModelForm, UserNotificationsForm,
+        ProjectModelForm)
 from storybase_user.auth.forms import ChangeUsernameEmailForm
 from storybase_user.auth.utils import send_email_change_email
-from storybase_user.models import Organization, Project, UserProfile
+from storybase_user.models import (Organization, Project, UserProfile)
+from storybase_user.utils import send_admin_mail
+
 
 class AccountNotificationsView(UpdateView):
     model = UserProfile
@@ -133,7 +138,7 @@ class OrganizationDetailView(RelatedStoriesDetailView):
 class OrganizationListView(ListView):
     """Display a list of all Organizations"""
     context_object_name = 'organizations'
-    queryset = Organization.objects.all().order_by('organizationtranslation__name')
+    queryset = Organization.objects.filter(status='published').order_by('organizationtranslation__name')
 
 
 class ProjectDetailView(RelatedStoriesDetailView):
@@ -145,7 +150,7 @@ class ProjectDetailView(RelatedStoriesDetailView):
 class ProjectListView(ListView):
     """Display a list of all Projects"""
     context_object_name = "projects"
-    queryset = Project.objects.all().order_by('-last_edited')
+    queryset = Project.objects.filter(status='published').order_by('-last_edited')
 
 
 class UserProfileDetailView(RelatedStoriesDetailView):
@@ -188,6 +193,63 @@ class UserProfileShareWidgetView(ShareWidgetView):
 
     def get_object_id_name(self):
         return 'profile_id'
+
+
+class CreateStoryAggregatorView(CreateView):
+    template_name = 'storybase_user/create_organization_project_base.html'
+
+    def send_create_notification(self, obj=None):
+        if obj is None:
+            obj = self.object
+        admin_url_name = "admin:%s_%s_change" % (obj._meta.app_label,
+                obj._meta.object_name.lower())
+        admin_url = full_url(reverse(admin_url_name, args=(obj.id,)))
+        message = render_to_string('storybase_user/admin_approval_required_email.txt',
+                { 'object': obj, 'admin_url': admin_url })
+        subject = "New %s %s needs your approval" % (
+                obj._meta.object_name, obj.name)
+        send_admin_mail(subject, message, settings.DEFAULT_FROM_EMAIL)
+        return True 
+
+    @method_decorator(login_required)
+    def dispatch(self, *args, **kwargs):
+        return super(CreateStoryAggregatorView, self).dispatch(*args, **kwargs)
+
+    def form_valid(self, form):
+        form.instance.status = 'pending'
+        self.object = form.save()
+        through_field_name = self.model._meta.object_name.lower()
+        through_kwargs = {
+            'user': self.request.user,
+            through_field_name: self.object,
+            'member_type': 'owner',
+        }
+        self.model.members.through.objects.create(**through_kwargs)
+        # Send a notification to the admins that the object has been
+        # created
+        self.send_create_notification()
+        # The default behavior is to redirect to the URL provided by 
+        # self.get_success_url().  We just want to render a completed
+        # message to the user via the template.
+        return self.render_to_response(self.get_context_data())
+
+    def get_context_data(self, **kwargs):
+        context = super(CreateStoryAggregatorView, self).get_context_data(**kwargs)
+        context['model_name'] = self.model._meta.object_name
+        context['list_url'] = reverse("%s_list" % (self.model._meta.object_name.lower()))
+        return context
+
+
+class CreateOrganizationView(CreateStoryAggregatorView):
+    model = Organization
+    form_class = OrganizationModelForm
+    template_name = 'storybase_user/create_organization.html'
+
+
+class CreateProjectView(CreateStoryAggregatorView):
+    model = Project
+    form_class = ProjectModelForm
+    template_name = 'storybase_user/create_project.html'
 
 
 @csrf_protect

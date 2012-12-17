@@ -7,7 +7,7 @@ from django.utils.translation import ugettext as _
 from storybase.fields import ShortTextField
 from storybase.models import (TranslatedModel, TranslationModel,
                               TimestampedModel)
-from storybase_user.utils import get_admin_emails
+from storybase_user.utils import send_admin_mail
 
 
 if "notification" in settings.INSTALLED_APPS:
@@ -46,18 +46,15 @@ class SiteContactMessage(models.Model):
 
 
 @receiver(post_save, sender=SiteContactMessage)
-def send_email_to_admins(sender, **kwargs):
+def send_message_to_admins(sender, **kwargs):
     """Send a copy of the message to admins"""
     from django.template.loader import render_to_string 
-    from django.core.mail import send_mail
 
     instance = kwargs.get('instance')
-    admin_emails = get_admin_emails()
-    if admin_emails:
-        subject = _("New message from") + " " + instance.email
-        message = render_to_string('storybase_messaging/sitecontactmessage_email.txt',
-                                   { 'message': instance })
-        send_mail(subject, message, instance.email, admin_emails)
+    subject = _("New message from") + " " + instance.email
+    message = render_to_string('storybase_messaging/sitecontactmessage_email.txt',
+                               { 'message': instance })
+    send_admin_mail(subject, message, instance.email)
 
 
 class SystemMessageTranslation(MessageTranslation):
