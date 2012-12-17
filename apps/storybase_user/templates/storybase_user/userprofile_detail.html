@@ -10,13 +10,7 @@ Template for user profile page.
 {% block summary_left %}
 <div class="grid_8 alpha">
     <section class="summary">
-        {% if object.user == request.user %}
-        {% url account_summary as connected_account_url %}
-        <div class="alert alert-warning">
-            <h3>{% trans "Your Profile Image" %}</h3>
-            <p>{% blocktrans %}If you have <a href="{{ connected_account_url }}" title="Connected accounts">connected your Facebook account</a>, your Facebook profile image will be used for your {{ storybase_site_name }} profile.  Otherwise, your <a href="http://gravatar.com/" title="Gravatar">Gravatar</a> image will be used. If neither is available, a default image will be shown.{% endblocktrans %}</p>
-        </div>
-        {% endif %}
+        {# No content here for now #}
     </section>
 </div>
 {% endblock %}
