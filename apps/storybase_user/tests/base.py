@@ -162,6 +162,15 @@ class CreateViewTestMixin(FileCleanupMixin):
         del data['name']
         self.do_test_post(data=data, expect_create=False)
 
+    def test_post_invalid_no_description(self):
+        """
+        Test that posting to the creation view with a missing description
+        does not create a new model instance
+        """
+        data = self.get_default_data()
+        del data['description']
+        self.do_test_post(data=data, expect_create=False)
+
     def test_send_create_notification(self):
         backend = getattr(settings, 'EMAIL_BACKEND', None)
         if backend != 'django.core.mail.backends.locmem.EmailBackend':

@@ -118,7 +118,7 @@ class MembershipUtilsMixin(object):
 class OrganizationTranslation(TranslationModel, TimestampedModel):
     organization = models.ForeignKey('Organization')
     name = ShortTextField(verbose_name=_("Organization Name"))
-    description = models.TextField(blank=True)
+    description = models.TextField()
 
     class Meta:
         unique_together = (('organization', 'language'))
@@ -246,7 +246,7 @@ def add_story_to_organization(sender, instance, **kwargs):
 class ProjectTranslation(TranslationModel):
     project = models.ForeignKey('Project')
     name = ShortTextField(verbose_name=_("Project Name"))
-    description = models.TextField(blank=True)
+    description = models.TextField()
 
     class Meta:
         unique_together = (('project', 'language'))
