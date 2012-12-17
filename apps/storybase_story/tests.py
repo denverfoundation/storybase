@@ -294,7 +294,7 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
         story = create_story(title="Test Story", summary="Test Summary",
                              byline="Test Byline", status='published')
         self.assertEqual(story.assets.count(), 0)
-        self.assertEqual(story.featured_asset_thumbnail_url(), '/static/img/default-image-story-222x132.png')
+        self.assertEqual(story.featured_asset_thumbnail_url(), '/static/img/default-image-story-150x90.png')
 
     def test_unique_slug(self):
         """
@@ -380,6 +380,15 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
         strings = story.asset_strings()
         self.assertIn(body1, strings)
         self.assertNotIn(body2, strings)
+
+    def test_never_published(self):
+        story = create_story(title="Test Story", summary="Test Summary",
+            byline="Test Byline")
+        self.assertEqual(story.never_published, True)
+        story.status = 'published'
+        story.save()
+        self.assertEqual(story.never_published, False)
+
 
 
 class StoryPermissionTest(TestCase):

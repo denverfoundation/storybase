@@ -163,6 +163,7 @@
 	</ul>
 </div>
 {% if user.is_authenticated %}
+{# TODO: Unify these with sidebar menu in storybase_user/account_base.html #}
 <div class="megamenu my-account">
 	<ul>
         <li><a href="{% url account_stories %}">{% trans "My Account"|upper %}<em></em></a>
@@ -172,11 +173,6 @@
 						<li><a href="{% url account_summary %}">{% trans "Account Information" %}</a></li>
                         <li><a href="{% url account_notifications %}">{% trans "Communication Preferences" %}</a></li>
                         <li><a href="{% url account_password %}">{% trans "My Password" %}</a></li>
-                        {# TODO: Enable these when/if these sections are implemented #}
-                        {% comment %}
-                        <li><a href="#">{% trans "My Bio" %}</a></li>
-						<li><a href="#">{% trans "My Organization" %}</a></li>
-                        {% endcomment %} 
                         <li><a href="{% url account_stories %}">{% trans "My Stories" %}</a></li>
 						<li style="margin-top:20px"><a href="{% url auth_logout %}">{% trans "Sign Out" %}</a></li>
 					</ul>

@@ -32,7 +32,7 @@
                   <a class="button gray unpublish" href="{{ story.get_absolute_url }}unpublish/">Unpublish</a>
                 </td>
               {% endif %}
-              {% if story.status == 'draft' %}
+              {% if story.status == 'draft' and not story.never_published %}
                 <td class="action">
                   <a class="button gray publish" href="{{ story.get_absolute_url }}publish/">Publish</a>
                 </td>

@@ -12,6 +12,10 @@ from storybase_story.models import Story
 
 register = template.Library()
 
+# Height in pixels of the IFRAME element rendered by the story
+# embed widget
+DEFAULT_EMBED_WIDGET_HEIGHT=500
+
 @register.simple_tag(takes_context=True)
 def container(context, value):
     if hasattr(value, 'weight'):
@@ -65,6 +69,7 @@ def featured_stories(count=4, img_width=335):
 @register.inclusion_tag('storybase_story/story_embed.html')
 def story_embed(story):
     return {
+        'default_embed_widget_height': DEFAULT_EMBED_WIDGET_HEIGHT,
         'story': story,
         'storybase_site_name': settings.STORYBASE_SITE_NAME,
         'widget_js_url': full_url(settings.STATIC_URL + 'js/widgets.min.js'),

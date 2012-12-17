@@ -66,6 +66,11 @@ class PublishedModel(models.Model):
         """Model metadata options"""
         abstract = True
 
+    @property
+    def never_published(self):
+        """Check if the model has ever been published"""
+        return self.published == None
+
 
 # Signal handlers
 def set_date_on_published(sender, instance, **kwargs):
