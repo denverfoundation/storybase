@@ -619,7 +619,9 @@ storybase.builder.views.HelpView = Backbone.View.extend(
       templateSource: $('#help-template').html()
     },
 
-    events: {},
+    events: {
+      'click #repeat-tour-button': 'repeatTour'
+    },
 
     initialize: function() {
       this.dispatcher = this.options.dispatcher;
@@ -670,6 +672,15 @@ storybase.builder.views.HelpView = Backbone.View.extend(
       }, this.help);
       this.$el.html(this.template(context));
       return this;
+    },
+
+    /**
+     * Show the tour again.
+     */
+    repeatTour: function() {
+      if (analyticsLoaded()) {
+        _gaq.push(['_trackEvent', 'Buttons', 'View the tour again']);
+      }
     }
   })
 );
