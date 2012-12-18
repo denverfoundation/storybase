@@ -4,6 +4,17 @@
 
 {% block head_title %}{{ object.name }}{{ block.super }}{% endblock %}
 
+{% block extrameta %}
+<meta name="title" content="{{ object.name }}" />
+<meta name="description" content="{{ object.description }}">
+
+<!-- Open Graph Protocol tags -->
+<meta property="og:url" content="{% fullurl object.get_absolute_url %}" />
+<meta property="og:title" content="{{ object.name }}" />
+<meta property="og:description" content="{{ object.description }}" />
+<meta property="og:image" content="{{ object.featured_asset_thumbnail_url }}" />
+{% endblock %}
+
 {% block body_title %}{{ object.name }}{% endblock %}
 
 {% block content_page_class %}object-detail{% endblock %}

@@ -1,8 +1,20 @@
 {% extends "base.html" %}
 
-{% load i18n sekizai_tags menu_tags verbatim %}
+{% load i18n sekizai_tags menu_tags verbatim storybase_tags %}
 
 {% block head_title %}{{ storybase_explore_title }}{{ block.super }}{% endblock %}
+
+{% block extrameta %}
+<meta name="title" content="{{ storybase_explore_title }}" />
+<meta name="description" content="{% blocktrans %}Browse and filter {{ storybase_site_name }} stories by topic, location, language, project and organization.{% endblocktrans %}">
+
+
+<!-- Open Graph Protocol tags -->{% url explore_stories as explore_url %}
+<meta property="og:url" content="{% fullurl explore_url %}" />
+<meta property="og:title" content="{{ storybase_explore_title }}" />
+<meta property="og:description" content="{% blocktrans %}Browse and filter {{ storybase_site_name }} stories by topic, location, language, project and organization.{% endblocktrans %}" />
+<meta property="og:image" content="{{ storybase_site_logo }}" />
+{% endblock %}
 
 {% block extrahead %}
 {% comment %}
