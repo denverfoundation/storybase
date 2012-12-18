@@ -220,8 +220,13 @@ storybase.builder.views.AppView = Backbone.View.extend({
 
   /**
    * Set the active step of the workflow and re-render the view
+   * 
+   * @param {String} step ID of the workflow step to set.  Must be one 
+   *     of "build", "data", "tag", "review" or "publish"
+   * @param {Function} [callback] Callback function that will be called
+   *     after the active workflow step is set.
    */
-  updateStep: function(step) {
+  updateStep: function(step, callback) {
     var activeView;
     // Checking that step is different from the active step is
     // required for the initial saving of the story.  The active view
@@ -237,6 +242,9 @@ storybase.builder.views.AppView = Backbone.View.extend({
       }
       this.activeStep = step;
       this.render();
+    }
+    if (callback) {
+      callback();
     }
   },
 
@@ -678,9 +686,15 @@ storybase.builder.views.HelpView = Backbone.View.extend(
      * Show the tour again.
      */
     repeatTour: function() {
+      var that = this;
       if (hasAnalytics()) {
         _gaq.push(['_trackEvent', 'Buttons', 'View the tour again']);
       }
+      this.dispatcher.trigger('do:hide:help');
+      // Switch to the build step and then show the tour
+      this.dispatcher.trigger('select:workflowstep', 'build', function() {
+        that.dispatcher.trigger('do:show:tour', true);
+      });
     }
   })
 );
@@ -1273,8 +1287,16 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
 
   /**
    * Checks if the tour should be shown
+   *
+   * @param {Boolean} [force=false] Force showing the tour, ignoring
+   *    other checks.
+   *     
    */
-  showTour: function() {
+  showTour: function(force) {
+    if (force) {
+      return true;
+    }
+
     if (_.isUndefined(guiders)) {
       return false;
     }
@@ -1290,7 +1312,13 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
     return this.options.showTour;
   },
 
-  show: function() {
+  /**
+   * Show the tour.
+   *
+   * @param {Boolean} [force=false] Force showing the tour, ignoring
+   *    other checks.
+   */
+  show: function(force) {
     var that = this;
 
     var bindNudge = function(myGuider) {
@@ -1299,7 +1327,7 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
       });
     }; 
     
-    if (this.showTour()) { 
+    if (this.showTour(force)) { 
       guiders.createGuider({
         id: 'workflow-step-guider',
         attachTo: '#workflow-step #build',
@@ -1595,6 +1623,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.dispatcher.on("save:story", this.setTitle, this);
     this.dispatcher.on("ready:story", this.setTitle, this);
     this.dispatcher.on("created:section", this.handleCreateSection, this);
+    this.dispatcher.on('do:show:tour', this.showTour, this);
 
     if (!this.model.isNew()) {
       this.model.sections.fetch();
@@ -1727,7 +1756,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     }
 
     // Show the tour
-    this._tour.show();
+    this.showTour();
 
     this.dispatcher.trigger("register:drawerview", this.unusedAssetView);
   },
@@ -1867,6 +1896,16 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
     this.$(this.options.titleEl).removeClass('error');
     return true;
+  },
+
+  /**
+   * Show the tour.
+   *
+   * @param {Boolean} [force=false] Force showing the tour. Otherwise,
+   *     it is only shown if the user has not already seen it.
+   */
+  showTour: function(force) {
+    this._tour.show(force);
   }
 });
 
