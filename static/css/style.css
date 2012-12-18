@@ -588,7 +588,8 @@ body.story-builder .wysihtml5-toolbar{position:relative;padding:0 0 20px 0;}
 body.story-builder [data-wysihtml5-command]{text-decoration:none;}
 body.story-builder [data-wysihtml5-dialog-action]{cursor:pointer;}
 body.story-builder [data-wysihtml5-dialog-action]{cursor:pointer;}
-body.story-builder [data-wysihtml5-dialog-field='href']{font-size:14px !important;padding:2px !important;}
+body.story-builder [data-wysihtml5-dialog] input{font-size:14px !important;padding:2px !important;}
+body.story-builder [data-wysihtml5-dialog] button{padding:2px !important;float:none !important;margin-right:0 !important;}
 body.story-builder #header{display:block;position:fixed;width:100%;z-index:999;}
 body.story-builder #header .nav{position:relative;float:left;}
 body.story-builder #header .nav>li{display:block-inline;float:left;}

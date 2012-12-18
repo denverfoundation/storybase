@@ -110,9 +110,17 @@ button.help {
   cursor: pointer;
 }
 
-(~"[data-wysihtml5-dialog-field='href']") {
-  font-size: 14px !important;
-  padding: 2px !important;
+(~"[data-wysihtml5-dialog]") {
+  input {
+    font-size: 14px !important;
+    padding: 2px !important;
+  }
+
+  button {
+    padding: 2px !important;
+    float: none !important;
+    margin-right: 0 !important;
+  }
 }
 
 // Header
