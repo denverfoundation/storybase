@@ -160,6 +160,18 @@ Namespace('storybase.utils', {
       }
     };
     return ccLicenses[params['commercial']][params['derivatives']];
+  },
+
+  /**
+   * Check if the Google Analytics tracking JavaScript has been initialized
+   */
+  hasAnalytics: function() {
+    if (window._gaq) {
+      return true;
+    }
+    else {
+      return false;
+    }
   }
 });
 

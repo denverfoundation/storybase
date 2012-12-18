@@ -1,0 +1,24 @@
+{# Tracking code and configuration for Google Analytics #}
+{% if ga_property_id %}
+{# Only display the script if a property ID has been defined #}
+<script>
+  window._gaq = [['_setAccount','{{ ga_property_id }}'],['_trackPageview']];
+  {% if not debug %}
+  {% if ga_domain_name %}
+  window._gaq.push(['_setDomainName', '{{ ga_domain_name }}']);
+  {% endif %}
+  {% else %}
+  {# For local development, ignore the domain name and just post the data #}
+  window._gaq.push(['_setDomainName', 'none']);
+  {% endif %}
+  {% if not debug %}
+  Modernizr.load({
+    load: ('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/ga.js'
+  });
+  {% else %}
+  Modernizr.load({
+    load: ('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/u/ga_debug.js'
+  });
+  {% endif %}
+</script>
+{% endif %}

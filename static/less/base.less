@@ -147,6 +147,39 @@
   -webkit-box-shadow: inset @arguments;
 }
 
+.button:hover {
+	text-decoration: none;
+}
+.button:active {
+	position: relative;
+	top: 1px;
+}
+
+.gradient-button (@base-color: #888, @text-color: white) {
+  display: inline-block;
+  outline: none;
+  cursor: pointer;
+  text-align: center;
+  text-decoration: none;
+  padding: .5em .5em .55em;
+  text-shadow: 0 1px 1px rgba(0, 0, 0, .3);
+  .rounded-corners(.5em);
+  .box-shadow(0, 1px, 2px, rgba(0, 0, 0, .2));
+  
+  color: @text-color;
+  border: solid 1px darken(@base-color, 20%);
+  background: @base-color;
+  background: -webkit-gradient(linear, left top, left bottom, from(lighten(@base-color, 20%)), to(darken(@base-color, 20%)));
+  background: -moz-linear-gradient(top,  lighten(@base-color, 20%), darken(@base-color, 20%));
+  filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='lighten(@base-color, 20%)', endColorstr='darken(@base-color, 20%)');
+  
+  &:hover {
+    background: darken(@base-color, 10%);
+    background: -webkit-gradient(linear, left top, left bottom, from(lighten(@base-color, 10%)), to(darken(@base-color, 30%)));
+    background: -moz-linear-gradient(top,  lighten(@base-color, 10%), darken(@base-color, 30%));
+  }
+}
+
 
 .remove-icon(@size, @color) {
   cursor:pointer;

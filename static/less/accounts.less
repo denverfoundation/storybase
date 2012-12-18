@@ -16,6 +16,33 @@
 			width: 40%;
 		}
 	}
+	
+	a.twitter, a.facebook {
+		&:before {
+			font-family: "FontAwesome";
+			font-size:2em;
+			margin-right:1em;
+			position:relative;
+			top:0.1em;
+		}
+		width:200px;
+		margin-bottom:1em;
+		padding-right:0.4em !important;
+	}
+	a.twitter {
+		.gradient-button(rgb(64, 146, 204));
+		&:before {
+			content:"\f099";
+			left:-0.3em;
+		}
+	}
+	a.facebook {
+		.gradient-button(rgb(59, 89, 152));
+		&:before {
+			content:"\f09a";
+			top:0.15em;
+		}
+	}
 }
 
 table.account-stories {
