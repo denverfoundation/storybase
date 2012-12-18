@@ -102,6 +102,13 @@
     <script src="{{ STATIC_URL }}js/builder/views.js"></script>
     <script src="{{ STATIC_URL }}js/builder/routes.js"></script>
 
+    <script>
+    Modernizr.load({
+      test: Modernizr.input.placeholder,
+      nope: '{{ STATIC_URL }}js/libs/polyfill.placeholder.js'
+    })
+    </script>
+
     <script type="text/javascript">
     $(document).ready(function() {
         storybase.builder.globals.APP_ROOT = storybase.utils.getRoot(["build", "build-connected"], window.location.pathname, 1);
