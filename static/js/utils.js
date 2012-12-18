@@ -165,8 +165,8 @@ Namespace('storybase.utils', {
   /**
    * Check if the Google Analytics tracking JavaScript has been initialized
    */
-  analyticsLoaded: function() {
-    if (window._gat && window._gat._getTracker) {
+  hasAnalytics: function() {
+    if (window._gaq) {
       return true;
     }
     else {

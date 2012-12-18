@@ -1,5 +1,5 @@
 Namespace('storybase.builder.views');
-Namespace.use('storybase.utils.analyticsLoaded');
+Namespace.use('storybase.utils.hasAnalytics');
 Namespace.use('storybase.utils.capfirst');
 Namespace.use('storybase.utils.geocode');
 
@@ -678,7 +678,7 @@ storybase.builder.views.HelpView = Backbone.View.extend(
      * Show the tour again.
      */
     repeatTour: function() {
-      if (analyticsLoaded()) {
+      if (hasAnalytics()) {
         _gaq.push(['_trackEvent', 'Buttons', 'View the tour again']);
       }
     }
