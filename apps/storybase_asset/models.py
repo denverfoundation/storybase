@@ -25,7 +25,7 @@ from storybase.fields import ShortTextField
 from storybase.models import (LicensedModel, PublishedModel,
     TimestampedModel, TranslatedModel, TranslationModel,
     PermissionMixin, set_date_on_published)
-from storybase.utils import key_from_instance
+from storybase.utils import full_url, key_from_instance
 from storybase_asset.oembed import bootstrap_providers
 from storybase_asset.utils import img_el
 
@@ -544,8 +544,10 @@ class LocalImageAsset(Asset):
         thumbnail_options = {}
         thumbnail_options.update({'size': (width, height)})
         thumbnail = thumbnailer.get_thumbnail(thumbnail_options)
-        host = "http://%s" % (Site.objects.get_current().domain) if include_host else ""
-        return "%s%s" % (host, thumbnail.url)
+        if include_host:
+            return full_url(thumbnail.url)
+        else:
+            return thumbnail.url
 
 
 # Hook up some signals so the publication date gets changed
@@ -569,10 +571,9 @@ class DefaultImageMixin(object):
         lgst_width = 0
         lgst_src = None
         for img_width, url in choices.iteritems():
-            if img_width <= width: 
+            if img_width <= width and img_width > lgst_width: 
                 lgst_src = url
-                if img_width > lgst_width:
-                    lgst_width = img_width
+                lgst_width = img_width
         return lgst_src
 
     def render_default_img_html(self, width=500, height=0, attrs={}):
