@@ -1,4 +1,5 @@
 Namespace('storybase.builder.views');
+Namespace.use('storybase.utils.analyticsLoaded');
 Namespace.use('storybase.utils.capfirst');
 Namespace.use('storybase.utils.geocode');
 
