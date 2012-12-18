@@ -304,6 +304,8 @@ ul.icons li .icon-large:before,ul.icons li .icon-large:before{vertical-align:ini
 .button-container{padding:2em 0;}
 .button:hover{text-decoration:none;}
 .button:active{position:relative;top:1px;}
+.icon-paragraph:before{content:"\00b6";}
+.icon-heading-h3:before{content:"H3";}
 .plain-serif-text{font-family:'Times New Roman',Georgia,Serif;}
 .sans-serif-text{font-family:Arial,sans-serif;}
 .body-copy{font-family:Arial,sans-serif;font-size:14px;line-height:1.4em;color:#444444;}.body-copy p{margin-bottom:1em;}
@@ -583,8 +585,9 @@ body.story-builder .introduction{margin-top:1em;}
 body.story-builder .error input{background-color:#F2DEDE;border-color:#EED3D7;}
 body.story-builder button.help{border:none;background:none;padding:0;margin:0;width:auto;text-align:center;text-shadow:none;display:block;color:#5a5a5a;cursor:pointer;font-size:18px;}
 body.story-builder .wysihtml5-toolbar{position:relative;padding:0 0 20px 0;}
-body.story-builder [[object Object]]{position:absolute;top:20px;width:100%;}
-body.story-builder [[object Object]]{cursor:pointer;}
+body.story-builder [data-wysihtml5-command]{text-decoration:none;}
+body.story-builder [data-wysihtml5-dialog]{position:absolute;top:20px;width:100%;}
+body.story-builder [data-wysihtml5-dialog-action]{cursor:pointer;}
 body.story-builder #header{display:block;position:fixed;width:100%;z-index:999;}
 body.story-builder #header .nav{position:relative;float:left;}
 body.story-builder #header .nav>li{display:block-inline;float:left;}
