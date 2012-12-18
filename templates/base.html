@@ -156,17 +156,7 @@
   {% render_block "js" %}
   <!-- end scripts-->
 
-  {% if ga_property_id %}
-  <script>
-      window._gaq = [['_setAccount','{{ ga_property_id }}'],['_trackPageview'],['_trackPageLoadTime']];
-      {% if ga_domain_name %}
-      window._gaq.push(['_setDomainName', '{{ ga_domain_name }}']);
-      {% endif %}
-    Modernizr.load({
-      load: ('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/ga.js'
-    });
-  </script>
-  {% endif %}
+  {% include "analytics.html" %}
 
   <!-- Prompt IE 6 users to install Chrome Frame. Remove this if you want to support IE 6.
        chromium.org/developers/how-tos/chrome-frame-getting-started -->
