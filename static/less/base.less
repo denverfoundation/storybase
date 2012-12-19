@@ -95,6 +95,22 @@
   }
 }
 
+// Reset button styles
+// Use this for buttons that you don't want to show up as a button
+.button-reset () {
+  border: none;
+  background: none;
+  padding: 0;
+  margin: 0;
+  width: auto;
+  text-align: center;
+  text-shadow: none;
+
+  &:hover {
+    background: none;
+  }
+}
+
 // CSS classes for button styles
 .button {
   .button-style;
@@ -113,21 +129,13 @@ button, .button {
     .button-style(gray);
   }
 
+  &.reset {
+    .button-reset;
+  }
+
   &.small {
     padding: 2px;
   }
-}
-
-// Reset button styles
-// Use this for buttons that you don't want to show up as a button
-.button-reset () {
-  border: none;
-  background: none;
-  padding: 0;
-  margin: 0;
-  width: auto;
-  text-align: center;
-  text-shadow: none;
 }
 
 .button-container {
@@ -208,6 +216,22 @@ button, .button {
 
 .icon-heading-h3 {
   &:before { content: "H3"; }
+}
+
+// Mixins that replicate some of the Font Awesome classes 
+.fa-icon-mixin() {
+  font-family: FontAwesome;
+  font-weight: normal;
+  font-style: normal;
+  display: inline-block;
+  text-decoration: inherit;
+}
+
+.icon-comment-mixin {
+  &:before {
+    .fa-icon-mixin;
+    content: "\f075";
+  }
 }
 
 .plain-serif-text {

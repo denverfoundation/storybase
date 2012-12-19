@@ -1470,7 +1470,30 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
           bindNudge(myGuider);
           that.dispatcher.trigger('do:show:help');
         },
-        onHide: function(myGuider) {
+        next: 'repeat-tour-guider',
+        xButton: true
+      });
+      guiders.createGuider({
+        attachTo: '#repeat-tour-button',
+        buttons: [
+          {
+            name: gettext("Prev"),
+            onclick: guiders.prev
+          },
+          {
+            name: gettext("Next"),
+            onclick: guiders.next
+          }
+        ],
+        position: 9,
+        offset: { left: 10, top: 11 },
+        id: 'repeat-tour-guider',
+        title: gettext("View this tour again"),
+        description: gettext("You can view this tour again by clicking this icon."),
+        onShow: function(myGuider) {
+          bindNudge(myGuider);
+        },
+        onHide: function() {
           that.dispatcher.trigger('do:hide:help');
         },
         next: 'tooltip-guider',

@@ -526,7 +526,16 @@ button.preview {
 
 #help-actions {
   text-align: right;
-  margin-bottom: 1em;
+}
+
+#repeat-tour-button {
+  &:before {
+    color: @highlight-blue;
+  }
+
+  &:hover {
+    .icon-comment-mixin;
+  }
 }
 
 // General builder styles
@@ -1525,6 +1534,13 @@ input[name=address] {
       font-family: "FontAwesome";
     &.guider_arrow_up:after {
       content: "\f0d8";
+    }
+    &.guider_arrow_right {
+      right: -40px;
+      text-shadow: 1px 0 @highlight-blue;
+      &:after {
+        content: "\f0da";
+      }
     }
   }
 
