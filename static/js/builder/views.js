@@ -1516,7 +1516,7 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
       if (storybase.builder.views.MSIE) {
         setTimeout(function() {
           that.nudgeIntoWindow(guiders._guiderById('workflow-step-guider').elem);
-        }, 200);
+        }, 250);
       }
     }
   }
