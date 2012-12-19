@@ -98,7 +98,9 @@
 // CSS classes for button styles
 .button {
   .button-style;
+}
 
+button, .button {
   &.hot {
     .button-style(hot);
   }
@@ -109,6 +111,10 @@
 
   &.gray {
     .button-style(gray);
+  }
+
+  &.small {
+    padding: 2px;
   }
 }
 
