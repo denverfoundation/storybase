@@ -7,11 +7,12 @@ from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.core.urlresolvers import reverse
 from django.db.models import Q
-from django.http import Http404
+from django.http import Http404, HttpResponseRedirect
 from django.utils.decorators import method_decorator
 from django.template import Context
 from django.template.loader import get_template
-from django.views.generic import DetailView, TemplateView 
+from django.views.generic import View, DetailView, TemplateView 
+from django.views.generic.detail import SingleObjectMixin, SingleObjectTemplateResponseMixin
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
@@ -119,6 +120,52 @@ class StoryViewerView(ModelIdDetailView):
     queryset = Story.objects.all()
     template_name = 'storybase_story/story_viewer.html'
 
+class StoryUpdateView(SingleObjectMixin, SingleObjectTemplateResponseMixin, View):
+  """
+  Updates story status, redirects to My Stories.
+  TODO: post success notification.
+  """
+  queryset = Story.objects.all()
+  template_name = 'storybase_story/story_update.html'
+  slug_url_kwarg = 'slug'
+  
+  def update_story(self, obj_id, status):
+    obj = self.get_object()
+    if obj is not None:
+      if not obj.has_perm(self.request.user, 'change'):
+          raise PermissionDenied(_(u"You are not authorized to edit this story"))
+      obj.status = status
+      obj.save()
+  
+  def get(self, request, *args, **kwargs):
+    self.object = self.get_object()
+
+    # previous and next urls default to account story list
+    result_url = previous_url = reverse('account_stories')
+    
+    if 'HTTP_REFERER' in request.META:
+      previous_url = request.META['HTTP_REFERER']
+
+    # can specify result url destination in GET query and urlconf.
+    if 'result_url' in kwargs and kwargs['result_url'] is not None:
+      result_url = kwargs['result_url']
+    if 'result_url' in request.GET:
+      result_url = request.GET['result_url']
+    
+    context = self.get_context_data(object=self.object, result_url=result_url, previous_url=previous_url, **kwargs)
+    return self.render_to_response(context)
+  
+  def post(self, request, *args, **kwargs):
+    if self.request.user.is_authenticated():
+      self.update_story(request.POST['story_id'], kwargs['status'])
+    result_url = reverse('account_stories')
+    if 'result_url' in kwargs and kwargs['result_url'] is not None:
+      result_url = kwargs['result_url']
+    if 'result_url' in request.POST:
+      result_url = request.POST['result_url']
+    # TODO: success notification?
+    return HttpResponseRedirect(result_url)
+    
 
 class StoryBuilderView(DetailView):
     """
@@ -413,6 +460,9 @@ class StoryBuilderView(DetailView):
             'showSharing': True,
             # Show the builder tour
             'showTour': True,
+            # Force showing the tour, even if the cookie has been set
+            'forceTour': getattr(settings, 'STORYBASE_FORCE_BUILDER_TOUR',
+                                 False),
             # Endpoint for fetching license information
             'licenseEndpoint': reverse("api_cc_license_get"),
             # Site name (used for re-writing title)
@@ -490,3 +540,26 @@ class StoryBuilderView(DetailView):
         # We override the view's dispatch method so we can decorate
         # it to only allow access by logged-in users
         return super(StoryBuilderView, self).dispatch(*args, **kwargs)
+
+
+class StoryWidgetView(ModelIdDetailView):
+    """An embedable widget for a story"""
+    context_object_name = "story"
+    # You can only embed published stories
+    queryset = Story.objects.filter(status='published')
+    template_name = 'storybase_story/story_widget.html'
+
+
+class StoryShareWidgetView(ModelIdDetailView):
+    """
+    Widget for sharing a story
+
+    While ``StoryWidgetView`` provides the HTML for the widget embedded
+    in a partner website, this view provides the HTML for a popup window
+    of sharing tools.  It is designed to be fetched via an asynchronous 
+    request from JavaScript
+
+    """
+    context_object_name = "story"
+    queryset = Story.objects.filter(status='published')
+    template_name = 'storybase_story/story_share_widget.html'

@@ -57,23 +57,25 @@
 	cursor:pointer;
         text-decoration: none;
 	text-shadow:0 -1px 0 rgba(0, 0, 0, .4);
+	display:inline-block;
 
 	&.right {
 		margin-left:8px;
+	}
+	&:hover {
+		text-decoration:none !important;
 	}
 }
 
 .button-style(hot) {
   background:@orange;
   &:hover {
-    text-decoration:none;
     background:darken(desaturate(@orange, 20%), 20%);
   }
 }
 .button-style(cool) {
   background:@highlight-blue;
   &:hover {
-    text-decoration:none;
     background:darken(desaturate(@highlight-blue, 20%), 20%);
   }
 }
@@ -81,7 +83,6 @@
 .button-style(gray) {
   background:@medium-gray;
   &:hover {
-    text-decoration:none;
     background:@orange;
   }
 }
@@ -159,7 +160,7 @@
 }
 
 .sans-serif-text {
-  font-family: Helvetica, Arial, sans-serif;
+  font-family: Arial, sans-serif;
 }
 
 .box-sizing(@sizing) {
@@ -171,10 +172,10 @@
 @body-copy-margin-bottom: 1em;
 
 .body-copy {
-  .plain-serif-text;
+  .sans-serif-text;
   font-size:@base-font-size;
+  line-height:@base-line-height;
   color:@body-copy-color; 
-  line-height:1.1em;
   p {
     margin-bottom: @body-copy-margin-bottom;
   }
@@ -202,7 +203,6 @@
   }
 }
 
-// museo as opposed to serif
 .styled-header(@align: center) {
   text-align:@align;
   font-family: 'Museo300Regular';
@@ -213,6 +213,9 @@
   background:url('../img/h3-line.png') repeat-x 0 8px; 
   margin-bottom:10px;
   
+  // line-through effect looks best with 1em line height
+  line-height:1em;
+  
   span {
     background:#fff; 
     padding-left:16px; 
@@ -220,13 +223,26 @@
   }
 }
 
-.standard-headers {
-  h1 { font-size:@h1-size; color:@dark-gray; .styled-header; .line-through-header; }
-  h2 { font-size:@h2-size; color:@dark-gray; .styled-header; }
-  h3 { font-size:@h3-size; color:@medium-gray; .styled-header; }
-  h4 { font-size:@h4-size; color:@medium-gray; .styled-header; }
-  h5 { font-size:@h5-size; color:@highlight-blue; font-family: 'MuseoSlab500Regular'; font-weight:normal;}
+.standard-headers(@align: center) {
+  h1 { font-size:@h1-size; color:@dark-gray; .styled-header(@align); .line-through-header; }
+  h2 { font-size:@h2-size; color:@dark-gray; .styled-header(@align); }
+  h3 { font-size:@h3-size; color:@medium-gray; .styled-header(@align); }
+  h4 { font-size:@h4-size; color:@medium-gray; .styled-header(@align); }
+  h5 { font-size:@h5-size; color:@highlight-blue; .styled-header(@align); }
+  h1, h2, h3, h4, h5 {
+    // explicit property seems neccesary to properly set line height using ems.
+    line-height:@base-line-height;
+  }
+  
+  // if a header is following any other element, give the header
+  // a little extra top-margin.
+  * {
+    &+h1, &+h2, &+h3, &+h4, &+h5 {
+      margin-top:1.2em;
+    }
+  }
 }
+
 
 .centered {
   text-align: center;
@@ -250,9 +266,9 @@ button {
 
 body.base-template {
 
-    .plain-serif-text;
+    .sans-serif-text;
     font-size: @base-font-size;
-    line-height: 1.3;
+    line-height:@base-line-height;
     color: @dark-gray;
     background:url('../img/body.jpg') repeat-x 0 0;
     min-width: 100%;
@@ -322,15 +338,10 @@ body.base-template {
 	@import "template-layout.less";
 }
 
+@import "tables.less";
 
-body.story-viewer {
-	
-	// the html5 boilerplate code is currently relied upon in story builder and viewer.
-	// the body {...} selector contents must be included directly here.
-	// @todo: clean this up
-	margin: 0; font-size: 13px; line-height: 1.231;
-	@import "html5-boilerplate.less";
-}
+
+@import "storybase-share.less";
 
 body.story-builder {
 	@import "builder.less";	
@@ -343,6 +354,8 @@ body.story-builder {
 body.explorer {
 	@import "explorer.less";
 }
+
+@import "search.less";
 
 // html5-boilerplate helpers want to go after other markup
 @import "helpers.less";

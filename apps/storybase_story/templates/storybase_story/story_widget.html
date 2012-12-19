@@ -1,0 +1,29 @@
+{% load storybase_tags i18n %}
+<html>
+    <head>
+        <title>{{ storybase_site_name }} | {{ story.title }}</title>
+
+        {% if debug %}
+        <link rel="stylesheet/less" type="text/css" href="{{ STATIC_URL }}less/widget.less">
+        <script src="{{ STATIC_URL }}js/libs/less-1.3.0.min.js"></script>
+        {% else %}
+        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/widget.css">
+        {% endif %}
+    </head>
+    <body>
+        {% url story_viewer slug=story.slug as viewer_path %}
+        {% fullurl story.get_absolute_url as detail_url %}
+        {% fullurl viewer_path as viewer_url %}
+        <div id="{{ story.story_id }}" class="storybase-story-embed {{ storybase_site_name|slugify }}-story-embed">
+            <a href="{{ detail_url }}" onclick="window.open('{{ detail_url }}'); return false;">
+                <img src="{{ story.featured_asset_thumbnail_url }}">
+            </a>
+            <div>
+                <h3><a href="{{ viewer_url }}" title="{{ story.title }}" class="story-link" onclick="window.open('{{ viewer_url }}'); return false;">{{ story.title }}</a></h3>
+                <p class="byline">{{ story.byline }}</p>
+		<div class="summary">{{ story.summary|firstparagraph|safe }}</div>
+                <a href="{{ detail_url}}" title="{{ story.title }}" class="story-link" onclick="window.open('{{ detail_url }}'); return false;">{% trans "View this story on" %} {{ storybase_site_name }}</a>
+            </div>
+        </div>
+    </body>
+</html>

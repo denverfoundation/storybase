@@ -1,0 +1,5 @@
+{% load storybase_tags i18n %}
+<a href="{% fullurl story.get_absolute_url %}" class="storybase-story-embed" data-height="{{ default_embed_widget_height }}">{{ story.title }} {% trans "on" %} {{ storybase_site_name }}</a>
+<!-- If you are embedding multiple stories on your page, include this script only once -->
+<script src="{{ widget_js_url }}" type="text/javascript"></script>
+

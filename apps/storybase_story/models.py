@@ -4,7 +4,6 @@ from datetime import datetime
 
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.contrib.sites.models import Site
 from django.core import urlresolvers
 from django.core.cache import cache
 from django.db import models
@@ -179,14 +178,6 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
             return ('story_detail', [self.slug])
 
         return ('story_detail', [self.story_id])
-
-    def get_full_url(self):
-        """
-        Calculate the canonical URL for a Story, including its
-        domain name.
-        """
-        return "http://%s%s" % (Site.objects.get_current().domain,
-                                self.get_absolute_url())
 
     @property
     def contributor_name(self):
@@ -424,6 +415,79 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
 
     def get_default_img_url_choices(self):
         return settings.STORYBASE_DEFAULT_STORY_IMAGES
+
+    def used_assets(self, asset_type=None):
+        """Return a queryset of assets actually used in story sections"""
+        assets = self.assets.exclude(sectionasset=None)
+
+        if asset_type:
+            assets = assets.filter(type=asset_type)
+
+        return assets.select_subclasses()
+
+    def asset_strings(self):
+        """Return all the text from a Story's assets as a single string
+        
+        This is meant to be used to help generate the document used to
+        index the story for full-text search using Haystack.
+
+        """ 
+        strings = []
+        # For now, only worry about text assets
+        for asset in self.used_assets(asset_type='text'):
+            s = asset.strings()
+            if s:
+                strings.append(s)
+
+        return " ".join(strings)
+
+    def search_result_metadata(self):
+        """Helper method for providing search result metadata to template"""
+        metadata = []
+        languages = self.get_language_names()
+        topics = self.topics_list()
+        topics_tags = []
+        explore_url = urlresolvers.reverse('explore_stories')
+        search_url = urlresolvers.reverse('haystack_search')
+
+        if languages:
+            metadata.append({
+                'id': 'languages',
+                'name': _("Languages"),
+                'values': [
+                    {
+                        'name': lang['name'],
+                        'url': "%s?languages=%s" % (explore_url, lang['id']), 
+                    }
+                    for lang in languages
+                ],
+            })
+
+        if topics:
+            topics_tags.extend([
+                    {
+                        'name': topic['name'],
+                        'url': "%s?topics=%s" % (explore_url, topic['id']), 
+                    }
+                    for topic in topics 
+            ])
+
+        if self.tags.count():
+            topics_tags.extend([
+                {
+                    'name': tag.name,
+                    'url': "%s?q=%s" % (search_url, tag.name),
+                }
+                for tag in self.tags.all()
+            ])
+
+        metadata.append({
+            'id': 'tags',
+            'name': _("Tags"),
+            'values': topics_tags,
+        })
+
+        return metadata
 
 
 def set_story_slug(sender, instance, **kwargs):

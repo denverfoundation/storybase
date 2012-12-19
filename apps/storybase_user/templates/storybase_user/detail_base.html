@@ -4,6 +4,17 @@
 
 {% block head_title %}{{ object.name }}{{ block.super }}{% endblock %}
 
+{% block extrameta %}
+<meta name="title" content="{{ object.name }}" />
+<meta name="description" content="{{ object.description }}">
+
+<!-- Open Graph Protocol tags -->
+<meta property="og:url" content="{% fullurl object.get_absolute_url %}" />
+<meta property="og:title" content="{{ object.name }}" />
+<meta property="og:description" content="{{ object.description }}" />
+<meta property="og:image" content="{{ object.featured_asset_thumbnail_url }}" />
+{% endblock %}
+
 {% block body_title %}{{ object.name }}{% endblock %}
 
 {% block content_page_class %}object-detail{% endblock %}
@@ -15,11 +26,12 @@
    <ul class="navroot">{% show_menu 1 %}</ul>
 </nav>
 {% endcomment %}
-{% include "addthis_widget_small.html" %}
+<a href="#" class="storybase-share-widget" data-story-id="{{ object.slug }}" data-options='{"widgetUrl": "{{ object.get_absolute_url }}share-widget/"}'>{% trans "Share This" %} {{ object|classname|camelsplit|first }}</a>
 {% endblock %}
 
 {% block twocol-content %}
 <section class="object-summary content-block">
+   {% block summary_left %}
     <div class="grid_4 alpha">
         <section class="summary">
             {% if object.description %}
@@ -27,12 +39,16 @@
             {% endif %}
         </section>
     </div>
+    {% endblock %}
 
+    {% block summary_right %}
     <div class="grid_6 omega">
         <section class="object-featured-asset">
             {% featured_asset object 335 %}
         </section>
     </div>
+    {% endblock %}
+
     <div class="object-metadata grid_10">
         <div class="grid_3 alpha">
         {% block metadata_alpha %}
@@ -44,7 +60,7 @@
             <h4>{% block metadata_center_title %}{% trans "Contributors" %}{% endblock %}</h4>
             <ul>
                 {% for member in object.members.all %}    
-                <li>{% format_user_name member %}</li>
+                <li><a href="{{ member.get_profile.get_absolute_url }}" title="{% format_user_name member %}">{% format_user_name member %}</a></li>
                 {% endfor %}
             </ul>
             {% endif %}
@@ -57,8 +73,8 @@
     </div>
 </section>
 {% block featured %}
-{% if object.featured %}
-{% with object.featured as featured %}
+{% if object.featured_story %}
+{% with object.featured_story as featured %}
 <section class="featured-story content-block">
     <h3>{% trans "Featured Story" %}</h3>
     <div class="grid_3 alpha">
@@ -73,11 +89,11 @@
 {% endif %}
 {% endblock %}
 {% block recent %}
-{% if object.recent_list %} 
-<section class="recent-stories content-block last">
-    <h3>{% trans "Recent Stories" %}</h3>
+{% if story_list %} 
+<section class="story-list content-block last">
+    <h3>{{ story_list_title}}</h3>
     <ul>
-        {% for story in object.recent_list %}
+        {% for story in story_list %}
         <li>
             <div class="grid_2 alpha">
                 <a href="{{ story.get_absolute_url }}">{% featured_asset story 150 %}</a>

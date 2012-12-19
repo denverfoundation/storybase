@@ -336,8 +336,13 @@ button.help {
 
 #last-saved {
   height: @workflow-item-height;
-  width: 100px;
-  margin: @workflow-item-margin-top 10px;
+  // Make the last-saved text message instead
+  // of taking over all available width
+  max-width: 100px;
+  // Make right margin 0px because it makes the element too wide to not be
+  // pushed below the workflow step elements in IE. The right margin doesn't
+  // cause any problems in Firefox and Chrome
+  margin: @workflow-item-margin-top 0 0 10px;
   font-size: 12px;
   float: left;
   color: #fff;
@@ -347,6 +352,9 @@ button.help {
 
 #save-button {
   .button-style(gray);
+  // Explicitely set the font-style to normal, otherwise
+  // IE inherits the italic style from the #last-saved rule
+  font-style: normal;
 }
 
 button.preview {
@@ -1440,11 +1448,11 @@ input[name=address] {
   }
 }
 
-
+// Builder Tour
+// BOOKMARK
 // a mixin for guider styles
 @guider-text-color: darken(@highlight-blue, 20%);
 .guider-text {
-  .plain-serif-text;
   font-size:@base-font-size;
   color:@guider-text-color;
 }
@@ -1473,7 +1481,7 @@ input[name=address] {
       margin-bottom:1em;
     }
   }
-  
+
   a.guider_button {
     .button-style(cool);
     font-size:17px;
@@ -1494,12 +1502,12 @@ input[name=address] {
       content: "\f0d8";
     }
   }
-  
-  .guider_close {
+
+  .x_button {
     .remove-icon(26px, @highlight-blue);
+    background-image: none;
     position:absolute;
-    top:-10px;
-    right:-10px;
+    top: -10px;
+    right: 0px;
   }
-  
 }

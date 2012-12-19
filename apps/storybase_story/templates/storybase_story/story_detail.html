@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n cms_tags menu_tags sekizai_tags storybase_tags %}
+{% load i18n cms_tags menu_tags sekizai_tags storybase_tags storybase_addthis %}
 
 {% block head_title %}{{ storybase_site_name }} | {{ story.title }}{% endblock %}
 
@@ -9,7 +9,7 @@
 <meta name="description" content="{{ story.summary }}">
 
 <!-- Open Graph Protocol tags -->
-<meta property="og:url" content="{{ story.get_full_url }}" />
+<meta property="og:url" content="{% fullurl story.get_absolute_url %}" />
 <meta property="og:title" content="{{ story.title }}" />
 <meta property="og:description" content="{{ story.summary }}" />
 <meta property="og:image" content="{{ story.featured_asset_thumbnail_url }}" />
@@ -65,11 +65,11 @@
 				</div>
 				<div class="grid_6">
 					<section class="object-details">
-						{% include "addthis_widget.html" %}
+						<a href="#" class="storybase-share-widget" data-story-id="{{ story.slug }}">Share This Story</a>
 						<dl class="object-metadata">
 							{% if story.contributor_name %}
 							<dt>{% trans "Contributed by" %}</dt>
-							<dd class="contributor">{{ story.contributor_name }}</dd>
+                            <dd class="contributor"><a href="{{ story.author.get_profile.get_absolute_url }}" title="{{ story.contributor_name }}">{{ story.contributor_name }}</a></dd>
 							{% endif %}
 							{% if story.published %}
 							<dt>{% trans "Published" %}</dt>

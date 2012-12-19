@@ -1,0 +1,120 @@
+// Styles for search page
+// Styles for search form that appear in header are in header.less
+
+body.search {
+  h1 { margin-top: 0.5em; }
+}
+
+#search-page-form {
+  margin: 2em 0;
+}
+
+.results-header, .results-footer {
+  padding: 0.5em 0 0;
+  overflow: hidden;
+}
+
+.results-header {
+  h1, h2 {
+    margin: 0 !important;
+    float: left;
+    font-size: 28.8px !important;
+    text-align: left !important;
+    background: none !important;
+  }
+}
+
+.results-footer {
+  // Clear the absolutely positioned child
+  min-height: 25px;
+}
+
+#search-page-form {
+  text-align: center;
+
+  #id_q {
+    width: 60%;
+  }
+}
+
+.results-paging {
+  position: absolute;
+  right: 0;
+
+  input[type="text"] {
+    text-align: right;
+    font-style: normal !important;
+    width: 1em;
+  }
+
+  .next, .prev {
+    &:before{
+      font-size: 16px;
+    }
+
+    &:hover {
+      text-decoration: none;
+    }
+  }
+
+  .next {
+    padding-left: 0.5em;
+  }
+
+  .prev {
+    padding-right: 0.5em;
+  }
+
+  .next span, .prev span {
+    display: none;
+
+  }
+}
+
+.search-pagination-form {
+  display: inline;
+}
+
+.search-result, .no-search-results { 
+  list-style-type: none;
+}
+
+.search-result {
+  display: block;
+  clear: left;
+  padding-top: 20px;
+  overflow: hidden;
+
+  h3, .summary, .metadata {
+    // Not all images are the same widget (e.g. oEmbedded ones that have
+    // a more narrow thumbnail.  Make sure the text elements are all
+    // aligned, regardless of image width. 
+    margin-left: 230px;
+  }
+
+  h3 { text-align: left !important; }
+
+  img {
+    float: left;
+    // Downsize externally hosted images in the browser.  Locally hosted
+    // images will be correctly resized server-side 
+    max-width: 222px;
+  }
+
+  .metadata {
+    dt {
+      display: block;
+      float: left;
+
+      &:after {
+        content: ':';
+      }
+    }
+
+    dd {
+      clear: right;
+      padding-left: 0.5em;
+      overflow: hidden;
+    }
+  }
+}

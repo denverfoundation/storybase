@@ -1,5 +1,11 @@
 """Models representing people or groups of people"""
 
+try:
+    import shortuuid
+    import uuid
+except ImportError:
+    shortuuid = None
+
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.db import models
@@ -13,8 +19,9 @@ from storybase.fields import ShortTextField
 from storybase.managers import FeaturedManager
 from storybase.models import (TimestampedModel, TranslatedModel,
                               TranslationModel)
-from storybase.utils import unique_slugify
-from storybase_asset.models import FeaturedAssetsMixin
+from storybase.utils import full_url, unique_slugify
+from storybase_asset.models import (DefaultImageMixin, FeaturedAssetsMixin,
+    ImageRenderingMixin)
 
 ADMIN_GROUP_NAME = getattr(settings, 'ADMIN_GROUP_NAME', 'CA Admin')
 """Default name of the administrator group"""
@@ -38,22 +45,44 @@ class FeaturedStoriesMixin(object):
     def get_featured_queryset(self):
         return self.curated_stories.all()
 
-    def featured(self):
+    def featured_story(self):
         try:
             return self.get_featured_queryset().order_by('-last_edited')[0]
         except IndexError:
             return None
 
 
-class RecentStoriesMixin(object):
+class StoriesMixin(object):
+    """
+    Mixin that provides some utility methods for populating the
+    stories section of templates
+
+    This provides a common interface for templates to access a model
+    instance's stories, even when they may be accessed through different
+    model fields.
+
+    """
+    def get_stories_queryset(self):
+        return self.stories.filter(status='published')
+
+    def all_stories(self):
+        return self.get_stories_queryset().order_by('-last_edited')
+
+
+class RecentStoriesMixin(StoriesMixin):
     """
     Mixin that provides some utility methods for populating the recent
     stories section of templates
+
+    This provides a common interface for templates to access a model
+    instance's stories, even when they may be accessed through different
+    model fields.
+
     """
     def get_recent_queryset(self):
-        return self.stories.all()
+        return self.get_stories_queryset()
 
-    def recent_list(self, count=3):
+    def recent_stories(self, count=3):
         return self.get_recent_queryset().order_by('-last_edited')[:count]
         
 
@@ -244,7 +273,45 @@ def add_story_to_project(sender, instance, **kwargs):
             story.save()
 
 
-class UserProfile(models.Model):
+class ProfileImage(ImageRenderingMixin, DefaultImageMixin, object):
+    """
+    An Assset-like object that abstracts away the retrieval and rendering
+    of a user's profile image
+
+    """
+    def __init__(self, profile, *args, **kwargs):
+        self.title = "Profile image for %s" % (profile.name())
+        self.user = profile.user
+
+    def get_default_img_url_choices(self):
+        return settings.STORYBASE_DEFAULT_USER_IMAGES
+
+    def facebook_image_url(self, width):
+        if not hasattr(self.user, 'social_auth'):
+            return None
+
+        fb_auths = self.user.social_auth.filter(provider='facebook')
+        if not fb_auths.count():
+            return None
+
+        return "https://graph.facebook.com/%s/picture?width=%d" % (
+            fb_auths[0].uid, width)
+
+    def get_thumbnail_url(self, width=0, height=0, **kwargs):
+        # First, try to get the user's Facebook profile image
+        url = self.facebook_image_url(width)
+        if url:
+            return url
+
+        # Go to Gravatar to retrieve the user's profile image
+        # If we provide a default image URL, Gravatar will fall
+        # back to this.
+        default_url = full_url(self.get_default_img_url(width, height))
+        from storybase_user.utils import gravatar_url
+        return gravatar_url(self.user.email, default_url, width)
+
+
+class UserProfile(RecentStoriesMixin, models.Model):
     user = models.OneToOneField(User)
 
     profile_id = UUIDField(auto=True, db_index=True)
@@ -269,6 +336,34 @@ class UserProfile(models.Model):
 
     def __unicode__(self):
         return unicode(self.user)
+
+    @models.permalink
+    def get_absolute_url(self):
+        if shortuuid:
+            profile_uuid = uuid.UUID(self.profile_id)
+            return ('userprofile_detail', (), 
+                    {'short_profile_id': shortuuid.encode(profile_uuid)})
+
+        return ('userprofile_detail', (), 
+                {'profile_id': self.profile_id})
+
+    def name(self):
+        # Import needs to go here to prevent a circular import
+        from storybase_user.utils import format_user_name
+        return format_user_name(self.user)
+
+    def get_stories_queryset(self):
+        return self.user.stories.filter(status='published')
+
+    def get_image(self):
+        if not hasattr(self, '_image'):
+            self._image = ProfileImage(self)
+
+        return self._image
+
+    def render_featured_asset(self, format='html', width=500, height=0):
+        image = self.get_image()
+        return image.render_thumbnail_html(width, height)
 
 
 def create_user_profile(sender, instance, created, **kwargs):

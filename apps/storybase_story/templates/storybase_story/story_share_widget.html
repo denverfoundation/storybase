@@ -1,0 +1,11 @@
+{% load story storybase_tags storybase_addthis i18n %}<div class="share-widget">
+    {% fullurl story.get_absolute_url as story_url %}
+    <dl>
+      <dt>{% trans "Share on popular social networks" %}</dt>
+      <dd>{% addthis_widget url=story_url,size="32x32",include_js=False %}</dd>
+      <dt>{% trans "Copy a link to the story" %}</dt>
+      <dd><input name="share-url" type="text" value="{{ story_url }}" /></dd>
+      <dt>{% trans "Embed this story on another site" %}</dt>
+      <dd><textarea name="share-embed-code">{% story_embed story %}</textarea></dd>
+    </dl>
+</div>

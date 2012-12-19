@@ -1,5 +1,8 @@
 """Utility functions for dealing with users and groups of users"""
 
+import hashlib
+import urllib
+
 from django.contrib.auth.models import User
 
 import storybase_user.models
@@ -52,3 +55,15 @@ def format_user_name(user):
             user_name = user.first_name
 
     return user_name
+
+def gravatar_url(email, default=None, size=40):
+    """Retrieve a gravatar URL for a given e-mail address"""
+    base_url = "http://www.gravatar.com/avatar/"
+    options = {
+        's': str(size),
+    }
+    if default:
+        options['d'] = default
+    url = base_url + hashlib.md5(email.lower()).hexdigest()
+    url = url + "?" + urllib.urlencode(options)
+    return url

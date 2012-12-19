@@ -1,0 +1,53 @@
+{% extends "storybase_user/detail_base.html" %}
+{% comment %}
+Template for user profile page.
+{% endcomment %}
+
+{% load i18n storybase_tags %}
+
+{% block content_page_class %}{{ block.super }} user{% endblock %}
+
+{% block summary_left %}
+<div class="grid_8 alpha">
+    <section class="summary">
+        {# No content here for now #}
+    </section>
+</div>
+{% endblock %}
+
+{% block summary_right %}
+<div class="grid_2 omega">
+    <section class="object-featured-asset">
+        {% featured_asset object 150 %}
+    </section>
+</div>
+{% endblock %}
+
+{% block metadata_alpha %}
+{% if object.user.organizations.all %}
+<h4>{% block metadata_alpha_title %}{% trans "Organizations" %}{% endblock %}</h4>
+<ul>
+    {% for org in object.user.organizations.all %}    
+    <li><a href="{{ org.get_absolute_url }}" title="{{ org.name }}">{{ org.name }}</a></li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endblock %}
+
+{% block metadata_center %}    
+{% if object.user.projects.all %}
+<h4>{% block metadata_center_title %}{% trans "Projects" %}{% endblock %}</h4>
+<ul>
+    {% for proj in object.user.projects.all %}    
+    <li><a href="{{ proj.get_absolute_url }}" title="{{ proj.name }}">{{ proj.name }}</a></li>
+    {% endfor %}
+</ul>
+{% endif %}
+{% endblock %}
+
+{% block metadata_omega %}
+{# No content in this block for now #}
+{% endblock %}
+
+{% block explore_button %}{# No content in this block for now #}{% endblock %}
+

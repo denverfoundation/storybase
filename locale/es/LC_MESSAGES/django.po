@@ -842,10 +842,6 @@ msgstr ""
 msgid "Project Contributors"
 msgstr ""
 
-#: apps/storybase_user/templates/storybase_user/project_detail.html:59
-msgid "Sponsoring Organizations"
-msgstr ""
-
 #: apps/storybase_user/templates/storybase_user/project_detail.html:70
 msgid "Featured Story"
 msgstr ""

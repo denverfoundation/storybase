@@ -17,7 +17,6 @@
 			.body-copy-lists;
 			
 			h2, h3, h4, h5 {
-				.plain-serif-text;
 				text-align:left;
 				background:none;
 				margin-bottom:0.2em;
@@ -29,7 +28,6 @@
 				font-size:(@top-header-size * .8);
 				line-height:27px;
 				color:@dark-gray;
-				.plain-serif-text;
 				.default-margin-bottom;
 			}
 
@@ -87,7 +85,6 @@
 			}
 			p { 
 				color:#5a5a5a; 
-				line-height:16px; 
 				padding-bottom:12px;
 				a {
 					color:@highlight-blue;
@@ -108,7 +105,6 @@
 	
 	/* object detail pages: story, project, etc */
 	&.object-detail {
-		.plain-serif-text;
 		a { color:@highlight-blue; }
 		.col {
 			float:left;
@@ -136,11 +132,11 @@
 			margin-bottom:12px;
 		}
 		h4 {
-			font-size:19px;
+			font-size:18px;
 			color:#333;
 			margin-bottom:0;
 		}
-		
+
 		.object-featured-asset {
 		}
 		.object img { width:100%; }
@@ -167,12 +163,20 @@
 			dt { clear:left; margin-right:4px }
 			dt:after { content:": " }
 		}
-		
-		&.project .featured-story img { width: 100%; }
-		&.project .recent-stories ul { margin-bottom: 30px; }
-		&.project .recent-stories li { 
+		.featured-story img { width: 100%; }
+		.story-list ul { margin-bottom: 30px; }
+		.story-list li { 
 			margin-bottom: 10px; 
 			overflow:hidden;
+                        div {
+                                // HACK: Force div to have layout, even when
+                                // image is broken, so titles are aligned.
+                                // This might be an edge case in my 
+                                // development instance because stories
+                                // should at least get the default featured
+                                // image
+                                min-height: 1px; 
+                        }
 			img {
 				margin-top:8px; width: 100%;
 			}

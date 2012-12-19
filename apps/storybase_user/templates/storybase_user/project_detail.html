@@ -8,7 +8,7 @@
 
 {% block metadata_omega %}
 {% if object.organizations.all %}
-<h4>{% trans "Sponsoring Organizations" %}</h4>
+<h4>{% trans "Contributing Organizations" %}</h4>
 <ul>
     {% for organization in object.organizations.all %}
     <li><a href="{{ organization.get_absolute_url }}">{{ organization.name }}</a></li>

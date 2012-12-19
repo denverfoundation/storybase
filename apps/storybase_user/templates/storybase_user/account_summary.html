@@ -1,6 +1,6 @@
 {% extends "storybase_user/account_base.html" %}
 
-{% load cms_tags sekizai_tags menu_tags i18n %}
+{% load cms_tags sekizai_tags menu_tags i18n storybase_tags %}
 
 {% block head_title %}{% trans "Account Information" %}{% endblock %}
 
@@ -8,6 +8,27 @@
 
 {% block twocol-content %}
 {% include "messages.html" %}
+
+<h2><span>{% trans "Public Profile" %}</span></h2>
+
+{% comment %}
+HACK: Wrap the content in a grid_10 div so that the default profile image
+will be cleared.  Without the wrapper, the next section floats next to the
+message about the profile image when the profile image is shorter than
+the text to the left of it.
+{% endcomment %}
+<div class="grid_10 alpha omega">
+    <div class="grid_8 alpha">
+        {% fullurl user.get_profile.get_absolute_url as profile_url %}
+        <p>{% blocktrans %} Your public profile page is viewable at <a href="{{ profile_url }}" title="Your public profile page">{{ profile_url }}</a>.{% endblocktrans %}</p>
+
+        <p>{% blocktrans %}If you have <a href="#connected-accounts" title="Connected accounts">connected your Facebook account</a>, your Facebook profile image will be used for your {{ storybase_site_name }} profile.  Otherwise, your <a href="http://gravatar.com/" title="Gravatar">Gravatar</a> image will be used. If neither is available, a default image will be shown.{% endblocktrans %}</p>
+    </div>
+
+    <div class="grid_2 omega">
+        {% featured_asset user.get_profile 150 %}
+    </div>
+</div>
 
 <h2><span>{% trans "Email Address" %}</span></h2>
 
@@ -17,7 +38,7 @@
 <input type="submit" value="{% trans "Change Email Address" %}" />
 </form>
 
-<h2><span>{% trans "Connected accounts" %}</span></h2>
+<h2 id="connected-accounts"><span>{% trans "Connected accounts" %}</span></h2>
 <ul>
   {% for name, value in social_auth.items %}
   <li>{{ name|capfirst }} {% if value %}<a href="{% url socialauth_disconnect backend=name %}">{% trans "disconnect" %}</a>{% else %}<a href="{% url socialauth_begin backend=name %}">{% trans "connect" %}</a>{% endif %}</li>

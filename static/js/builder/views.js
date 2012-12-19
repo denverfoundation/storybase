@@ -18,6 +18,14 @@ storybase.builder.views.VISIBLE_STEPS = {
 };
 
 /**
+ * Is the browser some version of Microsoft Internet Explorer?
+ *
+ * HACK: Browser detection is bad, but our work-around for #415 should only
+ * apply to MSIE and we can't determine this by feature detection.
+ */
+storybase.builder.views.MSIE = ($.browser !== undefined) && ($.browser.msie === true);
+
+/**
  * @name save:section
  * @event
  * @param Section section Event triggered when a section has successfully
@@ -113,6 +121,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
     buildViewOptions = _.defaults({
       assetTypes: this.options.assetTypes,
       containerTemplates: this.options.containerTemplates,
+      forceTour: this.options.forceTour,
       layouts: this.options.layouts,
       help: this.options.help,
       prompt: this.options.prompt,
@@ -747,7 +756,7 @@ storybase.builder.views.ClickableItemsView = Backbone.View.extend({
   },
 
   getItemClass: function(itemOptions) {
-    var cssClass = itemOptions.class || "";
+    var cssClass = itemOptions.className || "";
     var enabled = this.getPropertyValue(itemOptions, 'enabled', true);
     var selected = this.getPropertyValue(itemOptions, 'selected', false); 
 
@@ -765,7 +774,7 @@ storybase.builder.views.ClickableItemsView = Backbone.View.extend({
   renderItem: function(itemOptions) {
     this.$el.append(this.itemTemplate({
       id: itemOptions.id,
-      class: this.getItemClass(itemOptions),
+      className: this.getItemClass(itemOptions),
       title: itemOptions.title,
       text: itemOptions.text,
       href: this.getItemHref(itemOptions)
@@ -1131,7 +1140,7 @@ storybase.builder.views.StoryTemplateView = Backbone.View.extend({
       // Use this instead of the className property so we can set the class
       // dynamically when the view is instantiated based on the model's 
       // slug
-      class: 'template ' + this.model.get('slug') 
+      'class': 'template ' + this.model.get('slug') 
     };
   },
 
@@ -1215,11 +1224,70 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
     }, this);
   },
 
+  /**
+   * Move a guider's element to the left or right.
+   */
+  nudge: function($guiderEl, amount) {
+    var guiderElemLeft = parseInt($guiderEl.css("left").replace('px', ''));
+    var myGuiderArrow = $guiderEl.find(".guider_arrow");
+    var arrowElemLeft = parseInt(myGuiderArrow.css("left").replace('px', ''));
+    $guiderEl.css("left", (guiderElemLeft + amount) + "px");
+    myGuiderArrow.css("left", (arrowElemLeft - amount) + "px");
+  },
+
+  /**
+   * Detect if a guider's element falls outside of the window and push it
+   * in place if it does.
+   *
+   * This is meant to be bound to the guider element's 'guiders.show' event 
+   */
+  nudgeIntoWindow: function($guiderEl) {
+    var windowWidth = $(window).width();
+    var guiderOffset = $guiderEl.offset();
+    var guiderElemWidth = $guiderEl.outerWidth();
+    var isGuiderRight = (guiderOffset.left + guiderElemWidth > windowWidth);
+    var isGuiderLeft = (guiderOffset.left < 0);
+    // Check if the guider ends up to the left or to the right of the 
+    // window and nudge it over until it fits
+    if (isGuiderRight) {
+      this.nudge($guiderEl, windowWidth - guiderOffset.left - guiderElemWidth);
+    }
+    if (isGuiderLeft) {
+      this.nudge($guiderEl, 0 - guiderOffset.left);
+    }
+    // Unbind this event from the element
+    $guiderEl.unbind("guiders.show");
+  },
+
+  /**
+   * Checks if the tour should be shown
+   */
+  showTour: function() {
+    if (_.isUndefined(guiders)) {
+      return false;
+    }
+
+    if (this.options.forceTour) {
+      return true;
+    }
+  
+    if ($.cookie('storybase_show_builder_tour') === 'false') {
+      return false;
+    }
+
+    return this.options.showTour;
+  },
+
   show: function() {
     var that = this;
-    var showTour = _.isUndefined(guiders) ? false : ($.cookie('storybase_show_builder_tour') === 'false' ? false : true) && this.options.showTour;
 
-    if (showTour) { 
+    var bindNudge = function(myGuider) {
+      $(myGuider.elem).bind("guiders.show", function() {
+        that.nudgeIntoWindow($(this));
+      });
+    }; 
+    
+    if (this.showTour()) { 
       guiders.createGuider({
         id: 'workflow-step-guider',
         attachTo: '#workflow-step #build',
@@ -1232,7 +1300,9 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         position: 6,
         title: gettext("Building a story takes five simple steps."),
         description: this.template['workflow-step-guider'](),
-        next: 'section-list-guider'
+        next: 'section-list-guider',
+        xButton: true,
+        onShow: bindNudge 
       });
       guiders.createGuider({
         id: 'section-list-guider',
@@ -1252,7 +1322,9 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         // TODO: Remove reference to "Story Sections" tab
         description: gettext('This bar shows the sections in your story.'),
         prev: 'workflow-step-guider',
-        next: 'section-thumbnail-guider'
+        next: 'section-thumbnail-guider',
+        xButton: true,
+        onShow: bindNudge
       });
       guiders.createGuider({
         id: 'section-thumbnail-guider',
@@ -1271,7 +1343,9 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         title: gettext("Select the section you want to edit."),
         description: gettext("Click on a section to edit it. The section you are actively editing is highlighted."),
         prev: 'section-list-guider',
-        next: 'section-manipulation-guider'
+        next: 'section-manipulation-guider',
+        xButton: true,
+        onShow: bindNudge
       });
       guiders.createGuider({
         id: 'section-manipulation-guider',
@@ -1290,7 +1364,9 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         title: gettext("You can also add, move or delete sections."),
         description: this.template['section-manipulation-guider'](),
         prev: 'section-thumbnail-guider',
-        next: 'preview-guider'
+        next: 'preview-guider',
+        xButton: true,
+        onShow: bindNudge
       });
       guiders.createGuider({
         id: 'preview-guider',
@@ -1309,7 +1385,9 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         title: gettext("Preview your story at any time."),
         description: gettext("Clicking here lets you preview your story in a new window"),
         prev: 'section-manipulation-guider',
-        next: 'exit-guider'
+        next: 'exit-guider',
+        xButton: true,
+        onShow: bindNudge
       });
       guiders.createGuider({
         id: 'exit-guider',
@@ -1328,7 +1406,9 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         title: gettext("You can leave your story at any time and come back later."),
         description: this.template['exit-guider'](),
         prev: 'preview-guider',
-        next: 'help-guider'
+        next: 'help-guider',
+        xButton: true,
+        onShow: bindNudge
       });
       guiders.createGuider({
         attachTo: '#drawer-controls [title="Help"]',
@@ -1346,13 +1426,15 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         id: 'help-guider',
         title: gettext("Get tips on how to make a great story."),
         description: gettext("Clicking the \"Help\" button shows you tips for the section you're currently editing. You can also click on the \"?\" icon next to an asset to find more help."),
-        onShow: function() {
+        onShow: function(myGuider) {
+          bindNudge(myGuider);
           that.dispatcher.trigger('do:show:help');
         },
-        onHide: function() {
+        onHide: function(myGuider) {
           that.dispatcher.trigger('do:hide:help');
         },
-        next: 'tooltip-guider'
+        next: 'tooltip-guider',
+        xButton: true
       });
       guiders.createGuider({
         attachTo: '#workflow-step #build',
@@ -1371,7 +1453,8 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         id: 'tooltip-guider',
         title: gettext("Need even more tips?"),
         description: gettext("You can find out more about many of the buttons and links by hovering over them with your mouse."),
-        onShow: function() {
+        onShow: function(myGuider) {
+          bindNudge(myGuider);
           $('#workflow-step #build').triggerHandler('mouseover');
         },
         onHide: function() {
@@ -1382,9 +1465,19 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
             expires: 365
           });
           $('#workflow-step #build').triggerHandler('mouseout');
-        }
+        },
+        xButton: true
       });
       guiders.show('workflow-step-guider');
+      // HACK: Workaround for #415.  In IE, re-nudge the first guider element
+      // after waiting a little bit. In some cases, the initial CSS change 
+      // above doesn't render properly. The pause seems to fix this.  Note
+      // that this uses the internal guiders API to get the element.
+      if (storybase.builder.views.MSIE) {
+        setTimeout(function() {
+          that.nudgeIntoWindow(guiders._guiderById('workflow-step-guider').elem);
+        }, 200);
+      }
     }
   }
 });
@@ -1412,6 +1505,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this._relatedStoriesSaved = false;
     this._tour = new storybase.builder.views.BuilderTour({
       dispatcher: this.dispatcher,
+      forceTour: this.options.forceTour,
       showTour: this.options.showTour
     });
 
@@ -1443,7 +1537,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     if (this.options.visibleSteps.data) {
       navViewOptions.items.push({
         id: 'workflow-nav-data-fwd',
-        class: 'next',
+        className: 'next',
         title: gettext("Add Data to Your Story"),
         text: gettext("Next"),
         path: 'data/',
@@ -1453,7 +1547,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     else if (this.options.visibleSteps.publish) {
       navViewOptions.items.push({
         id: 'workflow-nav-publish-fwd',
-        class: 'next',
+        className: 'next',
         title: gettext("Publish My Story"),
         text: gettext("Next"),
         path: 'publish/',
@@ -1780,8 +1874,46 @@ storybase.builder.views.LastSavedView = Backbone.View.extend({
     return events;
   },
 
+  /**
+   * Make an ISO-8601 formatted string adhere to the 'strict' standard.
+   *
+   * In our case, this just means removing the microseconds from the 
+   * string.
+   */
+  _makeStrict: function(dateStr) {
+    var re = /\.\d+/;
+
+    return dateStr.replace(re, "");
+  },
+
+  /**
+   * Convert an ISO-8601 formatted date string into a Date object.
+   *
+   * Takes into account minor browser differences.
+   */
+  parseDate: function(date) {
+    var parsedDate;
+
+    if (_.isDate(date)) {
+      // If the argument is already a date object, just return it
+      return date;
+    }
+
+    // Otherwise, it's a string and we need to make a Date object out of it
+    parsedDate = new Date(date);
+    if (!isNaN(parsedDate.getTime())) {
+      // We successfully parsed the date string. Return the Date object
+      return parsedDate;
+    }
+
+    // The date wasn't successfully parsed, this is likely because the browser
+    // doesn't support microseconds in the ISO-8601 datestring as returned
+    // by the API (IE).
+    return new Date(this._makeStrict(date));
+  },
+
   initialize: function() {
-    this.lastSaved = !!this.options.lastSaved ? (_.isDate(this.options.lastSaved) ? this.options.lastSaved : new Date(this.options.lastSaved)) : null;
+    this.lastSaved = !!this.options.lastSaved ? this.parseDate(this.options.lastSaved) : null;
 
     this.dispatcher = this.options.dispatcher;
     this.dispatcher.on('save:section', this.updateLastSaved, this);
@@ -3781,14 +3913,14 @@ storybase.builder.views.DataView = Backbone.View.extend(
         items: [
           {
             id: 'workflow-nav-build-back',
-            class: 'prev',
+            className: 'prev',
             title: gettext("Continue Writing Story"),
             text: gettext("Previous"),
             path: ''
           },
           {
             id: 'workflow-nav-tag-fwd',
-            class: 'next',
+            className: 'next',
             title: gettext("Tag"),
             text: gettext("Next"),
             path: 'tag/'
@@ -3950,14 +4082,14 @@ storybase.builder.views.ReviewView = Backbone.View.extend(
         items: [
           {
             id: 'workflow-nav-tag-back',
-            class: 'prev',
+            className: 'prev',
             title: gettext("Back to Tag"),
             text: gettext("Previous"),
             path: 'tag/'
           },
           {
             id: 'workflow-nav-publish-fwd',
-            class: 'next',
+            className: 'next',
             title: gettext("Publish My Story"),
             text: gettext("Next"),
             path: 'publish/'
@@ -4014,14 +4146,14 @@ storybase.builder.views.TaxonomyView = Backbone.View.extend(
         items: [
           {
             id: 'workflow-nav-data-back',
-            class: 'prev',
+            className: 'prev',
             title: gettext("Back to Add Data"),
             text: gettext("Previous"),
             path: 'data/'
           },
           {
             id: 'workflow-nav-review-fwd',
-            class: 'next',
+            className: 'next',
             title: gettext("Review"),
             text: gettext("Next"),
             path: 'review/'
@@ -4789,7 +4921,7 @@ storybase.builder.views.PublishView = Backbone.View.extend(
       if (this.options.visibleSteps.review) {
         navViewOptions.items.push({
           id: 'workflow-nav-build-back',
-          class: 'prev',
+          className: 'prev',
           title: gettext("Back to Review"),
           text: gettext("Previous"), 
           path: 'review/'
@@ -4798,7 +4930,7 @@ storybase.builder.views.PublishView = Backbone.View.extend(
       else {
         navViewOptions.items.push({
           id: 'workflow-nav-review-back',
-          class: 'prev',
+          className: 'prev',
           title: gettext("Continue Writing Story"),
           text: gettext("Previous"),
           path: ''

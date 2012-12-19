@@ -46,6 +46,7 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
     this.$('.summary').show();
     this.$('.section').show();
     this.sizeFigCaptions();
+    this.$('.storybase-share-widget').storybaseShare();
     return this;
   },
 

@@ -68,6 +68,9 @@ class SectionRelationFormTest(TestCase):
 
 class StoryModelTest(TestCase, SloppyComparisonTestMixin):
     """Unit tests for Story Model"""
+
+    fixtures = ['section_layouts.json']
+
     def test_auto_slug(self):
         """Test slug field is set automatically"""
         title = ('Transportation Challenges Limit Education Choices for '
@@ -320,6 +323,71 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
             byline="Test Byline 2")
         self.assertEqual(story2.slug, "test-story-2")
         self.assertEqual(Story.objects.filter(slug="test-story").count(), 1)
+
+    def test_asset_strings(self):
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        story = create_story(title="Test Story", summary="Test Summary",
+            byline="Test Byline")
+        body1 = """awesome hyperhyperhyperlocal hyperhyperlocal the notional night cops reporter in Des Moines election-night hologram serendipity John Dewey masthead engagement, information overload #twittermakesyoustupid going forward content farm community curation Groupon commons-based peer production, Dan Fleckner Rupert Murdoch Snarkmarket hot news doctrine audience atomization overcome DocumentCloud dying. pay curtain do what you do best and link to the rest John Dewey Jeff Jarvis tabloid Voice of San Diego, content is king Rupert Murdoch every dog loves food open newsroom Tumblr location-based, Dan Fleckner Walter Cronkite died for your sins inverted pyramid right-sizing.""" 
+        body2 = """CPC the audience knows more than I do Alberto Ibarguen discuss What Would Google Do semipermeable church of the savvy rubber cement, the medium is the massage totally blowing up on Twitter the power of the press belongs to the person who owns one data journalism TweetDeck Arab spring newsonomics Project Thunderdome, attracting young readers tabloid stupid commenters awesome nut graf RT. put the paper to bed cognitive surplus bloggers in their mother's basement layoffs in the slot Politics & Socks page monetization YouTube Flipboard I love the Weather & Opera section, he said she said pay curtain Knight Foundation TechCrunch curmudgeon innovation CNN leaves it there layoffs vast wasteland, cancel my subscription 5 praise erasers & how to avoid them process vs. product Buttry dying we need a Nate Silver Fuego Tim Carmody."""
+        body3 = """recontextualize RT morgue natural-born blogger Tim Carmody DocumentCloud Project Thunderdome linkbait, Dan Fleckner curmudgeon nut graf Neil Postman This Week in Review bringing a tote bag to a knife fight NYT R&D, writing Rupert Murdoch ProPublica hyperhyperhyperlocal Encyclo community. bloggers in their mother's basement gamification Mozilla Like button crowdfunding information wants to be free DocumentCloud audience atomization overcome bringing a tote bag to a knife fight blog future newspaper Aron Pilhofer DocumentCloud go viral Demand Media digital circulation strategy Steve Jobs, Aron Pilhofer 5% corruption social media cognitive surplus 5 praise erasers & how to avoid them WordPress information wants to be free Groupon future of narrative the notional night cops reporter in Des Moines ProPublica Arianna but what's the business model #twittermakesyoustupid tags."""
+        asset1 = create_html_asset(type='text', title="Test Asset 1",
+                                  body=body1)
+        asset2 = create_html_asset(type='text', title="Test Asset 2",
+                                   body=body2)
+        asset3 = create_html_asset(type='text', title="Test Asset 3",
+                                   body=body3)
+        section1 = create_section(title="Test Section 1", story=story,
+                                  layout=layout)
+        section2 = create_section(title="Test Section 2", story=story,
+                                  layout=layout)
+        left = Container.objects.get(name='left')
+        right = Container.objects.get(name='right')
+        SectionAsset.objects.create(section=section1, asset=asset1, 
+                                    container=left)
+        SectionAsset.objects.create(section=section2, asset=asset2, 
+                                    container=right)
+        SectionAsset.objects.create(section=section2, asset=asset3, 
+                                    container=left)
+        strings = story.asset_strings()
+        self.assertIn(body1, strings)
+        self.assertIn(body2, strings)
+        self.assertIn(body3, strings)
+
+    def test_asset_strings_used_only(self):
+        """
+        Test that only assets used in the story are returned by the
+        asset_strings method.
+
+        """
+        body1 = """awesome hyperhyperhyperlocal hyperhyperlocal the notional night cops reporter in Des Moines election-night hologram serendipity John Dewey masthead engagement, information overload #twittermakesyoustupid going forward content farm community curation Groupon commons-based peer production, Dan Fleckner Rupert Murdoch Snarkmarket hot news doctrine audience atomization overcome DocumentCloud dying. pay curtain do what you do best and link to the rest John Dewey Jeff Jarvis tabloid Voice of San Diego, content is king Rupert Murdoch every dog loves food open newsroom Tumblr location-based, Dan Fleckner Walter Cronkite died for your sins inverted pyramid right-sizing.""" 
+        body2 = """CPC the audience knows more than I do Alberto Ibarguen discuss What Would Google Do semipermeable church of the savvy rubber cement, the medium is the massage totally blowing up on Twitter the power of the press belongs to the person who owns one data journalism TweetDeck Arab spring newsonomics Project Thunderdome, attracting young readers tabloid stupid commenters awesome nut graf RT. put the paper to bed cognitive surplus bloggers in their mother's basement layoffs in the slot Politics & Socks page monetization YouTube Flipboard I love the Weather & Opera section, he said she said pay curtain Knight Foundation TechCrunch curmudgeon innovation CNN leaves it there layoffs vast wasteland, cancel my subscription 5 praise erasers & how to avoid them process vs. product Buttry dying we need a Nate Silver Fuego Tim Carmody."""
+        story = create_story(title="Test Story", summary="Test Summary",
+            byline="Test Byline")
+        asset1 = create_html_asset(type='text', title="Test Asset 1",
+                                  body=body1)
+        asset2 = create_html_asset(type='text', title="Test Asset 2",
+                                   body=body2)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        section = create_section(title="Test Section 1", story=story,
+                                 layout=layout)
+        left = Container.objects.get(name='left')
+        SectionAsset.objects.create(section=section, asset=asset1, 
+                                    container=left)
+        story.assets.add(asset2)
+        story.save()
+        strings = story.asset_strings()
+        self.assertIn(body1, strings)
+        self.assertNotIn(body2, strings)
+
+    def test_never_published(self):
+        story = create_story(title="Test Story", summary="Test Summary",
+            byline="Test Byline")
+        self.assertEqual(story.never_published, True)
+        story.status = 'published'
+        story.save()
+        self.assertEqual(story.never_published, False)
+
 
 
 class StoryPermissionTest(TestCase):

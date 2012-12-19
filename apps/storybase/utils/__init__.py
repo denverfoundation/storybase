@@ -1,5 +1,6 @@
 """Shared utility functions"""
 
+from urlparse import urlsplit, urlunsplit
 import re
 
 import pytz
@@ -161,6 +162,19 @@ def get_site_name(request=None):
         current_site = get_current_site(request)
         site_name = current_site.name
     return site_name
+
+
+def full_url(urlstring, scheme='http'):
+    parsed = urlsplit(urlstring)
+    if parsed.netloc:
+        # URL string is already full, e.g. 
+        # http://localhost:8000/stories/foo/, just return it
+        return urlstring
+    else:
+        # URL string does not contain domain/protocol information.
+        # It's just a path, e.g. /stories/foo/
+        current_site = get_current_site(None)
+        return urlunsplit((scheme, current_site.domain, urlstring, None, None))
 
 
 def key_from_instance(instance, extra=None):

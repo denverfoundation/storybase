@@ -68,16 +68,11 @@
 					{% endif %}
 				</ul>
 				<div class="cl">&nbsp;</div>
-                {# TODO: Enable search #} 
-                {% comment %}
-				<form id="search" action="" method="post">
-					<input type="text" class="field" value="" />
-					<input type="submit" class="submit" value="" />
+                <form id="search" action="{% url haystack_search %}" method="get">
+                    <input id="id_q" type="text" name="q" class="field" value="{{ query }}" />
+                    <input type="submit" class="submit" value="" />
 					<div class="cl">&nbsp;</div>
 				</form>
-                {% endcomment %}
-                {# HACK: Take up the same amount of space as the search form #}
-                <div id="search-placeholder"></div>
 			</div>
 			<div class="cl">&nbsp;</div>
 		</div>
@@ -144,8 +139,16 @@
   var jqLatest = jQuery;
   </script>
 
+  {% addtoblock "js" %}
+  <script>
+  // Before loading all of our jQuery plugins, switch jQuery to our recent version
+  jQuery = jqLatest;
+  $ = jQuery;
+  </script>
+  {% endaddtoblock %}
   {% addtoblock "js" %}<script defer src="{{ STATIC_URL }}js/plugins.js"></script>{% endaddtoblock %}
   {% addtoblock "js" %}<script src="{{ STATIC_URL }}js/functions.js"></script>{% endaddtoblock %}
+  {% addtoblock "js" %}<script src="{{ STATIC_URL }}js/jquery.storybaseshare.js"></script>{% endaddtoblock %}
   {% if debug %}
   {% addtoblock "js" %}<script src="{{ STATIC_URL }}js/libs/less-1.3.0.min.js"></script>{% endaddtoblock %}
   {% endif %}

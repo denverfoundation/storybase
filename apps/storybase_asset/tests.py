@@ -290,6 +290,33 @@ class HtmlAssetModelTest(TestCase):
         self.assertEqual(asset.get_thumbnail_url(),
             "http://farm8.staticflickr.com/7261/7803936842_19ec7bf391_n.jpg")
 
+    def test_strings(self):
+        """
+        Test that the strings method of the model returns the body field
+        """
+        body = """"As Tina Griego writes for the Children's Corridor website, waves of immigration and a steep rise in births to foreign-born are both a challenge and an opportunity for communities living in the Children's Corridor: "With...immigration came many people with little formal education. The less education one has, the higher the risk of living in poverty."
+
+Data from the Pew Hispanic Center, which Griego cites in her article, shows that 60 percent of immigrants ages 25 and over have less than a high school education. These national statistics are reflected in here in Colorado through birth data. This graphic uses data from birth certificates to look at the education discrepancies between mothers born in the United States and mothers immigrating from a foreign country.
+
+In 2010, there were 66,346 births in Colorado. Of those births, 99.8% of mothers reported their country of origin on the birth certificate. Nearly four-firths of births were to mothers born in the U.S. A fifth of mothers immigrated here from another country. Of those mothers, more than half came from Mexico. The difference in education level among these groups is striking: 12 percent of U.S.-born mothers had less than a high school education, compared to 69 percent of mothers from Mexico and 16 percent of mothers from other countries."""
+        asset = create_html_asset(type='text', title="", caption="",
+                                  body=body, status='published')
+        self.assertEqual(asset.strings(), body)
+
+    def test_strings_strip_html(self):
+        """
+        Test that the strings method of the model returns the value of
+        the body field, but strips HTML from it.
+        """
+        body = """As
+<a rel="nofollow" target="_blank" href="http://www.denverchildrenscorridor.org/data/why-the-battle-against-childhood-poverty-must-include-immigrant-integration">Tina Griego writes for the Children's Corridor website</a>
+, waves of immigration and a steep rise in births to foreign-born are both a challenge and an opportunity for communities living in the Children's Corridor: "With...immigration came many people with little formal education. The less education one has, the higher the risk of living in poverty."
+<br>"""
+        asset = create_html_asset(type='text', title="", caption="",
+                                  body=body, status='published')
+        self.assertEqual(asset.strings(), striptags(body))
+
+
 
 class MockProviderTest(TestCase):
     def test_get_google_spreadsheet_embed(self):
