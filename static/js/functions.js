@@ -233,5 +233,32 @@
 	});
 
 
+	// misc functions
+	
+
+	// @todo: this whole file needs to be cleaned up/refactored,
+	// but might be nice to have global methods like this in a nice
+	// namespace.
+	// adapted from http://stackoverflow.com/questions/3656592/programmatically-disable-scrolling
+	// @note: while scrolling is disabled, the page may jump to (0, 0) in some
+	// browsers. for the use cases we currently have, this is ok.
+	window.disablePageScrolling = function() {
+		var $target = $('body');
+		var scrollPosition = [
+			window.pageXOffset || document.documentElement.scrollLeft || document.body.scrollLeft,
+			window.pageYOffset || document.documentElement.scrollTop  || document.body.scrollTop
+		];
+		$target.data('scroll-position', scrollPosition);
+		$target.data('previous-overflow', $target.css('overflow'));
+		$target.css({ overflow: 'hidden' });
+		window.scrollTo(scrollPosition[0], scrollPosition[1]);	// does not appear to be effective
+	}
+	window.enablePageScrolling = function() {
+		var $target = $('body');
+		var scrollPosition = $target.data('scroll-position');
+		$target.css('overflow', $target.data('previous-overflow'));
+		window.scrollTo(scrollPosition[0], scrollPosition[1]);
+	}
+
 })(jqLatest);
 

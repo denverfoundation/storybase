@@ -186,7 +186,14 @@ $(document).ready(function () {
             minHeight: height,
             minWidth: width,
             zIndex: 6000,
-            overlayCss: { background: 'black' }
+            overlayCss: { background: 'black' },
+            onShow: function(dialog) {
+              disablePageScrolling();
+            },
+            onClose: function(dialog) {
+              enablePageScrolling();
+              $.modal.close();
+            }
         });
         $("#story-viewer-modal iframe").css("width", width); 
         $("#story-viewer-modal iframe").css("height", height); 
