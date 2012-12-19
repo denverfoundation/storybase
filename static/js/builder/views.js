@@ -2730,7 +2730,7 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
   clickAddSection: function(evt) {
     evt.stopPropagation(); 
     evt.preventDefault();
-    var index = $(evt.currentTarget).data('index');
+    var index = $(evt.currentTarget).find('.add-section').data('index');
     this.addNewSection(index);
   },
 
