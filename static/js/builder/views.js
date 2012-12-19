@@ -662,6 +662,9 @@ storybase.builder.views.HelpView = Backbone.View.extend(
         this.delegateEvents();
         this.$el.show();
       }
+      if (jQuery().tooltipster) {
+        this.$('.tooltip').tooltipster();
+      }
       return this;
     },
 
