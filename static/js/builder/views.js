@@ -1539,7 +1539,7 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
       if (storybase.builder.views.MSIE) {
         setTimeout(function() {
           that.nudgeIntoWindow(guiders._guiderById('workflow-step-guider').elem);
-        }, 200);
+        }, 250);
       }
     }
   }
@@ -2753,7 +2753,7 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
   clickAddSection: function(evt) {
     evt.stopPropagation(); 
     evt.preventDefault();
-    var index = $(evt.currentTarget).data('index');
+    var index = $(evt.currentTarget).find('.add-section').data('index');
     this.addNewSection(index);
   },
 
