@@ -45,6 +45,14 @@
   left: -9999px;
 }
 
+.transition-duration(@duration: 0.2s) {
+  -moz-transition-duration: @duration;
+  -webkit-transition-duration: @duration;
+  -o-transition-duration: @duration;
+  transition-duration: @duration;
+}
+
+
 .button-style(@_:gray) {
 	padding:8px;
 	background:#878787;
