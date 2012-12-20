@@ -47,12 +47,27 @@ storybase.builder.views.MSIE = ($.browser !== undefined) && ($.browser.msie === 
  */
 
 /**
+ * Set the help item to be displayed in the help view.
+ *
+ * @event do:set:help
+ * @param {object} help Representation of help to be displayed in the
+ *   help view in the drawer.  This object should at least have a title
+ *   and body property.
+ */
+
+/**
+ * Remove all help items from the help view.
+ *
+ * @event do:clear:help
+ */
+
+/**
  * Set the view that defines action buttons that appear at the top of
  * the help content in the drawer.
  *
  * Currently, this is just used for the button that re-launches the tour.
  *
- * @event do:save:helpactions
+ * @event do:set:helpactions
  * @param View actionView View that controls the display and UI events 
  *     for action buttons at the top of the help content in the drawer.
  */
@@ -690,6 +705,7 @@ storybase.builder.views.HelpView = Backbone.View.extend(
 
       this.dispatcher.on('do:show:help', this.show, this);
       this.dispatcher.on('do:set:help', this.set, this);
+      this.dispatcher.on('do:clear:help', this.clear, this);
       this.dispatcher.on('do:hide:help', this.hide, this);
       this.dispatcher.on('do:set:helpactions', this.setActions, this);
       this.dispatcher.on('do:clear:helpactions', this.clearActions, this);
@@ -709,11 +725,9 @@ storybase.builder.views.HelpView = Backbone.View.extend(
         // our internal value
         this.set(help);
       }
-      if (this.help) {
-        this.render();
-        this.delegateEvents();
-        this.$el.show();
-      }
+      this.render();
+      this.delegateEvents();
+      this.$el.show();
       if (jQuery().tooltipster) {
         this.$('.tooltip').tooltipster();
       }
@@ -727,6 +741,10 @@ storybase.builder.views.HelpView = Backbone.View.extend(
     set: function(help) {
       this.help = help;
       this.render();
+    },
+
+    clear: function() {
+      this.help = null;
     },
 
     /**
@@ -1860,6 +1878,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
   },
 
   onHide: function() {
+    this.dispatcher.trigger('do:clear:help');
     this.dispatcher.trigger('do:clear:helpactions');
     this.dispatcher.trigger("unregister:drawerview", this.unusedAssetView);
   },

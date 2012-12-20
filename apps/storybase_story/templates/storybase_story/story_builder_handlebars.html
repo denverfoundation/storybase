@@ -15,8 +15,12 @@ Handlebars.js templates for story builder Backbone application
 
 <script type="text/x-handlebars-template" id="help-template">
 <div id="help-actions"></div>
+{{#if body}}
 <h3>{{title}}</h3>
 {{{body}}}
+{{else}}
+<p>{{gettext "There is no help for this topic."}}</p>
+{{/if}}
 </script>
 
 <script type="text/x-handlebars-template" id="clickable-item-template">
