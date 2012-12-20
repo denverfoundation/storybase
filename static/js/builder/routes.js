@@ -34,8 +34,20 @@ storybase.builder.routers.Router = Backbone.Router.extend({
     this.dispatcher.trigger('select:workflowstep', step, subStep);
   },
 
-  build: function() {
-    this.selectStep('build');
+  build: function(id) {
+    var url;
+    if (id) {
+      // The page was loaded with an id via a hash, so the views haven't
+      // been bootstrapped.  Force a page refresh so that the views will
+      // be properly bootstrapped.
+      // BOOKMARK
+      // TODO: Check how to generate the url to refresh in IE
+      url = window.location.href;
+      window.location.replace(url);
+    }
+    else {
+      this.selectStep('build');
+    }
   },
 
   selectTemplate: function() {
