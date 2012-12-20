@@ -95,7 +95,11 @@ button.help {
 
 .wysihtml5-toolbar {
   position: relative;
-  padding: 0 0 20px 0;
+  padding: 10px 0 0 0;
+
+  &:first-child {
+    padding-top: 0;
+  }
 }
 
 (~"[data-wysihtml5-command]") {
