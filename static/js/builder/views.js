@@ -27,21 +27,43 @@ storybase.builder.views.VISIBLE_STEPS = {
 storybase.builder.views.MSIE = ($.browser !== undefined) && ($.browser.msie === true);
 
 /**
- * @name save:section
- * @event
- * @param Section section Event triggered when a section has successfully
+ * A section has been successfully saved
+ *
+ * @event save:section
+ * @param Section section Section that was saved
  *     been saved.
- * @param Boolean showAlert Should an alert be displayed by a callback 
+ * @param Boolean [showAlert] Should an alert be displayed by a callback 
  *     bound to this event.
  */
 
 /**
- * @name save:story
- * @event
- * @param Story story Event triggered when a story has successfully
- *     been saved.
- * @param Boolean showAlert Should an alert be displayed by a callback 
+ * A story has been successfully saved
+ *
+ * @event save:story
+ * @param {Story} story Story model instance that was successfully
+ *     saved.
+ * @param {Boolean} [showAlert] Should an alert be displayed by a callback 
  *     bound to this event.
+ */
+
+/**
+ * Set the view that defines action buttons that appear at the top of
+ * the help content in the drawer.
+ *
+ * Currently, this is just used for the button that re-launches the tour.
+ *
+ * @event do:save:helpactions
+ * @param View actionView View that controls the display and UI events 
+ *     for action buttons at the top of the help content in the drawer.
+ */
+
+/**
+ * Unset the view that defines action buttons that appear at the top of
+ * the help content in the drawer.
+ *
+ * Currently, this is just used for the button that re-launches the tour.
+ *
+ * @event do:clear:helpactions
  */
 
 /**
@@ -640,15 +662,11 @@ storybase.builder.views.BuildHelpActionsView = Backbone.View.extend({
    * Show the tour again.
    */
   repeatTour: function() {
-    var that = this;
     if (hasAnalytics()) {
       _gaq.push(['_trackEvent', 'Buttons', 'View the tour again']);
     }
     this.dispatcher.trigger('do:hide:help');
-    // Switch to the build step and then show the tour
-    this.dispatcher.trigger('select:workflowstep', 'build', function() {
-      that.dispatcher.trigger('do:show:tour', true);
-    });
+    this.dispatcher.trigger('do:show:tour', true);
   }
 });
 
@@ -659,7 +677,8 @@ storybase.builder.views.HelpView = Backbone.View.extend(
     className: 'help',
 
     options: {
-      templateSource: $('#help-template').html()
+      templateSource: $('#help-template').html(),
+      actionsEl: '#help-actions'
     },
 
     initialize: function() {
@@ -667,15 +686,13 @@ storybase.builder.views.HelpView = Backbone.View.extend(
       this.help = null;
       this.template = Handlebars.compile(this.options.templateSource);
      
-      this.actionsView = new storybase.builder.views.BuildHelpActionsView({
-        dispatcher: this.dispatcher
-      });
-
       this.$el.hide();
 
       this.dispatcher.on('do:show:help', this.show, this);
       this.dispatcher.on('do:set:help', this.set, this);
       this.dispatcher.on('do:hide:help', this.hide, this);
+      this.dispatcher.on('do:set:helpactions', this.setActions, this);
+      this.dispatcher.on('do:clear:helpactions', this.clearActions, this);
     },
 
     /**
@@ -712,13 +729,42 @@ storybase.builder.views.HelpView = Backbone.View.extend(
       this.render();
     },
 
+    /**
+     * Set the view for the action buttons.
+     *
+     * @param {View} actionsView View to use for the action buttons.
+     */
+    setActions: function(actionsView) {
+      this.actionsView = actionsView;
+    },
+
+    /**
+     * Unset the view for the help action buttons.
+     */
+    clearActions: function() {
+      this.actionsView = null;
+    },
+   
+    /**
+     * Render the action buttons.
+     */
+    renderActions: function() {
+      if (this.actionsView) {
+        // Set the element for the actions view before rendering
+        // Does it make more sense to let the view have it's own
+        // element and just prepend it to HelpView's element?
+        this.actionsView.setElement(this.$(this.options.actionsEl));
+        this.actionsView.render();
+      }
+      return this;
+    },
+
     render: function() {
       var context = _.extend({
         'autoShow': this.autoShow
       }, this.help);
       this.$el.html(this.template(context));
-      this.actionsView.setElement(this.$('#help-actions'));
-      this.actionsView.render();
+      this.renderActions();
       return this;
     }
   })
@@ -1596,6 +1642,9 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       forceTour: this.options.forceTour,
       showTour: this.options.showTour
     });
+    this.helpActionsView = new storybase.builder.views.BuildHelpActionsView({
+      dispatcher: this.dispatcher
+    });
 
     if (_.isUndefined(this.model)) {
       // Create a new story model instance
@@ -1807,9 +1856,11 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.showTour();
 
     this.dispatcher.trigger("register:drawerview", this.unusedAssetView);
+    this.dispatcher.trigger('do:set:helpactions', this.helpActionsView);
   },
 
   onHide: function() {
+    this.dispatcher.trigger('do:clear:helpactions');
     this.dispatcher.trigger("unregister:drawerview", this.unusedAssetView);
   },
 
