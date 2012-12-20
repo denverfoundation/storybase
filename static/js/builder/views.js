@@ -617,6 +617,41 @@ storybase.builder.views.HelpDrawerMixin = {
   drawerCloseEvents: 'do:hide:help'
 };
 
+storybase.builder.views.BuildHelpActionsView = Backbone.View.extend({
+  options: {
+    templateSource: $('#build-help-actions-template').html()
+  },
+
+  events: {
+    'click #repeat-tour-button': 'repeatTour'
+  },
+
+  initialize: function() {
+    this.dispatcher = this.options.dispatcher;
+    this.template = Handlebars.compile(this.options.templateSource);
+  },
+
+  render: function() {
+    this.$el.html(this.template());
+    return this;
+  },
+
+  /**
+   * Show the tour again.
+   */
+  repeatTour: function() {
+    var that = this;
+    if (hasAnalytics()) {
+      _gaq.push(['_trackEvent', 'Buttons', 'View the tour again']);
+    }
+    this.dispatcher.trigger('do:hide:help');
+    // Switch to the build step and then show the tour
+    this.dispatcher.trigger('select:workflowstep', 'build', function() {
+      that.dispatcher.trigger('do:show:tour', true);
+    });
+  }
+});
+
 storybase.builder.views.HelpView = Backbone.View.extend(
   _.extend({}, storybase.builder.views.HelpDrawerMixin, {
     tagName: 'div',
@@ -627,14 +662,14 @@ storybase.builder.views.HelpView = Backbone.View.extend(
       templateSource: $('#help-template').html()
     },
 
-    events: {
-      'click #repeat-tour-button': 'repeatTour'
-    },
-
     initialize: function() {
       this.dispatcher = this.options.dispatcher;
       this.help = null;
       this.template = Handlebars.compile(this.options.templateSource);
+     
+      this.actionsView = new storybase.builder.views.BuildHelpActionsView({
+        dispatcher: this.dispatcher
+      });
 
       this.$el.hide();
 
@@ -682,22 +717,9 @@ storybase.builder.views.HelpView = Backbone.View.extend(
         'autoShow': this.autoShow
       }, this.help);
       this.$el.html(this.template(context));
+      this.actionsView.setElement(this.$('#help-actions'));
+      this.actionsView.render();
       return this;
-    },
-
-    /**
-     * Show the tour again.
-     */
-    repeatTour: function() {
-      var that = this;
-      if (hasAnalytics()) {
-        _gaq.push(['_trackEvent', 'Buttons', 'View the tour again']);
-      }
-      this.dispatcher.trigger('do:hide:help');
-      // Switch to the build step and then show the tour
-      this.dispatcher.trigger('select:workflowstep', 'build', function() {
-        that.dispatcher.trigger('do:show:tour', true);
-      });
     }
   })
 );
