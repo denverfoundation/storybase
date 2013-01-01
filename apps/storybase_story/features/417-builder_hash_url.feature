@@ -23,3 +23,11 @@ Feature: Load a story in the story builder with a hashed story ID
                 Then the user should be redirected to the connected story builder for the Story "Test connected story" without a hashed story ID in the URL
                 Then the title input is present
                 Then the byline input is present
+
+        Scenario: A user can load a story in the builder with a hashed workflow step 
+                Given an admin creates the User "test_user@fakedomain.com"
+                Given the Story "Transportation Challenges Limit Education Choices for Denver Parents" has been created with author "test_user@fakedomain.com"
+                Given the user "test_user@fakedomain.com" is logged in
+                Given the user opens the Story "Transportation Challenges Limit Education Choices for Denver Parents" in the story builder in the "tag" workflow step with a hashed workflow step 
+                Then the user should be redirected to the story builder for the Story "Transportation Challenges Limit Education Choices for Denver Parents" in the "tag" workflow step without a hashed workflow step in the URL
+                Then the "topics" select element is present

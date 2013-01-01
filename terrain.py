@@ -499,7 +499,11 @@ def story_created(step, title):
 @step(u'Given the Story "([^"]*)" has been created with author "([^"]*)"')
 def story_created_with_author(step, title, username):
     user = User.objects.get(username=username)
-    create_story(title=title, author=user)
+    try:
+        story = Story.objects.get(storytranslation__title=title,
+                author=user)
+    except Story.DoesNotExist:
+        create_story(title=title, author=user)
 
 @step(u'Given the Story "([^"]*)" is published')
 def story_published(step, title):
@@ -621,3 +625,8 @@ def click_button(step, button_value):
     except ElementDoesNotExist: 
         button = world.browser.find_by_xpath("//button[contains(text(), '%s')]" % button_value).first
     button.click()
+
+@step(u'the "([^"]*)" select element is present')
+def select_present(step, name):
+    selector = "select[name='%s']" % (name)
+    assert world.browser.is_element_present_by_css(selector)
