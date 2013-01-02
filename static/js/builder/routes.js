@@ -6,6 +6,7 @@ storybase.builder.routers.Router = Backbone.Router.extend({
     this.dispatcher = options.dispatcher;
     this.hasStory = options.hasStory;
     this.hasTemplate = options.hasTemplate;
+    this.storyReady = this.hasStory;
     // Define the routes dynamically instead of a declaring
     // a rotues property because the routing changes
     // depending on whether we're creating a new story
@@ -29,6 +30,7 @@ storybase.builder.routers.Router = Backbone.Router.extend({
       this.route(":id/:step/:substep/", "selectIdStep");
     }
     this.dispatcher.on("navigate", this.navigate, this);
+    this.dispatcher.on("ready:story", this.setStoryReady, this);
   },
 
   selectStep: function(step, subStep) {
@@ -55,11 +57,16 @@ storybase.builder.routers.Router = Backbone.Router.extend({
         // Backbone has already updated the location to be hash-less
         url = window.location.href;
       }
-      window.location.replace(url);
+      if (!this.storyReady) {
+        // If we're attempting to load an existing story, reload the page
+        // in the browser with an un-hashed story ID to force the bootstrapping
+        // of the views. If this is the initial save of a new story, don't
+        // reload. 
+        window.location.replace(url);
+      }
     }
-    else {
-      this.selectStep('build');
-    }
+
+    this.selectStep('build');
   },
 
   selectTemplate: function() {
@@ -68,5 +75,14 @@ storybase.builder.routers.Router = Backbone.Router.extend({
 
   selectIdStep: function(id, step, subStep) {
     this.selectStep(step, subStep);
+  },
+
+  /**
+   * Signal handler for ready:story signal.
+   *
+   * Toggles the this.storyReady flag to true.
+   */
+  setStoryReady: function(story) {
+    this.storyReady = true;
   }
 });
