@@ -595,25 +595,37 @@ storybase.explorer.views.Filters = Backbone.View.extend({
     return context;
   },
 
+  /**
+   * Initialize fancy tooltips to the filter selection widgets.
+   *
+   * @param {Object} options - Options passed to the tooltipster jQuery
+   *     plugin
+   */
+  addTooltips: function(options) {
+    this.$('select').each(function() {
+      var select2 = $(this).data('select2');
+      var title = $(this).attr('title');
+      var tooltipOptions; 
+      if (title) {
+        select2.container.attr('title', title);
+        if (jQuery().tooltipster) {
+          tooltipOptions = _.extend({
+            overrideText: title,
+            position: 'bottom'
+          }, options);
+          select2.container.tooltipster(tooltipOptions);
+        }
+      }
+    });
+  },
+
   render: function() {
     var context = this.buildContext();
     this.$el.html(this.template(context));
     var selects = this.$('select').select2({
       allowClear: true
-    }).each(function() {
-      var select2 = $(this).data('select2');
-      var title = $(this).attr('title');
-      if (title) {
-        select2.container.attr('title', title);
-        if (jQuery().tooltipster) {
-          select2.container.tooltipster({
-            overrideText: title,
-            position: 'bottom'
-          });
-        }
-        
-      }
     });
+    this.addTooltips();
     return this;
   },
 
