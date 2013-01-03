@@ -1,5 +1,6 @@
 from datetime import datetime
 import re
+from time import sleep
 from urlparse import urlparse
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -511,6 +512,11 @@ def story_published(step, title):
     story.status = 'published'
     story.save()
 
+@step(u'Then the Story "([^"]*)" exists')
+def story_exists(step, title):
+    sleep(1)
+    story = Story.objects.get(storytranslation__title=title)
+
 @step(u'Given the Organization "([^"]*)" has been created')
 def organization_created(step, name):
     create_organization(name)
@@ -629,4 +635,9 @@ def click_button(step, button_value):
 @step(u'the "([^"]*)" select element is present')
 def select_present(step, name):
     selector = "select[name='%s']" % (name)
+    assert world.browser.is_element_present_by_css(selector)
+
+@step(u'the "([^"]*)" text area is present')
+def textarea_present(step, name):
+    selector = "textarea[name='%s']" % (name)
     assert world.browser.is_element_present_by_css(selector)
