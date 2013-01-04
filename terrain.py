@@ -616,6 +616,11 @@ def text_present(step, text):
 def text_not_present(step, text):
     world.assert_text_not_present(text)
 
+@step(u'the "([^"]*)" input has the value "([^"]*)"')
+def input_has_value(step, field_name, value):
+    input = world.browser.find_by_name(field_name).first
+    assert_equal(input.value, value)
+
 @step(u'the user inputs "([^"]*)" for the "([^"]*)" field')
 def input_text(step, text, field_name):
     world.browser.fill(field_name, text)

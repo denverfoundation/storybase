@@ -7,7 +7,7 @@ Feature: Load a story in the story builder with a hashed story ID
                 Given the user "test_user@fakedomain.com" is logged in
                 Given the user opens the Story "Transportation Challenges Limit Education Choices for Denver Parents" in the story builder with a hashed story ID
                 Then the user should be redirected to the story builder for the Story "Transportation Challenges Limit Education Choices for Denver Parents" without a hashed story ID in the URL
-                Then the title input is present
+                Then the "title" input has the value "Transportation Challenges Limit Education Choices for Denver Parents"
                 Then the byline input is present
 
         Scenario: A user can load a connected story in the builder when accessed with a URL using a hashed story ID
@@ -20,7 +20,7 @@ Feature: Load a story in the story builder with a hashed story ID
                 Given the user inputs "Test User" for the "byline" field
                 Given the user opens the connected Story "Test connected story" in the story builder with a hashed story ID
                 Then the user should be redirected to the connected story builder for the Story "Test connected story" without a hashed story ID in the URL
-                Then the title input is present
+                Then the "title" input has the value "Test connected story" 
                 Then the byline input is present
 
         Scenario: A user can load a story in the builder with a hashed workflow step 
