@@ -1,5 +1,6 @@
 from datetime import datetime
 import re
+from time import sleep
 from urlparse import urlparse
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -334,7 +335,7 @@ def user_login(step, username, password="password"):
     world.browser.visit(django_url("/accounts/login/"))
     world.browser.fill('username', username)
     world.browser.fill('password', password)
-    button = world.browser.find_by_css("input[type=submit]").first
+    button = world.browser.find_by_css("input[type=submit]").last
     button.click()
 
 @step(u'Given the admin user is logged in')
@@ -349,7 +350,10 @@ def admin_login(step):
 
 @step(u'Given an admin creates the User "([^"]*)"')
 def create_user(step, username):
-    new_user = User.objects.create_user(username, username + '@fakedomain.com', 'password')
+    try:
+        user = User.objects.get(username=username)
+    except User.DoesNotExist:
+        user = User.objects.create_user(username, username + '@fakedomain.com', 'password')
 
 @step(u'Given the User "([^"]*)" exists')
 def user_exists(step, username):
@@ -489,15 +493,29 @@ def user_first_and_last_name_group3(step, username, first_name,
     user.last_name = last_name
     user.save()
 
-@step(u'Given the Story "([^"]*)" has been created')
+@step(u'Given the Story "([^"]*)" has been created$')
 def story_created(step, title):
     create_story(title)
+
+@step(u'Given the Story "([^"]*)" has been created with author "([^"]*)"')
+def story_created_with_author(step, title, username):
+    user = User.objects.get(username=username)
+    try:
+        story = Story.objects.get(storytranslation__title=title,
+                author=user)
+    except Story.DoesNotExist:
+        create_story(title=title, author=user)
 
 @step(u'Given the Story "([^"]*)" is published')
 def story_published(step, title):
     story = Story.objects.get(storytranslation__title=title)
     story.status = 'published'
     story.save()
+
+@step(u'Then the Story "([^"]*)" exists')
+def story_exists(step, title):
+    sleep(1)
+    story = Story.objects.get(storytranslation__title=title)
 
 @step(u'Given the Organization "([^"]*)" has been created')
 def organization_created(step, name):
@@ -597,3 +615,29 @@ def text_present(step, text):
 @step(u'the text "([^"]*)" is not present')
 def text_not_present(step, text):
     world.assert_text_not_present(text)
+
+@step(u'the user inputs "([^"]*)" for the "([^"]*)" field')
+def input_text(step, text, field_name):
+    world.browser.fill(field_name, text)
+
+@step(u'the user checks the "([^"]*)" checkbox')
+def check_checkbox(step, field_name):
+    world.browser.check(field_name)
+
+@step(u'the user clicks the "([^"]*)" button')
+def click_button(step, button_value):
+    try:
+        button = world.browser.find_by_value(button_value).first
+    except ElementDoesNotExist: 
+        button = world.browser.find_by_xpath("//button[contains(text(), '%s')]" % button_value).first
+    button.click()
+
+@step(u'the "([^"]*)" select element is present')
+def select_present(step, name):
+    selector = "select[name='%s']" % (name)
+    assert world.browser.is_element_present_by_css(selector)
+
+@step(u'the "([^"]*)" text area is present')
+def textarea_present(step, name):
+    selector = "textarea[name='%s']" % (name)
+    assert world.browser.is_element_present_by_css(selector)
