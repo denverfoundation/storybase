@@ -550,6 +550,12 @@ storybase.explorer.views.Filters = Backbone.View.extend({
 
   templateSource: $('#filters-template').html(),
 
+  events: {
+    // Hide fancy tooltips when filter dropdown is opened, otherwise
+    // the tooltips will obscure the dropdown items
+    "open select": "removeTooltips"
+  },
+
   initialize: function() {
     var that = this;
     this.initialOffset = null;
@@ -564,7 +570,6 @@ storybase.explorer.views.Filters = Backbone.View.extend({
       that.resizeWindow(ev);
     });
   },
-
 
   /**
    * Build a context object for passing to the template
@@ -617,6 +622,26 @@ storybase.explorer.views.Filters = Backbone.View.extend({
         }
       }
     });
+  },
+
+  /**
+   * Remove open fancy tooltips
+   *
+   * Code is based on the the animateOut function in the Tooltipster
+   * jQuery plugin. It has to be replicated here because that plugin has
+   * no public API for closing tooltips.
+   */
+  removeTooltips: function() {
+    var tooltipTheme = '.tooltip-message';
+    var $tooltipToKill = $(tooltipTheme).not('.tooltip-kill');
+    var speed = 100;
+    if ($tooltipToKill.length == 1) {
+      $tooltipToKill.slideUp(speed, function() {
+        $tooltipToKill.remove();
+        $("body").css("overflow-x", "auto");
+      });
+      $(tooltipTheme).not('.tooltip-kill').addClass('tooltip-kill');
+    }
   },
 
   render: function() {
