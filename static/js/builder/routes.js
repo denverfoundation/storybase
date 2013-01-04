@@ -6,7 +6,6 @@ storybase.builder.routers.Router = Backbone.Router.extend({
     this.dispatcher = options.dispatcher;
     this.hasStory = options.hasStory;
     this.hasTemplate = options.hasTemplate;
-    this.storyReady = this.hasStory;
     // Define the routes dynamically instead of a declaring
     // a rotues property because the routing changes
     // depending on whether we're creating a new story
@@ -30,7 +29,7 @@ storybase.builder.routers.Router = Backbone.Router.extend({
       this.route(":id/:step/:substep/", "selectIdStep");
     }
     this.dispatcher.on("navigate", this.navigate, this);
-    this.dispatcher.on("ready:story", this.setStoryReady, this);
+    this.dispatcher.on("save:story", this.setHasStory, this);
   },
 
   /**
@@ -78,7 +77,7 @@ storybase.builder.routers.Router = Backbone.Router.extend({
   build: function(id) {
     var url;
     if (id) {
-      this.handleHashedId(!this.storyReady);
+      this.handleHashedId(!this.hasStory);
     }
 
     this.selectStep('build');
@@ -93,11 +92,11 @@ storybase.builder.routers.Router = Backbone.Router.extend({
   },
 
   /**
-   * Signal handler for ready:story signal.
+   * Signal handler for the save:story signal.
    *
-   * Toggles the this.storyReady flag to true.
+   * Toggles the this.hasStory flag to true.
    */
-  setStoryReady: function(story) {
-    this.storyReady = true;
+  setHasStory: function(story) {
+    this.hasStory = true;
   }
 });
