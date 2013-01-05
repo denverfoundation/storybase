@@ -11,6 +11,27 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.3
+~~~
+
+* Fix for #231 (When adding a link in Story Builder text editor "OK" and "Cancel" buttons need to be more prominent)
+* Fix for #271 (builder.css has some JS output as selector)
+* More prominent social signup/login buttons (#347)
+* More visible Summary and Call To Action sections in story viewer (#369)
+* Fix for #415 (Builder tour popup falls off screen in Internet Explorer)
+* Polyfill for input placeholders in Internet Explorer (#416)
+* Users can make a request to create a new Organization (#458)
+* Users can make a request to create a new Project (#463)
+* Fix for #486 (Call to action overlaps with sharing information on story detail page)
+* Usability improvements for adding story sections in the builder (#506)
+* Ability to view the builder tour again (#508)
+* Usability improvements for modal story viewer (#519)
+* Fix for #546 (Incorrect Open Graph meta tags for Project and Organization detail pages and filtered Explore page)
+* Fix for #557 (Build step help is shown for other steps)
+
+0.2
+~~~
+
 * #237 - Fix builder last saved date in Internet Explorer
 * #435 - Sans-serif body fonts
 * #448 - s/Communication Preferences/Notifications and Subscriptions/
