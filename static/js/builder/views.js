@@ -2652,6 +2652,9 @@ storybase.builder.views.SectionNavView = Backbone.View.extend({
   }
 });
 
+/**
+ * A table of contents for navigating between sections in the builder.
+ */
 storybase.builder.views.SectionListView = Backbone.View.extend({
   tagName: 'div',
   
@@ -2891,26 +2894,122 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
     this.model.saveSections();
   },
 
-  startScroll: function(scrollVal) {
-    var that = this;
-    var $el = this.$('.sections-clip');
-    $el.animate({scrollLeft: scrollVal}, 'fast', function() {
-      if (that._doScroll) {
-        that.startScroll(scrollVal);
+  _getThumbnailEl: function(index) {
+    return this._sortedThumbnailViews[index].$('.section-thumbnail');
+  },
+
+  _forCond: function(i, direction, numTmb) {
+    if (direction === 'right') {
+      return (i < numTmb);
+    }
+    else {
+      return (i >= 0);
+    }
+  },
+
+  _forFinal: function(i, direction) {
+    if (direction === 'right') {
+      return i+1;
+    }
+    else {
+      return i-1;
+    }
+  },
+
+  /**
+   * Check if a section thumbnail is fully visible in the table of
+   * contents.
+   *
+   * @param {Object} $el jQuery object for the section thumbnail element
+   * @param {String} direction Which side of the table of contents
+   *     should be checked for visibility? Either 'left' or 'right'
+   * @param clipLeft {Integer} Offset of the right hand side of
+   *     the clipping element
+   * @param clipRight {Integer} Offset of the right hand side of
+   *     the clipping element
+   * @returns {Boolean} true if the element is FULLY visible
+   */ 
+  _tmbVisible: function($el, direction, clipLeft, clipRight) {
+    if (direction === 'right') {
+      return $el.offset().left + $el.outerWidth() <= clipRight; 
+    }
+    else {
+      return $el.offset().left >= clipLeft;
+    }
+  },
+
+  /**
+   * Get the index of the last visible section thumbnail
+   *
+   * @param {String} direction Which side of the table of contents
+   *     should be checked for visibility? Either 'left' or 'right'
+   * @param clipLeft {Integer} Offset of the right hand side of
+   *     the clipping element
+   * @param clipRight {Integer} Offset of the right hand side of
+   *     the clipping element
+   * @returns {Integer} Index (relative to this._sortedThumbnailViews)
+   *     of the last visible section thumbnail
+   */
+  _getLastVisibleThumbnailIdx: function(direction, clipLeft, clipRight) {
+    var numTmb = this._sortedThumbnailViews.length;
+    var $tmb;
+    var lastVisible;
+    var i = (direction === 'right') ? 0 : numTmb - 1;
+    for (i; this._forCond(i, direction, numTmb); i = this._forFinal(i, direction)) {
+      $tmb = this._getThumbnailEl(i); 
+      if (this._tmbVisible($tmb, direction, clipLeft, clipRight)) {
+        lastVisible = i;
       }
-    });
+      else {
+        return lastVisible;
+      }
+    }
+  },
+
+  startScroll: function(direction) {
+    var that = this;
+    var $clip = this.$('.sections-clip');
+    var clipOffset = $clip.offset();
+    var clipLeft = clipOffset.left;
+    var clipRight = clipOffset.left + $clip.innerWidth();
+    var numTmb = this._sortedThumbnailViews.length;
+    var lastIdx = this._getLastVisibleThumbnailIdx(direction, clipLeft, clipRight);
+    var $tmb;
+    var tmbLeft, tmbRight;
+    var scrollVal = null;
+ 
+    if (direction === 'right' && lastIdx < numTmb - 1) {
+      lastIdx++;
+      $tmb = this._getThumbnailEl(lastIdx);
+      tmbRight = $tmb.offset().left + $tmb.outerWidth();
+      scrollVal = "+=" + (tmbRight - clipRight);
+    }
+    else if (direction === 'left' && lastIdx > 0) {
+      lastIdx--;
+      $tmb = this._getThumbnailEl(lastIdx);
+      tmbLeft = $tmb.offset().left;
+      scrollVal = "-=" + (clipOffset.left - tmbLeft);
+    }
+
+    if (scrollVal) {
+      $clip.animate({scrollLeft: scrollVal}, 'fast', function() {
+        if (that._doScroll) {
+          that.startScroll(direction);
+        }
+      });
+    }
   },
 
   scrollLeft: function(evt) {
     evt.preventDefault();
     this._doScroll = true;
-    this.startScroll('-=50');
+    this.startScroll('left');
   },
 
   scrollRight: function(evt) {
     evt.preventDefault();
     this._doScroll = true;
-    this.startScroll('+=50');
+    this.startScroll('right');
   },
 
   stopScroll: function(evt) {
