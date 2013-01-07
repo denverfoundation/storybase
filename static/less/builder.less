@@ -91,7 +91,7 @@ button.help {
   font-size: 18px;
 }
 
-/* Rich Text Editor */
+// Rich Text Editor
 
 .wysihtml5-toolbar {
   position: relative;
@@ -392,7 +392,7 @@ button.preview {
   .container_12;
 }
 
-/* Main Application Container */
+// Main Application Container
 
 #builder {
   height: 100%;
@@ -566,7 +566,7 @@ button.preview {
 }
 
 
-/* Story Template List */
+// Story Template List
 
 .story-templates {
   .container_12;
@@ -787,7 +787,7 @@ button.preview {
   }
 }
 
-/* Story information editor */
+// Story information editor
 
 .story-title {
   .full-width;
@@ -1028,7 +1028,7 @@ button.preview {
 }
 
 .storybase-container-placeholder [name=body] {
-  /* TODO: Figure out a better way to set height */
+  // TODO: Figure out a better way to set height
   height: 150px;
 }
 
@@ -1096,6 +1096,11 @@ button.preview {
         .box-sizing(border-box);
         width:100%
       }
+    }
+
+    // Default select2 styles cut off placeholder text
+    .select2-container-multi .select2-choices .select2-search-field input {
+      height: auto;
     }
   }
   
@@ -1353,13 +1358,13 @@ button.preview {
   padding: 0;
 }
 
-/* Legal agreement view */
+// Legal agreement view
 #share-legal #permission ul {
   margin: 1em 0;
   padding: 0 0 0 40px;
 }
 
-/* Select taxonomy view */
+// Select taxonomy view
 
 #share-taxonomy select {
   width: 300px;
@@ -1368,6 +1373,13 @@ button.preview {
 #taxonomy {
   width: 50%;
   float: left;
+
+  // In Chrome, the initial width of the select2 widget input is
+  // incorrectly set to 10px, causing the placeholder value to get cut off.
+  // Work around this by setting a min-width
+  .select2-input {
+    min-width: 200px;
+  }
 }
 
 #story-tags {
@@ -1381,13 +1393,14 @@ button.preview {
   margin-bottom: 1em;
 }
 
-/* Tagging view */
+// Tagging view
+
 #tags {
   display: none;
   width: 300px;
 }
 
-/* Add location view */
+// Add location view
 #add-location {
   width: 50%;
   overflow: hidden;

@@ -571,7 +571,7 @@ table tbody td{padding:1em;}
 .storybase-share-popup input,.storybase-share-popup textarea{width:100%;}
 .storybase-share-popup header{background:#f0efef;padding:4px;text-align:center;font-family:'Museo300Regular';font-weight:normal;}.storybase-share-popup header .close{cursor:pointer;color:#808080;float:right;}.storybase-share-popup header .close:hover{color:#4d4d4d;}
 .storybase-share-popup header .close:after{font-family:"FontAwesome";content:"\f057";font-size:18px;width:18px;height:18px;}
-body.story-builder{}body.story-builder header{border-bottom:1px solid white;background:url(../img/builder/header-bg.png) repeat-x top left;}body.story-builder header>div{width:100%;position:relative;margin-left:auto;margin-right:auto;width:1020px;}
+body.story-builder header{border-bottom:1px solid white;background:url(../img/builder/header-bg.png) repeat-x top left;}body.story-builder header>div{width:100%;position:relative;margin-left:auto;margin-right:auto;width:1020px;}
 body.story-builder fieldset{border:none;}
 body.story-builder .bbf-form>fieldset>ul{margin:0 !important;padding:0 !important;}
 body.story-builder .field-body .bbf-editor{margin-left:0;width:100%;}
@@ -743,6 +743,7 @@ body.story-builder .storybase-container-placeholder:hover .section-asset-control
 body.story-builder #app .bbf-form{overflow:hidden;padding:20px;}body.story-builder #app .bbf-form fieldset{border:none;}
 body.story-builder #app .bbf-form .bbf-field{list-style-type:none;}body.story-builder #app .bbf-form .bbf-field label{float:none;width:100%;}
 body.story-builder #app .bbf-form .bbf-field .bbf-editor{margin-left:0;width:100%;}body.story-builder #app .bbf-form .bbf-field .bbf-editor input[type=text],body.story-builder #app .bbf-form .bbf-field .bbf-editor input[type=password],body.story-builder #app .bbf-form .bbf-field .bbf-editor textarea{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;-ms-box-sizing:border-box;width:100%;}
+body.story-builder #app .bbf-form .bbf-field .select2-container-multi .select2-choices .select2-search-field input{height:auto;}
 body.story-builder #app .bbf-form ul,body.story-builder #app .bbf-form ol{margin:0;padding:0;}
 body.story-builder .field-body .bbf-editor{margin-left:0;width:100%;}
 body.story-builder #app .caption{overflow:hidden;padding:.5em;}body.story-builder #app .caption form{overflow:hidden;}body.story-builder #app .caption form textarea,body.story-builder #app .caption form button{margin-bottom:1em;}
@@ -782,7 +783,7 @@ body.story-builder .dataset{padding:1% 0;}
 body.story-builder .dataset p{padding:0;}
 body.story-builder #share-legal #permission ul{margin:1em 0;padding:0 0 0 40px;}
 body.story-builder #share-taxonomy select{width:300px;}
-body.story-builder #taxonomy{width:50%;float:left;}
+body.story-builder #taxonomy{width:50%;float:left;}body.story-builder #taxonomy .select2-input{min-width:200px;}
 body.story-builder #story-tags{width:50%;overflow:hidden;}
 body.story-builder #story-tags form,body.story-builder #add-location form{margin-top:1em;margin-bottom:1em;}
 body.story-builder #tags{display:none;width:300px;}
