@@ -11,6 +11,13 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.4
+~~~
+
+* Fix for #417 (Cannot load a previously saved story in builder when accessing through a hash-based URL)
+* Fix for #320 (Tools tips on filters on Explore page obscure the drop-down list)
+* Basic in-browser integration tests for builder
+
 0.3
 ~~~
 
