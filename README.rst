@@ -17,6 +17,7 @@ Changelog
 * Fix for #245 (Placeholders getting cut off in tag view in builder)
 * Fix for #417 (Cannot load a previously saved story in builder when accessing through a hash-based URL)
 * Fix for #320 (Tools tips on filters on Explore page obscure the drop-down list)
+* Fix for #465 - Clean up builder table of contents scroll arrows
 * Basic in-browser integration tests for builder
 
 0.3
@@ -49,7 +50,6 @@ Changelog
 * #460 - Change story publication status in "My Stories" view
 * #461 - Public profile with story lists for each user
 * #464 - Full-text search for stories
-* #465 - Clean up builder table of contents scroll arrows
 * #475 - Consistent share widget that wraps AddThis widgets and embed code
 * #485 - Cleaned up table styling in "My Stories" view
 * #490/#532 - Remove italics in form inputs 

@@ -753,8 +753,8 @@ body.story-builder #section-list{position:relative;overflow:hidden;min-height:10
 body.story-builder #toggle-section-list{display:block;float:left;padding:10px;font-weight:bold;text-decoration:none;color:#fff;}
 body.story-builder .opened #toggle-section-list::after{content:' - ';}
 body.story-builder .closed #toggle-section-list::after{content:' + ';}
-body.story-builder .sections-container{position:relative;width:75%;float:left;overflow:hidden;padding:8px 0 0;text-align:center;}
-body.story-builder .sections-clip{float:left;width:90%;margin:0 40px;padding:0 10px;overflow:auto;}
+body.story-builder .sections-container{position:relative;width:100%;float:left;overflow:hidden;padding:8px 0 0;text-align:center;}
+body.story-builder .sections-clip{float:left;width:90%;margin:0 40px;padding:0;overflow:auto;}
 body.story-builder .scroll-left,body.story-builder .scroll-right{position:absolute;top:40px;text-indent:-32000px;cursor:pointer;background:url(../img/builder/section-scroll-arrows.png);display:block;float:left;height:34px;width:22px;}body.story-builder .scroll-left:hover,body.story-builder .scroll-right:hover{background-position:0 -34px;}
 body.story-builder .scroll-right{background-position:0 68px;position:absolute;right:10px;}body.story-builder .scroll-right:hover{background-position:0 34px;}
 body.story-builder .sections{width:1500px;margin:0;padding:0;float:left;}
