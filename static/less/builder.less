@@ -557,19 +557,16 @@ button.preview {
   list-style: none;
   padding-top:30px;
   
-  dl dt {
-    font-weight:bold;
-    margin-top:.8em;
-  }
 }
 
-.story-templates li {
+#app .story-templates li {
   display: block;
   float: left;
   width: 30%;
   padding-left:120px;
   position:relative;
-  
+  margin-right:2%;
+
   p {
     margin-bottom:1em !important;
   }
@@ -595,6 +592,56 @@ button.preview {
   @icon-height:80px;
   @icon-next-d:@icon-height;
   
+  .details, .examples {
+    dt {
+      .styled-header(left);
+      font-weight:bold;
+      margin-top:.8em;
+    }
+  }
+  
+  // content block containing template details
+  .details {
+    display:none;
+  }
+
+  // special li item showing details for a specific template.
+  // transient in dom: added/removed as needed.
+  &.template-details {
+    float:none;
+    clear:both;
+    width:auto;
+    background:@light-gray;
+    .box-shadow-inset(0, 0, 4px, lighten(@gray, 20%));
+    
+    .details {
+      display:block;
+      position:relative;
+      padding-top:1em;
+      padding-bottom:2em;
+    }
+    
+    .divot {
+      .inner-section-divot(4em, white);
+      position:absolute;
+      left:0;
+      top:0;
+      
+      &.odd {
+        // this is a bit of a hack: not really sure why this value is right.
+        left:52%;
+      }
+    }
+  }
+
+  // link for exposing details block
+  .show-details {
+    .styled-header(left);
+    text-decoration:none;
+    margin-top:1em;
+    display:block;
+  }
+  
   &.data-story h3 a {
     background-position: 0 0;
   }
@@ -609,6 +656,18 @@ button.preview {
   }
 
 
+}
+
+.tooltipster-content .details {
+  padding:1em;
+  dt {
+    .styled-header(left);
+    font-weight:bold;
+  }
+  
+  * + dt {
+    margin-top:.8em;
+  }
 }
 
 // Story Builder View

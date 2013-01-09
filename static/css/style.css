@@ -560,6 +560,14 @@ table thead{background:black;color:white;font-size:1em;text-align:left;font-fami
 table tbody tr{border-bottom:1px solid white;background:#f0efef;}
 table tbody tr:nth-child(odd),table tbody tr.odd{background:#f8f8f8;}
 table tbody td{padding:1em;}
+.tooltipster-clean-cut{background-color:#f9f9f9;border:1px solid #dadada;box-shadow:inset 0px 1px 0px #fff;color:#595959;font-family:Arial,sans-serif;font-size:12px;line-height:12px;position:absolute;padding:10px;border-radius:4px;text-align:center;z-index:9999999;pointer-events:none;width:auto;overflow:visible;}.tooltipster-clean-cut .tooltip-arrow{text-shadow:0px 2px 0px #dadada, 0px 1px 0px #dadada;}
+.tooltipster-content{background-color:#f9f9f9;border:1px solid #dadada;box-shadow:inset 0px 1px 0px #fff;color:#595959;font-size:12px;line-height:12px;position:absolute;padding:10px;border-radius:4px;text-align:center;z-index:9999999;pointer-events:none;width:auto;overflow:visible;font-family:Arial,sans-serif;font-size:14px;line-height:1.4em;color:#444444;text-align:left;box-shadow:0 2px 5px #3b3b3b #000000;-moz-box-shadow:0 2px 5px #3b3b3b #000000;-webkit-box-shadow:0 2px 5px #3b3b3b #000000;}.tooltipster-content .tooltip-arrow{text-shadow:0px 2px 0px #dadada, 0px 1px 0px #dadada;}
+.tooltipster-content p{margin-bottom:1em;}
+.tooltipster-content dd p,.tooltipster-content dt p,.tooltipster-content li p{margin-bottom:0;}
+.tooltipster-content a{color:#20c6fd;}.tooltipster-content a:visited{color:#19a3d1;}
+.tooltipster-content ul,.tooltipster-content ol{padding-left:20px;margin-bottom:1em;}
+.tooltipster-content ul li{list-style-type:square;}
+.tooltipster-content ol li{list-style-type:decimal;}
 .storybase-share-widget{padding:8px;background:#878787;font-family:"Museo300Regular";font-size:14px;border-radius:4px;border:none;font-weight:normal;color:white !important;cursor:pointer;text-decoration:none;text-shadow:0 -1px 0 rgba(0, 0, 0, 0.4);display:inline-block;background:#999999;}.storybase-share-widget.right{margin-left:8px;}
 .storybase-share-widget:hover{text-decoration:none !important;}
 .storybase-share-widget:hover{background:#fe9703;}
@@ -658,14 +666,22 @@ body.story-builder .dragging #drawer-contents{overflow:visible;}
 body.story-builder #help-actions{margin-bottom:1em;}
 body.story-builder .builder input,body.story-builder .builder textarea{font-family:Arial,sans-serif;box-shadow:inset 0 0 3px #ccc;border:1px solid #bbbbbb;padding:12px;border-radius:5px;color:#888;font-size:16px;}
 body.story-builder .builder .edit-section input.story-title{font-weight:bold;}
-body.story-builder .story-templates{margin-left:auto;margin-right:auto;width:1020px;list-style:none;padding-top:30px;}body.story-builder .story-templates dl dt{font-weight:bold;margin-top:.8em;}
-body.story-builder .story-templates li{display:block;float:left;width:30%;padding-left:120px;position:relative;}body.story-builder .story-templates li p{margin-bottom:1em !important;}
-body.story-builder .story-templates li h3{height:1em;}
-body.story-builder .story-templates li h3 a{padding-left:120px;margin-left:-120px !important;margin-top:0;height:80px;position:absolute;background:url(../img/builder/story-template-icons.png) no-repeat top left;}
-body.story-builder .story-templates li.data-story h3 a{background-position:0 0;}
-body.story-builder .story-templates li.photovoice h3 a{background-position:0 -80px;}
-body.story-builder .story-templates li.explainer h3 a{background-position:0 -160px;}
-body.story-builder .story-templates li.sandbox-basic-story h3 a{background-position:0 -240px;}
+body.story-builder .story-templates{margin-left:auto;margin-right:auto;width:1020px;list-style:none;padding-top:30px;}
+body.story-builder #app .story-templates li{display:block;float:left;width:30%;padding-left:120px;position:relative;margin-right:2%;}body.story-builder #app .story-templates li p{margin-bottom:1em !important;}
+body.story-builder #app .story-templates li h3{height:1em;}
+body.story-builder #app .story-templates li h3 a{padding-left:120px;margin-left:-120px !important;margin-top:0;height:80px;position:absolute;background:url(../img/builder/story-template-icons.png) no-repeat top left;}
+body.story-builder #app .story-templates li .details dt,body.story-builder #app .story-templates li .examples dt{text-align:left;font-family:'Museo300Regular';font-weight:normal;font-weight:bold;margin-top:.8em;}
+body.story-builder #app .story-templates li .details{display:none;}
+body.story-builder #app .story-templates li.template-details{float:none;clear:both;width:auto;background:#f0efef;box-shadow:inset 0 0 4px #aaaaaa;-moz-box-shadow:inset 0 0 4px #aaaaaa;-webkit-box-shadow:inset 0 0 4px #aaaaaa;}body.story-builder #app .story-templates li.template-details .details{display:block;position:relative;padding-top:1em;padding-bottom:2em;}
+body.story-builder #app .story-templates li.template-details .divot{color:#ffffff;position:absolute;left:0;top:0;}body.story-builder #app .story-templates li.template-details .divot:after{font-family:"FontAwesome";content:"\f0d7";font-size:4em;width:4em;height:4em;}
+body.story-builder #app .story-templates li.template-details .divot.odd{left:52%;}
+body.story-builder #app .story-templates li .show-details{text-align:left;font-family:'Museo300Regular';font-weight:normal;text-decoration:none;margin-top:1em;display:block;}
+body.story-builder #app .story-templates li.data-story h3 a{background-position:0 0;}
+body.story-builder #app .story-templates li.photovoice h3 a{background-position:0 -80px;}
+body.story-builder #app .story-templates li.explainer h3 a{background-position:0 -160px;}
+body.story-builder #app .story-templates li.sandbox-basic-story h3 a{background-position:0 -240px;}
+body.story-builder .tooltipster-content .details{padding:1em;}body.story-builder .tooltipster-content .details dt{text-align:left;font-family:'Museo300Regular';font-weight:normal;font-weight:bold;}
+body.story-builder .tooltipster-content .details *+dt{margin-top:.8em;}
 body.story-builder .vertical-space{margin-top:0.5%;}
 body.story-builder .vertical-space-important{margin-top:0.5% !important;}
 body.story-builder .full-width-important{width:100%;-webkit-box-sizing:border-box;-moz-box-sizing:border-box;-ms-box-sizing:border-box;width:100% !important;}

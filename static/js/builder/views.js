@@ -1151,6 +1151,7 @@ storybase.builder.views.SelectStoryTemplateView = Backbone.View.extend({
   render: function() {
     this.$el.html(this.template());
     this.collection.each(this.addTemplateEntry);
+    this.$el.find('.template:even').addClass('even');
     return this;
   }
 });
@@ -1173,7 +1174,8 @@ storybase.builder.views.StoryTemplateView = Backbone.View.extend({
   templateSource: $('#story-template-template').html(),
 
   events: {
-    "click a": "select"
+    "click a.show-details": "toggleDetails",
+    "click h3 a": "select"
   },
 
   initialize: function() {
@@ -1187,6 +1189,36 @@ storybase.builder.views.StoryTemplateView = Backbone.View.extend({
     return this;
   },
 
+  toggleDetails: function(e) {
+    var templateClassName = this.model.get('slug');
+    var $parent = this.$el.parent();
+    // if our template detail is already visible, hide it gracefully
+    var $existingDetails = $parent.find('li.template-details.' + templateClassName + ':visible');
+    if ($existingDetails.length) {
+      $existingDetails.slideUp(function() {
+        $existingDetails.remove();
+      });
+    }
+    else {
+      // remove detail items from other templates in a single shot
+      $parent.find('li.template-details:visible').remove();
+      var $prevSibling = this.$el;
+      var isEven = this.$el.hasClass('even');
+      if (isEven && this.$el.next('li').length) {
+        $prevSibling = this.$el.next('li');
+      }
+      this.$el.find('.details')
+        .clone()
+        .append('<div class="divot' + (isEven ? '' : ' odd') + '"></div>')
+        .wrap('<li class="template-details ' + templateClassName + '" style="display:none;">')
+        .parent('li') // wrap returns wrapped elements, not wrapping element
+          .insertAfter($prevSibling)
+          .slideDown();
+    }
+    e.preventDefault();
+    return false;
+  },
+  
   /**
    * Event handler for clicking a template's link
    */
