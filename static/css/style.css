@@ -818,6 +818,7 @@ body.story-builder .guider .x_button{cursor:pointer;color:#20c6fd;background-ima
 body.story-builder .guider .x_button:after{font-family:"FontAwesome";content:"\f057";font-size:26px;width:26px;height:26px;}
 .callout-section{background:#f0efef;border-top:1px solid #d7d5d5;border-bottom:1px solid #d7d5d5;}
 .story-viewer{background-color:#fff;}.story-viewer h2{color:#555;}
+.story-viewer figure{border:1px solid #f0efef;padding:4px;}
 .story-viewer figure img{width:auto;}
 .story-viewer a.button{padding:5px;background-color:#dcdcdc;border:1px solid #666;text-decoration:none;}
 .story-viewer .intro{font-size:2em;font-family:georgia;}

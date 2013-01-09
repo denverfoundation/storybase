@@ -92,6 +92,8 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
   
   sizeFigCaptionForImg: function(imgEl) {
     this.$(imgEl).next('figcaption').width($(imgEl).width());
+    // Resize the figure element as well
+    this.$(imgEl).parent('figure').width($(imgEl).width());
   },
   
   sizeFigCaptions: function() {
