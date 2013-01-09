@@ -500,7 +500,7 @@ class StorySignalsTest(TestCase):
             fn(related_instance)
         elif related_method == "clear":
             fn()
-        self.assertEqual(cache.get(key), None)
+        self.assertNotEqual(cache.get(key), test_value)
 
     def test_invalidate_points_cache_add(self):
         location = Location.objects.create(name="The Piton Foundation", lat=39.7438167, lng=-104.9884953)
