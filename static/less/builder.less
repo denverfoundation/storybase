@@ -86,19 +86,23 @@ li.select2-search-field {
 button.help {
   .button-reset;
   display: block;
-  color: @dark-gray;
+  color: @dark-gray !important;
   cursor: pointer;
   font-size: 18px;
 }
 
-/* Rich Text Editor */
+// Rich Text Editor
 
 .wysihtml5-toolbar {
   position: relative;
-  padding: 0 0 20px 0;
+  padding: 10px 0 0 0;
+
+  &:first-child {
+    padding-top: 0;
+  }
 }
 
-(~"[data-wysihtml5-command]") {
+(~"[data-wysihtml5-command], [data-wysihtml5-action]") {
   text-decoration: none;
 }
 
@@ -178,7 +182,7 @@ button.help {
   .title {
     background:url(../img/builder/builder-logo.png) no-repeat;
     text-indent:-32000px;
-    width:315px;
+    width:333px;
     height:32px;
     margin-top:20px;
   }
@@ -388,7 +392,7 @@ button.preview {
   .container_12;
 }
 
-/* Main Application Container */
+// Main Application Container
 
 #builder {
   height: 100%;
@@ -525,7 +529,19 @@ button.preview {
 // Help Drawer
 
 #help-actions {
-  margin-bottom: 1em;
+  text-align: right;
+}
+
+#repeat-tour-button {
+  color: @highlight-blue !important;
+
+  &:before {
+    padding-right: 2px;
+  }
+
+  &:hover {
+    .icon-comment-mixin;
+  }
 }
 
 // General builder styles
@@ -550,7 +566,7 @@ button.preview {
 }
 
 
-/* Story Template List */
+// Story Template List
 
 .story-templates {
   .container_12;
@@ -830,7 +846,7 @@ button.preview {
   }
 }
 
-/* Story information editor */
+// Story information editor
 
 .story-title {
   .full-width;
@@ -1071,7 +1087,7 @@ button.preview {
 }
 
 .storybase-container-placeholder [name=body] {
-  /* TODO: Figure out a better way to set height */
+  // TODO: Figure out a better way to set height
   height: 150px;
 }
 
@@ -1140,6 +1156,11 @@ button.preview {
         width:100%
       }
     }
+
+    // Default select2 styles cut off placeholder text
+    .select2-container-multi .select2-choices .select2-search-field input {
+      height: auto;
+    }
   }
   
   ul, ol {
@@ -1203,7 +1224,7 @@ button.preview {
 
 .sections-container {
   position: relative;
-  width: 75%;
+  width: 100%;
   float: left;
   overflow: hidden;
   padding: 8px 0 0;
@@ -1214,7 +1235,7 @@ button.preview {
   float: left;
   width: 90%;
   margin: 0 40px;
-  padding: 0 10px;
+  padding: 0;
   overflow: auto;
 }
 
@@ -1396,13 +1417,13 @@ button.preview {
   padding: 0;
 }
 
-/* Legal agreement view */
+// Legal agreement view
 #share-legal #permission ul {
   margin: 1em 0;
   padding: 0 0 0 40px;
 }
 
-/* Select taxonomy view */
+// Select taxonomy view
 
 #share-taxonomy select {
   width: 300px;
@@ -1411,6 +1432,13 @@ button.preview {
 #taxonomy {
   width: 50%;
   float: left;
+
+  // In Chrome, the initial width of the select2 widget input is
+  // incorrectly set to 10px, causing the placeholder value to get cut off.
+  // Work around this by setting a min-width
+  .select2-input {
+    min-width: 200px;
+  }
 }
 
 #story-tags {
@@ -1424,13 +1452,14 @@ button.preview {
   margin-bottom: 1em;
 }
 
-/* Tagging view */
+// Tagging view
+
 #tags {
   display: none;
   width: 300px;
 }
 
-/* Add location view */
+// Add location view
 #add-location {
   width: 50%;
   overflow: hidden;
@@ -1583,6 +1612,13 @@ input[name=address] {
       font-family: "FontAwesome";
     &.guider_arrow_up:after {
       content: "\f0d8";
+    }
+    &.guider_arrow_right {
+      right: -40px;
+      text-shadow: 1px 0 @highlight-blue;
+      &:after {
+        content: "\f0da";
+      }
     }
   }
 

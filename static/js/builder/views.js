@@ -27,21 +27,58 @@ storybase.builder.views.VISIBLE_STEPS = {
 storybase.builder.views.MSIE = ($.browser !== undefined) && ($.browser.msie === true);
 
 /**
- * @name save:section
- * @event
- * @param Section section Event triggered when a section has successfully
+ * A section has been successfully saved
+ *
+ * @event save:section
+ * @param Section section Section that was saved
  *     been saved.
- * @param Boolean showAlert Should an alert be displayed by a callback 
+ * @param Boolean [showAlert] Should an alert be displayed by a callback 
  *     bound to this event.
  */
 
 /**
- * @name save:story
- * @event
- * @param Story story Event triggered when a story has successfully
- *     been saved.
- * @param Boolean showAlert Should an alert be displayed by a callback 
+ * A story has been successfully saved
+ *
+ * @event save:story
+ * @param {Story} story Story model instance that was successfully
+ *     saved.
+ * @param {Boolean} [showAlert] Should an alert be displayed by a callback 
  *     bound to this event.
+ */
+
+/**
+ * Set the help item to be displayed in the help view.
+ *
+ * @event do:set:help
+ * @param {object} help Representation of help to be displayed in the
+ *   help view in the drawer.  This object should at least have a title
+ *   and body property.
+ */
+
+/**
+ * Remove all help items from the help view.
+ *
+ * @event do:clear:help
+ */
+
+/**
+ * Set the view that defines action buttons that appear at the top of
+ * the help content in the drawer.
+ *
+ * Currently, this is just used for the button that re-launches the tour.
+ *
+ * @event do:set:helpactions
+ * @param View actionView View that controls the display and UI events 
+ *     for action buttons at the top of the help content in the drawer.
+ */
+
+/**
+ * Unset the view that defines action buttons that appear at the top of
+ * the help content in the drawer.
+ *
+ * Currently, this is just used for the button that re-launches the tour.
+ *
+ * @event do:clear:helpactions
  */
 
 /**
@@ -617,6 +654,37 @@ storybase.builder.views.HelpDrawerMixin = {
   drawerCloseEvents: 'do:hide:help'
 };
 
+storybase.builder.views.BuildHelpActionsView = Backbone.View.extend({
+  options: {
+    templateSource: $('#build-help-actions-template').html()
+  },
+
+  events: {
+    'click #repeat-tour-button': 'repeatTour'
+  },
+
+  initialize: function() {
+    this.dispatcher = this.options.dispatcher;
+    this.template = Handlebars.compile(this.options.templateSource);
+  },
+
+  render: function() {
+    this.$el.html(this.template());
+    return this;
+  },
+
+  /**
+   * Show the tour again.
+   */
+  repeatTour: function() {
+    if (hasAnalytics()) {
+      _gaq.push(['_trackEvent', 'Buttons', 'View the tour again']);
+    }
+    this.dispatcher.trigger('do:hide:help');
+    this.dispatcher.trigger('do:show:tour', true);
+  }
+});
+
 storybase.builder.views.HelpView = Backbone.View.extend(
   _.extend({}, storybase.builder.views.HelpDrawerMixin, {
     tagName: 'div',
@@ -624,23 +692,23 @@ storybase.builder.views.HelpView = Backbone.View.extend(
     className: 'help',
 
     options: {
-      templateSource: $('#help-template').html()
-    },
-
-    events: {
-      'click #repeat-tour-button': 'repeatTour'
+      templateSource: $('#help-template').html(),
+      actionsEl: '#help-actions'
     },
 
     initialize: function() {
       this.dispatcher = this.options.dispatcher;
       this.help = null;
       this.template = Handlebars.compile(this.options.templateSource);
-
+     
       this.$el.hide();
 
       this.dispatcher.on('do:show:help', this.show, this);
       this.dispatcher.on('do:set:help', this.set, this);
+      this.dispatcher.on('do:clear:help', this.clear, this);
       this.dispatcher.on('do:hide:help', this.hide, this);
+      this.dispatcher.on('do:set:helpactions', this.setActions, this);
+      this.dispatcher.on('do:clear:helpactions', this.clearActions, this);
     },
 
     /**
@@ -657,10 +725,11 @@ storybase.builder.views.HelpView = Backbone.View.extend(
         // our internal value
         this.set(help);
       }
-      if (this.help) {
-        this.render();
-        this.delegateEvents();
-        this.$el.show();
+      this.render();
+      this.delegateEvents();
+      this.$el.show();
+      if (jQuery().tooltipster) {
+        this.$('.tooltip').tooltipster();
       }
       return this;
     },
@@ -674,27 +743,47 @@ storybase.builder.views.HelpView = Backbone.View.extend(
       this.render();
     },
 
+    clear: function() {
+      this.help = null;
+    },
+
+    /**
+     * Set the view for the action buttons.
+     *
+     * @param {View} actionsView View to use for the action buttons.
+     */
+    setActions: function(actionsView) {
+      this.actionsView = actionsView;
+    },
+
+    /**
+     * Unset the view for the help action buttons.
+     */
+    clearActions: function() {
+      this.actionsView = null;
+    },
+   
+    /**
+     * Render the action buttons.
+     */
+    renderActions: function() {
+      if (this.actionsView) {
+        // Set the element for the actions view before rendering
+        // Does it make more sense to let the view have it's own
+        // element and just prepend it to HelpView's element?
+        this.actionsView.setElement(this.$(this.options.actionsEl));
+        this.actionsView.render();
+      }
+      return this;
+    },
+
     render: function() {
       var context = _.extend({
         'autoShow': this.autoShow
       }, this.help);
       this.$el.html(this.template(context));
+      this.renderActions();
       return this;
-    },
-
-    /**
-     * Show the tour again.
-     */
-    repeatTour: function() {
-      var that = this;
-      if (hasAnalytics()) {
-        _gaq.push(['_trackEvent', 'Buttons', 'View the tour again']);
-      }
-      this.dispatcher.trigger('do:hide:help');
-      // Switch to the build step and then show the tour
-      this.dispatcher.trigger('select:workflowstep', 'build', function() {
-        that.dispatcher.trigger('do:show:tour', true);
-      });
     }
   })
 );
@@ -1502,7 +1591,30 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
           bindNudge(myGuider);
           that.dispatcher.trigger('do:show:help');
         },
-        onHide: function(myGuider) {
+        next: 'repeat-tour-guider',
+        xButton: true
+      });
+      guiders.createGuider({
+        attachTo: '#repeat-tour-button',
+        buttons: [
+          {
+            name: gettext("Prev"),
+            onclick: guiders.prev
+          },
+          {
+            name: gettext("Next"),
+            onclick: guiders.next
+          }
+        ],
+        position: 9,
+        offset: { left: 10, top: 11 },
+        id: 'repeat-tour-guider',
+        title: gettext("View this tour again"),
+        description: gettext("You can view this tour again by clicking this icon."),
+        onShow: function(myGuider) {
+          bindNudge(myGuider);
+        },
+        onHide: function() {
           that.dispatcher.trigger('do:hide:help');
         },
         next: 'tooltip-guider',
@@ -1579,6 +1691,9 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       dispatcher: this.dispatcher,
       forceTour: this.options.forceTour,
       showTour: this.options.showTour
+    });
+    this.helpActionsView = new storybase.builder.views.BuildHelpActionsView({
+      dispatcher: this.dispatcher
     });
 
     if (_.isUndefined(this.model)) {
@@ -1791,9 +1906,12 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.showTour();
 
     this.dispatcher.trigger("register:drawerview", this.unusedAssetView);
+    this.dispatcher.trigger('do:set:helpactions', this.helpActionsView);
   },
 
   onHide: function() {
+    this.dispatcher.trigger('do:clear:help');
+    this.dispatcher.trigger('do:clear:helpactions');
     this.dispatcher.trigger("unregister:drawerview", this.unusedAssetView);
   },
 
@@ -2566,6 +2684,9 @@ storybase.builder.views.SectionNavView = Backbone.View.extend({
   }
 });
 
+/**
+ * A table of contents for navigating between sections in the builder.
+ */
 storybase.builder.views.SectionListView = Backbone.View.extend({
   tagName: 'div',
   
@@ -2805,26 +2926,122 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
     this.model.saveSections();
   },
 
-  startScroll: function(scrollVal) {
-    var that = this;
-    var $el = this.$('.sections-clip');
-    $el.animate({scrollLeft: scrollVal}, 'fast', function() {
-      if (that._doScroll) {
-        that.startScroll(scrollVal);
+  _getThumbnailEl: function(index) {
+    return this._sortedThumbnailViews[index].$('.section-thumbnail');
+  },
+
+  _forCond: function(i, direction, numTmb) {
+    if (direction === 'right') {
+      return (i < numTmb);
+    }
+    else {
+      return (i >= 0);
+    }
+  },
+
+  _forFinal: function(i, direction) {
+    if (direction === 'right') {
+      return i+1;
+    }
+    else {
+      return i-1;
+    }
+  },
+
+  /**
+   * Check if a section thumbnail is fully visible in the table of
+   * contents.
+   *
+   * @param {Object} $el jQuery object for the section thumbnail element
+   * @param {String} direction Which side of the table of contents
+   *     should be checked for visibility? Either 'left' or 'right'
+   * @param clipLeft {Integer} Offset of the right hand side of
+   *     the clipping element
+   * @param clipRight {Integer} Offset of the right hand side of
+   *     the clipping element
+   * @returns {Boolean} true if the element is FULLY visible
+   */ 
+  _tmbVisible: function($el, direction, clipLeft, clipRight) {
+    if (direction === 'right') {
+      return $el.offset().left + $el.outerWidth() <= clipRight; 
+    }
+    else {
+      return $el.offset().left >= clipLeft;
+    }
+  },
+
+  /**
+   * Get the index of the last visible section thumbnail
+   *
+   * @param {String} direction Which side of the table of contents
+   *     should be checked for visibility? Either 'left' or 'right'
+   * @param clipLeft {Integer} Offset of the right hand side of
+   *     the clipping element
+   * @param clipRight {Integer} Offset of the right hand side of
+   *     the clipping element
+   * @returns {Integer} Index (relative to this._sortedThumbnailViews)
+   *     of the last visible section thumbnail
+   */
+  _getLastVisibleThumbnailIdx: function(direction, clipLeft, clipRight) {
+    var numTmb = this._sortedThumbnailViews.length;
+    var $tmb;
+    var lastVisible;
+    var i = (direction === 'right') ? 0 : numTmb - 1;
+    for (i; this._forCond(i, direction, numTmb); i = this._forFinal(i, direction)) {
+      $tmb = this._getThumbnailEl(i); 
+      if (this._tmbVisible($tmb, direction, clipLeft, clipRight)) {
+        lastVisible = i;
       }
-    });
+      else {
+        return lastVisible;
+      }
+    }
+  },
+
+  startScroll: function(direction) {
+    var that = this;
+    var $clip = this.$('.sections-clip');
+    var clipOffset = $clip.offset();
+    var clipLeft = clipOffset.left;
+    var clipRight = clipOffset.left + $clip.innerWidth();
+    var numTmb = this._sortedThumbnailViews.length;
+    var lastIdx = this._getLastVisibleThumbnailIdx(direction, clipLeft, clipRight);
+    var $tmb;
+    var tmbLeft, tmbRight;
+    var scrollVal = null;
+ 
+    if (direction === 'right' && lastIdx < numTmb - 1) {
+      lastIdx++;
+      $tmb = this._getThumbnailEl(lastIdx);
+      tmbRight = $tmb.offset().left + $tmb.outerWidth();
+      scrollVal = "+=" + (tmbRight - clipRight);
+    }
+    else if (direction === 'left' && lastIdx > 0) {
+      lastIdx--;
+      $tmb = this._getThumbnailEl(lastIdx);
+      tmbLeft = $tmb.offset().left;
+      scrollVal = "-=" + (clipOffset.left - tmbLeft);
+    }
+
+    if (scrollVal) {
+      $clip.animate({scrollLeft: scrollVal}, 'fast', function() {
+        if (that._doScroll) {
+          that.startScroll(direction);
+        }
+      });
+    }
   },
 
   scrollLeft: function(evt) {
     evt.preventDefault();
     this._doScroll = true;
-    this.startScroll('-=50');
+    this.startScroll('left');
   },
 
   scrollRight: function(evt) {
     evt.preventDefault();
     this._doScroll = true;
-    this.startScroll('+=50');
+    this.startScroll('right');
   },
 
   stopScroll: function(evt) {
@@ -3523,7 +3740,9 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
    */
   applyPolyfills: function() {
     if (!Modernizr.input.placeholder) {
-      window.polyfills.placeholders();
+      if (window.polyfills) {
+        window.polyfills.placeholders();
+      }
     }
   }
 });

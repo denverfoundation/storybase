@@ -11,6 +11,37 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.4
+~~~
+
+* Fix for #146 (Story section list should advance one thumbnail at a time instead of being a continuous scroll)
+* Fix for #245 (Placeholders getting cut off in tag view in builder)
+* Fix for #417 (Cannot load a previously saved story in builder when accessing through a hash-based URL)
+* Fix for #320 (Tools tips on filters on Explore page obscure the drop-down list)
+* Fix for #465 (Clean up builder table of contents scroll arrows)
+* Basic in-browser integration tests for builder
+
+0.3
+~~~
+
+* Fix for #231 (When adding a link in Story Builder text editor "OK" and "Cancel" buttons need to be more prominent)
+* Fix for #271 (builder.css has some JS output as selector)
+* More prominent social signup/login buttons (#347)
+* More visible Summary and Call To Action sections in story viewer (#369)
+* Fix for #415 (Builder tour popup falls off screen in Internet Explorer)
+* Polyfill for input placeholders in Internet Explorer (#416)
+* Users can make a request to create a new Organization (#458)
+* Users can make a request to create a new Project (#463)
+* Fix for #486 (Call to action overlaps with sharing information on story detail page)
+* Usability improvements for adding story sections in the builder (#506)
+* Ability to view the builder tour again (#508)
+* Usability improvements for modal story viewer (#519)
+* Fix for #546 (Incorrect Open Graph meta tags for Project and Organization detail pages and filtered Explore page)
+* Fix for #557 (Build step help is shown for other steps)
+
+0.2
+~~~
+
 * #237 - Fix builder last saved date in Internet Explorer
 * #435 - Sans-serif body fonts
 * #448 - s/Communication Preferences/Notifications and Subscriptions/
@@ -20,7 +51,6 @@ Changelog
 * #460 - Change story publication status in "My Stories" view
 * #461 - Public profile with story lists for each user
 * #464 - Full-text search for stories
-* #465 - Clean up builder table of contents scroll arrows
 * #475 - Consistent share widget that wraps AddThis widgets and embed code
 * #485 - Cleaned up table styling in "My Stories" view
 * #490/#532 - Remove italics in form inputs 
