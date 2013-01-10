@@ -541,8 +541,10 @@ class LocalImageAsset(Asset):
         if not self.image:
             return None
         thumbnailer = self.image.easy_thumbnails_thumbnailer
-        thumbnail_options = {}
-        thumbnail_options.update({'size': (width, height)})
+        thumbnail_options = {
+            'crop': ',0',
+            'size': (width, height),
+        }
         thumbnail = thumbnailer.get_thumbnail(thumbnail_options)
         if include_host:
             return full_url(thumbnail.url)
