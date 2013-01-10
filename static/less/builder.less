@@ -656,6 +656,11 @@ button.preview {
     text-decoration:none;
     margin-top:1em;
     display:block;
+    width:100%; // override font awesome's [li a] width rule.
+    
+    &:before {
+      padding-right:.5em;
+    }
   }
   
   &.data-story h3 a {

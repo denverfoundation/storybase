@@ -1243,6 +1243,7 @@ storybase.builder.views.SelectStoryTemplateView = Backbone.View.extend({
     this.$el.find('.template:even').addClass('even');
     return this;
   }
+
 });
 
 /**
@@ -1263,13 +1264,14 @@ storybase.builder.views.StoryTemplateView = Backbone.View.extend({
   templateSource: $('#story-template-template').html(),
 
   events: {
-    "click a.show-details": "toggleDetails",
+    "click a.show-details": "toggleDetailPane",
     "click h3 a": "select"
   },
 
   initialize: function() {
     console.info('initializing form');
     this.dispatcher = this.options.dispatcher;
+    this.dispatcher.on('do:hide:storyTemplateDetailPanes', this.removeDetailPane, this);
     this.template = Handlebars.compile(this.templateSource);
   },
 
@@ -1278,34 +1280,52 @@ storybase.builder.views.StoryTemplateView = Backbone.View.extend({
     return this;
   },
 
-  toggleDetails: function(e) {
+  getDetailsEl: function() {
     var templateClassName = this.model.get('slug');
-    var $parent = this.$el.parent();
-    // if our template detail is already visible, hide it gracefully
-    var $existingDetails = $parent.find('li.template-details.' + templateClassName + ':visible');
-    if ($existingDetails.length) {
-      $existingDetails.slideUp(function() {
-        $existingDetails.remove();
-      });
+    return this.$el.siblings('li.template-details.' + templateClassName + ':visible');
+  },
+
+  toggleDetailPane: function(e) {
+    if (this.getDetailsEl().length) {
+      // hide our own
+      this.removeDetailPane();
     }
     else {
-      // remove detail items from other templates in a single shot
-      $parent.find('li.template-details:visible').remove();
-      var $prevSibling = this.$el;
-      var isEven = this.$el.hasClass('even');
-      if (isEven && this.$el.next('li').length) {
-        $prevSibling = this.$el.next('li');
-      }
-      this.$el.find('.details')
-        .clone()
-        .append('<div class="divot' + (isEven ? '' : ' odd') + '"></div>')
-        .wrap('<li class="template-details ' + templateClassName + '" style="display:none;">')
-        .parent('li') // wrap returns wrapped elements, not wrapping element
-          .insertAfter($prevSibling)
-          .slideDown();
+      // hide all and show our own
+      this.dispatcher.trigger('do:hide:storyTemplateDetailPanes');
+      this.showDetailPane();
     }
     e.preventDefault();
     return false;
+  },
+
+  removeDetailPane: function() {
+    var $existingDetails = this.getDetailsEl();
+    if ($existingDetails.length) {
+      $existingDetails.slideUp($.proxy(function() {
+        $existingDetails.remove();
+        this.$el.find('.show-details').toggleClass('icon-chevron-right icon-chevron-down');
+      }, this));
+    }
+  },
+  
+  showDetailPane: function() {
+    var $insertAfter = this.$el;
+    var isEven = this.$el.hasClass('even');
+    var templateClassName = this.model.get('slug');
+    if (isEven && this.$el.next('li').length) {
+      $insertAfter = this.$el.next('li');
+    }
+    this.$el.find('.details')
+      .clone()
+      .append('<div class="divot' + (isEven ? '' : ' odd') + '"></div>')
+      .wrap('<li class="template-details ' + templateClassName + '" style="display:none;">')
+      .parent('li') // wrap returns wrapped elements, not wrapping element
+        .insertAfter($insertAfter)
+        .slideDown($.proxy(function() {
+          this.$el.find('.show-details').toggleClass('icon-chevron-right icon-chevron-down');
+        }, this));
+    ;
   },
   
   /**

@@ -680,7 +680,7 @@ body.story-builder #app .story-templates li .details{display:none;}
 body.story-builder #app .story-templates li.template-details{float:none;clear:both;width:auto;background:#f0efef;box-shadow:inset 0 0 4px #aaaaaa;-moz-box-shadow:inset 0 0 4px #aaaaaa;-webkit-box-shadow:inset 0 0 4px #aaaaaa;}body.story-builder #app .story-templates li.template-details .details{display:block;position:relative;padding-top:1em;padding-bottom:2em;}
 body.story-builder #app .story-templates li.template-details .divot{color:#ffffff;position:absolute;left:0;top:0;}body.story-builder #app .story-templates li.template-details .divot:after{font-family:"FontAwesome";content:"\f0d7";font-size:4em;width:4em;height:4em;}
 body.story-builder #app .story-templates li.template-details .divot.odd{left:52%;}
-body.story-builder #app .story-templates li .show-details{text-align:left;font-family:'Museo300Regular';font-weight:normal;text-decoration:none;margin-top:1em;display:block;}
+body.story-builder #app .story-templates li .show-details{text-align:left;font-family:'Museo300Regular';font-weight:normal;text-decoration:none;margin-top:1em;display:block;width:100%;}body.story-builder #app .story-templates li .show-details:before{padding-right:.5em;}
 body.story-builder #app .story-templates li.data-story h3 a{background-position:0 0;}
 body.story-builder #app .story-templates li.photovoice h3 a{background-position:0 -80px;}
 body.story-builder #app .story-templates li.explainer h3 a{background-position:0 -160px;}
