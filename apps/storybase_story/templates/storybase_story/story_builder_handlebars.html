@@ -50,7 +50,7 @@ Handlebars.js templates for story builder Backbone application
 {{#if examples}}
 <dl class="examples">
   <dt>{{gettext "Examples"}}</dt>
-  <dd>{{#each examples}}<a href="{{this.url}}">{{this.title}}</a> {{/each}}</dd>
+  <dd>{{#each examples}}<a href="{{this.url}}" target="_blank">{{this.title}}</a> {{/each}}</dd>
 </dl>
 <p><a href="#" class="show-details icon-chevron-right">{{gettext "Find Out More"}}</a></p>
 {{/if}}
