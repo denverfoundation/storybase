@@ -563,14 +563,6 @@ table thead{background:black;color:white;font-size:1em;text-align:left;font-fami
 table tbody tr{border-bottom:1px solid white;background:#f0efef;}
 table tbody tr:nth-child(odd),table tbody tr.odd{background:#f8f8f8;}
 table tbody td{padding:1em;}
-.tooltipster-clean-cut{background-color:#f9f9f9;border:1px solid #dadada;box-shadow:inset 0px 1px 0px #fff;color:#595959;font-family:Arial,sans-serif;font-size:12px;line-height:12px;position:absolute;padding:10px;border-radius:4px;text-align:center;z-index:9999999;pointer-events:none;width:auto;overflow:visible;}.tooltipster-clean-cut .tooltip-arrow{text-shadow:0px 2px 0px #dadada, 0px 1px 0px #dadada;}
-.tooltipster-content{background-color:#f9f9f9;border:1px solid #dadada;box-shadow:inset 0px 1px 0px #fff;color:#595959;font-size:12px;line-height:12px;position:absolute;padding:10px;border-radius:4px;text-align:center;z-index:9999999;pointer-events:none;width:auto;overflow:visible;font-family:Arial,sans-serif;font-size:14px;line-height:1.4em;color:#444444;text-align:left;box-shadow:0 2px 5px #3b3b3b #000000;-moz-box-shadow:0 2px 5px #3b3b3b #000000;-webkit-box-shadow:0 2px 5px #3b3b3b #000000;}.tooltipster-content .tooltip-arrow{text-shadow:0px 2px 0px #dadada, 0px 1px 0px #dadada;}
-.tooltipster-content p{margin-bottom:1em;}
-.tooltipster-content dd p,.tooltipster-content dt p,.tooltipster-content li p{margin-bottom:0;}
-.tooltipster-content a{color:#20c6fd;}.tooltipster-content a:visited{color:#19a3d1;}
-.tooltipster-content ul,.tooltipster-content ol{padding-left:20px;margin-bottom:1em;}
-.tooltipster-content ul li{list-style-type:square;}
-.tooltipster-content ol li{list-style-type:decimal;}
 .storybase-share-widget{padding:8px;background:#878787;font-family:"Museo300Regular";font-size:14px;border-radius:4px;border:none;font-weight:normal;color:white !important;cursor:pointer;text-decoration:none;text-shadow:0 -1px 0 rgba(0, 0, 0, 0.4);display:inline-block;background:#999999;}.storybase-share-widget.right{margin-left:8px;}
 .storybase-share-widget:hover{text-decoration:none !important;}
 .storybase-share-widget:hover{background:#fe9703;}
