@@ -1250,6 +1250,9 @@ storybase.builder.views.SelectStoryTemplateView = Backbone.View.extend({
     this.$el.html(this.template());
     this.collection.each(this.addTemplateEntry);
     this.$el.find('.template:even').addClass('even');
+    if (jQuery().tooltipster) {
+      this.$('.tooltip').tooltipster();
+    }
     return this;
   }
 
