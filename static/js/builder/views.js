@@ -80,6 +80,12 @@ storybase.builder.views.MSIE = ($.browser !== undefined) && ($.browser.msie === 
  *
  * @event do:clear:helpactions
  */
+ 
+ /**
+  * Hide any detail panes associated with StoryTemplateViews.
+  *
+  * @event do:hide:template:detail
+  */
 
 /**
  * Master view for the story builder
@@ -1283,7 +1289,7 @@ storybase.builder.views.StoryTemplateView = Backbone.View.extend({
   initialize: function() {
     console.info('initializing form');
     this.dispatcher = this.options.dispatcher;
-    this.dispatcher.on('do:hide:storyTemplateDetailPanes', this.removeDetailPane, this);
+    this.dispatcher.on('do:hide:template:detail', this.removeDetailPane, this);
     this.template = Handlebars.compile(this.templateSource);
   },
 
@@ -1304,7 +1310,7 @@ storybase.builder.views.StoryTemplateView = Backbone.View.extend({
     }
     else {
       // hide all and show our own
-      this.dispatcher.trigger('do:hide:storyTemplateDetailPanes');
+      this.dispatcher.trigger('do:hide:template:detail');
       this.showDetailPane();
     }
     e.preventDefault();
