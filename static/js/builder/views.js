@@ -111,6 +111,14 @@ storybase.builder.views.AppView = Backbone.View.extend({
       Handlebars.registerPartial(name, tmplSrc);
     });
   },
+  
+  registerHelpers: function() {
+    // use commaEach in place of each in templates for comma-separated items.
+    Handlebars.registerHelper('commaEach', function(items, fn) {
+      items = _.map(items, function(item) { return fn(item); });
+      return new Handlebars.SafeString(items.join(', '));
+    });
+  },
 
   initialize: function() {
     // Common options passed to sub-views
@@ -126,6 +134,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
 
     // Register some partials used across views with Handlebars
     this.registerPartials();
+    this.registerHelpers();
 
     this.dispatcher = this.options.dispatcher;
     // The currently active step of the story building process
