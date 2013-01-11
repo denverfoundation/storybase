@@ -251,3 +251,19 @@ Handlebars.registerHelper('firstparagraph', function(s, maxWords) {
    }
    return new Handlebars.SafeString("<p>" + result + "</p>"); 
 });
+
+/**
+ * Iterate over a list and separate items with a comma. Use just like 
+ * the #each Handlebars block helper.
+ *
+ * @param {Array} items The context over which to iterate.
+ * @param {Function} fn Compiled template. Passed by Handlebars.
+ * @return {String} Resulting compiled comma-separated list.
+ * @todo Allow for any separator.
+ */
+Handlebars.registerHelper('commaeach', function(items, fn) {
+  return new Handlebars.SafeString(_.map(items, function(item) { 
+    return fn(item); 
+  }).join(', '));
+});
+
