@@ -50,7 +50,7 @@ Handlebars.js templates for story builder Backbone application
 {{#if examples}}
 <dl class="examples">
   <dt>{{gettext "Examples"}}</dt>
-  <dd>{{#commaEach examples}}<a class="tooltip" title='Open "{{this.title}}" in a new tab.' href="{{this.url}}" target="_blank">{{this.title}}</a>{{/commaEach}}</dd>
+  <dd>{{#commaeach examples}}<a class="tooltip" title='Open "{{this.title}}" in a new tab.' href="{{this.url}}" target="_blank">{{this.title}}</a>{{/commaeach}}</dd>
 </dl>
 <p><a href="#" class="show-details icon-chevron-right">{{gettext "Find Out More"}}</a></p>
 {{/if}}
