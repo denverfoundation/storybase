@@ -542,7 +542,12 @@ class LocalImageAsset(Asset):
             return None
         thumbnailer = self.image.easy_thumbnails_thumbnailer
         thumbnail_options = {
-            'crop': ',0',
+            # Disable crop for now in favor of CSS cropping, but this
+            # is how you would do it. This particular argument crops
+            # from the center on the x-axis and the top edge of the
+            # image on the y-axis.  
+            # See http://easy-thumbnails.readthedocs.org/en/latest/ref/processors/#easy_thumbnails.processors.scale_and_crop
+            #'crop': ',0',
             'size': (width, height),
         }
         thumbnail = thumbnailer.get_thumbnail(thumbnail_options)
