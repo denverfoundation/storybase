@@ -299,11 +299,18 @@ ul#view-selector li a {
 #story-list.list li.story h3 {
 	font-size:20px;
 }
-#story-list li.story a img {
-	height:132px;
-	width:222px;
-	display:block;
+#story-list li.story > a:first-child {
+  height: 132px;
+  width: 222px;
+  overflow: hidden;
+  display: block;
+
+  img {
+    position: absolute;
+    width:222px;
+  }
 }
+
 #story-list.list li.story a img {
 	float:left;
 	margin-right:16px;
@@ -334,7 +341,6 @@ ul#view-selector li a {
 	display:block;
 	position:absolute;
 	top:0;
-	left:0;
 }
 #story-list li.story a:hover em.hover {  background:url('../img/over.png') no-repeat 0 0; }
 #story-list li.story .story-attributes { margin-top: 10px; }

@@ -4,7 +4,7 @@ python:
   - "2.7"
 #jdk:
 #  - openjdk6
-install: pip install -r REQUIREMENTS --use-mirrors && pip install -r REQUIREMENTS-dev --use-mirrors
+install: pip install -r REQUIREMENTS --use-mirrors && pip install Fabric==1.4.0 --use-mirrors
 #script: python manage.py harvest --apps=storybase_user  --settings=settings.travis
 script: python manage.py test storybase_messaging storybase_asset storybase_geo storybase_help storybase_story storybase_user storybase_taxonomy --settings=settings.travis
 postgres:
