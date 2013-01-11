@@ -4,6 +4,7 @@ from django.db.models.signals import post_save, pre_save
 from django.utils.translation import ugettext_lazy as _
 from filer.fields.image import FilerImageField
 from cms.models.pluginmodel import CMSPlugin
+from storybase.managers import FeaturedManager
 from storybase.utils import unique_slugify
 from storybase.fields import ShortTextField
 from storybase.models import (PublishedModel, TimestampedModel, 
@@ -35,6 +36,8 @@ class NewsItem(PublishedModel, TimestampedModel, TranslatedModel):
     on_homepage = models.BooleanField(_("Featured on homepage"),
                                       default=False)
 
+    objects = FeaturedManager()
+        
     translated_fields = ['title', 'body', 'image',] 
     translation_set = 'newsitemtranslation_set'
     translation_class = NewsItemTranslation

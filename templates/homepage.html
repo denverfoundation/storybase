@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load cms_tags i18n story projects %}
+{% load cms_tags i18n story projects news %}
 
 {% block extrameta %}
 <meta name="author" content="The Piton Foundation">
@@ -79,55 +79,7 @@
 		<h2><span>{% trans "Featured on Floodlight" %}</span></h2>
 		<div class="featured-on-floodlight flexslider-holder">
 			<div class="flexslider full-width">
-				{% comment %}
-				if we are actually using this whole carousel-within-a-carousel
-				thing, we could break this out a little more.
-				{% endcomment %}
-				{% placeholder special-content or %}
-				<ul class="slides">
-					<li>
-						<img src="{{ STATIC_URL }}img/homepage-featured/grow_your_skills.jpg" alt="Grow Your Skills Illustration"/>
-						<div class="featured-text">
-							<h5><a href="https://github.com/PitonFoundation/atlas/wiki/NNE-Story-Raising:-Skills-Sessions">Grow Your Storytelling Skills</a></h5>
-							<p>
-								At Floodlight, we think one of the best parts about storytelling is learning new skills so you can tell your story in new ways. Here are some tips from the Floodlight team to help you tell powerful stories:
-							</p>
-							<ul>
-								<li><a href="/stories/design-thinking-for-storytelling-your-story-in-5-e/">Design Thinking for Storytelling: Your Story in 5 Easy Steps</a></li>
-								<li><a href="/stories/how-to-make-a-photovoice-story-in-floodlight/">How to Make a Photovoice Story in Floodlight</a></li>
-								<li><a href="/stories/dataviz-how-to-make-a-bar-chart-in-fusion-tables/">Dataviz How-To: Make a bar chart in Fusion Tables</a></li>
-								<li><a href="/stories/workshop-1-video-find-your-story-with-one-powerful/">Workshop Video: Find your story with one powerful question</a></li>
-							</ul>
-							<p>Learn even more from the skills sessions we offered at our recent Near Northeast Story-Raising. <a href="https://github.com/PitonFoundation/atlas/wiki/NNE-Story-Raising:-Skills-Sessions">Our wiki has tip sheets about conducting interviews, recording audio, creating a narrative arc, using open source tools for photo and video editing, and more&hellip;</a></p>
-						</div>
-					</li>
-					<li>
-						<img src="{{ STATIC_URL }}img/homepage-featured/Childrens_Corridor_FL_homepage.jpg" alt="Children's Corridor Image"/>
-						<div class="featured-text">
-							<h5>Stories of the Children's Corridor</h5>
-							<p>The Children’s Corridor is home to 54,000 children in Denver and Aurora. Roughly two-thirds of them face the hardships of poverty, underperforming schools, undereducated parents, poor nutrition, or unsafe neighborhoods. The Piton Foundation has made a 20-year commitment to focus efforts and resources on creating a culture of success for every child in the Corridor.</p>
-							<p>Here are some of the stories of people living, working, and making positive change in the Corridor:</p>
-						
-							<ul>
-								<li><a href="/projects/finding-a-bite-food-access-in-the-childrens-corrid/">Finding a Bite: Food Access in the Children’s Corridor</a></li>
-								<li><a href="/projects/redeveloping-the-holly-from-gang-violence-to-hope/">Redeveloping the Holly: From Gang Violence to Hope</a></li>
-								<li><a href="/projects/soccer-in-the-corridor/">Soccer in the Corridor</a></li>
-							<ul>
-							<p><a class="more" href="http://denverchildrenscorridor.org">Find out more about the Children’s Corridor</a></p>
-						</div>
-					</li>
-					<li>
-						<img src="{{ STATIC_URL }}img/homepage-featured/Data_Engine_FL_homepage.jpg" alt="Colorado Data Engine Logo"/>
-						<div class="featured-text">
-							<h5>Colorado Data Engine</h5>
-							<p>Introducing a powerfully simple way to find and visualize data you can embed in a Floodlight story: Colorado Data Engine, an easy-to-use community information hub designed to help drive social change by making previously unavailable public data more accessible. With Colorado Data Engine, you can find data about demographics, health, education and more at the neighborhood level - data that can make your Floodlight story more compelling.</p>
-
-							<p><a class="more" href="http://codataengine.org">Visit Colorado Data Engine and start putting data to work in your community</a>.</p>
-							<p><a class="more" href="/grow-your-skills/data-analysis-and-visualization/">Learn how to use data to tell stories on Floodlight</a>.</p>
-						</div>
-					</li>
-				</ul>
-				{% endplaceholder %}
+                {% featured_news %}
 			</div>
 		</div>
 		<div class="flexslider-holder">
