@@ -1342,8 +1342,20 @@ storybase.builder.views.StoryTemplateView = Backbone.View.extend({
         .insertAfter($insertAfter)
         .slideDown($.proxy(function() {
           this.$el.find('.show-details').toggleClass('icon-chevron-right icon-chevron-down');
+          this.scrollToDetailPane();
         }, this));
     ;
+  },
+  
+  scrollToDetailPane: function() {
+    var pane = this.$el.parent().find('.template-details.' + this.model.get('slug') + ':visible');
+    if (pane.length) {
+      var slop = 100;
+      var paneTop = pane.position().top + slop;
+      if (paneTop > $(window).scrollTop() + $(window).height()) {
+        $(window).scrollTop(paneTop);
+      }
+    }
   },
   
   /**
