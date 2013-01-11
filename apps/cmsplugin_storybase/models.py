@@ -1,6 +1,7 @@
 from django.contrib.auth.models import User
 from django.db import models
 from django.db.models.signals import post_save, pre_save
+from django.utils.translation import ugettext_lazy as _
 from filer.fields.image import FilerImageField
 from cms.models.pluginmodel import CMSPlugin
 from storybase.utils import unique_slugify
@@ -31,6 +32,8 @@ class NewsItem(PublishedModel, TimestampedModel, TranslatedModel):
     author = models.ForeignKey(User, related_name="news_items", blank=True,
                                null=True)
     slug = models.SlugField(blank=True)
+    on_homepage = models.BooleanField(_("Featured on homepage"),
+                                      default=False)
 
     translated_fields = ['title', 'body', 'image',] 
     translation_set = 'newsitemtranslation_set'

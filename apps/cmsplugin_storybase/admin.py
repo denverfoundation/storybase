@@ -12,7 +12,9 @@ class NewsItemTranslationInline(StorybaseStackedInline):
 
 
 class NewsItemAdmin(StorybaseModelAdmin):
-    list_display = (obj_title, 'author', 'last_edited', 'status')
+    list_display = (obj_title, 'author', 'last_edited', 'status',
+            'on_homepage')
+    list_filter = ('status', 'author', 'on_homepage')
     search_fields = ['name']
     readonly_fields = ['created', 'last_edited']
     inlines = [NewsItemTranslationInline,]
