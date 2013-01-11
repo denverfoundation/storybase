@@ -80,6 +80,12 @@ storybase.builder.views.MSIE = ($.browser !== undefined) && ($.browser.msie === 
  *
  * @event do:clear:helpactions
  */
+ 
+ /**
+  * Hide any detail panes associated with StoryTemplateViews.
+  *
+  * @event do:hide:template:detail
+  */
 
 /**
  * Master view for the story builder
@@ -111,7 +117,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
       Handlebars.registerPartial(name, tmplSrc);
     });
   },
-
+  
   initialize: function() {
     // Common options passed to sub-views
     var commonOptions = {
@@ -1240,8 +1246,13 @@ storybase.builder.views.SelectStoryTemplateView = Backbone.View.extend({
   render: function() {
     this.$el.html(this.template());
     this.collection.each(this.addTemplateEntry);
+    this.$el.find('.template:even').addClass('even');
+    if (jQuery().tooltipster) {
+      this.$('.tooltip').tooltipster();
+    }
     return this;
   }
+
 });
 
 /**
@@ -1262,12 +1273,14 @@ storybase.builder.views.StoryTemplateView = Backbone.View.extend({
   templateSource: $('#story-template-template').html(),
 
   events: {
-    "click a": "select"
+    "click a.show-details": "toggleDetailPane",
+    "click h3 a": "select"
   },
 
   initialize: function() {
     console.info('initializing form');
     this.dispatcher = this.options.dispatcher;
+    this.dispatcher.on('do:hide:template:detail', this.removeDetailPane, this);
     this.template = Handlebars.compile(this.templateSource);
   },
 
@@ -1276,6 +1289,66 @@ storybase.builder.views.StoryTemplateView = Backbone.View.extend({
     return this;
   },
 
+  getDetailsEl: function() {
+    var templateClassName = this.model.get('slug');
+    return this.$el.siblings('li.template-details.' + templateClassName + ':visible');
+  },
+
+  toggleDetailPane: function(e) {
+    if (this.getDetailsEl().length) {
+      // hide our own
+      this.removeDetailPane();
+    }
+    else {
+      // hide all and show our own
+      this.dispatcher.trigger('do:hide:template:detail');
+      this.showDetailPane();
+    }
+    e.preventDefault();
+    return false;
+  },
+
+  removeDetailPane: function() {
+    var $existingDetails = this.getDetailsEl();
+    if ($existingDetails.length) {
+      $existingDetails.slideUp($.proxy(function() {
+        $existingDetails.remove();
+        this.$el.find('.show-details').toggleClass('icon-chevron-right icon-chevron-down');
+      }, this));
+    }
+  },
+  
+  showDetailPane: function() {
+    var $insertAfter = this.$el;
+    var isEven = this.$el.hasClass('even');
+    var templateClassName = this.model.get('slug');
+    if (isEven && this.$el.next('li').length) {
+      $insertAfter = this.$el.next('li');
+    }
+    this.$el.find('.details')
+      .clone()
+      .append('<div class="divot' + (isEven ? '' : ' odd') + '"></div>')
+      .wrap('<li class="template-details ' + templateClassName + '" style="display:none;">')
+      .parent('li') // wrap returns wrapped elements, not wrapping element
+        .insertAfter($insertAfter)
+        .slideDown($.proxy(function() {
+          this.$el.find('.show-details').toggleClass('icon-chevron-right icon-chevron-down');
+          this.scrollToDetailPane();
+        }, this));
+    ;
+  },
+  
+  scrollToDetailPane: function() {
+    var pane = this.$el.parent().find('.template-details.' + this.model.get('slug') + ':visible');
+    if (pane.length) {
+      var slop = 100;
+      var paneTop = pane.position().top + slop;
+      if (paneTop > $(window).scrollTop() + $(window).height()) {
+        $(window).scrollTop(paneTop);
+      }
+    }
+  },
+  
   /**
    * Event handler for clicking a template's link
    */
