@@ -7,8 +7,13 @@ fab --set run_local=True enable_jetty_start
 createdb -T template_postgis atlas_travis -U postgres
 python manage.py build_solr_schema --settings=settings.travis > config/travis/solr/schema.xml
 sudo cp config/travis/solr/schema.xml /usr/local/share/solr3/conf/
+# BEGIN DEBUG
+cat /etc/default/jetty
+dpkg --list | grep -i jdk
+# END DEBUG
 fab --set run_local=True update_solr_jetty_config
 sudo service jetty restart
-export DISPLAY=:99.0
-sh -e /etc/init.d/xvfb start
+# If running browser tests, uncomment these lines
+#export DISPLAY=:99.0
+#sh -e /etc/init.d/xvfb start
 
