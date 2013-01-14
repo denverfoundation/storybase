@@ -264,7 +264,6 @@ def upgrade_to_solr3(solr_version='3.6.0', run_local=env['run_local']):
     sudo('mkdir /usr/local/etc/solr3')
     sudo('mkdir -p /usr/local/lib/solr3/data')
     sudo('chown -R jetty /usr/local/lib/solr3/data')
-    run('wget -P /tmp http://www.reverse.net/pub/apache/lucene/solr/%s/apache-solr-%s.tgz' % (solr_version, solr_version))
     run('wget -P /tmp http://apache.osuosl.org/lucene/solr/%s/apache-solr-%s.tgz' % (solr_version, solr_version))
     run('tar --directory=/tmp -zxf /tmp/apache-solr-%s.tgz' % (solr_version))
     sudo('unzip -d /usr/local/share/solr3/ /tmp/apache-solr-%s/dist/apache-solr-%s.war' % (solr_version, solr_version))
