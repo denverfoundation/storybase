@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load cms_tags i18n story projects %}
+{% load cms_tags i18n story projects news %}
 
 {% block extrameta %}
 <meta name="author" content="The Piton Foundation">
@@ -51,7 +51,7 @@
     </div>
     <div class="grid_6">
       <div class="flexslider featured-on-floodlight">
-        {% featured_projects %}
+        {% featured_news %}
       </div>
     </div>
   </section>
@@ -129,6 +129,7 @@
   </section>
 </div>
 {% endblock base_content %}
+
 
 {% block extrajs %}
 	<script src="{{ STATIC_URL }}js/libs/jquery.cycle.all.min.js"></script>

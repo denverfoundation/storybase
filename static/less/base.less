@@ -212,6 +212,17 @@ button, .button {
   }
 }
 
+.inner-section-divot(@size:1em, @color:@almost-white) {
+  color:@color;
+  &:after {
+    font-family:"FontAwesome";
+    content: "\f0d7";
+    font-size:@size;
+    width:@size;
+    height:@size;
+  }
+}
+
 .icon-paragraph {
   &:before { content: "\00b6"; }
 }
@@ -421,7 +432,6 @@ body.base-template {
 }
 
 @import "tables.less";
-
 
 @import "storybase-share.less";
 

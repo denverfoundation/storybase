@@ -20,6 +20,7 @@ Changelog
 * Fix for #320 (Tools tips on filters on Explore page obscure the drop-down list)
 * Fix for #465 (Clean up builder table of contents scroll arrows)
 * Basic in-browser integration tests for builder
+* Redesigned template selection for (#383)
 
 0.3
 ~~~
