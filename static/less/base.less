@@ -400,18 +400,18 @@ body.base-template {
 		display: none;
 	}
 
-	#main a.button {
-		.button-style(cool);
-		display:inline-block;
+  a.button {
+    .button-style(cool);
+    display:inline-block;
+    
+    &.hot {
+      .button-style(hot);
+    }
 
-                &.hot {
-                  .button-style(hot);
-                }
-
-                &.gray {
-                  .button-style(gray);
-                }
-	}
+    &.gray {
+      .button-style(gray);
+    }
+  }
 }
 
 

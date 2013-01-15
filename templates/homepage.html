@@ -35,18 +35,18 @@
           {% trans "Floodlight is an easy tool to create, post and share stories about community issues to inspire people to act." %}
         {% endplaceholder %}
       </p>
-      <p><a href="{% url explore_stories %}">{% trans "Find out more" %}&hellip;</a></p>
+      <p><a href="{% page_url "about" %}">{% trans "Find out more" %}&hellip;</a></p>
       <p>
-        <a class="button bab create-your-story" href="{% url story_builder %}">
+        <a class="button create-your-story" href="{% url story_builder %}">
           <strong>{% trans "Create Your Story" %}</strong><br>
-          {% trans "Requires a free Floodlight account" %}
+          ({% trans "requires a free Floodlight account" %})
         </a>
       </p>
       <p>{% trans "Explore what others are posting on Floodlight" %}:</p>
       <ul class="explore-others-posts">
         <li><a href="{% url explore_stories %}">{% trans "View Stories" %}</a></li>
-        <li><a href="{% url explore_stories %}">{% trans "View Projects" %}</a></li>
-        <li><a href="{% url explore_stories %}">{% trans "View Organizations" %}</a></li>
+        <li><a href="{% url project_list %}">{% trans "View Projects" %}</a></li>
+        <li><a href="{% url organization_list %}">{% trans "View Organizations" %}</a></li>
       </ul>
     </div>
     <div class="grid_6">
@@ -79,7 +79,7 @@
     </div>
   </section>
   <section class="content-block last supporting-foundations">
-    <h2>{% trans "Supporting Foundations" %}</h2>
+    <h1 class="no-line">{% trans "Supporting Foundations" %}</h1>
     {% placeholder supporting-foundations or %}
     <div class="grid_3">
       <ul class="foundations">
@@ -129,7 +129,6 @@
   </section>
 </div>
 {% endblock base_content %}
-
 
 {% block extrajs %}
 	<script src="{{ STATIC_URL }}js/libs/jquery.cycle.all.min.js"></script>
