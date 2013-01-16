@@ -23,6 +23,11 @@ Changelog
 * Redesigned template selection for (#383)
 * Added a subtle border around images and videos in the story viewer (#520)
 
+0.3.1
+~~~~~
+
+* Embedded story widget height attribute needs a 'px'
+
 0.3
 ~~~
 
