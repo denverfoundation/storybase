@@ -11,6 +11,7 @@ except ImportError:
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.mail import send_mail
+from django.core import urlresolvers
 from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
@@ -339,6 +340,8 @@ class Project(MembershipUtilsMixin, FeaturedAssetsMixin, RecentStoriesMixin,
             "image_html": self.render_featured_asset(width=img_width),
             "excerpt": self.description, 
             "url": self.get_absolute_url(),
+            "more_link_text": _("View All Projects"),
+            "more_link_url": urlresolvers.reverse("project_list"),
         }
 
 

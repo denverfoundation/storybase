@@ -44,18 +44,6 @@ def connected_story(story):
 def connected_story_section(section):
     return section.render(show_title=False)
 
-@register.simple_tag
-def featured_stories(count=4, img_width=335):
-    qs = Story.objects.on_homepage().order_by('-last_edited')[:count]
-    objects = [obj.normalize_for_view(img_width) for obj in qs]
-    template = get_template('storybase/featured_object.html')
-    context = Context({
-        "objects": objects,
-        "more_link_text": _("View All Stories"),
-        "more_link_url": reverse("explore_stories"),
-    })
-    return template.render(context)
-
 @register.inclusion_tag('storybase_story/story_embed.html')
 def story_embed(story):
     return {

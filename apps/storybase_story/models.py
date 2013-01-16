@@ -503,6 +503,8 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
             "image_html": self.render_featured_asset(width=img_width), 
             "excerpt": self.summary,
             "url": self.get_absolute_url(),
+            "more_link_text": _("View All Stories"),
+            "more_link_url": urlresolvers.reverse("explore_stories"),
         }
 
 
