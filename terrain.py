@@ -290,7 +290,7 @@ def initialize_database(server):
 
 @before.runserver
 def setup_browser(server):
-    world.browser = Browser('webdriver.firefox')
+    world.browser = Browser('chrome')
 
 @before.each_feature
 def reset_data(feature):
