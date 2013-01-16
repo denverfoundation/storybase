@@ -323,6 +323,8 @@ THUMBNAIL_PROCESSORS = (
     'filer.thumbnail_processors.scale_and_crop_with_subject_location',
 )
 
+HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+
 # storybase settings
 # The name of the group used for site administrators
 ADMIN_GROUP_NAME = 'CA Admin'

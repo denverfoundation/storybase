@@ -21,6 +21,7 @@ Changelog
 * Fix for #465 (Clean up builder table of contents scroll arrows)
 * Basic in-browser integration tests for builder
 * Redesigned template selection for (#383)
+* Added a subtle border around images and videos in the story viewer (#520)
 
 0.3
 ~~~
