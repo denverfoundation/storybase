@@ -326,6 +326,21 @@ class Project(MembershipUtilsMixin, FeaturedAssetsMixin, RecentStoriesMixin,
     def get_default_img_url_choices(self):
         return settings.STORYBASE_DEFAULT_PROJECT_IMAGES
 
+    def normalize_for_view(self, img_width):
+        """Return attributes as a dictionary for use in a view context
+        
+        This allows using the same template across different models with
+        differently-named attributes that hold similar information.
+
+        """
+        return {
+            "title": self.name,
+            "date": self.created,
+            "image_html": self.render_featured_asset(width=img_width),
+            "excerpt": self.description, 
+            "url": self.get_absolute_url(),
+        }
+
 
 def set_project_slug(sender, instance, **kwargs):
     """

@@ -19,18 +19,8 @@ def _mock_image_html(width):
 @register.simple_tag
 def featured_projects(count=4, img_width=335):
     # Put project attributes into a "normalized" dictionary format
-    objects = []
     qs =  Project.objects.on_homepage().order_by('-last_edited')[:count]
-    for obj in qs:
-        objects.append({ 
-            "title": obj.name,
-            #"author": "Author Name", 
-            "date": obj.last_edited,
-            "image_html": obj.render_featured_asset(width=img_width),
-            "excerpt": obj.description, 
-            "url": obj.get_absolute_url(),
-        })
-
+    objects = [obj.normalize_for_view(img_width) for obj in qs]
     template = get_template('storybase/featured_object.html')
     context = Context({
         "objects": objects,

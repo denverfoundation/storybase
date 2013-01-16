@@ -46,18 +46,8 @@ def connected_story_section(section):
 
 @register.simple_tag
 def featured_stories(count=4, img_width=335):
-    # Put story attributes into a "normalized" dictionary format 
-    objects = []
     qs = Story.objects.on_homepage().order_by('-last_edited')[:count]
-    for obj in qs:
-        objects.append({ 
-            "title": obj.title,
-            "author": obj.contributor_name, 
-            "date": obj.created, 
-            "image_html": obj.render_featured_asset(width=img_width), 
-            "excerpt": obj.summary,
-            "url": obj.get_absolute_url(),
-        })
+    objects = [obj.normalize_for_view(img_width) for obj in qs]
     template = get_template('storybase/featured_object.html')
     context = Context({
         "objects": objects,

@@ -19,7 +19,7 @@ from storybase.admin import toggle_featured
 from storybase.tests.base import SloppyComparisonTestMixin, FixedTestApiClient
 from storybase.utils import slugify
 from storybase_asset.models import (Asset, HtmlAsset, HtmlAssetTranslation,
-                                    create_html_asset)
+        create_html_asset, create_external_asset)
 from storybase_geo.models import Location, GeoLevel, Place
 from storybase_help.models import create_help 
 from storybase_story.api import (SectionAssetResource, SectionResource, 
@@ -389,6 +389,25 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
         story.save()
         self.assertEqual(story.never_published, False)
 
+
+    def test_normalize_for_view(self):
+        user = User.objects.create_user('test', 'test@example.com', 'test')
+        user.first_name = "Test"
+        user.last_name = "User"
+        user.save()
+        story = create_story(title="Test Story", summary="Test Summary",
+            byline="Test Byline", author=user)
+        featured_asset = create_external_asset(type='image', title='',
+                url='http://fakedomain.com/uploads/image.jpg')
+        story.featured_assets.add(featured_asset)
+        normalized = story.normalize_for_view(img_width=335)
+        self.assertEqual(normalized['title'], "Test Story")
+        self.assertEqual(normalized['author'], "Test U.")
+        self.assertEqual(normalized['date'], story.created)
+        self.assertIn('http://fakedomain.com/uploads/image.jpg',
+                normalized['image_html'])
+        self.assertEqual(normalized['excerpt'], "Test Summary")
+        self.assertEqual(normalized['url'], story.get_absolute_url())
 
 
 class StoryPermissionTest(TestCase):
