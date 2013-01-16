@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.3.1
+~~~~~
+
+* Embedded story widget height attribute needs a 'px'
+
 0.3
 ~~~
 
