@@ -9,7 +9,7 @@
   width: 222px;
   padding: 7px;
   overflow: hidden;
-  background: #f3f3f3;
+  background: #f0efef;
   color: #5a5a5a;
   font-family: 'Times New Roman', Georgia, Serif;
   font-size: 14px;
@@ -35,7 +35,7 @@
 .storybase-story-embed .story-link {
   display: block;
   padding-top: 8px;
-  color: #20C6FD;
+  color: #2a88db;
   font-size: 16px;
   line-height: 16px;
   font-family: 'Museo300Regular';
