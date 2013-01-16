@@ -22,6 +22,11 @@ Changelog
 * Basic in-browser integration tests for builder
 * Redesigned template selection for (#383)
 
+0.3.1
+~~~~~
+
+* Embedded story widget height attribute needs a 'px'
+
 0.3
 ~~~
 
