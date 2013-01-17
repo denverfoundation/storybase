@@ -143,6 +143,9 @@ def format_field_name(field_name):
     E.g. website URL -> website_url
 
     """
+    if field_name == "Structure":
+        return 'structure_type'
+
     formatted_field_name = field_name.lower()
     formatted_field_name = re.sub(r'\s', '_', formatted_field_name)
     return formatted_field_name
@@ -176,7 +179,6 @@ def assert_is_uuid4(s):
 
 @world.absorb
 def assert_text_present(s):
-    print s
     assert world.browser.is_text_present(s)
 
 @world.absorb
@@ -512,7 +514,7 @@ def story_published(step, title):
     story.status = 'published'
     story.save()
 
-@step(u'Then the Story "([^"]*)" exists')
+@step(u'Then the Story "([^"]*)" exists$')
 def story_exists(step, title):
     sleep(1)
     story = Story.objects.get(storytranslation__title=title)
