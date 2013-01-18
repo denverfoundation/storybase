@@ -411,6 +411,7 @@ body.base-template .sidebar .sibling-nav li.selected,body.base-template .sidebar
 body.base-template .sidebar .sibling-nav li a:hover{text-decoration:none;}
 body.base-template .sidebar #subnav{margin-bottom:8px;}
 body.base-template.homepage .button.create-your-story{text-align:center;width:50%;margin:0 auto;display:block;}body.base-template.homepage .button.create-your-story strong{font-size:1.2em;}
+body.base-template.homepage .flex-direction-nav li a{z-index:inherit;}
 body.base-template.homepage .homepage-header{padding-top:1em;}body.base-template.homepage .homepage-header h1{text-align:left;}
 body.base-template.homepage ul.explore-others-posts li{float:left;margin-right:1em;}
 body.base-template.homepage .supporting-foundations .flexslider .flex-control-nav,body.base-template.homepage .supporting-foundations .flexslider .flex-direction-nav{display:none !important;}

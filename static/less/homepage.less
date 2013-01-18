@@ -14,6 +14,16 @@
     }
   }
   
+  // this is overriding a z-index of 5000 in the flexslider plugin's css. the 
+  // megamenu on the homepage is blocked by the flexslider's left and right 
+  // nav buttons. modifying the megamenu's z-index would be preferable to 
+  // doing this, but i was unable to arrive at the correct incantation to 
+  // achieve this. this seems to have no negative effects and its scope is 
+  // limited to the homepage.
+  .flex-direction-nav li a {
+    z-index: inherit;
+  }
+  
   .homepage-header {
     padding-top:1em;
     h1 {
