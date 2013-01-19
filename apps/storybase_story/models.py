@@ -497,6 +497,7 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
 
         """
         return {
+            "type": _("Story"),
             "title": self.title,
             "author": self.contributor_name, 
             "date": self.created, 

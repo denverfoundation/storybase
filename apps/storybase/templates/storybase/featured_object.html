@@ -1,9 +1,10 @@
-{% load i18n %}
+{% load i18n storybase_tags %}
 {% comment %}
 context:
 - more_link_text, eg "View Projects" or "View Stories"
 - more_link_url, a link to full listing of projects or stories
 - objects, a list of dicts with keys:
+    type
     title
     author
     date
@@ -20,6 +21,7 @@ context:
             {{ object.image_html|safe }}
         </div>
         <div class="text">
+            <p class="featured-type">{{ object.type }}</p>
             <h3><a href="{{ object.url }}" title="{{ object.title }}">{{ object.title }}</a></h3>
             <p class="byline">{% if object.author %}<span class="author">{{ object.author }}</span> {% endif %}<span class="date">{{ object.date|date:"F j, Y" }}</span></p>
             <div class="excerpt">{{ object.excerpt|safe }}</div>

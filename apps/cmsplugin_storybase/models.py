@@ -54,6 +54,7 @@ class NewsItem(PublishedModel, TimestampedModel, TranslatedModel):
 
         """
         return {
+            "type": _("News"),
             "title": self.title,
             "author": format_user_name(self.author),
             "date": self.created, 

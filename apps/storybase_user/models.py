@@ -335,6 +335,7 @@ class Project(MembershipUtilsMixin, FeaturedAssetsMixin, RecentStoriesMixin,
 
         """
         return {
+            "type": _("Project"),
             "title": self.name,
             "date": self.created,
             "image_html": self.render_featured_asset(width=img_width),

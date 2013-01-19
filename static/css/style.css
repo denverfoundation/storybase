@@ -423,6 +423,8 @@ body.base-template.homepage .images a img{display:block;}
 body.base-template.homepage .images a span.overlay{background:url('../img/image-overlay.png') 0 0;display:block;position:absolute;top:0;left:0;width:100%;height:100%;}
 body.base-template.homepage .images a span.title{position:absolute;bottom:0;left:0;background:url('../img/transparent.png') 0 0;display:block;width:100%;display:none;}
 body.base-template.homepage .images a span.title em{font-size:12px;font-style:normal;color:#2a88db;font-family:'MuseoSlab500Regular';padding:7px 14px 12px 14px;display:block;}
+body.base-template.homepage .featured-on-floodlight h3{margin-top:0;line-height:1em;}
+body.base-template.homepage .featured-on-floodlight .featured-type{color:#999999;font-weight:bold;}
 body.base-template.homepage .featured-on-floodlight .slides li{padding-top:1em;}body.base-template.homepage .featured-on-floodlight .slides li .image,body.base-template.homepage .featured-on-floodlight .slides li .text{padding:0 76px;}
 body.base-template.homepage .featured-on-floodlight .slides li .text{margin-top:.5em;}
 body.base-template .breadcrumbs{height:38px;background:url('../img/br-bg.png') repeat-x 0 0;margin-bottom:35px;}
