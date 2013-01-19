@@ -38,7 +38,7 @@ Feature: Editing stories in Django Admin
         Then the Story's byline should be "Mile High Connects"
         Then "Mile High Connects" should be listed in the Story's Organizations list
         Then "The Metro Denver Regional Equity Atlas" should be listed in the Story's Projects list
-        Then the Story's last edited field should be set to the current date
+        Then the Story's last edited field should be shown as the current date 
         Then the Story's published date should be blank
 
     # Acceptance test #T0003
@@ -57,7 +57,7 @@ Feature: Editing stories in Django Admin
         Then the Story's byline should be "Mile High Connects"
         Then "Mile High Connects" should be listed in the Story's Organizations list
         Then "The Metro Denver Regional Equity Atlas" should be listed in the Story's Projects list
-        Then the Story's last edited field should be set to the current date
+        Then the Story's last edited field should be shown as the current date 
         Then the Story's published date should be blank
 
     # Accepance test #T0003
@@ -125,4 +125,4 @@ Feature: Editing stories in Django Admin
             opportunities and challenges for creating a supportive 
             education environment for all children.
             """
-        Then the Story's last edited field should be set to the current date
+        Then the Story's last edited field should be shown as the current date 

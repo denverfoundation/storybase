@@ -3,7 +3,7 @@ import re
 from time import sleep
 from urlparse import urlparse
 from django.conf import settings
-from django.contrib.auth.models import User
+from django.contrib.auth.models import Group, User
 from django.core.management import call_command
 #from django.db import connection
 from django.db.utils import DatabaseError
@@ -22,7 +22,7 @@ from storybase_story.utils import bulk_create
 from storybase_taxonomy.models import create_category, Category
 import storybase_user
 from storybase_user.models import (create_organization, create_project,
-                                   Organization, Project)
+       Organization, OrganizationTranslation, Project, ProjectTranslation)
 
 # Utility methods
 
@@ -353,9 +353,26 @@ def admin_login(step):
 @step(u'Given an admin creates the User "([^"]*)"')
 def create_user(step, username):
     try:
-        user = User.objects.get(username=username)
+        User.objects.get(username=username)
     except User.DoesNotExist:
-        user = User.objects.create_user(username, username + '@fakedomain.com', 'password')
+        email = username
+        if '@' not in email:
+            email = "%s@floodlightproject.org" % (username) 
+        User.objects.create_user(username, email, 'password')
+
+@step(u'Given the User "([^"]*)" has the first name "([^"]*)" and last name "([^"]*)"')
+def set_user_names(step, username, first_name, last_name):
+    user = User.objects.get(username=username)
+    user.first_name = first_name
+    user.last_name = last_name
+    user.save()
+
+@step(u'Given an admin creates the group "([^"]*)"')
+def create_group(step, name):
+    try:
+        Group.objects.get(name=name)
+    except Group.DoesNotExist:
+        Group.objects.create(name=name) 
 
 @step(u'Given the User "([^"]*)" exists')
 def user_exists(step, username):
@@ -470,18 +487,24 @@ def created_today(step):
         '%B %d, %Y')
     world.assert_today(created)
 
-@step(r'Then the [^"]+ last edited field should be set to within 1 minute of the current date and time')
+@step(r'Then the [^"]+ last edited field should be shown to be within 1 minute of the current date and time')
 def last_edited_now(step):
     last_edited = datetime.strptime(world.browser.find_by_css('time.last-edited').value,
         '%B %d, %Y %I:%M %p')
     world.assert_now(last_edited, 60)
 
-@step(r'Then the [^"]+ "([^"]*)" last edited field should be set to within 1 minute of the current date and time')
+@step(r'Then the [^"]+ "([^"]*)" last edited field should be shown to be within 1 minute of the current date and time')
 def i18n_last_edited_now(step, language):
     last_edited = datetime.strptime(
         world.translate_date(world.browser.find_by_css('time.last-edited').value, language),
         '%B %d, %Y %I:%M %p')
     world.assert_now(last_edited, 60)
+
+@step(r'Then the [^"]+ last edited field should be shown as the current date')
+def last_edited_today(step):
+    last_edited = datetime.strptime(world.browser.find_by_css('time.last-edited').first.value,
+        '%B %d, %Y')
+    world.assert_today(last_edited)
 
 @step(u'Given the user navigates to "([^"]*)"')
 def user_navigates_to_path(step, path):
@@ -497,7 +520,10 @@ def user_first_and_last_name_group3(step, username, first_name,
 
 @step(u'Given the Story "([^"]*)" has been created$')
 def story_created(step, title):
-    create_story(title)
+    try:
+        Story.objects.get(storytranslation__title=title)
+    except Story.DoesNotExist:
+        create_story(title)
 
 @step(u'Given the Story "([^"]*)" has been created with author "([^"]*)"')
 def story_created_with_author(step, title, username):
@@ -521,11 +547,17 @@ def story_exists(step, title):
 
 @step(u'Given the Organization "([^"]*)" has been created')
 def organization_created(step, name):
-    create_organization(name)
+    try:
+        Organization.objects.get(organizationtranslation__name=name)
+    except Organization.DoesNotExist:
+        create_organization(name)
 
 @step(u'Given the Project "([^"]*)" has been created')
 def project_created(step, name):
-    create_project(name)
+    try:
+        Project.objects.get(projecttranslation__name=name)
+    except Project.DoesNotExist:
+        create_project(name)
 
 @step(u'Given the Story "([^"]*)" has the following summary:')
 def set_story_summary(step, title):
@@ -539,6 +571,20 @@ def set_story_byline(step, title, byline):
     story = Story.objects.get(storytranslation__title=title)
     story.byline = byline
     story.save()
+
+@step(u'Given the Organization "([^"]*)" has the following description:')
+def set_organization_description(step, name):
+    organization = Organization.objects.get(organizationtranslation__name=name)
+    translation = OrganizationTranslation.objects.get(organization=organization, language='en') 
+    translation.description = step.multiline
+    translation.save()
+
+@step(u'Given the Project "([^"]*)" has the following description:')
+def set_project_description(step, name):
+    project = Project.objects.get(projecttranslation__name=name)
+    translation = ProjectTranslation.objects.get(project=project, language='en') 
+    translation.description = step.multiline
+    translation.save()
 
 @step(u'Given the Project "([^"]*)" is associated with the Story "([^"]*)"')
 def add_project_to_story(step, name, title):
@@ -574,6 +620,12 @@ def story_topics(step, title):
     for topic in topics:
         story.topics.add(topic)
     story.save()
+
+@step(u'Given the Organization "([^"]*)" has website URL "([^"]*)"')
+def org_has_url(step, name, url):
+    obj = Organization.objects.get(organizationtranslation__name=name)
+    obj.website_url = url
+    obj.save()
 
 @step(u'the following projects have been created:')
 def projects_in_database(step):

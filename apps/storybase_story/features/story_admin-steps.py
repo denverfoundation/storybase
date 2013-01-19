@@ -20,11 +20,11 @@ def access_url(step, title):
     world.assert_is_uuid4(story_id)
     world.browser.visit(django_url('/stories/%s' % story_id))
 
-@step(u'Then the Story\'s last edited field should be set to the current date')
-def last_edited_now(step):
-    last_edited = datetime.strptime(world.browser.find_by_css('time.last-edited').first.value,
-        '%B %d, %Y')
-    world.assert_today(last_edited)
+#@step(u'Then the Story\'s last edited field should be set to the current date')
+#def last_edited_now(step):
+#    last_edited = datetime.strptime(world.browser.find_by_css('time.last-edited').first.value,
+#        '%B %d, %Y')
+#    world.assert_today(last_edited)
 
 @step(u'Then the Story\'s status should be "([^"]*)"')
 def see_status_as(step, status):
