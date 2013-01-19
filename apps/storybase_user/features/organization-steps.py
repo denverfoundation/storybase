@@ -1,14 +1,15 @@
-from datetime import datetime
 from lettuce import step, world
 from lettuce.django import django_url
 from nose.tools import assert_equal
 from django.contrib.auth.models import User
 from storybase_user.models import Organization
+from storybase_user.utils import format_user_name
 
-@step(u'Given an admin user creates the Organization "([^"]*)" with website URL "([^"]*)"')
-def create(step, name, website_url):
+@step(u'Given an admin user creates the Organization "([^"]*)" with website URL "([^"]*)" and description "([^"]*)" in the Django admin')
+def create(step, name, website_url, description):
     step.given('Given the user navigates to the "Organizations" addition page')
     step.given('Given the user sets the "name" of the "Organization" to "%s"' % name)
+    step.given('Given the user sets the "description" of the "Organization" to "%s"' % description)
     step.given('Given the user sets the "website URL" of the "Organization" to "%s"' % website_url)
     step.given('Given the user clicks the save button')
 
@@ -24,15 +25,15 @@ def access_url(step, name):
 def see_website_url(step, website_url):
     world.assert_text_present(website_url)
 
-@step(u'Then the Organization\'s members list should be blank')
-def no_members(step):
+@step(u'Then the Organization\'s contributors list should be blank')
+def no_contributors(step):
     world.assert_text_not_present('Members')
 
 @step(u'Then the Organization\'s description should be blank')
 def blank_description(step):
     world.assert_text_not_present('Description')
 
-@step(u'Given the Organization "([^"]*)" exists')
+@step(u'Given the Organization "([^"]*)" is visible in the Django admin')
 def exists_in_admin(step, name):
     # Visit the Organization's admin panel
     world.browser.visit(django_url('/admin/storybase_user/organization/'))
@@ -40,11 +41,9 @@ def exists_in_admin(step, name):
     organization_id = world.browser.find_by_css('.organization_id p').first.value
     world.save_info('Organization', organization_id)
 
-@step(u'Given the Organization "([^"]*)" has website URL "([^"]*)"')
-def has_website_url_in_admin(step, name, website_url):
+@step(u'Then the Organization has the website URL "([^"]*)" in the Django admin')
+def has_website_url_in_admin(step, website_url):
     # Visit the Organization's admin panel
-    world.browser.visit(django_url('/admin/storybase_user/organization/'))
-    world.browser.click_link_by_text(name)
     org_website_url = world.browser.find_by_css('#id_website_url').first.value
     assert_equal(org_website_url, website_url)
 
@@ -66,15 +65,15 @@ def other_fields_unchanged(step):
             assert_equal(getattr(world.organization, field),
                 getattr(organization, field))
 
-#@step(u'Given an admin assigns "([^"]*)" to the Organization "([^"]*)"')
-#def assign_user_to_org(step, username, name):
-#    """ Assign user to organization via the Organization admin """
-#    user = User.objects.get(username=username)
-#    world.browser.visit(django_url('/admin/storybase_user/organization/'))
-#    world.browser.click_link_by_text(name)
-#    world.browser.select('members_old', user.id)
-#    world.browser.find_by_css('.members .selector-add').first.click()
-#    world.browser.find_by_name('_save').first.click()
+@step(u'Given an admin assigns "([^"]*)" to the Organization "([^"]*)" in the Django admin')
+def assign_user_to_org(step, username, name):
+    """ Assign user to organization via the Organization admin """
+    user = User.objects.get(username=username)
+    world.browser.visit(django_url('/admin/storybase_user/organization/'))
+    world.browser.click_link_by_text(name)
+    world.browser.select('contributors_old', user.id)
+    world.browser.find_by_css('.contributors .selector-add').first.click()
+    world.browser.find_by_name('_save').first.click()
 
 @step(u'Given an admin assigns "([^"]*)" to the Organization "([^"]*)"')
 def assign_org_to_user(step, username, name):
@@ -85,10 +84,12 @@ def assign_org_to_user(step, username, name):
     world.browser.select('organizations', organization.pk)
     world.browser.find_by_name('_save').first.click()
 
-@step(r'"([^"]*)" is listed in the members list for Organization "([^"]*)"')
+@step(r'"([^"]*)" is listed in the contributors list for Organization "([^"]*)" on its detail page')
 def has_member(step, username, name):
+    user = User.objects.get(username=username)
     world.browser.visit(django_url('/organizations/%s' % world.organization.organization_id))
-    world.assert_text_in_list('ul.members li', username)
+    world.assert_text_present("Organization Contributors")
+    world.assert_text_present(format_user_name(user))
 
 @step(u'Then "([^"]*)" is selected on the "([^"]*)" User admin page')
 def listed_in_user_admin(step, name, username):
@@ -107,8 +108,7 @@ def listed_in_user_admin(step, name, username):
 def remove_user_from_org(step, username, name):
     """ Remove user from organization via the Organization admin """
     user = User.objects.get(username=username)
-    world.browser.select('members', user.id)
-    world.browser.find_by_css('.members .selector-remove').first.click()
+    world.browser.find_by_xpath("//*[contains(@class, 'dynamic-organizationmembership_set')]//option[@value='%d']/../../../..//input[@type='checkbox']" % (user.id)).first.check()
     world.browser.find_by_name('_save').first.click()
 
 #@step(u'Given an admin removes "([^"]*)" from the Organization "([^"]*)"')
@@ -121,10 +121,12 @@ def remove_user_from_org(step, username, name):
 #            member_elem.click()
 #    world.browser.find_by_name('_save').first.click()
 
-@step(u'Then "([^"]*)" is not listed in the members list for Organization "([^"]*)"')
+@step(u'Then "([^"]*)" is not listed in the contributors list for Organization "([^"]*)"')
 def not_member(step, username, name):
+    user = User.objects.get(username=username)
     world.browser.visit(django_url('/organizations/%s' % world.organization.organization_id))
-    world.assert_text_not_in_list('ul.members li', username)
+    world.assert_text_not_present("Organization Contributors")
+    world.assert_text_not_present(format_user_name(user))
 
 @step(u'Then "([^"]*)" is not selected on the "([^"]*)" User admin page')
 def not_listed_in_user_admin(step, name, username):
@@ -139,6 +141,15 @@ def not_listed_in_user_admin(step, name, username):
 
     assert False, "%s found in member list" % username
 
+@step(u'Given the User "([^"]*)" is associated with the Organization "([^"]*)"')
+def add_user_to_org(step, username, org_name):
+    user = User.objects.get(username=username)
+    org = Organization.objects.get(organizationtranslation__name=org_name)
+    try:
+        Organization.members.through.objects.get(user=user, organization=org)
+    except Organization.members.through.DoesNotExist:
+        Organization.members.through.objects.create(user=user, organization=org)
+
 @step(u'Given the user navigates to the Organization\'s detail page')
 def visit_detail_page(step):
     world.browser.visit(django_url('/organizations/%s' % world.organization.organization_id))
@@ -147,4 +158,24 @@ def visit_detail_page(step):
 @step(u'Then the Organization\'s name is listed as "([^"]*)"')
 def see_name(step, name):
     world.assert_text_present(name)
-        
+
+# HACK: I couldn't figure out how to write a regex that would match
+# "created|last edited", so I just wrote to different step definitions and
+# use this function to do the heavy lifting
+def assert_organization_date_now(name, date_type):
+    org = Organization.objects.get(organizationtranslation__name=name)
+    if date_type == "created": 
+        date = getattr(org, 'created')
+    elif date_type == "last edited":
+        date = getattr(org, 'last_edited')
+    else:
+        assert False
+    world.assert_now(date, 60)
+
+@step(u'Then the "([^"]*)" Organization\'s last edited field should be set to within 1 minute of the current date and time')
+def organization_edited_now(step, name):
+    assert_organization_date_now(name, "last edited")
+
+@step(u'Then the "([^"]*)" Organization\'s created field should be set to within 1 minute of the current date and time')
+def organization_created_now(step, name):
+    assert_organization_date_now(name, "created")
