@@ -20,7 +20,7 @@ context:
             {{ object.image_html|safe }}
         </div>
         <div class="text">
-            <h5><a href="{{ object.url }}" title="{{ object.title }}">{{ object.title }}</a></h5>
+            <h3><a href="{{ object.url }}" title="{{ object.title }}">{{ object.title }}</a></h3>
             <p class="byline">{% if object.author %}<span class="author">{{ object.author }}</span> {% endif %}<span class="date">{{ object.date|date:"F j, Y" }}</span></p>
             <div class="excerpt">{{ object.excerpt|safe }}</div>
             {% if object.more_link_url %}<p><a class="more" href="{{ object.more_link_url }}">{{ object.more_link_text }}</a></p>{% endif %}
