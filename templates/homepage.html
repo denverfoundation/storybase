@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load cms_tags i18n storybase_featured %}
+{% load cms_tags i18n story organization project storybase_featured %}
 
 {% block extrameta %}
 <meta name="author" content="The Piton Foundation">
@@ -58,24 +58,15 @@
   <section class="content-block latest-activity">
     <div class="grid_4">
       <h2>{% trans "Latest Stories" %}</h2>
-      <ul>
-        <li>story 1...</li>
-        <li>story 2...</li>
-      </ul>
+      {% latest_stories %}
     </div>
     <div class="grid_4">
       <h2>{% trans "Latest Organizations" %}</h2>
-      <ul>
-        <li>organization 1...</li>
-        <li>organization 2...</li>
-      </ul>
+      {% latest_organizations %}
     </div>
     <div class="grid_4">
       <h2>{% trans "Latest Projects" %}</h2>
-      <ul>
-        <li>project 1...</li>
-        <li>project 2...</li>
-      </ul>
+      {% latest_projects %}
     </div>
   </section>
   <section class="content-block last supporting-foundations">

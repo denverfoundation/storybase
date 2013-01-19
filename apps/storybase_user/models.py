@@ -190,6 +190,24 @@ class Organization(MembershipUtilsMixin, FeaturedAssetsMixin,
     def get_default_img_url_choices(self):
         return settings.STORYBASE_DEFAULT_ORGANIZATION_IMAGES
 
+    def normalize_for_view(self, img_width):
+        """Return attributes as a dictionary for use in a view context
+        
+        This allows using the same template across different models with
+        differently-named attributes that hold similar information.
+
+        """
+        return {
+            "type": _("Organization"),
+            "title": self.name,
+            "date": self.created,
+            "image_html": self.render_featured_asset(width=img_width),
+            "excerpt": self.description, 
+            "url": self.get_absolute_url(),
+            "more_link_text": _("View All Organizations"),
+            "more_link_url": urlresolvers.reverse("organization_list"),
+        }
+
 
 def set_organization_slug(sender, instance, **kwargs):
     """

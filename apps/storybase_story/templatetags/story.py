@@ -1,12 +1,8 @@
 from django import template
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
-from django.template import Context
-from django.template.loader import get_template
-from django.utils.translation import ugettext as _
 
-from storybase.utils import full_url
+from storybase.utils import full_url, latest_context
 from storybase_asset.models import Asset
 from storybase_story.models import Story
 
@@ -39,6 +35,10 @@ def connected_story(story):
     return {
         'story': story,
     }
+
+@register.inclusion_tag("storybase/latest_objects.html")
+def latest_stories(count=3, img_width=100):
+    return latest_context(Story, count, img_width)
 
 @register.simple_tag
 def connected_story_section(section):
