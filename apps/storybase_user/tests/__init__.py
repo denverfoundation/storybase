@@ -10,6 +10,7 @@ from django.test.client import Client
 from django.utils import translation
 
 from storybase.utils import slugify
+from storybase_asset.models import create_external_asset
 from storybase_story.models import create_story
 from storybase_user.auth.forms import ChangeUsernameEmailForm
 from storybase_user.forms import OrganizationModelForm
@@ -461,6 +462,25 @@ class ProjectModelTest(TestCase):
         self.assertEqual(stories.count(), 2)
         self.assertEqual(stories[0], story1)
         self.assertEqual(stories[1], story2)
+
+    def test_normalize_for_view(self):
+        user = User.objects.create_user('test', 'test@example.com', 'test')
+        user.first_name = "Test"
+        user.last_name = "User"
+        user.save()
+        project = create_project(name="Test Project", description="Test Description")
+        featured_asset = create_external_asset(type='image', title='',
+                url='http://fakedomain.com/uploads/image.jpg')
+        project.featured_assets.add(featured_asset)
+        normalized = project.normalize_for_view(img_width=335)
+        self.assertEqual(normalized['title'], "Test Project")
+        self.assertNotIn('author', normalized)
+        self.assertEqual(normalized['date'], project.created)
+        self.assertIn('http://fakedomain.com/uploads/image.jpg',
+                normalized['image_html'])
+        self.assertEqual(normalized['excerpt'], "Test Description")
+        self.assertEqual(normalized['url'], project.get_absolute_url())
+
 
 class ProjectApiTest(TestCase):
     def test_create_project(self):

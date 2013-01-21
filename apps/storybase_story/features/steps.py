@@ -3,7 +3,6 @@
 from datetime import datetime
 
 from django.core.urlresolvers import reverse
-from django.utils import translation
 from lettuce import step, world
 from lettuce.django import django_url
 from nose.tools import assert_equal
@@ -69,4 +68,3 @@ def see_byline_input(step):
 @step(u'the section list is not present')
 def not_see_section_list(step):
     assert world.browser.is_element_present_by_css('.section-list') is False
-    

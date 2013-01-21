@@ -19,7 +19,7 @@ def open_story_in_builder_hash_id(step, title):
 
 @step(u'Given the user opens the connected Story "([^"]*)" in the story builder with a hashed story ID')
 def open_connected_story_in_builder_hash_id(step, title):
-    sleep(1)
+    sleep(3)
     story = Story.objects.get(storytranslation__title=title)
     connected_to_story = story.connected_to_stories()[0]
     path = reverse('connected_story_builder',

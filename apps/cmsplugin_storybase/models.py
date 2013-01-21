@@ -1,14 +1,18 @@
+from django.conf import settings
 from django.contrib.auth.models import User
+from django.core.files import File
 from django.db import models
 from django.db.models.signals import post_save, pre_save
 from django.utils.translation import ugettext_lazy as _
-from filer.fields.image import FilerImageField
 from cms.models.pluginmodel import CMSPlugin
+from filer.fields.image import FilerImageField
+from filer.models import Image 
 from storybase.managers import FeaturedManager
 from storybase.utils import unique_slugify
 from storybase.fields import ShortTextField
 from storybase.models import (PublishedModel, TimestampedModel, 
         TranslatedModel, TranslationModel, set_date_on_published)
+from storybase_user.utils import format_user_name
        
 
 class List(CMSPlugin):
@@ -42,6 +46,22 @@ class NewsItem(PublishedModel, TimestampedModel, TranslatedModel):
     translation_set = 'newsitemtranslation_set'
     translation_class = NewsItemTranslation
 
+    def normalize_for_view(self, img_width):
+        """Return attributes as a dictionary for use in a view context
+        
+        This allows using the same template across different models with
+        differently-named attributes that hold similar information.
+
+        """
+        return {
+            "type": _("News"),
+            "title": self.title,
+            "author": format_user_name(self.author),
+            "date": self.created, 
+            "image_html":' <img src="%s" />' % (self.image.url),
+            "excerpt": self.body,
+        }
+
 
 def set_slug(sender, instance, **kwargs):
     try:
@@ -56,6 +76,21 @@ def set_slug(sender, instance, **kwargs):
 
 pre_save.connect(set_date_on_published, sender=NewsItem)
 post_save.connect(set_slug, sender=NewsItemTranslation)
+
+
+def create_news_item(title, body, image, image_filename=None,
+        language=settings.LANGUAGE_CODE, **kwargs):
+    """Convenience function for creating a NewsItem"""
+    image_file = File(image, name=image_filename)
+    image_model = Image.objects.create(owner=kwargs.get('owner', None),
+                                 original_filename=image_filename,
+                                 file=image_file)
+    obj = NewsItem(**kwargs)
+    obj.save()
+    translation = NewsItemTranslation(news_item=obj, title=title, body=body,
+            image=image_model, language=language)
+    translation.save()
+    return obj
 
 
 class StoryPlugin(CMSPlugin):

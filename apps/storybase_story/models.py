@@ -489,6 +489,25 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
 
         return metadata
 
+    def normalize_for_view(self, img_width):
+        """Return attributes as a dictionary for use in a view context
+        
+        This allows using the same template across different models with
+        differently-named attributes that hold similar information.
+
+        """
+        return {
+            "type": _("Story"),
+            "title": self.title,
+            "author": self.contributor_name, 
+            "date": self.created, 
+            "image_html": self.render_featured_asset(width=img_width), 
+            "excerpt": self.summary,
+            "url": self.get_absolute_url(),
+            "more_link_text": _("View All Stories"),
+            "more_link_url": urlresolvers.reverse("explore_stories"),
+        }
+
 
 def set_story_slug(sender, instance, **kwargs):
     """

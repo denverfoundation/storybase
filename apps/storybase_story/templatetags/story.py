@@ -1,12 +1,8 @@
 from django import template
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-from django.core.urlresolvers import reverse
-from django.template import Context
-from django.template.loader import get_template
-from django.utils.translation import ugettext as _
 
-from storybase.utils import full_url
+from storybase.utils import full_url, latest_context
 from storybase_asset.models import Asset
 from storybase_story.models import Story
 
@@ -40,31 +36,13 @@ def connected_story(story):
         'story': story,
     }
 
+@register.inclusion_tag("storybase/latest_objects.html")
+def latest_stories(count=3, img_width=100):
+    return latest_context(Story, count, img_width)
+
 @register.simple_tag
 def connected_story_section(section):
     return section.render(show_title=False)
-
-@register.simple_tag
-def featured_stories(count=4, img_width=335):
-    # Put story attributes into a "normalized" dictionary format 
-    objects = []
-    qs = Story.objects.on_homepage().order_by('-last_edited')[:count]
-    for obj in qs:
-        objects.append({ 
-            "title": obj.title,
-            "author": obj.contributor_name, 
-            "date": obj.created, 
-            "image_html": obj.render_featured_asset(width=img_width), 
-            "excerpt": obj.summary,
-            "url": obj.get_absolute_url(),
-        })
-    template = get_template('storybase/featured_object.html')
-    context = Context({
-        "objects": objects,
-        "more_link_text": _("View All Stories"),
-        "more_link_url": reverse("explore_stories"),
-    })
-    return template.render(context)
 
 @register.inclusion_tag('storybase_story/story_embed.html')
 def story_embed(story):

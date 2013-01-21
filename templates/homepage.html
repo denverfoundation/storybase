@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load cms_tags i18n story projects news %}
+{% load cms_tags i18n story organization project storybase_featured %}
 
 {% block extrameta %}
 <meta name="author" content="The Piton Foundation">
@@ -22,138 +22,104 @@
 {% block logo_text %}<h1>Floodlight</h1>{% endblock %}
 
 {% block base_content %}
-
-		<div class="intro">
-			<div class="flexslider">
-				<ul class="slides">
-					<li>
-						<h2><span>{% placeholder intro-carousel-title-1 or %}{% trans "Tell your story. Transform our community." %}{% endplaceholder %}</span></h2>
-						{% placeholder intro-carousel-content-1 or %}
-						<p>
-                        {% trans "Your story matters. Without it, nothing happens. Floodlight will help you build, tell and share  powerful stories that will make community change possible." %} <a href="{% url story_builder %}"><em>{% trans "Create your story now." %}</em></a> {% trans "Or" %}, <a href="{% url explore_stories %}"><em>{% trans "see the stories others are sharing." %}</em>
-						</p>
-						{% endplaceholder %}
-						<div class="page-nav">
-							<ul>
-                                <li><a href="#" class="left-nav" rel="2">{% trans "Explore Stories" %}</a></li>
-                                <li><span class="sep"></span><a href="#" class="right-nav" rel="2">{% trans "Build a Story" %}</a></li>
-							</ul>
-							<div class="cl"> </div>
-						</div>
-					</li>
-					<li>
-                    <h2><span>{% placeholder intro-carousel-title-2 or %}{% trans "Build a breakthrough story." %}{% endplaceholder %}</span></h2>
-						{% placeholder intro-carousel-content-2 or %}
-						<p>
-                        {% trans "Take your storytelling to the next level. Create visually compelling stories with photos, videos, data and more. Learn how to tell better stories by leveraging public data in creative ways." %} <a href="{% url story_builder %}"><em>{% trans "Create your story now." %}</em></a> {% trans "Or" %}, <a href="#">{% trans "build your storytelling skills" %}</a>
-                           
-						</p>
-						{% endplaceholder %}
-						<div class="page-nav">
-							<ul>
-                                <li><a href="#" class="left-nav" rel="2">{% trans "Your Story Matters" %}</a></li>
-                                <li><span class="sep"></span><a href="#" class="right-nav" rel="2">{% trans "Explore Stories" %}</a></li>
-							</ul>
-							<div class="cl"> </div>
-						</div>
-					</li>
-					<li>
-                    <h2><span>{% placeholder intro-carousel-title-3 or %}{% trans "See and show your community in a new light." %}{% endplaceholder %}</span></h2>
-						{% placeholder intro-carousel-content-3 or %}
-						<p>
-                        {% trans "Explore the stories others are sharing and discover new meaning in your neighborhood. Floodlight is where stories become movements." %} <strong><em><a href="{% url explore_stories %}">{% trans "Because what we can’t see, we can’t change." %}</a></em></strong>
-						</p>
-						{% endplaceholder %}
-						<div class="page-nav">
-							<ul>
-                                <li><a href="#" class="left-nav" rel="2">{% trans "Build a Story" %}</a></li>
-                                <li><span class="sep"></span><a href="#" class="right-nav" rel="2">{% trans "Your Story Matters" %}</a></li>
-							</ul>
-							<div class="cl"> </div>
-						</div>
-					</li>
-				</ul>
-			</div>
-		</div>
-		
-		<h2><span>{% trans "Featured on Floodlight" %}</span></h2>
-		<div class="featured-on-floodlight flexslider-holder">
-			<div class="flexslider full-width">
-                {% featured_news %}
-			</div>
-		</div>
-		<div class="flexslider-holder">
-			<div class="flexslider col left featured-projects">
-				<h2><span>{% trans "Featured Projects" %}</span></h2>
-				{% featured_projects %}
-			</div>
-			<div class="flexslider col right featured-stories">
-				<h2><span>{% trans "Featured Stories" %}</span></h2>
-				{% featured_stories %}
-			</div>
-			<div class="cl">&nbsp;</div>
-		</div>
-		<div class="bottom">
-			<h2><span>{% trans "Supporting Foundations" %}</span></h2>
-			{% placeholder supporting-foundations or %}
-			<div class="left">
-				<ul>
-					<li><a href="#" class="active">The Piton Foundation</a></li>
-					<li><a href="#">The Denver Foundation</a></li>
-					<li><a href="#">The Knight Foundation</a></li>
-				</ul>
-			</div>
-			<div class="right flexslider">
-				<ul class="slides">
-					<li>
-						<div class="image">
-							<a href="{% page_url "partners" %}">
-								<img src="{{ STATIC_URL }}img/piton-foundation-logo.jpg" alt=""/>
-							</a>
-						</div>
-						<div class="text">
-							<p>The Piton Foundation is a private, operating foundation established in 1976 by Denver oil man Sam Gary. The foundation provides opportunities for families and children in Denver to move from poverty and dependence to self-reliance. For more, visit <a href="http://piton.org">Piton.org</a>.</p>
-						</div>
-						<div class="cl"> </div>
-					</li>
-					<li>
-						<div class="image">
-							<a href="{% page_url "partners" %}">
-								<img src="{{ STATIC_URL }}img/denver-foundation-logo.gif" alt=""/>
-							</a>
-						</div>
-						<div class="text">
-							<p>Founded in 1925, The Denver Foundation is a community foundation serving Metro Denver, with the mission of inspiring people and mobilizing resources to strengthen the community.  The Denver Foundation three primary functions: stewarding an endowment to invest in meeting current and future needs for the community; managing more than 900 charitable funds for individuals, families and businesses; and working with the community and philanthropic leaders to address the core challenges that face Metro Denver. For more, visit <a href="http://denverfoundation.org">DenverFoundation.org</a>.</p>
-						</div>
-						<div class="cl"> </div>
-					</li>
-					<li>
-						<div class="image">
-							<a href="{% page_url "partners" %}">
-								<img src="{{ STATIC_URL }}img/knight-foundation-logo.jpg" alt=""/>
-							</a>
-						</div>
-						<div class="text">
-							<p>Knight Foundation supports transformational ideas that promote quality journalism, advance media innovation, engage communities and foster the arts. The foundation believes that democracy thrives when people and communities are informed and engaged. For more, visit <a href="http://knightfoundation.org">KnightFoundation.org</a>.</p>
-						</div>
-						<div class="cl"> </div>
-					</li>
-				</ul>
-			</div>
-			{% endplaceholder %}
-		</div>
-
-{% comment %}
-<!--
-  <div class="sixcol">
-    {% placeholder column_one %}
-  </div>
-  <div class="sixcol last">
-    {% placeholder column_two %}
-  </div>
--->
-{% endcomment %} 
-{% endblock %}
+<div class="content-page container_12">
+  <section class="content-block homepage-header">
+    <div class="grid_6">
+      <h1 class="no-line">
+        {% placeholder header-content or %}
+          {% trans "Everyone's got a story to tell. Floodlight makes yours shine." %}
+        {% endplaceholder %}
+      </h1>
+      <p>
+        {% placeholder header-sub-content or %}
+          {% trans "Floodlight is an easy tool to create, post and share stories about community issues to inspire people to act." %}
+        {% endplaceholder %}
+      </p>
+      <p><a href="{% page_url "about" %}">{% trans "Find out more" %}&hellip;</a></p>
+      <p>
+        <a class="button create-your-story" href="{% url story_builder %}">
+          <strong>{% trans "Create Your Story" %}</strong><br>
+          ({% trans "requires a free Floodlight account" %})
+        </a>
+      </p>
+      <p>{% trans "Explore what others are posting on Floodlight" %}:</p>
+      <ul class="explore-others-posts">
+        <li><a href="{% url explore_stories %}">{% trans "View Stories" %}</a></li>
+        <li><a href="{% url project_list %}">{% trans "View Projects" %}</a></li>
+        <li><a href="{% url organization_list %}">{% trans "View Organizations" %}</a></li>
+      </ul>
+    </div>
+    <div class="grid_6">
+      <div class="flexslider featured-on-floodlight">
+        {% featured_items %}
+      </div>
+    </div>
+  </section>
+  <section class="content-block latest-activity">
+    <div class="grid_4">
+      <h2>{% trans "Latest Stories" %}</h2>
+      {% latest_stories %}
+    </div>
+    <div class="grid_4">
+      <h2>{% trans "Latest Organizations" %}</h2>
+      {% latest_organizations %}
+    </div>
+    <div class="grid_4">
+      <h2>{% trans "Latest Projects" %}</h2>
+      {% latest_projects %}
+    </div>
+  </section>
+  <section class="content-block last supporting-foundations">
+    <h1 class="no-line">{% trans "Supporting Foundations" %}</h1>
+    {% placeholder supporting-foundations or %}
+    <div class="grid_3">
+      <ul class="foundations">
+        <li><a href="#" class="active">The Piton Foundation</a></li>
+        <li><a href="#">The Denver Foundation</a></li>
+        <li><a href="#">The Knight Foundation</a></li>
+      </ul>
+    </div>
+    <div class="grid_9 flexslider">
+      <ul class="slides">
+        <li>
+          <div class="image">
+            <a href="{% page_url "partners" %}">
+              <img src="{{ STATIC_URL }}img/piton-foundation-logo.jpg" alt=""/>
+            </a>
+          </div>
+          <div class="text">
+            <p>The Piton Foundation is a private, operating foundation established in 1976 by Denver oil man Sam Gary. The foundation provides opportunities for families and children in Denver to move from poverty and dependence to self-reliance. For more, visit <a href="http://piton.org">Piton.org</a>.</p>
+          </div>
+          <div class="cl"> </div>
+        </li>
+        <li>
+          <div class="image">
+            <a href="{% page_url "partners" %}">
+              <img src="{{ STATIC_URL }}img/denver-foundation-logo.gif" alt=""/>
+            </a>
+          </div>
+          <div class="text">
+            <p>Founded in 1925, The Denver Foundation is a community foundation serving Metro Denver, with the mission of inspiring people and mobilizing resources to strengthen the community.  The Denver Foundation three primary functions: stewarding an endowment to invest in meeting current and future needs for the community; managing more than 900 charitable funds for individuals, families and businesses; and working with the community and philanthropic leaders to address the core challenges that face Metro Denver. For more, visit <a href="http://denverfoundation.org">DenverFoundation.org</a>.</p>
+          </div>
+          <div class="cl"> </div>
+        </li>
+        <li>
+          <div class="image">
+            <a href="{% page_url "partners" %}">
+              <img src="{{ STATIC_URL }}img/knight-foundation-logo.jpg" alt=""/>
+            </a>
+          </div>
+          <div class="text">
+            <p>Knight Foundation supports transformational ideas that promote quality journalism, advance media innovation, engage communities and foster the arts. The foundation believes that democracy thrives when people and communities are informed and engaged. For more, visit <a href="http://knightfoundation.org">KnightFoundation.org</a>.</p>
+          </div>
+          <div class="cl"> </div>
+        </li>
+      </ul>
+    </div>
+    {% endplaceholder %}
+  </section>
+</div>
+{% endblock base_content %}
 
 {% block extrajs %}
 	<script src="{{ STATIC_URL }}js/libs/jquery.cycle.all.min.js"></script>

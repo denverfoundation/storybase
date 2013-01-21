@@ -317,6 +317,7 @@ button, .button {
 
 .standard-headers(@align: center) {
   h1 { font-size:@h1-size; color:@dark-gray; .styled-header(@align); .line-through-header; }
+  h1.no-line { background:none; margin-bottom:inherit; }
   h2 { font-size:@h2-size; color:@dark-gray; .styled-header(@align); }
   h3 { font-size:@h3-size; color:@medium-gray; .styled-header(@align); }
   h4 { font-size:@h4-size; color:@medium-gray; .styled-header(@align); }
@@ -398,18 +399,18 @@ body.base-template {
 		display: none;
 	}
 
-	#main a.button {
-		.button-style(cool);
-		display:inline-block;
+  a.button {
+    .button-style(cool);
+    display:inline-block;
+    
+    &.hot {
+      .button-style(hot);
+    }
 
-                &.hot {
-                  .button-style(hot);
-                }
-
-                &.gray {
-                  .button-style(gray);
-                }
-	}
+    &.gray {
+      .button-style(gray);
+    }
+  }
 }
 
 

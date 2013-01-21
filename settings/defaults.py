@@ -364,21 +364,25 @@ STORYBASE_CONNECTED_STORY_TEMPLATE = "connected"
 
 # Default images
 STORYBASE_DEFAULT_ORGANIZATION_IMAGES = {
+    100: STATIC_URL + 'img/default-image-organization-100x60.png',
     150: STATIC_URL + 'img/default-image-organization-150x90.png',
     222: STATIC_URL + 'img/default-image-organization-222x132.png',
     335: STATIC_URL + 'img/default-image-organization-335x200.png',
 }
 STORYBASE_DEFAULT_PROJECT_IMAGES = {
+    100: STATIC_URL + 'img/default-image-project-100x60.png',
     150: STATIC_URL + 'img/default-image-project-150x90.png',
     222: STATIC_URL + 'img/default-image-project-222x132.png',
     335: STATIC_URL + 'img/default-image-project-335x200.png',
 }
 STORYBASE_DEFAULT_STORY_IMAGES = {
+    100: STATIC_URL + 'img/default-image-story-100x60.png',
     150: STATIC_URL + 'img/default-image-story-150x90.png',
     222: STATIC_URL + 'img/default-image-story-222x132.png',
     335: STATIC_URL + 'img/default-image-story-335x200.png',
 }
 STORYBASE_DEFAULT_USER_IMAGES = {
+    100: STATIC_URL + 'img/default-image-user-100x60.png',
     150: STATIC_URL + 'img/default-image-user-150x90.png',
     222: STATIC_URL + 'img/default-image-user-222x132.png',
     335: STATIC_URL + 'img/default-image-user-335x200.png',
