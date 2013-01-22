@@ -387,7 +387,13 @@ def visit_model_admin(step, model_name):
 @step(u'Given the user navigates to the "([^"]*)" addition page')
 def visit_model_add_admin(step, model_name):
     step.given("Given the user navigates to the \"%s\" admin" % model_name)
-    world.browser.click_link_by_href("add/")
+    try:
+        # This works in Django 1.3
+        world.browser.click_link_by_href("add/")
+    except ElementDoesNotExist:
+        # This works in Django 1.4
+        el = world.browser.find_by_css('.addlink').first
+        el.click()
 
 @step(u'Given the user sets the "([^"]*)" of the "([^"]*)" to "([^"]*)"')
 def edit_field(step, field_name, model, field_value):
@@ -434,7 +440,12 @@ def select_org(step, org_name):
 
 @step(u'Given the user clicks the Add Organization icon')
 def clicks_org_add_icon(step):
-    world.browser.find_by_css('.organizations .selector-add').first.click()
+    try:
+        # Django 1.3
+        world.browser.find_by_css('.organizations .selector-add').first.click()
+    except ElementDoesNotExist:
+        # Django 1.4
+        world.browser.find_by_css('.field-organizations .selector-add').first.click()
 
 @step(u'Given the user selects "([^"]*)" from the list of available Projects')
 def select_project(step, project_name):
@@ -443,7 +454,12 @@ def select_project(step, project_name):
 
 @step(u'Given the user clicks the Add Project icon')
 def given_the_user_clicks_the_add_project_icon(step):
-    world.browser.find_by_css('.projects .selector-add').first.click()
+    try:
+        # Django 1.3
+        world.browser.find_by_css('.projects .selector-add').first.click()
+    except ElementDoesNotExist:
+        # Django 1.4
+        world.browser.find_by_css('.field-projects .selector-add').first.click()
 
 @step(u'Given the user clicks the save button')
 def click_save(step):

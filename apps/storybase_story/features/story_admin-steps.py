@@ -3,6 +3,7 @@ from urlparse import urlparse
 from lettuce import before, step, world
 from lettuce.django import django_url
 from nose.tools import assert_equal
+from splinter.exceptions import ElementDoesNotExist
 from storybase_user.models import create_organization, create_project
 
 @before.each_scenario
@@ -16,7 +17,12 @@ def setup_organization_and_project(scenario):
 def access_url(step, title):
     step.given('Given the user navigates to the "Stories" admin page')
     world.browser.click_link_by_text(title)
-    story_id = world.browser.find_by_css('.story_id p').first.value
+    try:
+        # Django 1.3
+        story_id = world.browser.find_by_css('.story_id p').first.value
+    except ElementDoesNotExist:
+        # Django 1.4
+        story_id = world.browser.find_by_css('.field-story_id p').first.value
     world.assert_is_uuid4(story_id)
     world.browser.visit(django_url('/stories/%s' % story_id))
 
@@ -38,7 +44,12 @@ def blank_published_date(step):
 def exists_in_admin(step, title):
     world.browser.visit(django_url('/admin/storybase_story/story/'))
     world.browser.click_link_by_text(title)
-    story_id = world.browser.find_by_css('.story_id p').first.value
+    try:
+        # Django 1.3
+        story_id = world.browser.find_by_css('.story_id p').first.value
+    except ElementDoesNotExist:
+        # Django 1.4
+        story_id = world.browser.find_by_css('.field-story_id p').first.value
     world.save_info('Story', story_id)
 
 @step(u'Given the user navigates to the Story\'s detail page')
@@ -67,7 +78,7 @@ def see_status(step, status):
 
 @step(u'Then the Story\'s published field should be set to the current date')
 def published_today(step):
-    published = datetime.strptime(world.browser.find_by_css('time.published').value,
+    published = datetime.strptime(world.browser.find_by_css('time.published').first.value,
         '%B %d, %Y')
     world.assert_today(published)
 

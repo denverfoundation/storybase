@@ -1,6 +1,7 @@
 from lettuce import step, world
 from lettuce.django import django_url
 from nose.tools import assert_equal
+from splinter.exceptions import ElementDoesNotExist
 from django.contrib.auth.models import User
 from storybase_user.models import Organization
 from storybase_user.utils import format_user_name
@@ -17,7 +18,12 @@ def create(step, name, website_url, description):
 def access_url(step, name):
     step.given('Given the user navigates to the "Organizations" admin page')
     world.browser.click_link_by_text(name)
-    organization_id = world.browser.find_by_css('.organization_id p').first.value
+    try:
+        # Django 1.3
+        organization_id = world.browser.find_by_css('.organization_id p').first.value
+    except ElementDoesNotExist:
+        # Django 1.4
+        organization_id = world.browser.find_by_css('.field-organization_id p').first.value
     world.assert_is_uuid4(organization_id)
     world.browser.visit(django_url('/organizations/%s' % organization_id))
 
@@ -38,7 +44,12 @@ def exists_in_admin(step, name):
     # Visit the Organization's admin panel
     world.browser.visit(django_url('/admin/storybase_user/organization/'))
     world.browser.click_link_by_text(name)
-    organization_id = world.browser.find_by_css('.organization_id p').first.value
+    try:
+        # Django 1.3
+        organization_id = world.browser.find_by_css('.organization_id p').first.value
+    except ElementDoesNotExist:
+        # Django 1.4
+        organization_id = world.browser.find_by_css('.field-organization_id p').first.value
     world.save_info('Organization', organization_id)
 
 @step(u'Then the Organization has the website URL "([^"]*)" in the Django admin')

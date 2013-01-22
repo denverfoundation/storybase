@@ -1,6 +1,7 @@
 from lettuce import before, step, world
 from lettuce.django import django_url
 from nose.tools import assert_equal
+from splinter.exceptions import ElementDoesNotExist
 from storybase_user.models import create_organization, Organization, Project
 
 @before.each_scenario
@@ -36,7 +37,13 @@ def blank_description(step):
 def visit_admin_edit_page(step, name):
     world.browser.visit(django_url('/admin/storybase_user/project/'))
     world.browser.click_link_by_text(name)
-    project_id = world.browser.find_by_css('.project_id p').first.value
+    try:
+        # Django 1.3
+        project_id = world.browser.find_by_css('.project_id p').first.value
+    except ElementDoesNotExist:
+        # Django 1.4
+        project_id = world.browser.find_by_css('.field-project_id p').first.value
+
     world.save_info('Project', project_id)
 
 @step(u'Given the user navigates to the Project\'s detail page')
