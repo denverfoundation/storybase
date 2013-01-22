@@ -14,17 +14,25 @@ StoryBase
 About
 =====
 
-StoryBase is a web-based storytelling tool to help communities tell stories around data.
+StoryBase is a web-based storytelling tool to help communities tell stories around data.  It is the software that runs `Floodlight <http://floodlightproject.org/>`_
 
 StoryBase is funded by the `Knight Foundation Community Information Challenge <http://knightfoundation.org/funding-initiatives/knight-community-information-challenge/>`_
+
+Install
+=======
+
+.. toctree::
+    :maxdepth: 1
+
+    upgrading 
 
 Documentation for developers
 ============================
 
 .. toctree::
-   :maxdepth: 1
+    :maxdepth: 1
 
-   api
+    api
 
 
 Indices and tables
