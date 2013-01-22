@@ -6,6 +6,10 @@ from django.contrib.auth.decorators import login_required
 from django.contrib.auth.forms import PasswordChangeForm
 from django.http import HttpResponseRedirect
 from django.core.urlresolvers import reverse
+try:
+    from django.core.urlresolvers import reverse_lazy
+except ImportError:
+    reverse_lazy = None
 from django.shortcuts import render_to_response
 from django.template import Context, RequestContext
 from django.template.loader import get_template, render_to_string
@@ -30,9 +34,11 @@ class AccountNotificationsView(UpdateView):
     model = UserProfile
     template_name = "storybase_user/account_notifications.html"
     form_class = UserNotificationsForm
-    # TODO: When switching to Django 1.4 use reverse_lazy to 
-    # get the URL of this view itself
-    success_url = "/accounts/notifications/"
+    if reverse_lazy:
+        success_url = reverse_lazy('account_notifications')
+    else:
+        def get_success_url(self):
+            return reverse('account_notifications')
 
     def get_object(self, queryset=None):
         return self.request.user.get_profile()
