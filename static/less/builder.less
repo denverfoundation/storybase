@@ -716,21 +716,27 @@ button.preview {
 }
 
 .section-controls {
-  min-width: 755px;
-  max-width: 1140px;
-  width: 940px;
-  top: 0; 
+  float:right;
+  margin: 1em 20px 0 0;
+  
+  h5 {
+    display:inline-block;
+    width:auto;
+    margin-right:.5em !important;
+  }
 }
 
 
 .graphic-select-container {
+  display:inline-block;
+  
   .widget {
     font-size:14px;
     color:white;
     padding:10px;
     border:none;
     font-family: 'Museo300Regular';
-    width:314px;
+    width:100%;
     border-radius:5px;
     background:@gray;
     z-index:301;
@@ -755,8 +761,8 @@ button.preview {
     overflow:hidden;
     position:absolute;
     z-index:300;  // *something* is covering it. sigh.
-    margin:-4px 2px 0;  // nudge it up under the popup widget
-    
+    margin:0 !important;
+    right:0;
     
     @item-height: 83px;
     @item-next-d: @item-height * 2;
@@ -914,7 +920,7 @@ button.preview {
 
   .section-title {
     margin-top: 15px;
-    .full-width;
+    width:75%;
   }
 }
 
