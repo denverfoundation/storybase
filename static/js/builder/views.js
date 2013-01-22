@@ -4133,7 +4133,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
           file = data.image;
         }
 
-        if (!data.url) {
+        if (!_.isUndefined(this.form.fields.image) && !data.url) {
           // Set a callback for saving the model that will upload the
           // image.
           options.deferRender = true;
