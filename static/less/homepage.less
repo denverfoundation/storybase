@@ -145,6 +145,8 @@
   }
 
   .latest {
+    @latest-img-width: 100px;
+
     li {
       overflow: hidden;
       padding-bottom: .5em;
@@ -152,7 +154,7 @@
     .img-wrapper {
       display: block;
       float: left;
-      width: 100px;
+      width: @latest-img-width; 
       height: 60px;
       margin-right: .5em;
       position: relative;
@@ -160,9 +162,10 @@
 
       img {
         position: absolute;
+        // Set max-width to scale externally-hosted images that we
+        // can't scale server-side
+        max-width: @latest-img-width;
       }
     }
-
-          //100x60
   }
 }

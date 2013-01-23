@@ -153,6 +153,11 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
         """Model metadata options"""
         verbose_name_plural = "stories"
 
+    def __init__(self, *args, **kwargs):
+        # Set a default license for Story objects
+        kwargs.setdefault('license', 'CC BY')
+        super(Story, self).__init__(*args, **kwargs)
+
     def get_structure_obj(self):
         """Return a structure object for the story"""
         if self._structure_obj is None:

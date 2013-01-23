@@ -251,7 +251,7 @@ def install_solr(run_local=env['run_local']):
     print "You'll probably need to edit /etc/default/jetty"
 
 @task
-def upgrade_to_solr3(solr_version='3.6.0', run_local=env['run_local']):
+def upgrade_to_solr3(solr_version='3.6.2', run_local=env['run_local']):
     """
     Upgrade Solr to version 3.5+ as the version supported in the
     Ubuntu packages don't support spatial queries

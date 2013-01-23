@@ -167,6 +167,7 @@ Handlebars.js templates for story builder Backbone application
 <script type="text/x-handlebars-template" id="section-edit-template">
 <div class="section-controls">
     {{#if showLayoutSelection}}
+    <h5>Layout</h5>
     <select name="layout" class="layout">
     {{#each layouts}}
     <option value="{{layout_id}}"{{#if selected}} selected="selected"{{/if}} class="{{slug}}">{{name}}</option>
@@ -450,10 +451,7 @@ Handlebars.js templates for story builder Backbone application
 
 <script type="text/x-handlebars-template" id="share-license-template">
 <h3>{{title}}</h3>
-{{#unless showForm}}
 <div id="cc-license"></div>
-<button type="button" class="change-license">{{gettext "Change license"}}</button>
-{{/unless}}
 </script>
 
 <script type="text/x-handlebars-template" id="share-cc-commercial-template">

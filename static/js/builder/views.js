@@ -4133,7 +4133,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
           file = data.image;
         }
 
-        if (!data.url) {
+        if (!_.isUndefined(this.form.fields.image) && !data.url) {
           // Set a callback for saving the model that will upload the
           // image.
           options.deferRender = true;
@@ -5077,7 +5077,7 @@ storybase.builder.views.LicenseDisplayView = Backbone.View.extend({
     var license = this.model.get('license');
     var params = storybase.utils.licenseStrToParams(license);
     // Set provision license text just so the user sees something
-    this._licenseHtml = "<p>" + gettext("You selected the ") + license + " " + gettext("license.") + "</p>";
+    this._licenseHtml = "<p>" + gettext("You selected the ") + license + " " + gettext("license. Retrieving license details ...") + "</p>";
     this.render();
     // Now try to get the license from the (proxied) Creative Commons
     // endpoint.  If this succeeds, we'll re-render when we're finished
@@ -5090,11 +5090,19 @@ storybase.builder.views.LicenseDisplayView = Backbone.View.extend({
       // correctly in the browser
       that._licenseHtml = $('<div>').append($(data).find("html").contents()).clone().html();
       that.render();
+    }).error(function() {
+      that._licenseHtml = "<p>" + gettext("You selected the ") + license + " " + gettext("license.") + "</p>";
+      that.render();
     });
   },
 
   render: function() {
-    this.$el.html(this._licenseHtml);
+    if (!this._licenseHtml) {
+      this.getLicenseHtml();
+    }
+    else {
+      this.$el.html(this._licenseHtml);
+    }
   }
 });
 
@@ -5102,8 +5110,7 @@ storybase.builder.views.LicenseView = Backbone.View.extend({
   id: 'share-license',
 
   events: {
-    'submit form': 'processForm',
-    'click .change-license': 'showForm'
+    'change form': 'processForm'
   },
 
   options: {
@@ -5173,7 +5180,6 @@ storybase.builder.views.LicenseView = Backbone.View.extend({
   },
 
   processForm: function(evt) {
-    evt.preventDefault();
     if (this.validate()) {
       this.dispatcher.trigger("select:license");
       // Update the form data to the new value of the form, otherwise
@@ -5187,26 +5193,15 @@ storybase.builder.views.LicenseView = Backbone.View.extend({
   render: function(options) {
     options = options || {};
     var license = this.model.get('license');
-    var showForm = (license ? false : true) || options.showForm;
     this.$el.html(this.template({
       title: this.options.title,
-      license: license,
-      showForm: showForm
+      license: license
     }));
-    if (showForm) {
-      this.form.render().$el.append('<input type="submit" value="' + gettext("Select License") + '" />');
-      this.$el.append(this.form.el);
-    }
-    else {
-      this.licenseDisplayView.setElement(this.$('#cc-license')).render();
-    }
+    this.$el.append(this.form.render().el);
+    this.licenseDisplayView.setElement(this.$('#cc-license')).render();
     this.delegateEvents();
 
     return this;
-  },
-
-  showForm: function() {
-    return this.render({showForm: true});
   }
 });
 
