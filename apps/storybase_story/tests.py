@@ -389,7 +389,6 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
         story.save()
         self.assertEqual(story.never_published, False)
 
-
     def test_normalize_for_view(self):
         user = User.objects.create_user('test', 'test@example.com', 'test')
         user.first_name = "Test"
@@ -408,6 +407,19 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
                 normalized['image_html'])
         self.assertEqual(normalized['excerpt'], "Test Summary")
         self.assertEqual(normalized['url'], story.get_absolute_url())
+
+    def test_default_license(self):
+        """Test that a story has a CC BY license by default"""
+        # When no license is specified, the license should default to "CC BY"
+        story = create_story(title="Test Story", summary="Test Summary",
+            byline="Test Byline")
+        self.assertEqual(story.license, 'CC BY')
+
+        # When a license is specified, it should be set
+        story = create_story(title="Test Story", summary="Test Summary",
+            byline="Test Byline", license="CC BY-NC-SA")
+        self.assertEqual(story.license, 'CC BY-NC-SA')
+
 
 
 class StoryPermissionTest(TestCase):
@@ -472,7 +484,7 @@ class StorySignalsTest(TestCase):
                                   body='Test content')
         story.assets.add(asset)
         story.save()
-        self.assertEqual(story.license, '')
+        self.assertNotEqual(story.license, 'CC BY-NC-SA')
         self.assertEqual(asset.license, '')
         story.license = 'CC BY-NC-SA'
         set_asset_license(sender=Story, instance=story)
@@ -490,7 +502,7 @@ class StorySignalsTest(TestCase):
                                   body='Test content')
         story.assets.add(asset)
         story.save()
-        self.assertEqual(story.license, '')
+        self.assertNotEqual(story.license, 'CC BY-NC-SA')
         self.assertEqual(asset.license, '')
         story.license = 'CC BY-NC-SA'
         story.save()
