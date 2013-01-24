@@ -136,6 +136,14 @@ button, .button {
   &.small {
     padding: 2px;
   }
+
+  &[disabled], &.disabled {
+    opacity: 0.65;
+    // Trigger hasLayout in IE, and use filter as IE doesn't support
+    // opacity.
+    zoom: 1;
+    filter: alpha(opacity=65);
+  }
 }
 
 .button-container {

@@ -303,6 +303,7 @@ button.gray:hover,.button.gray:hover{text-decoration:none !important;}
 button.gray:hover,.button.gray:hover{background:#fe9703;}
 button.reset,.button.reset{border:none;background:none;padding:0;margin:0;width:auto;text-align:center;text-shadow:none;}button.reset:hover,.button.reset:hover{background:none;}
 button.small,.button.small{padding:2px;}
+button[disabled],.button[disabled],button.disabled,.button.disabled{opacity:0.65;zoom:1;filter:alpha(opacity=65);}
 .button-container{padding:2em 0;}
 .button:hover{text-decoration:none;}
 .button:active{position:relative;top:1px;}
