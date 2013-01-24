@@ -796,7 +796,9 @@ body.story-builder #locations{margin:10px 0 0 0;padding:0;list-style:none;}
 body.story-builder .story-url-wrapper{margin-bottom:0.6em;}
 body.story-builder #story-url{width:300px;}
 body.story-builder .addthis_toolbox{display:inline-block;padding:0;}
-body.story-builder #share-publish .bbf-form{padding:0;}
+body.story-builder #share-publish .bbf-form{padding-left:0;}body.story-builder #share-publish .bbf-form:last-child{padding-bottom:0;}
+body.story-builder ol#publish-steps{counter-reset:li;margin-left:0;padding-left:0;}body.story-builder ol#publish-steps>li{position:relative;list-style:none;}body.story-builder ol#publish-steps>li h3{margin-left:25px;}
+body.story-builder ol#publish-steps>li:before{content:counter(li) '.';counter-increment:li;font-family:'Museo300Regular';font-size:25.2px;line-height:1.4em;color:#5a5a5a;position:absolute;left:0;top:0;}
 body.story-builder #cc-license{margin-bottom:10px;}
 body.story-builder #featured-asset{position:relative;}body.story-builder #featured-asset img{max-width:50%;}
 body.story-builder #featured-asset .featured-asset-controls{margin:0;padding:10px 10px 0 0;list-style:none outside none;background-color:#fff;z-index:999;}body.story-builder #featured-asset .featured-asset-controls li{display:inline-block;}

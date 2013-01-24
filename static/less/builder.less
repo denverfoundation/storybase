@@ -1531,7 +1531,39 @@ input[name=address] {
 // Share/Publish View
 #share-publish {
   .bbf-form {
-    padding: 0;
+    padding-left: 0;
+
+    &:last-child {
+      padding-bottom: 0;
+    }
+  }
+}
+
+// Some CSS magic to style the ordered list numbers
+ol#publish-steps {
+  counter-reset:li;
+  margin-left: 0;
+  padding-left: 0;
+
+  &>li {
+    position: relative;
+    list-style:none;
+
+    h3 {
+      margin-left: 25px;
+    }
+
+    &:before {
+      content:counter(li)+'.';
+      counter-increment:li;
+      font-family: 'Museo300Regular';
+      font-size: 25.2px;
+      line-height: 1.4em;
+      color: @dark-gray;
+      position: absolute;
+      left: 0;
+      top: 0;
+    }
   }
 }
 

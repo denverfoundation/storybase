@@ -5210,7 +5210,7 @@ storybase.builder.views.PublishView = Backbone.View.extend(
       sharingEl: '.publish-sharing',
       // Selector for the element (defined in templateSource) that 
       // contains the subviews
-      subviewEl: '.left'
+      subviewEl: '#publish-steps'
     },
 
     initialize: function() {
@@ -5223,17 +5223,20 @@ storybase.builder.views.PublishView = Backbone.View.extend(
       this.acceptedLegal = _.isUndefined(this.model) ? false : this.model.get('status') === "published";
       this.legalView = new storybase.builder.views.LegalView({
         model: this.model,
-        dispatcher: this.dispatcher
+        dispatcher: this.dispatcher,
+        tagName: 'li'
       });
       this.licenseView = new storybase.builder.views.LicenseView({
         model: this.model,
         dispatcher: this.dispatcher,
-        licenseEndpoint: this.options.licenseEndpoint
+        licenseEndpoint: this.options.licenseEndpoint,
+        tagName: 'li'
       });
       this.featuredAssetView = new storybase.builder.views.FeaturedAssetView({
         dispatcher: this.dispatcher,
         language: this.options.language,
-        story: this.model
+        story: this.model,
+        tagName: 'li'
       });
       this.subviews = [this.legalView, this.licenseView, this.featuredAssetView];
       this.updateTodo(null, false);
