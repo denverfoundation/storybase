@@ -138,11 +138,15 @@
       font-weight: bold;
     }
     .slides li {
-      .image, .text {
+      .title, .image, .text {
         padding:0 76px;
       }
       .text {
         margin-top:.5em;
+      }
+      .title {
+        // counter the margin in the containing li :(
+        margin-top:-.5em;
       }
       padding-top:1em;
     }
