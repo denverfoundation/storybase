@@ -412,7 +412,7 @@ body.base-template .sidebar .sibling-nav li a:hover{text-decoration:none;}
 body.base-template .sidebar #subnav{margin-bottom:8px;}
 body.base-template.homepage .button.create-your-story{text-align:center;width:50%;margin:0 auto;display:block;}body.base-template.homepage .button.create-your-story strong{font-size:1.2em;}
 body.base-template.homepage .flex-direction-nav li a{z-index:inherit;}
-body.base-template.homepage .homepage-header{padding-top:1em;}body.base-template.homepage .homepage-header h1{text-align:left;font-size:28.8px;margin:.25em 0 .75em 0;line-height:1.2em;}
+body.base-template.homepage .homepage-header{padding-top:1em;}body.base-template.homepage .homepage-header h1{text-align:left;margin:.25em 0 .75em 0;line-height:1.2em;}
 body.base-template.homepage ul.explore-others-posts{margin-top:2em;}body.base-template.homepage ul.explore-others-posts li{clear:both;margin-bottom:1em;overflow:hidden;}body.base-template.homepage ul.explore-others-posts li h3{text-align:left;margin-top:0;}
 body.base-template.homepage ul.explore-others-posts li img{width:165px;height:100px;display:block;float:left;margin-right:.5em;}
 body.base-template.homepage .supporting-foundations .flexslider .flex-control-nav,body.base-template.homepage .supporting-foundations .flexslider .flex-direction-nav{display:none !important;}
