@@ -44,11 +44,10 @@
 					var anchors = $('.supporting-foundations ul.foundations li a');
 					for (var i = 0; i < anchors.length; i++) {
 						anchors.eq(i).click((function(capturedIndex) {
-							var $clickedAnchor = $(this);
 							return function() {
 								slider.flexAnimate(capturedIndex);
 								anchors.removeClass('active');
-								$clickedAnchor.addClass('active');
+								$(this).addClass('active');
 								return false;
 							};
 						})(i));
