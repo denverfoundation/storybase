@@ -426,14 +426,7 @@ Handlebars.js templates for story builder Backbone application
 
 <script type="text/x-handlebars-template" id="share-legal-template">
 <h3>{{title}}</h3>
-{{#if showForm}}
 <p class="introduction">{{gettext "In order to publish and share your story, you need to double-check a few legal details."}} <a href="#">{{gettext "Read the Floodlight Terms of Service"}}</a>.</p>
-{{else}}
-<p>
-{{gettext "You signed off on the legal agreement"}}
-<button type="button" class="view-agreement">{{gettext "View agreement"}}</button>
-</p>
-{{/if}}
 </script>
 
 <script type="text/x-handlebars-template" id="share-permission-field-template">

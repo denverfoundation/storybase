@@ -495,6 +495,98 @@ describe('DrawerView', function() {
   });
 });
 
+describe('LegalView', function() {
+  beforeEach(function() {
+    var MockStory = Backbone.Model.extend({});
+    this.story = new MockStory();
+    this.dispatcher = _.clone(Backbone.Events);
+  });
+
+  describe('when initialized with an unpublished model', function() {
+    beforeEach(function() {
+      this.story.set('status', 'draft');
+      this.view = new storybase.builder.views.LegalView({
+        dispatcher: this.dispatcher,
+        model: this.story
+      });
+    });
+
+    it('should display with no check boxes checked', function() {
+      expect(this.view.render().$('[type="checkbox"]').length).toEqual(2);
+      expect(this.view.render().$(':checked').length).toEqual(0);
+    });
+  });
+
+  describe('when initialized with an published model', function() {
+    beforeEach(function() {
+      this.story.set('status', 'published');
+      this.view = new storybase.builder.views.LegalView({
+        dispatcher: this.dispatcher,
+        model: this.story
+      });
+    });
+
+    it('should display with both check boxes checked', function() {
+      expect(this.view.render().$('[type="checkbox"]').length).toEqual(2);
+      expect(this.view.render().$(':checked').length).toEqual(2);
+    });
+  });
+
+  describe('when only the first checkbox is checked', function() {
+    beforeEach(function() {
+      this.story.set('status', 'draft');
+      this.view = new storybase.builder.views.LegalView({
+        dispatcher: this.dispatcher,
+        model: this.story
+      });
+      this.spy = sinon.spy();
+      this.dispatcher.on("accept:legal", this.spy);
+      this.view.render().$('[type="checkbox"]').first().prop('checked', true).trigger('change');
+    });
+
+    it('should not trigger the "accept:legal" event', function() {
+      expect(this.view.$(':checked').length).toEqual(1);
+      expect(this.spy.called).toBeFalsy();
+    });
+  });
+
+  describe('when only the second checkbox is checked', function() {
+    beforeEach(function() {
+      this.story.set('status', 'draft');
+      this.view = new storybase.builder.views.LegalView({
+        dispatcher: this.dispatcher,
+        model: this.story
+      });
+      this.spy = sinon.spy();
+      this.dispatcher.on("accept:legal", this.spy);
+      this.view.render().$('[type="checkbox"]').eq(1).prop('checked', true).trigger('change');
+    });
+
+    it('should not trigger the "accept:legal" event', function() {
+      expect(this.view.$(':checked').length).toEqual(1);
+      expect(this.spy.called).toBeFalsy();
+    });
+  });
+
+  describe('when both checkboxes are checked', function() {
+    beforeEach(function() {
+      this.story.set('status', 'draft');
+      this.view = new storybase.builder.views.LegalView({
+        dispatcher: this.dispatcher,
+        model: this.story
+      });
+      this.spy = sinon.spy();
+      this.dispatcher.on("accept:legal", this.spy);
+      this.view.render().$('[type="checkbox"]').prop('checked', true).trigger('change');
+    });
+
+    it('should not trigger the "accept:legal" event', function() {
+      expect(this.view.$(':checked').length).toEqual(2);
+      expect(this.spy.called).toBeTruthy();
+    });
+  });
+});
+
 describe('LicenseView', function() {
   beforeEach(function() {
     var MockStory = Backbone.Model.extend({

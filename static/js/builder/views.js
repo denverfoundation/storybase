@@ -4930,8 +4930,7 @@ storybase.builder.views.LegalView = Backbone.View.extend({
 
   events: {
     'change input[name=license]': 'changeLicenseAgreement',
-    'click .view-agreement': 'showForm',
-    'submit form': 'processForm'
+    'change form': 'processForm'
   },
 
   options: {
@@ -4958,17 +4957,16 @@ storybase.builder.views.LegalView = Backbone.View.extend({
   },
 
   initialize: function() {
-    var formVals = {
-      permission: this.hasPermission,
-      license: this.agreedLicense
-    };
     this.dispatcher = this.options.dispatcher;
     this.template = Handlebars.compile(this.templateSource);
     this.hasPermission = this.model && this.model.get('status') === 'published';
     this.agreedLicense = this.model && this.model.get('status') === 'published';
     this.form = new Backbone.Form({
       schema: this.schema(),
-      data: formVals
+      data: {
+        permission: this.hasPermission,
+        license: this.agreedLicense
+      }
     });
     if (_.isUndefined(this.model)) {
       this.dispatcher.on("ready:story", this.setStory, this);
@@ -4993,20 +4991,10 @@ storybase.builder.views.LegalView = Backbone.View.extend({
   },
 
   processForm: function(evt) {
-    evt.preventDefault();
     if (this.validate()) {
-      this.render();
       this.dispatcher.trigger("accept:legal");
     }
   },
-
-  // TODO: Remove this if it's really not needed
-  /*
-  setRadioEnabled: function() {
-    this.form.fields['commercial'].$('input').prop('disabled', !this.agreedLicense);
-    this.form.fields['derivatives'].$('input').prop('disabled', !this.agreedLicense);
-  },
-  */
 
   /**
    * Workaround for limitations of form initial value setting.
@@ -5016,22 +5004,16 @@ storybase.builder.views.LegalView = Backbone.View.extend({
     // type.  Maybe make a custom editor that does it right.
     this.form.fields.permission.editor.$('input[type=checkbox]').prop('checked', this.hasPermission);
     this.form.fields.license.$('input[type=checkbox]').prop('checked', this.agreedLicense);
-    // TODO: Remove this if not needed
-    //this.setRadioEnabled();
   },
 
   render: function(options) {
     options = options || {};
-    var showForm = !(this.hasPermission && this.agreedLicense) || options.showForm;
     this.$el.html(this.template({
-      title: this.options.title,
-      showForm: showForm 
+      title: this.options.title
     }));
-    if (showForm) {
-      this.form.render().$el.append('<input type="submit" value="' + gettext("Agree") + '" />');
-      this.updateFormDefaults();
-      this.$el.append(this.form.el);
-    }
+    this.form.render();
+    this.updateFormDefaults();
+    this.$el.append(this.form.el);
     this.delegateEvents();
 
     return this;
@@ -5039,16 +5021,10 @@ storybase.builder.views.LegalView = Backbone.View.extend({
 
   changeLicenseAgreement: function(evt) {
     this.agreedLicense = $(evt.target).prop('checked');
-    // TODO: Remove this if not needed
-    //this.setRadioEnabled();
   },
 
   completed: function() {
     return this.agreedLicense && this.hasPermission;
-  },
-
-  showForm: function() {
-    return this.render({showForm: true});
   }
 });
 
