@@ -3,6 +3,8 @@
 // this is less than ideal; no pun intended.
 &.homepage {
 
+  @image-border-color: darken(@light-gray, 10%);
+
   .button.create-your-story {
     text-align:center;
     width:50%;
@@ -33,10 +35,27 @@
       line-height:1.2em;
     }
   }
-
-  ul.explore-others-posts li {
-    float:left;
-    margin-right:1em;
+  ul.explore-others-posts {
+    margin-top:2em;
+    
+    li {
+      clear: both;
+      margin-bottom:1em;
+      overflow:hidden;
+    
+      h3 {
+        text-align:left;
+        margin-top:0;
+      }
+      
+      img {
+        width:165px;
+        height:100px;
+        display:block;
+        float:left;
+        margin-right:.5em;
+      }
+    }
   }
   
   .supporting-foundations {
@@ -167,7 +186,7 @@
       margin-right: .5em;
       position: relative;
       overflow: hidden;
-      border: 1px solid darken(@light-gray, 10%);
+      border: 1px solid @image-border-color;
 
       img {
         position: absolute;
