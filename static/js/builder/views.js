@@ -4929,7 +4929,6 @@ storybase.builder.views.LegalView = Backbone.View.extend({
   templateSource: $('#share-legal-template').html(),
 
   events: {
-    'change input[name=license]': 'changeLicenseAgreement',
     'change form': 'processForm'
   },
 
@@ -5017,10 +5016,6 @@ storybase.builder.views.LegalView = Backbone.View.extend({
     this.delegateEvents();
 
     return this;
-  },
-
-  changeLicenseAgreement: function(evt) {
-    this.agreedLicense = $(evt.target).prop('checked');
   },
 
   completed: function() {
@@ -5181,33 +5176,55 @@ storybase.builder.views.LicenseView = Backbone.View.extend({
   }
 });
 
-storybase.builder.views.PublishView = Backbone.View.extend(
+/**
+ * Common functionality and initialization used throughout
+ * subviews for the Publish workflow step.
+ */
+storybase.builder.views.PublishViewBase = Backbone.View.extend({
+  /**
+   * Set the model for this view.
+   * This should be used as a "ready:story" event handler.
+   */
+  setStory: function(story) {
+    this.model = story;
+  },
+
+  /**
+   * Test for story published status.
+   */
+  storyPublished: function() {
+    return this.model ? (this.model.get('status') === "published") : false;
+  },
+
+  initialize: function() {
+    // Compile the template for the view
+    if (this.options.templateSource) {
+      this.template = Handlebars.compile(this.options.templateSource);
+    }
+    this.dispatcher = this.options.dispatcher;
+    // If the model isn't defined at initialization (usually when creating
+    // a new story), wire up a listener to set it when the story is ready.
+    if (_.isUndefined(this.model)) {
+      this.dispatcher.on("ready:story", this.setStory, this);
+    }
+  }
+});
+
+storybase.builder.views.PublishView = storybase.builder.views.PublishViewBase.extend(
   _.extend({}, storybase.builder.views.NavViewMixin, {
     id: 'share-publish',
 
     className: 'view-container',
 
-    events: {
-      'click .publish': 'handlePublish',
-      'click .unpublish': 'handleUnpublish',
-      'click a.popup': 'handleView'
-    },
-
     options: {
       // Source of template for the main view layout
       templateSource: $('#share-publish-template').html(),
-      // Source of the template with markup/text that is displayed
-      // when all the required steps have been completed.
-      readyTemplateSource: $('#publish-ready-msg-template').html(),
-      // Source of the template with markup/text that is displayed
-      // when the story has been published
-      publishedTemplateSource: $('#publish-published-msg-template').html(),
-      // Selector for the element (defined in templateSource) that
-      // shows the remaining publication steps
-      todoEl: '.publish-todo',
       // Selector for the element (defined in templateSource) that
       // shows the sharing widgets
       sharingEl: '.publish-sharing',
+      // Selector for the element (defined in templateSource) that
+      // contains the controls for a published story
+      publishedButtonsEl: '#published-buttons',
       // Selector for the element (defined in templateSource) that 
       // contains the subviews
       subviewEl: '#publish-steps'
@@ -5215,12 +5232,8 @@ storybase.builder.views.PublishView = Backbone.View.extend(
 
     initialize: function() {
       var navViewOptions;
-  
-      this.dispatcher = this.options.dispatcher;
-      this.template = Handlebars.compile(this.options.templateSource);
-      this.readyTemplate = Handlebars.compile(this.options.readyTemplateSource);
-      this.publishedTemplate = Handlebars.compile(this.options.publishedTemplateSource);
-      this.acceptedLegal = _.isUndefined(this.model) ? false : this.model.get('status') === "published";
+ 
+      storybase.builder.views.PublishViewBase.prototype.initialize.apply(this);
       this.legalView = new storybase.builder.views.LegalView({
         model: this.model,
         dispatcher: this.dispatcher,
@@ -5238,8 +5251,25 @@ storybase.builder.views.PublishView = Backbone.View.extend(
         story: this.model,
         tagName: 'li'
       });
-      this.subviews = [this.legalView, this.licenseView, this.featuredAssetView];
-      this.updateTodo(null, false);
+      this.todoView = new storybase.builder.views.PublishTodoView({
+        dispatcher: this.dispatcher,
+        model: this.model
+      });
+      this.todoView.register(this.licenseView, "select:license");
+      this.todoView.register(this.featuredAssetView, "select:featuredasset");
+      this.todoView.register(this.legalView, "accept:legal");
+      this.todoView.update({render: false});
+      this.buttonView = new storybase.builder.views.PublishButtonView({
+        dispatcher: this.dispatcher,
+        model: this.model,
+        todoView: this.todoView,
+        tagName: 'li'
+      });
+      this.publishedButtonsView = new storybase.builder.views.PublishedButtonsView({
+        dispatcher: this.dispatcher,
+        model: this.model
+      });
+      this.subviews = [this.legalView, this.licenseView, this.featuredAssetView, this.buttonView];
 
       navViewOptions = {
         model: this.model,
@@ -5265,85 +5295,6 @@ storybase.builder.views.PublishView = Backbone.View.extend(
         });
       }
       this.workflowNavView = new storybase.builder.views.WorkflowNavView(navViewOptions);
-      
-      if (_.isUndefined(this.model)) {
-        this.dispatcher.on("ready:story", this.setStory, this);
-      }
-      this.dispatcher.on("accept:legal", this.handleAcceptLegal, this);
-      this.dispatcher.on("select:license", this.updateTodo, this);
-      this.dispatcher.on("select:featuredasset", this.updateTodo, this);
-    },
-
-    todoItemLink: function(view) {
-      return '<a href="#' + view.$el.attr('id') + '" class="publish-todo-item">' + view.options.title + '</a>';
-    },
-
-    updateTodo: function(obj, render) {
-      render = _.isUndefined(render) ? true : render;
-      this.todo = [];
-  
-      _.each(this.subviews, function(view) {
-        if (!view.completed()) {
-          this.todo.push(this.todoItemLink(view));
-        }
-      }, this);
-
-      if (render) {
-        this.render({replace: false});
-      }
-      return this;
-    },
-
-    setStory: function(story) {
-      this.model = story;
-    },
-
-    /**
-     * Callback for when legal agreement is accepted.
-     */
-    handleAcceptLegal: function() {
-      this.acceptedLegal = true;
-      this.updateTodo(null, true);
-    },
-
-
-    handlePublish: function(evt) {
-      var that = this;
-      var triggerPublished = function(model, response) {
-        that.dispatcher.trigger('publish:story', model);
-        that.dispatcher.trigger('alert', 'success', 'Story published');
-        that.render({replace: false});
-      };
-      var triggerError = function(model, response) {
-        that.dispatcher.trigger('error', "Error publishing story");
-      };
-      this.model.save({'status': 'published'}, {
-        success: triggerPublished, 
-        error: triggerError 
-      });
-      evt.preventDefault();
-    },
-
-    handleUnpublish: function(evt) {
-      evt.preventDefault();
-      var that = this;
-      var success = function(model, response) {
-        that.dispatcher.trigger('alert', 'success', 'Story unpublished');
-        that.render({replace: false});
-      };
-      var triggerError = function(model, response) {
-        that.dispatcher.trigger('error', "Error unpublishing story");
-      };
-      this.model.save({'status': 'draft'}, {
-        success: success, 
-        error: triggerError 
-      });
-    },
-
-    handleView: function(evt) {
-      var url = $(evt.target).attr('href');
-      window.open(url);
-      evt.preventDefault();
     },
 
     getStoryUrl: function() {
@@ -5353,51 +5304,6 @@ storybase.builder.views.PublishView = Backbone.View.extend(
         url = loc.protocol + "//" + loc.host + url;
       }
       return url;
-    },
-
-    storyPublished: function() {
-      return this.model ? (this.model.get('status') === "published") : false;
-    },
-
-    renderButtons: function() {
-      var $publishBtn = this.$('.publish');
-      var $viewBtn = this.$('.view-story');
-      var $unpublishBtn = this.$('.unpublish');
-
-      if (this.storyPublished()) {
-        $publishBtn.hide();
-        $viewBtn.show();
-        $unpublishBtn.show();
-      }
-      else {
-        if (this.todo.length) {
-          $publishBtn.attr('disabled', 'disabled');
-        }
-        else {
-          $publishBtn.attr('disabled', null);
-        }
-        $publishBtn.show();
-        $viewBtn.hide();
-        $unpublishBtn.hide();
-      }
-    },
-
-    renderTodo: function() {
-      var $el = this.$(this.options.todoEl);
-      var html;
-      
-      if (this.todo.length) {
-        html = gettext("You need to ") + this.todo.join(", ");
-      }
-      else {
-        if (this.storyPublished()) {
-          html = this.publishedTemplate();
-        }
-        else {
-          html = this.readyTemplate(); 
-        }
-      }
-      $el.html(html);
     },
 
     renderSharing: function() {
@@ -5410,21 +5316,24 @@ storybase.builder.views.PublishView = Backbone.View.extend(
       }
     },
 
-    render: function(options) {
-      options = options || {replace: true};
+    /**
+     * Add subview to the DOM.
+     */
+    addSubviewEl: function(el) {
+      this.$(this.options.subviewEl).append(el);
+    },
+
+    render: function() {
       var context = {
         url: this.getStoryUrl(),
         title: this.model.get('title'),
         showSharing: this.options.showSharing
       };
-      if (options.replace) {
-        this.$el.html(this.template(context));
-        _.each(this.subviews, function(view) {
-          this.$(this.options.subviewEl).append(view.render().el);
-        }, this);
-      }
-      this.renderTodo();
-      this.renderButtons();
+      this.$el.html(this.template(context));
+      _.each(this.subviews, function(view) {
+        this.addSubviewEl(view.render().el);
+      }, this);
+      this.publishedButtonsView.setElement(this.$(this.options.publishedButtonsEl)).render();
       if (this.options.showSharing) {
         this.renderSharing();
       }
@@ -5701,3 +5610,215 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
     }
   })
 );
+
+/**
+ * A story is ready to be published.
+ *
+ * @event readytopublish:story
+ * @param Story story Story model instance that is ready to be published.
+ */
+
+/**
+ * A story is no longer ready to be published.
+ *
+ * @event notreadytopublish:story
+ * @param Story story Story model instance that is ready to be published.
+ */
+
+storybase.builder.views.PublishTodoView = storybase.builder.views.PublishViewBase.extend({
+  id: 'publish-todo',
+
+  options: {
+    // Source of the template with markup/text that is displayed
+    // when all the required steps have been completed.
+    readyTemplateSource: $('#publish-ready-msg-template').html()
+  },
+
+  initialize: function() {
+    storybase.builder.views.PublishViewBase.prototype.initialize.apply(this);
+    this.readyTemplate = Handlebars.compile(this.options.readyTemplateSource); 
+    this.subviews = [];
+    this.todo = [];
+
+    if (_.isUndefined(this.model)) {
+      this.dispatcher.on("ready:story", this.setStory, this);
+    }
+  },
+
+  register: function(view, evt) {
+    this.subviews.push(view);
+    this.dispatcher.on(evt, this.handleEvent, this); 
+  },
+
+  itemLink: function(view) {
+    return '<a href="#' + view.$el.attr('id') + '" class="publish-todo-item">' + view.options.title + '</a>';
+  },
+
+  handleEvent: function() {
+    this.update({render: true});
+  },
+
+  ready: function() {
+    return this.model && this.todo.length === 0;
+  },
+
+  update: function(options) {
+    options = options || { render: true };
+    this.todo = [];
+    _.each(this.subviews, function(view) {
+      if (!view.completed()) {
+        this.todo.push(this.itemLink(view));
+      }
+    }, this);
+    if (this.ready()) {
+      this.dispatcher.trigger("readytopublish:story", this.model); 
+    }
+    else {
+      this.dispatcher.trigger("notreadytopublish:story", this.model);
+    }
+    if (options.render) {
+      this.render();
+    }
+  },
+
+  render: function() {
+    var html;
+
+    if (this.storyPublished()) {
+      html = '';
+    }
+    else { 
+      if (this.ready()) {
+        html = this.readyTemplate(); 
+      }
+      else {
+        html = gettext("You need to ") + this.todo.join(", ");
+      }
+    }
+    this.$el.html(html);
+    return this;
+  }
+});
+
+storybase.builder.views.PublishedButtonsView = storybase.builder.views.PublishViewBase.extend({
+  id: 'published-buttons',
+
+  events: {
+    'click .unpublish': 'handleUnpublish',
+    'click a.popup': 'handleView'
+  },
+
+  options: {
+    templateSource: $('#published-buttons-template').html()
+  },
+
+  initialize: function() {
+    storybase.builder.views.PublishViewBase.prototype.initialize.apply(this);
+    this._rendered = false;
+
+    if (_.isUndefined(this.model)) {
+      this.dispatcher.on("ready:story", this.setStory, this);
+    }
+    this.dispatcher.on("publish:story", this.render, this);
+  },
+
+  handleUnpublish: function(evt) {
+    evt.preventDefault();
+    var that = this;
+    var success = function(model, response) {
+      that.dispatcher.trigger('alert', 'success', 'Story unpublished');
+      that.dispatcher.trigger('unpublish:story', that.model);
+      that.render();
+    };
+    var triggerError = function(model, response) {
+      that.dispatcher.trigger('error', "Error unpublishing story");
+    };
+    this.model.save({'status': 'draft'}, {
+      success: success, 
+      error: triggerError 
+    });
+  },
+
+  handleView: function(evt) {
+    var url = $(evt.target).attr('href');
+    window.open(url);
+    evt.preventDefault();
+  },
+
+  render: function() {
+    if (!this._rendered) {
+      // We only need to render the contents once, after that
+      // rendering just accounts to showing or hiding the element
+      this.$el.html(this.template({
+        url: this.model ? this.model.get('url') : ''
+      }));
+      this._rendered = true;
+    }
+    if (this.storyPublished()) {
+      this.$el.show();
+    }
+    else {
+      this.$el.hide();
+    }
+    return this;
+  }
+});
+
+storybase.builder.views.PublishButtonView = storybase.builder.views.PublishViewBase.extend({
+  id: 'publish-button',
+
+  events: {
+    'click .publish': 'handlePublish',
+  },
+
+  options: {
+    templateSource: $('#publish-button-template').html(),
+    title: gettext("Publish your story"),
+    todoEl: '#publish-todo'
+  },
+
+  initialize: function() {
+    storybase.builder.views.PublishViewBase.prototype.initialize.apply(this);
+    this.dispatcher.on("readytopublish:story", this.enable, this);
+    this.dispatcher.on("notreadytopublish:story", this.disable, this);
+    this.dispatcher.on("unpublish:story", this.render, this);
+  },
+
+  handlePublish: function(evt) {
+    var that = this;
+    var triggerPublished = function(model, response) {
+      that.dispatcher.trigger('publish:story', model);
+      that.dispatcher.trigger('alert', 'success', 'Story published');
+    };
+    var triggerError = function(model, response) {
+      that.dispatcher.trigger('error', "Error publishing story");
+    };
+    this.model.save({'status': 'published'}, {
+      success: triggerPublished, 
+      error: triggerError 
+    });
+    this.render();
+    evt.preventDefault();
+  },
+
+  enable: function() {
+    this.$('.publish').prop('disabled', false);
+  },
+
+  disable: function() {
+    this.$('.publish').prop('disabled', true);
+  },
+
+  render: function() {
+    var published = this.storyPublished();
+    this.$el.html(this.template({
+      title: this.options.title,
+      published: published,
+      ready: this.options.todoView.ready()
+    }));
+    if (!published) {
+      this.options.todoView.setElement(this.$(this.options.todoEl)).render();
+    }
+    return this;
+  }
+});

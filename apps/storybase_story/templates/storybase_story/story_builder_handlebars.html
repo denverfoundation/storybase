@@ -388,12 +388,7 @@ Handlebars.js templates for story builder Backbone application
 <div class="container_12">
     <div class="left grid_8 alpha">
         <h2 class="title">Publish and Share Your Story</h2>
-        <div class="publish-todo"></div>
-        <div class="publish-buttons centered button-container">
-            <button class="publish" type="button" disabled="disabled" style="display: none;">Publish My Story</button>
-            <a href="{{url}}" class="view-story popup button hot" style="display: none;">{{gettext "View my story"}}</a>
-            <button type="button" class="unpublish" style="display: none;">{{gettext "Unpublish My Story"}}</button>
-        </div>
+        <div id="published-buttons"></div>
         <ol id="publish-steps"></ol>
     </div>
     <div class="right grid_4 omega">
@@ -417,12 +412,28 @@ Handlebars.js templates for story builder Backbone application
 </div> <!-- /.row -->
 </script>
 
+<script type="text/x-handlebars-template" id="published-buttons-template">
+<p>{{gettext "Congratulations, your story has been published."}}</p>
+<div class="centered button-container">
+    <a href="{{url}}" class="view-story popup button hot">{{gettext "View my story"}}</a>
+    <button type="button" class="unpublish">{{gettext "Unpublish My Story"}}</button>
+</div>
+</script>
+
 <script type="text/x-handlebars-template" id="publish-ready-msg-template">
 <p>{{gettext "Looks like you're all set. When you're ready click the \"Publish My Story\" button."}}</p>
 </script>
 
-<script type="text/x-handlebars-template" id="publish-published-msg-template">
-<p>{{gettext "Congratulations, your story has been published. If you decide you'd like to view or unpublish your story, use the button below"}}</p>
+<script type="text/x-handlebars-template" id="publish-button-template">
+<h3>{{title}}</h3>
+{{#if published}}
+<p>{{gettext "Congratulations, your story has been published."}}</p>
+{{else}}
+<div id="publish-todo"></div>
+<div class="button-container">
+    <button class="publish" type="button"{{#unless ready}}  disabled="disabled"{{/unless}}>Publish My Story</button>
+</div>
+{{/if}}
 </script>
 
 <script type="text/x-handlebars-template" id="share-legal-template">
