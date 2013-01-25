@@ -33,7 +33,12 @@ context:
                   {{ object.excerpt|truncatewords_html:75|safe }}
               {% endif %}
             </div>
-            {% if object.more_link_url %}<p><a class="more" href="{{ object.more_link_url }}">{{ object.more_link_text }}</a></p>{% endif %}
+            {% if object.type != "News" %}
+            <p class="featured-links">
+              <a class="more" href="{{ object.url }}" title="{{ object.title }}">{% trans "View this" %} {{ object.type }}</a>
+              {% if object.more_link_url %}| <a class="more" href="{{ object.more_link_url }}">{{ object.more_link_text }}</a>{% endif %}
+            </p>
+            {% endif %}
         </div>
     </li>
     {% endfor %}
