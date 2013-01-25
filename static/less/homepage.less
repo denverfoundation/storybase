@@ -3,6 +3,8 @@
 // this is less than ideal; no pun intended.
 &.homepage {
 
+  @image-border-color: darken(@light-gray, 10%);
+
   .button.create-your-story {
     text-align:center;
     width:50%;
@@ -28,12 +30,31 @@
     padding-top:1em;
     h1 {
       text-align:left;
+      margin: .25em 0 .75em 0;
+      line-height:1.2em;
     }
   }
-
-  ul.explore-others-posts li {
-    float:left;
-    margin-right:1em;
+  ul.explore-others-posts {
+    margin-top:2em;
+    
+    li {
+      clear: both;
+      margin-bottom:1em;
+      overflow:hidden;
+    
+      h3 {
+        text-align:left;
+        margin-top:0;
+      }
+      
+      img {
+        width:25%;
+        height:auto;
+        display:block;
+        float:left;
+        margin-right:.5em;
+      }
+    }
   }
   
   .supporting-foundations {
@@ -126,19 +147,24 @@
 
   .featured-on-floodlight {
     h3 {
-      margin-top: 0;
+      margin-top: .5em;
       line-height: 1em;
+      text-align:left;
     }
     .featured-type {
       color: @medium-gray;
       font-weight: bold;
     }
     .slides li {
-      .image, .text {
+      .title, .image, .text {
         padding:0 76px;
       }
       .text {
         margin-top:.5em;
+      }
+      .title {
+        // counter the margin in the containing li :(
+        margin-top:-.5em;
       }
       padding-top:1em;
     }
@@ -159,6 +185,7 @@
       margin-right: .5em;
       position: relative;
       overflow: hidden;
+      border: 1px solid @image-border-color;
 
       img {
         position: absolute;
