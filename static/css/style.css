@@ -448,7 +448,6 @@ body.base-template ul.social li.facebook a{background-position:-67px 0;}
 body.base-template #slideContainer .back{width:26px;height:46px;background:url('../img/slider-arrows3.png') no-repeat 0 0;display:block;font-size:0;line-height:0;text-indent:-4000px;position:absolute;top:74px;left:76px;z-index:500;}
 body.base-template #slideContainer .forward{width:26px;height:46px;background:url('../img/slider-arrows3.png') no-repeat right 0;display:block;font-size:0;line-height:0;text-indent:-4000px;position:absolute;top:74px;right:0;z-index:500;}
 body.base-template p.byline{font-size:0.9em;color:#777777;font-style:italic;margin-bottom:0.9em;overflow:hidden;}
-body.base-template a.more{color:#fe9703;font-family:'MuseoSlab500Regular';margin-top:15px;}
 body.base-template #main .col h4{background:url('../img/h3-line.png') repeat-x 0 8px;margin-bottom:10px;line-height:1em;margin-bottom:20px;}body.base-template #main .col h4 span{background:#fff;padding-left:16px;padding-right:16px;}
 body.base-template #main .col h4 span{background:#fff;padding-right:10px;padding-left:10px;}
 body.base-template #main .col ul{width:335px;margin:0 auto;}
