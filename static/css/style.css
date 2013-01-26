@@ -430,6 +430,7 @@ body.base-template.homepage .featured-on-floodlight .featured-type{color:#999999
 body.base-template.homepage .featured-on-floodlight .slides li{padding-top:1em;}body.base-template.homepage .featured-on-floodlight .slides li .title,body.base-template.homepage .featured-on-floodlight .slides li .image,body.base-template.homepage .featured-on-floodlight .slides li .text{padding:0 76px;}
 body.base-template.homepage .featured-on-floodlight .slides li .text{margin-top:.5em;}
 body.base-template.homepage .featured-on-floodlight .slides li .title{margin-top:-0.5em;}
+body.base-template.homepage .featured-on-floodlight .slides li .image{position:relative;height:200px;overflow:hidden;}body.base-template.homepage .featured-on-floodlight .slides li .image img{position:absolute;}
 body.base-template.homepage .latest li{overflow:hidden;padding-bottom:.5em;}
 body.base-template.homepage .latest .img-wrapper{display:block;float:left;width:100px;height:60px;margin-right:.5em;position:relative;overflow:hidden;border:1px solid #d7d5d5;}body.base-template.homepage .latest .img-wrapper img{position:absolute;max-width:100px;}
 body.base-template .breadcrumbs{height:38px;background:url('../img/br-bg.png') repeat-x 0 0;margin-bottom:35px;}
