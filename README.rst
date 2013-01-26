@@ -20,7 +20,12 @@ Changelog
 * Fix for #320 (Tools tips on filters on Explore page obscure the drop-down list)
 * Fix for #465 (Clean up builder table of contents scroll arrows)
 * Basic in-browser integration tests for builder
-* Redesigned template selection for (#383)
+* Redesigned template selection view in builder (#383)
+* Added a subtle border around images and videos in the story viewer (#520)
+* Updated home page layout and ability for users to edit home page news
+  items (#433, #567)
+* Moved layout selector widget in builder (#442)
+* Use CSS to "crop" thumbnail images in various templates
 
 0.3.1
 ~~~~~

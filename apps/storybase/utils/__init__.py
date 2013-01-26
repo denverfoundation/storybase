@@ -189,3 +189,13 @@ def key_from_instance(instance, extra=None):
 def is_file(data):
     """Is the value a File object"""
     return hasattr(data, 'read') and callable(data.read)
+
+def latest_context(model, count=3, img_width=100):
+    """Popuplate the context for latest_* template tags"""
+    return {
+        'objects': [obj.normalize_for_view(img_width)
+                    for obj in model.objects.filter(
+                            status='published', on_homepage=False)
+                    .order_by('-published')[:count]],
+    }
+

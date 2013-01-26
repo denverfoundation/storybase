@@ -24,10 +24,6 @@ class SectionManager(models.Manager):
 
 
 class StoryManager(FeaturedManager):
-    def on_homepage(self):
-        """Return items to be featured on homepage"""
-        return super(StoryManager, self).on_homepage().filter(status='published')
-
     def get_by_natural_key(self, story_id):
         return self.get(story_id=story_id)
 

@@ -136,6 +136,14 @@ button, .button {
   &.small {
     padding: 2px;
   }
+
+  &[disabled], &.disabled {
+    opacity: 0.65;
+    // Trigger hasLayout in IE, and use filter as IE doesn't support
+    // opacity.
+    zoom: 1;
+    filter: alpha(opacity=65);
+  }
 }
 
 .button-container {
@@ -317,6 +325,7 @@ button, .button {
 
 .standard-headers(@align: center) {
   h1 { font-size:@h1-size; color:@dark-gray; .styled-header(@align); .line-through-header; }
+  h1.no-line { background:none; margin-bottom:inherit; }
   h2 { font-size:@h2-size; color:@dark-gray; .styled-header(@align); }
   h3 { font-size:@h3-size; color:@medium-gray; .styled-header(@align); }
   h4 { font-size:@h4-size; color:@medium-gray; .styled-header(@align); }
@@ -383,7 +392,6 @@ body.base-template {
 	a { color: @highlight-blue; text-decoration: none; cursor: pointer; }
 	a:hover { text-decoration: underline; }
 	a:visited { color: @visited-blue; }
-	a.secondary { color: @secondary-highlight-blue; }
 	a img { border: 0; }
 
 	textarea { overflow: auto; }
@@ -399,18 +407,18 @@ body.base-template {
 		display: none;
 	}
 
-	#main a.button {
-		.button-style(cool);
-		display:inline-block;
+  a.button {
+    .button-style(cool);
+    display:inline-block;
+    
+    &.hot {
+      .button-style(hot);
+    }
 
-                &.hot {
-                  .button-style(hot);
-                }
-
-                &.gray {
-                  .button-style(gray);
-                }
-	}
+    &.gray {
+      .button-style(gray);
+    }
+  }
 }
 
 

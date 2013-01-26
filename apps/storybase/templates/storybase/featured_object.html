@@ -1,29 +1,44 @@
-{% load i18n %}
-
+{% load i18n storybase_tags %}
 {% comment %}
 context:
 - more_link_text, eg "View Projects" or "View Stories"
 - more_link_url, a link to full listing of projects or stories
 - objects, a list of dicts with keys:
+    type
     title
     author
     date
     image_html
     excerpt
     url
-    
+    more_link_text
+    more_link_url
 {% endcomment %}
 <ul class="slides">
     {% for object in objects %}
     <li>
+        <div class="title">
+          <p class="featured-type">{{ object.type }}</p>
+          <h3><a href="{{ object.url }}" title="{{ object.title }}">{{ object.title }}</a></h3>
+          <p class="byline">{% if object.author %}<span class="author">{{ object.author }}</span> {% endif %}<span class="date">{{ object.date|date:"F j, Y" }}</span></p>
+        </div>
         <div class="image">
             {{ object.image_html|safe }}
         </div>
         <div class="text">
-            <h5><a href="{{ object.url }}" title="{{ object.title }}">{{ object.title }}</a></h5>
-            <p class="byline">{% if object.author %}<span class="author">{{ object.author }}</span> {% endif %}<span class="date">{{ object.date|date:"F j, Y" }}</span></p>
-            <div class="excerpt">{{ object.excerpt|safe }}</div>
-            <p><a class="more" href="{{ more_link_url }}">{{ more_link_text }}</a></p>
+            <div class="excerpt">
+              {% if object.type == "News" %}
+                  {{ object.excerpt|safe }}
+              {% else %}
+                  {{ object.excerpt|truncatewords_html:75|safe }}
+              {% endif %}
+            </div>
+            {% if object.type != "News" %}
+            <p class="featured-links">
+              <a class="more" href="{{ object.url }}" title="{{ object.title }}">{% trans "View this" %} {{ object.type }}</a>
+              {% if object.more_link_url %}| <a class="more" href="{{ object.more_link_url }}">{{ object.more_link_text }}</a>{% endif %}
+            </p>
+            {% endif %}
         </div>
     </li>
     {% endfor %}

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load cms_tags i18n story projects %}
+{% load cms_tags i18n story organization project storybase_featured %}
 
 {% block extrameta %}
 <meta name="author" content="The Piton Foundation">
@@ -22,186 +22,122 @@
 {% block logo_text %}<h1>Floodlight</h1>{% endblock %}
 
 {% block base_content %}
-
-		<div class="intro">
-			<div class="flexslider">
-				<ul class="slides">
-					<li>
-						<h2><span>{% placeholder intro-carousel-title-1 or %}{% trans "Tell your story. Transform our community." %}{% endplaceholder %}</span></h2>
-						{% placeholder intro-carousel-content-1 or %}
-						<p>
-                        {% trans "Your story matters. Without it, nothing happens. Floodlight will help you build, tell and share  powerful stories that will make community change possible." %} <a href="{% url story_builder %}"><em>{% trans "Create your story now." %}</em></a> {% trans "Or" %}, <a href="{% url explore_stories %}"><em>{% trans "see the stories others are sharing." %}</em>
-						</p>
-						{% endplaceholder %}
-						<div class="page-nav">
-							<ul>
-                                <li><a href="#" class="left-nav" rel="2">{% trans "Explore Stories" %}</a></li>
-                                <li><span class="sep"></span><a href="#" class="right-nav" rel="2">{% trans "Build a Story" %}</a></li>
-							</ul>
-							<div class="cl"> </div>
-						</div>
-					</li>
-					<li>
-                    <h2><span>{% placeholder intro-carousel-title-2 or %}{% trans "Build a breakthrough story." %}{% endplaceholder %}</span></h2>
-						{% placeholder intro-carousel-content-2 or %}
-						<p>
-                        {% trans "Take your storytelling to the next level. Create visually compelling stories with photos, videos, data and more. Learn how to tell better stories by leveraging public data in creative ways." %} <a href="{% url story_builder %}"><em>{% trans "Create your story now." %}</em></a> {% trans "Or" %}, <a href="#">{% trans "build your storytelling skills" %}</a>
-                           
-						</p>
-						{% endplaceholder %}
-						<div class="page-nav">
-							<ul>
-                                <li><a href="#" class="left-nav" rel="2">{% trans "Your Story Matters" %}</a></li>
-                                <li><span class="sep"></span><a href="#" class="right-nav" rel="2">{% trans "Explore Stories" %}</a></li>
-							</ul>
-							<div class="cl"> </div>
-						</div>
-					</li>
-					<li>
-                    <h2><span>{% placeholder intro-carousel-title-3 or %}{% trans "See and show your community in a new light." %}{% endplaceholder %}</span></h2>
-						{% placeholder intro-carousel-content-3 or %}
-						<p>
-                        {% trans "Explore the stories others are sharing and discover new meaning in your neighborhood. Floodlight is where stories become movements." %} <strong><em><a href="{% url explore_stories %}">{% trans "Because what we can’t see, we can’t change." %}</a></em></strong>
-						</p>
-						{% endplaceholder %}
-						<div class="page-nav">
-							<ul>
-                                <li><a href="#" class="left-nav" rel="2">{% trans "Build a Story" %}</a></li>
-                                <li><span class="sep"></span><a href="#" class="right-nav" rel="2">{% trans "Your Story Matters" %}</a></li>
-							</ul>
-							<div class="cl"> </div>
-						</div>
-					</li>
-				</ul>
-			</div>
-		</div>
-		
-		<h2><span>{% trans "Featured on Floodlight" %}</span></h2>
-		<div class="featured-on-floodlight flexslider-holder">
-			<div class="flexslider full-width">
-				{% comment %}
-				if we are actually using this whole carousel-within-a-carousel
-				thing, we could break this out a little more.
-				{% endcomment %}
-				{% placeholder special-content or %}
-				<ul class="slides">
-					<li>
-						<img src="{{ STATIC_URL }}img/homepage-featured/grow_your_skills.jpg" alt="Grow Your Skills Illustration"/>
-						<div class="featured-text">
-							<h5><a href="https://github.com/PitonFoundation/atlas/wiki/NNE-Story-Raising:-Skills-Sessions">Grow Your Storytelling Skills</a></h5>
-							<p>
-								At Floodlight, we think one of the best parts about storytelling is learning new skills so you can tell your story in new ways. Here are some tips from the Floodlight team to help you tell powerful stories:
-							</p>
-							<ul>
-								<li><a href="/stories/design-thinking-for-storytelling-your-story-in-5-e/">Design Thinking for Storytelling: Your Story in 5 Easy Steps</a></li>
-								<li><a href="/stories/how-to-make-a-photovoice-story-in-floodlight/">How to Make a Photovoice Story in Floodlight</a></li>
-								<li><a href="/stories/dataviz-how-to-make-a-bar-chart-in-fusion-tables/">Dataviz How-To: Make a bar chart in Fusion Tables</a></li>
-								<li><a href="/stories/workshop-1-video-find-your-story-with-one-powerful/">Workshop Video: Find your story with one powerful question</a></li>
-							</ul>
-							<p>Learn even more from the skills sessions we offered at our recent Near Northeast Story-Raising. <a href="https://github.com/PitonFoundation/atlas/wiki/NNE-Story-Raising:-Skills-Sessions">Our wiki has tip sheets about conducting interviews, recording audio, creating a narrative arc, using open source tools for photo and video editing, and more&hellip;</a></p>
-						</div>
-					</li>
-					<li>
-						<img src="{{ STATIC_URL }}img/homepage-featured/Childrens_Corridor_FL_homepage.jpg" alt="Children's Corridor Image"/>
-						<div class="featured-text">
-							<h5>Stories of the Children's Corridor</h5>
-							<p>The Children’s Corridor is home to 54,000 children in Denver and Aurora. Roughly two-thirds of them face the hardships of poverty, underperforming schools, undereducated parents, poor nutrition, or unsafe neighborhoods. The Piton Foundation has made a 20-year commitment to focus efforts and resources on creating a culture of success for every child in the Corridor.</p>
-							<p>Here are some of the stories of people living, working, and making positive change in the Corridor:</p>
-						
-							<ul>
-								<li><a href="/projects/finding-a-bite-food-access-in-the-childrens-corrid/">Finding a Bite: Food Access in the Children’s Corridor</a></li>
-								<li><a href="/projects/redeveloping-the-holly-from-gang-violence-to-hope/">Redeveloping the Holly: From Gang Violence to Hope</a></li>
-								<li><a href="/projects/soccer-in-the-corridor/">Soccer in the Corridor</a></li>
-							<ul>
-							<p><a class="more" href="http://denverchildrenscorridor.org">Find out more about the Children’s Corridor</a></p>
-						</div>
-					</li>
-					<li>
-						<img src="{{ STATIC_URL }}img/homepage-featured/Data_Engine_FL_homepage.jpg" alt="Colorado Data Engine Logo"/>
-						<div class="featured-text">
-							<h5>Colorado Data Engine</h5>
-							<p>Introducing a powerfully simple way to find and visualize data you can embed in a Floodlight story: Colorado Data Engine, an easy-to-use community information hub designed to help drive social change by making previously unavailable public data more accessible. With Colorado Data Engine, you can find data about demographics, health, education and more at the neighborhood level - data that can make your Floodlight story more compelling.</p>
-
-							<p><a class="more" href="http://codataengine.org">Visit Colorado Data Engine and start putting data to work in your community</a>.</p>
-							<p><a class="more" href="/grow-your-skills/data-analysis-and-visualization/">Learn how to use data to tell stories on Floodlight</a>.</p>
-						</div>
-					</li>
-				</ul>
-				{% endplaceholder %}
-			</div>
-		</div>
-		<div class="flexslider-holder">
-			<div class="flexslider col left featured-projects">
-				<h2><span>{% trans "Featured Projects" %}</span></h2>
-				{% featured_projects %}
-			</div>
-			<div class="flexslider col right featured-stories">
-				<h2><span>{% trans "Featured Stories" %}</span></h2>
-				{% featured_stories %}
-			</div>
-			<div class="cl">&nbsp;</div>
-		</div>
-		<div class="bottom">
-			<h2><span>{% trans "Supporting Foundations" %}</span></h2>
-			{% placeholder supporting-foundations or %}
-			<div class="left">
-				<ul>
-					<li><a href="#" class="active">The Piton Foundation</a></li>
-					<li><a href="#">The Denver Foundation</a></li>
-					<li><a href="#">The Knight Foundation</a></li>
-				</ul>
-			</div>
-			<div class="right flexslider">
-				<ul class="slides">
-					<li>
-						<div class="image">
-							<a href="{% page_url "partners" %}">
-								<img src="{{ STATIC_URL }}img/piton-foundation-logo.jpg" alt=""/>
-							</a>
-						</div>
-						<div class="text">
-							<p>The Piton Foundation is a private, operating foundation established in 1976 by Denver oil man Sam Gary. The foundation provides opportunities for families and children in Denver to move from poverty and dependence to self-reliance. For more, visit <a href="http://piton.org">Piton.org</a>.</p>
-						</div>
-						<div class="cl"> </div>
-					</li>
-					<li>
-						<div class="image">
-							<a href="{% page_url "partners" %}">
-								<img src="{{ STATIC_URL }}img/denver-foundation-logo.gif" alt=""/>
-							</a>
-						</div>
-						<div class="text">
-							<p>Founded in 1925, The Denver Foundation is a community foundation serving Metro Denver, with the mission of inspiring people and mobilizing resources to strengthen the community.  The Denver Foundation three primary functions: stewarding an endowment to invest in meeting current and future needs for the community; managing more than 900 charitable funds for individuals, families and businesses; and working with the community and philanthropic leaders to address the core challenges that face Metro Denver. For more, visit <a href="http://denverfoundation.org">DenverFoundation.org</a>.</p>
-						</div>
-						<div class="cl"> </div>
-					</li>
-					<li>
-						<div class="image">
-							<a href="{% page_url "partners" %}">
-								<img src="{{ STATIC_URL }}img/knight-foundation-logo.jpg" alt=""/>
-							</a>
-						</div>
-						<div class="text">
-							<p>Knight Foundation supports transformational ideas that promote quality journalism, advance media innovation, engage communities and foster the arts. The foundation believes that democracy thrives when people and communities are informed and engaged. For more, visit <a href="http://knightfoundation.org">KnightFoundation.org</a>.</p>
-						</div>
-						<div class="cl"> </div>
-					</li>
-				</ul>
-			</div>
-			{% endplaceholder %}
-		</div>
-
-{% comment %}
-<!--
-  <div class="sixcol">
-    {% placeholder column_one %}
-  </div>
-  <div class="sixcol last">
-    {% placeholder column_two %}
-  </div>
--->
-{% endcomment %} 
-{% endblock %}
+<div class="content-page container_12">
+  <section class="content-block homepage-header">
+    <div class="grid_6">
+      <h1 class="no-line">
+        {% placeholder header-content or %}
+          {% trans "Everyone's got a story to tell. Floodlight makes yours shine." %}
+        {% endplaceholder %}
+      </h1>
+      <p>
+        {% placeholder header-sub-content or %}
+          {% trans "Floodlight is an easy tool to create, post and share stories about community issues to inspire people to act." %}
+        {% endplaceholder %}
+      </p>
+      <p><a href="{% page_url "about" %}">{% trans "Find out more" %}&hellip;</a></p>
+      <p>
+        <a class="button create-your-story" href="{% url story_builder %}">
+          <strong>{% trans "Create Your Story" %}</strong><br>
+          ({% trans "requires a free Floodlight account" %})
+        </a>
+      </p>
+      <p>{% trans "Explore what others are posting on Floodlight" %}:</p>
+      <ul class="explore-others-posts">
+        <li>
+          <a href="{% url explore_stories %}"><img src="{{ STATIC_URL }}img/homepage-story-image.jpg"></a>
+          <h3><a href="{% url explore_stories %}">{% trans "Stories" %}</a></h3>
+          <p>
+            {% trans "From glimpses to in-depth explorations, see your community in a new light." %}
+          </p>
+        </li>
+        <li>
+          <a href="{% url project_list %}"><img src="{{ STATIC_URL }}img/homepage-project-image.jpg"></a>
+          <h3><a href="{% url project_list %}">{% trans "Projects" %}</a></h3>
+          <p>
+            {% trans "A project is a collection of stories about a common theme, place, issue or event." %}
+          </p>
+        </li>
+        <li>
+          <a href="{% url project_list %}"><img src="{{ STATIC_URL }}img/homepage-organization-image.jpg"></a>
+          <h3><a href="{% url organization_list %}">{% trans "Organizations" %}</a></h3>
+          <p>
+            {% trans "An organization is a group of people creating stories together." %}
+          </p>
+        </li>
+      </ul>
+    </div>
+    <div class="grid_6">
+      <div class="flexslider featured-on-floodlight">
+        {% featured_items %}
+      </div>
+    </div>
+  </section>
+  <section class="content-block latest-activity">
+    <div class="grid_4">
+      <h2>{% trans "Latest Stories" %}</h2>
+      {% latest_stories %}
+    </div>
+    <div class="grid_4">
+      <h2>{% trans "Latest Organizations" %}</h2>
+      {% latest_organizations %}
+    </div>
+    <div class="grid_4">
+      <h2>{% trans "Latest Projects" %}</h2>
+      {% latest_projects %}
+    </div>
+  </section>
+  <section class="content-block last supporting-foundations">
+    <h1 class="no-line">{% trans "Supporting Foundations" %}</h1>
+    {% placeholder supporting-foundations or %}
+    <div class="grid_3">
+      <ul class="foundations">
+        <li><a href="#" class="active">The Piton Foundation</a></li>
+        <li><a href="#">The Denver Foundation</a></li>
+        <li><a href="#">The Knight Foundation</a></li>
+      </ul>
+    </div>
+    <div class="grid_9 flexslider">
+      <ul class="slides">
+        <li>
+          <div class="image">
+            <a href="{% page_url "partners" %}">
+              <img src="{{ STATIC_URL }}img/piton-foundation-logo.jpg" alt=""/>
+            </a>
+          </div>
+          <div class="text">
+            <p>The Piton Foundation is a private, operating foundation established in 1976 by Denver oil man Sam Gary. The foundation provides opportunities for families and children in Denver to move from poverty and dependence to self-reliance. For more, visit <a href="http://piton.org">Piton.org</a>.</p>
+          </div>
+          <div class="cl"> </div>
+        </li>
+        <li>
+          <div class="image">
+            <a href="{% page_url "partners" %}">
+              <img src="{{ STATIC_URL }}img/denver-foundation-logo.gif" alt=""/>
+            </a>
+          </div>
+          <div class="text">
+            <p>Founded in 1925, The Denver Foundation is a community foundation serving Metro Denver, with the mission of inspiring people and mobilizing resources to strengthen the community.  The Denver Foundation three primary functions: stewarding an endowment to invest in meeting current and future needs for the community; managing more than 900 charitable funds for individuals, families and businesses; and working with the community and philanthropic leaders to address the core challenges that face Metro Denver. For more, visit <a href="http://denverfoundation.org">DenverFoundation.org</a>.</p>
+          </div>
+          <div class="cl"> </div>
+        </li>
+        <li>
+          <div class="image">
+            <a href="{% page_url "partners" %}">
+              <img src="{{ STATIC_URL }}img/knight-foundation-logo.jpg" alt=""/>
+            </a>
+          </div>
+          <div class="text">
+            <p>Knight Foundation supports transformational ideas that promote quality journalism, advance media innovation, engage communities and foster the arts. The foundation believes that democracy thrives when people and communities are informed and engaged. For more, visit <a href="http://knightfoundation.org">KnightFoundation.org</a>.</p>
+          </div>
+          <div class="cl"> </div>
+        </li>
+      </ul>
+    </div>
+    {% endplaceholder %}
+  </section>
+</div>
+{% endblock base_content %}
 
 {% block extrajs %}
 	<script src="{{ STATIC_URL }}js/libs/jquery.cycle.all.min.js"></script>

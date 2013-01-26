@@ -494,3 +494,76 @@ describe('DrawerView', function() {
     });
   });
 });
+
+describe('LicenseView', function() {
+  beforeEach(function() {
+    var MockStory = Backbone.Model.extend({
+        url: function() {
+          return '/api/0.1/stories/357c5885c4e844cb8a4cd4eebe912a1c/';
+        }
+    });
+    this.story = new MockStory({});
+    this.dispatcher = _.clone(Backbone.Events);
+  });
+
+  describe('when initialized with a model with a CC BY license', function() {
+    beforeEach(function() {
+      this.story.set('license', 'CC BY');
+      this.view = new storybase.builder.views.LicenseView({
+        dispatcher: this.dispatcher,
+        model: this.story
+      });
+    });
+
+    describe("and rendered", function() {
+      beforeEach(function() {
+        this.view.render();
+      });
+
+      it("sets the allow commercial radio button to yes", function() {
+        expect(this.view.$('[name="cc-allow-commercial"]:checked').val()). toEqual('y');
+      });
+
+      it("sets the allow modification radio button to yes", function() {
+        expect(this.view.$('[name="cc-allow-modification"]:checked').val()). toEqual('y');
+      });
+    });
+
+    describe("and the user sets the allow commercial radio button to no and the allow modification radio button to no", function() {
+      beforeEach(function() {
+        this.view.render();
+        this.view.$('[name="cc-allow-commercial"][value="n"]').prop('checked', true).trigger('change');
+        this.view.$('[name="cc-allow-modification"][value="n"]').prop('checked', true).trigger('change');
+      });
+
+      it("sets the model's license to 'CC BY-NC-ND'", function() {
+        expect(this.story.get('license')).toEqual("CC BY-NC-ND");
+      });
+    });
+  });
+
+  describe('when initialized with a model with a Creative Commons Attribution-NonComemrcial-ShareAlike license', function() {
+    beforeEach(function() {
+      this.licenseVal = 'CC BY-NC-SA';
+      this.story.set('license', this.licenseVal);
+      this.view = new storybase.builder.views.LicenseView({
+        dispatcher: this.dispatcher,
+        model: this.story
+      });
+    });
+
+    describe("and rendered", function() {
+      beforeEach(function() {
+        this.view.render();
+      });
+
+      it("sets the allow commercial radio button to no", function() {
+        expect(this.view.$('[name="cc-allow-commercial"]:checked').val()). toEqual('n');
+      });
+
+      it("sets the allow modification radio button to share-alike", function() {
+        expect(this.view.$('[name="cc-allow-modification"]:checked').val()). toEqual('sa');
+      });
+    });
+  });
+});

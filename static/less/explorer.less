@@ -3,12 +3,10 @@
   width: 100%;
 }
 
-.list-view .box { background:none; width:100%; padding-top:12px; padding-bottom:9px; border-top:1px dotted #7f7f7f;     }
+.list-view .box { background:none; width:100%; padding-top:12px; padding-bottom:9px; border-top:1px dotted @gray;     }
 .list-view .box img { float:left; display:inline; margin-right:16px; width:160px; margin-top:8px;  }
 .list-view .box .cnt { border-top:0 !important; margin-bottom:0 !important;  }
 .list-view .box  { min-height:20px;  }
-
-
 
 #filters.sticky {
   position: fixed;
@@ -47,7 +45,7 @@
 }
 
 #view-selector {
-  /* HACK: Provide min-height so first story clears the story count */
+  // HACK: Provide min-height so first story clears the story count
   min-height: 25px;
   text-align: right;
   padding: 0;
@@ -63,17 +61,16 @@
   list-style-type: none;
 }
 
-/*
-#story-list.tile .story {
-  float: left;
-  width: 100%;
-  margin: 10px 0;
-  border: 1px solid #ccc;
-  border-radius: 5px;
-  padding: 1%;
-  background: none repeat scroll 0 0 #eee;
-}
-*/
+//#story-list.tile .story {
+//  float: left;
+//  width: 100%;
+//  margin: 10px 0;
+//  border: 1px solid #ccc;
+//  border-radius: 5px;
+//  padding: 1%;
+//  background: none repeat scroll 0 0 #eee;
+//}
+
 #story-list .byline {
   font-style: italic;
 }
@@ -92,21 +89,21 @@
 }
 
 @media only screen and (min-width: 480px) {
-  /* Style adjustments for viewports 480px and over go here */
-/*
-  #story-list.tile .story {
-    width: 41%;
-  }
-*/
+// Style adjustments for viewports 480px and over go here
+//
+//  #story-list.tile .story {
+//    width: 41%;
+//  }
+//
 }
 
 @media only screen and (min-width: 768px) {
-  /* Style adjustments for viewports 480px and over go here */
-/*
-  #story-list.tile .story {
-    width: 21%;
-  }
-*/
+// Style adjustments for viewports 480px and over go here
+//
+//  #story-list.tile .story {
+//    width: 21%;
+//  }
+//
 }
 
 /* begin template rules */
@@ -144,7 +141,7 @@
 	font-size:13px;
 	color:#fbfaf2; 
 	font-family: 'MuseoSlab500Regular'; 
-	text-shadow:0 -1px 0 #605f5f; 
+	text-shadow:0 -1px #605f5f; 
 	line-height:34px;
 	height:34px;
 	padding-right:7px;
@@ -185,7 +182,8 @@
 #filters .field label {
 	display:none;
 }
-#filters .select2-container .select2-choice abbr { /* little "x" to clear a filter */
+#filters .select2-container .select2-choice abbr {
+        // little "x" to clear a filter
 	right:22px;
 	top:11px;
 	background-image:url(../img/select2.png);
@@ -200,7 +198,7 @@
 }
 
 h6.story-count {
-	color: #666666;
+	color: @gray;
 	display: inline;
 	float: left;
 	font-size: 22px;
@@ -237,12 +235,12 @@ ul#view-selector li.list-view a { background-position: -43px 0; }
 ul#view-selector li.list-view.active a { background-position: -43px -29px; }
 ul#view-selector li.map-view a { background-position: -86px 0; }
 ul#view-selector li.map-view.active a { background-position: -86px -29px; }
-ul#view-selector li.active a { color:#7f7f7f !important; }
+ul#view-selector li.active a { color:@gray !important; }
 ul#view-selector li a { 
 	position:absolute;
 	left:0; 
 	font-size:14px; 
-	color:#fe9703;
+	color: @orange;
 	font-style:normal;  
 	font-family: 'MuseoSlab500Regular'; 
 }
@@ -260,7 +258,7 @@ ul#view-selector li a {
 	width:222px; 
 	float:left;
 	padding:7px;
-	background:#f3f3f3;
+	background:@light-gray;
 	margin-bottom:11px;
 	margin-right:14px;
 	overflow:hidden;
@@ -269,7 +267,7 @@ ul#view-selector li a {
 	float:none;
 	width:100%;
 	background: none;
-	border-top: 1px dotted #7F7F7F;
+	border-top: 1px dotted @gray;
 	padding-bottom: 9px;
 	padding-top: 12px;
 	margin-bottom: 11px;
@@ -281,7 +279,7 @@ ul#view-selector li a {
 	padding-top:8px;
 	background:none;
 	font-size:16px;
-	color:#03ccfe;
+	color:@highlight-blue;
 	line-height:16px;
 }
 #map-container .leaflet-popup-content-wrapper, 
@@ -318,13 +316,13 @@ ul#view-selector li a {
 #story-list li.story p,
 #map-container .leaflet-popup .story p,
 #show-more {
-	color:#5a5a5a;
+	color:@dark-gray;
 }
 #story-list li.story p.cnt {
-	color:#5a5a5a; 
+	color:@dark-gray; 
 	padding-top:6px; 
 	margin-top:6px;
-	border-top:1px dotted #5a5a5a;
+	border-top:1px dotted @dark-gray;
 	margin-bottom:15px;
 }
 #story-list li.story a {
@@ -344,7 +342,7 @@ ul#view-selector li a {
 }
 #story-list li.story a:hover em.hover {  background:url('../img/over.png') no-repeat 0 0; }
 #story-list li.story .story-attributes { margin-top: 10px; }
-/*#story-list.list li.story .story-attributes { margin-left: 238px; }*/
+//#story-list.list li.story .story-attributes { margin-left: 238px; }
 .story .story-attributes dt {
 	font-weight:bold;
 }

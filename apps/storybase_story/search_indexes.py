@@ -17,7 +17,7 @@ class GeoHashMultiValueField(indexes.MultiValueField):
 class TextSpellField(indexes.CharField):
     field_type = 'textSpell'
 
-class StoryIndex(indexes.RealTimeSearchIndex, indexes.Indexable):
+class StoryIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
     author = indexes.FacetCharField(model_attr='author')
     published = indexes.FacetDateTimeField(model_attr='published')

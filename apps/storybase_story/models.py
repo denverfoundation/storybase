@@ -35,6 +35,26 @@ from storybase_taxonomy.models import TaggedItem
 
 class StoryPermission(PermissionMixin):
     """Permissions for the Story model"""
+    def anonymoususer_can_view(self, user):
+        if self.status == 'published':
+            return True
+
+        return False
+
+    def user_can_view(self, user):
+        from storybase_user.utils import is_admin
+
+        if self.status == 'published':
+            return True
+
+        if self.author == user:
+            return True
+
+        if user.is_superuser or is_admin(user):
+            return True
+
+        return False
+
     def user_can_change(self, user):
         from storybase_user.utils import is_admin
 
@@ -152,6 +172,11 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
     class Meta:
         """Model metadata options"""
         verbose_name_plural = "stories"
+
+    def __init__(self, *args, **kwargs):
+        # Set a default license for Story objects
+        kwargs.setdefault('license', 'CC BY')
+        super(Story, self).__init__(*args, **kwargs)
 
     def get_structure_obj(self):
         """Return a structure object for the story"""
@@ -488,6 +513,25 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
         })
 
         return metadata
+
+    def normalize_for_view(self, img_width):
+        """Return attributes as a dictionary for use in a view context
+        
+        This allows using the same template across different models with
+        differently-named attributes that hold similar information.
+
+        """
+        return {
+            "type": _("Story"),
+            "title": self.title,
+            "author": self.contributor_name, 
+            "date": self.created, 
+            "image_html": self.render_featured_asset(width=img_width), 
+            "excerpt": self.summary,
+            "url": self.get_absolute_url(),
+            "more_link_text": _("View All Stories"),
+            "more_link_url": urlresolvers.reverse("explore_stories"),
+        }
 
 
 def set_story_slug(sender, instance, **kwargs):

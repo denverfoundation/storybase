@@ -20,33 +20,35 @@
         </tr>
     </thead>
     <tbody>
-    {% for story in stories_list %}
+       {% for story in stories_list %}
         <tr>
             <td><a class="view"  href="{{ story.get_absolute_url }}">{{ story }}</a></td>
             <td class="last-edited">{{ story.last_edited }}</td>
             <td>
               <span class="status">{{ story.status|capfirst }}</span>
             </td>
-              {% if story.status == 'published' %}
-                <td class="action">
-                  <a class="button gray unpublish" href="{{ story.get_absolute_url }}unpublish/">Unpublish</a>
-                </td>
-              {% endif %}
-              {% if story.status == 'draft' and not story.never_published %}
-                <td class="action">
-                  <a class="button gray publish" href="{{ story.get_absolute_url }}publish/">Publish</a>
-                </td>
-              {% endif %}
-              {% if story.status != 'deleted' %}
-                <td class="action">
-                  <a class="button gray delete" href="{{ story.get_absolute_url }}delete/">Delete</a>
-                </td>
-              {% endif %}
+            {% if story.status == 'published' %}
+            <td class="action">
+              <a class="button gray unpublish" href="{{ story.get_absolute_url }}unpublish/">Unpublish</a>
+            </td>
+            {% else %}{% if story.status == 'draft' and not story.never_published %}
+            <td class="action">
+              <a class="button gray publish" href="{{ story.get_absolute_url }}publish/">Publish</a>
+            </td>
+            {% else %} 
+            <td></td>
+            {% endif %}
+            {% endif %}
+            {% if story.status != 'deleted' %}
+            <td class="action">
+              <a class="button gray delete" href="{{ story.get_absolute_url }}delete/">Delete</a>
+            </td>
+            {% endif %}
             <td class="action">
               <a class="button hot build" href="{{ story.builder_url }}">{% trans "Build" %}</a>
             </td>
         </tr>
-    {% endfor %}
+        {% endfor %}
     </tbody>
 </table>
 {% else %}

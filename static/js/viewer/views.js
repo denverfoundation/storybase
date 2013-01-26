@@ -90,27 +90,29 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
     // Do nothing. Subclasses might want to implement this to do some work
   },
   
-  sizeFigCaptionForImg: function(imgEl) {
-    this.$(imgEl).next('figcaption').width($(imgEl).width());
+  sizeFigCaption: function(el) {
+    this.$(el).next('figcaption').width($(el).width());
+    // Resize the figure element as well
+    this.$(el).parent('figure').width($(el).width());
   },
   
   sizeFigCaptions: function() {
     // we don't seem to get load events on images
     // even under a hard refresh.
     var view = this;
-    this.$('figure img').each(function() {
+    this.$('figure img, figure iframe').each(function() {
       if (this.width) {
-        view.sizeFigCaptionForImg(this);
+        view.sizeFigCaption(this);
       }
       // however, set up a handler anyway.
       $(this).on('load', function() {
-        view.sizeFigCaptionForImg(this);
+        view.sizeFigCaption(this);
       });
     });
   },
   
   handleImgResize: function(event) {
-    this.sizeFigCaptionForImg(event.target);
+    this.sizeFigCaption(event.target);
   },
 
   toggleToc: function(evt) {
