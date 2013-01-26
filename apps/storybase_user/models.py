@@ -22,8 +22,8 @@ from uuidfield.fields import UUIDField
 
 from storybase.fields import ShortTextField
 from storybase.managers import FeaturedManager
-from storybase.models import (DirtyFieldsMixin, PublishedModel,
-        TimestampedModel, TranslatedModel, TranslationModel)
+from storybase.models import (DirtyFieldsMixin, PermissionMixin,
+        PublishedModel, TimestampedModel, TranslatedModel, TranslationModel)
                              
 from storybase.utils import full_url, unique_slugify
 from storybase_asset.models import (DefaultImageMixin, FeaturedAssetsMixin,
@@ -117,6 +117,25 @@ class MembershipUtilsMixin(object):
         }
         return self.members.filter(**filter_kwargs)
 
+
+class PermissionBase(PermissionMixin):
+    def anonymoususer_can_view(self, user):
+        if self.status == 'published':
+            return True
+
+        return False
+
+    def user_can_view(self, user):
+        from storybase_user.utils import is_admin
+
+        if self.status == 'published':
+            return True
+
+        if user.is_superuser or is_admin(user):
+            return True
+
+        return False
+
         
 class OrganizationTranslation(TranslationModel, TimestampedModel):
     organization = models.ForeignKey('Organization')
@@ -130,7 +149,7 @@ class OrganizationTranslation(TranslationModel, TimestampedModel):
         return self.name
 
 
-class Organization(MembershipUtilsMixin, FeaturedAssetsMixin, 
+class Organization(PermissionBase, MembershipUtilsMixin, FeaturedAssetsMixin,
         RecentStoriesMixin, FeaturedStoriesMixin, DirtyFieldsMixin,
         PublishedModel, TranslatedModel, TimestampedModel):
     """ An organization or a community group that users and stories can be associated with. """
@@ -284,9 +303,9 @@ class ProjectTranslation(TranslationModel):
         return self.name
 
 
-class Project(MembershipUtilsMixin, FeaturedAssetsMixin, RecentStoriesMixin,
-        FeaturedStoriesMixin, DirtyFieldsMixin, PublishedModel,
-        TranslatedModel, TimestampedModel):
+class Project(PermissionBase, MembershipUtilsMixin, FeaturedAssetsMixin, 
+        RecentStoriesMixin, FeaturedStoriesMixin, DirtyFieldsMixin, 
+        PublishedModel, TranslatedModel, TimestampedModel):
     """ 
     A project that collects related stories.  
     

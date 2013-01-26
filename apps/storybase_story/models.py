@@ -35,6 +35,26 @@ from storybase_taxonomy.models import TaggedItem
 
 class StoryPermission(PermissionMixin):
     """Permissions for the Story model"""
+    def anonymoususer_can_view(self, user):
+        if self.status == 'published':
+            return True
+
+        return False
+
+    def user_can_view(self, user):
+        from storybase_user.utils import is_admin
+
+        if self.status == 'published':
+            return True
+
+        if self.author == user:
+            return True
+
+        if user.is_superuser or is_admin(user):
+            return True
+
+        return False
+
     def user_can_change(self, user):
         from storybase_user.utils import is_admin
 
