@@ -88,11 +88,11 @@ class PermissionTestCase(TestCase):
         self.user2 = User.objects.create_user("test2", "test2@example.com",
                                               "test2")
         self.admin_user = User.objects.create_user(
-                'test_admin_user@floodlightproject.org',
+                'test_admin',
                 'test_admin_user@floodlightproject.org', 'password')
         self.admin_user.groups.add(self.admin_group)
         self.superuser = User.objects.create_user(
-                'test_superuser@floodlightproject.org',
+                'test_superuser',
                 'test_superuser@floodlightproject.org', 'password')
         self.superuser.is_superuser = True
         self.superuser.save()
