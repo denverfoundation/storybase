@@ -4,6 +4,8 @@ from datetime import datetime
 from urlparse import urlparse
 
 import django.conf
+from django.contrib.auth.models import (AnonymousUser,
+        Group, User)
 from django.test import TestCase
 from django.test.client import FakePayload
 
@@ -76,6 +78,27 @@ class SettingsChangingTestCase(TestCase):
         for key, value in self._old_settings.items():
             setattr(settings_module, key, value)
 
+
+class PermissionTestCase(TestCase):
+    def setUp(self):
+        super(PermissionTestCase, self).setUp()
+        self.admin_group = Group.objects.create(name=django.conf.settings.ADMIN_GROUP_NAME)
+        self.user1 = User.objects.create_user("test1", "test1@example.com",
+                                              "test1")
+        self.user2 = User.objects.create_user("test2", "test2@example.com",
+                                              "test2")
+        self.admin_user = User.objects.create_user(
+                'test_admin',
+                'test_admin_user@floodlightproject.org', 'password')
+        self.admin_user.groups.add(self.admin_group)
+        self.superuser = User.objects.create_user(
+                'test_superuser',
+                'test_superuser@floodlightproject.org', 'password')
+        self.superuser.is_superuser = True
+        self.superuser.save()
+        self.anonymous_user = AnonymousUser()
+
+
 class FixedTestApiClient(TestApiClient):
     """
     Version of TestApiClient that fixes the patch() method
@@ -130,4 +153,3 @@ class FixedTestApiClient(TestApiClient):
         }
         r.update(kwargs)
         return self.client.request(**r)
-

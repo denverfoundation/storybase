@@ -56,7 +56,7 @@ class AccountStoriesView(TemplateView):
 
     def get_context_data(self, **kwargs):
       context = super(AccountStoriesView, self).get_context_data(**kwargs)
-      context["stories_list"] = self.request.user.stories.exclude(status='deleted')
+      context["stories_list"] = self.request.user.stories.exclude(status='deleted').order_by('-last_edited')
       return context
 
     @method_decorator(login_required)

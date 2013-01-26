@@ -16,7 +16,8 @@ from tastypie.bundle import Bundle
 from tastypie.test import ResourceTestCase
 
 from storybase.admin import toggle_featured
-from storybase.tests.base import SloppyComparisonTestMixin, FixedTestApiClient
+from storybase.tests.base import (SloppyComparisonTestMixin, 
+        PermissionTestCase, FixedTestApiClient)
 from storybase.utils import slugify
 from storybase_asset.models import (Asset, HtmlAsset, HtmlAssetTranslation,
         create_html_asset, create_external_asset)
@@ -422,18 +423,58 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
 
 
 
-class StoryPermissionTest(TestCase):
+class StoryPermissionTest(PermissionTestCase):
     """Test case for story permissions"""
     def setUp(self):
-        from django.contrib.auth.models import Group
-        self.admin_group = Group.objects.create(name=settings.ADMIN_GROUP_NAME)
-        self.user1 = User.objects.create_user("test1", "test1@example.com",
-                                              "test1")
-        self.user2 = User.objects.create_user("test2", "test2@example.com",
-                                              "test2")
+        super(StoryPermissionTest, self).setUp()
         self.story = create_story(title="Test Story", summary="Test Summary",
                                   byline="Test Byline", status='published',
                                   author=self.user1)
+
+    def test_user_can_view(self):
+        # Make the story a draft
+        self.story.status = 'draft'
+        self.story.save()
+
+        # Test author can view their own draft story
+        self.assertTrue(self.story.user_can_view(self.user1))
+
+        # Test another user cannot view a draft story created by
+        # another user
+        self.assertFalse(self.story.user_can_view(self.user2))
+
+        # Test an admin user can view another user's draft story
+        self.assertTrue(self.story.user_can_view(self.admin_user))
+
+        # Test that a super user can view another user's draft story
+        self.assertTrue(self.story.user_can_view(self.superuser))
+
+        # Publish the story to set up for next tests
+        self.story.status = 'published'
+        self.story.save()
+        
+        # Test that author can view a published story
+        self.assertTrue(self.story.user_can_view(self.user1))
+
+        # Test that another user can view a published story
+        self.assertTrue(self.story.user_can_view(self.user2))
+
+    def test_anonymoususer_can_view(self):
+        # Make the story a draft
+        self.story.status = 'draft'
+        self.story.save()
+
+        # An anonymous user can't view a draft story
+        self.assertFalse(
+                self.story.anonymoususer_can_view(self.anonymous_user))
+
+        # Make the story published
+        self.story.status = 'published'
+        self.story.save()
+
+        # An anonymous user can view a published story
+        self.assertTrue(
+                self.story.anonymoususer_can_view(self.anonymous_user))
 
     def test_user_can_change_as_author(self):
         """Test that author has permissions to change their story"""
@@ -445,17 +486,11 @@ class StoryPermissionTest(TestCase):
 
     def test_user_can_change_superuser(self):
         """Test that a superuser can change another user's story"""
-        self.assertFalse(self.story.user_can_change(self.user2))
-        self.user2.is_superuser = True
-        self.user2.save()
-        self.assertTrue(self.story.user_can_change(self.user2))
+        self.assertTrue(self.story.user_can_change(self.superuser))
 
     def test_user_can_change_admin(self):
         """Test that a member of the admin group can change another user's story"""
-        self.assertFalse(self.story.user_can_change(self.user2))
-        self.user2.groups.add(self.admin_group)
-        self.user2.save()
-        self.assertTrue(self.story.user_can_change(self.user2))
+        self.assertTrue(self.story.user_can_change(self.admin_user))
 
     def test_user_can_change_inactive(self):
         """Test that an inactive user can't change their own story"""

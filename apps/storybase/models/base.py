@@ -52,6 +52,7 @@ class PublishedModel(models.Model):
     STATUS = (
         (u'pending', u'pending'),
         (u'draft', u'draft'),
+        (u'staged', u'staged'),
         (u'published', u'published'),
     )
 

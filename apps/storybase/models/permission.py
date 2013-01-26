@@ -8,7 +8,8 @@ class PermissionMixin(object):
             return True
 
     def has_perm(self, actor, perm):
-        func_name = "%s_can_%s" % (actor.__class__.__name__.lower(), perm)
+        actor_class_name = actor.__class__.__name__.lower()
+        func_name = "%s_can_%s" % (actor_class_name, perm)
         func = getattr(self, func_name, None)
         if func is not None:
             return func(actor)
