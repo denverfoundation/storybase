@@ -63,7 +63,7 @@ class StoryIndex(indexes.SearchIndex, indexes.Indexable):
         prepared_data['suggestions'] = prepared_data['text']
         return prepared_data
 
-    def index_queryset(self):
+    def index_queryset(self, using=None):
         """
         Get the default QuerySet to index when doing a full update.
 
