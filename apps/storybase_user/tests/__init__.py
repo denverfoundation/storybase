@@ -9,6 +9,7 @@ from django.test import TestCase
 from django.test.client import Client
 from django.utils import translation
 
+from storybase.tests.base import PermissionTestCase
 from storybase.utils import slugify
 from storybase_asset.models import create_external_asset
 from storybase_story.models import create_story
@@ -16,8 +17,8 @@ from storybase_user.auth.forms import ChangeUsernameEmailForm
 from storybase_user.forms import OrganizationModelForm
 from storybase_user.models import (create_organization, create_project,
     Organization, OrganizationMembership, OrganizationStory, 
-    OrganizationTranslation, Project, ProjectStory, ProjectTranslation,
-    ADMIN_GROUP_NAME, send_approval_notification)
+    OrganizationTranslation, Project, ProjectMembership, ProjectStory,
+    ProjectTranslation, ADMIN_GROUP_NAME, send_approval_notification)
 from storybase_user.tests.base import CreateViewTestMixin
 from storybase_user.utils import is_admin, get_admin_emails, send_admin_mail
 from storybase_user.views import CreateOrganizationView, CreateProjectView
@@ -145,6 +146,49 @@ class ChangeUsernameEmailFormTest(TestCase):
         self.assertTrue(form.is_valid())
         form.save()
         self.assertEqual(form.previous_data['email'], old_email)
+
+
+class OrganizationPermissionTest(PermissionTestCase):
+    def test_user_can_view(self):
+        org = create_organization(name="Test Organization", 
+                status='pending')
+        OrganizationMembership.objects.create(user=self.user1, organization=org,
+                member_type='owner')
+
+        # Test owner cannot view their own pending organization
+        self.assertFalse(org.user_can_view(self.user1))
+
+        # Test non-owner cannot view a pending organization
+        self.assertFalse(org.user_can_view(self.user2))
+
+        # Test an admin user can view another user's pending organization
+        self.assertTrue(org.user_can_view(self.admin_user))
+
+        # Test that a super user can view another user's pending organization 
+        self.assertTrue(org.user_can_view(self.superuser))
+
+        # Publish the organization to set up for next tests
+        org.status = 'published'
+        org.save()
+        
+        # Test that owner can view a published organization 
+        self.assertTrue(org.user_can_view(self.user1))
+
+        # Test that another user can view a published organization 
+        self.assertTrue(org.user_can_view(self.user2))
+
+    def test_anonymoususer_can_view(self):
+        org = create_organization(name="Test Organization", 
+                status='pending')
+
+        # An anonymous user can't view a pending organization
+        self.assertFalse(org.anonymoususer_can_view(self.anonymous_user))
+
+        org.status = 'published'
+        org.save()
+
+        # An anonymous user can view a published organization
+        self.assertTrue(org.anonymoususer_can_view(self.anonymous_user))
 
 
 class OrganizationModelTest(TestCase):
@@ -334,6 +378,49 @@ class OrganizationApiTest(TestCase):
         self.assertEqual(retrieved_org.name, name)
         self.assertEqual(retrieved_org.description, description)
         self.assertEqual(retrieved_org.website_url, website_url)
+
+
+class ProjectPermissionTest(PermissionTestCase):
+    def test_user_can_view(self):
+        proj = create_project(name="Test Project", status='pending')
+        ProjectMembership.objects.create(user=self.user1, project=proj,
+                member_type='owner')
+
+        # Test owner cannot view their own pending Project
+        self.assertFalse(proj.user_can_view(self.user1))
+
+        # Test non-owner cannot view a pending Project
+        self.assertFalse(proj.user_can_view(self.user2))
+
+        # Test an admin user can view another user's pending Project
+        self.assertTrue(proj.user_can_view(self.admin_user))
+
+        # Test that a super user can view another user's pending Project 
+        self.assertTrue(proj.user_can_view(self.superuser))
+
+        # Publish the Project to set up for next tests
+        proj.status = 'published'
+        proj.save()
+        
+        # Test that owner can view a published Project 
+        self.assertTrue(proj.user_can_view(self.user1))
+
+        # Test that another user can view a published Project 
+        self.assertTrue(proj.user_can_view(self.user2))
+
+    def test_anonymoususer_can_view(self):
+        proj = create_project(name="Test Project", 
+                status='pending')
+
+        # An anonymous user can't view a pending project
+        self.assertFalse(proj.anonymoususer_can_view(self.anonymous_user))
+
+        proj.status = 'published'
+        proj.save()
+
+        # An anonymous user can view a published project 
+        self.assertTrue(proj.anonymoususer_can_view(self.anonymous_user))
+
 
 class ProjectModelTest(TestCase):
     def test_auto_slug(self):

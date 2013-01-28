@@ -10,13 +10,36 @@ from filer.models import Image
 from storybase.managers import FeaturedManager
 from storybase.utils import unique_slugify
 from storybase.fields import ShortTextField
-from storybase.models import (PublishedModel, TimestampedModel, 
-        TranslatedModel, TranslationModel, set_date_on_published)
+from storybase.models import (PermissionMixin, PublishedModel,
+        TimestampedModel, TranslatedModel, TranslationModel, 
+        set_date_on_published)
 from storybase_user.utils import format_user_name
-       
 
 class List(CMSPlugin):
     num_items = models.IntegerField(default=3)
+
+
+class NewsItemPermission(PermissionMixin):
+    """Permissions for the NewsItem model"""
+    def user_can_view(self, user):
+        from storybase_user.utils import is_admin
+
+        if self.status == 'published':
+            return True
+
+        if self.author == user:
+            return True
+
+        if user.is_superuser or is_admin(user):
+            return True
+
+        return False
+
+    def anonymoususer_can_view(self, user):
+        if self.status == 'published':
+            return True
+
+        return False
 
 
 class NewsItemTranslation(TranslationModel):
@@ -33,7 +56,8 @@ class NewsItemTranslation(TranslationModel):
         return self.title
 
 
-class NewsItem(PublishedModel, TimestampedModel, TranslatedModel):
+class NewsItem(NewsItemPermission, PublishedModel, TimestampedModel, 
+        TranslatedModel):
     author = models.ForeignKey(User, related_name="news_items", blank=True,
                                null=True)
     slug = models.SlugField(blank=True)
@@ -78,17 +102,24 @@ pre_save.connect(set_date_on_published, sender=NewsItem)
 post_save.connect(set_slug, sender=NewsItemTranslation)
 
 
-def create_news_item(title, body, image, image_filename=None,
+def create_news_item(title, body, image=None, image_filename=None,
         language=settings.LANGUAGE_CODE, **kwargs):
     """Convenience function for creating a NewsItem"""
-    image_file = File(image, name=image_filename)
-    image_model = Image.objects.create(owner=kwargs.get('owner', None),
-                                 original_filename=image_filename,
-                                 file=image_file)
+    translation_kwargs = {
+        'title': title,
+        'body': body,
+        'language': language
+    }
+    if image:
+        image_file = File(image, name=image_filename)
+        translation_kwargs['image'] = Image.objects.create(
+                owner=kwargs.get('owner', None),
+                original_filename=image_filename,
+               file=image_file)
     obj = NewsItem(**kwargs)
     obj.save()
-    translation = NewsItemTranslation(news_item=obj, title=title, body=body,
-            image=image_model, language=language)
+    translation_kwargs['news_item'] = obj
+    translation = NewsItemTranslation(**translation_kwargs)
     translation.save()
     return obj
 

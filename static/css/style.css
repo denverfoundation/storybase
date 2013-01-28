@@ -430,6 +430,7 @@ body.base-template.homepage .featured-on-floodlight .featured-type{color:#999999
 body.base-template.homepage .featured-on-floodlight .slides li{padding-top:1em;}body.base-template.homepage .featured-on-floodlight .slides li .title,body.base-template.homepage .featured-on-floodlight .slides li .image,body.base-template.homepage .featured-on-floodlight .slides li .text{padding:0 76px;}
 body.base-template.homepage .featured-on-floodlight .slides li .text{margin-top:.5em;}
 body.base-template.homepage .featured-on-floodlight .slides li .title{margin-top:-0.5em;}
+body.base-template.homepage .featured-on-floodlight .slides li .image{position:relative;height:200px;overflow:hidden;}body.base-template.homepage .featured-on-floodlight .slides li .image img{position:absolute;}
 body.base-template.homepage .latest li{overflow:hidden;padding-bottom:.5em;}
 body.base-template.homepage .latest .img-wrapper{display:block;float:left;width:100px;height:60px;margin-right:.5em;position:relative;overflow:hidden;border:1px solid #d7d5d5;}body.base-template.homepage .latest .img-wrapper img{position:absolute;max-width:100px;}
 body.base-template .breadcrumbs{height:38px;background:url('../img/br-bg.png') repeat-x 0 0;margin-bottom:35px;}
@@ -448,7 +449,6 @@ body.base-template ul.social li.facebook a{background-position:-67px 0;}
 body.base-template #slideContainer .back{width:26px;height:46px;background:url('../img/slider-arrows3.png') no-repeat 0 0;display:block;font-size:0;line-height:0;text-indent:-4000px;position:absolute;top:74px;left:76px;z-index:500;}
 body.base-template #slideContainer .forward{width:26px;height:46px;background:url('../img/slider-arrows3.png') no-repeat right 0;display:block;font-size:0;line-height:0;text-indent:-4000px;position:absolute;top:74px;right:0;z-index:500;}
 body.base-template p.byline{font-size:0.9em;color:#777777;font-style:italic;margin-bottom:0.9em;overflow:hidden;}
-body.base-template a.more{color:#fe9703;font-family:'MuseoSlab500Regular';margin-top:15px;}
 body.base-template #main .col h4{background:url('../img/h3-line.png') repeat-x 0 8px;margin-bottom:10px;line-height:1em;margin-bottom:20px;}body.base-template #main .col h4 span{background:#fff;padding-left:16px;padding-right:16px;}
 body.base-template #main .col h4 span{background:#fff;padding-right:10px;padding-left:10px;}
 body.base-template #main .col ul{width:335px;margin:0 auto;}
