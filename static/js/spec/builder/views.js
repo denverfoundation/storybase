@@ -495,9 +495,18 @@ describe('DrawerView', function() {
   });
 });
 
+var MockStory = Backbone.Model.extend({
+  // Mock story's save method so it doesn't try to do a request,
+  save: function(attributes, options) {
+    _.each(attributes, function(val, key) {
+      this.set(key, val);
+    }, this);
+    return true;
+  }
+});
+
 describe('PublishButtonView', function() {
   beforeEach(function() {
-    var MockStory = Backbone.Model.extend();
     var MockTodoView = Backbone.View.extend({
       ready: function() {
         return false;
@@ -602,14 +611,6 @@ describe('PublishButtonView', function() {
   describe('when the user clicks the "Publish" button', function() {
     beforeEach(function() {
       this.story.set('status', 'draft');
-      // Mock story's save method so it doesn't try to do a request,
-      // but does update the model attributes
-      this.story.save = function(attributes, options) {
-        _.each(attributes, function(val, key) {
-          this.set(key, val);
-        }, this);
-        return true;
-      };
       this.todoView.ready = function() {
         return true;
       };
@@ -635,7 +636,6 @@ describe('PublishButtonView', function() {
 
 describe('PublishTodoView', function() {
   beforeEach(function() {
-    var MockStory = Backbone.Model.extend();
     this.MockCompletedView = Backbone.View.extend({
       completed: function() {
         return true;
@@ -710,6 +710,73 @@ describe('PublishTodoView', function() {
       expect(this.view.$el.html()).toContain(this.subview1.options.title);
       expect(this.view.$el.html()).toNotContain(this.subview2.options.title);
       expect(this.view.$el.html()).toNotContain(this.subview4.options.title);
+    });
+  });
+});
+
+describe('PublishedButtonsView', function() {
+  beforeEach(function() {
+    this.story = new MockStory();
+    this.dispatcher = _.clone(Backbone.Events);
+    this.view = new storybase.builder.views.PublishedButtonsView({
+      model: this.story,
+      dispatcher: this.dispatcher
+    });
+    $('#sandbox').append(this.view.$el);
+  });
+
+  afterEach(function() {
+    this.view.remove();
+  });
+
+  describe("when its story is unpublished", function() {
+    beforeEach(function() {
+      this.story.set('status', 'draft');
+    });
+
+    it('has a hidden rendered element', function() {
+      expect(this.view.render().$el.is(':visible')).toBeFalsy();
+    });
+  });
+
+  describe("when its story is published", function() {
+    beforeEach(function() {
+      this.story.set('status', 'published');
+    });
+
+    it('has a visible rendered element', function() {
+      expect(this.view.render().$el.is(':visible')).toBeTruthy();
+    });
+
+    it('has a "View" button', function() {
+      expect(this.view.render().$('a,button').filter(':contains("View")').length).toEqual(1);
+    });
+
+    it('has a "Unpublish" button', function() {
+      expect(this.view.render().$('a,button').filter(':contains("Unpublish")').length).toEqual(1);
+    });
+
+    describe("clicking on the unpublish button", function() {
+      beforeEach(function() {
+        this.view.render().$('a,button').filter(':contains("Unpublish")').click();
+      });
+
+      it('should set the story status to "draft"', function() {
+        expect(this.story.get('status')).toEqual('draft');
+      });
+    });
+
+    describe("clicking on the view button", function() {
+      beforeEach(function() {
+        var $button = this.view.render().$('a,button').filter(':contains("View")');
+        spyOn(window, 'open');
+        $button.click();
+        this.url = $button.attr('href'); 
+      });
+
+      it('opens the story in a new window', function() {
+        expect(window.open).toHaveBeenCalledWith(this.url);
+      });
     });
   });
 });
@@ -808,12 +875,7 @@ describe('LegalView', function() {
 
 describe('LicenseView', function() {
   beforeEach(function() {
-    var MockStory = Backbone.Model.extend({
-        url: function() {
-          return '/api/0.1/stories/357c5885c4e844cb8a4cd4eebe912a1c/';
-        }
-    });
-    this.story = new MockStory({});
+    this.story = new MockStory();
     this.dispatcher = _.clone(Backbone.Events);
   });
 
