@@ -1,0 +1,20 @@
+[
+    {
+        "fields": {
+            "date_joined": "2012-12-23T16:05:58.491", 
+            "email": "admin@floodlightproject.org", 
+            "first_name": "", 
+            "groups": [], 
+            "is_active": true, 
+            "is_staff": true, 
+            "is_superuser": true, 
+            "last_login": "2013-01-18T17:22:39.139", 
+            "last_name": "", 
+            "password": "sha1$d4763$f9a2a600934a6573658987b84c82e26a18bd8ff7", 
+            "user_permissions": [], 
+            "username": "admin"
+        }, 
+        "model": "auth.user", 
+        "pk": 1
+    }
+]

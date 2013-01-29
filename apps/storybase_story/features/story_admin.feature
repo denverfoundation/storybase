@@ -43,6 +43,22 @@ Feature: Editing stories in Django Admin
 
     # Acceptance test #T0003
     Scenario: Access the English canonical URL for a Story with an English translation
+        Given the admin user is logged in
+        Given the Story "Transportation Challenges Limit Education Choices for Denver Parents" has been created 
+        Given the Organization "Mile High Connects" has been created
+        Given the Project "The Metro Denver Regional Equity Atlas" has been created
+        Given the Story "Transportation Challenges Limit Education Choices for Denver Parents" has the following summary: 
+            """
+            Many families in the Denver metro area use public
+            transportation instead of a school bus because for them, a
+            quality education is worth hours of daily commuting. Colorado's
+            school choice program is meant to foster educational equity,
+            but the families who benefit most are those who have time and
+            money to travel. Low-income families are often left in a lurch.
+            """
+        Given the Story "Transportation Challenges Limit Education Choices for Denver Parents" has the byline "Mile High Connects" 
+        Given the Organization "Mile High Connects" is associated with the Story "Transportation Challenges Limit Education Choices for Denver Parents"
+        Given the Project "The Metro Denver Regional Equity Atlas" is associated with the Story "Transportation Challenges Limit Education Choices for Denver Parents"
         Given the Story "Transportation Challenges Limit Education Choices for Denver Parents" exists in the Django admin
         Given the user navigates to the Story's "English" detail page
         Then the Story's summary is listed as the following:
@@ -62,12 +78,26 @@ Feature: Editing stories in Django Admin
 
     # Accepance test #T0003
     Scenario: Acess the Spanish canonical URL for a Story with only an English translation 
+        Given the admin user is logged in
+        Given the Story "Transportation Challenges Limit Education Choices for Denver Parents" has been created 
         Given the Story "Transportation Challenges Limit Education Choices for Denver Parents" exists in the Django admin
         Given the user navigates to the Story's "Spanish" detail page
         Then the user is redirected to the Story's "English" detail page
 
     # Acceptance test #T0004
     Scenario: Publish a story
+        Given the admin user is logged in
+        Given the Story "Transportation Challenges Limit Education Choices for Denver Parents" has been created 
+        Given the Story "Transportation Challenges Limit Education Choices for Denver Parents" has the following summary: 
+            """
+            Many families in the Denver metro area use public
+            transportation instead of a school bus because for them, a
+            quality education is worth hours of daily commuting. Colorado's
+            school choice program is meant to foster educational equity,
+            but the families who benefit most are those who have time and
+            money to travel. Low-income families are often left in a lurch.
+            """
+        Given the Story "Transportation Challenges Limit Education Choices for Denver Parents" has the byline "Mile High Connects" 
         Given the Story "Transportation Challenges Limit Education Choices for Denver Parents" exists in the Django admin
         Given the user visits the admin edit page for Story "Transportation Challenges Limit Education Choices for Denver Parents"
         Given the user sets Status to "published"
@@ -77,6 +107,18 @@ Feature: Editing stories in Django Admin
 
     # Acceptance test #T0005
     Scenario: Change story metadata
+        Given the admin user is logged in
+        Given the Story "Transportation Challenges Limit Education Choices for Denver Parents" has been created 
+        Given the Story "Transportation Challenges Limit Education Choices for Denver Parents" has the following summary: 
+            """
+            Many families in the Denver metro area use public
+            transportation instead of a school bus because for them, a
+            quality education is worth hours of daily commuting. Colorado's
+            school choice program is meant to foster educational equity,
+            but the families who benefit most are those who have time and
+            money to travel. Low-income families are often left in a lurch.
+            """
+        Given the Story "Transportation Challenges Limit Education Choices for Denver Parents" has the byline "Mile High Connects" 
         Given the Story "Transportation Challenges Limit Education Choices for Denver Parents" exists in the Django admin
         Given the user visits the admin edit page for Story "Transportation Challenges Limit Education Choices for Denver Parents"
         Given the user sets the "English" "title" of the "Story" to "Education and Transportation: Challenges and Opportunities for Equity"

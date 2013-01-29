@@ -3029,7 +3029,8 @@ class StoryExploreResourceTest(ResourceTestCase):
 
 
 class StoryTemplateResourceTest(ResourceTestCase):
-    fixtures = ['section_layouts.json', 'story_templates.json']
+    fixtures = ['admin_user.json', 'section_layouts.json', 
+                'story_templates.json']
 
     def setUp(self):
         super(StoryTemplateResourceTest, self).setUp()
