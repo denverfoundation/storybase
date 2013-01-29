@@ -279,12 +279,12 @@ describe('Asset model', function() {
         type: 'text'
       });
       this.spy = jasmine.createSpy();
-      this.model.on("error", this.spy);
+      this.model.on("invalid", this.spy);
     });
 
     it('should fail validation', function() {
-      this.model.set('url', 'http://example.com/asset/url/');
-      this.model.set('image', '/home/example/image.png');
+      this.model.set('url', 'http://example.com/asset/url/', {validate: true});
+      this.model.set('image', '/home/example/image.png', {validate: true});
       expect(this.spy).toHaveBeenCalled();
     });
   });
