@@ -206,7 +206,8 @@ class Organization(PermissionBase, MembershipUtilsMixin, FeaturedAssetsMixin,
         """
         return self.curated_stories.order_by('organizationstory__weight', '-organizationstory__added')
 
-    def get_default_img_url_choices(self):
+    @classmethod
+    def get_default_img_url_choices(cls):
         return settings.STORYBASE_DEFAULT_ORGANIZATION_IMAGES
 
     def normalize_for_view(self, img_width):
@@ -361,7 +362,8 @@ class Project(PermissionBase, MembershipUtilsMixin, FeaturedAssetsMixin,
         """
         return self.curated_stories.order_by('projectstory__weight', '-projectstory__added')
 
-    def get_default_img_url_choices(self):
+    @classmethod
+    def get_default_img_url_choices(cls):
         return settings.STORYBASE_DEFAULT_PROJECT_IMAGES
 
     def normalize_for_view(self, img_width):
@@ -425,7 +427,8 @@ class ProfileImage(ImageRenderingMixin, DefaultImageMixin, object):
         self.title = "Profile image for %s" % (profile.name())
         self.user = profile.user
 
-    def get_default_img_url_choices(self):
+    @classmethod
+    def get_default_img_url_choices(cls):
         return settings.STORYBASE_DEFAULT_USER_IMAGES
 
     def facebook_image_url(self, width):

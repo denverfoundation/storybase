@@ -569,12 +569,14 @@ class DefaultImageMixin(object):
     Mixin for models that have some related image that needs a 
     default value to fall back on
     """
-    def get_default_img_url_choices(self):
+    @classmethod
+    def get_default_img_url_choices(cls):
         # This should be implemented in the subclass
         raise NotImplemented
 
-    def get_default_img_url(self, width, height):
-        choices = self.get_default_img_url_choices()
+    @classmethod
+    def get_default_img_url(cls, width, height):
+        choices = cls.get_default_img_url_choices()
         lgst_width = 0
         lgst_src = None
         for img_width, url in choices.iteritems():
@@ -583,8 +585,9 @@ class DefaultImageMixin(object):
                 lgst_width = img_width
         return lgst_src
 
-    def render_default_img_html(self, width=500, height=0, attrs={}):
-        url = self.get_default_img_url(width, height)
+    @classmethod
+    def render_default_img_html(cls, width=500, height=0, attrs={}):
+        url = cls.get_default_img_url(width, height)
         el_attrs = dict(src=url)
         el_attrs.update(attrs)
         return mark_safe(img_el(el_attrs))

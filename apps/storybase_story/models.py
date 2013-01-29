@@ -438,7 +438,8 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
 
         return connected_to[0].connected_prompt
 
-    def get_default_img_url_choices(self):
+    @classmethod
+    def get_default_img_url_choices(cls):
         return settings.STORYBASE_DEFAULT_STORY_IMAGES
 
     def used_assets(self, asset_type=None):
