@@ -32,15 +32,13 @@ storybase.models.TastypieMixin = {
 storybase.collections.SaveableCollection = Backbone.Collection.extend({
   save: function(options) {
     // TODO: Test this 
-    // BOOKMARK
     options = options ? _.clone(options) : {};
     var collection = this;
     var success = options.success;
-    options.success = function(resp, status, xhr) {
-      collection.reset(collection.parse(resp, xhr), options);
+    options.success = function(collection, resp, options) {
+      collection.reset(collection.parse(resp, options), options);
       if (success) success(collection, resp);
     };
-    options.error = Backbone.wrapError(options.error, collection, options);
     return (this.sync || Backbone.sync).call(this, 'update', this, options);
   }
 });
@@ -224,6 +222,7 @@ storybase.models.Story = Backbone.Model.extend(
     setFeaturedAssets: function(collection) {
       this.featuredAssets = collection;
       this.featuredAssets.setStory(this);
+      this.trigger('set:featuredassets', this.featuredAssets);
     },
 
     /**
@@ -249,11 +248,18 @@ storybase.models.Story = Backbone.Model.extend(
      * This method provides an interface for the actual set operation
      * since it's a little unintuitive.
      */
-    setFeaturedAsset: function(asset) {
+    setFeaturedAsset: function(asset, options) {
       // The data model supports having multiple featured assets, but
       // our current use case only needs to keep one.
+      options = options ? _.clone(options) : {};
+      var model = this;
+      var success = options.success;
+      options.success = function(collection, resp, options) {
+        if (success) success(collection, resp, options);
+        model.trigger("set:featuredasset", asset);
+      };
       this.featuredAssets.reset(asset);
-      this.featuredAssets.save();
+      this.featuredAssets.save(options);
     },
 
     getFeaturedAsset: function(index) {
@@ -619,7 +625,7 @@ storybase.models.Asset = Backbone.Model.extend(
      * Make sure that only one of the content attributes is set to a truthy
      * value.
      */
-    validate: function(attrs) {
+    validate: function(attrs, options) {
       var contentAttrNames = ['body', 'image', 'url'];
       var found = [];
       _.each(contentAttrNames, function(attrName) {

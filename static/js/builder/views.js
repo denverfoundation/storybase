@@ -216,6 +216,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
     if (this.options.visibleSteps.publish) {
       this.subviews.publish =  new storybase.builder.views.PublishView(
         _.defaults({
+          defaultImageUrl: this.options.defaultImageUrl,
           showSharing: this.options.showSharing,
           licenseEndpoint: this.options.licenseEndpoint
         }, commonOptions)
@@ -5246,9 +5247,10 @@ storybase.builder.views.PublishView = storybase.builder.views.PublishViewBase.ex
         tagName: 'li'
       });
       this.featuredAssetView = new storybase.builder.views.FeaturedAssetView({
+        model: this.model,
+        defaultImageUrl: this.options.defaultImageUrl,
         dispatcher: this.dispatcher,
         language: this.options.language,
-        story: this.model,
         tagName: 'li'
       });
       this.todoView = new storybase.builder.views.PublishTodoView({
@@ -5256,7 +5258,6 @@ storybase.builder.views.PublishView = storybase.builder.views.PublishViewBase.ex
         model: this.model
       });
       this.todoView.register(this.licenseView, "select:license");
-      this.todoView.register(this.featuredAssetView, "select:featuredasset");
       this.todoView.register(this.legalView, "accept:legal");
       this.todoView.update({render: false});
       this.buttonView = new storybase.builder.views.PublishButtonView({
@@ -5349,105 +5350,169 @@ storybase.builder.views.PublishView = storybase.builder.views.PublishViewBase.ex
       this.workflowNavView.render();
       this.delegateEvents();
       return this;
+    },
+
+    onShow: function() {
+      this.featuredAssetView.onShow();
     }
   })
 );
 
-storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
-  _.extend({}, storybase.builder.views.FileUploadMixin, {
-    id: 'featured-asset',
-
-    events: {
-      'click .change': 'clickChange',
-      'click .add': 'clickAdd',
-      'click .select-asset': 'clickSelectAsset',
-      'click [type="reset"]': "cancel",
-      'submit form.bbf-form': 'processForm'
-    },
+storybase.builder.views.FeaturedAssetDisplayView = Backbone.View.extend(
+  _.extend({}, Backbone.Events, {
+    id: 'featured-asset-display',
 
     options: {
-      title: gettext("Select a featured image"),
-      templateSource: $('#featured-asset-template').html(),
+      defaultImageAlt: gettext('Default story image'),
     },
 
-    subTemplateSource: {
-      'display': $('#featured-asset-display-template').html(),
-      'select': $('#featured-asset-select-template').html(),
-      'upload': $('#asset-uploadprogress-template').html()
-    },
-
-    getSubTemplate: function() {
-      var state = this.getState();
-      if (_.isUndefined(this.templates[state])) {
-        if (this.subTemplateSource[state]) {
-          this.templates[state] = Handlebars.compile(this.subTemplateSource[state]);
-        }
-        else {
-          return null;
-        }
+    _initListeners: function() {
+      if (this.model) {
+        this.listenTo(this.model, "set:featuredasset", this.render);
       }
-      return this.templates[state]; 
+      else {
+        this.dispatcher.once("ready:story", function(story) {
+          this.model = story;
+          this._initListeners();
+        }, this);
+      }
     },
 
     initialize: function() {
       this.dispatcher = this.options.dispatcher;
-      this.story = this.options.story;
-      this.template = Handlebars.compile(this.options.templateSource);
-      this.templates = {};
-      this.form = this.getForm();
-
-      if (_.isUndefined(this.story)) {
-        this.dispatcher.on("ready:story", this.setStory, this);
-      }
-      else {
-        this.model = this.story.getFeaturedAsset();
-      }
-
-      this.setInitialState();
+      this._initListeners();
     },
 
-    completed: function() {
-      return !_.isUndefined(this.model);
-    },
+    render: function() {
+      var featuredAsset;
 
-    setInitialState: function() {
-      if (!_.isUndefined(this.model)) {
-        this._state = 'display';
+      if (this.model) {
+        featuredAsset = this.model.getFeaturedAsset();  
+        if (featuredAsset) {
+          // If the model is defined and it has a featured asset,
+          // display the featured asset.
+          this.$el.html(featuredAsset.get('content'));
+          return this;
+        }
       }
-      else {
-        this._state = 'select';
-      }
-    },
-
-    getState: function() {
-      return this._state;
-    },
-
-    setState: function(state) {
-      this._state = state;
-      if (this._state === 'add' && !this.form.model.isNew()) {
-        this.form.model = new storybase.models.Asset({
-          language: this.options.language,
-          type: 'image'
-        });
-      }
+     
+      // The model isn't defined, or there's no featured asset, show the
+      // default image
+      this.$el.html('<img src="' + this.options.defaultImageUrl + 
+                    '" alt="' + this.options.defaultImageAlt +
+                    '" />');
       return this;
+    }
+  })
+);
+
+storybase.builder.views.FeaturedAssetSelectView = Backbone.View.extend({
+  id: 'featured-asset-select',
+
+  tagName: 'ul',
+
+  events: {
+    'click .asset': 'clickAsset'
+  },
+
+  options: {
+    templateSource: $('#featured-asset-select-template').html()
+  },
+
+  initialize: function() {
+    this.dispatcher = this.options.dispatcher;
+    if (_.isUndefined(this.model)) {
+      this.dispatcher.once("ready:story", this.setStory, this);
+    }
+    else {
+      this.featuredAsset = this.model.getFeaturedAsset(); 
+    }
+    this.template = Handlebars.compile(this.options.templateSource);
+  },
+
+  setStory: function(story) {
+    this.model = story;
+  },
+
+  clickAsset: function(evt) {
+    var that = this;
+    var $targetEl = $(evt.currentTarget);
+    var id = $targetEl.data('assetId');
+    var selected = this.model.assets.get(id);
+    var $oldSelected = this.$('.selected');
+    // Change the highlighting for instant response
+    $oldSelected.removeClass('selected');
+    $targetEl.addClass('selected'); 
+    this.model.setFeaturedAsset(selected, {
+      success: function() {
+        that.featuredAsset = selected;
+      },
+      error: function() {
+        // Reset the highlighting
+        $targetEl.removeClass('selected');
+        $oldSelected.addClass('selected');
+        that.dispatcher.trigger("error", "Error selecting featured image");
+      }
+    });
+    evt.preventDefault();
+  },
+
+  getImageAssetsJSON: function() {
+    if (this.model) {
+      return _.map(this.model.assets.where({type: 'image'}),
+        function(model) {
+          var j = model.toJSON();
+          if (this.featuredAsset && model.id == this.featuredAsset.id) {
+            j.selected = true;
+          }
+          return j;
+        },
+        this
+      );
+    }
+
+    return [];
+  },
+
+  render: function() {
+    var context = {
+      assets: this.getImageAssetsJSON()
+    };
+    this.$el.html(this.template(context));
+    return this;
+  }
+});
+
+storybase.builder.views.FeaturedAssetAddView = Backbone.View.extend(
+  _.extend({}, storybase.builder.views.FileUploadMixin, {
+    id: 'featured-asset-add',
+
+    options: {
+      templateSource: $('#asset-uploadprogress-template').html() 
     },
 
-    getForm: function() {
+    events: {
+      'submit form.bbf-form': 'processForm',
+      'click [type="reset"]': "cancel"
+    },
+
+    initialize: function() {
+      this.template = Handlebars.compile(this.options.templateSource);
+      this.dispatcher = this.options.dispatcher;
+      this.form = this._initForm();
+    },
+
+    _initForm: function() {
       var form = new Backbone.Form({
         model: new storybase.models.Asset({
           language: this.options.language,
           type: 'image'
         })
       });
-      return this.updateFormLabels(form); 
+      return this._updateFormLabels(form); 
     },
 
-    /** 
-     * Update the view's form labels based on the asset type.
-     */
-    updateFormLabels: function(form) {
+    _updateFormLabels: function(form) {
       if (form.schema.url) {
         form.schema.url.title = capfirst(gettext("enter the featured image URL"));
       }
@@ -5457,44 +5522,16 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
       return form;
     },
 
-    setStory: function(story) {
-      this.story = story;
-      this.story.setFeaturedAssets(
-        new storybase.collections.FeaturedAssets
-      );
-    },
+    render: function(options) {
+      options = options ? options : {};
 
-    getImageAssetsJSON: function() {
-      return _.map(this.story.assets.where({type: 'image'}),
-        function(model) {
-          return model.toJSON();
-        }
-      );
-    },
-
-    render: function() {
-      var context = {
-        title: this.options.title
-      };
-      var state = this.getState();
-      var subTemplate = this.getSubTemplate();
-      if (this.model && (state === 'select' || state === 'display')) {
-        context.model = this.model.toJSON();
+      if (options.uploading) {
+        this.$el.html(this.template());
+        return this;
       }
-      if (state === 'select') {
-        context.assets = this.getImageAssetsJSON();
-      }
-      if (state === 'add') {
-        this.form.render().$el.append('<input type="reset" value="' + gettext("Cancel") + '" />').append('<input type="submit" value="' + gettext("Save Changes") + '" />');
-      }
-      this.$el.html(this.template(context));
-      if (subTemplate) {
-        this.$el.append(subTemplate(context));
-      }
-      if (state === 'add') {
-        this.$el.append(this.form.el);
-      }
-      this.delegateEvents();
+      
+      this.form.render().$el.append('<input type="reset" value="' + gettext("Cancel") + '" />').append('<input type="submit" value="' + gettext("Save Changes") + '" />');
+      this.$el.append(this.form.el);
       return this;
     },
 
@@ -5523,11 +5560,14 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
               form: form,
               progressHandler: that.handleUploadProgress,
               beforeSend: function() {
-                that.setState('upload');
-                that.render();
+                that.render({uploading: true});
               },
               success: function(model, response) {
-                that.setState('display');
+                // Reset the form
+                that.form.model = new storybase.models.Asset({
+                  language: that.options.language,
+                  type: 'image'
+                });
                 that.render();
               }
             });
@@ -5552,20 +5592,22 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
       }
     },
 
+    cancel: function() {
+      this.trigger('cancel');
+    },
+
     saveModel: function(model, options) {
       options = _.isUndefined(options) ? {} : options;
       var that = this;
-      model.set('license', this.story.get('license'));
+      model.set('license', this.model.get('license'));
       model.save(null, {
         success: function(model) {
-          that.model = model;
           if (!options.deferRender) {
             that.setState('display');
             that.render();
           }
-          that.story.assets.add(model);
-          that.story.setFeaturedAsset(model);
-          that.dispatcher.trigger('select:featuredasset', model);
+          that.model.assets.add(model);
+          that.model.setFeaturedAsset(model);
           if (options.success) {
             options.success(model);
           }
@@ -5574,42 +5616,153 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend(
           that.dispatcher.trigger('error', gettext('Error saving the featured image'));
         }
       });
-    },
-
-    clickChange: function(evt) {
-      evt.preventDefault();
-      this.setState('select').render();
-    },
-
-    clickAdd: function(evt) {
-      evt.preventDefault();
-      this.setState('add').render();
-    },
-
-    clickSelectAsset: function(evt) {
-      evt.preventDefault();
-      var id = $(evt.target).data('asset-id');
-      this.model = this.story.assets.get(id);
-      this.story.setFeaturedAsset(this.model);
-      this.dispatcher.trigger('select:featuredasset', this.model);
-      this.setState('display').render();
-    },
-
-    /**
-     * Event handler for canceling form interaction
-     */
-    cancel: function(e) {
-      e.preventDefault();
-      if (this.model.isNew()) {
-        this.setState('edit');
-      }
-      else {
-        this.setState('display');
-      }
-      this.render();
     }
   })
 );
+
+
+storybase.builder.views.FeaturedAssetView = Backbone.View.extend({
+  id: 'featured-asset',
+
+  events: {
+    'click .nav a': 'handleNavClick'
+  },
+
+  options: {
+    title: gettext("Select a featured image"),
+    templateSource: $('#featured-asset-template').html(),
+    navItemTemplateSource: '<li{{#if class}} class="{{class}}"{{/if}}><a href="#{{viewId}}">{{title}}</li>'
+  },
+
+  _initListeners: function() {
+    if (this.model) {
+      this.listenTo(this.model.assets, "add remove", this.toggleNavItems);
+      this.listenTo(this.model, "set:featuredasset", this.switchToDisplay);
+      this.listenTo(this.addView, "cancel", this.switchToDisplay);
+    }
+    else {
+      this.dispatcher.once("ready:story", this.setStory, this);
+    }
+  },
+
+  initialize: function() {
+    this.dispatcher = this.options.dispatcher;
+    this.template = Handlebars.compile(this.options.templateSource);
+    this.navItemTemplate = Handlebars.compile(
+      this.options.navItemTemplateSource);
+    this.displayView = new storybase.builder.views.FeaturedAssetDisplayView({
+      defaultImageUrl: this.options.defaultImageUrl,
+      dispatcher: this.dispatcher,
+      model: this.model
+    });
+    this.addView = new storybase.builder.views.FeaturedAssetAddView({
+      dispatcher: this.dispatcher,
+      model: this.model,
+      language: this.options.language
+    });
+    this.selectView = new storybase.builder.views.FeaturedAssetSelectView({
+      dispatcher: this.dispatcher,
+      model: this.model
+    });
+    this._subviews = [this.displayView, this.addView, this.selectView];
+    this._activeViewId = this.displayView.id;
+    this._rendered = false;
+
+    this._initListeners();
+  },
+
+  completed: function() {
+    // Always return true because this step isn't required
+    return true; 
+  },
+
+  setStory: function(story) {
+    this.model = story;
+    this.model.setFeaturedAssets(
+      new storybase.collections.FeaturedAssets
+    );
+    this._initListeners();
+  },
+
+  handleNavClick: function(evt) {
+    var $targetEl = $(evt.target);
+    if (!$targetEl.parent().hasClass('disabled') && !$targetEl.parent().hasClass('active')) {
+      this.$('.nav li').removeClass('active');
+      $targetEl.parent().addClass('active');
+      this._activeViewId = $targetEl.attr('href').replace('#', '');
+      this.render();
+    }
+    evt.preventDefault();
+  },
+
+  appendNav: function() {
+    $('<ul class="nav pills">')
+        .appendTo(this.$el)
+        .append($(this.navItemTemplate({
+          title: gettext("Current image"),
+          'class': 'active',
+          'viewId': this.displayView.id
+        })))
+        .append($(this.navItemTemplate({
+          title: gettext("Add a new image"),
+          'viewId': this.addView.id
+        })))
+        .append($(this.navItemTemplate({
+          title: gettext("Select an image from the story"),
+          'viewId': this.selectView.id
+        })));
+    this.toggleNavItems();
+    return this;
+  },
+
+  toggleNavItems: function() {
+    var $selectNav = this.$('.nav [href="#' + this.selectView.id + '"]').parent();
+    if (!this.model || !this.model.assets.length) {
+      $selectNav.addClass('disabled');  
+    }
+    else {
+      $selectNav.removeClass('disabled');
+    }
+  },
+
+  render: function() {
+    var context;
+    if (!this._rendered) {
+      context = {
+        title: this.options.title
+      };
+      this.$el.html(this.template(context));
+      // TODO: Reduce number of loops
+      this.appendNav();
+      _.each(this._subviews, function(view) {
+        this.$el.append(view.render().$el.hide());
+      }, this);
+      this._rendered = true;
+    }
+    _.each(this._subviews, function(view) {
+      var $navEl = this.$('.nav [href="#' + view.id + '"]').parent(); 
+      if (view.id == this._activeViewId) {
+        view.$el.show();
+        $navEl.addClass('active');
+      }
+      else {
+        view.$el.hide();
+        $navEl.removeClass('active');
+      }
+    }, this);
+    return this;
+  },
+
+  onShow: function() {
+    this.delegateEvents();
+  },
+
+  switchToDisplay: function() {
+    this._activeViewId = this.displayView.id;
+    this.render();
+    return this;
+  }
+});
 
 /**
  * A story is ready to be published.

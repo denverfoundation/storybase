@@ -349,6 +349,50 @@ button, .button {
   text-align: center;
 }
 
+// Pills
+.pills {
+  padding-left: 0;
+
+  >li {
+    display: inline-block;  
+    margin-right: 4px;
+    list-style-type: none;
+
+    &.active {
+      >a {
+        color: #fff;
+        background-color: @orange;
+
+        &:hover {
+          background-color: @orange;
+        }
+      }
+
+    }
+
+    &.disabled {
+      >a {
+        color: @light-gray;
+        cursor: default;
+        &:hover {
+          background-color: transparent;
+        }
+      }
+    }
+
+    >a {
+      .rounded-corners(4px);
+      padding: 4px;
+      text-decoration: none;
+
+      &:hover {
+        background-color: @light-gray; 
+      }
+
+    }
+  }
+}
+
 // global stuff
 
 html { font-size: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }

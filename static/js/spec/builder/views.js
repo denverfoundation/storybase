@@ -940,3 +940,91 @@ describe('LicenseView', function() {
     });
   });
 });
+
+describe('FeaturedAssetDisplayView', function() {
+  beforeEach(function() {
+    var MockAsset = Backbone.Model.extend();
+    this.featuredAsset1 = new MockAsset({
+        content: '<img class="asset-thumbnail featured-asset" alt="" src="/media/filer_thumbnails/2013/01/02/test_image1.jpg">' 
+    });
+    this.featuredAsset2 = new MockAsset({
+        content: '<img class="asset-thumbnail featured-asset" alt="" src="/media/filer_thumbnails/2013/01/02/test_image2.jpg">' 
+    });
+    this.story = new MockStory();
+    this.dispatcher = _.clone(Backbone.Events);
+    this.defaultImageUrl = '../img/default-image-story-335-200.png';
+    this.view = new storybase.builder.views.FeaturedAssetDisplayView({
+      dispatcher: this.dispatcher,
+      model: this.story,
+      defaultImageUrl: this.defaultImageUrl
+    });
+  });
+
+  describe("when the story doesn't have a featured asset set", function() {
+    beforeEach(function() {
+      // Mock Story.getFeaturedAsset
+      this.story.getFeaturedAsset = function() {
+        return undefined;
+      };
+    });
+
+    it("should show the default image", function() {
+      expect(this.view.render().$el.html()).toContain(this.defaultImageUrl);
+    });
+
+    describe("and a featured image is selected", function() {
+      beforeEach(function() {
+        expect(this.view.render().$el.html()).toContain(this.defaultImageUrl);
+        var that = this;
+        this.story.getFeaturedAsset = function() {
+          return that.featuredAsset1; 
+        };
+        this.story.featuredAssets = new Backbone.Collection();
+        this.story.featuredAssets.trigger("add");
+      });
+
+      it("should show the featured image", function() {
+        expect(this.view.render().$el.html()).toNotContain(this.defaultImageUrl);
+        expect(this.view.$el.html()).toContain(this.featuredAsset1.get('content'));
+      });
+    });
+  });
+
+  describe("when the story has a featured image set", function() {
+    beforeEach(function() {
+      // Mock Story.getFeaturedAsset
+      var that = this;
+      this.story.getFeaturedAsset = function() {
+        return that.featuredAsset1; 
+      };
+    });
+
+    it("should show the featured image", function() {
+      expect(this.view.render().$el.html()).toNotContain(this.defaultImageUrl);
+      expect(this.view.$el.html()).toContain(this.featuredAsset1.get('content'));
+    });
+  });
+
+  describe("when the story's featured image changes", function() {
+    beforeEach(function() {
+      // Mock Story.getFeaturedAsset
+      var that = this;
+      this.story.getFeaturedAsset = function() {
+        return that.featuredAsset1; 
+      };
+    });
+
+    it("should show the new featured image", function() {
+      // Expect the old featured asset
+      expect(this.view.render().$el.html()).toContain(this.featuredAsset1.get('content'));
+      // Mock changing the featured image
+      var that = this;
+      this.story.getFeaturedAsset = function() {
+        return that.featuredAsset2; 
+      };
+      this.story.featuredAssets = new Backbone.Collection();
+      this.story.featuredAssets.trigger("add");
+      expect(this.view.render().$el.html()).toContain(this.featuredAsset2.get('content'));
+    });
+  });
+});

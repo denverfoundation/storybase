@@ -253,29 +253,11 @@ Handlebars.js templates for story builder Backbone application
 </script>
 
 <script type="text/x-handlebars-template" id="featured-asset-select-template">
-<p>
-  {{#if model}}<button type="reset" class="cancel">{{gettext "Cancel"}}</button>{{/if}}
-  <button type="button" class="add">{{gettext "Add a new image"}}</button>
-</p>
-{{#if assets}}
-{{gettext "Or select an image from your story"}}
-</p>
-<ul class="assets">
-  {{#each assets}}
-  <li class="asset">
-      <div class="image-wrapper"><img class="thumbnail" src="{{thumbnail_url}}" /></div>
-      <button type="button" class="select-asset" data-asset-id="{{asset_id}}">{{gettext "Set as featured image"}}</button>
-  </li> 
-  {{/each}}
-</ul>
-{{/if}}
-</script>
-
-<script type="text/x-handlebars-template" id="featured-asset-display-template">
-<ul class="featured-asset-controls">
-    <li><button type="button" class="change">{{gettext "Change"}}</button></li>
-</ul>
-{{{model.content}}}
+{{#each assets}}
+<li class="asset{{#if selected}} selected{{/if}}" data-asset-id="{{asset_id}}">
+  <img class="thumbnail" src="{{thumbnail_url}}" />
+</li> 
+{{/each}}
 </script>
 
 <script type="text/x-handlebars-template" id="unused-assets-template">

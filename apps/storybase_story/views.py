@@ -431,6 +431,7 @@ class StoryBuilderView(DetailView):
     def get_options_json(self):
         """Get configuration options for the story builder"""
         options = {
+            'defaultImageUrl': Story.get_default_img_url(335, 200),
             # Show only the builder workflow steps
             'visibleSteps': {
                 'build': True,
@@ -489,7 +490,7 @@ class StoryBuilderView(DetailView):
         return json.dumps(options)
 
     def get_context_data(self, **kwargs):
-        """Provide Bootstrap data for Backbone models and collections"""
+        """Bootstrap data for Backbone models and collections"""
         context = {
             'asset_types_json': mark_safe(self.get_asset_types_json()),
             'help_json': mark_safe(self.get_help_json()),

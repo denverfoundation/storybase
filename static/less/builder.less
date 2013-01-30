@@ -1575,41 +1575,60 @@ ol#publish-steps {
 #featured-asset { 
   position: relative; 
 
-  img { max-width: 50%; }
+  .nav { 
+    // TODO: Decide if padding-left: 0 should be the default style for uls
+    // in the builder
+    padding-left: 0 !important;
 
-  .featured-asset-controls {
-    margin: 0;
-    padding: 10px 10px 0 0;
-    list-style: none outside none;
-    background-color: #fff;
-    z-index: 999;
-    
-    li { display: inline-block; }
+    > li {
+      &.active {
+        // TODO: See why the global a style clobbers the .pill style
+        a {
+          color: #fff;
+        }
+      }
+    }
   }
+}
 
-  .assets { 
-    padding: 0; 
-    list-style: none outside none;
+#featured-asset-display {
+  img {
+    max-width: 50%;
+  }
+}
 
-    // Override the default list bullet styles
-    li { list-style-type: none; }
+#featured-asset-select {
+  padding: 0 !important; 
+  // Clear the floated child elements
+  overflow: hidden;
 
-    .asset { 
-      padding: 8px 0; 
+  li {
+    padding: 8px; 
+    overflow: hidden;
+    position: relative;
+    float: left;
+    width: 222px;
+    text-align: center;
+    // TODO: change the ol li selector upstream to ol > li so these
+    // don't get numbered bullets, for now, just override it
+    list-style-type: none !important; 
 
-      .image-wrapper, img, button {
-        display: inline-block;
-        vertical-align: middle;
+    &.selected {
+      background-color: @orange;
+
+      &:hover {
+        // Don't highlight the already selected asset
+        background-color: @orange;
       }
+    }
 
-      img {
-        max-width: 100%;
-      }
+    &:hover {
+      background-color: @highlight-blue;
+    }
 
-      .image-wrapper {
-        text-align: center;
-        width: 25%;
-      }
+    img {
+      display: block;
+      max-width: 100%;
     }
   }
 }
