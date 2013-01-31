@@ -320,6 +320,9 @@ button[disabled],.button[disabled],button.disabled,.button.disabled{opacity:0.65
 .body-copy-lists ol li{list-style-type:decimal;}
 .line-through-header{background:url('../img/h3-line.png') repeat-x 0 8px;margin-bottom:10px;line-height:1em;}.line-through-header span{background:#fff;padding-left:16px;padding-right:16px;}
 .centered{text-align:center;}
+.pills{padding-left:0;}.pills>li{display:inline-block;margin-right:4px;list-style-type:none;}.pills>li.active>a{color:#fff;background-color:#fe9703;}.pills>li.active>a:hover{background-color:#fe9703;}
+.pills>li.disabled>a{color:#f0efef;cursor:default;}.pills>li.disabled>a:hover{background-color:transparent;}
+.pills>li>a{border-radius:4px;-webkit-border-radius:4px;-moz-border-radius:4px;padding:4px;text-decoration:none;}.pills>li>a:hover{background-color:#f0efef;}
 html{font-size:100%;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;}
 body,button,input,select,textarea{font-family:Arial,sans-serif;font-size:14px;line-height:1.4em;color:#444444;}body p,button p,input p,select p,textarea p{margin-bottom:1em;}
 body dd p,button dd p,input dd p,select dd p,textarea dd p,body dt p,button dt p,input dt p,select dt p,textarea dt p,body li p,button li p,input li p,select li p,textarea li p{margin-bottom:0;}
@@ -802,12 +805,11 @@ body.story-builder #share-publish .bbf-form{padding-left:0;}body.story-builder #
 body.story-builder ol#publish-steps{counter-reset:li;margin-left:0;padding-left:0;}body.story-builder ol#publish-steps>li{position:relative;list-style:none;}body.story-builder ol#publish-steps>li h3{margin-left:25px;}
 body.story-builder ol#publish-steps>li:before{content:counter(li) '.';counter-increment:li;font-family:'Museo300Regular';font-size:25.2px;line-height:1.4em;color:#5a5a5a;position:absolute;left:0;top:0;}
 body.story-builder #cc-license{margin-bottom:10px;}
-body.story-builder #featured-asset{position:relative;}body.story-builder #featured-asset img{max-width:50%;}
-body.story-builder #featured-asset .featured-asset-controls{margin:0;padding:10px 10px 0 0;list-style:none outside none;background-color:#fff;z-index:999;}body.story-builder #featured-asset .featured-asset-controls li{display:inline-block;}
-body.story-builder #featured-asset .assets{padding:0;list-style:none outside none;}body.story-builder #featured-asset .assets li{list-style-type:none;}
-body.story-builder #featured-asset .assets .asset{padding:8px 0;}body.story-builder #featured-asset .assets .asset .image-wrapper,body.story-builder #featured-asset .assets .asset img,body.story-builder #featured-asset .assets .asset button{display:inline-block;vertical-align:middle;}
-body.story-builder #featured-asset .assets .asset img{max-width:100%;}
-body.story-builder #featured-asset .assets .asset .image-wrapper{text-align:center;width:25%;}
+body.story-builder #featured-asset{position:relative;}body.story-builder #featured-asset .nav{padding-left:0 !important;}body.story-builder #featured-asset .nav>li.active a{color:#fff;}
+body.story-builder #featured-asset-display img{max-width:50%;}
+body.story-builder #featured-asset-select{padding:0 !important;overflow:hidden;}body.story-builder #featured-asset-select li{padding:8px;overflow:hidden;position:relative;float:left;width:222px;text-align:center;list-style-type:none !important;}body.story-builder #featured-asset-select li.selected{background-color:#fe9703;}body.story-builder #featured-asset-select li.selected:hover{background-color:#fe9703;}
+body.story-builder #featured-asset-select li:hover{background-color:#2a88db;}
+body.story-builder #featured-asset-select li img{display:block;max-width:100%;}
 body.story-builder .guider-text{font-size:14px;color:#175388;}
 body.story-builder .guider{border-color:#2a88db;background:#d9e9f8;padding:20px;box-shadow:0 0 8px rgba(0, 0, 0, 0.4);-moz-box-shadow:0 0 8px rgba(0, 0, 0, 0.4);-webkit-box-shadow:0 0 8px rgba(0, 0, 0, 0.4);font-size:14px;color:#175388;}body.story-builder .guider h1,body.story-builder .guider h2,body.story-builder .guider h3,body.story-builder .guider h4,body.story-builder .guider h5{text-align:left;font-family:'Museo300Regular';font-weight:normal;line-height:1em;margin-bottom:1em;color:#175388;}
 body.story-builder .guider ol,body.story-builder .guider ul{padding-left:1em;}
