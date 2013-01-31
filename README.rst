@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.4.1
+~~~~~
+
+* Fix for #599 (Home page featured image scaling)
+
 0.4
 ~~~
 
