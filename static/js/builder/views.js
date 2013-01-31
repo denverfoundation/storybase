@@ -3957,10 +3957,9 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       var $wrapperEl;
       this.template = Handlebars.compile(this.templateSource());
       if (state === 'select') {
-        if (this.options.canChangeAssetType || _.isUndefined(this.options.canChangeAssetType)) {
-          context.assetTypes = this.getAssetTypes();
-        }
-        context.defaultType = this.getDefaultAssetType(); 
+        context.assetTypes = this.assetTypes;
+        context.canChangeAssetType = _.isUndefined(this.options.canChangeAssetType) || this.options.canChangeAssetType;
+        context.defaultType = this.getDefaultAssetType();
         context.help = this.options.help;
       }
       else if (state === 'display') {
@@ -4043,7 +4042,9 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
      */
     selectType: function(e) {
       e.preventDefault(); 
-      this.setType($(e.target).data('asset-type'));
+      if (!$(e.target).hasClass('unavailable')) {
+        this.setType($(e.target).data('asset-type'));
+      }
     },
 
     setType: function(type) {

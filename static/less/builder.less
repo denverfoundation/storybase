@@ -963,7 +963,7 @@ button.preview {
   }
 }
 
-.storybase-container-placeholder.select {
+#app .storybase-container-placeholder.select {
   .wrapper {
     padding: 2%;
     position:relative;
@@ -1009,8 +1009,10 @@ button.preview {
           text-decoration:none;
           text-transform:uppercase;
           font-family:"Museo300Regular";
-          color:@gray !important;
+          color:@gray;
           line-height:22px; // ???
+          
+          
           &:after {
             .rounded-corners(3px);
             font-family:"FontAwesome";
@@ -1026,13 +1028,30 @@ button.preview {
             top:(@item-height * -0.25);
           }
           &:hover {
-            color:@orange !important;
+            color:@orange;
             &:after {
               background:@orange;
             }
           }
+          
+          &.unavailable {
+            color:@light-gray;
+            &:after {
+              background:@light-gray;
+            }
+            
+            &:hover {
+              cursor:default;
+              color:@light-gray;
+              &:after {
+                cursor:default;
+                background:@light-gray;
+              }
+            }
+          }
         }
       }
+  
       
       &.image, &.audio, &.video, &.map {
         right:75%;

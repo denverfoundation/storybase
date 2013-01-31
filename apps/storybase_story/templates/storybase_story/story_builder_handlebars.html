@@ -188,22 +188,31 @@ Handlebars.js templates for story builder Backbone application
 <script type="text/x-handlebars-template" id="section-asset-select-type-template">
 {{>help-icon}}
 <div class="wrapper">
-    {{#if defaultType}}
-    <p><a href="#" class="asset-type" data-asset-type="{{{defaultType.type}}}">{{gettext "Click to add your"}} {{{defaultType.name}}}</a></p>
-    {{/if}}
     {{#if assetTypes}}
     <p>
     {{#if defaultType}}
-    {{gettext "Or, select a different"}}:
+      {{#unless canChangeAssetType}}
+        {{gettext "Click to add your"}} {{{defaultType.name}}}:
+      {{else}}
+        {{gettext "Select a"}}:
+      {{/unless}}
     {{else}}
-    {{gettext "Select a"}}:
+      {{gettext "Select a"}}:
     {{/if}}
     </p>
     <ul class="asset-types">
         {{#each assetTypes}}
-        <li class="{{type}}"><a href="#" class="asset-type" data-asset-type="{{type}}">{{name}}</a></li>
+          {{#compare type ../defaultType.type}}
+            <li class="{{type}}"><a href="#" class="asset-type" data-asset-type="{{type}}">{{name}}</a></li>
+          {{else}}
+            <li class="{{type}}"><a href="#" class="asset-type{{#unless ../../canChangeAssetType}} unavailable{{/unless}}" data-asset-type="{{type}}">{{name}}</a></li>
+          {{/compare}}
         {{/each}}
     </ul>
+    {{else}}
+      {{#if defaultType}}
+        <p><a href="#" class="asset-type" data-asset-type="{{{defaultType.type}}}">{{gettext "Click to add your"}} {{{defaultType.name}}}</a></p>
+      {{/if}}
     {{/if}}
 </div>
 </script>
