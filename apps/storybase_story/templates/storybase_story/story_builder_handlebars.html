@@ -189,30 +189,13 @@ Handlebars.js templates for story builder Backbone application
 {{>help-icon}}
 <div class="wrapper">
     {{#if assetTypes}}
-    <p>
-    {{#if defaultType}}
-      {{#unless canChangeAssetType}}
-        {{gettext "Click to add your"}} {{{defaultType.name}}}:
-      {{else}}
-        {{gettext "Select a"}}:
-      {{/unless}}
-    {{else}}
-      {{gettext "Select a"}}:
-    {{/if}}
-    </p>
     <ul class="asset-types">
         {{#each assetTypes}}
-          {{#compare type ../defaultType.type}}
-            <li class="{{type}}"><a href="#" class="asset-type" data-asset-type="{{type}}">{{name}}</a></li>
-          {{else}}
-            <li class="{{type}}"><a href="#" class="asset-type{{#unless ../../canChangeAssetType}} unavailable{{/unless}}" data-asset-type="{{type}}">{{name}}</a></li>
-          {{/compare}}
+            <li class="{{type}}">
+              <a href="#" class="asset-type{{#unless available}} unavailable{{/unless}}{{#if suggested}} suggested{{/if}}" data-asset-type="{{type}}">{{name}}</a>
+            </li>
         {{/each}}
     </ul>
-    {{else}}
-      {{#if defaultType}}
-        <p><a href="#" class="asset-type" data-asset-type="{{{defaultType.type}}}">{{gettext "Click to add your"}} {{{defaultType.name}}}</a></p>
-      {{/if}}
     {{/if}}
 </div>
 </script>
