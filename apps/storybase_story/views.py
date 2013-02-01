@@ -120,6 +120,22 @@ class StoryViewerView(ModelIdDetailView):
     queryset = Story.objects.all()
     template_name = 'storybase_story/story_viewer.html'
 
+    def get_context_data(self, **kwargs):
+        context = super(StoryViewerView, self).get_context_data(**kwargs)
+        preview = self.kwargs.get('preview', False)
+        if preview and self.request.user:
+            # Previewing the story in the viewer, include draft
+            # connected stories belonging to this user
+            context['connected_stories'] = self.object.connected_stories(published_only=False, draft_author=self.request.user)
+
+        if 'connected_stories' not in context:
+            # Viewing the story in the viewer, show only published
+            # connected stories
+            context['connected_stories'] = self.object.connected_stories()
+
+        return context
+
+
 class StoryUpdateView(SingleObjectMixin, SingleObjectTemplateResponseMixin, View):
   """
   Updates story status, redirects to My Stories.
@@ -467,8 +483,10 @@ class StoryBuilderView(DetailView):
             'licenseEndpoint': reverse("api_cc_license_get"),
             # Site name (used for re-writing title)
             'siteName': settings.STORYBASE_SITE_NAME,
+            # Template for generating preview URLs
+            'previewURLTemplate': '/stories/{{id}}/preview/',
         }
-        if (self.template_object and  self.template_object.slug == settings.STORYBASE_CONNECTED_STORY_TEMPLATE):
+        if (self.template_object and self.template_object.slug == settings.STORYBASE_CONNECTED_STORY_TEMPLATE):
             # TODO: If these settings apply in cases other than just
             # connected stories, it might make more sense to store them
             # as part of the template model
@@ -485,6 +503,7 @@ class StoryBuilderView(DetailView):
                 'showStoryInfoInline': True,
                 'showSharing': False,
                 'showTour': False,
+                'previewURLTemplate': '/stories/%s/preview/#connected-stories/{{id}}' % (self.source_story.story_id)
             })
         return json.dumps(options)
 

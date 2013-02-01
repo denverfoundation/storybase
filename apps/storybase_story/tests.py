@@ -31,7 +31,7 @@ from storybase_story.models import (Container, Story, StoryTranslation,
     StoryRelation,
     create_story, create_section, set_asset_license)
 from storybase_story.templatetags.story import container
-from storybase_story.views import StoryBuilderView
+from storybase_story.views import StoryBuilderView, StoryViewerView
 from storybase_taxonomy.models import Category, create_category
 from storybase_user.models import (Organization, Project,
         OrganizationMembership, ProjectMembership,
@@ -745,7 +745,7 @@ class RelatedStoriesTest(TestCase):
     def setUp(self):
         self.username = 'test'
         self.password = 'test'
-        self.user = User.objects.create_user(self.username, 'test@example.com', self.password)
+        self.user = User.objects.create_user(self.username, 'test@floodlightproject.org', self.password)
         self.story = create_story(title="Test Story", summary="Test Summary",
                                   byline="Test Byline", status='published',
                                   author=self.user)
@@ -782,6 +782,75 @@ class RelatedStoriesTest(TestCase):
         self.assertEqual(len(self.story.related_stories.all()), 2)
         self.assertEqual(len(self.story.connected_stories()), 1)
         self.assertEqual(self.story.connected_stories()[0], story)
+
+    def test_connected_stories_published_only_default(self):
+        story = create_story(title="Test Related Story", 
+                             summary="Test Related Story Summary",
+                             byline="Test Related Story Byline",
+                             status='published',
+                             author=self.user)
+        story2 = create_story(title="Test Related Story 2", 
+                              summary="Test Related Story Summary 2",
+                              byline="Test Related Story Byline 2",
+                              status='draft',
+                              author=self.user)
+        StoryRelation.objects.create(source=self.story, target=story,
+                                     relation_type='connected')
+        StoryRelation.objects.create(source=self.story, target=story2,
+                                     relation_type='connected')
+        self.assertEqual(self.story.connected_stories().count(), 1)
+        self.assertEqual(self.story.connected_stories()[0],
+                         story)
+
+    def test_connected_stories_published_only_false(self):
+        story = create_story(title="Test Related Story", 
+                             summary="Test Related Story Summary",
+                             byline="Test Related Story Byline",
+                             status='published',
+                             author=self.user)
+        story2 = create_story(title="Test Related Story 2", 
+                              summary="Test Related Story Summary 2",
+                              byline="Test Related Story Byline 2",
+                              status='draft',
+                              author=self.user)
+        StoryRelation.objects.create(source=self.story, target=story,
+                                     relation_type='connected')
+        StoryRelation.objects.create(source=self.story, target=story2,
+                                     relation_type='connected')
+        connected = self.story.connected_stories(published_only=False)
+        self.assertEqual(connected.count(), 2)
+        self.assertIn(story, connected)
+        self.assertIn(story2, connected)
+
+    def connected_stories_draft_author(self):
+        user2 = User.objects.create_user('test2',
+                'test2@floodlightproject.org', 'test')
+        story = create_story(title="Test Related Story", 
+                             summary="Test Related Story Summary",
+                             byline="Test Related Story Byline",
+                             status='published',
+                             author=self.user)
+        story2 = create_story(title="Test Related Story 2", 
+                              summary="Test Related Story Summary 2",
+                              byline="Test Related Story Byline 2",
+                              status='draft',
+                              author=self.user)
+        story3 = create_story(title="Test Related Story 3", 
+                              summary="Test Related Story Summary 2",
+                              byline="Test Related Story Byline 2",
+                              status='draft',
+                              author=user2)
+        StoryRelation.objects.create(source=self.story, target=story,
+                                     relation_type='connected')
+        StoryRelation.objects.create(source=self.story, target=story2,
+                                     relation_type='connected')
+        StoryRelation.objects.create(source=self.story, target=story3,
+                                     relation_type='connected')
+        connected = self.story.connected_stories(published_only=False, draft_author=user2)
+        self.assertEqual(connected.count(), 2)
+        self.assertIn(story, connected)
+        self.assertNotIn(story2, connected)
+        self.assertIn(story3, connected)
 
     def test_connected_to_stories(self):
         story = create_story(title="Test Related Story", 
@@ -921,6 +990,92 @@ class StoryBuilderViewTest(TestCase):
                          data[section.section_id]['objects']]
             for asset in section.assets.all():
                 self.assertIn(asset.asset_id, asset_ids)
+
+
+class StoryViewerViewTest(TestCase):
+    def setUp(self):
+        self.username = 'test'
+        self.password = 'test'
+        self.user = User.objects.create_user(self.username, 'test@floodlightproject.org', self.password)
+        self.story = create_story(title="Test Story", summary="Test Summary",
+                byline="Test Byline", status='published', author=self.user)
+    
+    def test_get_context_connected_story_view(self):
+        """
+        Test that that only published connected stories are
+        included in the context when the story is being viewed
+
+        """
+        user2 = User.objects.create_user('test2',
+                'test2@floodlightproject.org', 'test')
+        story = create_story(title="Test Related Story", 
+                             summary="Test Related Story Summary",
+                             byline="Test Related Story Byline",
+                             status='published',
+                             author=self.user)
+        story2 = create_story(title="Test Related Story 2", 
+                              summary="Test Related Story Summary 2",
+                              byline="Test Related Story Byline 2",
+                              status='draft',
+                              author=self.user)
+        story3 = create_story(title="Test Related Story 3", 
+                              summary="Test Related Story Summary 2",
+                              byline="Test Related Story Byline 2",
+                              status='draft',
+                              author=user2)
+        StoryRelation.objects.create(source=self.story, target=story,
+                                     relation_type='connected')
+        StoryRelation.objects.create(source=self.story, target=story2,
+                                     relation_type='connected')
+        StoryRelation.objects.create(source=self.story, target=story3,
+                                     relation_type='connected')
+        req = HttpRequest()
+        req.method = 'GET'
+        view = StoryViewerView()
+        view.dispatch(req, story_id=self.story.story_id)
+        connected = view.get_context_data()['connected_stories']
+        self.assertEqual(connected.count(), 1)
+        self.assertIn(story, connected)
+
+    def test_get_context_connected_story_preview(self):
+        """
+        Test that that a user's draft connected stories are
+        included in the context when the story is being previewed
+
+        """
+        user2 = User.objects.create_user('test2',
+                'test2@floodlightproject.org', 'test')
+        story = create_story(title="Test Related Story", 
+                             summary="Test Related Story Summary",
+                             byline="Test Related Story Byline",
+                             status='published',
+                             author=self.user)
+        story2 = create_story(title="Test Related Story 2", 
+                              summary="Test Related Story Summary 2",
+                              byline="Test Related Story Byline 2",
+                              status='draft',
+                              author=self.user)
+        story3 = create_story(title="Test Related Story 3", 
+                              summary="Test Related Story Summary 2",
+                              byline="Test Related Story Byline 2",
+                              status='draft',
+                              author=user2)
+        StoryRelation.objects.create(source=self.story, target=story,
+                                     relation_type='connected')
+        StoryRelation.objects.create(source=self.story, target=story2,
+                                     relation_type='connected')
+        StoryRelation.objects.create(source=self.story, target=story3,
+                                     relation_type='connected')
+        req = HttpRequest()
+        req.method = 'GET'
+        req.user = user2
+        view = StoryViewerView()
+        view.dispatch(req, story_id=self.story.story_id, preview=True)
+        connected = view.get_context_data()['connected_stories']
+        self.assertEqual(connected.count(), 2)
+        self.assertIn(story, connected)
+        self.assertNotIn(story2, connected)
+        self.assertIn(story3, connected)
 
 
 class SectionModelTest(TestCase, SloppyComparisonTestMixin):
