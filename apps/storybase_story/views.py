@@ -133,6 +133,9 @@ class StoryViewerView(ModelIdDetailView):
             # connected stories
             context['connected_stories'] = self.object.connected_stories()
 
+        context['sections_json'] = self.object.structure.sections_json(
+                connected_stories=context['connected_stories'])
+
         return context
 
 

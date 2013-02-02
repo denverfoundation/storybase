@@ -103,7 +103,8 @@ class BaseStructure(object):
     def sections_flat(self):
         return self._sections_flat
 
-    def sections_json(self, include_summary=True, include_call_to_action=True):
+    def sections_json(self, include_summary=True, include_call_to_action=True,
+            connected_stories=None):
         """Return a JSON representation of the story sections
 
         This representation doesn't include the content of sections, just
@@ -119,6 +120,8 @@ class BaseStructure(object):
                                   section (default True)
 
         """
+        if connected_stories is None:
+            connected_stories = self.story.connected_stories()
         sections = [] 
         for section in self._sections_flat:
             sections.append(section.to_simple())
@@ -148,8 +151,7 @@ class BaseStructure(object):
                 sections[-1]['next_section_id'] = 'call-to-action'
             sections.append(call_to_action_section)
 
-            # TODO: Include connected stories in list
-            if self.story.allow_connected and self.story.connected_stories():
+            if self.story.allow_connected and connected_stories:
                 connected_stories_section = {
                     'section_id': 'connected-stories',
                     'title': _("Connected Stories"),
