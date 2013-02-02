@@ -95,9 +95,10 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
   },
   
   sizeFigCaption: function(el) {
-    this.$(el).next('figcaption').width($(el).width());
+    var width = $(el).width();
+    this.$(el).next('figcaption').width(width);
     // Resize the figure element as well
-    this.$(el).parent('figure').width($(el).width());
+    this.$(el).parent('figure').width(width);
   },
   
   sizeFigCaptions: function() {
@@ -105,7 +106,7 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
     // even under a hard refresh.
     var view = this;
     this.$('figure img, figure iframe').each(function() {
-      if (this.width) {
+      if ($(this).width()) {
         view.sizeFigCaption(this);
       }
       // however, set up a handler anyway.
