@@ -5598,7 +5598,7 @@ storybase.builder.views.FeaturedAssetAddView = Backbone.View.extend(
                 that.model.assets.add(model);
                 that.model.setFeaturedAsset(model);
                 // Reset the form
-                that.form.model = new this.options.assetModelClass({
+                that.form.model = new that.options.assetModelClass({
                   language: that.options.language,
                   type: 'image'
                 });
