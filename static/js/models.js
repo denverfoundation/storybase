@@ -256,9 +256,9 @@ storybase.models.Story = Backbone.Model.extend(
       var success = options.success;
       options.success = function(collection, resp, options) {
         if (success) success(collection, resp, options);
-        model.trigger("set:featuredasset", asset);
       };
       this.featuredAssets.reset(asset);
+      model.trigger("set:featuredasset", asset);
       this.featuredAssets.save(options);
     },
 
@@ -577,7 +577,7 @@ storybase.models.Asset = Backbone.Model.extend(
     /**
      * Build the schema for backbone-forms
      *
-     * This is done witha function instead of declaring an object because
+     * This is done with a function instead of declaring an object because
      * the fields differ depending on the type of asset.
      */
     schema: function() {
@@ -592,7 +592,6 @@ storybase.models.Asset = Backbone.Model.extend(
           source_url: {title: gettext("Source URL"), type: 'Text', validators: ['url']}
         };
         var type = this.get('type');
-        var self = this;
         // Remove fields that aren't relevant for a particular type
         _.each(schema, function(field, name, schema) {
           if (!this.formFieldVisible(name, type)) {
@@ -602,11 +601,11 @@ storybase.models.Asset = Backbone.Model.extend(
         if (!this.isNew()) {
           // For a saved model, only show the fields that have a value set.
           _.each(['image', 'url', 'body'], function(field) {
-            var value = self.get(field);
+            var value = this.get(field);
             if (!value) {
               delete schema[field];
             }
-          });
+          }, this);
         }
 
         return schema;
@@ -632,7 +631,7 @@ storybase.models.Asset = Backbone.Model.extend(
         if (_.has(attrs, attrName) && attrs[attrName]) {
           found.push(attrName);
         }
-      });
+      }, this);
       if (found.length > 1) {
         return "You must specify only one of the following values " + found.join(', ');
       }
