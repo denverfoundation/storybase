@@ -140,7 +140,9 @@ storybase.builder.views.AppView = Backbone.View.extend({
 
     // Initialize a view for the tools menu
     this.toolsView = new storybase.builder.views.ToolsView(
-      _.clone(commonOptions)
+      _.defaults({
+        previewURLTemplate: this.options.previewURLTemplate
+      }, commonOptions)
     );
     $toolsContainerEl.append(this.toolsView.el);
 
@@ -1166,6 +1168,7 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
     this.itemTemplate = this.getItemTemplate();
     this.activeStep = null;
     this.hasAssetList = false;
+    this.previewURLTemplate = Handlebars.compile(this.options.previewURLTemplate);
 
     this.dispatcher.on('ready:story', this.handleStorySave, this);
     this.dispatcher.on('save:story', this.handleStorySave, this);
@@ -1174,7 +1177,7 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
 
   previewStory: function(evt) {
     if (!$(evt.target).hasClass("disabled")) {
-      var url = '/stories/' + this.storyId + '/viewer/';
+      var url = this.previewURLTemplate({id: this.storyId});
       window.open(url);
     }
     evt.preventDefault();
@@ -1189,7 +1192,7 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
     var item = this.getItem('preview');
     if (!story.isNew() && _.isUndefined(this.storyId)) {
       this.storyId = story.id; 
-      item.path = '/stories/' + this.storyId + '/viewer/';
+      item.path = this.previewURLTemplate({id: this.storyId});
     }
     item.visible = true;
     this.render();

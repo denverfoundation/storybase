@@ -30,6 +30,8 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
     this.navigationView = new storybase.viewer.views.StoryNavigation({
       sections: this.options.sections
     }); 
+    // Has the view been rendered yet?
+    this._rendered = false;
     // TODO: Decide whether to re-enable updating the section title in the
     // header
     //this.headerView = new storybase.viewer.views.StoryHeader();
@@ -47,6 +49,8 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
     this.$('.section').show();
     this.sizeFigCaptions();
     this.$('.storybase-share-widget').storybaseShare();
+    this._rendered = true;
+    this.trigger("render");
     return this;
   },
 
@@ -91,9 +95,10 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
   },
   
   sizeFigCaption: function(el) {
-    this.$(el).next('figcaption').width($(el).width());
+    var width = $(el).width();
+    this.$(el).next('figcaption').width(width);
     // Resize the figure element as well
-    this.$(el).parent('figure').width($(el).width());
+    this.$(el).parent('figure').width(width);
   },
   
   sizeFigCaptions: function() {
@@ -101,7 +106,7 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
     // even under a hard refresh.
     var view = this;
     this.$('figure img, figure iframe').each(function() {
-      if (this.width) {
+      if ($(this).width()) {
         view.sizeFigCaption(this);
       }
       // however, set up a handler anyway.
@@ -562,11 +567,24 @@ storybase.viewer.views.LinearViewerApp = storybase.viewer.views.ViewerApp.extend
   },
 
   showConnectedStory: function(storyId) {
-    this.showingConnectedStory = true;
-    $(window).scrollTop(0);
-    this.$('.section').hide();
-    this.$('#connected-story-' + storyId).show();
-    this.navigationView.showConnectedStory();
+    if (!this._rendered) {
+      // The view hasn't been rendered yet.  Wait for this to happen
+      // before showing the connected story.  This happens if the
+      // a connected story path is accessed directly via the browser's
+      // location rather than by clicking on the connected story title in
+      // the view
+      this.on('render', function() {
+        this.showConnectedStory(storyId);
+      }, this);
+    }
+    else {
+      this.off('render');
+      this.showingConnectedStory = true;
+      $(window).scrollTop(0);
+      this.$('.section').hide();
+      this.$('#connected-story-' + storyId).show();
+      this.navigationView.showConnectedStory();
+    }
   }
 });
 

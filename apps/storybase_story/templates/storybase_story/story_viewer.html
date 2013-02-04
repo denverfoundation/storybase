@@ -66,10 +66,10 @@
 	      </section>
 	      {% endif %}
 
-          {% if story.allow_connected and story.connected_stories %}
+          {% if story.allow_connected and connected_stories %}
           <section id="connected-stories" class="section connected-stories">
             <h2 class="title">{% trans "Connected Stories" %}</h2>
-            {% for cs in story.connected_stories %}
+            {% for cs in connected_stories %}
             <div class="connected-story-item">
                 <h3><a href="#connected-stories/{{ cs.story_id }}">{{ cs.title }}</a></h3>
                 <p class="byline">{% trans "By" %} {{ story.byline|default:story.contributor_name }}</p>
@@ -77,7 +77,7 @@
             {% endfor %}
           </section>
 
-          {% for cs in story.connected_stories %}
+          {% for cs in connected_stories %}
           <section id="connected-story-{{ cs.story_id }}" class="connected-story" style="display:none;">
             {% connected_story cs %}
           </section>
@@ -91,7 +91,6 @@
             <button id="toggle-toc">Table of Contents <i class="icon-caret-up"></i></button>
           </nav>
 
-          {% fullurl story.get_absolute_url as full_story_url %}
           <a href="#" class="storybase-share-widget" data-story-id="{{ story.slug }}" data-options='{"appendeeSelector": "#footer", "alignment": "top right" }'>Share This Story</a>
         </footer>
     </div>
@@ -124,7 +123,7 @@
         Namespace('storybase.viewer');
         var story = new storybase.models.Story({{ story.structure.to_json }});
         var sections = new storybase.collections.Sections;
-        sections.reset({{ story.structure.sections_json }});
+        sections.reset({{ sections_json }});
         storybase.viewer.app = storybase.viewer.views.getViewerApp(
             storyStructureType,
             {

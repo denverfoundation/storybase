@@ -7,6 +7,7 @@ from django.contrib.auth.models import User
 from django.core import urlresolvers
 from django.core.cache import cache
 from django.db import models
+from django.db.models import Q
 from django.db.models.signals import post_save, pre_save, m2m_changed
 from django.template.loader import render_to_string
 from django.utils import simplejson
@@ -397,12 +398,18 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
     def natural_key(self):
         return (self.story_id,)
 
-    def connected_stories(self, published_only=True):
+    def connected_stories(self, published_only=True, draft_author=None):
         """Get a queryset of connected stories"""
         # Would this be better implemented as a related manager?
         qs = self.related_stories.filter(source__relation_type='connected')
         if published_only:
+            # By default only return published connected stories 
             qs = qs.filter(status='published')
+        elif draft_author:
+            # Alternately, include draft stories by a particular
+            # author
+            qs = qs.filter(Q(status='published') | Q(status='draft', author=draft_author))
+
         return qs
 
     def connected_to_stories(self):
