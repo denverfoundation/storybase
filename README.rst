@@ -11,6 +11,12 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.4.2
+~~~~~
+
+* Fix preview connected stories (#601)
+* Fix display of connected story byline (#607)
+
 0.4.1
 ~~~~~
 
