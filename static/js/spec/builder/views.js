@@ -496,13 +496,32 @@ describe('DrawerView', function() {
 });
 
 var MockStory = Backbone.Model.extend({
+  initialize: function(attributes, options) {
+    this.assets = new Backbone.Collection();
+  },
+
   // Mock story's save method so it doesn't try to do a request,
   save: function(attributes, options) {
     _.each(attributes, function(val, key) {
       this.set(key, val);
     }, this);
     return true;
+  },
+
+  // Stub the getFeaturedAsset method.  This can be overridden with
+  // spyOn().return() to change the behavior.
+  getFeaturedAsset: function() {
+    return undefined;
+  },
+
+  // Stub the setFeaturedAsset method. This can be overridden with
+  // spyOn() to change the behavior.
+  setFeaturedAsset: function(asset, options) {
   }
+});
+
+var MockAsset = Backbone.Model.extend({
+  idAttribute: 'asset_id'
 });
 
 describe('PublishButtonView', function() {
@@ -943,7 +962,6 @@ describe('LicenseView', function() {
 
 describe('FeaturedAssetDisplayView', function() {
   beforeEach(function() {
-    var MockAsset = Backbone.Model.extend();
     this.featuredAsset1 = new MockAsset({
         content: '<img class="asset-thumbnail featured-asset" alt="" src="/media/filer_thumbnails/2013/01/02/test_image1.jpg">' 
     });
@@ -961,13 +979,6 @@ describe('FeaturedAssetDisplayView', function() {
   });
 
   describe("when the story doesn't have a featured asset set", function() {
-    beforeEach(function() {
-      // Mock Story.getFeaturedAsset
-      this.story.getFeaturedAsset = function() {
-        return undefined;
-      };
-    });
-
     it("should show the default image", function() {
       expect(this.view.render().$el.html()).toContain(this.defaultImageUrl);
     });
@@ -975,12 +986,8 @@ describe('FeaturedAssetDisplayView', function() {
     describe("and a featured image is selected", function() {
       beforeEach(function() {
         expect(this.view.render().$el.html()).toContain(this.defaultImageUrl);
-        var that = this;
-        this.story.getFeaturedAsset = function() {
-          return that.featuredAsset1; 
-        };
-        this.story.featuredAssets = new Backbone.Collection();
-        this.story.featuredAssets.trigger("add");
+        // Stub Story.getFeaturedAsset
+        spyOn(this.story, "getFeaturedAsset").andReturn(this.featuredAsset1);
       });
 
       it("should show the featured image", function() {
@@ -992,11 +999,8 @@ describe('FeaturedAssetDisplayView', function() {
 
   describe("when the story has a featured image set", function() {
     beforeEach(function() {
-      // Mock Story.getFeaturedAsset
-      var that = this;
-      this.story.getFeaturedAsset = function() {
-        return that.featuredAsset1; 
-      };
+      // Stub Story.getFeaturedAsset
+      spyOn(this.story, "getFeaturedAsset").andReturn(this.featuredAsset1);
     });
 
     it("should show the featured image", function() {
@@ -1007,24 +1011,214 @@ describe('FeaturedAssetDisplayView', function() {
 
   describe("when the story's featured image changes", function() {
     beforeEach(function() {
-      // Mock Story.getFeaturedAsset
-      var that = this;
-      this.story.getFeaturedAsset = function() {
-        return that.featuredAsset1; 
-      };
+      // Stub Story.getFeaturedAsset
+      this.gfaStub = spyOn(this.story, "getFeaturedAsset").andReturn(this.featuredAsset1);
+      this.story.trigger("set:featuredasset");
     });
 
     it("should show the new featured image", function() {
       // Expect the old featured asset
       expect(this.view.render().$el.html()).toContain(this.featuredAsset1.get('content'));
       // Mock changing the featured image
-      var that = this;
-      this.story.getFeaturedAsset = function() {
-        return that.featuredAsset2; 
-      };
-      this.story.featuredAssets = new Backbone.Collection();
-      this.story.featuredAssets.trigger("add");
+      this.gfaStub.andReturn(this.featuredAsset2);
+      this.story.trigger("set:featuredasset");
       expect(this.view.render().$el.html()).toContain(this.featuredAsset2.get('content'));
     });
   });
+});
+
+describe('FeaturedAssetSelectView', function() {
+  beforeEach(function() {
+    this.story = new MockStory();
+    this.dispatcher = _.clone(Backbone.Events);
+    this.asset1 = new MockAsset({
+      asset_id: '0e279cbb85af43d9a9244c9b252edf71',
+      type: 'image',
+      content: '<img class="asset-thumbnail featured-asset" alt="" src="/media/filer_thumbnails/2013/01/02/test_image1.jpg">', 
+      thumbnail_url: '/media/filer_thumbnails/2013/01/02/test_image1__222x222_q85.jpg'
+    });
+    this.asset2 = new MockAsset({
+      asset_id: 'ecbe6e3f515a46259481c1efeb06d0b6',
+      type: 'image',
+      content: '<img class="asset-thumbnail featured-asset" alt="" src="/media/filer_thumbnails/2013/01/02/test_image2.jpg">', 
+      thumbnail_url: '/media/filer_thumbnails/2013/01/02/test_image2__222x222_q85.jpg'
+    });
+    this.asset3 = new MockAsset({
+      asset_id: '8e07570bb73940839026864cdb931501',
+      type: 'image',
+      content: '<img class="asset-thumbnail featured-asset" alt="" src="/media/filer_thumbnails/2013/01/02/test_image2.jpg">', 
+      thumbnail_url: '/media/filer_thumbnails/2013/01/02/test_image3__222x222_q85.jpg'
+    });
+    // Simulate SectionAssetEditView.addAsset's behavior
+    this.simulateAddAsset = function(asset) {
+      this.story.assets.add(asset);
+      // Simulate saving the assets to the server 
+      this.story.assets.trigger('sync');
+    };
+  });
+
+  describe("when initialized with a story with no image assets", function() {
+    beforeEach(function() {
+      this.view = new storybase.builder.views.FeaturedAssetSelectView({
+        dispatcher: this.dispatcher,
+        model: this.story
+      });
+    });
+
+    it('should show no images when rendered', function() {
+      expect(this.view.render().$('img').length).toEqual(0);
+    });
+
+    it('should show the images when an asset is added', function() {
+      expect(this.view.render().$('img').length).toEqual(0);
+      this.simulateAddAsset(this.asset1);
+      expect(this.view.$('img').length).toEqual(1);
+      expect(this.view.$el.html()).toContain(this.asset1.get('thumbnail_url'));
+    });
+  });
+
+  describe("when initialized with a story with image assets", function() {
+    beforeEach(function() {
+      this.story.assets.reset([this.asset1, this.asset2]);
+      this.view = new storybase.builder.views.FeaturedAssetSelectView({
+        dispatcher: this.dispatcher,
+        model: this.story
+      });
+    });
+
+    it('should show the images when rendered', function() {
+      expect(this.view.render().$('img').length).toEqual(2);
+      expect(this.view.$el.html()).toContain(this.asset1.get('thumbnail_url'));
+      expect(this.view.$el.html()).toContain(this.asset2.get('thumbnail_url'));
+    });
+
+    it("it should show new images when they're added", function() {
+      this.simulateAddAsset(this.asset3);
+      expect(this.view.$el.html()).toContain(this.asset1.get('thumbnail_url'));
+      expect(this.view.$el.html()).toContain(this.asset2.get('thumbnail_url'));
+      expect(this.view.$el.html()).toContain(this.asset3.get('thumbnail_url'));
+    });
+  });
+
+  describe("when rendered with a featured asset selected", function() {
+    beforeEach(function() {
+      this.story.assets.reset([this.asset1, this.asset2]);
+      // Stub Story.getFeaturedAsset
+      this.gfaStub = spyOn(this.story, "getFeaturedAsset").andReturn(this.asset1);
+      this.view = new storybase.builder.views.FeaturedAssetSelectView({
+        dispatcher: this.dispatcher,
+        model: this.story
+      });
+    });
+
+    it("should show the featured asset as highlighted when rendered", function() {
+      this.view.render();
+      expect(this.view.$('.selected').length).toEqual(1);
+      expect(this.view.$('.selected').first().html()).toContain(
+        this.asset1.get('thumbnail_url'));
+    });
+
+    describe("when a new featured asset is selected through another view", function() {
+      beforeEach(function() {
+        // Mock changing the featured image
+        this.story.assets.add(this.asset3);
+        this.gfaStub.andReturn(this.asset3);
+        this.story.trigger("set:featuredasset");
+      });
+
+      it("should show the new featured asset as selected", function() {
+        expect(this.view.$('.selected').length).toEqual(1);
+        expect(this.view.$('.selected').first().html()).toContain(
+          this.asset3.get('thumbnail_url'));
+      });
+    });  
+
+    describe("when a user clicks a thumbnail to select a featured asset", function() {
+      beforeEach(function() {
+        this.view.render();
+        var spec = this;
+        // Stub Story.setFeaturedAsset
+        this.sfaStub = spyOn(this.story, "setFeaturedAsset").andCallFake(function(asset, options) {
+          spec.gfaStub.andReturn(asset);
+          spec.story.trigger("set:featuredasset", asset);
+        });
+        // Find the element for this.asset2 and click it
+        this.sel = "img[src='" + this.asset2.get('thumbnail_url') + "']";
+      });
+
+      it("should show the clicked thumbnail as selected", function() {
+        this.view.$(this.sel).click();
+        expect(this.view.$('.selected').length).toEqual(1);
+        expect(this.view.$('.selected').first().html()).toContain(
+          this.asset2.get('thumbnail_url'));
+      });
+    });
+  });
+});
+
+// NOTE: We only test creating a new featured asset by URL because
+// I couldn't think of a clean way to trigger/mock the image
+// upload in JavaScript.
+describe("FeaturedAssetAddView", function() {
+   beforeEach(function() {
+     this.story = new MockStory();
+     this.dispatcher = _.clone(Backbone.Events);
+     // Stub the saving of the asset.  In a perfect world, we'd
+     // mock the entire class, but we'd have to repeat the 
+     // implementation of the schema method.
+     var MockSavingAsset = storybase.models.Asset.extend({
+       save: function(attributes, options) {
+         options = options || {};
+         _.each(attributes, function(val, key) {
+           this.set(key, val);
+         }, this);
+         if (options.success) {
+           options.success(this);
+         }
+         return true;
+       },
+     });
+     this.view = new storybase.builder.views.FeaturedAssetAddView({
+       dispatcher: this.dispatcher,
+       model: this.story,
+       defaultImageUrl: this.defaultImageUrl,
+       assetModelClass: MockSavingAsset
+     });
+   });
+
+   describe("when rendered", function() {
+     beforeEach(function() {
+       this.view.render();
+     });
+     
+     it("should show an input for a URL", function() {
+       expect(this.view.$('input[type=text][name=url]').length).toEqual(1);
+     });
+
+     it("should show an input for a file", function() {
+       expect(this.view.$('input[type=file]').length).toEqual(1);
+     });
+
+     it("should show a submit button", function() {
+       expect(this.view.$('[type=submit]').length).toEqual(1);
+     });
+
+     it("should show a reset button", function() {
+       expect(this.view.$('[type=reset]').length).toEqual(1);
+     });
+   });
+
+   describe("when the user specifies a URL", function() {
+     beforeEach(function() {
+       this.url = 'http://www.flickr.com/photos/79208145@N08/7803936842/';
+       this.sfaStub = spyOn(this.story, "setFeaturedAsset");
+       this.view.render();
+     });
+
+     it("should set the featured asset on the story when the form is submitted", function() {
+       this.view.$('[name=url]').val(this.url);
+       this.view.$('form').submit();
+       expect(this.sfaStub).toHaveBeenCalled();
+     });
+   });
 });
