@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.4.3
+~~~~~
+
+* Added link to connected stories in "Latest Stories" list on homepage (#609)
+
 0.4.2
 ~~~~~
 
