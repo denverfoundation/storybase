@@ -189,7 +189,7 @@ Handlebars.js templates for story builder Backbone application
 {{>help-icon}}
 <div class="wrapper">
     {{#if assetTypes}}
-    <ul class="asset-types">
+    <ul class="asset-types collapsed">
         {{#each assetTypes}}
             <li class="{{type}}">
               <a href="#" class="asset-type{{#unless available}} unavailable{{/unless}}{{#if suggested}} suggested{{/if}}" data-asset-type="{{type}}">{{name}}</a>

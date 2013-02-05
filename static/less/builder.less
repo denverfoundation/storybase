@@ -979,9 +979,11 @@ button.preview {
     position:relative;
     width:100%;
     margin:0 auto;
+    overflow:hidden;
+    height:180px;
+
     &:before {
-      //background: @visited-blue;
-      background:@light-gray;
+      background:@highlight-blue;
       color: white;
       font-family:"FontAwesome";
       content: "";
@@ -994,6 +996,21 @@ button.preview {
       left:37.5%;
       position:absolute;
     }
+
+    &.collapsed:before {
+      background:@light-gray;
+    }
+
+    &:hover {
+      cursor:pointer;
+      &:before {
+        background:@highlight-blue;
+      }
+    }
+
+    &.collapsed li {
+      display:none;
+    }
     
     @item-y-offset:45px;
     @item-height: 35px;
@@ -1002,7 +1019,7 @@ button.preview {
     li {
       position:absolute;
       list-style:none !important;
-      
+
       &.image, &.audio, &.video, &.map,
       &.chart, &.table, &.quotation, &.text {
         a {
@@ -1011,7 +1028,6 @@ button.preview {
           font-family:"Museo300Regular";
           color:@gray;
           line-height:22px; // ???
-          
           
           &:after {
             .rounded-corners(3px);

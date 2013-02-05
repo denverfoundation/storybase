@@ -3817,6 +3817,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
     },
 
     events: {
+      "click .asset-types": "toggleTypeListVisible",
       "click .asset-type": "selectType", 
       "click .remove": "remove",
       "click .edit": "edit",
@@ -4039,6 +4040,10 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       if (!$(e.target).hasClass('unavailable')) {
         this.setType($(e.target).data('asset-type'));
       }
+    },
+
+    toggleTypeListVisible: function(e) {
+      $(e.target).toggleClass('collapsed');
     },
 
     setType: function(type) {
