@@ -112,12 +112,12 @@ class ExploreStoriesView(TemplateView):
 
 class StoryDetailView(ModelIdDetailView):
     context_object_name = "story"
-    queryset = Story.objects.all()
+    queryset = Story.objects.exclude(source__relation_type='connected')
 
 
 class StoryViewerView(ModelIdDetailView):
     context_object_name = "story"
-    queryset = Story.objects.all()
+    queryset = Story.objects.exclude(source__relation_type='connected')
     template_name = 'storybase_story/story_viewer.html'
 
     def get_context_data(self, **kwargs):
