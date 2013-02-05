@@ -1,0 +1,2 @@
+{% extends "storybase/latest_objects.html" %}{% load i18n %}
+{% block "extra" %}{% if object.connected_count %}<a href="{{ object.url }}#connected" class="extra connected-link"><i class="icon-comments-alt"></i>{{ object.connected_count }} {% blocktrans count connected_count=object.connected_count %}connected story{% plural %}connected stories{% endblocktrans %}!</a>{% endif %}{% endblock %}
