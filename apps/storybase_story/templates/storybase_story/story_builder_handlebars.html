@@ -371,6 +371,7 @@ Handlebars.js templates for story builder Backbone application
 <div class="container_12">
     <div class="left grid_8 alpha">
         <h2 class="title">Publish and Share Your Story</h2>
+        <div id="share-legal"></div>
         <div id="published-buttons"></div>
         <ol id="publish-steps"></ol>
     </div>
@@ -420,25 +421,17 @@ Handlebars.js templates for story builder Backbone application
 </script>
 
 <script type="text/x-handlebars-template" id="share-legal-template">
-<h3>{{title}}</h3>
-<p class="introduction">{{gettext "In order to publish and share your story, you need to double-check a few legal details."}} <a href="#">{{gettext "Read the Floodlight Terms of Service"}}</a>.</p>
-</script>
-
-<script type="text/x-handlebars-template" id="share-permission-field-template">
-<input type="checkbox" name="permission" value="permission" /> {{gettext "I have the necessary ownership/rights/permissions to legally distribute the content in this story."}}
+<p>{{gettext "You are ready to share your story with the world! Before you publish, did you remember to"}} &hellip;</p>
 <ul>
-    <li>{{gettext "The content in this story doesn’t violate copyright law or infringe on a third party’s trademark, trade secret, proprietary data or patent"}}.</li>
-    <li>{{gettext "I have properly cited or credited any content that I did not create myself."}}</li>
-    <li>{{gettext "If this story has any photos or videos of children (under 18), I have obtained the proper parent or guardian release forms."}}<br /><br />{{gettext "Note: You can download a sample release form as a <a href='https://docs.google.com/document/d/1wmLKCuDhK2rdgGnvQIJAG7X37yzpNlh7J6v0hGogVTg/edit' class='popup'>Google doc</a> or <a href='/media/filer/2012/11/07/sample_photo_release.docx'>Word doc</a>.  For more information about using photos or videos of people in your Floodlight stories, visit our <a href='/grow-your-skills/resources/' class='popup'>Resources page</a>."}}</li>
+    <li>{{gettext "Obtain the proper release forms for photos or videos of children in your story? You can download a sample release form as a <a href='https://docs.google.com/document/d/1wmLKCuDhK2rdgGnvQIJAG7X37yzpNlh7J6v0hGogVTg/edit'>Google doc</a> or <a href='/media/filer/2012/11/07/sample_photo_release.docx'>Word doc</a>."}}</li>
+    <li>{{gettext "Properly cite or credit any content you didn’t create  yourself?"}}</li>
 </ul>
-</script>
-
-<script type="text/x-handlebars-template" id="share-license-field-template">
-<input type="checkbox" name="license" value="license" /> {{gettext "I participate in Floodlight’s cooperative distribution by publishing my story under a Creative Commons license. This means that I remain the owner of this story, but that my content can be featured on the site and redistributed by others. Learn more about Creative Commons."}}    
+<p>{{gettext "See our <a href='/policies/'>policies</a> page for the Floodlight <a href='/policies/#community-values'>community values</a> and <a href='/policies/#master-terms-of-use'>terms of use</a>. For information about using photos or videos of people in your Floodlight stories, visit our <a href='/grow-your-skills/resources/'>resources</a> page."}}</p>
 </script>
 
 <script type="text/x-handlebars-template" id="share-license-template">
 <h3>{{title}}</h3>
+<p>{{gettext "All Floodlight stories will be published with a <a href=\"http://creativecommons.org/\" title=\"Creative Commons\">Creative Commons</a> license. Find out more about <a href=\"/policies/#community-values\">why we decided to use Creative Commons</a> and <a href=\"/policies/#using-creative-commons\">how to choose a license</a>."}}</p>
 <div id="cc-license"></div>
 </script>
 

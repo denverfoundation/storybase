@@ -4928,106 +4928,6 @@ storybase.builder.views.TagView = Backbone.View.extend({
 });
 
 
-storybase.builder.views.LegalView = Backbone.View.extend({
-  id: 'share-legal',
-
-  templateSource: $('#share-legal-template').html(),
-
-  events: {
-    'change form': 'processForm'
-  },
-
-  options: {
-    'title': gettext("Accept the legal agreement")
-  },
-
-  // Schema for form
-  schema: function () {
-    var isChecked = storybase.forms.isChecked;
-    return {
-      permission: { 
-        type: 'Checkboxes',
-        title: '',
-        options: Handlebars.compile($('#share-permission-field-template').html())(),
-        validators: [isChecked]
-      },
-      license: {
-        type: 'Checkboxes',
-        title: '',
-        options: Handlebars.compile($('#share-license-field-template').html())(),
-        validators: [isChecked]
-      }
-    };
-  },
-
-  initialize: function() {
-    this.dispatcher = this.options.dispatcher;
-    this.template = Handlebars.compile(this.templateSource);
-    this.hasPermission = this.model && this.model.get('status') === 'published';
-    this.agreedLicense = this.model && this.model.get('status') === 'published';
-    this.form = new Backbone.Form({
-      schema: this.schema(),
-      data: {
-        permission: this.hasPermission,
-        license: this.agreedLicense
-      }
-    });
-    if (_.isUndefined(this.model)) {
-      this.dispatcher.on("ready:story", this.setStory, this);
-    }
-  },
-
-  setStory: function(story) {
-    this.model = story;
-  },
-
-  validate: function() {
-    var formValues = this.form.getValue();
-    var errors = this.form.validate();
-    if (!errors) {
-      this.hasPermission = true;
-      this.agreedLicense = true;
-      return true;
-    }
-    else {
-      return false;
-    }
-  },
-
-  processForm: function(evt) {
-    if (this.validate()) {
-      this.dispatcher.trigger("accept:legal");
-    }
-  },
-
-  /**
-   * Workaround for limitations of form initial value setting.
-   */
-  updateFormDefaults: function() {
-    // HACK: Work around weird setValue implementation for checkbox
-    // type.  Maybe make a custom editor that does it right.
-    this.form.fields.permission.editor.$('input[type=checkbox]').prop('checked', this.hasPermission);
-    this.form.fields.license.$('input[type=checkbox]').prop('checked', this.agreedLicense);
-  },
-
-  render: function(options) {
-    options = options || {};
-    this.$el.html(this.template({
-      title: this.options.title
-    }));
-    this.form.render();
-    this.updateFormDefaults();
-    this.$el.append(this.form.el);
-    this.delegateEvents();
-
-    return this;
-  },
-
-  completed: function() {
-    return this.agreedLicense && this.hasPermission;
-  }
-});
-
 storybase.builder.views.LicenseDisplayView = Backbone.View.extend({
   id: 'cc-license',
 
@@ -5192,6 +5092,7 @@ storybase.builder.views.PublishViewBase = Backbone.View.extend({
    */
   setStory: function(story) {
     this.model = story;
+    this.initListeners();
   },
 
   /**
@@ -5201,17 +5102,21 @@ storybase.builder.views.PublishViewBase = Backbone.View.extend({
     return this.model ? (this.model.get('status') === "published") : false;
   },
 
+  initListeners: function() {
+    // If the model isn't defined at initialization (usually when creating
+    // a new story), wire up a listener to set it when the story is ready.
+    if (_.isUndefined(this.model)) {
+      this.dispatcher.once("ready:story", this.setStory, this);
+    }
+  },
+
   initialize: function() {
     // Compile the template for the view
     if (this.options.templateSource) {
       this.template = Handlebars.compile(this.options.templateSource);
     }
     this.dispatcher = this.options.dispatcher;
-    // If the model isn't defined at initialization (usually when creating
-    // a new story), wire up a listener to set it when the story is ready.
-    if (_.isUndefined(this.model)) {
-      this.dispatcher.on("ready:story", this.setStory, this);
-    }
+    this.initListeners();
   }
 });
 
@@ -5232,18 +5137,16 @@ storybase.builder.views.PublishView = storybase.builder.views.PublishViewBase.ex
       publishedButtonsEl: '#published-buttons',
       // Selector for the element (defined in templateSource) that 
       // contains the subviews
-      subviewEl: '#publish-steps'
+      subviewEl: '#publish-steps',
+      // Selector for the element (defined in templateSource) that
+      // contains the legal information for the story
+      legalEl: '#share-legal'
     },
 
     initialize: function() {
       var navViewOptions;
  
       storybase.builder.views.PublishViewBase.prototype.initialize.apply(this);
-      this.legalView = new storybase.builder.views.LegalView({
-        model: this.model,
-        dispatcher: this.dispatcher,
-        tagName: 'li'
-      });
       this.licenseView = new storybase.builder.views.LicenseView({
         model: this.model,
         dispatcher: this.dispatcher,
@@ -5262,8 +5165,11 @@ storybase.builder.views.PublishView = storybase.builder.views.PublishViewBase.ex
         model: this.model
       });
       this.todoView.register(this.licenseView, "select:license");
-      this.todoView.register(this.legalView, "accept:legal");
       this.todoView.update({render: false});
+      this.legalView = new storybase.builder.views.LegalView({
+        dispatcher: this.dispatcher,
+        model: this.model
+      });
       this.buttonView = new storybase.builder.views.PublishButtonView({
         dispatcher: this.dispatcher,
         model: this.model,
@@ -5275,7 +5181,7 @@ storybase.builder.views.PublishView = storybase.builder.views.PublishViewBase.ex
         model: this.model,
         viewURLTemplate: this.options.viewURLTemplate
       });
-      this.subviews = [this.legalView, this.licenseView, this.featuredAssetView, this.buttonView];
+      this.subviews = [this.licenseView, this.featuredAssetView, this.buttonView];
 
       navViewOptions = {
         model: this.model,
@@ -5339,6 +5245,7 @@ storybase.builder.views.PublishView = storybase.builder.views.PublishViewBase.ex
       _.each(this.subviews, function(view) {
         this.addSubviewEl(view.render().el);
       }, this);
+      this.legalView.setElement(this.$('#share-legal')).render();
       this.publishedButtonsView.setElement(this.$(this.options.publishedButtonsEl)).render();
       if (this.options.showSharing) {
         this.renderSharing();
@@ -5363,6 +5270,45 @@ storybase.builder.views.PublishView = storybase.builder.views.PublishViewBase.ex
   })
 );
 
+storybase.builder.views.LegalView = storybase.builder.views.PublishViewBase.extend({
+  id: 'share-legal',
+
+  options: {
+    templateSource: $('#share-legal-template').html()
+  },
+
+  initListeners: function() {
+    if (_.isUndefined(this.model)) {
+      this.dispatcher.once("ready:story", this.setStory, this);
+    }
+    else {
+      this.listenTo(this.model, "change:status", this.render);
+    }
+  },
+
+  initialize: function() {
+    storybase.builder.views.PublishViewBase.prototype.initialize.apply(this);
+    this._rendered = false;
+    this.$el.hide();
+  },
+
+  render: function() {
+    if (!this._rendered) {
+      this.$el.html(this.template());
+      this._rendered = true;
+    }
+    if (this.storyPublished()) {
+      this.$el.hide();
+    }
+    else {
+      this.$el.show();
+    }
+    return this;
+  },
+
+  completed: true
+});
+
 storybase.builder.views.FeaturedAssetDisplayView = Backbone.View.extend({
   id: 'featured-asset-display',
 
@@ -5371,21 +5317,21 @@ storybase.builder.views.FeaturedAssetDisplayView = Backbone.View.extend({
     defaultImageAlt: gettext('Default story image'),
   },
 
-  _initListeners: function() {
+  initListeners: function() {
     if (this.model) {
       this.listenTo(this.model, "set:featuredasset", this.render);
     }
     else {
       this.dispatcher.once("ready:story", function(story) {
         this.model = story;
-        this._initListeners();
+        this.initListeners();
       }, this);
     }
   },
 
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
-    this._initListeners();
+    this.initListeners();
   },
 
   enabled: true,
@@ -5426,7 +5372,7 @@ storybase.builder.views.FeaturedAssetSelectView = Backbone.View.extend({
     templateSource: $('#featured-asset-select-template').html()
   },
 
-  _initListeners: function() {
+  initListeners: function() {
     if (_.isUndefined(this.model)) {
       this.dispatcher.once("ready:story", this.setStory, this);
     }
@@ -5442,13 +5388,13 @@ storybase.builder.views.FeaturedAssetSelectView = Backbone.View.extend({
 
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
-    this._initListeners();
+    this.initListeners();
     this.template = Handlebars.compile(this.options.templateSource);
   },
 
   setStory: function(story) {
     this.model = story;
-    this._initListeners();
+    this.initListeners();
   },
 
   enabled: function() {
@@ -5523,12 +5469,12 @@ storybase.builder.views.FeaturedAssetAddView = Backbone.View.extend(
       this.template = Handlebars.compile(this.options.templateSource);
       this.dispatcher = this.options.dispatcher;
       this.form = this._initForm();
-      this._initListeners();
+      this.initListeners();
     },
 
     enabled: true,
 
-    _initListeners: function() {
+    initListeners: function() {
       this.dispatcher.once('ready:story', this.setStory, this);
     },
 
@@ -5672,7 +5618,7 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend({
     selectViewClass: storybase.builder.views.FeaturedAssetSelectView
   },
 
-  _initListeners: function() {
+  initListeners: function() {
     if (this.model) {
       this.listenTo(this.model.assets, "add remove", this.render);
       this.listenTo(this.model, "set:featuredasset", this.switchToDisplay);
@@ -5706,7 +5652,7 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend({
     this._activeViewId = this.displayView.id;
     this._rendered = false;
 
-    this._initListeners();
+    this.initListeners();
   },
 
   // Always true because the default image will be used if the user
@@ -5718,7 +5664,7 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend({
     this.model.setFeaturedAssets(
       new storybase.collections.FeaturedAssets
     );
-    this._initListeners();
+    this.initListeners();
   },
 
   handleNavClick: function(evt) {
@@ -5925,7 +5871,8 @@ storybase.builder.views.PublishedButtonsView = storybase.builder.views.PublishVi
   },
 
   options: {
-    templateSource: $('#published-buttons-template').html()
+    templateSource: $('#published-buttons-template').html(),
+    viewURLTemplate: '/stories/{{slug}}/viewer/'
   },
 
   initialize: function() {
