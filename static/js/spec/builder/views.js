@@ -1222,3 +1222,130 @@ describe("FeaturedAssetAddView", function() {
      });
    });
 });
+
+describe("FeaturedAssetView", function() {
+   beforeEach(function() {
+     // Mock the subviews. We're not testing them.
+     this.MockFeaturedAssetAddView = Backbone.View.extend({
+       id: 'featured-asset-add',
+       options: {
+         title: "Current image"
+       },
+       enabled: true
+     });
+     this.MockFeaturedAssetDisplayView = Backbone.View.extend({
+       id: 'featured-asset-display',
+       options: {
+         title: "Add a new image"
+       },
+       enabled: true
+     });
+     this.MockFeaturedAssetSelectView = Backbone.View.extend({
+       id: 'featured-asset-select',
+       options: {
+         title: "Select an image from the story"
+       },
+       enabled: false
+     });
+     this.getNavItem = function(view) {
+       return this.view.$('[href=#' + view.id + ']'); 
+     };
+     this.story = new MockStory();
+     this.dispatcher = _.clone(Backbone.Events);
+     this.view = new storybase.builder.views.FeaturedAssetView({
+       model: this.story,
+       addViewClass: this.MockFeaturedAssetAddView,
+       displayViewClass: this.MockFeaturedAssetDisplayView,
+       selectViewClass: this.MockFeaturedAssetSelectView,
+       dispatcher: this.dispatcher
+     });
+     // Append the view's element to the DOM so we can test
+     // for visibility
+     $('#sandbox').append(this.view.$el);
+
+   });
+
+   describe("when initially rendered", function() {
+     beforeEach(function() {
+       this.view.render();
+     });
+
+     it("should show the display subview and hide the other subviews", function() {
+       expect(this.view.displayView.$el.is(':hidden')).toBeFalsy();
+       expect(this.view.addView.$el.is(':hidden')).toBeTruthy();
+       expect(this.view.selectView.$el.is(':hidden')).toBeTruthy();
+     });
+
+     it("should show a navigation element", function() {
+       expect(this.view.$('.nav').length).toEqual(1);
+     });
+
+     it("should show only the display view's navigation item as active", function() {
+       expect(this.getNavItem(this.view.displayView).parent().hasClass('active')).toBeTruthy(); 
+       expect(this.getNavItem(this.view.addView).parent().hasClass('active')).toBeFalsy(); 
+       expect(this.getNavItem(this.view.selectView).parent().hasClass('active')).toBeFalsy(); 
+     });
+   });
+
+  describe("when the add view's navigation item is clicked", function() {
+    beforeEach(function() {
+      this.view.render();
+      this.getNavItem(this.view.addView).click();
+    });
+
+    it("should show the add subview and hide the other subviews", function() {
+      expect(this.view.displayView.$el.is(':hidden')).toBeTruthy();
+      expect(this.view.addView.$el.is(':hidden')).toBeFalsy();
+      expect(this.view.selectView.$el.is(':hidden')).toBeTruthy();
+    });
+
+    it("should show only the add subview's navigation item as active", function() {
+       expect(this.getNavItem(this.view.displayView).parent().hasClass('active')).toBeFalsy(); 
+       expect(this.getNavItem(this.view.addView).parent().hasClass('active')).toBeTruthy(); 
+       expect(this.getNavItem(this.view.selectView).parent().hasClass('active')).toBeFalsy(); 
+    });
+
+    describe("when a featured image is selected", function() {
+      beforeEach(function() {
+        this.story.trigger("set:featuredasset");
+      });
+
+      it("should switch back to showing the display subview", function() {
+       expect(this.view.displayView.$el.is(':hidden')).toBeFalsy();
+       expect(this.view.addView.$el.is(':hidden')).toBeTruthy();
+       expect(this.view.selectView.$el.is(':hidden')).toBeTruthy();
+       expect(this.getNavItem(this.view.displayView).parent().hasClass('active')).toBeTruthy(); 
+       expect(this.getNavItem(this.view.addView).parent().hasClass('active')).toBeFalsy(); 
+       expect(this.getNavItem(this.view.selectView).parent().hasClass('active')).toBeFalsy(); 
+      });
+    });
+  });
+
+  describe("when the select subview is disabled", function() {
+     beforeEach(function() {
+       this.view.selectView.enabled = false;
+       this.view.render();
+     });
+    it("should show the select subview's nav item as disabled", function() {
+       expect(this.getNavItem(this.view.selectView).parent().hasClass('disabled')).toBeTruthy(); 
+    });
+
+    it("should not change the the displayed view when the select subview's navigation item is clicked", function() {
+       this.getNavItem(this.view.selectView).click();
+       expect(this.getNavItem(this.view.selectView).parent().hasClass('active')).toBeFalsy(); 
+       expect(this.view.selectView.$el.is(':hidden')).toBeTruthy();
+    });
+
+    describe("when an asset is added to the story", function() {
+      beforeEach(function() {
+        var asset = new MockAsset(); 
+        this.view.selectView.enabled = true;
+        this.story.assets.add(asset);
+      });
+
+      it("should enable the navigation item for the select subview", function() {
+        expect(this.getNavItem(this.view.selectView).parent().hasClass('disabled')).toBeFalsy();
+      });
+    });  
+  });  
+});

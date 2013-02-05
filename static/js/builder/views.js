@@ -5361,56 +5361,54 @@ storybase.builder.views.PublishView = storybase.builder.views.PublishViewBase.ex
   })
 );
 
-storybase.builder.views.FeaturedAssetDisplayView = Backbone.View.extend(
-  _.extend({}, Backbone.Events, {
-    id: 'featured-asset-display',
+storybase.builder.views.FeaturedAssetDisplayView = Backbone.View.extend({
+  id: 'featured-asset-display',
 
-    options: {
-      title: gettext("Current image"),
-      defaultImageAlt: gettext('Default story image'),
-    },
+  options: {
+    title: gettext("Current image"),
+    defaultImageAlt: gettext('Default story image'),
+  },
 
-    _initListeners: function() {
-      if (this.model) {
-        this.listenTo(this.model, "set:featuredasset", this.render);
-      }
-      else {
-        this.dispatcher.once("ready:story", function(story) {
-          this.model = story;
-          this._initListeners();
-        }, this);
-      }
-    },
-
-    initialize: function() {
-      this.dispatcher = this.options.dispatcher;
-      this._initListeners();
-    },
-
-    enabled: true,
-
-    render: function() {
-      var featuredAsset;
-
-      if (this.model) {
-        featuredAsset = this.model.getFeaturedAsset();  
-        if (featuredAsset) {
-          // If the model is defined and it has a featured asset,
-          // display the featured asset.
-          this.$el.html(featuredAsset.get('content'));
-          return this;
-        }
-      }
-     
-      // The model isn't defined, or there's no featured asset, show the
-      // default image
-      this.$el.html('<img src="' + this.options.defaultImageUrl + 
-                    '" alt="' + this.options.defaultImageAlt +
-                    '" />');
-      return this;
+  _initListeners: function() {
+    if (this.model) {
+      this.listenTo(this.model, "set:featuredasset", this.render);
     }
-  })
-);
+    else {
+      this.dispatcher.once("ready:story", function(story) {
+        this.model = story;
+        this._initListeners();
+      }, this);
+    }
+  },
+
+  initialize: function() {
+    this.dispatcher = this.options.dispatcher;
+    this._initListeners();
+  },
+
+  enabled: true,
+
+  render: function() {
+    var featuredAsset;
+
+    if (this.model) {
+      featuredAsset = this.model.getFeaturedAsset();  
+      if (featuredAsset) {
+        // If the model is defined and it has a featured asset,
+        // display the featured asset.
+        this.$el.html(featuredAsset.get('content'));
+        return this;
+      }
+    }
+   
+    // The model isn't defined, or there's no featured asset, show the
+    // default image
+    this.$el.html('<img src="' + this.options.defaultImageUrl + 
+                  '" alt="' + this.options.defaultImageAlt +
+                  '" />');
+    return this;
+  }
+});
 
 storybase.builder.views.FeaturedAssetSelectView = Backbone.View.extend({
   id: 'featured-asset-select',
@@ -5666,7 +5664,10 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend({
   options: {
     title: gettext("Select a featured image"),
     templateSource: $('#featured-asset-template').html(),
-    navItemTemplateSource: '<li{{#if class}} class="{{class}}"{{/if}}><a href="#{{viewId}}">{{title}}</li>'
+    navItemTemplateSource: '<li{{#if class}} class="{{class}}"{{/if}}><a href="#{{viewId}}">{{title}}</li>',
+    addViewClass: storybase.builder.views.FeaturedAssetAddView,
+    displayViewClass: storybase.builder.views.FeaturedAssetDisplayView,
+    selectViewClass: storybase.builder.views.FeaturedAssetSelectView
   },
 
   _initListeners: function() {
@@ -5685,17 +5686,17 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend({
     this.template = Handlebars.compile(this.options.templateSource);
     this.navItemTemplate = Handlebars.compile(
       this.options.navItemTemplateSource);
-    this.displayView = new storybase.builder.views.FeaturedAssetDisplayView({
+    this.displayView = new this.options.displayViewClass({
       defaultImageUrl: this.options.defaultImageUrl,
       dispatcher: this.dispatcher,
       model: this.model
     });
-    this.addView = new storybase.builder.views.FeaturedAssetAddView({
+    this.addView = new this.options.addViewClass({
       dispatcher: this.dispatcher,
       model: this.model,
       language: this.options.language
     });
-    this.selectView = new storybase.builder.views.FeaturedAssetSelectView({
+    this.selectView = new this.options.selectViewClass({
       dispatcher: this.dispatcher,
       model: this.model
     });
