@@ -22,7 +22,9 @@
     <tbody>
        {% for story in stories_list %}
         <tr>
-            <td><a class="view"  href="{{ story.get_absolute_url }}">{{ story }}</a></td>
+            <td>{% with connected_to=story.connected_to %}
+                {% if connected_to %}{{ story }} <a href="{{ connected_to.get_absolute_url }}" title="{% trans "Connected to" %} {{ connected_to }}"><i class="icon-comments-alt"></i></a>{% else %}<a class="view"  href="{{ story.get_absolute_url }}">{{ story }}</a>{% endif %}
+            {% endwith %}</td>
             <td class="last-edited">{{ story.last_edited }}</td>
             <td>
               <span class="status">{{ story.status|capfirst }}</span>

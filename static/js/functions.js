@@ -50,7 +50,6 @@
 			});
 		}
 
-
 		//Drop down
 		$('.dd').hide();
 		$('.megamenu ul li').hover(function(){ 
@@ -108,6 +107,13 @@
 		});
 		
 		$('.storybase-share-widget').storybaseShare();
+
+    // Analytics events 
+    if (window._gaq) {
+      $('.homepage .latest .connected-link').click(function() {
+        _gaq.push(['_trackEvent', 'Links', 'Latest stories connected']);
+      });
+    }
 	});
 
 
@@ -142,7 +148,6 @@
 
 
 	// misc functions
-	
 
 	// @todo: this whole file needs to be cleaned up/refactored,
 	// but might be nice to have global methods like this in a nice

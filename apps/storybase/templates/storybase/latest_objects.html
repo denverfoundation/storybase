@@ -5,6 +5,7 @@
             {{ object.image_html|safe }}
         </a>
         <a href="{{ object.url }}" title="{{ object.title }}" class="title-wrapper">{{ object.title }}</a>
+        {% block "extra" %}{% endblock %}
     </li>
     {% endfor %}
 </ul>

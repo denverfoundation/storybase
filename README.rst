@@ -11,6 +11,19 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.4.3
+~~~~~
+
+* Added link to connected stories in "Latest Stories" list on homepage (#609)
+
+0.4.2
+~~~~~
+
+* Fix preview connected stories (#601)
+* Fix display of connected story byline (#607)
+* Hide connected stories in latest story list and make their detail
+  and viewer views inaccessible (#609)
+
 0.4.1
 ~~~~~
 

@@ -8,7 +8,8 @@ from time import sleep
 from django.conf import settings
 from django.core.cache import cache
 from django.contrib.auth.models import User
-from django.http import HttpRequest
+from django.http import HttpRequest, Http404
+from django.template import Context, Template
 from django.test import TestCase
 from django.utils import simplejson
 
@@ -31,7 +32,8 @@ from storybase_story.models import (Container, Story, StoryTranslation,
     StoryRelation,
     create_story, create_section, set_asset_license)
 from storybase_story.templatetags.story import container
-from storybase_story.views import StoryBuilderView, StoryViewerView
+from storybase_story.views import (StoryBuilderView, StoryDetailView,
+        StoryViewerView)
 from storybase_taxonomy.models import Category, create_category
 from storybase_user.models import (Organization, Project,
         OrganizationMembership, ProjectMembership,
@@ -629,6 +631,22 @@ class StorySignalsTest(TestCase):
         self._test_invalidate_related_cache('projects', 'projects',
                                             'clear', project)
 
+    def test_update_last_edited_for_connected(self):
+        user = User.objects.create_user(username='test',
+                email='test@floodlightproject.org',
+                password='password')
+        story1 = create_story(title="Test Story", 
+                summary="Test summary", byline="Test byline", 
+                author=user, status='published', allow_connected=True)
+        connected_story = create_story(title="Test Connected Story",
+                author=user, byline="Test byline", status="draft")
+        StoryRelation.objects.create(source=story1, target=connected_story,
+                relation_type='connected')
+        old_last_edited = story1.last_edited
+        connected_story.status = 'published'
+        connected_story.save()
+        story1 = Story.objects.get(story_id=story1.story_id)
+        self.assertTrue(old_last_edited < story1.last_edited)
 
 
 class StoryAdminTest(TestCase):
@@ -992,6 +1010,28 @@ class StoryBuilderViewTest(TestCase):
                 self.assertIn(asset.asset_id, asset_ids)
 
 
+class StoryDetailViewTest(TestCase):
+    def test_connected_story_404(self):
+        """
+        Test that when trying to access the detail view for a 
+        connected story, the user gets a 404 error.
+        """
+        user = User.objects.create_user(username='test',
+                email='test@floodlightproject.org',
+                password='password')
+        story1 = create_story(title="Test Story", 
+                summary="Test summary", byline="Test byline", 
+                author=user, status='published', allow_connected=True)
+        connected_story = create_story(title="Test Connected Story",
+                author=user, byline="Test byline", status="published")
+        StoryRelation.objects.create(source=story1, target=connected_story,
+                relation_type='connected')
+        req = HttpRequest()
+        req.method = 'GET'
+        view = StoryDetailView()
+        self.assertRaises(Http404, view.dispatch, req, story_id=connected_story.story_id)
+
+
 class StoryViewerViewTest(TestCase):
     def setUp(self):
         self.username = 'test'
@@ -1076,6 +1116,23 @@ class StoryViewerViewTest(TestCase):
         self.assertIn(story, connected)
         self.assertNotIn(story2, connected)
         self.assertIn(story3, connected)
+
+    def test_connected_story_404(self):
+        """
+        Test that when trying to access the story viewer for a 
+        connected story, the user gets a 404 error.
+        """
+        story1 = create_story(title="Test Story", 
+                summary="Test summary", byline="Test byline", 
+                author=self.user, status='published', allow_connected=True)
+        connected_story = create_story(title="Test Connected Story",
+                author=self.user, byline="Test byline", status="published")
+        StoryRelation.objects.create(source=story1, target=connected_story,
+                relation_type='connected')
+        req = HttpRequest()
+        req.method = 'GET'
+        view = StoryViewerView()
+        self.assertRaises(Http404, view.dispatch, req, story_id=connected_story.story_id)
 
 
 class SectionModelTest(TestCase, SloppyComparisonTestMixin):
@@ -1200,6 +1257,31 @@ class TemplateTagTest(TestCase):
         self.assertEqual(html, assets[0].render_html())
         html = container(context, "right")
         self.assertEqual(html, assets[1].render_html())
+
+    def test_latest_stories_no_connected(self):
+        """
+        Test that the latest_stories template tag doesn't include any
+        connected stories.
+        """
+        user = User.objects.create_user(username='test',
+                email='test@floodlightproject.org',
+                password='password')
+        story1 = create_story(title="Test Story", 
+                summary="Test summary", byline="Test byline", 
+                author=user, status='published', allow_connected=True)
+        story2 = create_story(title="Test Story 2", 
+                summary="Test summary", byline="Test byline", 
+                author=user, status='published')
+        connected_story = create_story(title="Test Connected Story",
+                author=user, byline="Test byline", status="published")
+        StoryRelation.objects.create(source=story1, target=connected_story,
+                relation_type='connected')
+        t = Template("{% load story %}{% latest_stories %}")
+        c = Context()
+        rendered = t.render(c)
+        self.assertIn(story1.title, rendered)
+        self.assertIn(story2.title, rendered)
+        self.assertNotIn(connected_story.title, rendered)
 
 
 class SectionRenderTest(TestCase):
