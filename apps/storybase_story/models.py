@@ -528,7 +528,7 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
         differently-named attributes that hold similar information.
 
         """
-        return {
+        context = {
             "type": _("Story"),
             "title": self.title,
             "author": self.contributor_name, 
@@ -539,6 +539,13 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
             "more_link_text": _("View All Stories"),
             "more_link_url": urlresolvers.reverse("explore_stories"),
         }
+
+        if not self.allow_connected:
+            return context
+
+        context['connected_count'] = self.connected_stories().count()
+
+        return context
 
 
 def set_story_slug(sender, instance, **kwargs):
@@ -655,11 +662,28 @@ def invalidate_projects_cache(sender, instance, **kwargs):
     invalidate_related_cache(sender, instance, 'projects', **kwargs)
 
 
+def update_last_edited_for_connected(sender, instance, **kwargs):
+    """
+    Update the last_edited field on the seed story when a 
+    connected story is published.
+    """
+    if instance.status == 'published':
+        dirty_fields = instance.get_dirty_fields()
+        if 'status' in dirty_fields:
+            # Story is being published
+            connected_to = instance.connected_to()
+            if connected_to is not None:
+                # Story is a connected story
+                # Save it's seed story to update the seed story's
+                # last_edited field
+                connected_to.save()
+
 
 # Hook up some signal handlers
 pre_save.connect(set_date_on_published, sender=Story)
 pre_save.connect(set_default_featured_asset, sender=Story)
 pre_save.connect(set_asset_license, sender=Story)
+pre_save.connect(update_last_edited_for_connected, sender=Story)
 post_save.connect(set_story_slug, sender=StoryTranslation)
 m2m_changed.connect(update_last_edited, sender=Story.organizations.through)
 m2m_changed.connect(update_last_edited, sender=Story.projects.through)
