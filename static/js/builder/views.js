@@ -220,7 +220,8 @@ storybase.builder.views.AppView = Backbone.View.extend({
         _.defaults({
           defaultImageUrl: this.options.defaultImageUrl,
           showSharing: this.options.showSharing,
-          licenseEndpoint: this.options.licenseEndpoint
+          licenseEndpoint: this.options.licenseEndpoint,
+          viewURLTemplate: this.options.viewURLTemplate
         }, commonOptions)
       );
     }
@@ -1177,7 +1178,7 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
 
   previewStory: function(evt) {
     if (!$(evt.target).hasClass("disabled")) {
-      var url = this.previewURLTemplate({id: this.storyId});
+      var url = this.previewURLTemplate({story_id: this.storyId});
       window.open(url);
     }
     evt.preventDefault();
@@ -1192,7 +1193,7 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
     var item = this.getItem('preview');
     if (!story.isNew() && _.isUndefined(this.storyId)) {
       this.storyId = story.id; 
-      item.path = this.previewURLTemplate({id: this.storyId});
+      item.path = this.previewURLTemplate({story_id: this.storyId});
     }
     item.visible = true;
     this.render();
@@ -5271,7 +5272,8 @@ storybase.builder.views.PublishView = storybase.builder.views.PublishViewBase.ex
       });
       this.publishedButtonsView = new storybase.builder.views.PublishedButtonsView({
         dispatcher: this.dispatcher,
-        model: this.model
+        model: this.model,
+        viewURLTemplate: this.options.viewURLTemplate
       });
       this.subviews = [this.legalView, this.licenseView, this.featuredAssetView, this.buttonView];
 
@@ -5928,6 +5930,7 @@ storybase.builder.views.PublishedButtonsView = storybase.builder.views.PublishVi
 
   initialize: function() {
     storybase.builder.views.PublishViewBase.prototype.initialize.apply(this);
+    this.viewURLTemplate = Handlebars.compile(this.options.viewURLTemplate); 
     this._rendered = false;
 
     if (_.isUndefined(this.model)) {
@@ -5964,7 +5967,7 @@ storybase.builder.views.PublishedButtonsView = storybase.builder.views.PublishVi
       // We only need to render the contents once, after that
       // rendering just accounts to showing or hiding the element
       this.$el.html(this.template({
-        url: this.model ? this.model.get('url') : ''
+        url: this.model ? this.viewURLTemplate(this.model.toJSON()) : ''
       }));
       this._rendered = true;
     }

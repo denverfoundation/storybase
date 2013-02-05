@@ -488,7 +488,9 @@ class StoryBuilderView(DetailView):
             # Site name (used for re-writing title)
             'siteName': settings.STORYBASE_SITE_NAME,
             # Template for generating preview URLs
-            'previewURLTemplate': '/stories/{{id}}/preview/',
+            'previewURLTemplate': '/stories/{{story_id}}/preview/',
+            # Template for generating view URLs
+            'viewURLTemplate': '/stories/{{slug}}/viewer/',
         }
         if (self.template_object and self.template_object.slug == settings.STORYBASE_CONNECTED_STORY_TEMPLATE):
             # TODO: If these settings apply in cases other than just
@@ -507,7 +509,8 @@ class StoryBuilderView(DetailView):
                 'showStoryInfoInline': True,
                 'showSharing': False,
                 'showTour': False,
-                'previewURLTemplate': '/stories/%s/preview/#connected-stories/{{id}}' % (self.source_story.story_id)
+                'previewURLTemplate': '/stories/%s/preview/#connected-stories/{{story_id}}' % (self.source_story.story_id),
+                'viewURLTemplate': '/stories/%s/viewer/#connected-stories/{{story_id}}' % (self.source_story.story_id),
             })
         return json.dumps(options)
 
