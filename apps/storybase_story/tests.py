@@ -631,6 +631,22 @@ class StorySignalsTest(TestCase):
         self._test_invalidate_related_cache('projects', 'projects',
                                             'clear', project)
 
+    def test_update_last_edited_for_connected(self):
+        user = User.objects.create_user(username='test',
+                email='test@floodlightproject.org',
+                password='password')
+        story1 = create_story(title="Test Story", 
+                summary="Test summary", byline="Test byline", 
+                author=user, status='published', allow_connected=True)
+        connected_story = create_story(title="Test Connected Story",
+                author=user, byline="Test byline", status="draft")
+        StoryRelation.objects.create(source=story1, target=connected_story,
+                relation_type='connected')
+        old_last_edited = story1.last_edited
+        connected_story.status = 'published'
+        connected_story.save()
+        story1 = Story.objects.get(story_id=story1.story_id)
+        self.assertTrue(old_last_edited < story1.last_edited)
 
 
 class StoryAdminTest(TestCase):

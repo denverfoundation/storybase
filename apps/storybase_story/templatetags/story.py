@@ -36,7 +36,7 @@ def connected_story(story):
         'story': story,
     }
 
-@register.inclusion_tag("storybase/latest_objects.html")
+@register.inclusion_tag("storybase_story/latest_stories.html")
 def latest_stories(count=3, img_width=100):
     return latest_context(
             Story.objects.exclude(source__relation_type='connected'), 
