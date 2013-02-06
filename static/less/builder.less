@@ -963,6 +963,8 @@ button.preview {
   }
 }
 
+@asset-type-inactive-color: darken(@light-gray, 10%);
+
 #app .storybase-container-placeholder.select {
   .wrapper {
     padding: 2%;
@@ -983,7 +985,8 @@ button.preview {
     height:180px;
 
     &:before {
-      background:@highlight-blue;
+      //background:@highlight-blue;
+      background:@asset-type-inactive-color;
       color: white;
       font-family:"FontAwesome";
       content: "";
@@ -998,18 +1001,17 @@ button.preview {
     }
 
     &.collapsed:before {
-      background:@light-gray;
-    }
-
-    &:hover {
-      cursor:pointer;
-      &:before {
-        background:@highlight-blue;
-      }
+      background:@asset-type-inactive-color;
     }
 
     &.collapsed li {
-      display:none;
+      //display:none;
+      a {
+        color:transparent !important;
+        &:after {
+          background:@asset-type-inactive-color !important;
+        }
+      }
     }
     
     @item-y-offset:45px;
@@ -1051,17 +1053,16 @@ button.preview {
           }
           
           &.unavailable {
-            color:@light-gray;
+            color:transparent !important;
             &:after {
-              background:@light-gray;
+              background:@asset-type-inactive-color;
             }
             
             &:hover {
               cursor:default;
-              color:@light-gray;
               &:after {
                 cursor:default;
-                background:@light-gray;
+                background:@asset-type-inactive-color;
               }
             }
           }
