@@ -218,10 +218,10 @@ storybase.viewer.views.StoryNavigation = Backbone.View.extend({
     this.activeSection = section;
     if (this.activeSection) {
       this.setNextSection(this.sections.get(
-	this.activeSection.get('next_section_id')
+        this.activeSection.get('next_section_id')
       ));
       this.setPreviousSection(this.sections.get( 	
-	  this.activeSection.get('previous_section_id')
+        this.activeSection.get('previous_section_id')
       ));
     }
     this.render();
@@ -485,85 +485,32 @@ storybase.viewer.views.Spider = Backbone.View.extend({
 storybase.viewer.views.LinearViewerApp = storybase.viewer.views.ViewerApp.extend({
   elClass: 'linear',
 
+  // override to hook into our own render event.
+  initialize: function() {
+    this.on('render', this.showActiveSection, this);
+    storybase.viewer.views.ViewerApp.prototype.initialize.apply(this, arguments);
+  },
+
   footerTop: function() {
     return this.$('footer').offset().top;
   },
 	
   // Show the active section
   showActiveSection: function() {
-    var sectionEl = this.$('#' + this.activeSection.id);
-    var sectionTop;
+    var $section = this.$('#' + this.activeSection.id);
+    //console.log('show active section: ' + $section.find('h2').html());
+
     this.showingConnectedStory = false;
     // Hide connected stories
     this.$('.connected-story').hide();
-    // Show all sections section if it's hidden
-    this.$('.section').show(); 
-    sectionTop = sectionEl.offset().top;
-    this._preventScrollEvent = true;
-    var headerHeight = this.$('header').outerHeight();
-    // Calculate
-    var scrollPosition = Math.ceil(sectionTop - headerHeight);
-    if (scrollPosition >= $(document).height() - $(window).height()) {  
-      // The scroll bar will hit the bottom of the page before can scroll
-      // to the desired position.  Add some padding to the bottom of the 
-      // wrapper element so we can scroll to the desired position
-      var padding = scrollPosition - $(window).height() + headerHeight;
-      this.$('#body').css("padding-bottom", padding);
-    }
-    $(window).scrollTop(scrollPosition);
+        
+    this.$('.section')
+      .not($section.show())
+      .hide();
   },
 
   getLastSection: function() {
     return this.$('.section').last();
-  },
-
-  getFirstVisibleSectionEl: function() {
-    var numSections = this.$('.section').length;
-    for (var i = 0; i < numSections; i++) {
-      var $section = this.$('.section').eq(i);
-      var sectionTop = $section.offset().top;
-      var sectionBottom = sectionTop + $section.outerHeight(); 
-      if (sectionBottom >= this.$('header').offset().top + this.$('header').outerHeight()) {
-	return $section;
-      }
-    }
-    return null;
-  },
-
-  // Event handler for scroll event
-  handleScroll: function(e) {
-    var newSection = this.activeSection;
-    var scrollTop = $(window).scrollTop();
-    if (this._preventScrollEvent !== true && this.showingConnectedStory !== true) {
-      if (scrollTop == 0) {
-        // At the top of the window.  Set the active section to the 
-        // first section
-        newSection = this.sections.first();
-      }
-      else {
-        if (scrollTop == $(document).height() - $(window).height()) {  
-          // Reached the bottom of the window
-          // Add enough padding so we can scroll the last section to the 
-          // top of the window
-          var $lastSection = this.getLastSection();
-          var padding = $lastSection.offset().top - this.$('header').offset().top;
-          if (padding > this.$('header').outerHeight()) {
-            this.$('#body').css("padding-bottom", padding);
-          }
-        }
-        var $firstVisibleSectionEl = this.getFirstVisibleSectionEl();
-        if ($firstVisibleSectionEl) {
-          var firstVisibleSection = this.sections.get($firstVisibleSectionEl.attr('id'));
-          if (firstVisibleSection != this.activeSection) {
-            newSection = firstVisibleSection; 
-          }
-        }
-      }
-      this.setSection(newSection, {showActiveSection: false});
-      storybase.viewer.router.navigate("sections/" + newSection.id,
-                                     {trigger: false});
-    }
-    this._preventScrollEvent = false;
   },
 
   showConnectedStory: function(storyId) {
