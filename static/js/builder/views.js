@@ -3835,6 +3835,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
     },
 
     events: {
+      "hover .wrapper": "toggleTypeListVisible",
       "click .asset-type": "selectType", 
       "click .remove": "remove",
       "click .edit": "edit",
@@ -3938,32 +3939,28 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
     },
 
     /**
-     * Get a list of asset types and their labels, filtering out the
-     * default type.
+     * Get a list of asset types, their labels, and properties. 
+     * Properties on returned hash:
+     *  type {string}
+     *  name {string}
+     *  suggested {bool}
+     *  available {bool}
      */
     getAssetTypes: function() {
       var type = this.options.suggestedType;
-      if (type) {
-        return _.filter(this.assetTypes, function(at) {
-          return at.type !== type;
-        });
-      }
-      else {
-        return this.assetTypes;
-      }
+      var result = [];
+      var canChangeAssetType = _.isUndefined(this.options.canChangeAssetType) || this.options.canChangeAssetType;
+      _.each(this.assetTypes, function(type) {
+        var isSuggested = type.type == this.options.suggestedType;
+        // note we don't modify this.assetTypes
+        result.push(_.extend({}, type, { 
+          suggested: isSuggested,
+          available: canChangeAssetType || isSuggested
+        }));
+      }, this);
+      return result;
     },
 
-    getDefaultAssetType: function() {
-      var type = this.options.suggestedType;
-      if (type) {
-        return _.filter(this.assetTypes, function(at) {
-          return at.type === type;
-        })[0];
-      }
-      else {
-        return null;
-      }
-    },
 
     render: function() {
       var context = {};
@@ -3975,10 +3972,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       var $wrapperEl;
       this.template = Handlebars.compile(this.templateSource());
       if (state === 'select') {
-        if (this.options.canChangeAssetType || _.isUndefined(this.options.canChangeAssetType)) {
-          context.assetTypes = this.getAssetTypes();
-        }
-        context.defaultType = this.getDefaultAssetType(); 
+        context.assetTypes = this.getAssetTypes();
         context.help = this.options.help;
       }
       else if (state === 'display') {
@@ -4061,7 +4055,13 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
      */
     selectType: function(e) {
       e.preventDefault(); 
-      this.setType($(e.target).data('asset-type'));
+      if (!$(e.target).hasClass('unavailable')) {
+        this.setType($(e.target).data('asset-type'));
+      }
+    },
+
+    toggleTypeListVisible: function(e) {
+      this.$el.find('.asset-types').toggleClass('collapsed');
     },
 
     setType: function(type) {
