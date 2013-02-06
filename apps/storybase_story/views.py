@@ -23,7 +23,8 @@ from storybase_help.api import HelpResource
 from storybase_story.api import (ContainerTemplateResource,
     SectionAssetResource, SectionResource,
     StoryResource, StoryTemplateResource)
-from storybase_story.models import SectionLayout, Story, StoryTemplate
+from storybase_story.models import (SectionLayout, Story, StoryRelation,
+        StoryTemplate)
 from storybase_taxonomy.models import Category
 from storybase.utils import simple_language_changer
 from storybase.views.generic import ModelIdDetailView
@@ -407,7 +408,25 @@ class StoryBuilderView(DetailView):
         return json.dumps(to_be_serialized);
 
     def get_related_stories_json(self):
-        if self.source_story:
+        """
+        Return a JSON representation of the stories related stories
+        to bootstrap Backbone views
+        """
+        if self.object:
+            # Existing story, return a representation of the related stories
+            q = Q(source=self.object) | Q(target=self.object)
+            return json.dumps({
+                'objects': [
+                  {
+                      'source': rel.source.story_id,
+                      'target': rel.target.story_id,
+                      'relation_type': rel.relation_type,
+                  }
+                  for rel in StoryRelation.objects.filter(q)
+                ]
+            })
+        elif self.source_story:
+            # New connected story, bootstrap the Backbone view with
             return json.dumps({
                 'objects': [
                     {
@@ -417,6 +436,7 @@ class StoryBuilderView(DetailView):
                 ]
             })
         else:
+            # New non-connected story, no connected stories.
             return None
 
     def get_prompt(self):

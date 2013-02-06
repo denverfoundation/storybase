@@ -1732,7 +1732,10 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.containerTemplates = this.options.containerTemplates;
     this.dispatcher = this.options.dispatcher;
     this.help = this.options.help;
-    this._relatedStoriesSaved = false;
+    // Should the story relations be saved to the server?
+    // Currently, we only want to do this once, when connected stories
+    // are saved for the first time.
+    this._saveRelatedStories = _.isUndefined(this.model) ? true : this.model.isNew() && this.options.relatedStories.length;
     this._tour = new storybase.builder.views.BuilderTour({
       dispatcher: this.dispatcher,
       forceTour: this.options.forceTour,
@@ -2025,6 +2028,18 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.dispatcher.trigger("ready:story", this.model);
   },
 
+  saveRelatedStories: function() {
+    if (this._saveRelatedStories) {
+      // Only save the related stories if they've never been saved before
+      if (this.model.relatedStories.length) {
+        // Only bother making the request if there is actually data to 
+        // save 
+        this.model.saveRelatedStories();
+      }
+      this._saveRelatedStories = false;
+    }
+  },
+
   save: function() {
     console.info("Saving story");
     var that = this;
@@ -2033,9 +2048,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       success: function(model, response) {
         that.dispatcher.trigger('save:story', model);
         model.saveSections();
-        if (!that._relatedStoriesSaved) {
-          model.saveRelatedStories();
-        }
+        that.saveRelatedStories();
         if (isNew) {
           that.dispatcher.trigger('navigate', model.id + '/', {
             trigger: true 
