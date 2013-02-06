@@ -2522,6 +2522,7 @@ storybase.builder.views.FileUploadMixin = {
         success: function() {
           model.fetch({
             success: function(model, response) {
+              model.trigger("fileupload");
               if (options.success) {
                 options.success(model, response);
               }
@@ -5554,8 +5555,8 @@ storybase.builder.views.FeaturedAssetAddView = Backbone.View.extend(
                 that.render({uploading: true});
               },
               success: function(model, response) {
-                that.model.assets.add(model);
                 that.model.setFeaturedAsset(model);
+                that.model.assets.add(model);
                 // Reset the form
                 that.form.model = new that.options.assetModelClass({
                   language: that.options.language,
@@ -5569,8 +5570,8 @@ storybase.builder.views.FeaturedAssetAddView = Backbone.View.extend(
         else {
           // Set a callback that just sets the featured asset 
           options.success = function(model) {
-            that.model.assets.add(model);
             that.model.setFeaturedAsset(model);
+            that.model.assets.add(model);
           }
         }
 
@@ -5631,11 +5632,37 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend({
     selectViewClass: storybase.builder.views.FeaturedAssetSelectView
   },
 
+  /**
+   * Set the initial featured asset from the story's image assets
+   * if one has not already been set.
+   *
+   * This really only applies to already-created stories without
+   * featured images.  Newly-created stories will have their featured
+   * asset set by the handler.
+   */
+  setInitialFeaturedAsset: function() {
+    var imgAsset;
+    if (this.model && this.model.featuredAssets.length == 0 &&
+        this.model.assets.length != 0) {
+      imgAsset = this.model.assets.find(function(asset) {
+        return asset.get('type') === 'image';
+      });
+      if (imgAsset) {
+        this.model.setFeaturedAsset(imgAsset);
+      }
+    }
+  },
+
   initListeners: function() {
     if (this.model) {
-      this.listenTo(this.model.assets, "add remove", this.render);
-      this.listenTo(this.model, "set:featuredasset", this.switchToDisplay);
+      this.listenTo(this.model.assets, "add", this.render);
+      this.listenTo(this.model, "set:featuredasset", this.handleFeaturedAsset);
       this.listenTo(this.addView, "cancel", this.switchToDisplay);
+      if (this.model.featuredAssets.length == 0) {
+        // If the model doesn't have a featured asset set, try to
+        // set it when new assets are added to the story
+        this.listenTo(this.model.assets, "add", this.handleAddAsset);
+      }
     }
     else {
       this.dispatcher.once("ready:story", this.setStory, this);
@@ -5665,6 +5692,7 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend({
     this._activeViewId = this.displayView.id;
     this._rendered = false;
 
+    this.setInitialFeaturedAsset();
     this.initListeners();
   },
 
@@ -5778,6 +5806,24 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend({
 
   onShow: function() {
     this.delegateEvents();
+  },
+
+  handleAddAsset: function(asset) {
+    if (asset.get('type') === 'image') {
+      this.model.setFeaturedAsset(asset);    
+      // Workaround race condition where display view is
+      // re-rendered before the update file information has been
+      // retrieved from the server by re-rendering the display view
+      // once we receive notification that the file has been uploaded
+      asset.once("fileupload", this.displayView.render, this.displayView);
+    }
+  },
+
+  handleFeaturedAsset: function() {
+    // A featured asset has been selected, stop looking for the
+    // initial featured asset
+    this.stopListening(this.model.assets, "add", this.handleAddAsset);
+    this.switchToDisplay();
   },
 
   switchToDisplay: function() {

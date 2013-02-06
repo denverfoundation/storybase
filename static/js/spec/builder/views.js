@@ -1192,6 +1192,7 @@ describe("FeaturedAssetView", function() {
        return this.view.$('[href=#' + view.id + ']'); 
      };
      this.story = new MockStory();
+     this.story.featuredAssets = new Backbone.Collection();
      this.dispatcher = _.clone(Backbone.Events);
      this.view = new storybase.builder.views.FeaturedAssetView({
        model: this.story,
