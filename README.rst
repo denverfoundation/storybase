@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.4.4
+~~~~~
+
+* Fixed clobbering of connected story relations when editing a seed story (#611)  
+
 0.4.3
 ~~~~~
 
