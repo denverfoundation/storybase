@@ -18,7 +18,6 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
   events: function() {
     var events = {};
     events['click ' + this.options.tocButtonEl] = 'toggleToc';
-    events['click ' + this.options.tocEl + ' a'] = 'toggleToc';
     events['resize figure img'] = 'handleImgResize';
     return events;
   },
@@ -127,13 +126,43 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
   handleImgResize: function(event) {
     this.sizeFigCaption(event.target);
   },
-
-  toggleToc: function(evt) {
+  
+  openToc: function() {
     var $tocEl = $(this.options.tocEl);
-    $tocEl.slideToggle();
-    $(evt.target).children(this.options.tocIconEl)
-                 .toggleClass(this.options.tocOpenClass)
-                 .toggleClass(this.options.tocClosedClass);
+    if (!$tocEl.data('open') || _.isUndefined($tocEl.data('open'))) {
+      $tocEl.slideDown().data('open', true);
+      $(this.options.tocButtonEl)
+        .children(this.options.tocIconEl)
+        .removeClass(this.options.tocClosedClass)
+        .addClass(this.options.tocOpenClass);
+      $('body').on('click.toc', $.proxy(function() {
+        this.closeToc();
+      }, this));
+    }
+    return false;
+  },
+  
+  closeToc: function() {
+    var $tocEl = $(this.options.tocEl);
+    if ($tocEl.data('open')) {
+      $tocEl.slideUp().data('open', false);
+      $(this.options.tocButtonEl)
+        .children(this.options.tocIconEl)
+        .addClass(this.options.tocClosedClass)
+        .removeClass(this.options.tocOpenClass);
+      $('body').off('click.toc');
+    }
+    return false;
+  },
+  
+  toggleToc: function() {
+    if ($(this.options.tocEl).data('open')) {
+      this.closeToc();
+    }
+    else {
+      this.openToc();
+    }
+    return false;
   }
 });
 
