@@ -5934,15 +5934,27 @@ storybase.builder.views.PublishedButtonsView = storybase.builder.views.PublishVi
     viewURLTemplate: '/stories/{{slug}}/viewer/'
   },
 
+  initListeners: function() {
+    // If the model isn't defined at initialization (usually when creating
+    // a new story), wire up a listener to set it when the story is ready.
+    if (_.isUndefined(this.model)) {
+      this.dispatcher.once("ready:story", this.setStory, this);
+    }
+    else {
+      this.listenTo(this.model, "change:status", this.handleChangeStatus);
+    }
+  },
+
   initialize: function() {
     storybase.builder.views.PublishViewBase.prototype.initialize.apply(this);
     this.viewURLTemplate = Handlebars.compile(this.options.viewURLTemplate); 
     this._rendered = false;
+  },
 
-    if (_.isUndefined(this.model)) {
-      this.dispatcher.on("ready:story", this.setStory, this);
+  handleChangeStatus: function(story, statusVal, options) {
+    if (statusVal == 'published') {
+      this.render();
     }
-    this.dispatcher.on("publish:story", this.render, this);
   },
 
   handleUnpublish: function(evt) {
@@ -5950,7 +5962,6 @@ storybase.builder.views.PublishedButtonsView = storybase.builder.views.PublishVi
     var that = this;
     var success = function(model, response) {
       that.dispatcher.trigger('alert', 'success', 'Story unpublished');
-      that.dispatcher.trigger('unpublish:story', that.model);
       that.render();
     };
     var triggerError = function(model, response) {
@@ -6000,17 +6011,26 @@ storybase.builder.views.PublishButtonView = storybase.builder.views.PublishViewB
     todoEl: '#publish-todo'
   },
 
-  initialize: function() {
-    storybase.builder.views.PublishViewBase.prototype.initialize.apply(this);
-    this.dispatcher.on("readytopublish:story", this.enable, this);
-    this.dispatcher.on("notreadytopublish:story", this.disable, this);
-    this.dispatcher.on("unpublish:story", this.render, this);
+  initListeners: function() {
+    if (_.isUndefined(this.model)) {
+      this.dispatcher.once("ready:story", this.setStory, this);
+    }
+    else {
+      this.dispatcher.on("readytopublish:story", this.enable, this);
+      this.dispatcher.on("notreadytopublish:story", this.disable, this);
+      this.listenTo(this.model, 'change:status', this.handleChangeStatus);
+    }
+  },
+
+  handleChangeStatus: function(story, statusVal, options) {
+    if (statusVal !== 'published') {
+      this.render();
+    }
   },
 
   handlePublish: function(evt) {
     var that = this;
     var triggerPublished = function(model, response) {
-      that.dispatcher.trigger('publish:story', model);
       that.dispatcher.trigger('alert', 'success', 'Story published');
     };
     var triggerError = function(model, response) {
