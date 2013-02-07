@@ -16,10 +16,11 @@ django-mptt==0.5.2
 django-reversion==1.6
 django-sekizai==0.6.1
 django-taggit
-# Use trunk of django-tastypie because it has testing utilities that aren't in
-# 0.9.11 
-#django-tastypie==0.9.11
-git+https://github.com/toastdriven/django-tastypie.git@master#egg=django-tastypie
+# Use trunk of django-tastypie because it has testing utilities that aren't # in 0.9.11, but get a version before the backward-incompatible changes to 
+# the API.
+# TODO: Update codebase to support Tastypie API changes added in
+# d850758b088761a00f60a474f5b2d683dc1ec3c0
+git+https://github.com/toastdriven/django-tastypie.git@d5128a4f72b7b6ab9bf04e3f13d1bb6b97b32d7#egg=django-tastypie
 django-tinymce==1.5.1b2
 django-uni-form==0.9.0
 geopy
