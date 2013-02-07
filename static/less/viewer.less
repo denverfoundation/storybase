@@ -161,14 +161,21 @@
       a {
         color: #fff;
         text-decoration: none;
+        display:block;
+        width:100%;
+        padding: 4px 2px;
         
+        &:hover {
+          background:darken(@dark-gray, 10%);
+        }
         &.current {
           color:@orange;
+          background:darken(@dark-gray, 10%);
         }
       }
 
       li {
-        padding: 4px 2px;
+        padding: 0;
       }
 
       li ul {
