@@ -197,9 +197,9 @@ class BaseStructure(object):
                           open_html_element(item_el, item_attrs),
                           self.summary_toc_link(),
                           close_html_element(item_el)))
-        for root_section in self.story.sections.filter(root=True) \
-                                               .order_by('weight'):
-            output.append(self.render_toc_section(root_section))
+        for section_index, root_section in enumerate(self.story.sections.filter(root=True) \
+                                               .order_by('weight'), start=1):
+            output.append(self.render_toc_section(root_section, index=section_index))
         if self.story.call_to_action:
             output.append("%s%s%s" % (
                           open_html_element(item_el, item_attrs),
@@ -244,10 +244,12 @@ class LinearStructure(BaseStructure):
     def render_toc_section(self, section, **kwargs):
         item_el = kwargs.get('item_el', 'li')
         item_attrs = kwargs.get('item_attrs', {})
+        section_index = kwargs.get('index', 0)
         output = []
+        title = section.title if section.title else "%s %d" % (_("Section"), section_index)
         output.append("%s<a href='#sections/%s'>%s</a>%s" % (
                       open_html_element(item_el, item_attrs),
-                      section.section_id, section.title,
+                      section.section_id, title,
                       close_html_element(item_el)))
         for child in section.children.order_by('weight'):
             output.append(self.render_toc_section(child, **kwargs))
