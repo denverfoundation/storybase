@@ -5813,7 +5813,7 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend({
       // before setting it as the featured asset. This works around a race
       // condition where FeaturedAssetDisplayView would render before the
       // asset attributes were updated.
-      asset.once('change:content', function() {
+      asset.once('change:content', function(asset) {
         this.model.setFeaturedAsset(asset);    
       }, this);
     }
