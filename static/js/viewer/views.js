@@ -58,6 +58,13 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
   // Update the active story section in the sub-views
   updateSubviewSections: function() {
     this.navigationView.setSection(this.activeSection);
+    
+    // highlight TOC entry
+    this.$(this.options.tocEl).find('a')
+      .removeClass('current')
+      .filter('a[href="#sections/' + this.activeSection.id + '"]')
+        .addClass('current');
+
     // TODO: Decide whether to re-enable updating the section title in the
     // header
     //this.headerView.setSection(this.activeSection);
