@@ -5156,6 +5156,15 @@ storybase.builder.views.PublishView = storybase.builder.views.PublishViewBase.ex
       legalEl: '#share-legal'
     },
 
+    initListeners: function() {
+      if (_.isUndefined(this.model)) {
+        this.dispatcher.once("ready:story", this.setStory, this);
+      }
+      else {
+        this.listenTo(this.model, "change:status", this.renderSharing);
+      }
+    },
+
     initialize: function() {
       var navViewOptions;
  
@@ -5233,6 +5242,7 @@ storybase.builder.views.PublishView = storybase.builder.views.PublishViewBase.ex
 
     renderSharing: function() {
       var $el = this.$(this.options.sharingEl);
+      console.de
       if (this.storyPublished()) {
         $el.show();
       }
