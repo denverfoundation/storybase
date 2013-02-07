@@ -2522,7 +2522,6 @@ storybase.builder.views.FileUploadMixin = {
         success: function() {
           model.fetch({
             success: function(model, response) {
-              model.trigger("fileupload");
               if (options.success) {
                 options.success(model, response);
               }
@@ -5810,12 +5809,13 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend({
 
   handleAddAsset: function(asset) {
     if (asset.get('type') === 'image') {
-      this.model.setFeaturedAsset(asset);    
-      // Workaround race condition where display view is
-      // re-rendered before the update file information has been
-      // retrieved from the server by re-rendering the display view
-      // once we receive notification that the file has been uploaded
-      asset.once("fileupload", this.displayView.render, this.displayView);
+      // Wait until the file upload has completed and the asset model has synced
+      // before setting it as the featured asset. This works around a race
+      // condition where FeaturedAssetDisplayView would render before the
+      // asset attributes were updated.
+      asset.once('change:content', function() {
+        this.model.setFeaturedAsset(asset);    
+      }, this);
     }
   },
 
