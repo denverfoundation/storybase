@@ -5242,7 +5242,6 @@ storybase.builder.views.PublishView = storybase.builder.views.PublishViewBase.ex
 
     renderSharing: function() {
       var $el = this.$(this.options.sharingEl);
-      console.de
       if (this.storyPublished()) {
         $el.show();
       }
