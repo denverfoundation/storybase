@@ -18,6 +18,7 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
   events: function() {
     var events = {};
     events['click ' + this.options.tocButtonEl] = 'toggleToc';
+    events['click ' + this.options.tocEl + ' a'] = 'toggleToc';
     events['resize figure img'] = 'handleImgResize';
     return events;
   },
