@@ -1207,6 +1207,64 @@ describe("FeaturedAssetView", function() {
 
    });
 
+   describe("when initialized with a story with image assets but no featured image", function() {
+     beforeEach(function() {
+       this.imgAsset = new MockAsset({
+         type: 'image'
+       });
+       this.textAsset = new MockAsset({
+         type: 'text'
+       });
+       this.story.assets.add(this.imgAsset);
+       this.story.assets.add(this.textAsset);
+       spyOn(this.story, 'setFeaturedAsset');
+       this.view = new storybase.builder.views.FeaturedAssetView({
+         model: this.story,
+         addViewClass: this.MockFeaturedAssetAddView,
+         displayViewClass: this.MockFeaturedAssetDisplayView,
+         selectViewClass: this.MockFeaturedAssetSelectView,
+         dispatcher: this.dispatcher
+       });
+     });
+
+     it("should set the featured image to an image asset in the story's assets", function() {
+       expect(this.story.setFeaturedAsset).toHaveBeenCalledWith(this.imgAsset);
+     });
+   });
+
+   describe("when initialized with a story with no image assets", function() {
+     beforeEach(function() {
+       var spec = this;
+       this.imgAsset = new MockAsset({
+         type: 'image'
+       });
+       this.imgAsset2 = new MockAsset({
+         type: 'image'
+       });
+       spyOn(this.story, 'setFeaturedAsset').andCallFake(function(asset, options) {
+          spec.story.trigger("set:featuredasset", asset);
+       });
+       // Simulate adding and image and retrieving the synced values from the
+       // server
+       this.mockImageAdd = function(asset) {
+         spec.story.assets.add(asset);
+         asset.set('content', '<img class="asset-thumbnail featured-asset" alt="" src="/media/filer_thumbnails/2013/01/02/test_image1.jpg">');
+       };
+     });
+
+     it("should set the featured asset when an image asset is added to the story", function() {
+       this.mockImageAdd(this.imgAsset); 
+       expect(this.story.setFeaturedAsset).toHaveBeenCalledWith(this.imgAsset);
+     });
+
+     it("should not set the featured asset when a second image asset is added to the story", function() {
+       this.mockImageAdd(this.imgAsset); 
+       expect(this.story.setFeaturedAsset).toHaveBeenCalledWith(this.imgAsset);
+       this.mockImageAdd(this.imgAsset2); 
+       expect(this.story.setFeaturedAsset).wasNotCalledWith(this.imgAsset2);
+     });
+   });
+
    describe("when initially rendered", function() {
      beforeEach(function() {
        this.view.render();
