@@ -213,11 +213,11 @@
       &.disabled {
         color:@gray;
         border:1px solid @dark-gray;
-        background:@dark-gray;
         cursor:default;
         
-        &:hover, &:visited {
+        &:hover {
           color:@gray;
+          background:darken(@dark-gray, 10%);
         }
       }
 
