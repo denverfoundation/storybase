@@ -5161,7 +5161,7 @@ storybase.builder.views.PublishView = storybase.builder.views.PublishViewBase.ex
         this.dispatcher.once("ready:story", this.setStory, this);
       }
       else {
-        this.listenTo(this.model, "change:status", this.renderSharing);
+        this.listenTo(this.model, "change:status", this.handleChangeStatus);
       }
     },
 
@@ -5169,6 +5169,8 @@ storybase.builder.views.PublishView = storybase.builder.views.PublishViewBase.ex
       var navViewOptions;
  
       storybase.builder.views.PublishViewBase.prototype.initialize.apply(this);
+
+      this._sharingWidgetInitialized = false;
       this.licenseView = new storybase.builder.views.LicenseView({
         model: this.model,
         dispatcher: this.dispatcher,
@@ -5231,18 +5233,37 @@ storybase.builder.views.PublishView = storybase.builder.views.PublishViewBase.ex
       this.workflowNavView = new storybase.builder.views.WorkflowNavView(navViewOptions);
     },
 
-    getStoryUrl: function() {
-      var url = this.model ? this.model.get('url') : '';
-      var loc = window.location;
-      if (url) {
-        url = loc.protocol + "//" + loc.host + url;
+    handleChangeStatus: function(story, statusVal, options) {
+      if (statusVal === 'published') {
+        if (!this._sharingWidgetInitialized) {
+          // Initiialize the sharing widget once the model has synced
+          // with the server
+          this.initSharingWidget({delay:true});
+        }
       }
-      return url;
+      // Show/hide the share sidebar.
+      this.renderSharing();
+    },
+
+    initSharingWidget: function(options) {
+      options = options || {};
+      this._sharingWidgetInitialized = true;
+      if (options.delay) {
+        // Wait until the status change has been saved to the
+        // server before initializing the widget, otherwise the GET to
+        // /stories/{{story_id}}/share-widget/ endpoint will fail
+        this.model.once("sync", this.initSharingWidget, this);
+        return;
+      }
+      this.$('.storybase-share-widget').storybaseShare();
     },
 
     renderSharing: function() {
       var $el = this.$(this.options.sharingEl);
       if (this.storyPublished()) {
+        if (!this._sharingWidgetInitialized) {
+          this.initSharingWidget();
+        }
         $el.show();
       }
       else {
@@ -5259,9 +5280,9 @@ storybase.builder.views.PublishView = storybase.builder.views.PublishViewBase.ex
 
     render: function() {
       var context = {
-        url: this.getStoryUrl(),
         title: this.model.get('title'),
-        showSharing: this.options.showSharing
+        showSharing: this.options.showSharing,
+        storyId: this.model ? this.model.id : ''
       };
       this.$el.html(this.template(context));
       _.each(this.subviews, function(view) {
@@ -5271,15 +5292,6 @@ storybase.builder.views.PublishView = storybase.builder.views.PublishViewBase.ex
       this.publishedButtonsView.setElement(this.$(this.options.publishedButtonsEl)).render();
       if (this.options.showSharing) {
         this.renderSharing();
-      }
-      if (window.addthis) {
-        // Render the addthis toolbox.  We have to do this explictly
-        // since it wasn't in the DOM when the page was loaded.
-        addthis.toolbox(this.$('.addthis_toolbox')[0], {
-          // Don't append clickback URL fragment so users get a clean
-          // URL when clicking the permalink button
-          data_track_clickback: false
-        });
       }
       this.workflowNavView.render();
       this.delegateEvents();

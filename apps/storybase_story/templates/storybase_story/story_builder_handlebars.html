@@ -372,15 +372,8 @@ Handlebars.js templates for story builder Backbone application
         <div class="publish-sharing" style="display: none">
             <h3>{{gettext "Let your story be heard!"}}</h3>
             <p>{{gettext "Let your story be heard! Spread the word by sharing it with your social networks, printing a copy, or embeding it on your own website."}}</p>
-            <div class="story-url-wrapper"><input id="story-url" type="text" value="{{url}}" /></div>
-            <div class="addthis_toolbox addthis_default_style addthis_32x32_style"
-                addthis:url="{{url}}" addthis:title="{{title}}">
-              <a class="addthis_button_link" title="Copy Link"></a>
-              <a class="addthis_button_email"></a>
-              <a class="addthis_button_facebook"></a>
-              <a class="addthis_button_twitter"></a>
-              <a class="addthis_button_google_plusone_share"></a>
-              <a class="addthis_button_compact"></a>
+
+            <a href="#" class="storybase-share-widget" data-story-id="{{storyId}}">Share This Story</a>
             </div>
         {{/if}}
         </div>
