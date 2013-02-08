@@ -5184,12 +5184,6 @@ storybase.builder.views.PublishView = storybase.builder.views.PublishViewBase.ex
         language: this.options.language,
         tagName: 'li'
       });
-      this.todoView = new storybase.builder.views.PublishTodoView({
-        dispatcher: this.dispatcher,
-        model: this.model
-      });
-      this.todoView.register(this.licenseView, "select:license");
-      this.todoView.update({render: false});
       this.legalView = new storybase.builder.views.LegalView({
         dispatcher: this.dispatcher,
         model: this.model
@@ -5197,7 +5191,6 @@ storybase.builder.views.PublishView = storybase.builder.views.PublishViewBase.ex
       this.buttonView = new storybase.builder.views.PublishButtonView({
         dispatcher: this.dispatcher,
         model: this.model,
-        todoView: this.todoView,
         tagName: 'li'
       });
       this.publishedButtonsView = new storybase.builder.views.PublishedButtonsView({
@@ -5853,95 +5846,6 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend({
   }
 });
 
-/**
- * A story is ready to be published.
- *
- * @event readytopublish:story
- * @param Story story Story model instance that is ready to be published.
- */
-
-/**
- * A story is no longer ready to be published.
- *
- * @event notreadytopublish:story
- * @param Story story Story model instance that is ready to be published.
- */
-
-storybase.builder.views.PublishTodoView = storybase.builder.views.PublishViewBase.extend({
-  id: 'publish-todo',
-
-  options: {
-    // Source of the template with markup/text that is displayed
-    // when all the required steps have been completed.
-    readyTemplateSource: $('#publish-ready-msg-template').html()
-  },
-
-  initialize: function() {
-    storybase.builder.views.PublishViewBase.prototype.initialize.apply(this);
-    this.readyTemplate = Handlebars.compile(this.options.readyTemplateSource); 
-    this.subviews = [];
-    this.todo = [];
-
-    if (_.isUndefined(this.model)) {
-      this.dispatcher.on("ready:story", this.setStory, this);
-    }
-  },
-
-  register: function(view, evt) {
-    this.subviews.push(view);
-    this.dispatcher.on(evt, this.handleEvent, this); 
-  },
-
-  itemLink: function(view) {
-    return '<a href="#' + view.$el.attr('id') + '" class="publish-todo-item">' + view.options.title + '</a>';
-  },
-
-  handleEvent: function() {
-    this.update({render: true});
-  },
-
-  ready: function() {
-    return this.model && this.todo.length === 0;
-  },
-
-  update: function(options) {
-    options = options || { render: true };
-    this.todo = [];
-    _.each(this.subviews, function(view) {
-      if (!_.result(view, 'completed')) {
-        this.todo.push(this.itemLink(view));
-      }
-    }, this);
-    if (this.ready()) {
-      this.dispatcher.trigger("readytopublish:story", this.model); 
-    }
-    else {
-      this.dispatcher.trigger("notreadytopublish:story", this.model);
-    }
-    if (options.render) {
-      this.render();
-    }
-  },
-
-  render: function() {
-    var html;
-
-    if (this.storyPublished()) {
-      html = '';
-    }
-    else { 
-      if (this.ready()) {
-        html = this.readyTemplate(); 
-      }
-      else {
-        html = gettext("You need to ") + this.todo.join(", ");
-      }
-    }
-    this.$el.html(html);
-    return this;
-  }
-});
-
 storybase.builder.views.PublishedButtonsView = storybase.builder.views.PublishViewBase.extend({
   id: 'published-buttons',
 
@@ -6028,8 +5932,7 @@ storybase.builder.views.PublishButtonView = storybase.builder.views.PublishViewB
 
   options: {
     templateSource: $('#publish-button-template').html(),
-    title: gettext("Publish your story"),
-    todoEl: '#publish-todo'
+    title: gettext("Publish your story")
   },
 
   initListeners: function() {
@@ -6037,8 +5940,6 @@ storybase.builder.views.PublishButtonView = storybase.builder.views.PublishViewB
       this.dispatcher.once("ready:story", this.setStory, this);
     }
     else {
-      this.dispatcher.on("readytopublish:story", this.enable, this);
-      this.dispatcher.on("notreadytopublish:story", this.disable, this);
       this.listenTo(this.model, 'change:status', this.handleChangeStatus);
     }
   },
@@ -6077,12 +5978,8 @@ storybase.builder.views.PublishButtonView = storybase.builder.views.PublishViewB
     var published = this.storyPublished();
     this.$el.html(this.template({
       title: this.options.title,
-      published: published,
-      ready: this.options.todoView.ready()
+      published: published
     }));
-    if (!published) {
-      this.options.todoView.setElement(this.$(this.options.todoEl)).render();
-    }
     return this;
   }
 });
