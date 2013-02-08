@@ -204,7 +204,7 @@
       float:left;
       border:1px solid @gray;
       .rounded-corners(4px);
-      background:@dark-gray;
+      background:darken(@dark-gray, 10%);
 
       &:first-child {
         margin-right:5px;
@@ -221,8 +221,8 @@
         }
       }
 
-      &:hover, &:visited {
-        color: #fff;
+      &:hover {
+        background:@dark-gray;
       }
     }
     
