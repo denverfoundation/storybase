@@ -230,7 +230,13 @@ storybase.viewer.views.StoryNavigation = Backbone.View.extend({
     };
 
     context.next_section = this.nextSection || null;
+    if (context.next_section) {
+      context.next_section.title = this.nextSection.get('title');
+    }
     context.previous_section = this.previousSection || null;
+    if (context.previous_section) {
+      context.previous_section.title = this.previousSection.get('title');
+    }
     context.totalSectionsNum = this.sections.length;
     context.currentSectionNum = this.sections.models.indexOf(this.activeSection) + 1;
     
