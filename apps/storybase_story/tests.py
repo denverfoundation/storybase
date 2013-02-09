@@ -648,6 +648,19 @@ class StorySignalsTest(TestCase):
         story1 = Story.objects.get(story_id=story1.story_id)
         self.assertTrue(old_last_edited < story1.last_edited)
 
+    def test_set_story_slug_on_publish(self):
+        story = create_story(title="Test Story", 
+                summary="Test summary", byline="Test byline", 
+                status='draft', allow_connected=True)
+        translation = StoryTranslation.objects.get(story=story)
+        translation.title = "Updated Story Title"
+        translation.save()
+        story = Story.objects.get(story_id=story.story_id)
+        self.assertNotEqual(story.slug, "updated-story-title")
+        story.status = 'published'
+        story.save()
+        self.assertEqual(story.slug, "updated-story-title")
+
 
 class StoryAdminTest(TestCase):
     fixtures = ['section_layouts.json']
