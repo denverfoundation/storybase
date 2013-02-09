@@ -1,6 +1,7 @@
 from django.conf.urls.defaults import handler500, patterns, include, url
 from django.contrib import admin
 from django.conf import settings
+from django.views.decorators.cache import cache_page
 
 from tastypie.api import Api
 
@@ -37,8 +38,9 @@ urlpatterns += patterns('',
     # REST API
     (r'^api/', include(v0_1_api.urls)),
     # Proxy for Creative Commons endpoint
+    # Cache responses for 24 hours
     url(r"^api/%s/license/get/" % v0_1_api.api_name,
-        CreativeCommonsLicenseGetProxyView.as_view(),
+        cache_page(CreativeCommonsLicenseGetProxyView.as_view(), 60 * 60 * 24),
         name="api_cc_license_get"),
 )
 
