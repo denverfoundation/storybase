@@ -11,6 +11,25 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.5
+~~~
+
+* Add support for Django 1.4.* and Django CMS 2.3.* (see docs/upgrading.rst)
+* Improved asset type selection user interface (#381)
+* Simplified flow in the publish/share step of the story builder (#515, #590)
+* Use the site-wide sharing widget in the publish/share step of the
+  builder (#515)
+* Set default featured image in the builder (#515)
+* Improved user interface for featured image selection in the builder (#515)
+* Update and save the story slug when it's initially published (#596)
+* Cleanly handle errors and cache response from upstream Creative Commons
+  license API (#605)
+* "View" button in publish/share step goes to the story viewer and not the
+  detail page (#612)
+* Update Backbone to version 0.9.10 and Underscore to version 1.4.3
+* Update dependency version of django-notification to 1.0 (see 
+  docs/upgrading.rst)
+
 0.4.4
 ~~~~~
 
