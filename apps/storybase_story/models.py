@@ -625,7 +625,7 @@ def set_default_featured_asset(sender, instance, **kwargs):
 
 def set_asset_license(sender, instance, **kwargs):
     changed_fields = instance.get_dirty_fields().keys()
-    if 'license' in changed_fields:
+    if instance.pk and 'license' in changed_fields:
         # Update all assets' licenses to that of the Story's if a
         # license hasn't already been set.
         instance.assets.filter(license='').update(license=instance.license)
