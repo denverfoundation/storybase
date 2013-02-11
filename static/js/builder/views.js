@@ -2375,6 +2375,7 @@ storybase.builder.views.UnusedAssetView = Backbone.View.extend(
 
 storybase.builder.views.RichTextEditorMixin = {
   toolbarTemplateSource: $('#editor-toolbar-template').html(),
+  editor: null,
 
   getEditorToolbarHtml: function() {
     return this.toolbarTemplateSource; 
@@ -2388,6 +2389,7 @@ storybase.builder.views.RichTextEditorMixin = {
   },
 
   getEditor: function(el, callbacks) {
+    var view = this;
     var defaultCallbacks = {
       'focus': function() {
         $(this.toolbar.container).show();
@@ -2409,13 +2411,15 @@ storybase.builder.views.RichTextEditorMixin = {
         $(this.toolbar.container).mouseout(function() {
           that._okToHideToolbar = true;
         });
-      }
+        view.updateCharacterCount();
+      },
+      'newword:composer': $.proxy(this.updateCharacterCount, this)
 
     };
-    var editor;
+
     var toolbarEl = this.getEditorToolbarEl();
     $(el).before(toolbarEl);
-    editor = new wysihtml5.Editor(
+    this.editor = new wysihtml5.Editor(
       el,    
       {
         toolbar: toolbarEl, 
@@ -2424,11 +2428,40 @@ storybase.builder.views.RichTextEditorMixin = {
     );
     callbacks = _.isUndefined(callbacks) ? {} : callbacks;
     _.defaults(callbacks, defaultCallbacks);
-    _.each(callbacks, function(value, key, list) {
-      editor.on(key, value);
-    });
-    return editor;
-  }
+    _.each(callbacks, $.proxy(function(value, key, list) {
+      this.editor.on(key, value);
+    }, this));
+    return this.editor;
+  },
+  
+  updateCharacterCount: function() {
+    if (this.editor) {
+      var $toolbar = $(this.getEditorToolbarEl());
+      var $counter = $toolbar.find('.character-counter');
+      if ($counter.length) {
+        var text = this.editor.getValue();
+        
+        // remove tags
+        text = text.replace(/<(.*?)>/g, '');
+        
+        // "render" to convert entities to characters (eg, &lt;)
+        text = $('<div/>').html(text).text();
+      
+        $counter.find('.count').html(text.length);
+        var $warning = $counter.find('.warning');
+        if ($warning.length) {
+          var limit = parseInt($warning.data('character-limit'), 10);
+          if (text.length > limit) {
+            $warning.show();
+          }
+          else {
+            $warning.hide();
+          }
+        }
+      }
+    }
+  },
+  
 };
 
 /**
