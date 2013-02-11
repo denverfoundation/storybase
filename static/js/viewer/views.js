@@ -228,13 +228,18 @@ storybase.viewer.views.StoryNavigation = Backbone.View.extend({
       'addl_links': this.addlLinks,
       'showing_connected_story': this.showingConnectedStory
     };
-    if (this.nextSection) {
-      context.next_section = this.nextSection;
-    }
-    if (this.previousSection) {
-      context.previous_section = this.previousSection;
-    }
 
+    context.next_section = this.nextSection || null;
+    if (context.next_section) {
+      context.next_section.title = this.nextSection.get('title');
+    }
+    context.previous_section = this.previousSection || null;
+    if (context.previous_section) {
+      context.previous_section.title = this.previousSection.get('title');
+    }
+    context.totalSectionsNum = this.sections.length;
+    context.currentSectionNum = this.sections.models.indexOf(this.activeSection) + 1;
+    
     this.$el.html(this.template(context));
     return this;
   },

@@ -863,7 +863,10 @@ body.story-builder .guider .x_button:after{font-family:"FontAwesome";content:"\f
 .story-viewer #toc .story-toc li{padding:0;}
 .story-viewer #toc .story-toc li ul{padding-top:2px;}
 .story-viewer #toc .story-toc li li{padding:2px;}
-.story-viewer #story-nav{color:#fff;text-align:center;width:20%;margin-left:auto;margin-right:auto;padding:0;}.story-viewer #story-nav a{text-decoration:none;color:#fff;}.story-viewer #story-nav a:hover,.story-viewer #story-nav a:visited{color:#fff;}
+.story-viewer #story-nav{color:#fff;text-align:center;width:170px;margin-left:auto;margin-right:auto;padding:0;}.story-viewer #story-nav a{text-decoration:none;color:#fff;width:80px;display:block;float:left;border:1px solid #777777;border-radius:4px;-webkit-border-radius:4px;-moz-border-radius:4px;background:#414141;}.story-viewer #story-nav a:first-child{margin-right:5px;}
+.story-viewer #story-nav a.disabled{color:#777777;border:1px solid #5a5a5a;cursor:default;}.story-viewer #story-nav a.disabled:hover{color:#777777;background:#414141;}
+.story-viewer #story-nav a:hover{background:#5a5a5a;}
+.story-viewer #story-nav .location{clear:both;font-size:.8em;color:#f0efef;}
 .story-viewer path.link{fill:none;stroke-width:2;stroke:#dddddd;}
 .story-viewer .node.active{fill:red;}
 .story-viewer section.story,.story-viewer section.actions{overflow:hidden;padding:2% 0 4% 0;}
