@@ -566,6 +566,16 @@ def set_story_slug(sender, instance, **kwargs):
         pass
 
 
+def set_story_slug_on_publish(sender, instance, **kwargs):
+    """Update a story's slug when it is published"""
+    if instance.pk and instance.status == 'published' and instance.published is None:
+        # Only update the slug for stories that are:
+        # * Being published
+        # * Have not been previously published
+        # * Has been previously saved
+        unique_slugify(instance, instance.title)
+
+
 def update_last_edited(sender, instance, **kwargs):
     """
     When an object is added to a Story, update the related object's
@@ -615,7 +625,7 @@ def set_default_featured_asset(sender, instance, **kwargs):
 
 def set_asset_license(sender, instance, **kwargs):
     changed_fields = instance.get_dirty_fields().keys()
-    if 'license' in changed_fields:
+    if instance.pk and 'license' in changed_fields:
         # Update all assets' licenses to that of the Story's if a
         # license hasn't already been set.
         instance.assets.filter(license='').update(license=instance.license)
@@ -681,10 +691,12 @@ def update_last_edited_for_connected(sender, instance, **kwargs):
 
 
 # Hook up some signal handlers
+pre_save.connect(set_story_slug_on_publish, sender=Story)
 pre_save.connect(set_date_on_published, sender=Story)
 pre_save.connect(set_default_featured_asset, sender=Story)
 pre_save.connect(set_asset_license, sender=Story)
 pre_save.connect(update_last_edited_for_connected, sender=Story)
+pre_save.connect(set_date_on_published, sender=Story)
 post_save.connect(set_story_slug, sender=StoryTranslation)
 m2m_changed.connect(update_last_edited, sender=Story.organizations.through)
 m2m_changed.connect(update_last_edited, sender=Story.projects.through)

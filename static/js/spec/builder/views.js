@@ -526,12 +526,6 @@ var MockAsset = Backbone.Model.extend({
 
 describe('PublishButtonView', function() {
   beforeEach(function() {
-    var MockTodoView = Backbone.View.extend({
-      ready: function() {
-        return false;
-      }
-    });
-    this.todoView = new MockTodoView();
     this.story = new MockStory();
     this.dispatcher = _.clone(Backbone.Events);
   });
@@ -541,62 +535,13 @@ describe('PublishButtonView', function() {
       this.story.set('status', 'draft');
       this.view = new storybase.builder.views.PublishButtonView({
         dispatcher: this.dispatcher,
-        model: this.story,
-        todoView: this.todoView
+        model: this.story
       });
       this.view.render();
     });
 
     it("should show a button", function() {
       expect(this.view.$('button').length).toEqual(1);
-    });
-
-    describe("and the story is ready to be published", function() {
-      beforeEach(function() {
-        this.todoView.ready = function() {
-          return true;
-        }
-        this.view.render();
-      });
-
-      it("should make the button enabled", function() {
-        expect(this.view.$('button').length).toEqual(1);
-        expect(this.view.$('button').filter(':disabled').length).toEqual(0);
-      });
-
-      describe('and it receives the "notreadytopublish:story" event', function() {
-        beforeEach(function() {
-          this.dispatcher.trigger("notreadytopublish:story");
-        });
-
-        it("should show the button disabled", function() {
-          expect(this.view.$('button').filter(':disabled').length).toEqual(1);
-        });
-      });
-    });
-
-    describe("and the story is not ready to be published", function() {
-      beforeEach(function() {
-        this.todoView.ready = function() {
-          return false;
-        }
-        this.view.render();
-      });
-
-      it("should show the button disabled", function() {
-        expect(this.view.$('button').filter(':disabled').length).toEqual(1);
-      });
-
-      describe('and it receives the "readytopublish:story" event', function() {
-        beforeEach(function() {
-          this.dispatcher.trigger("readytopublish:story");
-        });
-
-        it("should show the button enabled", function() {
-          expect(this.view.$('button').length).toEqual(1);
-          expect(this.view.$('button').filter(':disabled').length).toEqual(0);
-        });
-      });
     });
   });
 
@@ -605,8 +550,7 @@ describe('PublishButtonView', function() {
       this.story.set('status', 'published');
       this.view = new storybase.builder.views.PublishButtonView({
         dispatcher: this.dispatcher,
-        model: this.story,
-        todoView: this.todoView
+        model: this.story
       });
       this.view.render();
     });
@@ -615,10 +559,9 @@ describe('PublishButtonView', function() {
       expect(this.view.$('button').length).toEqual(0);
     });
 
-    describe("and it receives the 'unpublish:story' signal", function() {
+    describe("and the story's status is set to 'draft'", function() {
       beforeEach(function () {
         this.story.set('status', 'draft');
-        this.dispatcher.trigger('unpublish:story');
       });
 
       it("should show a button", function() {
@@ -630,13 +573,9 @@ describe('PublishButtonView', function() {
   describe('when the user clicks the "Publish" button', function() {
     beforeEach(function() {
       this.story.set('status', 'draft');
-      this.todoView.ready = function() {
-        return true;
-      };
       this.view = new storybase.builder.views.PublishButtonView({
         dispatcher: this.dispatcher,
-        model: this.story,
-        todoView: this.todoView
+        model: this.story
       });
       spyOn(this.story, 'save').andCallThrough();
       this.view.render();
@@ -649,86 +588,6 @@ describe('PublishButtonView', function() {
 
     it('should hide the button', function() {
       expect(this.view.$('button').length).toEqual(0);
-    });
-  });
-});
-
-describe('PublishTodoView', function() {
-  beforeEach(function() {
-    this.MockCompletedView = Backbone.View.extend({
-      completed: function() {
-        return true;
-      }
-    });
-    this.MockNotCompletedView = Backbone.View.extend({
-      completed: function() {
-        return false;
-      }
-    });
-    this.story = new MockStory();
-    this.dispatcher = _.clone(Backbone.Events);
-    this.view = new storybase.builder.views.PublishTodoView({
-      model: this.story,
-      dispatcher: this.dispatcher
-    });
-    this.subview1 = new this.MockNotCompletedView({
-      title: "Incomplete step 1"
-    });
-    this.subview2 = new this.MockCompletedView({
-      title: "Complete step 2"
-    });
-    this.subview3 = new this.MockNotCompletedView({
-      title: "Incomplete step 3"
-    });
-    this.subview4 = new this.MockCompletedView({
-      title: "Complete step 4"
-    });
-  });
-
-  describe("when a registered event is received", function() {
-    it("calls the update method", function() {
-      this.view.register(this.subview1, "mockevent");
-      spyOn(this.view, 'update');
-      this.dispatcher.trigger("mockevent");
-      expect(this.view.update).toHaveBeenCalled();
-    });
-  });
-
-  describe("when all registered steps have been completed", function() {
-    beforeEach(function() {
-      this.view.register(this.subview2, "mockevent1");
-      this.view.register(this.subview4, "mockevent2");
-      this.dispatcher.trigger('mockevent1');
-    });
-
-    it("the ready method returns true", function() {
-      expect(this.view.ready()).toBeTruthy();
-    });
-
-    it("no steps are listed in the rendered output", function() {
-      this.view.render();
-      expect(this.view.$el.html()).toNotContain(this.subview2.options.title);  
-      expect(this.view.$el.html()).toNotContain(this.subview4.options.title);  
-    });
-  });
-
-  describe("when any of the registered steps have not been completed", function() {
-    beforeEach(function() {
-      this.view.register(this.subview1, "mockevent1");
-      this.view.register(this.subview2, "mockevent2");
-      this.view.register(this.subview4, "mockevent3");
-      this.dispatcher.trigger('mockevent1');
-    });
-
-    it("the ready method returns false", function() {
-      expect(this.view.ready()).toBeFalsy();
-    });
-
-    it("shows incomplete steps in the rendered output", function() {
-      this.view.render();
-      expect(this.view.$el.html()).toContain(this.subview1.options.title);
-      expect(this.view.$el.html()).toNotContain(this.subview2.options.title);
-      expect(this.view.$el.html()).toNotContain(this.subview4.options.title);
     });
   });
 });
@@ -1192,6 +1051,7 @@ describe("FeaturedAssetView", function() {
        return this.view.$('[href=#' + view.id + ']'); 
      };
      this.story = new MockStory();
+     this.story.featuredAssets = new Backbone.Collection();
      this.dispatcher = _.clone(Backbone.Events);
      this.view = new storybase.builder.views.FeaturedAssetView({
        model: this.story,
@@ -1204,6 +1064,64 @@ describe("FeaturedAssetView", function() {
      // for visibility
      $('#sandbox').append(this.view.$el);
 
+   });
+
+   describe("when initialized with a story with image assets but no featured image", function() {
+     beforeEach(function() {
+       this.imgAsset = new MockAsset({
+         type: 'image'
+       });
+       this.textAsset = new MockAsset({
+         type: 'text'
+       });
+       this.story.assets.add(this.imgAsset);
+       this.story.assets.add(this.textAsset);
+       spyOn(this.story, 'setFeaturedAsset');
+       this.view = new storybase.builder.views.FeaturedAssetView({
+         model: this.story,
+         addViewClass: this.MockFeaturedAssetAddView,
+         displayViewClass: this.MockFeaturedAssetDisplayView,
+         selectViewClass: this.MockFeaturedAssetSelectView,
+         dispatcher: this.dispatcher
+       });
+     });
+
+     it("should set the featured image to an image asset in the story's assets", function() {
+       expect(this.story.setFeaturedAsset).toHaveBeenCalledWith(this.imgAsset);
+     });
+   });
+
+   describe("when initialized with a story with no image assets", function() {
+     beforeEach(function() {
+       var spec = this;
+       this.imgAsset = new MockAsset({
+         type: 'image'
+       });
+       this.imgAsset2 = new MockAsset({
+         type: 'image'
+       });
+       spyOn(this.story, 'setFeaturedAsset').andCallFake(function(asset, options) {
+          spec.story.trigger("set:featuredasset", asset);
+       });
+       // Simulate adding and image and retrieving the synced values from the
+       // server
+       this.mockImageAdd = function(asset) {
+         spec.story.assets.add(asset);
+         asset.set('content', '<img class="asset-thumbnail featured-asset" alt="" src="/media/filer_thumbnails/2013/01/02/test_image1.jpg">');
+       };
+     });
+
+     it("should set the featured asset when an image asset is added to the story", function() {
+       this.mockImageAdd(this.imgAsset); 
+       expect(this.story.setFeaturedAsset).toHaveBeenCalledWith(this.imgAsset);
+     });
+
+     it("should not set the featured asset when a second image asset is added to the story", function() {
+       this.mockImageAdd(this.imgAsset); 
+       expect(this.story.setFeaturedAsset).toHaveBeenCalledWith(this.imgAsset);
+       this.mockImageAdd(this.imgAsset2); 
+       expect(this.story.setFeaturedAsset).wasNotCalledWith(this.imgAsset2);
+     });
    });
 
    describe("when initially rendered", function() {

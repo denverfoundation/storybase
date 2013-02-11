@@ -963,7 +963,9 @@ button.preview {
   }
 }
 
-.storybase-container-placeholder.select {
+@asset-type-inactive-color: darken(@light-gray, 10%);
+
+#app .storybase-container-placeholder.select {
   .wrapper {
     padding: 2%;
     position:relative;
@@ -979,9 +981,12 @@ button.preview {
     position:relative;
     width:100%;
     margin:0 auto;
+    overflow:hidden;
+    height:180px;
+
     &:before {
-      //background: @visited-blue;
-      background:@light-gray;
+      //background:@highlight-blue;
+      background:@asset-type-inactive-color;
       color: white;
       font-family:"FontAwesome";
       content: "";
@@ -994,6 +999,20 @@ button.preview {
       left:37.5%;
       position:absolute;
     }
+
+    &.collapsed:before {
+      background:@asset-type-inactive-color;
+    }
+
+    &.collapsed li {
+      //display:none;
+      a {
+        color:transparent !important;
+        &:after {
+          background:@asset-type-inactive-color !important;
+        }
+      }
+    }
     
     @item-y-offset:45px;
     @item-height: 35px;
@@ -1002,15 +1021,16 @@ button.preview {
     li {
       position:absolute;
       list-style:none !important;
-      
+
       &.image, &.audio, &.video, &.map,
       &.chart, &.table, &.quotation, &.text {
         a {
           text-decoration:none;
           text-transform:uppercase;
           font-family:"Museo300Regular";
-          color:@gray !important;
+          color:@gray;
           line-height:22px; // ???
+          
           &:after {
             .rounded-corners(3px);
             font-family:"FontAwesome";
@@ -1026,13 +1046,29 @@ button.preview {
             top:(@item-height * -0.25);
           }
           &:hover {
-            color:@orange !important;
+            color:@orange;
             &:after {
               background:@orange;
             }
           }
+          
+          &.unavailable {
+            color:transparent !important;
+            &:after {
+              background:@asset-type-inactive-color;
+            }
+            
+            &:hover {
+              cursor:default;
+              &:after {
+                cursor:default;
+                background:@asset-type-inactive-color;
+              }
+            }
+          }
         }
       }
+  
       
       &.image, &.audio, &.video, &.map {
         right:75%;

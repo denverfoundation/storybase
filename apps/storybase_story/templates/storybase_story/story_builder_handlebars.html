@@ -188,20 +188,12 @@ Handlebars.js templates for story builder Backbone application
 <script type="text/x-handlebars-template" id="section-asset-select-type-template">
 {{>help-icon}}
 <div class="wrapper">
-    {{#if defaultType}}
-    <p><a href="#" class="asset-type" data-asset-type="{{{defaultType.type}}}">{{gettext "Click to add your"}} {{{defaultType.name}}}</a></p>
-    {{/if}}
     {{#if assetTypes}}
-    <p>
-    {{#if defaultType}}
-    {{gettext "Or, select a different"}}:
-    {{else}}
-    {{gettext "Select a"}}:
-    {{/if}}
-    </p>
-    <ul class="asset-types">
+    <ul class="asset-types collapsed">
         {{#each assetTypes}}
-        <li class="{{type}}"><a href="#" class="asset-type" data-asset-type="{{type}}">{{name}}</a></li>
+            <li class="{{type}}">
+              <a href="#" class="asset-type{{#unless available}} unavailable{{/unless}}{{#if suggested}} suggested{{/if}}" data-asset-type="{{type}}">{{name}}</a>
+            </li>
         {{/each}}
     </ul>
     {{/if}}
@@ -380,15 +372,8 @@ Handlebars.js templates for story builder Backbone application
         <div class="publish-sharing" style="display: none">
             <h3>{{gettext "Let your story be heard!"}}</h3>
             <p>{{gettext "Let your story be heard! Spread the word by sharing it with your social networks, printing a copy, or embeding it on your own website."}}</p>
-            <div class="story-url-wrapper"><input id="story-url" type="text" value="{{url}}" /></div>
-            <div class="addthis_toolbox addthis_default_style addthis_32x32_style"
-                addthis:url="{{url}}" addthis:title="{{title}}">
-              <a class="addthis_button_link" title="Copy Link"></a>
-              <a class="addthis_button_email"></a>
-              <a class="addthis_button_facebook"></a>
-              <a class="addthis_button_twitter"></a>
-              <a class="addthis_button_google_plusone_share"></a>
-              <a class="addthis_button_compact"></a>
+
+            <a href="#" class="storybase-share-widget" data-story-id="{{storyId}}">Share This Story</a>
             </div>
         {{/if}}
         </div>
@@ -413,9 +398,8 @@ Handlebars.js templates for story builder Backbone application
 {{#if published}}
 <p>{{gettext "Congratulations, your story has been published."}}</p>
 {{else}}
-<div id="publish-todo"></div>
 <div class="button-container">
-    <button class="publish" type="button"{{#unless ready}}  disabled="disabled"{{/unless}}>Publish My Story</button>
+    <button class="publish" type="button">Publish My Story</button>
 </div>
 {{/if}}
 </script>

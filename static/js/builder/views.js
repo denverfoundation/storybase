@@ -1526,7 +1526,6 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         ],
         position: 6,
         title: gettext("This is your table of contents."),
-        // TODO: Remove reference to "Story Sections" tab
         description: gettext('This bar shows the sections in your story.'),
         prev: 'workflow-step-guider',
         next: 'section-thumbnail-guider',
@@ -1732,7 +1731,10 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.containerTemplates = this.options.containerTemplates;
     this.dispatcher = this.options.dispatcher;
     this.help = this.options.help;
-    this._relatedStoriesSaved = false;
+    // Should the story relations be saved to the server?
+    // Currently, we only want to do this once, when connected stories
+    // are saved for the first time.
+    this._saveRelatedStories = _.isUndefined(this.model) ? true : this.model.isNew() && this.options.relatedStories.length;
     this._tour = new storybase.builder.views.BuilderTour({
       dispatcher: this.dispatcher,
       forceTour: this.options.forceTour,
@@ -2025,6 +2027,18 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     this.dispatcher.trigger("ready:story", this.model);
   },
 
+  saveRelatedStories: function() {
+    if (this._saveRelatedStories) {
+      // Only save the related stories if they've never been saved before
+      if (this.model.relatedStories.length) {
+        // Only bother making the request if there is actually data to 
+        // save 
+        this.model.saveRelatedStories();
+      }
+      this._saveRelatedStories = false;
+    }
+  },
+
   save: function() {
     console.info("Saving story");
     var that = this;
@@ -2033,9 +2047,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       success: function(model, response) {
         that.dispatcher.trigger('save:story', model);
         model.saveSections();
-        if (!that._relatedStoriesSaved) {
-          model.saveRelatedStories();
-        }
+        that.saveRelatedStories();
         if (isNew) {
           that.dispatcher.trigger('navigate', model.id + '/', {
             trigger: true 
@@ -2602,133 +2614,6 @@ storybase.builder.views.NavViewMixin = {
     return this.workflowNavView;
   }
 };
-
-// TODO: Remove this view
-/**
- * Next/previous buttons.
- */
-storybase.builder.views.SectionNavView = Backbone.View.extend({
-  id: 'section-nav',
-
-  className: 'section-nav',
-
-  events: {
-    'click .next,.prev': 'handleClick'
-  },
-
-  templateSource: $('#section-nav-template').html(),
-
-  initialize: function() {
-    this.dispatcher = this.options.dispatcher;
-    //this._active = 'story-info'; 
-    this._active = null;
-    this._prev = null;
-    this._next = null;
-
-    this.template = Handlebars.compile(this.templateSource);
-
-    this.model.sections.on("remove", this.updatePrevNext, this);
-    this.model.sections.on("sync", this.updatePrevNext, this);
-    this.dispatcher.on('select:section', this.updateSection, this);
-  },
-
-  updatePrevNext: function() {
-    if (_.isObject(this._active)) {
-      // section is a Section model instance
-      index = this.model.sections.indexOf(this._active);
-      if (index === 0) {
-        this._prev = 'story-info';
-      }
-      else {
-        this._prev = this.model.sections.at(index - 1);
-      }
-
-      if (index === this.model.sections.length - 1) {
-        this._next = 'call-to-action';
-      }
-      else {
-        this._next = this.model.sections.at(index + 1);
-      }
-    }
-    else {
-      // section is a string for the pseudo sections
-      if (this._active === 'story-info') {
-        // Assume story information view is the first view
-        this._prev = null;
-        this._next = this.model.sections.at(0);
-      }
-      else if (this._active === 'call-to-action') {
-        this._prev = this.model.sections.last();
-        this._next = null;
-      }
-    }
-
-    this.render();
-  },
-
-  updateSection: function(section) {
-    var index;
-    this._active = section;
-    this.updatePrevNext();
-  },
-
-  /**
-   * Get a (pseudo) section's ID.
-   */
-  getId: function(value) {
-    if (_.isObject(value)) {
-      // Section is a model
-      if (value.isNew()) {
-        // It hasn't been saved, so return the client ID
-        return value.cid;  
-      }
-      else {
-        // Return the ID
-        return value.id;
-      }
-    }
-    else {
-      // Section is a pseudo-section ID, just return that string
-      return value;
-    }
-  },
-
-  render: function() {
-    var context = {
-      prevId: this.getId(this._prev),
-      nextId: this.getId(this._next)
-    };
-    this.$el.html(this.template(context));
-    this.delegateEvents();
-    return this;
-  },
-
-  /**
-   * Lookup a (pseudo) section.
-   */
-  getSection: function(sectionId) {
-    var section;
-    // If the id is one of the pseudo-section ids, just return
-    // the id string
-    if (sectionId === 'story-info' || sectionId === 'call-to-action') {
-      return sectionId;
-    }
-    // Next, try to look up the section by the id 
-    section = this.model.sections.get(sectionId);
-    if (_.isUndefined(section)) {
-      // A matching section wasn't found. See if it's a client id
-      section = this.model.sections.getByCid(sectionId);
-    }
-    return section;
-  },
-
-  handleClick: function(evt) {
-    var sectionId = $(evt.target).attr('id');
-    var section = this.getSection(sectionId); 
-    evt.preventDefault();
-    this.dispatcher.trigger('select:section', section);
-  }
-});
 
 /**
  * A table of contents for navigating between sections in the builder.
@@ -3822,6 +3707,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
     },
 
     events: {
+      "hover .wrapper": "toggleTypeListVisible",
       "click .asset-type": "selectType", 
       "click .remove": "remove",
       "click .edit": "edit",
@@ -3925,32 +3811,28 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
     },
 
     /**
-     * Get a list of asset types and their labels, filtering out the
-     * default type.
+     * Get a list of asset types, their labels, and properties. 
+     * Properties on returned hash:
+     *  type {string}
+     *  name {string}
+     *  suggested {bool}
+     *  available {bool}
      */
     getAssetTypes: function() {
       var type = this.options.suggestedType;
-      if (type) {
-        return _.filter(this.assetTypes, function(at) {
-          return at.type !== type;
-        });
-      }
-      else {
-        return this.assetTypes;
-      }
+      var result = [];
+      var canChangeAssetType = _.isUndefined(this.options.canChangeAssetType) || this.options.canChangeAssetType;
+      _.each(this.assetTypes, function(type) {
+        var isSuggested = type.type == this.options.suggestedType;
+        // note we don't modify this.assetTypes
+        result.push(_.extend({}, type, { 
+          suggested: isSuggested,
+          available: canChangeAssetType || isSuggested
+        }));
+      }, this);
+      return result;
     },
 
-    getDefaultAssetType: function() {
-      var type = this.options.suggestedType;
-      if (type) {
-        return _.filter(this.assetTypes, function(at) {
-          return at.type === type;
-        })[0];
-      }
-      else {
-        return null;
-      }
-    },
 
     render: function() {
       var context = {};
@@ -3962,10 +3844,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       var $wrapperEl;
       this.template = Handlebars.compile(this.templateSource());
       if (state === 'select') {
-        if (this.options.canChangeAssetType || _.isUndefined(this.options.canChangeAssetType)) {
-          context.assetTypes = this.getAssetTypes();
-        }
-        context.defaultType = this.getDefaultAssetType(); 
+        context.assetTypes = this.getAssetTypes();
         context.help = this.options.help;
       }
       else if (state === 'display') {
@@ -4048,7 +3927,13 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
      */
     selectType: function(e) {
       e.preventDefault(); 
-      this.setType($(e.target).data('asset-type'));
+      if (!$(e.target).hasClass('unavailable')) {
+        this.setType($(e.target).data('asset-type'));
+      }
+    },
+
+    toggleTypeListVisible: function(e) {
+      this.$el.find('.asset-types').toggleClass('collapsed');
     },
 
     setType: function(type) {
@@ -5143,10 +5028,21 @@ storybase.builder.views.PublishView = storybase.builder.views.PublishViewBase.ex
       legalEl: '#share-legal'
     },
 
+    initListeners: function() {
+      if (_.isUndefined(this.model)) {
+        this.dispatcher.once("ready:story", this.setStory, this);
+      }
+      else {
+        this.listenTo(this.model, "change:status", this.handleChangeStatus);
+      }
+    },
+
     initialize: function() {
       var navViewOptions;
  
       storybase.builder.views.PublishViewBase.prototype.initialize.apply(this);
+
+      this._sharingWidgetInitialized = false;
       this.licenseView = new storybase.builder.views.LicenseView({
         model: this.model,
         dispatcher: this.dispatcher,
@@ -5160,12 +5056,6 @@ storybase.builder.views.PublishView = storybase.builder.views.PublishViewBase.ex
         language: this.options.language,
         tagName: 'li'
       });
-      this.todoView = new storybase.builder.views.PublishTodoView({
-        dispatcher: this.dispatcher,
-        model: this.model
-      });
-      this.todoView.register(this.licenseView, "select:license");
-      this.todoView.update({render: false});
       this.legalView = new storybase.builder.views.LegalView({
         dispatcher: this.dispatcher,
         model: this.model
@@ -5173,7 +5063,6 @@ storybase.builder.views.PublishView = storybase.builder.views.PublishViewBase.ex
       this.buttonView = new storybase.builder.views.PublishButtonView({
         dispatcher: this.dispatcher,
         model: this.model,
-        todoView: this.todoView,
         tagName: 'li'
       });
       this.publishedButtonsView = new storybase.builder.views.PublishedButtonsView({
@@ -5209,18 +5098,37 @@ storybase.builder.views.PublishView = storybase.builder.views.PublishViewBase.ex
       this.workflowNavView = new storybase.builder.views.WorkflowNavView(navViewOptions);
     },
 
-    getStoryUrl: function() {
-      var url = this.model ? this.model.get('url') : '';
-      var loc = window.location;
-      if (url) {
-        url = loc.protocol + "//" + loc.host + url;
+    handleChangeStatus: function(story, statusVal, options) {
+      if (statusVal === 'published') {
+        if (!this._sharingWidgetInitialized) {
+          // Initiialize the sharing widget once the model has synced
+          // with the server
+          this.initSharingWidget({delay:true});
+        }
       }
-      return url;
+      // Show/hide the share sidebar.
+      this.renderSharing();
+    },
+
+    initSharingWidget: function(options) {
+      options = options || {};
+      this._sharingWidgetInitialized = true;
+      if (options.delay) {
+        // Wait until the status change has been saved to the
+        // server before initializing the widget, otherwise the GET to
+        // /stories/{{story_id}}/share-widget/ endpoint will fail
+        this.model.once("sync", this.initSharingWidget, this);
+        return;
+      }
+      this.$('.storybase-share-widget').storybaseShare();
     },
 
     renderSharing: function() {
       var $el = this.$(this.options.sharingEl);
       if (this.storyPublished()) {
+        if (!this._sharingWidgetInitialized) {
+          this.initSharingWidget();
+        }
         $el.show();
       }
       else {
@@ -5237,9 +5145,9 @@ storybase.builder.views.PublishView = storybase.builder.views.PublishViewBase.ex
 
     render: function() {
       var context = {
-        url: this.getStoryUrl(),
         title: this.model.get('title'),
-        showSharing: this.options.showSharing
+        showSharing: this.options.showSharing,
+        storyId: this.model ? this.model.id : ''
       };
       this.$el.html(this.template(context));
       _.each(this.subviews, function(view) {
@@ -5249,15 +5157,6 @@ storybase.builder.views.PublishView = storybase.builder.views.PublishViewBase.ex
       this.publishedButtonsView.setElement(this.$(this.options.publishedButtonsEl)).render();
       if (this.options.showSharing) {
         this.renderSharing();
-      }
-      if (window.addthis) {
-        // Render the addthis toolbox.  We have to do this explictly
-        // since it wasn't in the DOM when the page was loaded.
-        addthis.toolbox(this.$('.addthis_toolbox')[0], {
-          // Don't append clickback URL fragment so users get a clean
-          // URL when clicking the permalink button
-          data_track_clickback: false
-        });
       }
       this.workflowNavView.render();
       this.delegateEvents();
@@ -5541,8 +5440,8 @@ storybase.builder.views.FeaturedAssetAddView = Backbone.View.extend(
                 that.render({uploading: true});
               },
               success: function(model, response) {
-                that.model.assets.add(model);
                 that.model.setFeaturedAsset(model);
+                that.model.assets.add(model);
                 // Reset the form
                 that.form.model = new that.options.assetModelClass({
                   language: that.options.language,
@@ -5556,8 +5455,8 @@ storybase.builder.views.FeaturedAssetAddView = Backbone.View.extend(
         else {
           // Set a callback that just sets the featured asset 
           options.success = function(model) {
-            that.model.assets.add(model);
             that.model.setFeaturedAsset(model);
+            that.model.assets.add(model);
           }
         }
 
@@ -5618,11 +5517,37 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend({
     selectViewClass: storybase.builder.views.FeaturedAssetSelectView
   },
 
+  /**
+   * Set the initial featured asset from the story's image assets
+   * if one has not already been set.
+   *
+   * This really only applies to already-created stories without
+   * featured images.  Newly-created stories will have their featured
+   * asset set by the handler.
+   */
+  setInitialFeaturedAsset: function() {
+    var imgAsset;
+    if (this.model && this.model.featuredAssets.length == 0 &&
+        this.model.assets.length != 0) {
+      imgAsset = this.model.assets.find(function(asset) {
+        return asset.get('type') === 'image';
+      });
+      if (imgAsset) {
+        this.model.setFeaturedAsset(imgAsset);
+      }
+    }
+  },
+
   initListeners: function() {
     if (this.model) {
-      this.listenTo(this.model.assets, "add remove", this.render);
-      this.listenTo(this.model, "set:featuredasset", this.switchToDisplay);
+      this.listenTo(this.model.assets, "add", this.render);
+      this.listenTo(this.model, "set:featuredasset", this.handleFeaturedAsset);
       this.listenTo(this.addView, "cancel", this.switchToDisplay);
+      if (this.model.featuredAssets.length == 0) {
+        // If the model doesn't have a featured asset set, try to
+        // set it when new assets are added to the story
+        this.listenTo(this.model.assets, "add", this.handleAddAsset);
+      }
     }
     else {
       this.dispatcher.once("ready:story", this.setStory, this);
@@ -5652,6 +5577,7 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend({
     this._activeViewId = this.displayView.id;
     this._rendered = false;
 
+    this.setInitialFeaturedAsset();
     this.initListeners();
   },
 
@@ -5767,98 +5693,28 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend({
     this.delegateEvents();
   },
 
+  handleAddAsset: function(asset) {
+    if (asset.get('type') === 'image') {
+      // Wait until the file upload has completed and the asset model has synced
+      // before setting it as the featured asset. This works around a race
+      // condition where FeaturedAssetDisplayView would render before the
+      // asset attributes were updated.
+      asset.once('change:content', function(asset) {
+        this.model.setFeaturedAsset(asset);    
+      }, this);
+    }
+  },
+
+  handleFeaturedAsset: function() {
+    // A featured asset has been selected, stop looking for the
+    // initial featured asset
+    this.stopListening(this.model.assets, "add", this.handleAddAsset);
+    this.switchToDisplay();
+  },
+
   switchToDisplay: function() {
     this._activeViewId = this.displayView.id;
     return this.render();
-  }
-});
-
-/**
- * A story is ready to be published.
- *
- * @event readytopublish:story
- * @param Story story Story model instance that is ready to be published.
- */
-
-/**
- * A story is no longer ready to be published.
- *
- * @event notreadytopublish:story
- * @param Story story Story model instance that is ready to be published.
- */
-
-storybase.builder.views.PublishTodoView = storybase.builder.views.PublishViewBase.extend({
-  id: 'publish-todo',
-
-  options: {
-    // Source of the template with markup/text that is displayed
-    // when all the required steps have been completed.
-    readyTemplateSource: $('#publish-ready-msg-template').html()
-  },
-
-  initialize: function() {
-    storybase.builder.views.PublishViewBase.prototype.initialize.apply(this);
-    this.readyTemplate = Handlebars.compile(this.options.readyTemplateSource); 
-    this.subviews = [];
-    this.todo = [];
-
-    if (_.isUndefined(this.model)) {
-      this.dispatcher.on("ready:story", this.setStory, this);
-    }
-  },
-
-  register: function(view, evt) {
-    this.subviews.push(view);
-    this.dispatcher.on(evt, this.handleEvent, this); 
-  },
-
-  itemLink: function(view) {
-    return '<a href="#' + view.$el.attr('id') + '" class="publish-todo-item">' + view.options.title + '</a>';
-  },
-
-  handleEvent: function() {
-    this.update({render: true});
-  },
-
-  ready: function() {
-    return this.model && this.todo.length === 0;
-  },
-
-  update: function(options) {
-    options = options || { render: true };
-    this.todo = [];
-    _.each(this.subviews, function(view) {
-      if (!_.result(view, 'completed')) {
-        this.todo.push(this.itemLink(view));
-      }
-    }, this);
-    if (this.ready()) {
-      this.dispatcher.trigger("readytopublish:story", this.model); 
-    }
-    else {
-      this.dispatcher.trigger("notreadytopublish:story", this.model);
-    }
-    if (options.render) {
-      this.render();
-    }
-  },
-
-  render: function() {
-    var html;
-
-    if (this.storyPublished()) {
-      html = '';
-    }
-    else { 
-      if (this.ready()) {
-        html = this.readyTemplate(); 
-      }
-      else {
-        html = gettext("You need to ") + this.todo.join(", ");
-      }
-    }
-    this.$el.html(html);
-    return this;
   }
 });
 
@@ -5875,15 +5731,27 @@ storybase.builder.views.PublishedButtonsView = storybase.builder.views.PublishVi
     viewURLTemplate: '/stories/{{slug}}/viewer/'
   },
 
+  initListeners: function() {
+    // If the model isn't defined at initialization (usually when creating
+    // a new story), wire up a listener to set it when the story is ready.
+    if (_.isUndefined(this.model)) {
+      this.dispatcher.once("ready:story", this.setStory, this);
+    }
+    else {
+      this.listenTo(this.model, "change:status", this.handleChangeStatus);
+    }
+  },
+
   initialize: function() {
     storybase.builder.views.PublishViewBase.prototype.initialize.apply(this);
     this.viewURLTemplate = Handlebars.compile(this.options.viewURLTemplate); 
     this._rendered = false;
+  },
 
-    if (_.isUndefined(this.model)) {
-      this.dispatcher.on("ready:story", this.setStory, this);
+  handleChangeStatus: function(story, statusVal, options) {
+    if (statusVal == 'published') {
+      this.render();
     }
-    this.dispatcher.on("publish:story", this.render, this);
   },
 
   handleUnpublish: function(evt) {
@@ -5891,7 +5759,6 @@ storybase.builder.views.PublishedButtonsView = storybase.builder.views.PublishVi
     var that = this;
     var success = function(model, response) {
       that.dispatcher.trigger('alert', 'success', 'Story unpublished');
-      that.dispatcher.trigger('unpublish:story', that.model);
       that.render();
     };
     var triggerError = function(model, response) {
@@ -5937,21 +5804,27 @@ storybase.builder.views.PublishButtonView = storybase.builder.views.PublishViewB
 
   options: {
     templateSource: $('#publish-button-template').html(),
-    title: gettext("Publish your story"),
-    todoEl: '#publish-todo'
+    title: gettext("Publish your story")
   },
 
-  initialize: function() {
-    storybase.builder.views.PublishViewBase.prototype.initialize.apply(this);
-    this.dispatcher.on("readytopublish:story", this.enable, this);
-    this.dispatcher.on("notreadytopublish:story", this.disable, this);
-    this.dispatcher.on("unpublish:story", this.render, this);
+  initListeners: function() {
+    if (_.isUndefined(this.model)) {
+      this.dispatcher.once("ready:story", this.setStory, this);
+    }
+    else {
+      this.listenTo(this.model, 'change:status', this.handleChangeStatus);
+    }
+  },
+
+  handleChangeStatus: function(story, statusVal, options) {
+    if (statusVal !== 'published') {
+      this.render();
+    }
   },
 
   handlePublish: function(evt) {
     var that = this;
     var triggerPublished = function(model, response) {
-      that.dispatcher.trigger('publish:story', model);
       that.dispatcher.trigger('alert', 'success', 'Story published');
     };
     var triggerError = function(model, response) {
@@ -5977,12 +5850,8 @@ storybase.builder.views.PublishButtonView = storybase.builder.views.PublishViewB
     var published = this.storyPublished();
     this.$el.html(this.template({
       title: this.options.title,
-      published: published,
-      ready: this.options.todoView.ready()
+      published: published
     }));
-    if (!published) {
-      this.options.todoView.setElement(this.$(this.options.todoEl)).render();
-    }
     return this;
   }
 });
