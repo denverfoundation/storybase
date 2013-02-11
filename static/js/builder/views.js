@@ -2376,6 +2376,7 @@ storybase.builder.views.UnusedAssetView = Backbone.View.extend(
 storybase.builder.views.RichTextEditorMixin = {
   toolbarTemplateSource: $('#editor-toolbar-template').html(),
   editor: null,
+  characterCountTimer: null,
 
   getEditorToolbarHtml: function() {
     return this.toolbarTemplateSource; 
@@ -2393,12 +2394,14 @@ storybase.builder.views.RichTextEditorMixin = {
     var defaultCallbacks = {
       'focus': function() {
         $(this.toolbar.container).show();
+        view.startPollingCharacterCount();
       },
 
       'blur': function() {
         if (this._okToHideToolbar) {
           $(this.toolbar.container).hide();
         }
+        view.stopPollingCharacterCount();
       },
 
       'load': function() {
@@ -2413,8 +2416,16 @@ storybase.builder.views.RichTextEditorMixin = {
         });
         view.updateCharacterCount();
       },
-      'newword:composer': $.proxy(this.updateCharacterCount, this)
-
+      
+      // @todo: what we really want is a change event that fires on every 
+      // visible change in the editor. for some reason, the published 
+      // change events do not behave that way. if future versions of the 
+      // wysihtml5 editor address this, or if we change editors, something
+      // like the following should be used rather than polling.
+      //
+      // 'change': function() {
+      //   view.updateCharacterCount();
+      // }
     };
 
     var toolbarEl = this.getEditorToolbarEl();
@@ -2434,6 +2445,18 @@ storybase.builder.views.RichTextEditorMixin = {
     return this.editor;
   },
   
+  // @todo: switch from polling to listening for events when wysihtml5 editor
+  // hits version 0.5. @see https://github.com/PitonFoundation/atlas/issues/530
+  // and @see https://github.com/xing/wysihtml5/issues/174
+  // or, ideally, use a published change event if its behavior is fine-grained
+  // enough. see note above.
+  startPollingCharacterCount: function() {
+    this.characterCountTimer = setInterval($.proxy(this.updateCharacterCount, this), 500);
+  },
+  stopPollingCharacterCount: function() {
+    clearInterval(this.characterCountTimer);
+  },
+  
   updateCharacterCount: function() {
     if (this.editor) {
       var $toolbar = $(this.getEditorToolbarEl());
@@ -2451,7 +2474,7 @@ storybase.builder.views.RichTextEditorMixin = {
         var $warning = $counter.find('.warning');
         if ($warning.length) {
           var limit = parseInt($warning.data('character-limit'), 10);
-          if (text.length > limit) {
+          if (!isNaN(limit) && text.length > limit) {
             $warning.show();
           }
           else {

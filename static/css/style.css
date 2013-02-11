@@ -582,7 +582,7 @@ body.story-builder .alert-info{background-color:#D9EDF7;border-color:#BCE8F1;col
 body.story-builder .introduction{margin-top:1em;}
 body.story-builder .error input{background-color:#F2DEDE;border-color:#EED3D7;}
 body.story-builder button.help{border:none;background:none;padding:0;margin:0;width:auto;text-align:center;text-shadow:none;display:block;color:#5a5a5a !important;cursor:pointer;font-size:18px;}body.story-builder button.help:hover{background:none;}
-body.story-builder .wysihtml5-toolbar{position:relative;padding:10px 0 0 0;}body.story-builder .wysihtml5-toolbar:first-child{padding-top:0;}
+body.story-builder .wysihtml5-toolbar{position:relative;padding:10px 0 0 0;color:#777777;}body.story-builder .wysihtml5-toolbar:first-child{padding-top:0;}
 body.story-builder .wysihtml5-toolbar .character-counter{float:right;}body.story-builder .wysihtml5-toolbar .character-counter .warning{color:white;background:#ee6666;border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px;padding:2px 6px;display:none;}
 body.story-builder [data-wysihtml5-command], [data-wysihtml5-action]{text-decoration:none;}
 body.story-builder [data-wysihtml5-dialog-action]{cursor:pointer;}
