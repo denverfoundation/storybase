@@ -14,6 +14,8 @@ Changelog
 0.5
 ~~~
 
+* Builder story summary editor has a character counter and warning when 
+  character limit is hit (#530)
 * Add support for Django 1.4.* and Django CMS 2.3.* (see docs/upgrading.rst)
 * Improved asset type selection user interface (#381)
 * Simplified flow in the publish/share step of the story builder (#515, #590)
