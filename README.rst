@@ -14,6 +14,7 @@ Changelog
 0.5
 ~~~
 
+* Story viewer is navigated one page at a time. (#518)
 * Add support for Django 1.4.* and Django CMS 2.3.* (see docs/upgrading.rst)
 * Improved asset type selection user interface (#381)
 * Simplified flow in the publish/share step of the story builder (#515, #590)
