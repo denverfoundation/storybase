@@ -288,27 +288,3 @@ def password_change(request,
     context.update(extra_context or {})
     return render_to_response(template_name, context,
                               context_instance=RequestContext(request, current_app=current_app))
-
-
-def simple_list(objects):
-    """Render a simple listing of Projects or Organizations 
-    
-    Arguments:
-    objects -- A queryset of Project or Organization model instances
-
-    """
-    template = get_template('storybase_user/simple_list.html')
-    context =  Context({"objects": objects})
-    return template.render(context)
-
-
-def homepage_organization_list(count):
-    """Render a listing of organizations for the homepage"""
-    orgs = Organization.objects.on_homepage().order_by('-last_edited')[:count]
-    return simple_list(orgs)
-
-
-def homepage_project_list(count):
-    """Render a listing of projects for the homepage"""
-    projects = Project.objects.on_homepage().order_by('-last_edited')[:count]
-    return simple_list(projects)

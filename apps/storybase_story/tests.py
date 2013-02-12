@@ -936,35 +936,6 @@ class RelatedStoriesTest(TestCase):
         self.assertEqual(story.get_prompt(), "")
 
 
-class ViewsTest(TestCase):
-    """Tests for story-related views"""
-
-    def test_homepage_story_list(self):
-        """Test homepage_story_list()"""
-        import lxml.html
-        from storybase_story.views import homepage_story_list
-
-        homepage_titles = (
-            "The Power of Play: Playground Locations in the Children's Corridor",
-            "Birth Trends in the Children's Corridor: Focus on Foreign-born Mothers",
-            "Shattered Dreams: Revitalizing Hope in Original Aurora",
-            "A School Fight Rallies Hinkley High School Mothers to Organize",
-            "Transportation Challenges Limit Education Choices for Denver Parents")
-        for title in homepage_titles:
-            create_story(title=title, on_homepage=True, status='published')
-            # Force different timestamps for stories
-            sleep(1)
-        homepage_stories = Story.objects.on_homepage()
-        html = homepage_story_list(len(homepage_titles))
-        fragment = lxml.html.fromstring(html)
-        # TODO: Finish implementing this
-        elements = fragment.cssselect('.stories > li')
-        self.assertEqual(len(elements), homepage_stories.count())
-        sorted_titles = tuple(reversed(homepage_titles))
-        for i in range(len(sorted_titles)):
-            self.assertTrue(sorted_titles[i] in elements[i].text_content())
-
-
 class StoryBuilderViewTest(TestCase):
     """Test case for view that bootstraps Backbone view for editing stories"""
     fixtures = ['section_layouts.json']
