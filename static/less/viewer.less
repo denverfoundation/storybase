@@ -161,10 +161,21 @@
       a {
         color: #fff;
         text-decoration: none;
+        display:block;
+        width:100%;
+        padding: 4px 2px;
+        
+        &:hover {
+          background:darken(@dark-gray, 10%);
+        }
+        &.current {
+          color:@orange;
+          background:darken(@dark-gray, 10%);
+        }
       }
 
       li {
-        padding: 4px 2px;
+        padding: 0;
       }
 
       li ul {
@@ -180,7 +191,7 @@
   #story-nav {
     color: #fff;
     text-align: center;
-    width: 20%;
+    width: 170px;
     margin-left: auto;
     margin-right: auto;
     padding: 0;
@@ -188,10 +199,37 @@
     a {
       text-decoration: none;
       color: #fff;
+      width:80px;
+      display:block;
+      float:left;
+      border:1px solid @gray;
+      .rounded-corners(4px);
+      background:darken(@dark-gray, 10%);
 
-      &:hover, &:visited {
-        color: #fff;
+      &:first-child {
+        margin-right:5px;
       }
+
+      &.disabled {
+        color:@gray;
+        border:1px solid @dark-gray;
+        cursor:default;
+        
+        &:hover {
+          color:@gray;
+          background:darken(@dark-gray, 10%);
+        }
+      }
+
+      &:hover {
+        background:@dark-gray;
+      }
+    }
+    
+    .location {
+      clear:both;
+      font-size:.8em;
+      color:@light-gray;
     }
   }
 
