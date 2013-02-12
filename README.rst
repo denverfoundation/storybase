@@ -14,7 +14,6 @@ Changelog
 0.5
 ~~~
 
-* Story viewer is navigated one page at a time. (#518)
 * Add support for Django 1.4.* and Django CMS 2.3.* (see docs/upgrading.rst)
 * Improved asset type selection user interface (#381)
 * Simplified flow in the publish/share step of the story builder (#515, #590)
@@ -22,6 +21,9 @@ Changelog
   builder (#515)
 * Set default featured image in the builder (#515)
 * Improved user interface for featured image selection in the builder (#515)
+* Story viewer is navigated one page at a time. (#518)
+* Builder story summary editor has a character counter and warning when 
+  character limit is hit (#530)
 * Update and save the story slug when it's initially published (#596)
 * Cleanly handle errors and cache response from upstream Creative Commons
   license API (#605)

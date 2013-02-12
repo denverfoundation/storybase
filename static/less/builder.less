@@ -96,10 +96,24 @@ button.help {
 .wysihtml5-toolbar {
   position: relative;
   padding: 10px 0 0 0;
+  color:@gray;
 
   &:first-child {
     padding-top: 0;
   }
+  
+  .character-counter {
+    float:right;
+    
+    .warning {
+      color:white;
+      background:@error-color;
+      .rounded-corners(5px);
+      padding:2px 6px;
+      display:none;
+    }
+  }
+  
 }
 
 (~"[data-wysihtml5-command], [data-wysihtml5-action]") {

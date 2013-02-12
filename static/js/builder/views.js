@@ -2375,6 +2375,8 @@ storybase.builder.views.UnusedAssetView = Backbone.View.extend(
 
 storybase.builder.views.RichTextEditorMixin = {
   toolbarTemplateSource: $('#editor-toolbar-template').html(),
+  editor: null,
+  characterCountTimer: null,
 
   getEditorToolbarHtml: function() {
     return this.toolbarTemplateSource; 
@@ -2388,15 +2390,18 @@ storybase.builder.views.RichTextEditorMixin = {
   },
 
   getEditor: function(el, callbacks) {
+    var view = this;
     var defaultCallbacks = {
       'focus': function() {
         $(this.toolbar.container).show();
+        view.startPollingCharacterCount();
       },
 
       'blur': function() {
         if (this._okToHideToolbar) {
           $(this.toolbar.container).hide();
         }
+        view.stopPollingCharacterCount();
       },
 
       'load': function() {
@@ -2409,13 +2414,23 @@ storybase.builder.views.RichTextEditorMixin = {
         $(this.toolbar.container).mouseout(function() {
           that._okToHideToolbar = true;
         });
-      }
-
+        view.updateCharacterCount();
+      },
+      
+      // @todo: what we really want is a change event that fires on every 
+      // visible change in the editor. for some reason, the published 
+      // change events do not behave that way. if future versions of the 
+      // wysihtml5 editor address this, or if we change editors, something
+      // like the following should be used rather than polling.
+      //
+      // 'change': function() {
+      //   view.updateCharacterCount();
+      // }
     };
-    var editor;
+
     var toolbarEl = this.getEditorToolbarEl();
     $(el).before(toolbarEl);
-    editor = new wysihtml5.Editor(
+    this.editor = new wysihtml5.Editor(
       el,    
       {
         toolbar: toolbarEl, 
@@ -2424,11 +2439,52 @@ storybase.builder.views.RichTextEditorMixin = {
     );
     callbacks = _.isUndefined(callbacks) ? {} : callbacks;
     _.defaults(callbacks, defaultCallbacks);
-    _.each(callbacks, function(value, key, list) {
-      editor.on(key, value);
-    });
-    return editor;
-  }
+    _.each(callbacks, $.proxy(function(value, key, list) {
+      this.editor.on(key, value);
+    }, this));
+    return this.editor;
+  },
+  
+  // @todo: switch from polling to listening for events when wysihtml5 editor
+  // hits version 0.5. @see https://github.com/PitonFoundation/atlas/issues/530
+  // and @see https://github.com/xing/wysihtml5/issues/174
+  // or, ideally, use a published change event if its behavior is fine-grained
+  // enough. see note above.
+  startPollingCharacterCount: function() {
+    this.characterCountTimer = setInterval($.proxy(this.updateCharacterCount, this), 500);
+  },
+  stopPollingCharacterCount: function() {
+    clearInterval(this.characterCountTimer);
+  },
+  
+  updateCharacterCount: function() {
+    if (this.editor) {
+      var $toolbar = $(this.getEditorToolbarEl());
+      var $counter = $toolbar.find('.character-counter');
+      if ($counter.length) {
+        var text = this.editor.getValue();
+        
+        // remove tags
+        text = text.replace(/<(.*?)>/g, '');
+        
+        // "render" to convert entities to characters (eg, &lt;)
+        text = $('<div/>').html(text).text();
+      
+        $counter.find('.count').html(text.length);
+        var $warning = $counter.find('.warning');
+        if ($warning.length) {
+          var limit = parseInt($warning.data('character-limit'), 10);
+          if (!isNaN(limit) && text.length > limit) {
+            $warning.show();
+          }
+          else {
+            $warning.hide();
+          }
+        }
+      }
+    }
+  },
+  
 };
 
 /**
