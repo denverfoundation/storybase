@@ -393,6 +393,23 @@ button, .button {
   }
 }
 
+// Error popups
+.error-popup {
+  .rounded-corners;
+  color: @error-color;
+  background-color: lighten(@error-color, 30%);
+  border: 1px solid @error-color;
+  position: fixed;
+  top: 50%;
+  left: 50%;
+  width: 200px;
+  height: 100px;
+  margin-top: -50px;
+  margin-left: -100px;
+  padding: 20px;
+  z-index: 100000005 !important
+}
+
 // global stuff
 
 html { font-size: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
