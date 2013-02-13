@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.6
+~~~
+
+* Make titles in Explore view left-justified (#576)
+
 0.5.1
 ~~~~~
 
