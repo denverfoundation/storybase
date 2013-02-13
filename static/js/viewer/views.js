@@ -47,7 +47,9 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
     this.navigationView.render();
     this.$('.summary').show();
     this.$('.section').show();
-    this.sizeFigCaptions();
+    // When images are finally loaded, resize the <figure> containers
+    // and the image captions to fit the images 
+    this.$el.imagesLoaded($.proxy(this.sizeFigCaptions, this));
     this.$('.storybase-share-widget').storybaseShare();
     this._rendered = true;
     this.trigger("render");
@@ -109,8 +111,6 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
   },
   
   sizeFigCaptions: function() {
-    // we don't seem to get load events on images
-    // even under a hard refresh.
     var view = this;
     this.$('figure img, figure iframe').each(function() {
       if ($(this).width()) {
