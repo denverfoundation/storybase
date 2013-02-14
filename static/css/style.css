@@ -323,6 +323,7 @@ button[disabled],.button[disabled],button.disabled,.button.disabled{opacity:0.65
 .pills{padding-left:0;}.pills>li{display:inline-block;margin-right:4px;list-style-type:none;}.pills>li.active>a{color:#fff;background-color:#fe9703;}.pills>li.active>a:hover{background-color:#fe9703;}
 .pills>li.disabled>a{color:#f0efef;cursor:default;}.pills>li.disabled>a:hover{background-color:transparent;}
 .pills>li>a{border-radius:4px;-webkit-border-radius:4px;-moz-border-radius:4px;padding:4px;text-decoration:none;}.pills>li>a:hover{background-color:#f0efef;}
+.error-popup{border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px;color:#ee6666;background-color:#fdf0f0;border:1px solid #ee6666;position:fixed;top:50%;left:50%;width:200px;height:100px;margin-top:-50px;margin-left:-100px;padding:20px;z-index:100000005 !important;}
 html{font-size:100%;-webkit-text-size-adjust:100%;-ms-text-size-adjust:100%;}
 body,button,input,select,textarea{font-family:Arial,sans-serif;font-size:14px;line-height:1.4em;color:#444444;}body p,button p,input p,select p,textarea p{margin-bottom:1em;}
 body dd p,button dd p,input dd p,select dd p,textarea dd p,body dt p,button dt p,input dt p,select dt p,textarea dt p,body li p,button li p,input li p,select li p,textarea li p{margin-bottom:0;}
@@ -954,10 +955,9 @@ body.explorer #story-count{margin:0 0 20px 0;}
 body.explorer #story-list{clear:both;}
 body.explorer #story-list.tile li.story{width:222px;float:left;padding:7px;background:#f0efef;margin-bottom:11px;margin-right:14px;overflow:hidden;}
 body.explorer #story-list.list li.story{float:none;width:100%;background:none;border-top:1px dotted #777777;padding-bottom:9px;padding-top:12px;margin-bottom:11px;margin-right:14px;overflow:hidden;}
-body.explorer #story-list li.story h3,body.explorer #map-container .leaflet-popup h3{padding-top:8px;background:none;font-size:16px;color:#2a88db;line-height:16px;}
+body.explorer #story-list li.story h3,body.explorer #map-container .leaflet-popup h3{padding-top:8px;background:none;font-size:16px;color:#2a88db;line-height:16px;text-align:left;}
 body.explorer #map-container .leaflet-popup-content-wrapper,body.explorer #map-container .leaflet-popup-tip{overflow:hidden;padding:0 0 25px 0;}
 body.explorer #story-list.list li.story h3{padding-top:0;}
-body.explorer #story-list.list li.story h3,body.explorer #map-container .leaflet-popup h3{text-align:left;}
 body.explorer #story-list.list li.story h3{font-size:20px;}
 body.explorer #story-list li.story>a:first-child{height:132px;width:222px;overflow:hidden;display:block;}body.explorer #story-list li.story>a:first-child img{position:absolute;width:222px;}
 body.explorer #story-list.list li.story a img{float:left;margin-right:16px;}

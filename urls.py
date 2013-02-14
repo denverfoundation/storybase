@@ -6,6 +6,7 @@ from django.views.decorators.cache import cache_page
 from tastypie.api import Api
 
 from storybase.api import CreativeCommonsLicenseGetProxyView
+from storybase.views import JSErrorHandlerView
 from storybase_asset.urls import urlpatterns as asset_urlpatterns
 from storybase_user.urls import urlpatterns as user_urlpatterns
 from storybase_story.urls import urlpatterns as story_urlpatterns
@@ -69,6 +70,9 @@ urlpatterns += patterns('',
 
     # Make translations available in JavaScript
     (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', {}),
+
+    # JS errors
+    url(r'^errors/', JSErrorHandlerView.as_view(), name="js_error_log"), 
 
     # Comments
     (r'^comments/', include('django.contrib.comments.urls')),

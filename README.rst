@@ -11,6 +11,27 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.6
+~~~
+
+* Make titles in Explore view left-justified (#576)
+
+0.5.3
+~~~~~
+
+* Log uncaught JavaScript exceptions to the server (#623)
+
+0.5.2
+~~~~~
+
+* Wait until viewer images are loaded before resizing containers and captions
+  (#622)
+
+0.5.1
+~~~~~
+
+* Show error message on uncaught JavaScript exceptions (#623)
+
 0.5
 ~~~
 
@@ -128,6 +149,7 @@ This project includes a number of excellent open-source libraries:
 * `Guiders.js <https://github.com/jeff-optimizely/Guiders-JS>`_ by Optimizely
 * `Handlebars <http://handlebarsjs.com/>`_ by Yehuda Katz
 * `HTML5 Boilerplate <http://html5boilerplate.com/>`_
+* `imagesLoaded <https://github.com/desandro/imagesloaded>`_ by David DeSandro
 * `jQuery <http://jquery.org/>`_ by John Resig
 * `jQuery Cookie <https://github.com/carhartl/jquery-cookie/>`_ by Klaus Hartl
 * `jQuery Condense Plugin <https://github.com/jsillitoe/jquery-condense-plugin>`_ by Joe Sillitoe
