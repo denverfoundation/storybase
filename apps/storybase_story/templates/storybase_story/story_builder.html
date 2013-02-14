@@ -38,7 +38,7 @@
     {% render_block "css" %}
     <!-- end CSS-->
 
-    <script src="{{ STATIC_URL }}js/error.min.js"></script>
+    {% include "storybase/js_error.html" %}
     <script src="{{ STATIC_URL }}js/libs/modernizr.custom.min.js"></script>
 
     {% comment %}

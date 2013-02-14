@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.5.3
+~~~~~
+
+* Log uncaught JavaScript exceptions to the server (#623)
+
 0.5.2
 ~~~~~
 
