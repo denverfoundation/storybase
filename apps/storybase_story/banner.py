@@ -1,7 +1,8 @@
 import random
-
+from django.db.models import Count
 from django.template.loader import render_to_string
 from storybase_story.models import Story
+from storybase_taxonomy.models import Category
 
 class BannerRegistry(object):
     _banner_classes = {}
@@ -18,6 +19,13 @@ class BannerRegistry(object):
 
 
 class Banner(object):
+    """
+    Base class for banner implementations.
+
+    In most cases, just override get_objects in the subclass to use a 
+    different strategy for selecting stories.
+
+    """
     template_name = "storybase_story/banner.html"
     # TODO: Decide on real value for this default 
     img_width = 335
@@ -44,7 +52,14 @@ class Banner(object):
         rendered = render_to_string(self.template_name, self.get_context_data())
         return rendered
 
+# TODO: Exclude connected stories from these, I think by using a custom
+# manager
+
 class RandomBanner(Banner):
+    """
+    Banner that shows randomly selected stories
+
+    """
     banner_id = "random"
 
     def get_objects(self, count=10):
@@ -54,5 +69,42 @@ class RandomBanner(Banner):
         return Story.objects.filter(status='published').order_by('?')[:count]
 
 
+class TopicBanner(Banner):
+    """
+    Banner that selects stories with a specified topic.
+    """
+    banner_id = "topic"
+
+    def get_random_topic(self, count):
+        # Limit elgible topics to only those with at least ``count``
+        # associated stories
+        topics = Category.objects.filter(stories__status='published')\
+                         .annotate(num_stories=Count('stories'))\
+                         .filter(num_stories__gte=count)
+        if not topics.count():
+            # No topics with stories
+            return None
+
+        return topics[0]
+        
+    def get_objects(self, count=10):
+        slug = getattr(self, 'slug', None)
+        if slug is None:
+            topic = self.get_random_topic(count) 
+        else:
+            topic = Category.objects.get(categorytranslation__slug=slug)
+
+        if not topic:
+            # No eligible topic, return an empty list
+            return []
+
+        # Return all the stories
+        return topic.stories.filter(status='published').order_by('?')[:count]
+        
+
+# Create a single instance of BannerRegistry for import elsewhere
 registry = BannerRegistry()
+
+# Register our banner implementations
 registry.register_banner(RandomBanner)
+registry.register_banner(TopicBanner)
