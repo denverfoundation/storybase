@@ -4,7 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 
 from storybase.utils import full_url, latest_context
 from storybase_asset.models import Asset
-from storybase_story.banner import RandomBanner
+from storybase_story.banner import registry as banner_registry
 from storybase_story.models import Story
 
 register = template.Library()
@@ -57,6 +57,10 @@ def story_embed(story):
     }
 
 @register.simple_tag
-def banner():
-    banner = RandomBanner()
+def banner(banner_id=None, **kwargs):
+    if banner_id is None:
+        banner = banner_registry.get_random_banner(**kwargs)
+    else:
+        banner = banner_registry.get_banner(banner_id, **kwargs)
+
     return banner.render()

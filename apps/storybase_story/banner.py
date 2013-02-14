@@ -1,19 +1,21 @@
+import random
+
 from django.template.loader import render_to_string
 from storybase_story.models import Story
 
-# Old code, just for reference
-#def homepage_banner_list(num_stories):
-#    """Render a listing of stories for the homepage banner """
-#    # temp -- just putting out demo images
-#    #stories = Story.objects.on_homepage().order_by('-last_edited')[:num_stories]
-#    stories = []
-#    image_num = 1
-#    for i in range(num_stories):
-#        image_num = i + 1
-#        if (image_num > 9):
-#            image_num -= 9
-#        stories.append({"image": "image%d.jpg" % image_num, "title": "banner story %d title here." % i})
-#    return stories
+class BannerRegistry(object):
+    _banner_classes = {}
+
+    def register_banner(self, banner_cls):
+        self._banner_classes[banner_cls.banner_id] = banner_cls
+
+    def get_banner(self, banner_id, **kwargs):
+        return self._banner_classes[banner_id](**kwargs)
+
+    def get_random_banner(self, **kwargs):
+        banner_id = random.choice(self._banner_classes.keys())
+        return self.get_banner(banner_id, **kwargs)
+
 
 class Banner(object):
     template_name = "storybase_story/banner.html"
@@ -43,6 +45,8 @@ class Banner(object):
         return rendered
 
 class RandomBanner(Banner):
+    banner_id = "random"
+
     def get_objects(self, count=10):
         # Sort the objects randomly. Unfortunately, we can't use call 
         # the parent's get_objects because QuerySets can't be reordered
@@ -50,4 +54,5 @@ class RandomBanner(Banner):
         return Story.objects.filter(status='published').order_by('?')[:count]
 
 
-# TODO: Registration of banner classes
+registry = BannerRegistry()
+registry.register_banner(RandomBanner)
