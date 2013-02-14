@@ -16,6 +16,11 @@ Changelog
 
 * Make titles in Explore view left-justified (#576)
 
+0.5.3
+~~~~~
+
+* Log uncaught JavaScript exceptions to the server (#623)
+
 0.5.2
 ~~~~~
 
