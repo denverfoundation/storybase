@@ -1,4 +1,18 @@
-#!/bin/bash
+#!/usr/bin/env bash
+
+DJANGO_ADMIN=`which django-admin.py`
+if [ -z "$DJANGO_ADMIN" ]; then
+  if [ -f ~/virtualenv/python2.7/bin/activate ]; then
+    # This script assumes the virtualenv is active before running, but
+    # thsi doesn't seem to be the case when run under Travis CI. Activate
+    # the virtualenv explicitely
+    source ~/virtualenv/python2.7/bin/activate
+    DJANGO_ADMIN=`which django-admin.py`
+  else
+    echo "django-admin.py not found!"
+    exit 1
+  fi
+fi
 
 django_version()
 {

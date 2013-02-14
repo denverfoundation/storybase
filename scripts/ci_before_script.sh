@@ -1,6 +1,6 @@
 #!/bin/sh  
 
-sudo bash ./scripts/apply_django_patches /home/vagrant/virtualenv/python2.7/lib/python2.7/site-packages/django
+sudo ./scripts/apply_django_patches /home/vagrant/virtualenv/python2.7/lib/python2.7/site-packages/django
 fab --set run_local=True install_solr upgrade_to_solr3 install_solr_2155
 fab --set run_local=True install_solr_config:instance=travis,solr_multicore=,project_root=`pwd`
 fab --set run_local=True enable_jetty_start
