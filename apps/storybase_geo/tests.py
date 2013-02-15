@@ -19,14 +19,14 @@ class YahooGeocoderTestMixin(object):
         settings = self.get_settings_module()
         self._old_settings['STORYBASE_GEOCODER'] = getattr(settings, 'STORYBASE_GEOCODER', None)
         self._old_settings['STORYBASE_GEOCODER_ARGS'] = getattr(settings, 'STORYBASE_GEOCODER_ARGS', None)
-        settings.STORYBASE_GEOCODER = "geopy.geocoders.Yahoo"
-        settings.STORYBASE_GEOCODER_ARGS = {
+        self.set_setting('STORYBASE_GEOCODER', "geopy.geocoders.Yahoo")
+        self.set_setting('STORYBASE_GEOCODER_ARGS', {
             'app_id': ""
-        }
+        })
 
 
-class LocationModelTest(SettingsChangingTestCase, YahooGeocoderTestMixin,
-                        SloppyComparisonTestMixin):
+class LocationModelTest(YahooGeocoderTestMixin, SloppyComparisonTestMixin, 
+        SettingsChangingTestCase):
     def get_settings_module(self):
         from storybase_geo import settings
         return settings
@@ -84,8 +84,8 @@ class LocationModelTest(SettingsChangingTestCase, YahooGeocoderTestMixin,
         self.assertApxEqual(loc.point.y, 41.8716782)
 
 
-class GeocoderResourceTest(SettingsChangingTestCase, YahooGeocoderTestMixin,
-                           SloppyComparisonTestMixin):
+class GeocoderResourceTest(YahooGeocoderTestMixin, SloppyComparisonTestMixin,
+        SettingsChangingTestCase):
     """Tests for geocoding endpoint"""
     def get_settings_module(self):
         from storybase_geo import settings
