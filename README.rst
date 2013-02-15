@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.5.4
+~~~~~
+
+* Hide error popup for uncaught JavaScript exceptions (#634)
+
 0.5.3
 ~~~~~
 
