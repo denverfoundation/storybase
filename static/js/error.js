@@ -22,7 +22,7 @@
   }
 
   window.onerror = function(message, url, lineNumber) {
-    errorPopup();
+    //errorPopup();
     logError(window.jsLogUrl, message, url, lineNumber);
     return false;
   };
