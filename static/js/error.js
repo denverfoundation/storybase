@@ -13,7 +13,7 @@
   function logError(logUrl, message, url, lineNumber) {
     if (logUrl && window.XMLHttpRequest) {
       var xhr = new XMLHttpRequest();
-      var log = 'message='+message+'&url='+url+'&lineNumber='+lineNumber;
+      var log = 'message='+message+'&url='+url+'&lineNumber='+lineNumber+'&location='+window.location.href;
       xhr.open("POST", logUrl);
       xhr.setRequestHeader("Content-type", "application/x-www-form-urlencoded");
       xhr.send(log);
@@ -22,7 +22,10 @@
   }
 
   window.onerror = function(message, url, lineNumber) {
-    errorPopup();
+    // For now don't show error popups until we have a way to make them
+    // less obtrusive/blocking.
+    // See https://github.com/PitonFoundation/atlas/issues/634
+    //errorPopup();
     logError(window.jsLogUrl, message, url, lineNumber);
     return false;
   };
