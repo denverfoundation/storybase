@@ -1,4 +1,5 @@
 import sys
+from urlparse import parse_qs
 
 from django.conf import settings
 from django.contrib.auth.models import User
@@ -9,6 +10,7 @@ from django.test import TestCase
 
 from storybase.models import PermissionMixin
 from storybase.forms import UserEmailField 
+from storybase.tests.base import SettingsChangingTestCase
 from storybase.utils import full_url, is_file
 
 class ContextProcessorTest(TestCase):
@@ -44,8 +46,9 @@ class FilterTest(TestCase):
         self.assertEqual(t.render(c), output)
 
 
-class TemplateTagTest(TestCase):
+class TemplateTagTest(SettingsChangingTestCase):
     def setUp(self):
+        super(TemplateTagTest, self).setUp()
         Site.objects.all().delete()
         self._site_name = "floodlightproject.org"
         self._site_domain = "floodlightproject.org"
@@ -82,6 +85,15 @@ class TemplateTagTest(TestCase):
         c = Context({'path': '/stories/asdas/'})
         t.render(c)
         self.assertEqual(c['full_path'], "http://floodlightproject.org/stories/asdas/")
+
+    def test_ga_campaign_params(self):
+        self.set_setting('GA_PROPERTY_ID', 'UA-11111111-1')
+        t = Template('{% load storybase_tags %}{% ga_campaign_params "exampleblog" "referral" "spring" %}')
+        c = Context()
+        params = parse_qs(t.render(c).lstrip('?'))
+        self.assertEqual(params['utm_source'][0], 'exampleblog')
+        self.assertEqual(params['utm_medium'][0], 'referral')
+        self.assertEqual(params['utm_campaign'][0], 'spring')
 
 
 class TestPermissionClass(PermissionMixin):

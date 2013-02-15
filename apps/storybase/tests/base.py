@@ -72,12 +72,23 @@ class SettingsChangingTestCase(TestCase):
     def setUp(self, settings_module=django.conf.settings):
         self._settings_module=settings_module
         self._old_settings = {}
+        self._settings_to_delete = []
 
     def tearDown(self):
         settings_module = self.get_settings_module()
         for key, value in self._old_settings.items():
             setattr(settings_module, key, value)
+        for attr in self._settings_to_delete:
+            delattr(settings_module, attr)
 
+    def set_setting(self, attr, val):
+        settings_module = self.get_settings_module()
+        try:
+            self._old_settings[attr] = getattr(settings_module, attr)
+        except AttributeError:
+            self._settings_to_delete.append(attr)
+        setattr(settings_module, attr, val)
+            
 
 class PermissionTestCase(TestCase):
     def setUp(self):

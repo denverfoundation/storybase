@@ -1,4 +1,5 @@
 import re
+from urllib import urlencode
 
 from django.conf import settings
 from django.template import (Node, Library, TemplateSyntaxError, Variable,
@@ -9,6 +10,9 @@ from django.utils.encoding import force_unicode
 from storybase import settings as storybase_settings
 
 register = Library()
+
+# Is Google Analytics enabled?
+GA_ENABLED = hasattr(settings, 'GA_PROPERTY_ID')
 
 @register.filter
 @stringfilter
@@ -68,6 +72,33 @@ def storybase_conf(parser, token):
 @register.simple_tag
 def featured_asset(obj, width=500):
     return obj.render_featured_asset(format='html', width=width)
+
+
+@register.simple_tag
+def ga_campaign_params(source, medium, campaign, term=None, content=None,
+                       prefix="?"):
+    """
+    Add custom campaign paramaters to a URL
+
+    See https://support.google.com/analytics/bin/answer.py?hl=en&answer=1033863&topic=1032998&ctx=topic
+    """
+    if not GA_ENABLED:
+        # Google Analytics is not enabled, just return the default URL
+        return ""
+
+    params = {
+        'utm_source': source,
+        'utm_medium': medium,
+        'utm_campaign': campaign,
+    }
+
+    if term:
+        params['utm_term'] = term
+
+    if content:
+        params['utm_content'] = content
+
+    return "%s%s" % (prefix, urlencode(params))
 
 
 class FullURLNode(Node):
@@ -134,3 +165,4 @@ def an(text):
     if not CONSONANT_SOUND.match(text) and VOWEL_SOUND.match(text):
         return 'an'
     return 'a'
+
