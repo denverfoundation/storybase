@@ -26,6 +26,9 @@ class Banner(object):
     different strategy for selecting stories.
 
     """
+    # Override this in subclasses. This is used to retrieve a banner instance
+    # via BannerRegistry
+    banner_id = "base"
     template_name = "storybase_story/banner.html"
     # TODO: Decide on real value for this default 
     img_width = 335
@@ -41,8 +44,21 @@ class Banner(object):
         # a custom manager?
         return Story.objects.filter(status='published')[:count]
 
+    def encode_args(self):
+        """
+        Encode arguments used to initialize a Banner instance as a string.
+
+        This is mostly to provide a way to differentiate between different
+        instantiations of the same banner class when looking at analytics.
+        """
+        # The base class doesn't know how to handle arguments. But this should
+        # be implemented in subclasses that do take arguments.
+        return ""
+
     def get_context_data(self):
         return {
+            'banner_args': self.encode_args(),
+            'banner_id': self.banner_id,
             'objects': [o.normalize_for_view(img_width=self.img_width)
                         for o in self.get_objects()],
         }
@@ -75,12 +91,23 @@ class TopicBanner(Banner):
     """
     banner_id = "topic"
 
-    def get_random_topic(self, count):
+    def __init__(self, **kwargs):
+        super(TopicBanner, self).__init__(**kwargs)
+        count = getattr(self, 'count', 10)
+        try:
+            slug = getattr(self, 'slug')
+            self.topic = Category.objects.get(categorytranslation__slug=slug)
+        except AttributeError:
+            # No topic was specified. Get a random one
+            self.topic = self.get_random_topic(count)
+            self.slug = self.topic.slug
+
+    def get_random_topic(self, min_count):
         # Limit elgible topics to only those with at least ``count``
         # associated stories
         topics = Category.objects.filter(stories__status='published')\
                          .annotate(num_stories=Count('stories'))\
-                         .filter(num_stories__gte=count)
+                         .filter(num_stories__gte=min_count)
         if not topics.count():
             # No topics with stories
             return None
@@ -88,18 +115,16 @@ class TopicBanner(Banner):
         return topics[0]
         
     def get_objects(self, count=10):
-        slug = getattr(self, 'slug', None)
-        if slug is None:
-            topic = self.get_random_topic(count) 
-        else:
-            topic = Category.objects.get(categorytranslation__slug=slug)
 
-        if not topic:
+        if not self.topic:
             # No eligible topic, return an empty list
             return []
 
         # Return all the stories
-        return topic.stories.filter(status='published').order_by('?')[:count]
+        return self.topic.stories.filter(status='published').order_by('?')[:count]
+
+    def encode_args(self):
+        return getattr(self, 'slug', "")
         
 
 # Create a single instance of BannerRegistry for import elsewhere
