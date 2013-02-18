@@ -1,7 +1,8 @@
+{% load storybase_tags %}
 <div id="banner">
     <div class="images">
         {% for obj in objects %}
-        <a href="{{ obj.url }}" title="{{ obj.title }}">
+	<a href="{{ obj.url }}{% ga_campaign_params 'homepage' banner_id 'banner' content=banner_args %}" title="{{ obj.title }}">
             <span class="overlay"></span>
             {{ obj.image_html }}
             <span class="title"><em>{{ obj.title }}</em></span>
