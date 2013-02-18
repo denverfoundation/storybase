@@ -46,6 +46,22 @@ class StoryQuerySet(FeaturedQuerySetMixin, PublishedQuerySetMixin,
                  .filter(related_stories__source__relation_type='connected')\
                  .distinct()
 
+    def template(self):
+        """Return stories that are templates for other stories"""
+        return self.filter(is_template=True)
+
+    def not_template(self):
+        """Return stories that are not templates for other stories"""
+        return self.filter(is_template=False)
+
+    def public(self, published_statuses=None):
+        """
+        Convenience method to filter for stories that are visible by all
+        users 
+        """
+        return self.published(published_statuses=published_statuses)\
+                   .not_template().not_connected()
+
 
 class StoryManager(FeaturedManager):
     use_for_related_fields = True 
@@ -67,6 +83,9 @@ class StoryManager(FeaturedManager):
 
     def seed(self):
         return self.get_query_set().seed()
+
+    def public(self):
+        return self.get_query_set().public()
 
 
 class StoryTemplateManager(models.Manager):

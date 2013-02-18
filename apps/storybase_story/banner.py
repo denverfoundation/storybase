@@ -40,9 +40,7 @@ class Banner(object):
     # Using "objects" instead of "stories" to anticipate including other
     # things (projects, organizations, users) in banner one day.
     def get_objects(self, count=10):
-        # TODO: This code is repeated a lot.  Maybe it needs to be in
-        # a custom manager?
-        return Story.objects.filter(status='published')[:count]
+        return Story.objects.public()[:count]
 
     def encode_args(self):
         """
@@ -68,8 +66,6 @@ class Banner(object):
         rendered = render_to_string(self.template_name, self.get_context_data())
         return rendered
 
-# TODO: Exclude connected stories from these, I think by using a custom
-# manager
 
 class RandomBanner(Banner):
     """
@@ -82,7 +78,7 @@ class RandomBanner(Banner):
         # Sort the objects randomly. Unfortunately, we can't use call 
         # the parent's get_objects because QuerySets can't be reordered
         # after being sliced.
-        return Story.objects.filter(status='published').order_by('?')[:count]
+        return Story.objects.public().order_by('?')[:count]
 
 
 class TopicBanner(Banner):
@@ -100,7 +96,8 @@ class TopicBanner(Banner):
         except AttributeError:
             # No topic was specified. Get a random one
             self.topic = self.get_random_topic(count)
-            self.slug = self.topic.slug
+            if self.topic:
+                self.slug = self.topic.slug
 
     def get_random_topic(self, min_count):
         # Limit elgible topics to only those with at least ``count``
@@ -115,13 +112,12 @@ class TopicBanner(Banner):
         return topics[0]
         
     def get_objects(self, count=10):
-
         if not self.topic:
             # No eligible topic, return an empty list
             return []
 
         # Return all the stories
-        return self.topic.stories.filter(status='published').order_by('?')[:count]
+        return self.topic.stories.public().order_by('?')[:count]
 
     def encode_args(self):
         return getattr(self, 'slug', "")

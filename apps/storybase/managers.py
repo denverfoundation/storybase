@@ -32,7 +32,16 @@ class PublishedQuerySetMixin(object):
             return self.filter(status__in=published_statuses)
 
 
-class FeaturedManager(models.Manager):
+class PublishedManagerMixin(object):
+    """
+    Mixin that proxies methods to its queryset that mixes in
+    PublishedQuerySetMixin
+    """
+    def published(self, published_statuses=None):
+        return self.get_query_set().published(published_statuses)
+
+
+class FeaturedManager(PublishedManagerMixin, models.Manager):
     """Add ability to query featured content"""
     # TODO: Make Model classes that use featured manager use
     # a QuerySet that mixes in FeaturedQuerySetMixin and have 
