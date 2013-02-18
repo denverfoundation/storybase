@@ -84,7 +84,7 @@ class StoriesMixin(object):
 
     """
     def get_stories_queryset(self):
-        return self.stories.filter(status='published')
+        return self.stories.published()
 
     def all_stories(self):
         return self.get_stories_queryset().order_by('-last_edited')
@@ -498,7 +498,7 @@ class UserProfile(RecentStoriesMixin, models.Model):
         return format_user_name(self.user)
 
     def get_stories_queryset(self):
-        return self.user.stories.filter(status='published')
+        return self.user.stories.published()
 
     def get_image(self):
         if not hasattr(self, '_image'):

@@ -28,7 +28,7 @@ class StorybaseMenu(Menu):
             id='organizations',
             parent_id=explore.id)
         nodes.append(organizations)
-        for organization in Organization.objects.filter(status='published').order_by('organizationtranslation__name'):
+        for organization in Organization.objects.published().order_by('organizationtranslation__name'):
             nodes.append(
             NavigationNode(
                 title=organization.name,
@@ -41,7 +41,7 @@ class StorybaseMenu(Menu):
             id='projects',
             parent_id=explore.id)
         nodes.append(projects)
-        for project in Project.objects.filter(status='published').order_by('-last_edited'):
+        for project in Project.objects.published().order_by('-last_edited'):
             nodes.append(
                 NavigationNode(
 	                title=project.name,

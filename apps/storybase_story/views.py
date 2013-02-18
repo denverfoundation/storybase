@@ -81,12 +81,12 @@ class ExploreStoriesView(TemplateView):
 
 class StoryDetailView(ModelIdDetailView):
     context_object_name = "story"
-    queryset = Story.objects.exclude(source__relation_type='connected')
+    queryset = Story.objects.not_connected()
 
 
 class StoryViewerView(ModelIdDetailView):
     context_object_name = "story"
-    queryset = Story.objects.exclude(source__relation_type='connected')
+    queryset = Story.objects.not_connected()
     template_name = 'storybase_story/story_viewer.html'
 
     def get_context_data(self, **kwargs):
@@ -560,7 +560,7 @@ class StoryWidgetView(ModelIdDetailView):
     """An embedable widget for a story"""
     context_object_name = "story"
     # You can only embed published stories
-    queryset = Story.objects.filter(status='published')
+    queryset = Story.objects.published()
     template_name = 'storybase_story/story_widget.html'
 
 
@@ -575,5 +575,5 @@ class StoryShareWidgetView(ModelIdDetailView):
 
     """
     context_object_name = "story"
-    queryset = Story.objects.filter(status='published')
+    queryset = Story.objects.published()
     template_name = 'storybase_story/story_share_widget.html'
