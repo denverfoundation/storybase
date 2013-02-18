@@ -401,10 +401,10 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
     def connected_stories(self, published_only=True, draft_author=None):
         """Get a queryset of connected stories"""
         # Would this be better implemented as a related manager?
-        qs = self.related_stories.filter(source__relation_type='connected')
+        qs = self.related_stories.connected()
         if published_only:
             # By default only return published connected stories 
-            qs = qs.filter(status='published')
+            qs = qs.published()
         elif draft_author:
             # Alternately, include draft stories by a particular
             # author
@@ -414,7 +414,7 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
 
     def connected_to_stories(self):
         """Get a queryset of stories that this story is connected to"""
-        return self.related_to.filter(target__relation_type='connected')
+        return self.related_to.seed()
 
     def connected_to(self):
         connected_to = self.connected_to_stories()
