@@ -15,6 +15,7 @@ Changelog
 ~~~
 
 * Make titles in Explore view left-justified (#576)
+* High-level query API for stories
 
 0.5.3
 ~~~~~

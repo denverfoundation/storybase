@@ -27,6 +27,7 @@ from storybase_help.models import create_help
 from storybase_story.api import (SectionAssetResource, SectionResource, 
                                  StoryResource)
 from storybase_story.forms import SectionRelationAdminForm
+from storybase_story.managers import StoryQuerySet
 from storybase_story.models import (Container, Story, StoryTranslation,
     Section, SectionAsset, SectionLayout, SectionRelation, StoryTemplate,
     StoryRelation,
@@ -715,6 +716,92 @@ class StoryApiTest(TestCase):
         self.assertEqual(retrieved_story.title, title)
         self.assertEqual(retrieved_story.summary, summary)
         self.assertEqual(retrieved_story.byline, byline)
+
+
+class StoryQuerySetTest(TestCase):
+    # TODO: Use the setUp pattern here in other classes instead
+    # to make tests more DRY
+    """
+    Tests for StoryQuerySet custom QuerySet
+
+    This also tests storybase.managers.FeaturedQuerySetMixin and 
+    storybase.managers.PublishedQuerySetMixin so we don't have to
+    define a mock model class to test them in the storybase app
+    
+    """
+    def setUp(self):
+        # Always create a normal story
+        self.story = create_story(title="Test Story", 
+                summary="Test Story Summary",
+                byline="Test Story Byline")
+
+    # Initialization for certain types of stories
+    def _setUpConnected(self):
+        self.seed_story = create_story(title="Test Seed Story", 
+                summary="Test Seed Story Summary",
+                byline="Test Seed Story Byline")
+        self.connected_story1 = create_story(title="Test Connected Story 1",
+                summary="Test Connected Story Summary 1",
+                byline="Test Connected Story Byline 1")
+        StoryRelation.objects.create(source=self.seed_story,
+                target=self.connected_story1, relation_type='connected')
+        self.connected_story2 = create_story(title="Test Connected Story 2",
+                summary="Test Connected Story Summary 2",
+                byline="Test Connected Story Byline 2")
+        StoryRelation.objects.create(source=self.seed_story,
+                target=self.connected_story2, relation_type='connected')
+        self.qs = StoryQuerySet(model=Story)
+
+    def _setUpFeatured(self):
+        self.homepage_story = create_story(title="Test Homepage Story",
+                summary="Test Homepage Story Summary",
+                byline="Test Homepage Story Byline",
+                on_homepage=True)
+        self.qs = StoryQuerySet(model=Story)
+
+    def _setUpPublished(self):
+        self.draft_story = create_story(title="Test Draft Story",
+                summary="Test Draft Story Summary",
+                byline="Test Draft Story Byline",
+                status='draft',)
+        self.published_story = create_story(title="Test Published Story",
+                summary="Test Published Story Summary",
+                byline="Test Published Story Byline",
+                status='published',)
+        self.qs = StoryQuerySet(model=Story)
+
+    def test_connected(self):
+        self._setUpConnected()
+        connected = self.qs.connected()
+        self.assertEqual(connected.count(), 2)
+        self.assertIn(self.connected_story1, connected)
+        self.assertIn(self.connected_story2, connected)
+
+    def test_not_connected(self):
+        self._setUpConnected()
+        not_connected = self.qs.not_connected()
+        self.assertEqual(not_connected.count(), 2)
+        self.assertIn(self.story, not_connected)
+        self.assertIn(self.seed_story, not_connected)
+
+    def test_seed(self):
+        self._setUpConnected()
+        seed = self.qs.seed()
+        self.assertEqual(seed.count(), 1)
+        self.assertIn(self.seed_story, seed)
+
+    def test_on_homepage(self):
+        self._setUpFeatured()
+        on_homepage = self.qs.on_homepage()
+        self.assertEqual(on_homepage.count(), 1)
+        self.assertIn(self.homepage_story, on_homepage)
+
+    def test_published(self):
+        self._setUpPublished()
+        published = self.qs.published()
+        self.assertEqual(published.count(), 1)
+        self.assertIn(self.published_story, published)
+
 
 class StoryManagerTest(TestCase):
     """Test case for custom manager for Story model"""
