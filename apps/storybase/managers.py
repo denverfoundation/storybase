@@ -13,6 +13,13 @@ class FeaturedQuerySetMixin(object):
     def on_homepage(self):
         return self.filter(on_homepage=True)
 
+    def featured(self):
+        """Alias for on_homepage"""
+        return self.on_homepage()
+
+    def not_featured(self):
+        return self.filter(on_homepage=False)
+
 
 class PublishedQuerySetMixin(object):
     """
@@ -68,3 +75,11 @@ class FeaturedManager(PublishedManagerMixin, models.Manager):
         # is published
         return self.get_query_set().on_homepage()\
                    .published(published_statuses=('published', 'staged'))
+
+
+    def featured(self):
+        """Alias for on_homepage"""
+        return self.on_homepage(self)
+
+    def not_featured(self):
+        return self.get_query_set().not_featured()

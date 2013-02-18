@@ -192,7 +192,6 @@ def latest_context(qs, count=3, img_width=100):
     """Popuplate the context for latest_* template tags"""
     return {
         'objects': [obj.normalize_for_view(img_width)
-                    for obj in qs.filter(
-                            status='published', on_homepage=False)
-                    .order_by('-last_edited')[:count]],
+                    for obj in qs.published().not_featured()
+                                 .order_by('-last_edited')[:count]],
     }
