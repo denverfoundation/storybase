@@ -11,8 +11,8 @@ try:
 except ImportError:
     reverse_lazy = None
 from django.shortcuts import render_to_response
-from django.template import Context, RequestContext
-from django.template.loader import get_template, render_to_string
+from django.template import RequestContext
+from django.template.loader import render_to_string
 from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_protect
