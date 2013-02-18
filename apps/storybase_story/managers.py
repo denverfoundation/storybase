@@ -1,8 +1,5 @@
 from django.db import models
-
-from storybase.managers import (FeaturedQuerySetMixin, PublishedQuerySetMixin,
-        FeaturedManager)
-
+from storybase.managers import (FeaturedQuerySet, FeaturedManager)
 
 class ContainerManager(models.Manager):
     def get_by_natural_key(self, name):
@@ -24,8 +21,7 @@ class SectionManager(models.Manager):
         return self.get(section_id=section_id)
 
 
-class StoryQuerySet(FeaturedQuerySetMixin, PublishedQuerySetMixin,
-        models.query.QuerySet):
+class StoryQuerySet(FeaturedQuerySet):
     """
     Custom query set to provide a high-level query interface to stories
 
