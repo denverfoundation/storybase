@@ -9,8 +9,6 @@ from django.core.urlresolvers import reverse
 from django.db.models import Q
 from django.http import Http404, HttpResponseRedirect
 from django.utils.decorators import method_decorator
-from django.template import Context
-from django.template.loader import get_template
 from django.views.generic import View, DetailView, TemplateView 
 from django.views.generic.detail import SingleObjectMixin, SingleObjectTemplateResponseMixin
 from django.utils.safestring import mark_safe
