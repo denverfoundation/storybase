@@ -3,8 +3,6 @@
 from urlparse import urlsplit, urlunsplit
 import re
 
-import pytz
-
 from django.conf import settings
 from django.contrib.sites.models import get_current_site
 from django.template.defaultfilters import slugify as django_slugify
