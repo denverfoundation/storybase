@@ -33,6 +33,7 @@ Documentation for developers
     :maxdepth: 1
 
     api
+    templatetags
 
 
 Indices and tables
