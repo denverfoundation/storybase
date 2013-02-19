@@ -102,17 +102,16 @@
     width:100%; 
     position:relative; 
     overflow:hidden; 
-    // Hide the banner initially, it gets shown in a window load event 
-    // handler in functions.js. 
-    display:none;
 
     a { 
+      // Hide the banner initially, it gets shown in a window load event 
+      // handler in functions.js. 
+      display:none;
       // Height and width are set dynamically relative to window width in
       // functions.js:intro_resize() 
       float:left; 
       display:inline; 
       position:relative; 
-      margin-bottom:-4px; 
       position:relative;
       &:hover {
         text-decoration:none;

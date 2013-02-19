@@ -108,12 +108,12 @@
 		
 		$('.storybase-share-widget').storybaseShare();
 
-    // Analytics events 
-    if (window._gaq) {
-      $('.homepage .latest .connected-link').click(function() {
-        _gaq.push(['_trackEvent', 'Links', 'Latest stories connected']);
-      });
-    }
+		// Analytics events 
+		if (window._gaq) {
+			$('.homepage .latest .connected-link').click(function() {
+				_gaq.push(['_trackEvent', 'Links', 'Latest stories connected']);
+			});
+		}
 	});
 
 
@@ -122,32 +122,36 @@
 	});
 
 
-  /**
-   * Resize the banner images based on the window width
-   */
+	/**
+	 * Resize the banner images based on the window width
+	 */
 	function intro_resize() {
-    // Aspect ratio is based on the default icon size, 335x200px or
-    // 5:3.
-    var aspect_ratio = 3 / 5;
+		// Aspect ratio is based on the default icon size, 335x200px or
+		// 5:3.
+		var aspect_ratio = 3 / 5;
 		var window_width = $(window).width();
 		var images_num = ($('#banner .images a').size())/2;
 
 		var image_width = window_width / images_num;
-    var image_height = image_width * aspect_ratio;
-    $('.images a img').css({
+		var image_height = image_width * aspect_ratio;
+		var container_height = image_height * 2;
+		$('.images').css({
+			height: container_height
+		});
+		$('.images a img').css({
 			width : image_width
-    });
-    // The <A> elements are used to "crop" tall images, so we need to set
-    // their heights as well
+		});
+		// The <A> elements are used to "crop" tall images, so we need to set
+		// their heights as well
 		$('.images a').css({
 			width : image_width,
-      height: image_height
+			height: image_height
 		});
 	}
 
-  // Wait until all the images are loaded before revealing the banner
+	// Wait until all the images are loaded before revealing the banner
 	$(window).load(function() {
-		$('.images').fadeIn();
+		$('.images a').fadeIn();
 	});
 
 	// sidebar
