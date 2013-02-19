@@ -122,19 +122,30 @@
 	});
 
 
-	function intro_resize(){
-
+  /**
+   * Resize the banner images based on the window width
+   */
+	function intro_resize() {
+    // Aspect ratio is based on the default icon size, 335x200px or
+    // 5:3.
+    var aspect_ratio = 3 / 5;
 		var window_width = $(window).width();
 		var images_num = ($('#banner .images a').size())/2;
 
-		var image_width = window_width / images_num
-		$('.images a, .images a img').css({
+		var image_width = window_width / images_num;
+    var image_height = image_width * aspect_ratio;
+    $('.images a img').css({
 			width : image_width
-		})
-
-
+    });
+    // The <A> elements are used to "crop" tall images, so we need to set
+    // their heights as well
+		$('.images a').css({
+			width : image_width,
+      height: image_height
+		});
 	}
 
+  // Wait until all the images are loaded before revealing the banner
 	$(window).load(function() {
 		$('.images').fadeIn();
 	});
