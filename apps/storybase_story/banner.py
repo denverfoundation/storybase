@@ -5,15 +5,49 @@ from storybase_story.models import Story
 from storybase_taxonomy.models import Category
 
 class BannerRegistry(object):
+    """
+    A registry of banner implementations.
+
+    You shouldn't instantiate this, but instead import 
+    ``storybase_story.banner.registry`` to register your banner classes.
+
+    Example::
+
+        from storybase_story.banner import Banner, registry
+
+        class MyBanner(Banner):
+            banner_id = "my_banner"
+            ...
+
+        registry.register(MyBanner)
+
+    """
     _banner_classes = {}
 
-    def register_banner(self, banner_cls):
+    def register(self, banner_cls):
+        """
+        Register a new banner implementation.
+        """
         self._banner_classes[banner_cls.banner_id] = banner_cls
 
-    def get_banner(self, banner_id, **kwargs):
+    def get(self, banner_id, **kwargs):
+        """
+        Get a banner instance using a specific implementation.
+
+        Arguments:
+        banner_id -- banner_id attribute of the Banner subclass that should
+                     be instantiated
+
+        Keyword arguments are passed to the constructor for the banner.
+
+
+        """
         return self._banner_classes[banner_id](**kwargs)
 
-    def get_random_banner(self, **kwargs):
+    def get_random(self, **kwargs):
+        """
+        Get a banner instance using a randomly-selected implementation.
+        """
         banner_id = random.choice(self._banner_classes.keys())
         return self.get_banner(banner_id, **kwargs)
 
@@ -40,6 +74,13 @@ class Banner(object):
     # Using "objects" instead of "stories" to anticipate including other
     # things (projects, organizations, users) in banner one day.
     def get_objects(self, count=10):
+        """
+        Get items to be displayed in the banner.
+
+        Keyword arguments:
+        count -- The number of items to show in the banner (default 10)
+
+        """
         return Story.objects.public()[:count]
 
     def encode_args(self):
@@ -48,12 +89,17 @@ class Banner(object):
 
         This is mostly to provide a way to differentiate between different
         instantiations of the same banner class when looking at analytics.
+
         """
         # The base class doesn't know how to handle arguments. But this should
         # be implemented in subclasses that do take arguments.
         return ""
 
     def get_context_data(self):
+        """
+        Return a dictionary that will be used as context when rendering
+        the banner template.
+        """
         return {
             'banner_args': self.encode_args(),
             'banner_id': self.banner_id,
@@ -62,6 +108,9 @@ class Banner(object):
         }
 
     def render(self):
+        """
+        Return a string containing the HTML for the rendered banner
+        """
         # TODO: Cache output
         rendered = render_to_string(self.template_name, self.get_context_data())
         return rendered
@@ -88,6 +137,15 @@ class TopicBanner(Banner):
     banner_id = "topic"
 
     def __init__(self, **kwargs):
+        """
+        Keyword arguments:
+        count -- number of stories to select (default 10). This is used
+                 to filter out Topics with too few stories when a random
+                 topic is desired.
+        slug  -- Slug of the Topic to be selected. If no value is selected
+                 a topic is selected randomly.
+
+        """
         super(TopicBanner, self).__init__(**kwargs)
         count = getattr(self, 'count', 10)
         try:
@@ -127,5 +185,5 @@ class TopicBanner(Banner):
 registry = BannerRegistry()
 
 # Register our banner implementations
-registry.register_banner(RandomBanner)
-registry.register_banner(TopicBanner)
+registry.register(RandomBanner)
+registry.register(TopicBanner)

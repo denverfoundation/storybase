@@ -59,8 +59,8 @@ def story_embed(story):
 @register.simple_tag
 def banner(banner_id=None, **kwargs):
     if banner_id is None:
-        banner = banner_registry.get_random_banner(**kwargs)
+        banner = banner_registry.get_random(**kwargs)
     else:
-        banner = banner_registry.get_banner(banner_id, **kwargs)
+        banner = banner_registry.get(banner_id, **kwargs)
 
     return banner.render()
