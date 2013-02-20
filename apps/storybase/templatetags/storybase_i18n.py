@@ -1,5 +1,11 @@
 import django
 
+from django.template import Library
+
+# Always create a variable named register, even if we don't need to
+# load this backport, otherwise {% load storybase_i18n %} will fail
+register = Library()
+
 if django.VERSION[0] <=1 and django.VERSION[2] < 4: 
     # Make the ``langauge`` template tag available for Django versions earlier
     # than 1.4
@@ -38,11 +44,10 @@ if django.VERSION[0] <=1 and django.VERSION[2] < 4:
     # NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
     # SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
    
-    from django.template import (Node, Library, TemplateSyntaxError)
+    from django.template import (Node, TemplateSyntaxError)
     from django.utils.translation import (activate, deactivate, deactivate_all,
         get_language)
 
-    register = Library()
 
     class Override(object):
         def __init__(self, language, deactivate=False):
