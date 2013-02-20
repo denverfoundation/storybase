@@ -1,5 +1,11 @@
-<ul class="navroot">
-  {% for item in menu_items %}
-  <li class="{% if item.active %}selected{% endif %}"><a href="{{ item.url }}" title="{{ item.tooltip }}" class="tooltip">{{ item.label }}</a></li>
-  {% endfor %}
-</ul>
+{% comment %}
+Sidebar menu for the "My Account" section. Intended to be rendered using
+the storybase_menu tag.
+{% endcomment %}
+<nav id="subnav">
+    <ul class="navroot">
+      {% for item in menu_items %}
+      <li class="{% if item.active %}selected{% endif %}"><a href="{{ item.url }}" title="{{ item.tooltip }}" class="tooltip">{{ item.label }}</a></li>
+      {% endfor %}
+    </ul>
+</nav>

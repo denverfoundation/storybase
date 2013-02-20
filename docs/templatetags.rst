@@ -9,6 +9,32 @@ Example::
 
     {% load story %}
 
+
+storybase_menu
+--------------
+
+Template tags used for rendering ``storybase.menu.Menu`` instances.
+
+storybase_menu
+^^^^^^^^^^^^^^
+
+Example:
+
+    {% load storybase_menu %}
+    {% storybase_menu "my_account" "storybase_user/account_menu.html" request.path %}
+
+The ``storybase_menu`` tag takes three arguments.  The first is a string
+matching the ID used when instantiating the ``storybase.menu.Menu`` '
+instance. The second is the name of the template to be used to render the
+menu.  The third optional argument is the path of the current view, used
+to identify the active item in the menu.  ``request.path`` works well for
+this third argument, asuming ``django.core.context_processors.request``
+is included in ``settings.TEMPLATE_CONTEXT_PROCESSORS``.
+
+The template context includes a ``menu`` variable which is the 
+``Menu`` instance and ``menu_items``, a list of the menu items from the 
+menu.
+    
 story
 -----
 
