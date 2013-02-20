@@ -14,8 +14,15 @@ Changelog
 0.6
 ~~~
 
+* Wired in home page banner (#198)
+* Better cleanup of Select2 instances on Explore page (#480)
+* Made link and button colors consistent across the site (#514)
+* Move "View all stories" button higher up on project and organization
+  detail pages (#531)
+* Make "My Account" menu consistent in the sidebar and megamenu (#544)
 * Make titles in Explore view left-justified (#576)
 * High-level query API for stories
+* Implemented a reusable menu class and template tag for rendering menus
 
 0.5.5
 ~~~~~
