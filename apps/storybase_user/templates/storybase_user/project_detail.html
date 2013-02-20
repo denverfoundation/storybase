@@ -22,4 +22,4 @@
 {% endif %}
 {% endblock %}
 
-{% block explore_button %}<a class="button" href="{% url explore_stories %}?projects={{ object.project_id }}">{% trans "View All Stories for This Project" %}</a>{% endblock %}
+{% block explore_button %}<a class="button view-all-stories" href="{% url explore_stories %}?projects={{ object.project_id }}">{% trans "View All Stories for This Project" %}</a>{% endblock %}

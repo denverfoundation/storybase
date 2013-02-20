@@ -113,6 +113,9 @@
 			$('.homepage .latest .connected-link').click(function() {
 				_gaq.push(['_trackEvent', 'Links', 'Latest stories connected']);
 			});
+			$('.button.view-all-stories').click(function() {
+			    _gaq.push(['_trackEvent', 'Links', 'View All Stories']);
+			});
 		}
 	});
 
