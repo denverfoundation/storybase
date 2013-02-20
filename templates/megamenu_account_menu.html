@@ -1,0 +1,18 @@
+{% load i18n %}
+<div class="megamenu my-account">
+	<ul>
+        <li><a href="{% url account_stories %}">{% trans "My Account"|upper %}<em></em></a>
+			<div class="dd onecol">
+				<div class="dd-col col1">
+					<ul>
+                        {% for item in menu_items %}
+                        <li class="{% if item.active %}selected{% endif %}"><a href="{{ item.url }}" title="{{ item.tooltip }}">{{ item.label }}</a></li>
+                        {% endfor %}
+						<li style="margin-top:20px"><a href="{% url auth_logout %}">{% trans "Sign Out" %}</a></li>
+					</ul>
+				</div>
+				<div class="cl">&nbsp;</div>
+			</div>
+		</li>
+	</ul>
+</div>

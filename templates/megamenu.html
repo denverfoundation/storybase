@@ -1,4 +1,4 @@
-{% load i18n cms_tags %}
+{% load i18n cms_tags storybase_menu %}
 <div class="megamenu shell navigation" id="navigation">
 	<ul> 
 		<li class="nodd"><a class="active" href="/">{% trans "Home"|upper %}</a></li>
@@ -163,23 +163,5 @@
 	</ul>
 </div>
 {% if user.is_authenticated %}
-{# TODO: Unify these with sidebar menu in storybase_user/account_base.html #}
-<div class="megamenu my-account">
-	<ul>
-        <li><a href="{% url account_stories %}">{% trans "My Account"|upper %}<em></em></a>
-			<div class="dd onecol">
-				<div class="dd-col col1">
-					<ul>
-						<li><a href="{% url account_summary %}">{% trans "Account Information" %}</a></li>
-                        <li><a href="{% url account_notifications %}">{% trans "Notifications and Subscriptions" %}</a></li>
-                        <li><a href="{% url account_password %}">{% trans "My Password" %}</a></li>
-                        <li><a href="{% url account_stories %}">{% trans "My Stories" %}</a></li>
-						<li style="margin-top:20px"><a href="{% url auth_logout %}">{% trans "Sign Out" %}</a></li>
-					</ul>
-				</div>
-				<div class="cl">&nbsp;</div>
-			</div>
-		</li>
-	</ul>
-</div>
+{% storybase_menu "my_account" "megamenu_account_menu.html" request.path %}
 {% endif %}

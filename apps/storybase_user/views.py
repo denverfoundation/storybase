@@ -20,6 +20,7 @@ from django.views.generic.base import TemplateView
 from django.views.generic.edit import CreateView, UpdateView 
 from django.views.generic.list import ListView
 
+from storybase.menu import Menu, registry as menu_registry
 from storybase.views.generic import ModelIdDetailView
 from storybase.utils import full_url
 from storybase_user.forms import (OrganizationModelForm, UserNotificationsForm,
@@ -105,6 +106,22 @@ class AccountSummaryView(TemplateView):
             if request.POST['form_id'] == 'change_email':
                 return self.post_change_email(request, *args, **kwargs)
         return self.render_to_response(self.get_context_data())
+
+
+# Create and wire up menus for "My Account" section
+my_account_menu = Menu(menu_id="my_account", label=_("My Account"))
+my_account_menu.add_url('account_stories',
+        label=_("My Stories"),
+        tooltip=_("Manage your stories and launch them in the Story Builder"))
+my_account_menu.add_url('account_summary',
+        label=_("Account Information"),
+        tooltip=_("Manage your basic information, like email address and connected social media accounts"))
+my_account_menu.add_url('account_notifications',
+        label=_("Communication Preferences"),
+        tooltip=_("Control your settings for receiving updates"))
+my_account_menu.add_url('account_password', label=_("Change My Password"),
+        tooltip=_("Change your password"))
+menu_registry.register(my_account_menu)
 
 
 class RelatedStoriesDetailView(ModelIdDetailView):

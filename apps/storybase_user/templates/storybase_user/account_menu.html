@@ -1,0 +1,5 @@
+<ul class="navroot">
+  {% for item in menu_items %}
+  <li class="{% if item.active %}selected{% endif %}"><a href="{{ item.url }}" title="{{ item.tooltip }}" class="tooltip">{{ item.label }}</a></li>
+  {% endfor %}
+</ul>

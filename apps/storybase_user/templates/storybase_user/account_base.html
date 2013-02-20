@@ -1,20 +1,11 @@
 {% extends "twocol.html" %}
 
-{% load cms_tags sekizai_tags menu_tags i18n %}
+{% load cms_tags sekizai_tags menu_tags i18n storybase_menu %}
 
 {% block sidebar %}
 {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/tooltipster-1.2/css/tooltipster.css">{% endaddtoblock %}
   <nav id="subnav">
-      <ul class="navroot">
-          <li class="selected has_children">
-          <a href="{% url account_summary %}" title="{% trans "Manage your basic information, like email address and connected social media accounts" %}" class="tooltip">{% trans "Account Information" %}</a>
-              <ul>
-                  <li><a href="{% url account_password %}" title="{% trans "Change your password" %}" class="tooltip">{% trans "Password" %}</a></li>
-                  <li><a href="{% url account_notifications %}" title="{% trans "Control your settings for receiving updates from" %} {{ storybase_site_name }}" class="tooltip">{% trans "Notifications and Subscriptions" %}</a></li>
-                  <li><a href="{% url account_stories %}" title="{% trans "Manage your stories and launch them in the Story Builder" %}" class="tooltip">{% trans "My Stories" %}</a></li>
-              </ul>
-          </li>
-      </ul>
+     {% storybase_menu "my_account" "storybase_user/account_menu.html" request.path %}
   </nav>
 {% endblock %}
 
