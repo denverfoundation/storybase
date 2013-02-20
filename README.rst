@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.5.5
+~~~~~
+
+* Properly register backport i18n tag library.
+
 0.5.4
 ~~~~~
 
