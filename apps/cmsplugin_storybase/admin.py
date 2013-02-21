@@ -1,8 +1,16 @@
+from django import forms
 from django.contrib import admin
+from django.utils.translation import ugettext_lazy as _
+from cms.admin.forms import PageForm
+from cms.admin.pageadmin import PageAdmin
+from cms.models import Page
+from cms.utils import get_language_from_request
 from storybase.admin import (StorybaseModelAdmin, StorybaseStackedInline,
         obj_title)
 from cmsplugin_storybase.forms import NewsItemTranslationAdminForm
-from cmsplugin_storybase.models import NewsItem, NewsItemTranslation
+from cmsplugin_storybase.models import (NewsItem, NewsItemTranslation,
+    Teaser, EmptyTeaser)
+
 
 class NewsItemTranslationInline(StorybaseStackedInline):
     """Inline for translated fields of a NewsItem"""
@@ -30,4 +38,60 @@ class NewsItemAdmin(StorybaseModelAdmin):
             obj.author = request.user
         obj.save()
 
+
+class StorybasePageForm(PageForm):
+    """Custom PageForm to handle the Teaser"""
+    teaser = forms.CharField(label=_("Page Teaser"), 
+        widget=forms.Textarea,
+        help_text=_("Brief description of the page to be included on parent pages"),
+        required=False)
+
+
+class StorybasePageAdmin(PageAdmin):
+    """Custom PageAdmin to handle our Teaser"""
+    form = StorybasePageForm
+
+    def get_form(self, request, obj=None, **kwargs):
+        language = get_language_from_request(request, obj)
+
+        if obj:
+            form = super(StorybasePageAdmin, self).get_form(request, obj, **kwargs)
+        else:
+            form = StorybasePageForm
+
+        if obj:
+            try:
+                teaser_obj = obj.teaser_set.get(language=language)
+            except:
+                # TODO: Handle case when no teaser exists
+                teaser_obj = EmptyTeaser()
+
+            form.base_fields['teaser'].initial = teaser_obj.teaser
+        else:
+            form.base_fields['teaser'].initial = u''
+
+        return form
+
+    def save_model(self, request, obj, form, change):
+        # Call super to save the page and title
+        super(StorybasePageAdmin, self).save_model(request, obj, form, change)
+
+        # Now, save our teaser
+        language = form.cleaned_data['language']
+        teaser_obj, created = Teaser.objects.get_or_create(page=obj, language=language)
+        teaser_obj.teaser = form.cleaned_data['teaser']
+        teaser_obj.save()
+
+
+def update_fieldsets(cls):
+    """Add our custom fields to the Admin fieldsets"""
+    cls.fieldsets[0][1]['fields'].append('teaser')
+
+
+update_fieldsets(StorybasePageAdmin)
+
+
 admin.site.register(NewsItem, NewsItemAdmin)
+# Replace the default PageAdmin class with our own
+admin.site.unregister(Page)
+admin.site.register(Page, StorybasePageAdmin)
