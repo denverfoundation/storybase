@@ -21,6 +21,8 @@ Changelog
   detail pages (#531)
 * Make "My Account" menu consistent in the sidebar and megamenu (#544)
 * Make titles in Explore view left-justified (#576)
+* Include count and link to connected stories in homepage featured slider
+  and explore pasge (#629)
 * High-level query API for stories
 * Implemented a reusable menu class and template tag for rendering menus
 
