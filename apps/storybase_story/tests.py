@@ -2286,6 +2286,7 @@ class StoryResourceTest(ResourceTestCase):
         story_attribute_keys = ['allow_connected',
                                 'byline',
                                 'call_to_action',
+                                'connected_count',
                                 'connected_prompt',
                                 'contact_info',
                                 'created',
