@@ -44,6 +44,8 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
     projects = fields.ListField(readonly=True)
     places = fields.ListField(readonly=True)
     featured_asset_url = fields.CharField(readonly=True)
+    connected_count = fields.IntegerField(attribute='connected_count',
+            readonly=True)
     # A list of lat/lon values for related Location objects as well as
     # centroids of Place tags
     points = fields.ListField(readonly=True)

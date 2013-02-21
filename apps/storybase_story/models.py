@@ -400,7 +400,6 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
 
     def connected_stories(self, published_only=True, draft_author=None):
         """Get a queryset of connected stories"""
-        # Would this be better implemented as a related manager?
         qs = self.related_stories.connected()
         if published_only:
             # By default only return published connected stories 
@@ -428,6 +427,17 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
         Is this story a connected story?
         """
         return self.connected_to_stories().count() > 0
+
+    def connected_count(self):
+        """
+        Helper for the API to get a count of connected stories.
+        """
+        if not self.allow_connected:
+            # Connected stories aren't enabled for this story. Return early
+            # and save a call to the DB
+            return 0
+
+        return self.related_stories.connected().published().count()
 
     def builder_url(self):
         if self.is_connected():

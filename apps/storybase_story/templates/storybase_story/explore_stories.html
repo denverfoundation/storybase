@@ -105,6 +105,9 @@ Handlebars templates for rendering Backbone views.
   <h3>{{>story_link}}</h3>
   <p class="byline">{{byline}}</p>
   {{firstparagraph summary}}
+  {{#if connected_count}}
+  <p><a href="{{url}}#connected"><i class="icon-comments-alt"></i>{{connected_count}} {{#blockgettext}}connected stor{{pluralize connected_count suffix="y,ies"}}{{/blockgettext}}!</a></p>
+  {{/if}}
   <dl class="story-attributes">
     <dt><p>{{gettext "Languages"}}</p></dt>
     <dd>
