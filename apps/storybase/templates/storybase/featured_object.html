@@ -36,8 +36,14 @@ context:
             {% if object.type != "News" %}
             <p class="featured-links">
               <a class="more" href="{{ object.url }}" title="{{ object.title }}">{% trans "View this" %} {{ object.type }}</a>
+	      {% comment %}Only stories will have the ``connected_count``
+	      attribute. It might make sense to figure out a solution that
+	      involves template inheritance or populates a list of items to
+	      be shown here as a key of ``object`` instead of having all this
+	      conditional logic in the template.{% endcomment %}
+	      {% if object.connected_count %}| <a href="{{ object.url }}#connected" class="more">{% trans "View" %} {{ object.connected_count }} {% blocktrans count connected_count=object.connected_count %}connected story{% plural %}connected stories{% endblocktrans %}</a>{% endif %}
               {% if object.more_link_url %}| <a class="more" href="{{ object.more_link_url }}">{{ object.more_link_text }}</a>{% endif %}
-            </p>
+	    </p>
             {% endif %}
         </div>
     </li>
