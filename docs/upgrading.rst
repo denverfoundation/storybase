@@ -2,6 +2,14 @@
 Upgrading
 =========
 
+0.5 to 0.6
+==========
+
+With version 0.6, a new Teaser model has been added to the Django CMS
+integration.  In order to create the model schema in the database, run::
+
+    manage.py migrate cmsplugin_storybase
+
 0.4 to 0.5
 ==========
 

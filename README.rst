@@ -11,7 +11,7 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
-0.6
+0.7
 ~~~
 
 * Wired in home page banner (#198)
@@ -25,6 +25,11 @@ Changelog
   and explore pasge (#629)
 * High-level query API for stories
 * Implemented a reusable menu class and template tag for rendering menus
+
+0.6
+~~~
+
+* Ability to add Teasers to CMS Pages
 
 0.5.5
 ~~~~~
