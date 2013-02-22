@@ -4,7 +4,7 @@
 
 {% block body_title %}{% page_attribute "page_title" %}{% endblock%}
 
-{% block body_class %}twocol cms-twocol{% endblock %}
+{% block body_class %}twocol cms-twocol  {% page_attribute "slug" request.current_page.get_root %}{% endblock %}
 
 {% block sidebar %}
 <ul class="sibling-nav">

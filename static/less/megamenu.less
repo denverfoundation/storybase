@@ -1,6 +1,12 @@
 
 @dd-col-std-padding:10px;
 
+// mixin for "active" state on top-level links
+.active-top-nav-link {
+	color:@orange; 
+	text-decoration:underline;
+}
+
 .megamenu { 
 	padding-top:39px;  
 	
@@ -13,7 +19,7 @@
 			padding-left:46px;
 			font-family: 'MuseoSlab500Regular';
 			
-			a { 
+			a.top-nav { 
 				font-size:16px;
 				color:#ffffff;
 				font-family: 'MuseoSlab500Regular';
@@ -35,8 +41,7 @@
 				&.active,
 				&.hover,
 				&:hover {
-					color:@orange; 
-					text-decoration:underline;
+					.active-top-nav-link
 				}
 			}
 
@@ -164,4 +169,14 @@
 			float:none;
 		}
 	}
+}
+
+// highlighting for main nav links.
+// highlight when the body class matches the nav link class.
+body.homepage .megamenu a.top-nav.homepage, 
+body.story-builder .megamenu a.top-nav.story-builder,
+body.explorer .megamenu a.top-nav.explorer,
+body.grow-your-skills .megamenu a.top-nav.grow-your-skills,
+body.about .megamenu a.top-nav.about { 
+	.active-top-nav-link;
 }

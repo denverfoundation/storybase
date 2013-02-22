@@ -1,8 +1,8 @@
 {% load i18n cms_tags storybase_menu %}
 <div class="megamenu shell navigation" id="navigation">
 	<ul> 
-		<li class="nodd"><a class="active" href="/">{% trans "Home"|upper %}</a></li>
-        <li><a href="{% page_url "story-builder-landing" %}">{% trans "Build a story"|upper %}<em></em></a>
+		<li class="nodd"><a class="top-nav homepage" href="/">{% trans "Home"|upper %}</a></li>
+        <li><a class="top-nav story-builder" href="{% page_url "story-builder-landing" %}">{% trans "Build a story"|upper %}<em></em></a>
 			<div class="dd threecol">
 				<div class="dd-col col1-2">
 					<h6><a href="{% page_url "story-builder-landing" %}">{% trans "Take your storytelling to the next level." %}</a></h6>
@@ -19,7 +19,7 @@
 				<div class="cl">&nbsp;</div>
 			</div>
 		</li>
-        <li><a href="{% url explore_stories %}">{% trans "Explore Stories"|upper %}<em></em></a>
+        <li><a class="top-nav explorer" href="{% url explore_stories %}">{% trans "Explore Stories"|upper %}<em></em></a>
 			<div class="dd threecol">
 				<div class="dd-col col1">
                     <h6><a href="{% url explore_stories %}">{% trans "Browse Stories" %}</a></h6>
@@ -50,7 +50,7 @@
 				<div class="cl">&nbsp;</div>
 			</div>
 		</li>
-		<li><a href="{% page_url "grow-your-skills" %}">{% trans "Skills"|upper %}<em></em></a>
+		<li><a class="top-nav grow-your-skills" href="{% page_url "grow-your-skills" %}">{% trans "Skills"|upper %}<em></em></a>
 			<div class="dd fourcol" style="min-height:270px;">
 				<div class="dd-col col1">
 					<h6><a href="{% page_url "grow-your-skills" %}">{% trans "Learn how to be a better storyteller" %}</a></h6>
@@ -97,7 +97,7 @@
 				<div class="cl">&nbsp;</div>
 			</div>
 		</li>
-		<li><a href="/about/">{% trans "About"|upper %}<em></em></a>
+		<li><a class="top-nav about" href="/about/">{% trans "About"|upper %}<em></em></a>
 			<div class="dd fourcol">
 				<div class="dd-col col1">
 					<ul>
