@@ -5,6 +5,7 @@ from django.db import models
 from django.db.models.signals import post_save, pre_save
 from django.utils.translation import ugettext_lazy as _
 from cms.models.pluginmodel import CMSPlugin
+from cms.models import Page
 from filer.fields.image import FilerImageField
 from filer.models import Image 
 from storybase.managers import FeaturedManager
@@ -122,6 +123,35 @@ def create_news_item(title, body, image=None, image_filename=None,
     translation = NewsItemTranslation(**translation_kwargs)
     translation.save()
     return obj
+
+
+class Teaser(models.Model):
+    """
+    Brief summary of a Page
+
+    This is intended to be used when listing child pages on a top-level
+    page.
+    
+    """
+    teaser = models.TextField(blank=True)
+    language = models.CharField(_("language"), max_length=15, db_index=True)
+    page = models.ForeignKey(Page, verbose_name=_("page"), related_name="teaser_set")
+
+    class Meta:
+        unique_together = (('language', 'page'),)
+
+    def __unicode__(self):
+        return self.teaser
+
+
+class EmptyTeaser(object):
+    """
+    Mock Teaser object 
+    
+    Lets us avoid branching in the admin code 
+    """
+    # This pattern was taken from Django CMS' Title implementation
+    teaser = u''
 
 
 class StoryPlugin(CMSPlugin):
