@@ -438,13 +438,9 @@ body.base-template.homepage .featured-on-floodlight .slides li .image{position:r
 body.base-template.homepage .latest li{overflow:hidden;padding-bottom:.5em;}
 body.base-template.homepage .latest .img-wrapper{display:block;float:left;width:100px;height:60px;margin-right:.5em;position:relative;overflow:hidden;border:1px solid #d7d5d5;}body.base-template.homepage .latest .img-wrapper img{position:absolute;max-width:100px;}
 body.base-template.homepage .latest .extra{display:block;font-size:80%;}
-body.base-template .breadcrumbs{height:38px;background:url('../img/br-bg.png') repeat-x 0 0;margin-bottom:35px;}
-body.base-template .breadcrumbs ul{list-style:none;}
-body.base-template .breadcrumbs ul li{float:left;display:inline;background:url('../img/bread-sep.png') no-repeat right center;padding-right:12px;padding-left:7px;}
-body.base-template .breadcrumbs ul li:first-child{padding-left:0;}
+body.base-template .breadcrumbs{height:38px;background:url('../img/br-bg.png') repeat-x 0 0;margin-bottom:35px;}body.base-template .breadcrumbs ul{list-style:none;}body.base-template .breadcrumbs ul li{float:left;display:inline;background:url('../img/bread-sep.png') no-repeat right center;padding-right:12px;padding-left:7px;font-size:14px;color:#777777;font-family:'MuseoSlab500Regular';line-height:37px;}body.base-template .breadcrumbs ul li:first-child{padding-left:0;}
 body.base-template .breadcrumbs ul li.last{background:none;}
-body.base-template .breadcrumbs ul li.first a{color:#fe9703;}
-body.base-template .breadcrumbs ul li,body.base-template .breadcrumbs ul li a{font-size:14px;color:#3b3b3b;font-family:'MuseoSlab500Regular';line-height:37px;}
+body.base-template .breadcrumbs ul li a{color:#fe9703;}body.base-template .breadcrumbs ul li a:hover{text-decoration:underline;}
 body.base-template ul.messages{border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px;border:1px solid #bbb;padding:10px;margin:20px 0;color:#f0efef;font-size:16px;}
 body.base-template ul.messages li.error{color:#ee6666;}
 body.base-template ul.social{list-style:none;padding-top:12px;}body.base-template ul.social li{float:left;display:inline;padding-right:10px;}body.base-template ul.social li a{width:24px;height:24px;float:left;display:inline;background:url('../img/social.png') no-repeat 0 0;font-size:0;line-height:0;text-indent:-4000px;}body.base-template ul.social li a:hover{opacity:0.7;}

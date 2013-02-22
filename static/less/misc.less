@@ -1,12 +1,41 @@
 // multi-use widgets or stuff without a clear home otherwise
 
-.breadcrumbs { height:38px; background:url('../img/br-bg.png') repeat-x 0 0; margin-bottom:35px;  }
-.breadcrumbs ul { list-style:none; }
-.breadcrumbs ul li { float:left; display:inline; background:url('../img/bread-sep.png') no-repeat right center; padding-right:12px; padding-left:7px;   }
-.breadcrumbs ul li:first-child { padding-left:0;   }
-.breadcrumbs ul li.last {background:none;  }
-.breadcrumbs ul li.first a {color:@orange ;  }
-.breadcrumbs ul li, .breadcrumbs ul li a { font-size:14px; color:#3b3b3b;font-family: 'MuseoSlab500Regular'; line-height:37px;   }
+.breadcrumbs {
+  height:38px;
+  background:url('../img/br-bg.png') repeat-x 0 0;
+  margin-bottom:35px;
+  
+  ul {
+    list-style:none;
+    
+    li {
+      float:left;
+      display:inline;
+      background:url('../img/bread-sep.png') no-repeat right center;
+      padding-right:12px;
+      padding-left:7px;
+      font-size:14px; 
+      color:@gray;
+      font-family: 'MuseoSlab500Regular'; 
+      line-height:37px;
+      
+      &:first-child {
+        padding-left:0;
+      }
+      
+      &.last {
+        background:none;
+      }
+      a {
+        color: @orange;
+        
+        &:hover {
+          text-decoration:underline;
+        }
+      }
+    }
+  }
+}
 
 ul.messages {
 	.rounded-corners;
