@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.6
+~~~
+
+* Ability to add Teasers to CMS Pages
+
 0.5.5
 ~~~~~
 
