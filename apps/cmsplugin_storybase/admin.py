@@ -63,7 +63,6 @@ class StorybasePageAdmin(PageAdmin):
             try:
                 teaser_obj = obj.teaser_set.get(language=language)
             except:
-                # TODO: Handle case when no teaser exists
                 teaser_obj = EmptyTeaser()
 
             form.base_fields['teaser'].initial = teaser_obj.teaser
