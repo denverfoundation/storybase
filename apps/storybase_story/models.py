@@ -886,6 +886,7 @@ class Section(node_factory('SectionRelation'), TranslatedModel,
         output = []
         context = {
             'assets': assets,
+            'section': self
         }
         if show_title:
             output.append("<h2 class='title'>%s</h2>" % self.title)

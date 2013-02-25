@@ -1,10 +1,14 @@
+import logging
+
 from django import template
 from django.conf import settings
-from django.core.exceptions import ObjectDoesNotExist
+from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 
 from storybase.utils import full_url, latest_context
 from storybase_asset.models import Asset
 from storybase_story.models import Story
+
+logger = logging.getLogger('storybase')
 
 register = template.Library()
 
@@ -25,6 +29,17 @@ def container(context, value):
             # Either the context doesn't have an "assets" attribute or there
             # is no asset matching the container
             return '<div class="storybase-container-placeholder" id="%s"></div>' % (value)
+        except MultipleObjectsReturned:
+            # There are two assets added to the same container. See #535
+            section = context['section']
+            assets = context['assets'].filter(container__name=value)
+            logger.error("Multiple assets assigned to container %s in section %s" % (value, section.section_id),
+                extra={'asset_ids': [a.asset_id for a in assets],
+                    'container': value,
+                    'section_id': section.section_id})
+           
+            # Just pick one of the assets to show
+            asset = assets[0]
 
     # Get the asset subclass instance
     asset = Asset.objects.get_subclass(pk=asset.pk)

@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.6.2
+~~~~~
+
+* Workaround for multiple assets per section container issue (#534, #535)
+
 0.6.1
 ~~~~~
 
