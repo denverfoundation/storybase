@@ -755,7 +755,7 @@ body.story-builder .field-body .bbf-editor{margin-left:0;width:100%;}
 body.story-builder #app .caption{overflow:hidden;padding:.5em;}body.story-builder #app .caption form{overflow:hidden;}body.story-builder #app .caption form textarea,body.story-builder #app .caption form button{margin-bottom:1em;}
 body.story-builder #app .caption form textarea{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;-ms-box-sizing:border-box;width:100%;}
 body.story-builder #app .caption form button{float:right;margin:0 0 1em 1em;}
-body.story-builder #section-list{position:relative;overflow:hidden;min-height:108px;}
+body.story-builder #section-list{position:relative;overflow:hidden;min-height:108px;width:100%;}
 body.story-builder #toggle-section-list{display:block;float:left;padding:10px;font-weight:bold;text-decoration:none;color:#fff;}
 body.story-builder .opened #toggle-section-list::after{content:' - ';}
 body.story-builder .closed #toggle-section-list::after{content:' + ';}

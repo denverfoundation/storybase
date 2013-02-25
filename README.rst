@@ -26,6 +26,11 @@ Changelog
 * High-level query API for stories
 * Implemented a reusable menu class and template tag for rendering menus
 
+0.6.1
+~~~~~
+
+* Fix width of builder section list in Chrome (#648)
+
 0.6
 ~~~
 
