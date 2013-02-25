@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.6.1
+~~~~~
+
+* Fix width of builder section list in Chrome (#648)
+
 0.6
 ~~~
 

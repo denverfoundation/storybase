@@ -1264,6 +1264,10 @@ button.preview {
   position: relative;
   overflow: hidden;
   min-height: 108px;
+  // Take up the full width of the container. This used to happen
+  // automatically, but started breaking in Chrome 0.25.
+  // See #648
+  width: 100%;
 }
 
 #toggle-section-list {
