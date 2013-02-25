@@ -26,6 +26,11 @@ Changelog
 * High-level query API for stories
 * Implemented a reusable menu class and template tag for rendering menus
 
+0.6.2
+~~~~~
+
+* Workaround for multiple assets per section container issue (#534, #535)
+
 0.6.1
 ~~~~~
 
