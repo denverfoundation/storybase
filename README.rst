@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.6.3
+~~~~~
+
+* Only log JavaScript errors to the server once (#635)
+
 0.6.2
 ~~~~~
 
