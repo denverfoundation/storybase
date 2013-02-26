@@ -20,18 +20,26 @@
     {% endplaceholder %}
 
     {% placeholder subpages or %}
-    {% for child_page in current_page.children.all %}
-    <div class="child-page">
+    {% comment %}
+    If the page has children, list them along with their teasers in two 
+    columns
+    {% endcomment %}
+    {% if current_page.children.count %}
+    <div class="page-children grid_10">
+      {% for child_page in current_page.children.all %}
+      <div class="child-page grid_5{% if forloop.first %} alpha{% endif %}{% if forloop.last %} omega{% endif %}">
         {% page_attribute "title" child_page as title %}
         <h3><a href="{% page_url child_page %}" title="{{ title }}">{{ title }}</a></h3>
         {% page_attribute "teaser" child_page as teaser %}
         {% if teaser %}
         <p class="teaser">{{ teaser }}</p>
         {% endif %}
-    </div> {# /.child-page #}
+      </div> {# /.child-page #}
     {% endfor %}
+    </div> {# /.page-children #}
+    {% endif %}
     {% endplaceholder %}
 
-	{% placeholder twocol-content %}
+    {% placeholder twocol-content %}
 </section>
 {% endblock twocol-content %}
