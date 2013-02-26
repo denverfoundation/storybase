@@ -3,9 +3,10 @@ from django.contrib.auth.models import User
 from django.core.files import File
 from django.db import models
 from django.db.models.signals import post_save, pre_save
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import get_language, ugettext_lazy as _
 from cms.models.pluginmodel import CMSPlugin
 from cms.models import Page
+from cms.utils import i18n
 from filer.fields.image import FilerImageField
 from filer.models import Image 
 from storybase.managers import FeaturedManager
@@ -15,6 +16,7 @@ from storybase.models import (PermissionMixin, PublishedModel,
         TimestampedModel, TranslatedModel, TranslationModel, 
         set_date_on_published)
 from storybase_user.utils import format_user_name
+from cmsplugin_storybase.managers import TeaserManager
 
 class List(CMSPlugin):
     num_items = models.IntegerField(default=3)
@@ -137,6 +139,8 @@ class Teaser(models.Model):
     language = models.CharField(_("language"), max_length=15, db_index=True)
     page = models.ForeignKey(Page, verbose_name=_("page"), related_name="teaser_set")
 
+    objects = TeaserManager()
+
     class Meta:
         unique_together = (('language', 'page'),)
 
@@ -152,6 +156,57 @@ class EmptyTeaser(object):
     """
     # This pattern was taken from Django CMS' Title implementation
     teaser = u''
+
+
+def get_teaser(self, language=None, fallback=True, version_id=None, force_reload=False):
+    """
+    Get the teaser of the page depending on the given language
+    """
+    # This is based largely off of ``cms.models.Page.get_title``
+    # but it doesn't bother with revisions and flattens out
+    # the logic in ``get_title_obj_attribute``,
+    # ``get_title_obj`` and ``_get_title_cache`` into a single
+    # method
+    if not language:
+        language = get_language()
+    load = False
+    if not hasattr(self, 'teaser_cache') or force_reload:
+        # No teasers have been cached. We need to load the
+        # teaser from the database
+        load = True
+        # But first, create the cache attribute
+        self.teaser_cache = {}
+    elif not language in self.teaser_cache:
+        # We have the cache set up, but the desired language
+        # isn't cached.
+        if fallback:
+            # Check if we've cached the teaser in a fallback
+            # language
+            fallback_langs = i18n.get_fallback_languages(language)
+            for lang in fallback_langs:
+                if lang in self.teaser_cache:
+                    # We found a teaser for the fallback
+                    # language.  Return it!
+                    return self.teaser_cache[lang].teaser
+            # We didn't find teasers in any fallback language,
+            # We'll try to load it from the database below
+            load = True
+
+    if load:
+        # Use ``TeaserManager.get_teaser`` to handle
+        # getting the ``Teaser`` instance from the database
+        # wth language fallback
+        teaser = Teaser.objects.get_teaser(self, language, language_fallback=fallback)
+        if teaser:
+            # We found a teaser. Cache it and then return it
+            self.teaser_cache[teaser.language] = teaser
+            return teaser.teaser
+
+    # If all else fails, return an empty string
+    return ""
+
+# Patch the Page Model class to add our getter 
+setattr(Page, 'get_teaser', get_teaser)
 
 
 class StoryPlugin(CMSPlugin):

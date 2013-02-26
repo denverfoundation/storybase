@@ -1,0 +1,37 @@
+{% extends "cms_twocol.html" %}
+{# QUESTION: Should this not extend the two column template since there's no sidebar content? #}
+
+{% load cms_tags i18n sekizai_tags menu_tags storybase_cms_tags %}
+
+{% block sidebar %}
+<ul class="sibling-nav">
+	{% show_menu 1 100 0 1 %}
+</ul>
+{% placeholder "sidebar" %}
+{% endblock %}
+
+{% block twocol-content %}
+<section class="content-block">
+    {% placeholder teaser_container or %}
+    {% page_attribute "teaser" as teaser %}
+    {% if teaser %}
+    <p class="teaser">{{ teaser }}</p>
+    {% endif %}
+    {% endplaceholder %}
+
+    {% placeholder subpages or %}
+    {% for child_page in current_page.children.all %}
+    <div class="child-page">
+        {% page_attribute "title" child_page as title %}
+        <h3><a href="{% page_url child_page %}" title="{{ title }}">{{ title }}</a></h3>
+        {% page_attribute "teaser" child_page as teaser %}
+        {% if teaser %}
+        <p class="teaser">{{ teaser }}</p>
+        {% endif %}
+    </div> {# /.child-page #}
+    {% endfor %}
+    {% endplaceholder %}
+
+	{% placeholder twocol-content %}
+</section>
+{% endblock twocol-content %}

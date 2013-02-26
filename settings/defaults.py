@@ -139,6 +139,7 @@ CMS_TEMPLATES = (
     ('homepage.html', 'Home Page'),
     ('cms_twocol.html', 'Two Column'),
     ('faq.html', 'FAQ'),
+    ('cms_section_landing.html', 'Section Landing'),
 )
 
 INSTALLED_APPS = (
