@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.6.4
+~~~~~
+
+* Allow superusers to open any story in builer (#657)
+
 0.6.3
 ~~~~~
 
