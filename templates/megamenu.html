@@ -10,8 +10,8 @@
     </li>
     <li>
       <a class="top-nav story-builder" href="{% page_url "story-builder-landing" %}">{% trans "Build a story"|upper %}<em></em></a>
-      <div class="dd threecol">
-        <div class="dd-col col1-2">
+      <div class="dd twocol">
+        <div class="dd-col col1">
           <h6><a href="{% page_url "story-builder-landing" %}">{% trans "Take your storytelling to the next level." %}</a></h6>
           <p>
             {% blocktrans %}
@@ -20,10 +20,9 @@
           </p>
           <p><a href="{% page_url "story-builder-landing" %}">{% trans "Learn more" %}&hellip;</a></p>
         </div>
-        <div class="dd-col col3">
+        <div class="dd-col col2">
           <a class="create-your-story" href="{% url story_builder %}">Create Your Story</a>
         </div>
-        <div class="cl">&nbsp;</div>
       </div>
     </li>
     <li>
@@ -55,12 +54,11 @@
           </p>
           <p><a href="{% url create_project %}">{% trans "Create a Project" %}</a></p>
         </div>
-        <div class="cl">&nbsp;</div>
       </div>
     </li>
     <li>
       <a class="top-nav grow-your-skills" href="{% page_url "grow-your-skills" %}">{% trans "Grow Your Skills"|upper %}<em></em></a>
-      <div class="dd fourcol" style="min-height:270px;">
+      <div class="dd fourcol">
         <div class="dd-col col1">
           <h6><a href="{% page_url "grow-your-skills" %}">{% trans "Learn how to be a better storyteller" %}</a></h6>
           <p>
@@ -102,13 +100,11 @@
             {% endblocktrans %}
           </p>
         </div>
-        <div class="cl">&nbsp;</div>
       </div>
     </li>
-    <li class="last">
+    <li>
       <a class="top-nav" href="#">{% trans "News & Updates"|upper %}<em></em></a>
       <div class="dd fourcol">
-        <p>
         <div class="dd-col col1">
           <h6><a href="#">{% trans "News & Updates" %}</a></h6>
           <p>
@@ -180,7 +176,6 @@
           </p>
           
         </div>
-        <div class="cl">&nbsp;</div>
       </div>
     </li>
   </ul>

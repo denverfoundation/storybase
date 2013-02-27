@@ -10,7 +10,7 @@
 .megamenu { 
   padding-top:39px;  
   
-  ul { 
+  &>ul { 
     list-style:none;position:relative;
     
     li { 
@@ -54,65 +54,82 @@
         min-height:200px;
         display:none;
         box-shadow: 0 0 5px #9a9a9a;
+        padding:20px 25px 20px;
 
         &.onecol {
           .dd-col.col1 { width:auto; }
         }
 
-        &.fourcol {
-          .dd-col.col3 {
-            padding-right:@dd-col-std-padding;
+        &.twocol {
+          .dd-col.col1,
+          .dd-col.col2 {
+            width:50%;
           }
+        }
+
+        &.threecol {
+          .dd-col.col1,
+          .dd-col.col2,
+          .dd-col.col3 { 
+            width:33%;
+          }
+        }
+        
+        &.fourcol {
           .dd-col.col1,
           .dd-col.col2,
           .dd-col.col3,
           .dd-col.col4 { 
-            width:20%;
+            width:25%;
           }
-        }
-        
-        &.onecol .dd-col.col1,
-        &.onecol .dd-col.col1-2,
-        &.threecol .dd-col.col3,
-        &.fourcol .dd-col.col4 { 
-          border-right:0;  
         }
         
         .dd-col {
+          .border-box;
           .sans-serif-text;
           float:left;
           display:inline;
-          min-height:120px;
-          margin-top:20px;
+          min-height:200px;
           border-right:1px dotted #666;
-          padding-left:25px;
-          line-height:1em;
+          line-height:1.2em;
+          padding: 0 @dd-col-std-padding;
 
-          &.col1 {
-            padding-right:20px;
+          &:first-child {
+            padding-left:0;
           }
-          &.col2,
-          &.col1-2 {
-            padding-right:@dd-col-std-padding;
-          }
-          &.col1,
-          &.col2,
-          &.col3 {
-            width:25%;
-          }
-          &.col1-2 {
-            width:50%;
+          &:last-child {
+            padding-right:0;
+            border-right:0;
           }
           
           a { 
             font-size:13px; 
-            color:#fe9703; 
-            padding: 0 0 0 8px; 
-            position:relative; 
-            left:-8px; 
+            color:@orange; 
             background-image: none;
           }
           
+          h6 {
+            font-size:16px !important;
+            font-weight:normal; 
+            font-family: 'MuseoSlab500Regular'; 
+            background:none; 
+            display:block;  
+            margin-bottom:9px;
+
+            a {
+              font-size:16px !important; // (actually needed here and in h6 for specificity override)
+              padding: 0 0 0 8px; 
+              left:-8px;
+              position:relative;
+              color:@orange;
+          
+              &:hover { 
+                background:url('../img/h6-a-arrow.png') no-repeat 0 center !important;
+                text-decoration:none;
+              }
+            }
+          }
+
           // note this needs to be in this block
           // to override above style.
           a.create-your-story {
@@ -120,36 +137,33 @@
             line-height: @base-line-height;
             vertical-align:middle;
             font-size:2em;
-            margin:30px 0;
+            margin:70px auto;
             display:block;
+            width:75%;
+            text-align:center;
           }
         }
         
       }
 
-      h6,
-      h6 a { 
-        font-size:16px !important; 
-        font-weight:normal; 
-        font-family: 'MuseoSlab500Regular'; 
-        background:none; 
-        display:block;  
-        margin-bottom:9px;
-      }
-      h6 a { color:@orange; }
-      h6 a:hover { 
-        background:url('../img/h6-a-arrow.png') no-repeat 0 center !important;
-        text-decoration:none;
-      }
       ul li { 
-        padding-left:0;
-        a { background:none; display:block;  }
-        a:hover { background:url('../img/a-arrow.png') no-repeat 0 2px; }
+        padding-left:.5em;
+        margin-bottom:.5em;
+        float:none;
+        display:block;
+        
+        a { 
+          background:none; 
+          display:block;
+        }
+        a:hover { 
+          background:url('../img/a-arrow.png') no-repeat 0 2px;
+        }
       }
     }
     
-    li:first-child { padding-left:0;  }
-    li.nodd a { background:none; padding-left:0; }
+    &>li:first-child { padding-left:0;  }
+    &>li.nodd a { background:none; padding-left:0; }
     
   }
 }
