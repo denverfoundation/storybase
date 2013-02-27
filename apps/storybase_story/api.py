@@ -120,9 +120,14 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
         # Only show published stories  
         q = Q(status='published')
         if hasattr(request, 'user') and request.user.is_authenticated():
-            # If the user is logged in, show their unpublished stories as
-            # well
-            q = q | Q(author=request.user)
+            if request.user.is_superuser:
+                # If the user is a superuser, don't restrict the story
+                # list at all
+                q = Q()
+            else:
+                # If the user is logged in, show their unpublished stories as
+                # well
+                q = q | Q(author=request.user)
 
         return super(StoryResource, self).get_object_list(request).filter(q)
 

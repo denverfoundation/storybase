@@ -216,12 +216,22 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
         the publication status
         
         """
+        # TODO: This code is really similar to that in ``StoryResource``
+        # Maybe it's possible to refactor them into a common base class?
+        # However, it's probably best to think about this when moving to
+        # support Tastypie 0.9.13
+
         # Only show published assets 
         q = Q(status='published')
         if hasattr(request, 'user') and request.user.is_authenticated():
-            # If the user is logged in, show their unpublished stories as
-            # well
-            q = q | Q(owner=request.user)
+            if request.user.is_superuser:
+                # If the user is a superuser, don't restrict the asset 
+                # list at all
+                q = Q()
+            else:
+                # If the user is logged in, show their unpublished assets as
+                # well
+                q = q | Q(owner=request.user)
 
         return super(AssetResource, self).obj_get_list(request, **kwargs).filter(q)
 
@@ -313,12 +323,22 @@ class DataSetResource(DataUriResourceMixin,DelayedAuthorizationResource,
         the publication status
         
         """
+        # TODO: This code is really similar to that in ``StoryResource``
+        # Maybe it's possible to refactor them into a common base class?
+        # However, it's probably best to think about this when moving to
+        # support Tastypie 0.9.13
+
         # Only show published datasets 
         q = Q(status='published')
         if hasattr(request, 'user') and request.user.is_authenticated():
-            # If the user is logged in, show their unpublished stories as
-            # well
-            q = q | Q(owner=request.user)
+            if request.user.is_superuser:
+                # If the user is a superuser, don't restrict the data set
+                # list at all
+                q = Q()
+            else:
+                # If the user is logged in, show their unpublished data sets
+                # as well
+                q = q | Q(owner=request.user)
         return super(DataSetResource, self).obj_get_list(request, **kwargs).filter(q)
 
     def prepend_urls(self):
