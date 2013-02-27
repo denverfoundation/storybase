@@ -26,6 +26,11 @@ Changelog
 * High-level query API for stories
 * Implemented a reusable menu class and template tag for rendering menus
 
+0.6.5
+~~~~~
+
+* Use Django 1.4's signature for ``PasswordResetForm.save`` (#661)
+
 0.6.4
 ~~~~~
 
