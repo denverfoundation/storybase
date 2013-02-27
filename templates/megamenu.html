@@ -80,18 +80,17 @@
           <h6><a href="{% page_url "grow-your-skills" %}#storytelling-tips">{% trans "Storytelling Tips" %}</a></h6>
           <ul>
             {# TODO: Wire these up once content is available #}
-            {% comment %}
             <li><a href="#">{% trans "Elements of Storytelling" %}</a></li>
             <li><a href="#">{% trans "Reporting and Information Gathering" %}</a></li>
-            {% endcomment %}
-            <li><a href="{% page_url "data-analysis-and-visualization" %}">{% trans "Data Analysis and Visualization" %}</a></li>
-            {# TODO: Wire these up once content is available #}
-            {% comment %}
-            <li><a href="#">{% trans "Making and Using Maps" %}</a></li>
             <li><a href="#">{% trans "Photos and Images" %}</a></li>
+            <li><a href="{% page_url "data-analysis-and-visualization" %}">{% trans "Data Analysis and Visualization" %}</a></li>
             <li><a href="#">{% trans "Video Storytelling" %}</a></li>
             <li><a href="#">{% trans "Audio Storytelling" %}</a></li>
+            <li><a href="#">{% trans "Creative Commons" %}</a></li>
+            {# currently unused: #}
+            {% comment %}
             <li><a href="#">{% trans "Graphics, Drawings and Diagrams" %}</a></li>
+            <li><a href="#">{% trans "Making and Using Maps" %}</a></li>
             {% endcomment %}
           </ul>
         </div>
@@ -108,26 +107,41 @@
     </li>
     <li class="last">
       <a class="top-nav" href="#">{% trans "News & Updates"|upper %}<em></em></a>
-      <div class="dd">
+      <div class="dd fourcol">
+        <p>
         <div class="dd-col col1">
-          <h6><a href="#">Browse by Tags</a></h6>
+          <h6><a href="#">{% trans "News & Updates" %}</a></h6>
+          <p>
+            {% blocktrans %}
+            Like a good story, Floodlight is a work in progress. Here, you’ll find information about improvements we’re making to the site, storytelling events we’re holding in the community, storytelling advice, contests, and more.
+            {% endblocktrans %}
+          </p>
         </div>
         <div class="dd-col col2">
-          <h6><a href="#">Contributing Organizations</a></h6>
-          <ul>
-            <li><a href="#">The Piton Foundation</a></li>
-            <li><a href="#">The Denver Foundation</a></li>
-            <li><a href="#">Colorado Center for <br />Community Development</a></li>
-          </ul>
+          <h6><a href="#">{% trans "Latest Updates" %}</a></h6>
+          <p>
+            {% blocktrans %}
+            Read about what the Floodlight team has been up to, both online and in the community.
+            {% endblocktrans %}
+          </p>
         </div>
         <div class="dd-col col3">
-          <h6><a href="#">Special Projects</a></h6>
-          <ul>
-            <li><a href="#">The Children’s Corridor</a></li>
-            <li><a href="#">Hinkley High School</a></li>
-          </ul>
+          <h6><a href="#">{% trans "Story Raisings" %}</a></h6>
+          <p>
+            {% blocktrans %}
+            Story-Raisings are events where people get together to learn storytelling skills and document and share stories. Find out more about past and future Story-Raisings.
+            {% endblocktrans %}
+          </p>
         </div>
-        <div class="cl">&nbsp;</div>
+        <div class="dd-col col4">
+          <h6><a href="#">{% trans "Storytelling Workshops" %}</a></h6>
+          <p>
+            {% blocktrans %}
+            In Summer 2012, we held a four-part community storytelling workshop in Denver. View videos of the workshops and access training materials.
+            {% endblocktrans %}
+          </p>
+        </div>
+
       </div>
     </li>
     <li class="last">
