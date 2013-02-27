@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.6.5
+~~~~~
+
+* Use Django 1.4's signature for ``PasswordResetForm.save`` (#661)
+
 0.6.4
 ~~~~~
 

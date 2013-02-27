@@ -8,6 +8,7 @@ from django.utils.translation import ugettext_lazy as _
 from storybase.utils import get_site_name
 
 def send_password_reset_email(user, domain_override=None, 
+                              subject_template_name='registration/password_reset_subject.txt',
                               email_template_name='registration/password_reset_email.html',
                               use_https=False, 
                               token_generator=default_token_generator, 
@@ -30,7 +31,6 @@ def send_password_reset_email(user, domain_override=None,
         domain = current_site.domain
     else:
         site_name = domain = domain_override
-    t = loader.get_template(email_template_name)
     c = {
         'email': user.email,
         'domain': domain,
@@ -41,8 +41,11 @@ def send_password_reset_email(user, domain_override=None,
         'protocol': use_https and 'https' or 'http',
     }
     c.update(extra_context)
-    send_mail(_("Password reset on %s") % site_name,
-        t.render(Context(c)), from_email, [user.email])
+    subject = loader.render_to_string(subject_template_name, c)
+    # Email subject *must not* contain newlines
+    subject = ''.join(subject.splitlines())
+    email = loader.render_to_string(email_template_name, c)
+    send_mail(subject, email, from_email, [user.email])
     logger.info("Password reset email sent to %s" % (user.email))
 
 
