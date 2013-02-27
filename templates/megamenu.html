@@ -1,166 +1,166 @@
 {% load i18n cms_tags storybase_menu %}
 <div class="megamenu shell navigation" id="navigation">
-	<ul> 
-		<li class="nodd"><a class="top-nav homepage" href="/">{% trans "Home"|upper %}</a></li>
+  <ul> 
+    <li class="nodd"><a class="top-nav homepage" href="/">{% trans "Home"|upper %}</a></li>
         <li><a class="top-nav story-builder" href="{% page_url "story-builder-landing" %}">{% trans "Build a story"|upper %}<em></em></a>
-			<div class="dd threecol">
-				<div class="dd-col col1-2">
-					<h6><a href="{% page_url "story-builder-landing" %}">{% trans "Take your storytelling to the next level." %}</a></h6>
-					<p>
-						{% blocktrans %}
-						Create an amazing story in minutes. Start by choosing a template -- like photo voice, explainer, or data story. Customize it with your text, photos, video, audio, data and more. Include a call to action to inspire your readers to get involved.
-						{% endblocktrans %}
-					</p>
-					<p><a href="{% page_url "story-builder-landing" %}">{% trans "Learn more" %}&hellip;</a></p>
-				</div>
-				<div class="dd-col col3">
-					<a class="create-your-story" href="{% url story_builder %}">Create Your Story</a>
-				</div>
-				<div class="cl">&nbsp;</div>
-			</div>
-		</li>
+      <div class="dd threecol">
+        <div class="dd-col col1-2">
+          <h6><a href="{% page_url "story-builder-landing" %}">{% trans "Take your storytelling to the next level." %}</a></h6>
+          <p>
+            {% blocktrans %}
+            Create an amazing story in minutes. Start by choosing a template -- like photo voice, explainer, or data story. Customize it with your text, photos, video, audio, data and more. Include a call to action to inspire your readers to get involved.
+            {% endblocktrans %}
+          </p>
+          <p><a href="{% page_url "story-builder-landing" %}">{% trans "Learn more" %}&hellip;</a></p>
+        </div>
+        <div class="dd-col col3">
+          <a class="create-your-story" href="{% url story_builder %}">Create Your Story</a>
+        </div>
+        <div class="cl">&nbsp;</div>
+      </div>
+    </li>
         <li><a class="top-nav explorer" href="{% url explore_stories %}">{% trans "Explore Stories"|upper %}<em></em></a>
-			<div class="dd threecol">
-				<div class="dd-col col1">
+      <div class="dd threecol">
+        <div class="dd-col col1">
                     <h6><a href="{% url explore_stories %}">{% trans "Browse Stories" %}</a></h6>
-					<p>
-						{% blocktrans %}
-						Browse and filter Floodlight stories by topic, location, language, project and organization.
-						{% endblocktrans %}
-					</p>
-				</div>
-				<div class="dd-col col2">
+          <p>
+            {% blocktrans %}
+            Browse and filter Floodlight stories by topic, location, language, project and organization.
+            {% endblocktrans %}
+          </p>
+        </div>
+        <div class="dd-col col2">
                     <h6><a href="{% url organization_list %}">{% trans "Organizations" %}</a></h6>
-					<p>
-						{% blocktrans %}
-						Organizations are groups of people creating stories together. They can be non-profits, school groups, neighborhoods, or any storytellers who share a common goal.
-						{% endblocktrans %}
-					</p>
-					<p><a href="{% url create_organization %}">{% trans "Create an Organization" %}</a></p>
-				</div>
-				<div class="dd-col col3">
+          <p>
+            {% blocktrans %}
+            Organizations are groups of people creating stories together. They can be non-profits, school groups, neighborhoods, or any storytellers who share a common goal.
+            {% endblocktrans %}
+          </p>
+          <p><a href="{% url create_organization %}">{% trans "Create an Organization" %}</a></p>
+        </div>
+        <div class="dd-col col3">
                     <h6><a href="{% url project_list %}">{% trans "Projects" %}</a></h6>
-					<p>
-						{% blocktrans %}
-						Projects are collections of stories about a common theme, place, issue, event or movement. They can be open to contributions from any Floodlight user, or constrained to a group of authors.
-						{% endblocktrans %}
-					</p>
-					<p><a href="{% url create_project %}">{% trans "Create a Project" %}</a></p>
-				</div>
-				<div class="cl">&nbsp;</div>
-			</div>
-		</li>
-		<li><a class="top-nav grow-your-skills" href="{% page_url "grow-your-skills" %}">{% trans "Skills"|upper %}<em></em></a>
-			<div class="dd fourcol" style="min-height:270px;">
-				<div class="dd-col col1">
-					<h6><a href="{% page_url "grow-your-skills" %}">{% trans "Learn how to be a better storyteller" %}</a></h6>
-					<p>
-						{% blocktrans %}
-						Storytelling comes naturally to all of us. But we can always improve with practice. Here you’ll find information about in-person trainings and online tools and tutorials to help you build your skills.
-						{% endblocktrans %}
-					</p>
-				</div>
-				<div class="dd-col col2">
-					<h6><a href="{% page_url "grow-your-skills" %}#workshops">{% trans "Storytelling Workshops" %}</a></h6>
-					<ul>
-						<li><a href="{% page_url "grow-your-skills" %}#online-training">{% trans "Online training materials" %}</a></li>
-						<li><a href="{% page_url "grow-your-skills" %}#upcoming-workshops">{% trans "Upcoming sessions" %}</a></li>
-					</ul>
-				</div>
-				<div class="dd-col col3">
-					<h6><a href="{% page_url "grow-your-skills" %}#storytelling-tips">{% trans "Storytelling Tips" %}</a></h6>
-					<ul>
-						{# TODO: Wire these up once content is available #}
-						{% comment %}
-						<li><a href="#">{% trans "Elements of Storytelling" %}</a></li>
-						<li><a href="#">{% trans "Reporting and Information Gathering" %}</a></li>
-						{% endcomment %}
-						<li><a href="{% page_url "data-analysis-and-visualization" %}">{% trans "Data Analysis and Visualization" %}</a></li>
-						{# TODO: Wire these up once content is available #}
-						{% comment %}
-						<li><a href="#">{% trans "Making and Using Maps" %}</a></li>
-						<li><a href="#">{% trans "Photos and Images" %}</a></li>
-						<li><a href="#">{% trans "Video Storytelling" %}</a></li>
-						<li><a href="#">{% trans "Audio Storytelling" %}</a></li>
-						<li><a href="#">{% trans "Graphics, Drawings and Diagrams" %}</a></li>
-						{% endcomment %}
-					</ul>
-				</div>
-				<div class="dd-col col4">
-					<h6><a href="{% page_url "resources" %}">{% trans "Resources" %}</a></h6>
-					<p>
-						{% blocktrans %}
-						Here you’ll find answers to commonly asked questions and links to commonly used tools, like photo release forms.
-						{% endblocktrans %}
-					</p>
-				</div>
-				<div class="cl">&nbsp;</div>
-			</div>
-		</li>
-		<li><a class="top-nav about" href="/about/">{% trans "About"|upper %}<em></em></a>
-			<div class="dd fourcol">
-				<div class="dd-col col1">
-					<ul>
-						<li><a href="{% page_url "about" %}">{% trans "What is Floodlight?" %}</a></li>
-						<li><a href="{% page_url "about"%}#vision">{% trans "The Vision" %}</a></li>
-						<li><a href="{% page_url "partners" %}">{% trans "Supporting Foundations and Partners" %}</a></li>
-						<li><a href="{% page_url "about" %}#how-it-works">{% trans "How it Works" %}</a></li>
-					</ul>
-				</div>
-				<div class="dd-col col2">
-					<p>
-						{% blocktrans %}
-						Your story matters. Without it, nothing happens. Floodlight is a <strong>tool</strong> for creating meaningful stories on the web that are visually compelling, supported by facts and encourage community action. Floodlight is also a <strong>place</strong> to share stories and uncover connections between them.
-						{% endblocktrans %}
-					</p>
-				</div>
-				<div class="dd-col col3">
-					<h6>{% trans "On Floodlight, you can&hellip;" %}</h6>
-					<p>
-						{% blocktrans %}
-						<strong>Build</strong> a breakthrough story using photos, videos, data and more.<br>
-						<strong>Learn</strong> how to be a better storyteller through training and resources.<br>
-						<strong>Read</strong> and contribute to the stories others are sharing.
-						{% endblocktrans %}
-					</p>
-				</div>
-				<div class="dd-col col4">
-					<p>
-						{% blocktrans %}
-						By connecting <em>storytellers</em>, <em>story sharers</em> and <em>story readers</em>, Floodlight is a project to brighten, inform and transform community though the power of story.
-						{% endblocktrans %}
-					</p>
-					
-				</div>
-				<div class="cl">&nbsp;</div>
-			</div>
-		</li>
-		{% comment %}
-		<li class="last"><a href="#">NEWS &amp; UPDATES<em></em></a>
-			<div class="dd">
-				<div class="dd-col col1">
-					<h6><a href="#">Browse by Tags</a></h6>
-				</div>
-				<div class="dd-col col2">
-					<h6><a href="#">Contributing Organizations</a></h6>
-					<ul>
-						<li><a href="#">The Piton Foundation</a></li>
-						<li><a href="#">The Denver Foundation</a></li>
-						<li><a href="#">Colorado Center for <br />Community Development</a></li>
-					</ul>
-				</div>
-				<div class="dd-col col3">
-					<h6><a href="#">Special Projects</a></h6>
-					<ul>
-						<li><a href="#">The Children’s Corridor</a></li>
-						<li><a href="#">Hinkley High School</a></li>
-					</ul>
-				</div>
-				<div class="cl">&nbsp;</div>
-			</div>
-		</li>
-		{% endcomment %}
-	</ul>
+          <p>
+            {% blocktrans %}
+            Projects are collections of stories about a common theme, place, issue, event or movement. They can be open to contributions from any Floodlight user, or constrained to a group of authors.
+            {% endblocktrans %}
+          </p>
+          <p><a href="{% url create_project %}">{% trans "Create a Project" %}</a></p>
+        </div>
+        <div class="cl">&nbsp;</div>
+      </div>
+    </li>
+    <li><a class="top-nav grow-your-skills" href="{% page_url "grow-your-skills" %}">{% trans "Skills"|upper %}<em></em></a>
+      <div class="dd fourcol" style="min-height:270px;">
+        <div class="dd-col col1">
+          <h6><a href="{% page_url "grow-your-skills" %}">{% trans "Learn how to be a better storyteller" %}</a></h6>
+          <p>
+            {% blocktrans %}
+            Storytelling comes naturally to all of us. But we can always improve with practice. Here you’ll find information about in-person trainings and online tools and tutorials to help you build your skills.
+            {% endblocktrans %}
+          </p>
+        </div>
+        <div class="dd-col col2">
+          <h6><a href="{% page_url "grow-your-skills" %}#workshops">{% trans "Storytelling Workshops" %}</a></h6>
+          <ul>
+            <li><a href="{% page_url "grow-your-skills" %}#online-training">{% trans "Online training materials" %}</a></li>
+            <li><a href="{% page_url "grow-your-skills" %}#upcoming-workshops">{% trans "Upcoming sessions" %}</a></li>
+          </ul>
+        </div>
+        <div class="dd-col col3">
+          <h6><a href="{% page_url "grow-your-skills" %}#storytelling-tips">{% trans "Storytelling Tips" %}</a></h6>
+          <ul>
+            {# TODO: Wire these up once content is available #}
+            {% comment %}
+            <li><a href="#">{% trans "Elements of Storytelling" %}</a></li>
+            <li><a href="#">{% trans "Reporting and Information Gathering" %}</a></li>
+            {% endcomment %}
+            <li><a href="{% page_url "data-analysis-and-visualization" %}">{% trans "Data Analysis and Visualization" %}</a></li>
+            {# TODO: Wire these up once content is available #}
+            {% comment %}
+            <li><a href="#">{% trans "Making and Using Maps" %}</a></li>
+            <li><a href="#">{% trans "Photos and Images" %}</a></li>
+            <li><a href="#">{% trans "Video Storytelling" %}</a></li>
+            <li><a href="#">{% trans "Audio Storytelling" %}</a></li>
+            <li><a href="#">{% trans "Graphics, Drawings and Diagrams" %}</a></li>
+            {% endcomment %}
+          </ul>
+        </div>
+        <div class="dd-col col4">
+          <h6><a href="{% page_url "resources" %}">{% trans "Resources" %}</a></h6>
+          <p>
+            {% blocktrans %}
+            Here you’ll find answers to commonly asked questions and links to commonly used tools, like photo release forms.
+            {% endblocktrans %}
+          </p>
+        </div>
+        <div class="cl">&nbsp;</div>
+      </div>
+    </li>
+    <li><a class="top-nav about" href="/about/">{% trans "About"|upper %}<em></em></a>
+      <div class="dd fourcol">
+        <div class="dd-col col1">
+          <ul>
+            <li><a href="{% page_url "about" %}">{% trans "What is Floodlight?" %}</a></li>
+            <li><a href="{% page_url "about"%}#vision">{% trans "The Vision" %}</a></li>
+            <li><a href="{% page_url "partners" %}">{% trans "Supporting Foundations and Partners" %}</a></li>
+            <li><a href="{% page_url "about" %}#how-it-works">{% trans "How it Works" %}</a></li>
+          </ul>
+        </div>
+        <div class="dd-col col2">
+          <p>
+            {% blocktrans %}
+            Your story matters. Without it, nothing happens. Floodlight is a <strong>tool</strong> for creating meaningful stories on the web that are visually compelling, supported by facts and encourage community action. Floodlight is also a <strong>place</strong> to share stories and uncover connections between them.
+            {% endblocktrans %}
+          </p>
+        </div>
+        <div class="dd-col col3">
+          <h6>{% trans "On Floodlight, you can&hellip;" %}</h6>
+          <p>
+            {% blocktrans %}
+            <strong>Build</strong> a breakthrough story using photos, videos, data and more.<br>
+            <strong>Learn</strong> how to be a better storyteller through training and resources.<br>
+            <strong>Read</strong> and contribute to the stories others are sharing.
+            {% endblocktrans %}
+          </p>
+        </div>
+        <div class="dd-col col4">
+          <p>
+            {% blocktrans %}
+            By connecting <em>storytellers</em>, <em>story sharers</em> and <em>story readers</em>, Floodlight is a project to brighten, inform and transform community though the power of story.
+            {% endblocktrans %}
+          </p>
+          
+        </div>
+        <div class="cl">&nbsp;</div>
+      </div>
+    </li>
+    {% comment %}
+    <li class="last"><a href="#">NEWS &amp; UPDATES<em></em></a>
+      <div class="dd">
+        <div class="dd-col col1">
+          <h6><a href="#">Browse by Tags</a></h6>
+        </div>
+        <div class="dd-col col2">
+          <h6><a href="#">Contributing Organizations</a></h6>
+          <ul>
+            <li><a href="#">The Piton Foundation</a></li>
+            <li><a href="#">The Denver Foundation</a></li>
+            <li><a href="#">Colorado Center for <br />Community Development</a></li>
+          </ul>
+        </div>
+        <div class="dd-col col3">
+          <h6><a href="#">Special Projects</a></h6>
+          <ul>
+            <li><a href="#">The Children’s Corridor</a></li>
+            <li><a href="#">Hinkley High School</a></li>
+          </ul>
+        </div>
+        <div class="cl">&nbsp;</div>
+      </div>
+    </li>
+    {% endcomment %}
+  </ul>
 </div>
 {% if user.is_authenticated %}
 {% storybase_menu "my_account" "megamenu_account_menu.html" request.path %}
