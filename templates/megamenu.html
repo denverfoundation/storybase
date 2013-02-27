@@ -1,8 +1,15 @@
 {% load i18n cms_tags storybase_menu %}
+{% if user.is_authenticated %}
+{% storybase_menu "my_account" "megamenu_account_menu.html" request.path %}
+{% endif %}
+
 <div class="megamenu shell navigation" id="navigation">
-  <ul> 
-    <li class="nodd"><a class="top-nav homepage" href="/">{% trans "Home"|upper %}</a></li>
-        <li><a class="top-nav story-builder" href="{% page_url "story-builder-landing" %}">{% trans "Build a story"|upper %}<em></em></a>
+  <ul>
+    <li class="nodd">
+      <a class="top-nav homepage" href="/">{% trans "Home"|upper %}</a>
+    </li>
+    <li>
+      <a class="top-nav story-builder" href="{% page_url "story-builder-landing" %}">{% trans "Build a story"|upper %}<em></em></a>
       <div class="dd threecol">
         <div class="dd-col col1-2">
           <h6><a href="{% page_url "story-builder-landing" %}">{% trans "Take your storytelling to the next level." %}</a></h6>
@@ -19,7 +26,8 @@
         <div class="cl">&nbsp;</div>
       </div>
     </li>
-        <li><a class="top-nav explorer" href="{% url explore_stories %}">{% trans "Explore Stories"|upper %}<em></em></a>
+    <li>
+      <a class="top-nav explorer" href="{% url explore_stories %}">{% trans "Explore Stories"|upper %}<em></em></a>
       <div class="dd threecol">
         <div class="dd-col col1">
                     <h6><a href="{% url explore_stories %}">{% trans "Browse Stories" %}</a></h6>
@@ -50,7 +58,8 @@
         <div class="cl">&nbsp;</div>
       </div>
     </li>
-    <li><a class="top-nav grow-your-skills" href="{% page_url "grow-your-skills" %}">{% trans "Skills"|upper %}<em></em></a>
+    <li>
+      <a class="top-nav grow-your-skills" href="{% page_url "grow-your-skills" %}">{% trans "Grow Your Skills"|upper %}<em></em></a>
       <div class="dd fourcol" style="min-height:270px;">
         <div class="dd-col col1">
           <h6><a href="{% page_url "grow-your-skills" %}">{% trans "Learn how to be a better storyteller" %}</a></h6>
@@ -97,7 +106,32 @@
         <div class="cl">&nbsp;</div>
       </div>
     </li>
-    <li><a class="top-nav about" href="/about/">{% trans "About"|upper %}<em></em></a>
+    <li class="last">
+      <a class="top-nav" href="#">{% trans "News & Updates"|upper %}<em></em></a>
+      <div class="dd">
+        <div class="dd-col col1">
+          <h6><a href="#">Browse by Tags</a></h6>
+        </div>
+        <div class="dd-col col2">
+          <h6><a href="#">Contributing Organizations</a></h6>
+          <ul>
+            <li><a href="#">The Piton Foundation</a></li>
+            <li><a href="#">The Denver Foundation</a></li>
+            <li><a href="#">Colorado Center for <br />Community Development</a></li>
+          </ul>
+        </div>
+        <div class="dd-col col3">
+          <h6><a href="#">Special Projects</a></h6>
+          <ul>
+            <li><a href="#">The Children’s Corridor</a></li>
+            <li><a href="#">Hinkley High School</a></li>
+          </ul>
+        </div>
+        <div class="cl">&nbsp;</div>
+      </div>
+    </li>
+    <li class="last">
+      <a class="top-nav about" href="/about/">{% trans "About"|upper %}<em></em></a>
       <div class="dd fourcol">
         <div class="dd-col col1">
           <ul>
@@ -135,33 +169,5 @@
         <div class="cl">&nbsp;</div>
       </div>
     </li>
-    {% comment %}
-    <li class="last"><a href="#">NEWS &amp; UPDATES<em></em></a>
-      <div class="dd">
-        <div class="dd-col col1">
-          <h6><a href="#">Browse by Tags</a></h6>
-        </div>
-        <div class="dd-col col2">
-          <h6><a href="#">Contributing Organizations</a></h6>
-          <ul>
-            <li><a href="#">The Piton Foundation</a></li>
-            <li><a href="#">The Denver Foundation</a></li>
-            <li><a href="#">Colorado Center for <br />Community Development</a></li>
-          </ul>
-        </div>
-        <div class="dd-col col3">
-          <h6><a href="#">Special Projects</a></h6>
-          <ul>
-            <li><a href="#">The Children’s Corridor</a></li>
-            <li><a href="#">Hinkley High School</a></li>
-          </ul>
-        </div>
-        <div class="cl">&nbsp;</div>
-      </div>
-    </li>
-    {% endcomment %}
   </ul>
 </div>
-{% if user.is_authenticated %}
-{% storybase_menu "my_account" "megamenu_account_menu.html" request.path %}
-{% endif %}
