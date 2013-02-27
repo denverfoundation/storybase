@@ -80,8 +80,11 @@ class CustomContextPasswordResetForm(PasswordResetForm):
         context = conf(request)
         return context 
 
-    def save(self, domain_override=None, email_template_name='registration/password_reset_email.html',
-             use_https=False, token_generator=default_token_generator, from_email=None, request=None):
+    def save(self, domain_override=None,
+             subject_template_name='registration/password_reset_subject.txt',
+             email_template_name='registration/password_reset_email.html',
+             use_https=False, token_generator=default_token_generator,
+             from_email=None, request=None):
         """
         Generates a one-use only link for resetting password and sends to the user
         """
@@ -89,6 +92,7 @@ class CustomContextPasswordResetForm(PasswordResetForm):
         for user in self.users_cache:
             send_password_reset_email(user,
                 domain_override=domain_override, 
+                subject_template_name=subject_template_name,
                 email_template_name=email_template_name,
                 use_https=use_https,
                 token_generator=token_generator,
