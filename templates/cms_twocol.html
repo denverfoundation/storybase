@@ -15,6 +15,12 @@
 
 {% block twocol-content %}
 <section class="content-block">
+        {% placeholder description or %}
+        {% page_attribute "teaser" as teaser %}
+        {% if teaser %}
+        <p class="teaser">{{ teaser }}</p>
+        {% endif %}
+        {% endplaceholder %}
 	{% placeholder twocol-content or %}
 	<h4 class="first">
 		Floodlight is about two things: storytelling and positive change.<br>Our goal is to help you use the first one to achieve the second.
