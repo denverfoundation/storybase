@@ -22,11 +22,18 @@
   }
 
   window.onerror = function(message, url, lineNumber) {
-    // For now don't show error popups until we have a way to make them
-    // less obtrusive/blocking.
-    // See https://github.com/PitonFoundation/atlas/issues/634
-    //errorPopup();
-    logError(window.jsLogUrl, message, url, lineNumber);
+    window._sbJsErrs = window._sbJsErrs || {};
+    window._sbJsErrs[url] = window._sbJsErrs[url] || {};
+    if (!window._sbJsErrs[url][lineNumber]) {
+      // This error hasn't been seen before
+      // For now don't show error popups until we have a way to make them
+      // less obtrusive/blocking.
+      // See https://github.com/PitonFoundation/atlas/issues/634
+      //errorPopup();
+      logError(window.jsLogUrl, message, url, lineNumber);
+      // Record that we've seen this error
+      window._sbJsErrs[url][lineNumber] = true;
+    }
     return false;
   };
 })(window, document);

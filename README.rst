@@ -26,6 +26,16 @@ Changelog
 * High-level query API for stories
 * Implemented a reusable menu class and template tag for rendering menus
 
+0.6.4
+~~~~~
+
+* Allow superusers to open any story in builer (#657)
+
+0.6.3
+~~~~~
+
+* Only log JavaScript errors to the server once (#635)
+
 0.6.2
 ~~~~~
 
