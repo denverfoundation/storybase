@@ -1,14 +1,5 @@
 {% extends "cms_twocol.html" %}
-{# QUESTION: Should this not extend the two column template since there's no sidebar content? #}
-
 {% load cms_tags i18n sekizai_tags menu_tags storybase_cms_tags %}
-
-{% block sidebar %}
-<ul class="sibling-nav">
-	{% show_menu 1 100 0 1 %}
-</ul>
-{% placeholder "sidebar" %}
-{% endblock %}
 
 {% block twocol-content %}
 <section class="content-block">
@@ -31,6 +22,7 @@
     {% if current_page.children.count %}
     <div class="page-children grid_10 alpha omega">
       {% for child_page in current_page.children.all %}
+      {% if child_page.published %}
       <div class="child-page grid_5 {% cycle 'alpha' 'omega' %}">
         {% page_attribute "title" child_page as title %}
         <h3><a href="{% page_url child_page %}" title="{{ title }}">{{ title }}</a></h3>
@@ -39,6 +31,7 @@
         <p class="teaser">{{ teaser }}</p>
         {% endif %}
       </div> {# /.child-page #}
+      {% endif %}
     {% endfor %}
     </div> {# /.page-children #}
     {% endif %}
