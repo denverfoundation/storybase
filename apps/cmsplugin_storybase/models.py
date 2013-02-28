@@ -1,6 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files import File
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.signals import post_save, pre_save
 from django.utils.translation import get_language, ugettext_lazy as _
@@ -72,6 +73,24 @@ class NewsItem(NewsItemPermission, PublishedModel, TimestampedModel,
     translated_fields = ['title', 'body', 'image',] 
     translation_set = 'newsitemtranslation_set'
     translation_class = NewsItemTranslation
+
+    def get_absolute_url(self):
+        kwargs = {'slug': self.slug}
+        if self.published:
+            kwargs['year'] = self.published.year
+            kwargs['month'] = self.published.month
+        else:
+            kwargs['year'] = self.last_updated.year
+            kwargs['month'] = self.last_updated.month
+
+        # HACK: Django CMS URLs only get reversed if we prefix them
+        # with the language.
+        # See http://docs.django-cms.org/en/2.1.3/extending_cms/app_integration.html#app-hooks
+        # and http://stackoverflow.com/questions/11216565/django-cms-urls-used-by-apphooks-dont-work-with-reverse-or-url
+        language = get_language()
+        url_name = "%s:newsitem_detail" % (language)
+
+        return reverse(url_name, kwargs=kwargs)
 
     def normalize_for_view(self, img_width):
         """Return attributes as a dictionary for use in a view context

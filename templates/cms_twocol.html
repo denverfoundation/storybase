@@ -9,7 +9,8 @@
 {% block sidebar %}
 {% block sidebar-menu %}
 <ul class="sibling-nav">
-    {% show_menu 0 100 0 1 %}
+    {# Only show the first two levels of menus #}
+    {% show_menu 0 1 0 1 %}
 </ul>
 {% endblock %}
 {% placeholder "sidebar" %}

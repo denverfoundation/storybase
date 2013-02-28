@@ -1,10 +1,12 @@
 from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext_lazy as _
 
-from menus.base import Menu, Modifier, NavigationNode 
+from cms.menu_bases import CMSAttachMenu
+from menus.base import Menu, Modifier, NavigationNode
 from menus.menu_pool import menu_pool
 
 from cmsplugin_storybase import settings as plugin_settings
+from cmsplugin_storybase.models import NewsItem
 
 from storybase_user.models import Organization, Project
 
@@ -52,6 +54,26 @@ class StorybaseMenu(Menu):
         return nodes
 
 menu_pool.register_menu(StorybaseMenu)
+
+
+class NewsItemMenu(CMSAttachMenu):
+    """
+    A menu of all published news items
+
+    This is meant to be attached to the same page as ``NewsItemApphoook``
+    and helps to set the breadcrumb on news item detail pages.
+
+    """
+    name = _("News Items")
+
+    def get_nodes(self, request):
+        nodes = []
+        for newsitem in NewsItem.objects.published():
+            nodes.append(NavigationNode(newsitem.title, newsitem.get_absolute_url(), newsitem.pk))
+        return nodes
+
+menu_pool.register_menu(NewsItemMenu)
+
 
 class OrderMenuNodes(Modifier):
     """Modifier that insert custom navigation nodes in a specified order"""

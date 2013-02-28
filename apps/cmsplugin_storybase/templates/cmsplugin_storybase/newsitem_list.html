@@ -1,0 +1,25 @@
+{% extends "cms_twocol.html" %}
+{% comment %}
+Template for listing all news items
+{% endcomment %}
+{% load i18n thumbnail %}
+
+{% block content_page_class %}object-list{% endblock %}
+
+{% block twocol-content %}
+<ul class="object-list">
+  {% for object in object_list %}
+  <li>
+    <div class="grid_3 alpha">
+      <a href="{{ object.get_absolute_url }}"><img src="{% thumbnail object.image 222x222 %}" /></a>
+    </div>
+    <div class="grid_7 omega">
+        <h2><a href="{{ object.get_absolute_url }}">{{ object.title }}</a></h2>
+        <div>{{ object.body|safe }}</div>
+    </div>
+  </li>
+  {% empty %}
+  <p>{% trans "There are no updates for this period" %}</p>
+  {% endfor %}
+</ul>
+{% endblock %}

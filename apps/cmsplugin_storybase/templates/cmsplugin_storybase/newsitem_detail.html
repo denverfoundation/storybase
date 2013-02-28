@@ -1,0 +1,42 @@
+{% extends "twocol.html" %}
+{% comment %}
+Show a single news item
+{% endcomment %}
+{% load i18n thumbnail storybase_tags %}
+
+{% block head_title %}{{ object.title }}{{ block.super }}{% endblock %}
+
+{% block extrameta %}
+{% with object.body|striptags|truncatewords:100 as short_body %}
+<meta name="title" content="{{ object.title }}" />
+<meta name="description" content="{{ short_body }}">
+
+<!-- Open Graph Protocol tags -->
+<meta property="og:url" content="{% fullurl object.get_absolute_url %}" />
+<meta property="og:title" content="{{ object.title }}" />
+<meta property="og:description" content="{{ short_body }}" />
+<meta property="og:image" content="{% thumbnail object.image 222x222 %}" />
+{% endwith %}
+{% endblock %}
+
+{% block body_title %}{{ object.title }}{% endblock %}
+
+{% block content_page_class %}object-detail{% endblock %}
+
+{% block sidebar %}
+{# Nothing in the sidebar for now #}
+{% endblock %}
+
+{% block twocol-content %}
+   {% block summary_left %}
+    <div class="grid_6 alpha">
+        {{ object.body|safe }}
+    </div>
+    {% endblock %}
+
+    {% block summary_right %}
+    <div class="grid_4 omega">
+        <img src="{% thumbnail object.image 335x335 %}" />
+    </div>
+    {% endblock %}
+{% endblock %}
