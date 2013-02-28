@@ -7,9 +7,11 @@
 {% block body_class %}twocol cms-twocol{% endblock %}
 
 {% block sidebar %}
+{% block sidebar-menu %}
 <ul class="sibling-nav">
-	{% show_menu 1 100 0 1 %}
+    {% show_menu 0 100 0 1 %}
 </ul>
+{% endblock %}
 {% placeholder "sidebar" %}
 {% endblock %}
 
