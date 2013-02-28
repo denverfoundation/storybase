@@ -198,14 +198,24 @@
           .object-list {
             li {
               overflow: hidden;
+              margin-bottom: 1em;
+
               h2, h3, h4 {
                 text-align:left;
               }
 
+              h2 {
+                // TODO: Use variables or otherwise make these consistent
+                // site-wide
+                line-height: 1.2em;
+                margin-bottom: 0.5em;
+              }
+
               img.featured-asset { max-width: 100%; }
             }
-            
-            .description {
+           
+            // Override the reset that gets rid of paragraph margins    
+            .description, .body {
               p { margin-bottom: 1em; }
             }
           }

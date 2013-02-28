@@ -7,15 +7,15 @@ Template for listing all news items
 {% block content_page_class %}object-list{% endblock %}
 
 {% block twocol-content %}
-<ul class="object-list">
+<ul class="object-list newsitem-list">
   {% for object in object_list %}
   <li>
     <div class="grid_3 alpha">
       <a href="{{ object.get_absolute_url }}"><img src="{% thumbnail object.image 222x222 %}" /></a>
     </div>
-    <div class="grid_7 omega">
+    <div class="grid_7 omega body">
         <h2><a href="{{ object.get_absolute_url }}">{{ object.title }}</a></h2>
-        <div>{{ object.body|safe }}</div>
+        {{ object.body|safe }}
     </div>
   </li>
   {% empty %}
