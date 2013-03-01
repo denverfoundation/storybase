@@ -5,7 +5,7 @@ rendered using the storybase_menu tag.
 {% load i18n %}
 <div class="megamenu my-account">
 	<ul>
-        <li><a href="{% url account_stories %}">{% trans "My Account"|upper %}<em></em></a>
+        <li><a class="top-nav" href="{% url account_stories %}">{% trans "My Account"|upper %}<em></em></a>
 			<div class="dd onecol">
 				<div class="dd-col col1">
 					<ul>
@@ -15,7 +15,6 @@ rendered using the storybase_menu tag.
 						<li style="margin-top:20px"><a href="{% url auth_logout %}">{% trans "Sign Out" %}</a></li>
 					</ul>
 				</div>
-				<div class="cl">&nbsp;</div>
 			</div>
 		</li>
 	</ul>

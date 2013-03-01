@@ -95,6 +95,12 @@
   }
 }
 
+.border-box {
+  box-sizing:border-box;
+  -moz-box-sizing:border-box; /* Firefox */
+  -webkit-box-sizing:border-box; /* Safari */
+}
+
 // Reset button styles
 // Use this for buttons that you don't want to show up as a button
 .button-reset () {
@@ -488,7 +494,6 @@ body.base-template {
 body.base-template {
 	@import "header.less";
 	@import "footer.less";
-	@import "megamenu.less";
 	@import "sidebar.less";
 	@import "homepage.less";
 	@import "misc.less";
@@ -498,6 +503,8 @@ body.base-template {
 	@import "accounts.less";
 	@import "template-layout.less";
 }
+
+@import "megamenu.less";
 
 @import "tables.less";
 

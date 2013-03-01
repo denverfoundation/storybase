@@ -1,167 +1,208 @@
 
 @dd-col-std-padding:10px;
 
+// mixin for "active" state on top-level links
+.active-top-nav-link {
+  color:@orange; 
+  text-decoration:underline;
+}
+
 .megamenu { 
-	padding-top:39px;  
-	
-	ul { 
-		list-style:none;position:relative;
-		
-		li { 
-			float:left;
-			display:inline;
-			padding-left:46px;
-			font-family: 'MuseoSlab500Regular';
-			
-			a { 
-				font-size:16px;
-				color:#ffffff;
-				font-family: 'MuseoSlab500Regular';
-				background:url('../img/nav-arrow.png') no-repeat 0 3px;
-				padding-left:12px;
-				position:relative;
-				padding-bottom:23px;
-				
-				em { 
-					height:8px; 
-					background:url('../img/dd-arrow.png') no-repeat center 0; 
-					width:100%; 
-					position:absolute; 
-					bottom:0px; 
-					left:0; 
-					display:none; 
-					z-index: 5000;
-				}
-				&.active,
-				&.hover,
-				&:hover {
-					color:@orange; 
-					text-decoration:underline;
-				}
-			}
+  padding-top:39px;  
+  
+  &>ul { 
+    list-style:none;position:relative;
+    
+    li { 
+      float:left;
+      display:inline;
+      padding-left:30px;
+      
+      a.top-nav { 
+        font-size:16px;
+        color:#ffffff;
+        font-family: 'MuseoSlab500Regular';
+        background:url('../img/nav-arrow.png') no-repeat 0 3px;
+        padding-left:12px;
+        position:relative;
+        padding-bottom:23px;
+        
+        em { 
+          height:8px; 
+          background:url('../img/dd-arrow.png') no-repeat center 0; 
+          width:100%; 
+          position:absolute; 
+          bottom:0px; 
+          left:0; 
+          display:none; 
+          z-index: 5000;
+        }
+        &.active,
+        &.hover,
+        &:hover {
+          .active-top-nav-link
+        }
+      }
 
-			.dd { 
-				position:absolute; 
-				top:41px;
-				left:0;
-				background:#fff;
-				width:1000px;
-				min-height:200px;
-				display:none;
-				box-shadow: 0 0 5px #9a9a9a;
+      .dd { 
+        position:absolute; 
+        top:41px;
+        left:0;
+        background:#fff;
+        width:1000px;
+        min-height:200px;
+        display:none;
+        box-shadow: 0 0 5px #9a9a9a;
+        padding:20px 25px 20px;
 
-				&.onecol {
-					.dd-col.col1 { width:auto; }
-				}
+        &.onecol {
+          .dd-col.col1 { width:auto; }
+        }
 
-				&.fourcol {
-					.dd-col.col3 {
-						padding-right:@dd-col-std-padding;
-					}
-					.dd-col.col1,
-					.dd-col.col2,
-					.dd-col.col3,
-					.dd-col.col4 { 
-						width:20%;
-					}
-				}
-				
-				&.onecol .dd-col.col1,
-				&.onecol .dd-col.col1-2,
-				&.threecol .dd-col.col3,
-				&.fourcol .dd-col.col4 { 
-					border-right:0;  
-				}
-				
-				.dd-col {
-					.sans-serif-text;
-					float:left;
-					display:inline;
-					min-height:120px;
-					margin-top:20px;
-					border-right:1px dotted #666;
-					padding-left:25px;
-					line-height:1em;
+        &.twocol {
+          .dd-col.col1,
+          .dd-col.col2 {
+            width:50%;
+          }
+        }
 
-					&.col1 {
-						padding-right:20px;
-					}
-					&.col2,
-					&.col1-2 {
-						padding-right:@dd-col-std-padding;
-					}
-					&.col1,
-					&.col2,
-					&.col3 {
-						width:25%;
-					}
-					&.col1-2 {
-						width:50%;
-					}
-					
-					a { 
-						font-size:13px; 
-						color:#fe9703; 
-						padding: 0 0 0 8px; 
-						position:relative; 
-						left:-8px; 
-						background-image: none;
-					}
-					
-					// note this needs to be in this block
-					// to override above style.
-					a.create-your-story {
-						.button-style(hot);
-						line-height: @base-line-height;
-						vertical-align:middle;
-						font-size:2em;
-						margin:30px 0;
-						display:block;
-					}
-				}
-				
-			}
+        &.threecol {
+          .dd-col.col1,
+          .dd-col.col2,
+          .dd-col.col3 { 
+            width:33%;
+          }
+        }
+        
+        &.fourcol {
+          .dd-col.col1,
+          .dd-col.col2,
+          .dd-col.col3,
+          .dd-col.col4 { 
+            width:25%;
+          }
+          .dd-col.col2-4 {
+            width:75%;
+            background:transparent url('../img/left-v-shadow-200px.png') no-repeat 0 center !important;
+          }
+        }
+        
+        .dd-col {
+          .border-box;
+          .sans-serif-text;
+          float:left;
+          display:inline;
+          min-height:200px;
+          border-right:1px dotted #666;
+          line-height:1.2em;
+          padding: 0 @dd-col-std-padding;
 
-			h6,
-			h6 a { 
-				font-size:16px !important; 
-				font-weight:normal; 
-				font-family: 'MuseoSlab500Regular'; 
-				background:none; 
-				display:block;  
-				margin-bottom:9px;
-			}
-			h6 a { color:@orange; }
-			h6 a:hover { 
-				background:url('../img/h6-a-arrow.png') no-repeat 0 center !important;
-				text-decoration:none;
-			}
-			ul li { 
-				padding-left:0;
-				a { background:none; display:block;  }
-				a:hover { background:url('../img/a-arrow.png') no-repeat 0 2px; }
-			}
-		}
-		
-		li:first-child { padding-left:0;  }
-		li.nodd a { background:none; padding-left:0; }
-		
-	}
+          &:first-child {
+            padding-left:0;
+          }
+          &:last-child {
+            padding-right:0;
+            border-right:0;
+          }
+          
+          a { 
+            font-size:13px; 
+            color:@orange; 
+            background-image: none;
+          }
+          
+          p.legend {
+            color:lighten(@gray, 10%);
+            font-size:1.8em;
+            line-height:1.2em;
+            padding:30px 45px;
+            font-family: 'Museo300Regular';
+          }
+          
+          h6 {
+            font-size:16px !important;
+            font-weight:normal; 
+            font-family: 'MuseoSlab500Regular';
+            background:none; 
+            display:block;  
+            margin-bottom:9px;
+
+            a {
+              font-family: 'MuseoSlab500Regular';
+              font-size:16px !important; // (actually needed here and in h6 for specificity override)
+              padding: 0 0 0 8px; 
+              left:-8px;
+              position:relative;
+              color:@orange;
+          
+              &:hover { 
+                background:url('../img/h6-a-arrow.png') no-repeat 0 center !important;
+                text-decoration:none;
+              }
+            }
+          }
+
+          // note this needs to be in this block
+          // to override above style.
+          a.create-your-story {
+            .button-style(hot);
+            .box-shadow(0 3px 4px #888);
+            line-height: @base-line-height;
+            vertical-align:middle;
+            font-size:2em;
+            margin:60px auto;
+            display:block;
+            width:75%;
+            text-align:center;
+          }
+        }
+        
+      }
+
+      ul li { 
+        padding-left:0;
+        margin-bottom:.5em;
+        float:none;
+        display:block;
+        
+        a { 
+          background:none; 
+          display:block;
+        }
+        a:hover { 
+          background:url('../img/a-arrow.png') no-repeat 0 2px;
+        }
+      }
+    }
+    
+    &>li:first-child { padding-left:0;  }
+    &>li.nodd a { background:none; padding-left:0; }
+    
+  }
 }
 .megamenu.my-account {
-	position: absolute;
-	top: 83px;
-	right:20px;
-	
-	ul li {
-		.dd {
-			width:auto;
-			left:-60px;
-			right:0;
-		}
-		ul li {
-			display:block;
-			float:none;
-		}
-	}
+  float:right;
+  margin-right:1em;
+  
+  ul li {
+    .dd {
+      width:auto;
+      left:-60px;
+      right:0;
+    }
+    ul li {
+      display:block;
+      float:none;
+    }
+  }
+}
+
+// highlighting for main nav links.
+// highlight when the body class matches the nav link class.
+body.homepage .megamenu a.top-nav.homepage, 
+body.story-builder .megamenu a.top-nav.story-builder,
+body.explorer .megamenu a.top-nav.explorer,
+body.grow-your-skills .megamenu a.top-nav.grow-your-skills,
+body.about .megamenu a.top-nav.about { 
+  .active-top-nav-link;
 }
