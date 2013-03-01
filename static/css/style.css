@@ -551,7 +551,7 @@ body.base-template .twocol .twocol-content{overflow:hidden;}
 .megamenu>ul>li.nodd a{background:none;padding-left:0;}
 .megamenu.my-account{float:right;margin-right:1em;}.megamenu.my-account ul li .dd{width:auto;left:-60px;right:0;}
 .megamenu.my-account ul li ul li{display:block;float:none;}
-body.homepage .megamenu a.top-nav.homepage,body.story-builder .megamenu a.top-nav.story-builder,body.explorer .megamenu a.top-nav.explorer,body.grow-your-skills .megamenu a.top-nav.grow-your-skills,body.about .megamenu a.top-nav.about{color:#fe9703;text-decoration:underline;}
+body.homepage .megamenu a.top-nav.homepage,body.story-builder .megamenu a.top-nav.story-builder,body.explorer .megamenu a.top-nav.explorer,body.grow-your-skills .megamenu a.top-nav.grow-your-skills,body.about .megamenu a.top-nav.about,body.news .megamenu a.top-nav.news{color:#fe9703;text-decoration:underline;}
 table{border-spacing:0;border-collapse:collapse;font-family:Arial,sans-serif;font-size:14px;line-height:1.4em;color:#444444;}table p{margin-bottom:1em;}
 table dd p,table dt p,table li p{margin-bottom:0;}
 table a{color:#2a88db;}table a:visited{color:#336c9f;}
