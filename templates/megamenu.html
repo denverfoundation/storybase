@@ -60,22 +60,7 @@
       <a class="top-nav grow-your-skills" href="{% page_url "grow-your-skills" %}">{% trans "Grow Your Skills"|upper %}<em></em></a>
       <div class="dd fourcol">
         <div class="dd-col col1">
-          <h6><a href="{% page_url "grow-your-skills" %}">{% trans "Learn how to be a better storyteller" %}</a></h6>
-          <p>
-            {% blocktrans %}
-            Storytelling comes naturally to all of us. But we can always improve with practice. Here you’ll find information about in-person trainings and online tools and tutorials to help you build your skills.
-            {% endblocktrans %}
-          </p>
-        </div>
-        <div class="dd-col col2">
-          <h6><a href="{% page_url "grow-your-skills" %}#workshops">{% trans "Storytelling Workshops" %}</a></h6>
-          <ul>
-            <li><a href="{% page_url "grow-your-skills" %}#online-training">{% trans "Online training materials" %}</a></li>
-            <li><a href="{% page_url "grow-your-skills" %}#upcoming-workshops">{% trans "Upcoming sessions" %}</a></li>
-          </ul>
-        </div>
-        <div class="dd-col col3">
-          <h6><a href="{% page_url "grow-your-skills" %}#storytelling-tips">{% trans "Storytelling Tips" %}</a></h6>
+          <h6><a href="{% page_url "grow-your-skills" %}">{% trans "Skills" %}</a></h6>
           <ul>
             {# TODO: Wire these up once content is available #}
             <li><a href="#">{% trans "Elements of Storytelling" %}</a></li>
@@ -92,11 +77,10 @@
             {% endcomment %}
           </ul>
         </div>
-        <div class="dd-col col4">
-          <h6><a href="{% page_url "resources" %}">{% trans "Resources" %}</a></h6>
-          <p>
+        <div class="dd-col col2-4">
+          <p class="legend">
             {% blocktrans %}
-            Here you’ll find answers to commonly asked questions and links to commonly used tools, like photo release forms.
+            Storytelling comes naturally to all of us. But we can always improve with practice. Here, you’ll find online tools and tutorials to help you build your skills.
             {% endblocktrans %}
           </p>
         </div>
@@ -107,47 +91,30 @@
       <div class="dd fourcol">
         <div class="dd-col col1">
           <h6><a href="#">{% trans "News & Updates" %}</a></h6>
-          <p>
+          <ul>
+            <li><a href="#">{% trans "Latest Updates" %}</a></li>
+            <li><a href="#">{% trans "Story Raisings" %}</a></li>
+            <li><a href="#">{% trans "Storytelling Workshops" %}</a></li>
+          </ul>
+        </div>
+        <div class="dd-col col2-4">
+          <p class="legend">
             {% blocktrans %}
             Like a good story, Floodlight is a work in progress. Here, you’ll find information about improvements we’re making to the site, storytelling events we’re holding in the community, storytelling advice, contests, and more.
             {% endblocktrans %}
           </p>
         </div>
-        <div class="dd-col col2">
-          <h6><a href="#">{% trans "Latest Updates" %}</a></h6>
-          <p>
-            {% blocktrans %}
-            Read about what the Floodlight team has been up to, both online and in the community.
-            {% endblocktrans %}
-          </p>
-        </div>
-        <div class="dd-col col3">
-          <h6><a href="#">{% trans "Story Raisings" %}</a></h6>
-          <p>
-            {% blocktrans %}
-            Story-Raisings are events where people get together to learn storytelling skills and document and share stories. Find out more about past and future Story-Raisings.
-            {% endblocktrans %}
-          </p>
-        </div>
-        <div class="dd-col col4">
-          <h6><a href="#">{% trans "Storytelling Workshops" %}</a></h6>
-          <p>
-            {% blocktrans %}
-            In Summer 2012, we held a four-part community storytelling workshop in Denver. View videos of the workshops and access training materials.
-            {% endblocktrans %}
-          </p>
-        </div>
-
       </div>
     </li>
     <li class="last">
       <a class="top-nav about" href="/about/">{% trans "About"|upper %}<em></em></a>
       <div class="dd fourcol">
         <div class="dd-col col1">
+          <h6><a href="{% page_url "about"%}">{% trans "About" %}</a></h6>
           <ul>
-            <li><a href="{% page_url "about" %}">{% trans "What is Floodlight?" %}</a></li>
             <li><a href="{% page_url "about"%}#vision">{% trans "The Vision" %}</a></li>
-            <li><a href="{% page_url "partners" %}">{% trans "Supporting Foundations and Partners" %}</a></li>
+            <li><a href="#">{% trans "Community Values" %}</a></li>
+            <li><a href="{% page_url "partners" %}">{% trans "Partners" %}</a></li>
             <li><a href="{% page_url "about" %}#how-it-works">{% trans "How it Works" %}</a></li>
           </ul>
         </div>

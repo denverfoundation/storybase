@@ -17,7 +17,6 @@
       float:left;
       display:inline;
       padding-left:30px;
-      font-family: 'MuseoSlab500Regular';
       
       a.top-nav { 
         font-size:16px;
@@ -82,6 +81,9 @@
           .dd-col.col4 { 
             width:25%;
           }
+          .dd-col.col2-4 {
+            width:75%;
+          }
         }
         
         .dd-col {
@@ -108,15 +110,24 @@
             background-image: none;
           }
           
+          p.legend {
+            color:lighten(@gray, 10%);
+            font-size:1.8em;
+            line-height:1.2em;
+            padding:30px 45px;
+            font-family: 'Museo300Regular';
+          }
+          
           h6 {
             font-size:16px !important;
             font-weight:normal; 
-            font-family: 'MuseoSlab500Regular'; 
+            font-family: 'MuseoSlab500Regular';
             background:none; 
             display:block;  
             margin-bottom:9px;
 
             a {
+              font-family: 'MuseoSlab500Regular';
               font-size:16px !important; // (actually needed here and in h6 for specificity override)
               padding: 0 0 0 8px; 
               left:-8px;
@@ -134,10 +145,11 @@
           // to override above style.
           a.create-your-story {
             .button-style(hot);
+            .box-shadow(0 3px 4px #888);
             line-height: @base-line-height;
             vertical-align:middle;
             font-size:2em;
-            margin:70px auto;
+            margin:60px auto;
             display:block;
             width:75%;
             text-align:center;
@@ -147,7 +159,7 @@
       }
 
       ul li { 
-        padding-left:.5em;
+        padding-left:0;
         margin-bottom:.5em;
         float:none;
         display:block;
