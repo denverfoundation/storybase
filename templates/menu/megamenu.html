@@ -1,8 +1,7 @@
 {% load i18n cms_tags menu_tags storybase_menu %}
 {% if user.is_authenticated %}
-{% storybase_menu "my_account" "megamenu_account_menu.html" request.path %}
+{% storybase_menu "my_account" "menu/megamenu_account.html" request.path %}
 {% endif %}
-
 <div class="megamenu shell navigation" id="navigation">
   <ul>
     <li class="nodd">
