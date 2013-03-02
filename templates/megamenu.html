@@ -1,4 +1,4 @@
-{% load i18n cms_tags storybase_menu %}
+{% load i18n cms_tags menu_tags storybase_menu %}
 {% if user.is_authenticated %}
 {% storybase_menu "my_account" "megamenu_account_menu.html" request.path %}
 {% endif %}
@@ -62,26 +62,12 @@
         <div class="dd-col col1">
           <h6><a href="{% page_url "grow-your-skills" %}">{% trans "Skills" %}</a></h6>
           <ul>
-            {# TODO: Wire these up once content is available #}
-            <li><a href="#">{% trans "Elements of Storytelling" %}</a></li>
-            <li><a href="#">{% trans "Reporting and Information Gathering" %}</a></li>
-            <li><a href="#">{% trans "Photos and Images" %}</a></li>
-            <li><a href="{% page_url "data-analysis-and-visualization" %}">{% trans "Data Analysis and Visualization" %}</a></li>
-            <li><a href="#">{% trans "Video Storytelling" %}</a></li>
-            <li><a href="#">{% trans "Audio Storytelling" %}</a></li>
-            <li><a href="#">{% trans "Creative Commons" %}</a></li>
-            {# currently unused: #}
-            {% comment %}
-            <li><a href="#">{% trans "Graphics, Drawings and Diagrams" %}</a></li>
-            <li><a href="#">{% trans "Making and Using Maps" %}</a></li>
-            {% endcomment %}
+            {% show_menu_below_id "grow-your-skills" 0 0 0 0 "menu/megamenu_submenu.html" %}
           </ul>
         </div>
         <div class="dd-col col2-4">
           <p class="legend">
-            {% blocktrans %}
-            Storytelling comes naturally to all of us. But we can always improve with practice. Here, you’ll find online tools and tutorials to help you build your skills.
-            {% endblocktrans %}
+	    {% page_attribute "teaser" "grow-your-skills" %} 
           </p>
         </div>
       </div>
@@ -92,16 +78,12 @@
         <div class="dd-col col1">
 	  <h6><a href="{% page_url "news" %}">{% trans "News & Updates" %}</a></h6>
           <ul>
-	    <li><a href="{% page_url "updates" %}">{% trans "Latest Updates" %}</a></li>
-            <li><a href="{% page_url "story-raisings" %}">{% trans "Story Raisings" %}</a></li>
-            <li><a href="{% page_url "workshops" %}">{% trans "Storytelling Workshops" %}</a></li>
+            {% show_menu_below_id "news" 0 0 0 0 "menu/megamenu_submenu.html" %}
           </ul>
         </div>
         <div class="dd-col col2-4">
           <p class="legend">
-            {% blocktrans %}
-            Like a good story, Floodlight is a work in progress. Here, you’ll find information about improvements we’re making to the site, storytelling events we’re holding in the community, storytelling advice, contests, and more.
-            {% endblocktrans %}
+	    {% page_attribute "teaser" "news" %}
           </p>
         </div>
       </div>
@@ -112,10 +94,7 @@
         <div class="dd-col col1">
           <h6><a href="{% page_url "about"%}">{% trans "About" %}</a></h6>
           <ul>
-            <li><a href="{% page_url "about"%}#vision">{% trans "The Vision" %}</a></li>
-            <li><a href="#">{% trans "Community Values" %}</a></li>
-            <li><a href="{% page_url "partners" %}">{% trans "Partners" %}</a></li>
-            <li><a href="{% page_url "about" %}#how-it-works">{% trans "How it Works" %}</a></li>
+            {% show_menu_below_id "about" 0 0 0 0 "menu/megamenu_submenu.html" %}
           </ul>
         </div>
         <div class="dd-col col2">
