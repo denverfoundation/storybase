@@ -535,7 +535,7 @@ body.base-template .twocol .twocol-content{overflow:hidden;}
 .megamenu>ul li .dd{position:absolute;top:41px;left:0;background:#fff;width:1000px;min-height:200px;display:none;box-shadow:0 0 5px #9a9a9a;padding:20px 25px 20px;}.megamenu>ul li .dd.onecol .dd-col.col1{width:auto;}
 .megamenu>ul li .dd.twocol .dd-col.col1,.megamenu>ul li .dd.twocol .dd-col.col2{width:50%;}
 .megamenu>ul li .dd.threecol .dd-col.col1,.megamenu>ul li .dd.threecol .dd-col.col2,.megamenu>ul li .dd.threecol .dd-col.col3{width:33%;}
-.megamenu>ul li .dd.threecol .dd-col.col2-3{width:66%;}
+.megamenu>ul li .dd.threecol .dd-col.col1-2,.megamenu>ul li .dd.threecol .dd-col.col2-3{width:66%;}
 .megamenu>ul li .dd.fourcol .dd-col.col1,.megamenu>ul li .dd.fourcol .dd-col.col2,.megamenu>ul li .dd.fourcol .dd-col.col3,.megamenu>ul li .dd.fourcol .dd-col.col4{width:25%;}
 .megamenu>ul li .dd.fourcol .dd-col.col2-4{width:75%;background:transparent url('../img/left-v-shadow-200px.png') no-repeat 0 center !important;}
 .megamenu>ul li .dd .dd-col{box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;font-family:Arial,sans-serif;float:left;display:inline;min-height:200px;border-right:1px dotted #666;line-height:1.2em;padding:0 10px;}.megamenu>ul li .dd .dd-col:first-child{padding-left:0;}

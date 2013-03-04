@@ -2,7 +2,7 @@
 {% load i18n %}
 {% block megamenu_extra_num_cols %}threecol{% endblock %}
 {% block megamenu_extra %}
-<div class="dd-col col1">
+<div class="dd-col col1-2">
   <h6><a href="{{ menu_url }}">{% trans "Take your storytelling to the next level." %}</a></h6>
   <p>
     {% blocktrans %}
@@ -11,7 +11,7 @@
   </p>
   <p><a href="{{ menu_url }}">{% trans "Learn more" %}&hellip;</a></p>
 </div>
-<div class="dd-col col2-3">
+<div class="dd-col col3">
   <a class="create-your-story" href="{% url story_builder %}">{% trans "Create Your Story" %}</a>
 </div>
 {% endblock %}
