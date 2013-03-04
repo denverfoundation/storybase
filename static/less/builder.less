@@ -241,13 +241,21 @@ button.help {
 
 
 #workflow-step {
-  margin: @workflow-item-margin-top auto;
+  // note: This is an arguably more appropriate way to
+  // make space above workflow step items, but in 
+  // Chrome 0.25, items following the first are bumped
+  // down an extra 10px for no apparent reason.
+  //
+  // Using the padding property-top on individual li
+  // items fixes this.
+  //margin: @workflow-item-margin-top auto;
   clear:both;
 
   li {
     color:@orange;
     list-style:decimal inside none;
-    padding:0 19px;
+    // for motivation for padding-top value, see note above.
+    padding:@workflow-item-margin-top 19px 0;
     height: @workflow-item-height;
     border-right:1px solid @almost-black;
     font-family:'Museo300Regular';
@@ -276,7 +284,7 @@ button.help {
       width:12px;
       height:6px;
       position:absolute;
-      top:46px;
+      top:56px;
       left:48%;
       z-index:10;
     }
