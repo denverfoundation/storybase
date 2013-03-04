@@ -1,127 +1,36 @@
-{% load i18n cms_tags menu_tags storybase_menu %}
+{% comment %}
+Top-level navigation that appears at the top of most pages.
+
+This is designed to be included in most pages using the ``show_menu`` tag::
+
+    {% show_menu 0 0 0 0 "menu/megamenu.html" %}
+
+Pages/custom menu entries can be added to the megamenu by adding their page
+reverse ID or custom menu item ID to the STORYBASE_MEGAMENU_ITEMS setting.
+
+Then, add a template that inherits from "menu/megamenu_extra_base.html" named 
+"menu/megamenu_extra_MENU_ID.html" where ``MENU_ID`` is the CMS page reverse
+ID or the custom menu item ID.
+{% endcomment %}
+
+{% load i18n cms_tags menu_tags storybase_menu storybase_cms_tags %}
+
+{# Show the "My Account" menu for authenticated users #}
 {% if user.is_authenticated %}
 {% storybase_menu "my_account" "menu/megamenu_account.html" request.path %}
 {% endif %}
+
 <div class="megamenu shell navigation" id="navigation">
   <ul>
-    <li class="nodd">
-      <a class="top-nav homepage" href="/">{% trans "Home"|upper %}</a>
+    {% for child in children|megamenuitems %}
+    {% with menu_title=child.get_menu_title menu_url=child.attr.redirect_url|default:child.get_absolute_url menu_id=child.attr.reverse_id|default:child.id %}
+    {% with extra_template_name="menu/megamenu_extra_"|add:menu_id|add:".html" %}
+    <li {% if forloop.first %}class="nodd"{% elif forloop.last %}class="last"{% else %}{% endif %}>
+    <a class="top-nav {{ menu_id }}{% if child.selected %} selected{% endif %}{%if child.ancestor %} ancestor{% endif %}" href="{{ menu_url }}">{{ menu_title|upper }}{% if menu_id != "home" %}<em></em>{% endif %}</a>
+      {% if menu_id != "home" %}{% include extra_template_name %}{% endif %}
     </li>
-    <li>
-      <a class="top-nav story-builder" href="{% page_url "story-builder-landing" %}">{% trans "Build a story"|upper %}<em></em></a>
-      <div class="dd twocol">
-        <div class="dd-col col1">
-          <h6><a href="{% page_url "story-builder-landing" %}">{% trans "Take your storytelling to the next level." %}</a></h6>
-          <p>
-            {% blocktrans %}
-            Create an amazing story in minutes. Start by choosing a template -- like photo voice, explainer, or data story. Customize it with your text, photos, video, audio, data and more. Include a call to action to inspire your readers to get involved.
-            {% endblocktrans %}
-          </p>
-          <p><a href="{% page_url "story-builder-landing" %}">{% trans "Learn more" %}&hellip;</a></p>
-        </div>
-        <div class="dd-col col2">
-          <a class="create-your-story" href="{% url story_builder %}">Create Your Story</a>
-        </div>
-      </div>
-    </li>
-    <li>
-      <a class="top-nav explorer" href="{% url explore_stories %}">{% trans "Explore Stories"|upper %}<em></em></a>
-      <div class="dd threecol">
-        <div class="dd-col col1">
-                    <h6><a href="{% url explore_stories %}">{% trans "Browse Stories" %}</a></h6>
-          <p>
-            {% blocktrans %}
-            Browse and filter Floodlight stories by topic, location, language, project and organization.
-            {% endblocktrans %}
-          </p>
-        </div>
-        <div class="dd-col col2">
-                    <h6><a href="{% url organization_list %}">{% trans "Organizations" %}</a></h6>
-          <p>
-            {% blocktrans %}
-            Organizations are groups of people creating stories together. They can be non-profits, school groups, neighborhoods, or any storytellers who share a common goal.
-            {% endblocktrans %}
-          </p>
-          <p><a href="{% url create_organization %}">{% trans "Create an Organization" %}</a></p>
-        </div>
-        <div class="dd-col col3">
-                    <h6><a href="{% url project_list %}">{% trans "Projects" %}</a></h6>
-          <p>
-            {% blocktrans %}
-            Projects are collections of stories about a common theme, place, issue, event or movement. They can be open to contributions from any Floodlight user, or constrained to a group of authors.
-            {% endblocktrans %}
-          </p>
-          <p><a href="{% url create_project %}">{% trans "Create a Project" %}</a></p>
-        </div>
-      </div>
-    </li>
-    <li>
-      <a class="top-nav grow-your-skills" href="{% page_url "grow-your-skills" %}">{% trans "Grow Your Skills"|upper %}<em></em></a>
-      <div class="dd fourcol">
-        <div class="dd-col col1">
-          <h6><a href="{% page_url "grow-your-skills" %}">{% trans "Skills" %}</a></h6>
-          <ul>
-            {% show_menu_below_id "grow-your-skills" 0 0 0 0 "menu/megamenu_submenu.html" %}
-          </ul>
-        </div>
-        <div class="dd-col col2-4">
-          <p class="legend">
-	    {% page_attribute "teaser" "grow-your-skills" %} 
-          </p>
-        </div>
-      </div>
-    </li>
-    <li>
-      <a class="top-nav news" href="{% page_url "news" %}">{% trans "News & Updates"|upper %}<em></em></a>
-      <div class="dd fourcol">
-        <div class="dd-col col1">
-	  <h6><a href="{% page_url "news" %}">{% trans "News & Updates" %}</a></h6>
-          <ul>
-            {% show_menu_below_id "news" 0 0 0 0 "menu/megamenu_submenu.html" %}
-          </ul>
-        </div>
-        <div class="dd-col col2-4">
-          <p class="legend">
-	    {% page_attribute "teaser" "news" %}
-          </p>
-        </div>
-      </div>
-    </li>
-    <li class="last">
-      <a class="top-nav about" href="/about/">{% trans "About"|upper %}<em></em></a>
-      <div class="dd fourcol">
-        <div class="dd-col col1">
-          <h6><a href="{% page_url "about"%}">{% trans "About" %}</a></h6>
-          <ul>
-            {% show_menu_below_id "about" 0 0 0 0 "menu/megamenu_submenu.html" %}
-          </ul>
-        </div>
-        <div class="dd-col col2">
-          <p>
-            {% blocktrans %}
-            Your story matters. Without it, nothing happens. Floodlight is a <strong>tool</strong> for creating meaningful stories on the web that are visually compelling, supported by facts and encourage community action. Floodlight is also a <strong>place</strong> to share stories and uncover connections between them.
-            {% endblocktrans %}
-          </p>
-        </div>
-        <div class="dd-col col3">
-          <h6>{% trans "On Floodlight, you can&hellip;" %}</h6>
-          <p>
-            {% blocktrans %}
-            <strong>Build</strong> a breakthrough story using photos, videos, data and more.<br>
-            <strong>Learn</strong> how to be a better storyteller through training and resources.<br>
-            <strong>Read</strong> and contribute to the stories others are sharing.
-            {% endblocktrans %}
-          </p>
-        </div>
-        <div class="dd-col col4">
-          <p>
-            {% blocktrans %}
-            By connecting <em>storytellers</em>, <em>story sharers</em> and <em>story readers</em>, Floodlight is a project to brighten, inform and transform community though the power of story.
-            {% endblocktrans %}
-          </p>
-          
-        </div>
-      </div>
-    </li>
+    {% endwith %}
+    {% endwith %}
+    {% endfor %}
   </ul>
 </div>

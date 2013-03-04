@@ -72,6 +72,9 @@
           .dd-col.col3 { 
             width:33%;
           }
+          .dd-col.col2-3 {
+            width:66%;
+          }
         }
         
         &.fourcol {
@@ -197,13 +200,9 @@
   }
 }
 
-// highlighting for main nav links.
-// highlight when the body class matches the nav link class.
-body.homepage .megamenu a.top-nav.homepage, 
-body.story-builder .megamenu a.top-nav.story-builder,
-body.explorer .megamenu a.top-nav.explorer,
-body.grow-your-skills .megamenu a.top-nav.grow-your-skills,
-body.about .megamenu a.top-nav.about,
-body.news .megamenu a.top-nav.news { 
+// Highlighting for main navigation links
+// Highlight when the the megamenu link class is "selected" or "ancestor"
+.megamenu a.top-nav.selected,
+.megamenu a.top-nav.ancestor {
   .active-top-nav-link;
 }

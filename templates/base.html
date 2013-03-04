@@ -76,7 +76,7 @@
 			</div>
 			<div class="cl">&nbsp;</div>
 		</div>
-		{% include "menu/megamenu.html" %}
+		{% show_menu 0 0 0 0 "menu/megamenu.html" %}
 		<div class="cl">&nbsp;</div>
 	</div>
 	<!-- end Header -->
@@ -113,7 +113,7 @@
 					<li><a href="/">{% trans "Home" %}</a></li>
                     <li><a href="{% page_url "story-builder-landing" %}">{% trans "Story Builder" %}</a></li>
                     <li><a href="{% url explore_stories %}">{% trans "Explore" %} {{ storybase_site_name }}</a></li>
-                    <li><a href="{% page_url "grow-your-skills" %}">{% trans "Grow Your Skills" %}</a></li>
+                    <li><a href="{% page_url "skills" %}">{% trans "Grow Your Skills" %}</a></li>
                     <li><a href="{% page_url "about" %}">{% trans "About" %}</a></li>
                     <li class="middle"><a href="{% url account_summary %}">{% trans "My Account" %}</a></li>
                     <li class="last"><a href="{% page_url "contact" %}">{% trans "Contact Us" %}</a></li>

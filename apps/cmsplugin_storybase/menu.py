@@ -30,6 +30,12 @@ class StorybaseMenu(Menu):
             id='organizations',
             parent_id=explore.id)
         nodes.append(organizations)
+        nodes.append(NavigationNode(
+            title=_("Create an Organization"),
+            url=reverse('create_organization'),
+            id='create_organization',
+            parent_id=organizations.id,
+        ))
         for organization in Organization.objects.published().order_by('organizationtranslation__name'):
             nodes.append(
             NavigationNode(
@@ -43,6 +49,12 @@ class StorybaseMenu(Menu):
             id='projects',
             parent_id=explore.id)
         nodes.append(projects)
+        nodes.append(NavigationNode(
+            title=_("Create a Project"),
+            url=reverse('create_project'),
+            id='create_project',
+            parent_id=projects.id,
+        ))
         for project in Project.objects.published().order_by('-last_edited'):
             nodes.append(
                 NavigationNode(

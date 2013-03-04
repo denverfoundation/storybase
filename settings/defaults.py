@@ -297,6 +297,9 @@ LANGUAGES = [
 # Don't hide menu items that are untranslated
 CMS_HIDE_UNTRANSLATED = False
 
+# Allow overriding menu titles
+CMS_MENU_TITLE_OVERWRITE = True
+
 TAGGIT_AUTOSUGGEST_MODEL = 'storybase_tag.models.Tag'
 
 FILER_STATICMEDIA_PREFIX = os.path.join(STATIC_URL, 'filer/')

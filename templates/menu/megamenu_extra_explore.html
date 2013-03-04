@@ -1,0 +1,31 @@
+{% extends "menu/megamenu_extra_base.html" %}
+{% load cms_tags menu_tags i18n %}
+{% block megamenu_extra_num_cols %}threecol{% endblock %}
+{% block megamenu_extra %}
+<div class="dd-col col1">
+  <h6><a href="{{ menu_url }}">{% trans "Browse Stories" %}</a></h6>
+  <p>
+    {% blocktrans %}
+    Browse and filter Floodlight stories by topic, location, language, project and organization.
+    {% endblocktrans %}
+  </p>
+</div>
+<div class="dd-col col2">
+  <h6><a href="{% url organization_list %}">{% trans "Organizations" %}</a></h6>
+  <p>
+    {% blocktrans %}
+    Organizations are groups of people creating stories together. They can be non-profits, school groups, neighborhoods, or any storytellers who share a common goal.
+    {% endblocktrans %}
+  </p>
+  <p><a href="{% url create_organization %}">{% trans "Create an Organization" %}</a></p>
+</div>
+<div class="dd-col col3">
+  <h6><a href="{% url project_list %}">{% trans "Projects" %}</a></h6>
+  <p>
+    {% blocktrans %}
+    Projects are collections of stories about a common theme, place, issue, event or movement. They can be open to contributions from any Floodlight user, or constrained to a group of authors.
+    {% endblocktrans %}
+  </p>
+  <p><a href="{% url create_project %}">{% trans "Create a Project" %}</a></p>
+</div>
+{% endblock %}

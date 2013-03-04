@@ -17,7 +17,7 @@
 {% banner "random" %}
 {% endblock %}
 
-{% block body_class %}homepage{% endblock %}
+{% block body_class %}{{ request.current_page.reverse_id }} homepage{% endblock %}
 
 {% block logo_text %}<h1>Floodlight</h1>{% endblock %}
 

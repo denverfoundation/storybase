@@ -1,0 +1,27 @@
+{% comment %}
+Base template for additional content for a section in the megamenu.
+
+By default it lists the sub-pages and and shows the top-level page's teaser
+{% endcomment %}
+{% load cms_tags menu_tags %}
+<div class="dd {% block megamenu_extra_num_cols %}fourcol{% endblock %}">
+    {% block megamenu_extra %}
+    {% block megamenu_extra_col1 %}
+    <div class="dd-col col1">
+	<h6><a href="{{ menu_url }}" title="{{ menu_title }}">{{ menu_title }}</a></h6>
+        <ul>
+            {% show_menu_below_id menu_id 0 0 0 0 "menu/megamenu_submenu.html" %}
+       </ul>
+    </div>
+    {% endblock %}
+    {% block megamenu_extra_col2 %}
+    <div class="dd-col col2-4">
+        <p class="legend">
+            {% page_attribute "teaser" menu_id %} 
+        </p>
+    </div>
+    {% endblock %}
+    {% block megamenu_extra_col3 %}{% endblock %}
+    {% block megamenu_extra_col4 %}{% endblock %}
+    {% endblock %}
+</div>
