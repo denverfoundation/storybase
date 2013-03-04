@@ -90,7 +90,7 @@ class NewsItem(NewsItemPermission, PublishedModel, TimestampedModel,
         try:
             return reverse('newsitem_detail', kwargs=kwargs)
         except NoReverseMatch:
-            return None 
+            return ""
 
     def normalize_for_view(self, img_width):
         """Return attributes as a dictionary for use in a view context
