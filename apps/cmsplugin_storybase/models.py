@@ -1,7 +1,7 @@
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files import File
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import reverse, NoReverseMatch
 from django.db import models
 from django.db.models.signals import post_save, pre_save
 from django.utils.translation import get_language, ugettext_lazy as _
@@ -87,7 +87,10 @@ class NewsItem(NewsItemPermission, PublishedModel, TimestampedModel,
         # for the call to reverse() below to work correctly.
         # See http://docs.django-cms.org/en/2.1.3/extending_cms/app_integration.html#app-hooks
         # and http://stackoverflow.com/questions/11216565/django-cms-urls-used-by-apphooks-dont-work-with-reverse-or-url
-        return reverse('newsitem_detail', kwargs=kwargs)
+        try:
+            return reverse('newsitem_detail', kwargs=kwargs)
+        except NoReverseMatch:
+            return None 
 
     def normalize_for_view(self, img_width):
         """Return attributes as a dictionary for use in a view context
