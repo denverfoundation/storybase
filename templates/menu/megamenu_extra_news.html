@@ -1,1 +1,10 @@
 {% extends "menu/megamenu_extra_base.html" %}
+{% load i18n %}
+{% block megamenu_extra_col2 %}
+<div class="dd-col col2-3">
+    <h6><a href="{{ menu_url }}" title="{{ menu_title }}">{% trans "Like a good story, Floodlight is a work in progress." %}</a></h6>
+    <p>{% trans "Here, you’ll find information about improvements we’re making to the site, storytelling events we’re holding in the community, storytelling advice, contests, and more." %}</p>
+
+</div>
+{% endblock %}
+
