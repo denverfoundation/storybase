@@ -26,6 +26,8 @@ Changelog
 * Apphook to connect news items feed to a CMS page (#646)
 * High-level query API for stories
 * Implemented a reusable menu class and template tag for rendering menus
+* (Mostly) remove hard-coded URLs from navigation
+* Factor navigation menus into separate templates
 
 0.6.5
 ~~~~~
