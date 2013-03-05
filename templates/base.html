@@ -57,16 +57,7 @@
 				<img class="header-logo" src="{{ STATIC_URL }}img/header-logo.png" alt="{% trans "Floodlight: Tell a Story. Transform Your Community" %}" />
 			</a>
 			<div class="header-right">
-				<ul class="top-nav">
-					<li>{% language_chooser %}</li>
-                    <li><a href="{% page_url "contact" %}">{% trans "Contact Us" %}</a></li>
-                    <li><a href="{% page_url "help" %}">{% trans "Help" %}</a></li>
-					{% if user.is_authenticated %}
-                    <li><a href="{% url account_summary %}">{% trans "Hi" %}, {{ user.first_name }}</a></li>
-					{% else %}
-					<li><a href="{% url auth_login %}">{% trans "Sign In" %}</a></li>
-					{% endif %}
-				</ul>
+		                {% show_menu 0 0 0 0 "menu/menu_top.html" %}
 				<div class="cl">&nbsp;</div>
                 <form id="search" action="{% url haystack_search %}" method="get">
                     <input id="id_q" type="text" name="q" class="field" value="{{ query }}" />
@@ -109,17 +100,7 @@
 				</ul>
 			</div>
 			<div class="right">
-				<ul>
-					<li><a href="/">{% trans "Home" %}</a></li>
-                    <li><a href="{% page_url "story-builder-landing" %}">{% trans "Story Builder" %}</a></li>
-                    <li><a href="{% url explore_stories %}">{% trans "Explore" %} {{ storybase_site_name }}</a></li>
-                    <li><a href="{% page_url "skills" %}">{% trans "Grow Your Skills" %}</a></li>
-                    <li><a href="{% page_url "about" %}">{% trans "About" %}</a></li>
-                    <li class="middle"><a href="{% url account_summary %}">{% trans "My Account" %}</a></li>
-                    <li class="last"><a href="{% page_url "contact" %}">{% trans "Contact Us" %}</a></li>
-                    <li class="last"><a href="{% page_url "help" %}">{% trans "Help" %}</a></li>
-                    <li class="last"><a href="{% page_url "policies" %}">{{ storybase_site_name|default:"Floodlight" }} {% trans "Policies" %}</a></li>
-				</ul>
+		            {% show_menu 0 0 0 0 "menu/menu_footer.html" %}
 			</div>
 			<div class="cl">&nbsp;</div>
 		</div>

@@ -1,0 +1,24 @@
+{% comment %}
+Navigation items that appear in the footer
+
+This template is designed to be included with the ``show_menu`` template tag::
+
+	{% show_menu 0 0 0 0 "menu/menu_footer.html" %}
+
+{% endcomment %}
+{% load cms_tags storybase_cms_tags i18n %}
+<ul>
+  {% for child in children|megamenuitems %}
+  {% with menu_title=child.get_menu_title menu_url=child.attr.redirect_url|default:child.get_absolute_url menu_id=child.attr.reverse_id|default:child.id %}
+  <li><a href="{{ menu_url }}" title="{{ menu_title }}">{{ menu_title }}</a></li>
+  {% endwith %}
+  {% endfor %}
+  {% if user.is_authenticated %}
+  <li class="middle"><a href="{% url account_summary %}">{% trans "My Account" %}</a></li>
+  {% endif %}
+  {% for child in children|filtermenuitems:"contact,help,policies" %}
+  {% with menu_title=child.get_menu_title menu_url=child.attr.redirect_url|default:child.get_absolute_url menu_id=child.attr.reverse_id|default:child.id %}
+  <li><a href="{{ menu_url }}" title="{{ menu_title }}">{{ menu_title }}</a></li>
+  {% endwith %}
+  {% endfor %}
+</ul>

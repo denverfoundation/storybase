@@ -1,0 +1,22 @@
+{% comment %}
+Navigation items that appear in the upper-right-hand corner of the page 
+
+This template is designed to be included with the ``show_menu`` template tag::
+
+	{% show_menu 0 0 0 0 "menu/menu_top.html" %}
+
+{% endcomment %}
+{% load menu_tags storybase_cms_tags i18n %}
+<ul class="top-nav">
+    <li>{% language_chooser %}</li>
+    {% for child in children|filtermenuitems:"contact,help" %}
+    {% with menu_title=child.get_menu_title menu_url=child.attr.redirect_url|default:child.get_absolute_url menu_id=child.attr.reverse_id|default:child.id %}
+    <li><a href="{{ menu_url }}" title="{{ menu_title }}">{{ menu_title }}</a></li>
+    {% endwith %}
+    {% endfor %}
+    {% if user.is_authenticated %}
+    <li><a href="{% url account_summary %}">{% trans "Hi" %}, {{ user.first_name }}</a></li>
+    {% else %}
+    <li><a href="{% url auth_login %}">{% trans "Sign In" %}</a></li>
+    {% endif %}
+</ul>

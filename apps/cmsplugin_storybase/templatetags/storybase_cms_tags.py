@@ -8,15 +8,9 @@ register = template.Library()
 # Patch the {% page_attribute %} tag to allow it to display the teaser
 PageAttribute.valid_attributes = PageAttribute.valid_attributes + ["teaser",]
 
-def megamenu_items(value, arg=None):
-    """Filter a list of menu items to only those shown in the megamenu"""
+def _filter_menu_items(children, allowed_ids=None):
     filtered = []
-    if arg:
-        allowed_ids = arg.split(",")
-    else:
-        allowed_ids = STORYBASE_MEGAMENU_ITEMS
-
-    for child in value:
+    for child in children:
         try:
             menu_id = child.attr['reverse_id']
         except KeyError:
@@ -25,4 +19,14 @@ def megamenu_items(value, arg=None):
         if menu_id in allowed_ids:
             filtered.append(child)
     return filtered 
+
+def filter_menu_items(value, arg):
+    allowed_ids = arg.split(",")
+    return _filter_menu_items(value, allowed_ids)
+register.filter("filtermenuitems", filter_menu_items)
+
+def megamenu_items(value):
+    """Filter a list of menu items to only those shown in the megamenu"""
+    return _filter_menu_items(value, STORYBASE_MEGAMENU_ITEMS)
 register.filter("megamenuitems", megamenu_items)
+
