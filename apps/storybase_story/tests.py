@@ -8,6 +8,7 @@ from time import sleep
 from django.conf import settings
 from django.core.cache import cache
 from django.contrib.auth.models import User
+from django.db import IntegrityError
 from django.http import HttpRequest, Http404
 from django.template import Context, Template
 from django.test import TestCase
@@ -1493,11 +1494,7 @@ class SectionAssetModelTest(TestCase):
     """Test Case for Asset to Section relation through model"""
     fixtures = ['section_layouts.json']
 
-    def test_auto_add_assets_to_story(self):
-        """
-        Test that when an asset is added to a section it is also added
-        to the Story
-        """
+    def setUp(self):
         # Create a story
         title = ('Transportation Challenges Limit Education Choices for '
                  'Denver Parents')
@@ -1510,108 +1507,99 @@ class SectionAssetModelTest(TestCase):
             money to travel. Low-income families are often left in a lurch.
             """
         byline = "Mile High Connects"
-        story = create_story(title=title, summary=summary, byline=byline)
+        self.story = create_story(title=title, summary=summary, byline=byline)
+
+        # Create a Section
+        layout = SectionLayout.objects.get(
+            sectionlayouttranslation__name="Side by Side")
+        self.section = create_section(title="Test Section 1",
+                                      story=self.story, layout=layout)
+
+
+        # Create a HtmlAsset
+        self.asset = create_html_asset(type='text', title="Test Asset")
+
+    def test_auto_add_assets_to_story(self):
+        """
+        Test that when an asset is added to a section it is also added
+        to the Story
+        """
         # Confirm that the story has no assets
-        self.assertEqual(story.assets.count(), 0)
-        # create a Section
-        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
-        section = create_section(title="Test Section 1", story=story, layout=layout)
-        # create a HtmlAsset
-        asset = HtmlAsset()
-        asset.save()
-        translation = HtmlAssetTranslation(title='Test Asset', asset=asset)
-        translation.save()
+        self.assertEqual(self.story.assets.count(), 0)
         # Assign the asset to the section
         container = Container.objects.get(name='left')
-        section_asset = SectionAsset(section=section, asset=asset, container=container)
+        section_asset = SectionAsset(section=self.section, asset=self.asset, container=container)
         section_asset.save()
         # Confirm the asset is in the section's list
-        self.assertTrue(asset in section.assets.select_subclasses())
+        self.assertTrue(self.asset in self.section.assets.select_subclasses())
         # Confirm that the asset is in the story's list
-        self.assertTrue(asset in story.assets.select_subclasses())
+        self.assertTrue(self.asset in self.story.assets.select_subclasses())
 
     def test_already_added_asset(self):
         """
         Test that when an asset that is related to a story is also
         related to a section, nothing breaks
         """
-        # Create a story
-        title = ('Transportation Challenges Limit Education Choices for '
-                 'Denver Parents')
-        summary = """
-            Many families in the Denver metro area use public
-            transportation instead of a school bus because for them, a
-            quality education is worth hours of daily commuting. Colorado's
-            school choice program is meant to foster educational equity,
-            but the families who benefit most are those who have time and
-            money to travel. Low-income families are often left in a lurch.
-            """
-        byline = "Mile High Connects"
-        story = create_story(title=title, summary=summary, byline=byline)
-        # create a HtmlAsset
-        asset = HtmlAsset()
-        asset.save()
-        translation = HtmlAssetTranslation(title='Test Asset', asset=asset)
-        translation.save()
         # assign the asset to the story
-        story.assets.add(asset)
-        story.save()
+        self.story.assets.add(self.asset)
+        self.story.save()
         # confirm the asset is added to the story
-        self.assertTrue(asset in story.assets.select_subclasses())
-        # create a Section
-        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
-        section = create_section(title="Test Section 1", story=story, layout=layout)
+        self.assertTrue(self.asset in self.story.assets.select_subclasses())
         # Assign the asset to the section
         container = Container.objects.get(name='left')
-        section_asset = SectionAsset(section=section, asset=asset, container=container)
+        section_asset = SectionAsset(section=self.section, asset=self.asset, container=container)
         section_asset.save()
         # Confirm the asset is in the section's list
-        self.assertTrue(asset in section.assets.select_subclasses())
+        self.assertTrue(self.asset in self.section.assets.select_subclasses())
         # Confirm that the asset is in the story's list
-        self.assertTrue(asset in story.assets.select_subclasses())
+        self.assertTrue(self.asset in self.story.assets.select_subclasses())
 
     def test_remove_asset(self):
         """
         Test that when an asset is removed from a section, it is not 
         removed from the story
         """
-        # Create a story
-        title = ('Transportation Challenges Limit Education Choices for '
-                 'Denver Parents')
-        summary = """
-            Many families in the Denver metro area use public
-            transportation instead of a school bus because for them, a
-            quality education is worth hours of daily commuting. Colorado's
-            school choice program is meant to foster educational equity,
-            but the families who benefit most are those who have time and
-            money to travel. Low-income families are often left in a lurch.
-            """
-        byline = "Mile High Connects"
-        story = create_story(title=title, summary=summary, byline=byline)
         # Confirm that the story has no assets
-        self.assertEqual(story.assets.count(), 0)
-        # create a Section
-        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
-        section = create_section(title="Test Section 1", story=story, layout=layout)
-        # create a HtmlAsset
-        asset = HtmlAsset()
-        asset.save()
-        translation = HtmlAssetTranslation(title='Test Asset', asset=asset)
-        translation.save()
+        self.assertEqual(self.story.assets.count(), 0)
         # Assign the asset to the section
         container = Container.objects.get(name='left')
-        section_asset = SectionAsset(section=section, asset=asset, container=container)
+        section_asset = SectionAsset(section=self.section, asset=self.asset, container=container)
         section_asset.save()
         # Confirm the asset is in the section's list
-        self.assertTrue(asset in section.assets.select_subclasses())
+        self.assertTrue(self.asset in self.section.assets.select_subclasses())
         # Confirm that the asset is in the story's list
-        self.assertTrue(asset in story.assets.select_subclasses())
+        self.assertTrue(self.asset in self.story.assets.select_subclasses())
         # Delete the asset from the section.
         section_asset.delete()
         # Confirm that the asset is NOT in the section's list
-        self.assertFalse(asset in section.assets.select_subclasses())
+        self.assertFalse(self.asset in self.section.assets.select_subclasses())
         # Confirm that the asset is in the story's list
-        self.assertTrue(asset in story.assets.select_subclasses())
+        self.assertTrue(self.asset in self.story.assets.select_subclasses())
+
+    def test_unique(self):
+        """Test that only one asset is allowed per container"""
+        # Assign the asset to the section
+        container = Container.objects.get(name='left')
+        section_asset = SectionAsset(section=self.section, asset=self.asset,
+                                     container=container)
+        section_asset.save()
+
+        # Create a new assset
+        asset = create_html_asset(type='text', title="Test Asset 2")
+
+        # Assign it to the same section and container as the the first
+        # asset 
+        section_asset2 = SectionAsset(section=section_asset.section,
+                                      asset=asset,
+                                      container=section_asset.container)
+        # It should rais an IntegriyError
+        self.assertRaises(IntegrityError, section_asset2.save)
+
+        # Assign the new asset to a different container and all should be
+        # well
+        container = Container.objects.get(name='right')
+        section_asset2.container = container
+        section_asset2.save()
 
 
 class StructureTest(TestCase):
@@ -3166,6 +3154,51 @@ class SectionAssetResourceTest(ResourceTestCase):
         section_asset = SectionAsset.objects.get()
         self.assertEqual(section_asset.section, section)
         self.assertEqual(section_asset.container, container1)
+
+    def test_post_list_duplicate(self):
+        """
+        Test that trying to add a second asset to a
+        section/container that already has one returns a 400 error
+        """
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status="published",
+                             language="en", author=self.user)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        container1 = Container.objects.get(name='left')
+        section = create_section(title="Test Section 1", story=story,
+                                  layout=layout)
+        asset = create_html_asset(type='text', title='Test Asset',
+                                   body='Test content', owner=self.user)
+        
+        asset2 = create_html_asset(type='text', title='Test Asset',
+                                   body='Test content 2', owner=self.user)
+        self.assertEqual(SectionAsset.objects.count(), 0)
+        post_data = {
+            'asset': self.get_asset_uri(asset),
+            'container': container1.name
+        }
+        uri = '/api/0.1/stories/%s/sections/%s/assets/' % (story.story_id,
+            section.section_id)
+        self.api_client.client.login(username=self.username, password=self.password)
+        resp = self.api_client.post(uri, format='json', data=post_data)
+        self.assertHttpCreated(resp)
+        self.assertEqual(SectionAsset.objects.count(), 1)
+        section_asset = SectionAsset.objects.get()
+        self.assertEqual(section_asset.section, section)
+        self.assertEqual(section_asset.container, container1)
+
+        # Re-post a new asset to the same section/container
+        post_data = {
+            'asset': self.get_asset_uri(asset2),
+            'container': container1.name
+        }
+        self.api_client.client.login(username=self.username, password=self.password)
+        resp = self.api_client.post(uri, format='json', data=post_data)
+        # Confirm that an HTTP 400 (bad request) error was
+        # returned
+        self.assertHttpBadRequest(resp)
+        # Confirm that a second SectionAsset wasn't created
+        self.assertEqual(SectionAsset.objects.count(), 1)
 
     def test_delete_detail(self):
         """Tests that a user can remove an asset from a section"""

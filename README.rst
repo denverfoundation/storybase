@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.7.1
+~~~~~
+
+* Prevent saving multiple assets to the same section and container (#535)
+
 0.7
 ~~~
 

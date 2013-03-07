@@ -3639,9 +3639,29 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     return sectionAsset;
   },
 
+  /**
+   * Assign an asset to a particular container in this section.
+   */
   saveSectionAsset: function(asset, container) {
-    console.debug('Saving section asset');
-    this.getSectionAsset(asset, container).save();
+    var view = this;
+    this.getSectionAsset(asset, container).save(null, {
+      error: function(sectionAsset, xhr, options) {
+        // Could not assign an asset to the container.  In most cases
+        // this is because the user already assigned an asset to the
+        // container in another tab/window
+        var msg = xhr.responseText;
+        if (xhr.status === 400) {
+          msg = gettext("Could not add your asset to this container. This is probably because you already did so in another window. Hold tight while we refresh this section's assets ...");
+        }
+        view.dispatcher.trigger('error', msg);
+        view.assets.remove(asset);
+        // Re-fetch this section's assets from the server to get the
+        // assets that were added in the other window/tab. The resulting
+        // ``sync`` event will also force the UI to re-render.
+        view.assets.fetch();
+        // TODO: Should we add the asset to the story's asset list ?
+      }
+    });
   },
 
   saveSectionAssets: function() {
