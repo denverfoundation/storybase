@@ -3651,7 +3651,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
         // container in another tab/window
         var msg = xhr.responseText;
         if (xhr.status === 400) {
-          msg = gettext("Could not add your asset to this container. This is probably because you already did so in another window. Hold tight while we refresh this section's assets ...");
+          msg = gettext("Oops, couldn't add your asset here. This is probably because you already did so in another tab or window. Hold tight while we refresh this section's assets.");
         }
         view.dispatcher.trigger('error', msg);
         view.assets.remove(asset);
