@@ -477,7 +477,7 @@ class HtmlAsset(Asset):
                 output.append(full_caption_html)
             output.append('</figure>')
         elif self.type == 'quotation':
-            output.append('<blockquote>')
+            output.append('<blockquote class="quotation">')
             output.append(self.body)
             if self.attribution:
                 attribution = self.attribution

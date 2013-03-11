@@ -306,6 +306,8 @@ button.reset,.button.reset{border:none;background:none;padding:0;margin:0;width:
 button.small,.button.small{padding:2px;}
 button[disabled],.button[disabled],button.disabled,.button.disabled{opacity:0.65;zoom:1;filter:alpha(opacity=65);}
 .button-container{padding:2em 0;}
+.pullquote{font-size:22px;float:left;font-style:italic;line-height:1.2em;color:#777777;width:48%;padding-right:2%;}
+.pullquote.right{float:right;padding:0 0 0 2%;}
 .button:hover{text-decoration:none;}
 .button:active{position:relative;top:1px;}
 .icon-paragraph:before{content:"\00b6";}
@@ -446,8 +448,6 @@ body.base-template .content-page.generic .content-block ol li{list-style-type:de
 body.base-template .content-page.generic .content-block h2,body.base-template .content-page.generic .content-block h3,body.base-template .content-page.generic .content-block h4,body.base-template .content-page.generic .content-block h5{text-align:left;background:none;margin-bottom:0.2em;}
 body.base-template .content-page.generic .content-block h3,body.base-template .content-page.generic .content-block h4,body.base-template .content-page.generic .content-block h5{color:#3b3b3b;}
 body.base-template .content-page.generic .content-block h4.first{font-size:28.8px;line-height:27px;color:#5a5a5a;margin-bottom:1em;}
-body.base-template .content-page.generic .content-block p.pullquote{font-size:22px;float:left;font-style:italic;line-height:1.2em;color:#777777;width:48%;padding-right:2%;}
-body.base-template .content-page.generic .content-block p.pullquote.right{float:right;padding:0 0 0 2%;}
 body.base-template .content-page.generic .content-block .faq-section,body.base-template .content-page.generic .content-block .faq-question{padding:1em 0;}
 body.base-template .content-page.generic .content-block .faq-section{text-align:left;font-family:'Museo300Regular';font-weight:normal;color:#777777;}
 body.base-template .content-page.generic .content-block .faq-question{cursor:pointer;border-top:1px solid #ddd;margin-bottom:0;color:#fe9703;}body.base-template .content-page.generic .content-block .faq-question:before{padding-right:0.66em;}
@@ -833,7 +833,7 @@ body.story-builder .guider .x_button:after{font-family:"FontAwesome";content:"\f
 .callout-section{background:#f0efef;border-top:1px solid #d7d5d5;border-bottom:1px solid #d7d5d5;}
 .story-viewer{background-color:#fff;}.story-viewer h2{color:#555;}
 .story-viewer figure{border:1px solid #f0efef;padding:4px;}
-.story-viewer blockquote{padding:1em;background:#f0efef;border-radius:4px;-webkit-border-radius:4px;-moz-border-radius:4px;border:1px solid #777777;font-style:italic;color:#5a5a5a;}
+.story-viewer blockquote{padding:1em;background:#f0efef;border-radius:4px;-webkit-border-radius:4px;-moz-border-radius:4px;border:1px solid #777777;font-style:italic;color:#5a5a5a;}.story-viewer blockquote.quotation{font-size:22px;float:left;font-style:italic;line-height:1.2em;color:#777777;width:48%;padding-right:2%;background:transparent;border:0;}
 .story-viewer figure img{width:auto;}
 .story-viewer a.button{padding:5px;background-color:#dcdcdc;border:1px solid #666;text-decoration:none;}
 .story-viewer .intro{font-size:2em;font-family:georgia;}
