@@ -549,6 +549,13 @@ storybase.viewer.views.LinearViewerApp = storybase.viewer.views.ViewerApp.extend
     this.$('.section')
       .not($section.show())
       .hide();
+      
+    // TODO: see note in clickSectionNode below re: using a global
+    // reference to the router.
+    storybase.viewer.router.navigate(
+      "sections/" + this.activeSection.id,
+      { trigger: true, replace: true }
+    );
   },
 
   getLastSection: function() {
