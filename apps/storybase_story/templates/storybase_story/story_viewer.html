@@ -1,4 +1,4 @@
-{% load i18n sekizai_tags storybase_tags story storybase_addthis %}
+{% load i18n sekizai_tags storybase_tags story compress %}
 <!doctype html>
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
 <!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
@@ -21,11 +21,14 @@
     {% if debug %}
     {% addtoblock "css" %}<link rel="stylesheet/less" href="{{ STATIC_URL }}less/base.less">{% endaddtoblock %}
     {% addtoblock "css" %}<script src="{{ STATIC_URL }}js/libs/less-1.3.0.min.js"></script>{% endaddtoblock %}
-    {% else %}
-    {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/style.css">{% endaddtoblock %}
     {% endif %}
+    {% comment %}
+    If we're not in debug mode, we'll be passing the styleshset through
+    django-compressor below. 
+    {% endcomment %}
 
     {% render_block "css" %}
+    {% compress css %}<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css">{% endcompress %}
     <!-- end CSS-->
 
     {% include "storybase/js_error.html" %}
@@ -113,11 +116,13 @@
     <script src="{{ STATIC_URL }}js/libs/jquery.condense.js"></script>
     <script src="{{ STATIC_URL }}js/jquery.storybaseshare.js"></script>
 
+    {% compress js %}
     <script src="{{ STATIC_URL }}js/models.js"></script>
     <script src="{{ STATIC_URL }}js/utils.js"></script>
     <script src="{{ STATIC_URL }}js/viewer/application.js"></script>
     <script src="{{ STATIC_URL }}js/viewer/views.js"></script>
     <script src="{{ STATIC_URL }}js/viewer/routes.js"></script>
+    {% endcompress %}
 
     <script type="text/javascript">
     $(document).ready(function() {

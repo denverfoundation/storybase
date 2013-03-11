@@ -54,3 +54,4 @@ git+git://github.com/HonzaKral/django-threadedcomments.git
 cssselect
 lxml
 shortuuid
+django-compressor

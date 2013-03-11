@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% load i18n sekizai_tags menu_tags verbatim storybase_tags %}
+{% load i18n sekizai_tags menu_tags verbatim storybase_tags compress %}
 
 {% block head_title %}{{ storybase_explore_title }}{{ block.super }}{% endblock %}
 
@@ -191,10 +191,12 @@ $ = jQuery;
 <script src="{{ STATIC_URL}}js/libs/leafclusterer.js"></script>
 <script src="{{ STATIC_URL}}js/libs/spin.min.js"></script>
 <script src="{{ STATIC_URL }}js/libs/tooltipster-1.2/js/jquery.tooltipster.min.js"></script>
+{% compress js %}
 <script src="{{ STATIC_URL }}js/models.js"></script>
 <script src="{{ STATIC_URL }}js/utils.js"></script>
 <script src="{{ STATIC_URL }}js/explorer/application.js"></script>
 <script src="{{ STATIC_URL }}js/explorer/views.js"></script>
+{% endcompress js %}
 <script type="text/javascript">
 $(document).ready(function() {
   storybase.explorer.globals.MAP_CENTER = {{ storybase_map_center }};

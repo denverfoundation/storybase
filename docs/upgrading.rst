@@ -2,6 +2,25 @@
 Upgrading
 =========
 
+0.7 to 0.8
+==========
+
+With version 0.8, we started compressing and versioning our JavaScript and
+CSS assets using Django Compressor.  You'll need to install this Django app
+in your environment::
+
+    pip install django-compressor
+
+If you don't want to use Django Compressor, removing ``compress`` from the
+``{% load %}`` statement and the ``{% compress %}`` block tags from these
+templates will allow you to continue without Django Compressor: 
+
+* storybase_story/explore_stories.html
+* storybase_story/story_builder.html
+* storybase_story/story_detail.html
+* storybase_story/story_viewer.html
+* base.html
+
 0.5 to 0.6
 ==========
 

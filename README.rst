@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.8
+~~~
+
+* Use django-compressor to compress and version static assets (#624)
+
 0.7
 ~~~
 

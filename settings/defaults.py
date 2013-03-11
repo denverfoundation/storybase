@@ -185,7 +185,7 @@ INSTALLED_APPS = (
     'django.contrib.comments',
     'threadedcomments',
     'notification',
-
+    'compressor',
 
     # StoryBase
     'storybase',

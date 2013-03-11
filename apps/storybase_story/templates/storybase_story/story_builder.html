@@ -1,4 +1,4 @@
-{% load i18n sekizai_tags verbatim %}
+{% load i18n sekizai_tags verbatim compress %}
 <!doctype html>
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
 <!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
@@ -36,6 +36,7 @@
     {% endif %}
 
     {% render_block "css" %}
+    {% compress css %}<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css">{% endcompress %}
     <!-- end CSS-->
 
     {% include "storybase/js_error.html" %}
@@ -98,6 +99,7 @@
     <script src="{{ STATIC_URL }}js/builder/jquery.graphicselect.js"></script>
     <script src="{{ STATIC_URL }}js/jquery.storybaseshare.js"></script>
 
+    {% compress js %}
     <script src="{{ STATIC_URL }}js/utils.js"></script>
     <script src="{{ STATIC_URL }}js/forms.js"></script>
     <script src="{{ STATIC_URL }}js/models.js"></script>
@@ -105,6 +107,7 @@
     <script src="{{ STATIC_URL }}js/builder/models.js"></script>
     <script src="{{ STATIC_URL }}js/builder/views.js"></script>
     <script src="{{ STATIC_URL }}js/builder/routes.js"></script>
+    {% endcompress %}
 
     <script>
     Modernizr.load({

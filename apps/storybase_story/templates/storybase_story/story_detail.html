@@ -15,19 +15,6 @@
 <meta property="og:image" content="{{ story.featured_asset_thumbnail_url }}" />
 {% endblock %}
 
-{% block extrahead %}
-    {% comment %}
-    In development, use Javascript to compile the LESS to CSS. In
-    production, assume they've been pre-compiled/collected.
-    {% endcomment %}
-    {% if debug %}
-    {% addtoblock "css" %}<link rel="stylesheet/less" href="{{ STATIC_URL }}less/base.less">{% endaddtoblock %}
-    {% addtoblock "css" %}<script src="{{ STATIC_URL }}js/libs/less-1.3.0.min.js"></script>{% endaddtoblock %}
-    {% else %}
-    {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/style.css">{% endaddtoblock %}
-    {% endif %}
-{% endblock %}
-
 {% block above_content %}
 {% show_breadcrumb "breadcrumbs.html" %}
 {% endblock %}
