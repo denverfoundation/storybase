@@ -3398,6 +3398,9 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     this._unsavedAssets = [];
     this._doConditionalRender = false;
     this._firstSave = this.model.isNew();
+    // Object to keep track of asset edit views.  Keys are
+    // the container ids.
+    this._assetEditViews = {};
     
     // Edit the story information within the section edit view
     // This is mostly used in the connected story builder
@@ -3452,37 +3455,61 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     });
   },
 
-  renderAssetViews: function() {
-    console.debug('Rendering asset views');
-    var that = this;
+  /**
+   * Create a new SectionAssetEditView for a given
+   * container.
+   *
+   * @param {String} container Container ID
+   * @param {Object} el DOM element from the layout template
+   *   that will be the view's element.
+   */
+  createAssetEditView: function(container, el) {
     var containerTemplate;
+    var options = {
+      el: el,
+      container: container, 
+      dispatcher: this.dispatcher,
+      section: this.model, 
+      story: this.story,
+      assetTypes: this.options.assetTypes
+    };
+    if (this.assets.length) {
+      // If there are assets, bind them to the view with the appropriate
+      // container
+      options.model = this.assets.where({container: container})[0];
+    }
+    if (this.templateSection && this.containerTemplates.length) {
+      containerTemplate = this.containerTemplates.where({
+        section: this.templateSection.id,
+        container: container 
+      })[0];
+      if (containerTemplate) {
+        options.suggestedType = containerTemplate.get('asset_type');
+        options.canChangeAssetType = containerTemplate.get('can_change_asset_type');
+        options.help = containerTemplate.get('help');
+      }
+    }
+    this._assetEditViews[container] = new storybase.builder.views.SectionAssetEditView(options);
+    return this._assetEditViews[container]; 
+  },
+
+  /**
+   * Get the asset editing view for a given container
+   */
+  getAssetEditView: function(container) {
+    return this._assetEditViews[container];
+  },
+
+  renderAssetViews: function() {
+    var view = this;
     this.$(this.options.containerEl).each(function(index, el) {
-      var options = {
-        el: el,
-        container: $(el).attr('id'),
-        dispatcher: that.dispatcher,
-        section: that.model, 
-        story: that.story,
-        assetTypes: that.options.assetTypes
-      };
-      if (that.assets.length) {
-        // If there are assets, bind them to the view with the appropriate
-        // container
-        options.model = that.assets.where({container: $(el).attr('id')})[0];
+      var container = $(el).attr('id');
+      var assetEditView = view.getAssetEditView(container);
+      // If there isn't a view for this container, create it
+      if (!assetEditView) {
+        assetEditView = view.createAssetEditView(container, el);
       }
-      if (that.templateSection && that.containerTemplates.length) {
-        containerTemplate = that.containerTemplates.where({
-          section: that.templateSection.id,
-          container: $(el).attr('id')
-        })[0];
-        if (containerTemplate) {
-          options.suggestedType = containerTemplate.get('asset_type');
-          options.canChangeAssetType = containerTemplate.get('can_change_asset_type');
-          options.help = containerTemplate.get('help');
-        }
-      }
-      var sectionAssetView = new storybase.builder.views.SectionAssetEditView(options);
-      sectionAssetView.render();
+      assetEditView.render();
     });
   },
 
@@ -3562,9 +3589,17 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     this.saveAttr(key, value);
   },
 
+  /**
+   * Event handler for the 'change:layout' event.
+   */
   changeLayout: function(evt) {
     this.setConditionalRender();
-    this.removeAssets();
+    if (this.assets.length) {
+      this.removeAssets();
+    }
+    else {
+      this.removeAssetEditViews();
+    }
   },
 
   /**
@@ -3604,21 +3639,44 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   },
 
   /**
+   * Remove all asset editing views
+   */
+  removeAssetEditViews: function() {
+    _.each(this._assetEditViews, function(view, container) {
+      view.close();
+      delete this._assetEditViews[container];
+    }, this);
+  },
+
+  /**
+   * Remove the asset editing view for a particular asset
+   */
+  removeEditViewForAsset: function(asset) {
+    var container = asset.get('container');
+    var view = this._assetEditViews[container];
+    if (view && view.model == asset) {
+      view.close();
+      delete this._assetEditViews[container];
+    }
+  },
+
+  /**
    * Callback for when an asset is removed from the section
    */
   removeAsset: function(section, asset) {
     if (section == this.model) {
-      var that = this;
+      var view = this;
       var sectionAsset = this.getSectionAsset(asset);
       sectionAsset.id = asset.id;
       sectionAsset.destroy({
         success: function(model, response) {
-          that.assets.remove(asset);
-          that.dispatcher.trigger("remove:sectionasset", asset);
-          that.dispatcher.trigger("alert", "info", "You removed an asset, but it's not gone forever. You can re-add it to a section from the asset list");
+          view.removeEditViewForAsset(asset);
+          view.assets.remove(asset);
+          view.dispatcher.trigger("remove:sectionasset", asset);
+          view.dispatcher.trigger("alert", "info", "You removed an asset, but it's not gone forever. You can re-add it to a section from the asset list");
         },
         error: function(model, response) {
-          that.dispatcher.trigger("error", "Error removing asset from section");
+          view.dispatcher.trigger("error", "Error removing asset from section");
         }
       });
     }
@@ -3765,7 +3823,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
     events: {
       "hover .wrapper": "toggleTypeListVisible",
       "click .asset-type": "selectType", 
-      "click .remove": "remove",
+      "click .remove": "handleRemove",
       "click .edit": "edit",
       "click .help": "showHelp",
       'click input[type="reset"]': "cancel",
@@ -4122,7 +4180,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       this.setState('edit').render();
     },
 
-    remove: function(evt) {
+    handleRemove: function(evt) {
       evt.preventDefault();
       // This view should no longer listen to events on this model
       this.unbindModelEvents();
