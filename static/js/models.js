@@ -312,7 +312,8 @@ storybase.models.Story = Backbone.Model.extend(
                     
       story.sections.each(function(section) {
         var sectionCopy = new storybase.models.Section();
-        sectionCopy.set("title", section.get("title"));
+        sectionCopy.set("title_placeholder", section.get("title"));
+        sectionCopy.set("title", "");
         sectionCopy.set("layout", section.get("layout"));
         sectionCopy.set("root", section.get("root"));
         sectionCopy.set("weight", section.get("weight"));

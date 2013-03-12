@@ -2878,7 +2878,8 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
     // TODO: Better method of selecting layout for new section.  This one
     // breaks if you remove all sections
     var section = new storybase.models.Section({
-      title: gettext('New Section'),
+      title: '',
+      title_placeholder: '',
       layout: this.model.sections.at(0).get('layout'),
       root: true,
       template_section: this.model.sections.at(0).get('template_section'),

@@ -267,3 +267,9 @@ Handlebars.registerHelper('commaeach', function(items, fn) {
   }).join(', '));
 });
 
+Handlebars.registerHelper('default', function(str, ifEmpty) {
+  if (str && str.length) {
+    return new Handlebars.SafeString(gettext(str));
+  }
+  return new Handlebars.SafeString(gettext(ifEmpty));
+});
