@@ -11,7 +11,7 @@ from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.http import HttpRequest, Http404
 from django.template import Context, Template
-from django.test import TestCase
+from django.test import TestCase, TransactionTestCase
 from django.utils import simplejson
 
 from tastypie.bundle import Bundle
@@ -1490,7 +1490,7 @@ class SectionApiTest(TestCase):
         self.assertEqual(retrieved_section.story, story)
         self.assertEqual(retrieved_section.layout, layout)
 
-class SectionAssetModelTest(TestCase):
+class SectionAssetModelTest(TransactionTestCase):
     """Test Case for Asset to Section relation through model"""
     fixtures = ['section_layouts.json']
 
@@ -1594,6 +1594,9 @@ class SectionAssetModelTest(TestCase):
                                       container=section_asset.container)
         # It should rais an IntegriyError
         self.assertRaises(IntegrityError, section_asset2.save)
+        # Roll back the connection because we caught the IntegrityError
+        from django.db import transaction 
+        transaction.rollback()
 
         # Assign the new asset to a different container and all should be
         # well
@@ -3197,8 +3200,6 @@ class SectionAssetResourceTest(ResourceTestCase):
         # Confirm that an HTTP 400 (bad request) error was
         # returned
         self.assertHttpBadRequest(resp)
-        # Confirm that a second SectionAsset wasn't created
-        self.assertEqual(SectionAsset.objects.count(), 1)
 
     def test_delete_detail(self):
         """Tests that a user can remove an asset from a section"""

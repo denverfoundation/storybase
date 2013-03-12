@@ -5,7 +5,7 @@ import logging
 from django.conf.urls.defaults import url
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.urlresolvers import NoReverseMatch
-from django.db import IntegrityError
+from django.db import transaction, IntegrityError
 from django.db.models import Q
 try:
     from django.utils import timezone
@@ -719,6 +719,9 @@ class SectionAssetResource(DelayedAuthorizationResource, HookedModelResource):
         except IntegrityError:
             # An asset is already assigned to this section/
             # container
+            
+            # Roll back the transaction
+            transaction.rollback()
             logger.warn("Attempted duplicate assignment of asset %s to "
                         "section %s in container %s" % 
                         (bundle.obj.asset.asset_id, 
