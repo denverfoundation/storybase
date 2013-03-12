@@ -44,7 +44,7 @@ class Migration(DataMigration):
         for key, sectionassets in conflicts.items():
             container = sectionassets[0].container
             weight = sectionassets[0].weight
-            if container is "None" and weight == 0:
+            if container is None and weight == 0:
                 # Story created without builder. Just assign weights in the order they were found
                 i = 0
                 for sa in sectionassets:
