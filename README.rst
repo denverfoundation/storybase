@@ -14,7 +14,9 @@ Changelog
 0.8
 ~~~
 
+* Prevent saving multiple assets to the same section and container (#535)
 * Use django-compressor to compress and version static assets (#624)
+* Do better housekeeping of Backbone views for asset editing (#671)
 
 0.7
 ~~~

@@ -1,8 +1,11 @@
 """REST API for Stories"""
 
+import logging
+
 from django.conf.urls.defaults import url
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.urlresolvers import NoReverseMatch
+from django.db import IntegrityError
 from django.db.models import Q
 try:
     from django.utils import timezone
@@ -30,6 +33,8 @@ from storybase_story.models import (Container, ContainerTemplate,
                                     Story, StoryRelation, StoryTemplate)
 from storybase_taxonomy.models import Category
 from storybase_user.models import Organization, Project
+
+logger = logging.getLogger("storybase")
 
 class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
     # Explicitly declare fields that are on the translation model
@@ -709,7 +714,21 @@ class SectionAssetResource(DelayedAuthorizationResource, HookedModelResource):
     def obj_create(self, bundle, request=None, **kwargs):
         section_id = kwargs.pop('section__section_id')
         kwargs['section'] = Section.objects.get(section_id=section_id)
-        return super(SectionAssetResource, self).obj_create(bundle, request, **kwargs)
+        try:
+            return super(SectionAssetResource, self).obj_create(bundle, request, **kwargs)
+        except IntegrityError:
+            # An asset is already assigned to this section/
+            # container
+            logger.warn("Attempted duplicate assignment of asset %s to "
+                        "section %s in container %s" % 
+                        (bundle.obj.asset.asset_id, 
+                         bundle.obj.section.section_id, 
+                         bundle.obj.container.name))
+            msg = ("An asset has already been assigned to this section and "
+                    "container")
+            raise ImmediateHttpResponse(response=http.HttpBadRequest(msg))
+
+
 
     def apply_request_kwargs(self, obj_list, request=None, **kwargs):
         section_id = kwargs.get('section__section_id')

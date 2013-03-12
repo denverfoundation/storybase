@@ -970,6 +970,9 @@ class SectionAsset(models.Model, SectionAssetPermission):
     # staging during the development process.
     weight = models.IntegerField(default=0)
 
+    class Meta:
+        unique_together = (("section", "container", "weight"),)
+
 
 def add_section_asset_to_story(sender, instance, **kwargs):
     """When an asset is added to a Section, also add it to the Story
