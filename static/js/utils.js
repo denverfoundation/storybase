@@ -269,7 +269,7 @@ Handlebars.registerHelper('commaeach', function(items, fn) {
 
 Handlebars.registerHelper('default', function(str, ifEmpty) {
   if (str && str.length) {
-    return new Handlebars.SafeString(str);
+    return new Handlebars.SafeString(gettext(str));
   }
-  return new Handlebars.SafeString(ifEmpty);
+  return new Handlebars.SafeString(gettext(ifEmpty));
 });
