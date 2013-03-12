@@ -2879,7 +2879,7 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
     // breaks if you remove all sections
     var section = new storybase.models.Section({
       title: '',
-      title_placeholder: gettext('Section Title'),
+      title_placeholder: '',
       layout: this.model.sections.at(0).get('layout'),
       root: true,
       template_section: this.model.sections.at(0).get('template_section'),
