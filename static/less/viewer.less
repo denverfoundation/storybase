@@ -20,6 +20,22 @@
     border: 1px solid @light-gray; 
     padding: 4px;
   }
+  
+
+  blockquote {
+    padding:1em;
+    background:@light-gray;
+    .rounded-corners(4px);
+    border:1px solid @gray;
+    font-style:italic;
+    color:@dark-gray;
+    
+    &.quotation {
+      .pullquote;
+      background:transparent;
+      border:0;
+    }
+  }
 
   figure img {
     width: auto;
