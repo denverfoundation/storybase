@@ -13,7 +13,7 @@ django-email-confirmation==0.2
 git+git://github.com/stefanfoulis/django-filer.git
 git+https://github.com/toastdriven/django-haystack.git@master#egg=django-haystack
 django-mptt==0.5.2
-django-reversion==1.6
+django-reversion>=1.6,<1.7
 django-sekizai==0.6.1
 django-taggit
 # Use trunk of django-tastypie because it has testing utilities that aren't # in 0.9.11, but get a version before the backward-incompatible changes to 
