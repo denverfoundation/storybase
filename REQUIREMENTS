@@ -55,3 +55,4 @@ cssselect
 lxml
 shortuuid
 django-compressor
+BeautifulSoup<4.0

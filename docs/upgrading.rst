@@ -11,6 +11,12 @@ in your environment::
 
     pip install django-compressor
 
+It also has some `dependencies <http://django_compressor.readthedocs.org/en/latest/quickstart/#dependencies>`_ which vary depending on how you
+configure the app.  Namely, I needed to install BeautifulSoup to use the
+``compressor.parser.LxmlParser`` parser::
+
+    pip install "BeautifulSoup<4.0"
+
 If you don't want to use Django Compressor, removing ``compress`` from the
 ``{% load %}`` statement and the ``{% compress %}`` block tags from these
 templates will allow you to continue without Django Compressor: 
@@ -20,6 +26,9 @@ templates will allow you to continue without Django Compressor:
 * storybase_story/story_detail.html
 * storybase_story/story_viewer.html
 * base.html
+
+You'll also need to remove ``compressor`` from the ``INSTALLED_APPS`` 
+setting in your Django settings module.
 
 0.5 to 0.6
 ==========

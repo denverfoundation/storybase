@@ -101,6 +101,7 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
     'media_staticfiles_finder.AppDirectoriesFinderAsMedia',
+    'compressor.finders.CompressorFinder',
 )
 
 # List of callables that know how to import templates from various sources.
