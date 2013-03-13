@@ -15,8 +15,12 @@ Changelog
 ~~~
 
 * Prevent saving multiple assets to the same section and container (#535)
+* Quote styles in viewer (#565)
 * Use django-compressor to compress and version static assets (#624)
+* Add space to content in viewer to accomdate bottom bar (#627)
+* Fix alignment of builder toolbar icons in Chrome >= 0.25 (#649)
 * Do better housekeeping of Backbone views for asset editing (#671)
+
 
 0.7
 ~~~
