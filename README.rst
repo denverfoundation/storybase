@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.8.1
+~~~~~
+
+* Fix duplicate CSS being included in builder
+
 0.8
 ~~~
 
