@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.8.2
+~~~~~
+
+* Match oEmbed URLs beginning with either "http://" or "https://" (#681)
+
 0.8.1
 ~~~~~
 
