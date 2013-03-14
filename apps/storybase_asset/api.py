@@ -3,6 +3,7 @@ from django.db.models import Q
 from django.http import Http404
 from django.conf.urls.defaults import url
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.core.files.uploadedfile import UploadedFile
 from django.views.decorators.csrf import csrf_exempt
 from django.views.generic import View
 from django.views.generic.detail import SingleObjectMixin
@@ -171,7 +172,18 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
                     return bundle
             except Exception:
                 pass
-        return self._hydrate_file(bundle, Image, 'image', 'filename')
+
+        if ('image' in bundle.data and
+                isinstance(bundle.data['image'], UploadedFile)):
+            # The image data is an uploaded file, create an image object
+            # and add it to the bundle
+            image = Image.objects.create(file=bundle.data['image'])
+            bundle.data['image'] = image
+            return bundle 
+        else:
+            # Treat the image data as data-url-encoded
+            # file
+            return self._hydrate_file(bundle, Image, 'image', 'filename')
 
     def build_bundle(self, obj=None, data=None, request=None):
         if obj and obj.__class__ == Asset:

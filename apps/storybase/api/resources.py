@@ -14,7 +14,36 @@ from tastypie.exceptions import ImmediateHttpResponse, NotFound
 from tastypie.resources import (ModelResource, convert_post_to_put, 
                                 convert_post_to_patch, NOT_AVAILABLE)
 
-class HookedModelResource(ModelResource):
+class MultipartFileUploadModelResource(ModelResource):
+    """
+    A version of ModelResource that accepts file uploads via
+    multipart forms.
+
+    Based on Work by Michael Wu and Philip Smith. 
+    See https://github.com/toastdriven/django-tastypie/pull/606
+
+    """
+    def deserialize(self, request, data, format='application/json'):
+        """
+        Given a request, data and a format, deserializes the given data.
+
+        It relies on the request properly sending a ``CONTENT_TYPE`` header,
+        falling back to ``application/json`` if not provided.
+
+        Mostly a hook, this uses the ``Serializer`` from ``Resource._meta``.
+        """
+        # If the format of the request is 
+        # or multipart/form-data, then ignore the data attribute and
+        # just grab the data to deserialize from the request
+        if format.startswith('multipart'):
+            deserialized = request.POST.copy()
+            deserialized.update(request.FILES)
+        else:
+            deserialized = self._meta.serializer.deserialize(data, format=request.META.get('CONTENT_TYPE', 'application/json'))
+        return deserialized
+
+
+class HookedModelResource(MultipartFileUploadModelResource):
     """
     A version of ModelResource with extra actions at various points in 
     the pipeline

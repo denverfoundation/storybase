@@ -1043,8 +1043,51 @@ class AssetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
             self.assertEqual(self.deserialize(resp)['caption'], asset_caption)
             self.assertIn('<img src', self.deserialize(resp)['content'])
 
-    def test_post_list_image(self):
-        """Test creating a asset with the data stored in an uploaded image"""
+    def test_post_list_image_as_multipart(self):
+        """Test creating a new image asset with the image sent as multipart form data"""
+        image_filename = "test_image.jpg"
+
+        app_dir = os.path.dirname(os.path.abspath(__file__))
+        img_path = os.path.join(app_dir, "test_files", image_filename)
+        original_hash = hashlib.sha1(file(img_path, 'r').read()).digest()
+        with open(img_path) as image:
+            post_data = {
+                'type': "image",
+                'title': "Test Image Asset",
+                'caption': "This is a test image",
+                'status': "published",
+                'filename': image_filename,
+                'image': image,
+                'language': "en",
+            }
+            self.assertEqual(Asset.objects.count(), 0)
+            self.api_client.client.login(username=self.username,
+                                         password=self.password)
+            resp = self.api_client.client.post('/api/0.1/assets/',
+                                               data=post_data)
+            self.assertHttpCreated(resp)
+            # Check that asset was created in the system and has the correct
+            # metadata
+            self.assertEqual(Asset.objects.count(), 1)
+            created_asset = Asset.objects.get_subclass()
+            self.assertEqual(created_asset.type, post_data['type'])
+            self.assertEqual(created_asset.title, post_data['title'])
+            self.assertEqual(created_asset.caption, post_data['caption'])
+            self.assertEqual(created_asset.status, post_data['status'])
+            self.assertEqual(created_asset.get_languages(),
+                             [post_data['language']])
+            self.assertEqual(created_asset.owner, self.user)
+            # Check that the id is returned by the endpoint
+            returned_asset_id = resp['location'].split('/')[-2]
+            self.assertEqual(created_asset.asset_id, returned_asset_id)
+            # Compare the uploaded image and the original 
+            created_hash = hashlib.sha1(file(created_asset.image.path, 'r').read()).digest()
+            self.assertEqual(original_hash, created_hash)
+            # Set our created file to be cleaned up
+            self.add_file_to_cleanup(created_asset.image.file.path)
+
+    def test_post_list_image_as_data_url(self):
+        """Test creating an asset with the data stored in an uploaded image encoded as a data URL"""
         image_filename = "test_image.jpg"
 
         app_dir = os.path.dirname(os.path.abspath(__file__))
@@ -1086,6 +1129,9 @@ class AssetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         # Set our created file to be cleaned up
         self.add_file_to_cleanup(created_asset.image.file.path)
 
+
+    # BOOKMARK
+    # TODO: Remove this test after getting multipart uploads working
     def test_post_list_image_no_file(self):
         """
         Test that an image asset can be created without a file
@@ -1116,6 +1162,7 @@ class AssetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
                          [post_data['language']])
         self.assertEqual(created_asset.owner, self.user)
 
+    # TODO: Remove this test after getting multipart uploads working
     def test_post_list_map_no_file(self):
         """
         Test that a map can be created without a file
