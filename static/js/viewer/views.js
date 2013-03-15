@@ -30,6 +30,8 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
     this.navigationView = new storybase.viewer.views.StoryNavigation({
       sections: this.options.sections
     }); 
+    this.navigationView.on('navigate:section', this.setSectionById, this);
+    
     // Has the view been rendered yet?
     this._rendered = false;
     // TODO: Decide whether to re-enable updating the section title in the
@@ -201,6 +203,10 @@ storybase.viewer.views.StoryNavigation = Backbone.View.extend({
   id: 'story-nav',
 
   templateSource: $('#navigation-template').html(),
+  
+  events: {
+    'click a': 'handleNavClick'
+  },
 
   initialize: function() {
     this.activeSection = null;
@@ -272,6 +278,22 @@ storybase.viewer.views.StoryNavigation = Backbone.View.extend({
   showConnectedStory: function() {
     this.showingConnectedStory = true; 
     this.render();
+  },
+  
+  handleNavClick: function(event) {
+    if (!$(event.target).hasClass('disabled')) {
+      if (storybase.viewer.router) {
+        // we allow our router to handle the location change.
+        return true;
+      }
+      
+      // if there is no router we trigger an event for internal 
+      // use and prevent the anchor click from bubbling.
+      var sectionId = $(event.target).attr('href').split('/')[1];
+      this.trigger('navigate:section', sectionId);
+      
+      return false;
+    }
   }
 });
 
@@ -549,13 +571,6 @@ storybase.viewer.views.LinearViewerApp = storybase.viewer.views.ViewerApp.extend
     this.$('.section')
       .not($section.show())
       .hide();
-      
-    // TODO: see note in clickSectionNode below re: using a global
-    // reference to the router.
-    storybase.viewer.router.navigate(
-      "sections/" + this.activeSection.id,
-      { trigger: true, replace: true }
-    );
   },
 
   getLastSection: function() {
