@@ -24,7 +24,7 @@ from storybase_story.api import (ContainerTemplateResource,
 from storybase_story.models import (SectionLayout, Story, StoryRelation,
         StoryTemplate)
 from storybase_taxonomy.models import Category
-from storybase.utils import simple_language_changer
+from storybase.utils import escape_json_for_html, simple_language_changer
 from storybase.views.generic import ModelIdDetailView
 
 
@@ -506,7 +506,8 @@ class StoryBuilderView(DetailView):
         """Bootstrap data for Backbone models and collections"""
         context = {
             'asset_types_json': mark_safe(self.get_asset_types_json()),
-            'help_json': mark_safe(self.get_help_json()),
+            'help_json': mark_safe(escape_json_for_html(
+                self.get_help_json())),
             'layouts_json': mark_safe(self.get_layouts_json()),
             'organizations_json': mark_safe(self.get_organizations_json()),
             'places_json': mark_safe(self.get_places_json()),
@@ -517,8 +518,10 @@ class StoryBuilderView(DetailView):
 
         if self.object:
             context['story_json'] = mark_safe(self.get_story_json())
-            context['featured_assets_json'] = mark_safe(self.get_assets_json(featured=True))
-            context['assets_json'] = mark_safe(self.get_assets_json())
+            context['featured_assets_json'] = mark_safe(escape_json_for_html(
+                self.get_assets_json(featured=True)))
+            context['assets_json'] = mark_safe(escape_json_for_html(
+                self.get_assets_json()))
             if self.object.template_story:
                 context['template_story_json'] = mark_safe(
                     self.get_story_json(self.object.template_story))

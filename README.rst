@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.8.3
+~~~~~
+
+* Escape JSON when output inside <script> tags (#658)
+
 0.8.2
 ~~~~~
 

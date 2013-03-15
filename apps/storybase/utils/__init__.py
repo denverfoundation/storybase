@@ -195,3 +195,16 @@ def latest_context(qs, count=3, img_width=100):
                     for obj in qs.published().not_featured()
                                  .order_by('-last_edited')[:count]],
     }
+
+def escape_json_for_html(json_str):
+    """
+    Escape a JSON string so that it can be enclosed inside a <script> tag
+    
+    This is needed to bootstrap our Backbone views from inside our
+    templates.  Alterately, we could use this by making a custom serializer
+    for the Tastypie resources that uses simplejson.JSONEncoderForHTML 
+    """
+    json_str = json_str.replace('&', '\\u0026')
+    json_str = json_str.replace('<', '\\u003c')
+    json_str = json_str.replace('>', '\\u003e')
+    return json_str

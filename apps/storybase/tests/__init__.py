@@ -5,13 +5,15 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core.files import File
+from django.core.serializers import json
 from django.template import Context, Template, RequestContext
 from django.test import TestCase
+from django.utils import simplejson
 
 from storybase.models import PermissionMixin
 from storybase.forms import UserEmailField 
 from storybase.tests.base import SettingsChangingTestCase
-from storybase.utils import full_url, is_file
+from storybase.utils import escape_json_for_html, full_url, is_file
 
 class ContextProcessorTest(TestCase):
     def test_conf(self):
@@ -198,3 +200,14 @@ class UtilsTestCase(TestCase):
     def test_is_file_false(self):
         s = u"This is a string, not a file"
         self.assertFalse(is_file(s))
+
+    def test_escape_json_for_html(self):
+        data = {
+            'title': "Test Title",
+            'body': "<script src=\"http://floodlightproject.org/fake.js\"></script>",
+        }
+
+        json_str = simplejson.dumps(data, cls=json.DjangoJSONEncoder, sort_keys=True, ensure_ascii=False)
+        escaped_json_str = escape_json_for_html(json_str)
+        self.assertEqual(simplejson.loads(json_str)['body'],
+                         simplejson.loads(escaped_json_str)['body'])
