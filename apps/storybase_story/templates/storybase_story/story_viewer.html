@@ -75,6 +75,7 @@
             <h2 class="title">{% trans "Connected Stories" %}</h2>
             {% for cs in connected_stories %}
             <div class="connected-story-item">
+                {{ cs.render_featured_asset }}
                 <h3><a href="#connected-stories/{{ cs.story_id }}">{{ cs.title }}</a></h3>
                 <p class="byline">{% trans "By" %} {{ cs.byline|default:cs.contributor_name }}</p>
             </div>
