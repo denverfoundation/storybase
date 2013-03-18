@@ -4147,6 +4147,8 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
 
         this.setState('upload').render();
       }
+      // BOOKMARK 
+      // TODO: Figure out how to detect when to use IFRAME support
 
       this.model.save(attributes, options); 
     },

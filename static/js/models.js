@@ -47,8 +47,6 @@ storybase.collections.SaveableCollection = Backbone.Collection.extend({
  * Model that can sync a file attribute to the server as multipart form data.
  */
 storybase.models.FileUploadModel = Backbone.Model.extend({
-  // BOOKMARK
-  // TODO: Decide if we even need this
   // List if model attributes that can take uploaded files
   fileAttributes: [],
 
@@ -67,6 +65,39 @@ storybase.models.FileUploadModel = Backbone.Model.extend({
 
   /**
    * Custom implementation of Backbone.Model.sync that sends
+   * file attributes to the server as multipart form data
+   * in a hidden IFRAME.
+   *
+   * This is for browsers that don't support the FileReader
+   * API.
+   *
+   * It requires the jQuery Iframe Transport to be available. 
+   * See http://cmlenz.github.com/jquery-iframe-transport/ 
+   */
+  syncWithUploadIframe: function(method, model, options) {
+    var data; // Attribute data, passed to jQuery.sync
+
+    _.extend(options, {
+      iframe: true, // Tell jQuery to use the IFRAME transport
+      files: options.form.find(':file'), 
+      processData: false,
+      dataType: 'json',
+      // We can't set the accepts header of the IFRAMEd post,
+      // so explicitly ask for the response as JSON.
+      url: _.result(model, 'url') + '?format=json'
+    });
+
+    if (!options.data) {
+      data = options.attrs || model.toJSON(options);
+      // Remove file attributes from the data
+      options.data = _.omit(data, model.fileAttributes);
+    }
+
+    return Backbone.sync(method, model, options);
+  },
+
+  /**
+   * Custom implementation of Backbone.Model.sync that sends
    * file attributes to the server as multipart form data.
    *
    * Additional options:
@@ -77,7 +108,7 @@ storybase.models.FileUploadModel = Backbone.Model.extend({
    *     event of the underlying ``XMLHttpRequest`` object.
    */
   syncWithUpload: function(method, model, options) {
-    if (window.FormData && window.FileReader) {
+    if (window.FormData && window.FileReader && !options.iframe) {
       if (!options.xhr) {
         // Wire up the upload progress handler if one has been specified
         options.xhr = function() {
@@ -106,10 +137,9 @@ storybase.models.FileUploadModel = Backbone.Model.extend({
     }
     else {
       // Browser (i.e. IE < 10) doesn't support the FormData interface for
-      // XMLHttpRequest. We'll have to upload using a hidden
-      // IFRAME
-      // BOOKMARK
-      // TODO: Implement this
+      // XMLHttpRequest. Or IFRAME uploads have been explictely requested.
+      // We'll have to upload using a hidden IFRAME
+      this.syncWithUploadIframe(method, model, options);
     }
   },
 

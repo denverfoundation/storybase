@@ -112,10 +112,16 @@
     {% endcompress %}
 
     <script>
-    Modernizr.load({
-      test: Modernizr.input.placeholder,
-      nope: '{{ STATIC_URL }}js/libs/polyfill.placeholder.js'
-    })
+    Modernizr.load([
+      {
+        test: Modernizr.input.placeholder,
+        nope: '{{ STATIC_URL }}js/libs/polyfill.placeholder.js'
+      },
+      {
+        test: Modernizr.filereader,
+        nope: '{{ STATIC_URL }}js/libs/jquery.iframe-transport.js' 
+      }
+    ]);
     </script>
 
     <script type="text/javascript">
