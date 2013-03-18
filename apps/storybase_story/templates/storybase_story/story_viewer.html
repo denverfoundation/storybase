@@ -130,6 +130,7 @@
         Namespace('storybase.viewer');
         var story = new storybase.models.Story({{ story.structure.to_json }});
         var sections = new storybase.collections.Sections;
+	var viewerContext = '{{ context }}';
         sections.reset({{ sections_json }});
         storybase.viewer.app = storybase.viewer.views.getViewerApp(
             storyStructureType,
@@ -140,8 +141,7 @@
             }
         );
         
-        storybase.viewer.context = '{{ context }}';
-        if (storybase.viewer.context == 'iframe') {
+        if (viewerContext == 'iframe') {
             storybase.viewer.router = null;
         }
         else {

@@ -104,11 +104,11 @@ class StoryViewerView(ModelIdDetailView):
 
         context['sections_json'] = self.object.structure.sections_json(
                 connected_stories=context['connected_stories'])
-        # currently supporting two "contexts" in which the viewer lives: iframe and normal
-        context['context'] = 'normal' 
-        if 'context' in self.request.REQUEST and self.request.REQUEST['context'] == 'iframe':
-          context['context'] = 'iframe'
-        
+
+        # Currently supporting two "contexts" in which the viewer lives: 
+        # iframe and normal
+        context['context'] = self.request.REQUEST.get('context', 'normal')
+
         return context
 
 

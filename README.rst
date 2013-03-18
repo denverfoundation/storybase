@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.8.4
+~~~~~
+
+* Don't write to browser history when opening viewer in modal IFRAME (#487)
+
 0.8.3
 ~~~~~
 
