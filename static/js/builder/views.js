@@ -1849,6 +1849,7 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
       collection: this._editViews,
       story: this.model,
       assetTypes: this.options.assetTypes,
+      language: this.options.language,
       layouts: this.options.layouts,
       containerTemplates: this.containerTemplates,
       defaultHelp: this.help.where({slug: 'new-section'})[0],
@@ -3470,6 +3471,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
       el: el,
       container: container, 
       dispatcher: this.dispatcher,
+      language: this.options.language,
       section: this.model, 
       story: this.story,
       assetTypes: this.options.assetTypes
@@ -3814,8 +3816,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
 });
 
 storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
-  _.extend({}, storybase.builder.views.FileUploadMixin, 
-           storybase.builder.views.RichTextEditorMixin, {
+  _.extend({}, storybase.builder.views.RichTextEditorMixin, {
     tagName: 'div',
 
     className: 'edit-section-asset',
@@ -3871,7 +3872,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
         }
         this.model = new storybase.models.Asset(modelOptions);
       }
-      _.bindAll(this, 'uploadFile', 'handleUploadProgress', 'editCaption'); 
+      _.bindAll(this, 'handleUploadProgress', 'editCaption'); 
       this.bindModelEvents();
       this.initializeForm();
       this.setInitialState();
@@ -4091,43 +4092,63 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       this.render();
     },
 
-    saveModel: function(attributes, options) {
-      console.debug("Saving asset");
-      options = _.isUndefined(options) ? {} : options;
-      var that = this;
+    /**
+     * Save the asset model to the server.
+     *
+     * This method mostly handles initializing the callbacks and options for 
+     * Asset.save()
+     *
+     * @param {Object} attributes Model attributes to be passed to
+     *     Asset.save()
+     */
+    saveModel: function(attributes) {
+      var view = this;
       // Save the model's original new state to decide
       // whether to send a signal later
       var isNew = this.model.isNew();
       var storyLicense = this.story.get('license');
+      var options;
+
+      // If this is the initial save and the story has a license
+      // defined and the asset has no explicit license defined, set the
+      // asset license to that of the story.
       if (isNew && _.isUndefined(attributes['license']) && storyLicense) {
-        // If this is the initial save and the story has a license
-        // defined and the asset has no explicit license defined, set the
-        // asset license to that of the story.
         attributes['license'] = storyLicense;
       }
-      this.model.save(attributes, {
+
+      // Initialize callbacks for saving the model
+      options = {
         success: function(model) {
-          // When uploading files, we'll let the upload handler re-render
-          // This is mostly because we need to keep the form element for
-          // IFRAME-based uploads
-          if (!options.deferRender) {
-            that.setState('display');
-            that.render();
-          }
+          view.setState('display').render();
+
           if (isNew) {
-            // Model was new before saving
-            that.dispatcher.trigger("do:add:sectionasset", that.section,
-              that.model, that.container
+            // Model was new before saving, trigger an event telling listeners
+            // that a new asset has been added to the section
+            view.dispatcher.trigger("do:add:sectionasset", view.section,
+              view.model, view.container
             );
-          }
-          if (options.success) {
-            options.success(model);
           }
         },
         error: function(model) {
-          that.dispatcher.trigger('error', 'error saving the asset');
+          view.dispatcher.trigger('error', 'error saving the asset');
         }
-      });
+      };
+
+      if (attributes.image && !_.isUndefined(this.form.fields.image) && !attributes.url) {
+        // A new file is being uploaded, provide some
+        // additional options to Story.save()
+        _.extend(options, {
+          upload: true,
+          // The form element in case we need to
+          // POST via an iframe
+          form: this.form.$el,
+          progressHandler: this.handleUploadProgress
+        });
+
+        this.setState('upload').render();
+      }
+
+      this.model.save(attributes, options); 
     },
 
     /**
@@ -4144,53 +4165,23 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
      * Event handler for submitting form
      */
     processForm: function(e) {
-      e.preventDefault();
-      console.info("Editing asset");
       var errors = this.form.validate();
       var data;
-      var file;
-      var options = {};
-      var that = this;
-      if (!errors) {
-        var data = this.form.getValue();
-        if (data.image) {
-          // We were able to retrieve the file via the File API
-          file = data.image;
-        }
+      var view = this;
 
-        if (!_.isUndefined(this.form.fields.image) && !data.url) {
-          // Set a callback for saving the model that will upload the
-          // image.
-          options.deferRender = true;
-          options.success = function(model) {
-            that.uploadFile(model, 'image', file, {
-              form: e.target, 
-              progressHandler: that.handleUploadProgress,
-              beforeSend: function() {
-                that.setState('upload');
-                that.render();
-              },
-              success: function(model, response) {
-                that.setState('display');
-                that.render();
-              }
-            });
-          };
-        }
-        
-        // Delete the image property.  We've either retrieved it for
-        // upload or it was empty (meaning we don't want to change the
-        // image.
-        delete data.image;
-        this.saveModel(data, options);
+      e.preventDefault();
+
+      if (!errors) {
+        data = this.form.getValue();
+        this.saveModel(data);
       }
       else {
         // Remove any previous error messages
         this.form.$('.bbf-model-errors').remove();
         if (!_.isUndefined(errors._others)) {
-          that.form.$el.prepend('<ul class="bbf-model-errors">');
+          view.form.$el.prepend('<ul class="bbf-model-errors">');
           _.each(errors._others, function(msg) {
-            that.form.$('.bbf-model-errors').append('<li>' + msg + '</li>');
+            view.form.$('.bbf-model-errors').append('<li>' + msg + '</li>');
           });
         }
       }

@@ -43,6 +43,99 @@ storybase.collections.SaveableCollection = Backbone.Collection.extend({
   }
 });
 
+/**
+ * Model that can sync a file attribute to the server as multipart form data.
+ */
+storybase.models.FileUploadModel = Backbone.Model.extend({
+  // BOOKMARK
+  // TODO: Decide if we even need this
+  // List if model attributes that can take uploaded files
+  fileAttributes: [],
+
+  /**
+   * Return a FormData object corresponding to the model's
+   * attributes
+   */
+  toFormData: function(options) {
+    var attrs = options.attrs || this.attributes;
+    var formData = new FormData;
+    _.each(attrs, function(value, key) {
+      formData.append(key, value); 
+    }, this);
+    return formData;
+  },
+
+  /**
+   * Custom implementation of Backbone.Model.sync that sends
+   * file attributes to the server as multipart form data.
+   *
+   * Additional options:
+   *
+   * @param {Object} [form] jQuery object for the HTML form element. This is
+   *     needed if we have to POST using a hidden IFRAME in older browsers.
+   * @param {function} [progressHandler] Handler function for the ``progress``
+   *     event of the underlying ``XMLHttpRequest`` object.
+   */
+  syncWithUpload: function(method, model, options) {
+    if (window.FormData && window.FileReader) {
+      if (!options.xhr) {
+        // Wire up the upload progress handler if one has been specified
+        options.xhr = function() {
+          var newXhr = $.ajaxSettings.xhr();
+          if (newXhr.upload && options.progressHandler) {
+            newXhr.upload.addEventListener('progress', options.progressHandler, false);
+          }
+          return newXhr;
+        };
+      }
+      if (!options.data) {
+        // Convert model attributes to a FormData object
+        options.data = model.toFormData(options);
+      }
+
+      // Set some defaults for jQuery.ajax to make sure that
+      // our multipart form data will get sent correctly.
+      // See http://stackoverflow.com/a/5976031
+      _.extend(options, {
+        cache: false,
+        contentType: false,
+        processData: false
+      });
+
+      return Backbone.sync(method, model, options);
+    }
+    else {
+      // Browser (i.e. IE < 10) doesn't support the FormData interface for
+      // XMLHttpRequest. We'll have to upload using a hidden
+      // IFRAME
+      // BOOKMARK
+      // TODO: Implement this
+    }
+  },
+
+  /**
+   * Custom implementation of Backbone.Model.sync that delegates to
+   * syncWithFileUpload when a file to be uploaded is present.
+   *
+   * Additional parameters:
+   *
+   * @param {Boolean} [upload] Should we attempt to upload files on sync
+   * @param {Object} [form] jQuery object for the HTML form element. This is
+   *     needed if we have to POST using a hidden IFRAME in older browsers.
+   * @param {function} [progressHandler] Handler function for the ``progress``
+   *     event of the underlying ``XMLHttpRequest`` object.
+   */
+  sync: function(method, model, options) {
+    if (options.upload) {
+      return this.syncWithUpload(method, model, options);
+    }
+    else {
+      return Backbone.sync.apply(this, arguments);
+    }
+  }
+});
+
+
 storybase.models.DataSet = Backbone.Model.extend({
     idAttribute: "dataset_id",
 
@@ -519,8 +612,10 @@ storybase.collections.StoryRelations = storybase.collections.SaveableCollection.
   })
 );
 
-storybase.models.Asset = Backbone.Model.extend(
+storybase.models.Asset = storybase.models.FileUploadModel.extend(
   _.extend({}, storybase.models.TastypieMixin, {
+    fileAttributes: ['image'],
+
     showFormField: {
       url: {
         'image': true,
