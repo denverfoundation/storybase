@@ -11,6 +11,16 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.8.4
+~~~~~
+
+* Don't write to browser history when opening viewer in modal IFRAME (#487)
+
+0.8.3
+~~~~~
+
+* Escape JSON when output inside <script> tags (#658)
+
 0.8.2
 ~~~~~
 

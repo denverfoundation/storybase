@@ -156,7 +156,7 @@
       <a id="launch-viewer-window" href="{% url story_viewer slug=story.slug %}" title="{%trans "View in new window"%}"><i class="icon-share"></i><span class="hide-text">{%trans "View in new window"%}</span></a>
       <button class="simplemodal-close" title="{% trans "Close" %}"><i class="icon-remove-sign"></i><span class="hide-text">{% trans "Close" %}</span></button>
   </div>
-  <iframe src="{% url story_viewer slug=story.slug %}"></iframe>
+  <iframe src="{% url story_viewer slug=story.slug %}?context=iframe"></iframe>
 </div>
 {% endblock bodyend %}
 
