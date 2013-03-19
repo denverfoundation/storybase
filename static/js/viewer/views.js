@@ -549,6 +549,10 @@ storybase.viewer.views.Spider = Backbone.View.extend({
 storybase.viewer.views.LinearViewerApp = storybase.viewer.views.ViewerApp.extend({
   elClass: 'linear',
 
+  events: {
+    'click .connected-story-item a': 'handleConnectedStoryClick'
+  },
+
   // override to hook into our own render event.
   initialize: function() {
     this.on('render', this.showActiveSection, this);
@@ -596,6 +600,17 @@ storybase.viewer.views.LinearViewerApp = storybase.viewer.views.ViewerApp.extend
       this.$('#connected-story-' + storyId).show();
       this.navigationView.showConnectedStory();
     }
+  },
+  handleConnectedStoryClick: function(event) {
+    if (storybase.viewer.router) {
+      // allow the router to handle the location change
+      return true;
+    }
+    
+    // just show the story, without affecting location or history.
+    var storyId = $(event.target).attr('href').split('/')[1];
+    this.showConnectedStory(storyId);
+    return false;
   }
 });
 
