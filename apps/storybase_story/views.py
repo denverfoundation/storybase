@@ -107,7 +107,15 @@ class StoryViewerView(ModelIdDetailView):
 
         # Currently supporting two "contexts" in which the viewer lives: 
         # iframe and normal
-        context['context'] = self.request.REQUEST.get('context', 'normal')
+        supported_contexts = ['normal', 'iframe']
+        try:
+            viewer_context = self.request.REQUEST.get('context', 'normal')
+            context['context'] = (viewer_context 
+                                  if viewer_context in supported_contexts 
+                                  else 'normal')
+        except AttributeError:
+            # No self.request defined, default to normal context
+            viewer_context = 'normal'
 
         return context
 

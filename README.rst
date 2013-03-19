@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.8.5
+~~~~~
+
+* Fix connected story links in viewer in modal IFRAME (#487)
+
 0.8.4
 ~~~~~
 
