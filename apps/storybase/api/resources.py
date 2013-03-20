@@ -13,6 +13,7 @@ from tastypie.bundle import Bundle
 from tastypie.exceptions import ImmediateHttpResponse, NotFound
 from tastypie.resources import (ModelResource, convert_post_to_put, 
                                 convert_post_to_patch, NOT_AVAILABLE)
+from tastypie.utils.mime import build_content_type
 
 class MultipartFileUploadModelResource(ModelResource):
     """
@@ -21,6 +22,10 @@ class MultipartFileUploadModelResource(ModelResource):
 
     Based on Work by Michael Wu and Philip Smith. 
     See https://github.com/toastdriven/django-tastypie/pull/606
+
+    This resource class also supports wrapping a serialized response in
+    a TEXTAREA element for use with the jQuery IFRAME Transport.  See
+    http://cmlenz.github.com/jquery-iframe-transport/
 
     """
     def deserialize(self, request, data, format='application/json'):
@@ -41,6 +46,47 @@ class MultipartFileUploadModelResource(ModelResource):
         else:
             deserialized = self._meta.serializer.deserialize(data, format=request.META.get('CONTENT_TYPE', 'application/json'))
         return deserialized
+
+    def iframed_request(self, request):
+        """
+        Checks if the request was issued from an IFRAME
+        
+        When being called from an IFRAME, an ``iframe`` parameter should be
+        added to the querystring.
+
+        """
+        if not request:
+            return False
+
+        return 'iframe' in request.REQUEST
+
+    def serialize(self, request, data, format, options=None):
+        serialized = super(MultipartFileUploadModelResource, self).serialize(
+                           request, data, format, options)
+        if not self.iframed_request(request):
+            return serialized
+        else:
+            return '<textarea data-type="%s">%s</textarea>' % (format, serialized)
+
+    def build_content_type(self, request, desired_format):
+        """Always return 'text/html' when the request is from an IFRAME"""
+        if self.iframed_request(request):
+            return 'text/html'
+
+        return build_content_type(desired_format) 
+
+    def create_response(self, request, data, response_class=HttpResponse, **response_kwargs):
+        """
+        Extracts the common "which-format/serialize/return-response" cycle.
+
+        This version overrides the content type header to be 'text/html' if
+        the request originates from an IFRAME.
+
+        """
+        desired_format = self.determine_format(request)
+        serialized = self.serialize(request, data, desired_format)
+        content_type = self.build_content_type(request, desired_format)
+        return response_class(content=serialized, content_type=content_type, **response_kwargs)
 
 
 class HookedModelResource(MultipartFileUploadModelResource):

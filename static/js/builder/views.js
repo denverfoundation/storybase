@@ -4145,10 +4145,14 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
           progressHandler: this.handleUploadProgress
         });
 
-        this.setState('upload').render();
+        if (!_.isString(attributes.image)) {
+          // If the image field is not a string (meaning it's a File object),
+          // remove the form so we can show the upload status. Otherwise, we need
+          // to keep the form around to be able to access the file input
+          // element when posting the form through a hidden IFRAME
+          this.setState('upload').render();
+        }
       }
-      // BOOKMARK 
-      // TODO: Figure out how to detect when to use IFRAME support
 
       this.model.save(attributes, options); 
     },

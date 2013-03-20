@@ -84,7 +84,7 @@ storybase.models.FileUploadModel = Backbone.Model.extend({
       dataType: 'json',
       // We can't set the accepts header of the IFRAMEd post,
       // so explicitly ask for the response as JSON.
-      url: _.result(model, 'url') + '?format=json'
+      url: _.result(model, 'url') + '?format=json&iframe=iframe'
     });
 
     if (!options.data) {
