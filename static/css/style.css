@@ -856,6 +856,9 @@ body.story-builder .guider .x_button:after{font-family:"FontAwesome";content:"\f
 .story-viewer .summary{padding:1%;background:#f0efef;border-top:1px solid #d7d5d5;border-bottom:1px solid #d7d5d5;}
 .story-viewer .call-to-action{background:#f0efef;border-top:1px solid #d7d5d5;border-bottom:1px solid #d7d5d5;}
 .story-viewer .section,.story-viewer .connected-story{padding:1%;}
+.story-viewer .connected-stories h2.title{margin-bottom:1.2em;}
+.story-viewer .connected-story-item{margin-bottom:1em;clear:both;overflow:hidden;}.story-viewer .connected-story-item h3{margin-top:0 !important;}
+.story-viewer .connected-story-item img{max-width:100px;margin-right:1em;float:left;}
 .story-viewer .spider .sidebar{float:left;width:18%;}
 .story-viewer .spider svg{float:left;position:fixed;}
 .story-viewer .spider .sidebar .summary,.story-viewer .spider .sidebar .call-to-action{padding:0 6%;}
