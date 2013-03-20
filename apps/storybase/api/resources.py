@@ -60,13 +60,22 @@ class MultipartFileUploadModelResource(ModelResource):
 
         return 'iframe' in request.REQUEST
 
+    def wrap_in_textarea(self, format, body):
+        """
+        Wrap response text in a textarea
+        
+        This allows the jQuery Iframe transport to detect the content type.
+
+        """
+        return '<textarea data-type="%s">%s</textarea>' % (format, body)
+
     def serialize(self, request, data, format, options=None):
         serialized = super(MultipartFileUploadModelResource, self).serialize(
                            request, data, format, options)
         if not self.iframed_request(request):
             return serialized
         else:
-            return '<textarea data-type="%s">%s</textarea>' % (format, serialized)
+            return self.wrap_in_textarea(format, serialized)
 
     def build_content_type(self, request, desired_format):
         """Always return 'text/html' when the request is from an IFRAME"""
