@@ -34,10 +34,13 @@ storybase.forms.File = Backbone.Form.editors.Text.extend({
     // Check if the files property is defined.  It won't be for browsers
     // that don't support the HTML5 File API
     if (this.el.files) {
+      // If the File API is supported, return a FILE object
       return this.el.files[0];
     }
     else {
-      return undefined;
+      // Otherwise, return the element value, probably a string
+      // representation of the filename.
+      return this.$el.val();
     }
   },
  
