@@ -3990,8 +3990,13 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
             );
           }
         },
-        error: function(model) {
-          view.dispatcher.trigger('error', 'error saving the asset');
+        error: function(model, xhr) {
+          // If we've switched to the upload progress view, switch back to the
+          // form
+          if (view.getState() === 'upload') {
+            view.setState('edit').render();
+          }
+          view.dispatcher.trigger('error', xhr.responseText || 'error saving the asset');
         }
       };
 
