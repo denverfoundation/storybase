@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.9
+~~~
+
+* Add display of connected story featured images in viewer (#610)
+
 0.8.5
 ~~~~~
 
