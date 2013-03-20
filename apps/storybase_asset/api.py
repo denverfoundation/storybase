@@ -17,7 +17,9 @@ from storybase.api import (DataUriResourceMixin,
    LoggedInAuthorization)
 from storybase_asset.models import (Asset, ExternalAsset, HtmlAsset, 
     LocalImageAsset, DataSet, ExternalDataSet, LocalDataSet)
+from storybase_asset.utils import image_type_supported
 from storybase_story.models import Story
+
 
 class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource, 
                     TranslatedModelResource):
@@ -52,7 +54,6 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
     def get_object_class(self, bundle=None, request=None, **kwargs):
         content_fields = ('body', 'image', 'url')
         num_content_fields = 0
-        delayed_upload_types = ('image', 'map', 'chart') 
         for name in content_fields:
             if bundle.data.get(name):
                 num_content_fields = num_content_fields + 1
@@ -62,8 +63,7 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
             return HtmlAsset
         elif bundle.data.get('url'):
             return ExternalAsset
-        elif (bundle.data.get('image') or 
-              bundle.data.get('type') in delayed_upload_types):
+        elif bundle.data.get('image'):
             return LocalImageAsset
         else:
             raise BadRequest("You must specify an image, body, or url") 
@@ -164,8 +164,13 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
 
         if ('image' in bundle.data and
                 isinstance(bundle.data['image'], UploadedFile)):
-            # The image data is an uploaded file, create an image object
-            # and add it to the bundle
+            # The image data is an uploaded file
+
+            # Make sure the file format is supported
+            if not image_type_supported(bundle.data['image']):
+                raise BadRequest("Unsupported image format")
+
+            # Create an image object and add it to the bundle
             image = Image.objects.create(file=bundle.data['image'])
             bundle.data['image'] = image
             return bundle 
@@ -301,12 +306,12 @@ class DataSetResource(DataUriResourceMixin,DelayedAuthorizationResource,
         return kwargs
 
     def get_object_class(self, bundle=None, request=None, **kwargs):
-        if (bundle.data.get('file', None) or not bundle.data.get('url')):
+        if bundle.data.get('file', None):
             return LocalDataSet
         elif bundle.data.get('url', None):
             return ExternalDataSet
         else:
-            raise AttributeError
+            raise BadRequest("You must provide either a file or URL when creating a data set")
 
     def apply_request_kwargs(self, obj_list, request=None, **kwargs):
         filters = {}

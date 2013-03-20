@@ -20,6 +20,7 @@ from storybase_asset.models import (Asset, ExternalAsset, HtmlAsset,
     create_html_asset, create_external_asset, create_local_image_asset,
     create_external_dataset)
 from storybase_asset.oembed.providers import GoogleSpreadsheetProvider
+from storybase_asset.utils import image_type_supported
 
 class DataUrlMixin(object):
     """Mixin class for dealing with Data URLs"""
@@ -682,12 +683,10 @@ class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
             # Test that the created dataset is associated with a story 
             self.assertIn(self.story, created_dataset.stories.all())
 
-    # BOOKMARK
-    # TODO: Update this test for an error when creating a dataset without
-    # specifying a file or URL
-    def test_post_list_with_story_no_file(self):
+    def test_post_list_with_story_no_file_or_url(self):
         """
-        Test that a user can create a resource that will later accept an uploaded file
+        Test that a user receives an error when trying to create a dataset without
+        specifying a file or URL
         """
         post_data = {
             'title': "Test Dataset",
@@ -699,25 +698,8 @@ class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
                                      password=self.password)
         uri = '/api/0.1/datasets/stories/%s/' % (self.story.story_id)
         resp = self.api_client.post(uri, format='json', data=post_data)
-        self.assertHttpCreated(resp)
-        returned_id = resp['location'].split('/')[-2]
-        self.assertEqual(LocalDataSet.objects.count(), 1)
-        # Compare the response data with the post data
-        self.assertEqual(self.deserialize(resp)['title'], 
-                         post_data['title'])
-        self.assertEqual(self.deserialize(resp)['description'], 
-                         post_data['description'])
-        created_dataset = DataSet.objects.get_subclass()
-        # Compare the id from the resource URI with the created dataset
-        self.assertEqual(created_dataset.dataset_id, returned_id)
-        # Compare the created model instance with the post data
-        self.assertEqual(created_dataset.title, post_data['title'])
-        self.assertEqual(created_dataset.description, post_data['description'])
-        # Test that the owner of the dataset is our logged-in user
-        self.assertEqual(created_dataset.owner, self.user)
-        # Test that the created dataset is associated with a story 
-        self.assertIn(self.story, created_dataset.stories.all())
-
+        self.assertHttpBadRequest(resp)
+        self.assertEqual(DataSet.objects.count(), 0)
 
     def test_post_list_with_story_url(self):
         post_data = {
@@ -1104,6 +1086,32 @@ class AssetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
             # Set our created file to be cleaned up
             self.add_file_to_cleanup(created_asset.image.file.path)
 
+    def test_post_list_unsupported_image(self):
+        """Test that an error is returned creating a new image asset when the image file is an unsupported format"""
+        image_filename = "test_image.pdf"
+
+        app_dir = os.path.dirname(os.path.abspath(__file__))
+        img_path = os.path.join(app_dir, "test_files", image_filename)
+        with open(img_path) as image:
+            post_data = {
+                'type': "image",
+                'title': "Test Image Asset",
+                'caption': "This is a test image",
+                'status': "published",
+                'filename': image_filename,
+                'image': image,
+                'language': "en",
+            }
+            self.assertEqual(Asset.objects.count(), 0)
+            self.api_client.client.login(username=self.username,
+                                         password=self.password)
+            resp = self.api_client.client.post('/api/0.1/assets/',
+                                               data=post_data)
+            # Check that the endpoint returns an error
+            self.assertHttpBadRequest(resp)
+            # Check that no asset was created 
+            self.assertEqual(Asset.objects.count(), 0)
+
     def test_post_list_image_as_data_url(self):
         """Test creating an asset with the data stored in an uploaded image encoded as a data URL"""
         image_filename = "test_image.jpg"
@@ -1147,13 +1155,11 @@ class AssetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         # Set our created file to be cleaned up
         self.add_file_to_cleanup(created_asset.image.file.path)
 
-    # BOOKMARK
-    # TODO: Alter this test to verify that endpoint rejects asset creation
-    # when no file/URL is specified
-    def test_post_list_image_no_file(self):
+    def test_post_list_image_no_file_or_url(self):
         """
-        Test that an image asset can be created without a file
-        so the file can be uploaded via the separate upload endpoint
+        Test that an error is returned when trying to create an image asset 
+        without specifying a file or URL
+        
         """
         post_data = {
             'type': "image",
@@ -1167,25 +1173,13 @@ class AssetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
                                      password=self.password)
         resp = self.api_client.post('/api/0.1/assets/',
                                format='json', data=post_data)
-        self.assertHttpCreated(resp)
-        # Check that asset was created in the system and has the correct
-        # metadata
-        self.assertEqual(LocalImageAsset.objects.count(), 1)
-        created_asset = LocalImageAsset.objects.get()
-        self.assertEqual(created_asset.type, post_data['type'])
-        self.assertEqual(created_asset.title, post_data['title'])
-        self.assertEqual(created_asset.caption, post_data['caption'])
-        self.assertEqual(created_asset.status, post_data['status'])
-        self.assertEqual(created_asset.get_languages(),
-                         [post_data['language']])
-        self.assertEqual(created_asset.owner, self.user)
+        self.assertHttpBadRequest(resp)
+        self.assertEqual(Asset.objects.count(), 0)
 
-    # BOOKMARK
-    # TODO: Update test to check for error if no file or URL parameter is present 
-    def test_post_list_map_no_file(self):
+    def test_post_list_map_no_file_body_or_url(self):
         """
-        Test that a map can be created without a file
-        so the file can be uploaded via the separate upload endpoint
+        Test that a map cannot be created when no file, body or url field is
+        provided
         """
         post_data = {
             'type': "map",
@@ -1198,17 +1192,8 @@ class AssetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
                                      password=self.password)
         resp = self.api_client.post('/api/0.1/assets/',
                                format='json', data=post_data)
-        self.assertHttpCreated(resp)
-        # Check that asset was created in the system and has the correct
-        # metadata
-        self.assertEqual(LocalImageAsset.objects.count(), 1)
-        created_asset = LocalImageAsset.objects.get()
-        self.assertEqual(created_asset.type, post_data['type'])
-        self.assertEqual(created_asset.title, post_data['title'])
-        self.assertEqual(created_asset.status, post_data['status'])
-        self.assertEqual(created_asset.get_languages(),
-                         [post_data['language']])
-        self.assertEqual(created_asset.owner, self.user)
+        self.assertHttpBadRequest(resp)
+        self.assertEqual(Asset.objects.count(), 0)
 
     def test_put_detail_image_relative_url(self):
         """
@@ -1666,3 +1651,17 @@ class AssetResourceFeaturedTest(FileCleanupMixin, ResourceTestCase):
         # Refresh the story
         story = Story.objects.get(story_id=story.story_id)
         self.assertEqual(story.featured_assets.all().count(), 0)
+
+
+class UtilsTest(TestCase):
+    def test_image_type_supported_jpg(self):
+        image_filename = "test_image.jpg"
+        app_dir = os.path.dirname(os.path.abspath(__file__))
+        img_path = os.path.join(app_dir, "test_files", image_filename)
+        self.assertTrue(image_type_supported(img_path))
+        
+    def test_image_type_supported_pdf(self):
+        image_filename = "test_image.pdf"
+        app_dir = os.path.dirname(os.path.abspath(__file__))
+        img_path = os.path.join(app_dir, "test_files", image_filename)
+        self.assertFalse(image_type_supported(img_path))
