@@ -1,13 +1,7 @@
-from django import http as django_http
 from django.db.models import Q
-from django.http import Http404
 from django.conf.urls.defaults import url
-from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.uploadedfile import UploadedFile
-from django.views.decorators.csrf import csrf_exempt
-from django.views.generic import View
-from django.views.generic.detail import SingleObjectMixin
-from django.utils.translation import ugettext as _
 
 from tastypie import fields, http
 from tastypie.authentication import Authentication
@@ -22,8 +16,7 @@ from storybase.api import (DataUriResourceMixin,
    DelayedAuthorizationResource, TranslatedModelResource,
    LoggedInAuthorization)
 from storybase_asset.models import (Asset, ExternalAsset, HtmlAsset, 
-    LocalImageAsset, LocalImageAssetTranslation,
-    DataSet, ExternalDataSet, LocalDataSet)
+    LocalImageAsset, DataSet, ExternalDataSet, LocalDataSet)
 from storybase_story.models import Story
 
 class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource, 
