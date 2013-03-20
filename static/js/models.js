@@ -166,7 +166,7 @@ storybase.models.FileUploadModel = Backbone.Model.extend({
 });
 
 
-storybase.models.DataSet = Backbone.Model.extend({
+storybase.models.DataSet = storybase.models.FileUploadModel.extend({
     idAttribute: "dataset_id",
 
     /**

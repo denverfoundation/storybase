@@ -82,10 +82,6 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
                 (self._meta.resource_name, trailing_slash()),
                 self.wrap_view('dispatch_detail'),
                 name="api_dispatch_detail"),
-            url(r"^(?P<resource_name>%s)/(?P<asset_id>[0-9a-f]{32,32})/upload%s$" %
-                (self._meta.resource_name, trailing_slash()),
-                AssetImageUploadView.as_view(), 
-                name="api_dispatch_upload"),
             url(r"^(?P<resource_name>%s)/stories/(?P<story_id>[0-9a-f]{32,32})%s$" %
                 (self._meta.resource_name, trailing_slash()),
                 self.wrap_view('dispatch_list'),
@@ -356,10 +352,6 @@ class DataSetResource(DataUriResourceMixin,DelayedAuthorizationResource,
     def prepend_urls(self):
         return [
             url(r"^(?P<resource_name>%s)/stories/(?P<story_id>[0-9a-f]{32,32})%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
-            url(r"^(?P<resource_name>%s)/(?P<dataset_id>[0-9a-f]{32,32})/upload%s$" %
-                (self._meta.resource_name, trailing_slash()),
-                DataSetFileUploadView.as_view(), 
-                name="api_dispatch_upload"),
         ]
 
     def obj_create(self, bundle, request=None, **kwargs):
@@ -388,81 +380,19 @@ class DataSetResource(DataUriResourceMixin,DelayedAuthorizationResource,
         return bundle
 
     def hydrate_file(self, bundle):
-        return self._hydrate_file(bundle, File, 'file', 'filename')
+        if ('file' in bundle.data and
+            isinstance(bundle.data['file'], UploadedFile)):
+            # The file data is an uploaded file, create a file object
+            # and add it to the bundle
+            file = File.objects.create(file=bundle.data['file'])
+            bundle.data['file'] = file
+            return bundle 
+        else:
+            # Treat the file data as data-url-encoded
+            # file
+            return self._hydrate_file(bundle, File, 'file', 'filename')
 
     def dehydrate(self, bundle):
         # Exclude the filename field from the output
         del bundle.data['filename']
         return bundle
-
-class UploadView(SingleObjectMixin, View):
-    queryset = None
-    translation_queryset = None
-    obj_id_name = None
-    translation_fk_name = None
-    file_field_name = None
-    file_model_class = None
-
-    def get_object(self):
-        """Retrieve the object by it's model specific id instead of pk"""
-        queryset = self.get_queryset()
-        obj_id = self.kwargs.get(self.obj_id_name, None)
-        if obj_id is not None:
-            filter_args = {self.obj_id_name: obj_id}
-            queryset = queryset.filter(**filter_args)
-            try:
-                obj = queryset.get()
-            except ObjectDoesNotExist:
-                raise Http404(_(u"No %(verbose_name)s found matching the query") %
-                        {'verbose_name': queryset.model._meta.verbose_name})
-            if not obj.has_perm(self.request.user, 'change'):
-                raise PermissionDenied(_(u"You are not authorized to edit this story"))
-            return obj
-        else:
-            return None
-
-    def get_translation_queryset(self):
-        return self.translation_queryset
-
-    def get_object_translation(self):
-        queryset = self.get_translation_queryset()
-        kwargs = {}
-        kwargs[self.translation_fk_name] = self.object
-        return queryset.get(**kwargs)
-
-    def post(self, request, *args, **kwargs):
-        self.object = self.get_object()
-        if not self.object.has_perm(request.user, 'change'):
-            return django_http.HttpResponsForbidden()
-        file_field = self.file_field_name
-        uploaded_file = request.FILES.get(file_field)
-        if not uploaded_file:
-            return django_http.HttpResponseBadRequest()
-        file_model = self.file_model_class.objects.create(file=uploaded_file)
-        if file_field in self.object.translated_fields:
-            self.object_translation = self.get_object_translation()
-            setattr(self.object_translation, file_field, file_model)
-            self.object_translation.save()
-        else:
-            setattr(self.object, file_field, file_model)
-            self.object.save()
-
-        return django_http.HttpResponse("File successfully uploaded")
-
-    @csrf_exempt
-    def dispatch(self, *args, **kwargs):
-        return super(UploadView, self).dispatch(*args, **kwargs)
-
-class AssetImageUploadView(UploadView):
-    queryset = LocalImageAsset.objects.all()
-    translation_queryset = LocalImageAssetTranslation.objects.all()
-    obj_id_name = 'asset_id' 
-    translation_fk_name = 'asset'
-    file_field_name = 'image'
-    file_model_class = Image
-
-class DataSetFileUploadView(UploadView):
-    queryset = LocalDataSet.objects.all()
-    obj_id_name = 'dataset_id' 
-    file_field_name = 'file'
-    file_model_class = File 

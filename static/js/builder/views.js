@@ -2525,145 +2525,6 @@ storybase.builder.views.ThumbnailHighlightMixin = {
 };
 
 /**
- * Mixin object that provides a method for doing asynchronous file
- * uploads.
- */
-storybase.builder.views.FileUploadMixin = {
-  /**
-   * Upload a file associated with a model, then refresh the model
-   *
-   * The heavy lifting is done by jQuery.ajax()
-   * 
-   * @param object model Model instance that the file will be
-   *     associated with on the server side.
-   * @param string fileField Name of the file input for the file
-   * @param object file File object retrieved from a form's file input
-   * @options object Options to configure the AJAX request, especially
-   *     callbacks.  progressHandler is the callback for the updating
-   *     the upload's progress, beforeSend is the beforeSend callback
-   *     for the jQuery AJAX request, and success is the callback for
-   *     after the file has been uploaded AND the model's data has
-   *     been refreshed from the server.
-   *
-   * @returns object The jqXHR object returned by the call to 
-   *     jQuery.ajax()
-   */
-  uploadFile: function(model, fileField, file, options) {
-    options = _.isUndefined(options) ? {} : options;
-    var that = this;
-    var url = model.url() + 'upload/';
-    var settings;
-
-    if (file) {
-      formData = new FormData;
-      formData.append(fileField, file);
-      settings = {
-        type: "POST",
-        data: formData,
-        cache: false,
-        contentType: false,
-        processData: false,
-        xhr: function() {
-          var newXhr = $.ajaxSettings.xhr();
-          if (newXhr.upload && options.progressHandler) {
-            newXhr.upload.addEventListener('progress', options.progressHandler, false);
-          }
-          return newXhr;
-        },
-        beforeSend: function() {
-          if (options.beforeSend) {
-            options.beforeSend();
-          }
-        },
-        success: function() {
-          model.fetch({
-            success: function(model, response) {
-              if (options.success) {
-                options.success(model, response);
-              }
-            }
-          });
-        }
-      };
-      var jqXHR = $.ajax(url, settings);
-      return jqXHR;
-    }
-    else {
-      // A file object was not available, likely because the browser doesn't
-      // support the File API.  Try uploading via an IFRAME
-      if (options.form) {
-        this.uploadFileIframe(model, options.form, url, options); 
-      }
-    }
-  },
-
-  uploadFileIframe: function(model, form, url, options) {
-    // Get a jQuery object for the form 
-    var $form = $(form);
-    var timeout = 250;
-    var loadHandler = function(evt) {
-      var iframe = evt.target; 
-      var content;
-
-      if (iframe.detachEvent) {
-        iframe.detachEvent("onload", loadHandler);
-      }
-      else {
-        iframe.removeEventListener("load", loadHandler);
-      }
-
-      if (iframe.contentDocument) {
-        content = iframe.contentDocument.body.innerHTML;
-      }
-      else if (iframe.contentWindow) {
-        content = iframe.contentWindow.document.body.innerHTML;
-      }
-      else if (iframe.document) {
-        content = iframe.document.body.innerHTML;
-      }
-      model.fetch({
-        success: function(model, response) {
-          if (options.success) {
-            options.success(model, response);
-          }
-        }
-      });
-      setTimeout(function() {
-        iframe.parentNode.removeChild(iframe);
-      }, timeout);
-    };
-    // Create a hidden iframe and append it to the DOM
-    // We append it to the body rather than the form's parent element because
-    // the form's parent element gets removed before the form can post
-    var iframe = document.createElement('iframe');
-    iframe.setAttribute('id', 'storybase-upload-iframe');
-    iframe.setAttribute('name', 'storybase-upload-iframe');
-    iframe.setAttribute('width', '0');
-    iframe.setAttribute('height', '0');
-    iframe.setAttribute('border', '0');
-    iframe.setAttribute('style', "width: 0; height: 0; border: none;");
-    document.body.appendChild(iframe);
-    window.frames['storybase-upload-iframe'].name = 'storybase-upload-iframe';
-
-    if (iframe.addEventListener) {
-      iframe.addEventListener('load', loadHandler, true);
-    }
-    if (iframe.attachEvent) {
-      iframe.attachEvent('onload', loadHandler);
-    }
-
-    $form.attr('target', 'storybase-upload-iframe');
-    $form.attr('action', url);
-    $form.attr('method', 'POST');
-    $form.attr('enctype', "multipart/form-data");
-    $form.attr('encoding', "multipart/form-data");
- 
-    form.submit();
-  }
-};
-
-
-/**
  * Mixin for views that have a navigation subview
  */
 storybase.builder.views.NavViewMixin = {
@@ -4257,7 +4118,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
 );
 
 storybase.builder.views.DataView = Backbone.View.extend(
-  _.extend({}, storybase.builder.views.NavViewMixin, storybase.builder.views.FileUploadMixin, {
+  _.extend({}, storybase.builder.views.NavViewMixin, {
     className: 'view-container',
 
     templateSource: $('#data-template').html(),
@@ -4387,33 +4248,27 @@ storybase.builder.views.DataView = Backbone.View.extend(
     },
 
     addDataSet: function(attrs, form) {
-      var that = this;
+      var view = this;
       var file = null;
-      if (attrs.file) {
-        file = attrs.file;
-        delete attrs.file;
-      }
-      this.collection.create(attrs, {
+      var options = {
         success: function(model, response) {
-          that.trigger('save:dataset', model);
-          if (file || !attrs.url) {
-            that.uploadFile(model, 'file', file, {
-              form: form,
-              success: function(model, response) {
-                that.dispatcher.trigger('alert', 'success', "Data set added");
-                that.render();
-              }
-            });
-          }
-          else {
-            that.dispatcher.trigger('alert', 'success', "Data set added");
-            that.render();
-          }
+          view.trigger('save:dataset', model);
+          view.dispatcher.trigger('alert', 'success', "Data set added");
+          view.render();
         },
         error: function(model, response) {
-          that.dispatcher.trigger('error', 'Error saving the data set');
+          view.dispatcher.trigger('error', 'Error saving the data set');
         }
-      });
+      };
+
+      if (attrs.file) {
+        _.extend(options, {
+          upload: true,
+          form: $(form)
+        });
+      }
+
+      this.collection.create(attrs, options);
     },
 
     handleDelete: function(evt) {
@@ -5481,156 +5336,148 @@ storybase.builder.views.FeaturedAssetSelectView = Backbone.View.extend({
   }
 });
 
-storybase.builder.views.FeaturedAssetAddView = Backbone.View.extend(
-  _.extend({}, storybase.builder.views.FileUploadMixin, {
-    id: 'featured-asset-add',
+storybase.builder.views.FeaturedAssetAddView = Backbone.View.extend({
+  id: 'featured-asset-add',
 
-    options: {
-      title: gettext("Add a new image"),
-      templateSource: $('#asset-uploadprogress-template').html(),
-      assetModelClass: storybase.models.Asset
-    },
+  options: {
+    title: gettext("Add a new image"),
+    templateSource: $('#asset-uploadprogress-template').html(),
+    assetModelClass: storybase.models.Asset
+  },
 
-    events: {
-      'submit form.bbf-form': 'processForm',
-      'click [type="reset"]': "cancel"
-    },
+  events: {
+    'submit form.bbf-form': 'processForm',
+    'click [type="reset"]': "cancel"
+  },
 
-    initialize: function() {
-      this.template = Handlebars.compile(this.options.templateSource);
-      this.dispatcher = this.options.dispatcher;
-      this.form = this._initForm();
-      this.initListeners();
-    },
+  initialize: function() {
+    this.template = Handlebars.compile(this.options.templateSource);
+    this.dispatcher = this.options.dispatcher;
+    this.initializeForm();
+    this.initListeners();
+    this._appendForm = true; // Append the form element on render
+  },
 
-    enabled: true,
+  enabled: true,
 
-    initListeners: function() {
-      this.dispatcher.once('ready:story', this.setStory, this);
-    },
+  initListeners: function() {
+    this.dispatcher.once('ready:story', this.setStory, this);
+  },
 
-    _initForm: function() {
-      var form = new Backbone.Form({
-        model: new this.options.assetModelClass({
-          language: this.options.language,
-          type: 'image'
-        })
-      });
-      return this._updateFormLabels(form); 
-    },
-
-    _updateFormLabels: function(form) {
-      if (form.schema.url) {
-        form.schema.url.title = capfirst(gettext("enter the featured image URL"));
-      }
-      if (form.schema.image) {
-        form.schema.image.title = capfirst(gettext("select the featured image from your own computer"));
-      }
-      return form;
-    },
-
-    setStory: function(story) {
-      this.model = story;
-    },
-
-    render: function(options) {
-      options = options ? options : {};
-
-      if (options.uploading) {
-        this.$el.html(this.template());
-        return this;
-      }
-      
-      this.form.render().$el.append('<input type="reset" value="' + gettext("Cancel") + '" />').append('<input type="submit" value="' + gettext("Save Changes") + '" />');
-      this.$el.append(this.form.el);
-      return this;
-    },
-
-    /**
-     * Event handler for submitting form
-     */
-    processForm: function(e) {
-      e.preventDefault();
-      var form = e.target;
-      var errors = this.form.validate();
-      var file;
-      var url;
-      var options = {};
-      var that = this;
-      if (!errors) {
-        this.form.commit();
-        file = this.form.model.get('image');
-        url =  this.form.model.get('url');
-        if (file || !url) {
-          // Set a callback for saving the model that will upload the
-          // image and then set the featured asset.
-          options.success = function(model) {
-            that.uploadFile(model, 'image', file, {
-              form: form,
-              progressHandler: that.handleUploadProgress,
-              beforeSend: function() {
-                that.render({uploading: true});
-              },
-              success: function(model, response) {
-                that.model.setFeaturedAsset(model);
-                that.model.assets.add(model);
-                // Reset the form
-                that.form.model = new that.options.assetModelClass({
-                  language: that.options.language,
-                  type: 'image'
-                });
-                that.render();
-              }
-            });
-          };
-        }
-        else {
-          // Set a callback that just sets the featured asset 
-          options.success = function(model) {
-            that.model.setFeaturedAsset(model);
-            that.model.assets.add(model);
-          }
-        }
-
-        // Delete the image property.  We've either retrieved it for
-        // upload or it was empty (meaning we don't want to change the
-        // image.
-        this.form.model.unset('image'); 
-        this.saveModel(this.form.model, options);
-      }
-      else {
-        // Remove any previous error messages
-        this.form.$('.bbf-model-errors').remove();
-        if (!_.isUndefined(errors._others)) {
-          that.form.$el.prepend('<ul class="bbf-model-errors">');
-          _.each(errors._others, function(msg) {
-            that.form.$('.bbf-model-errors').append('<li>' + msg + '</li>');
-          });
-        }
-      }
-    },
-
-    cancel: function() {
-      this.trigger('cancel');
-    },
-
-    saveModel: function(model, options) {
-      options = options || {};
-      var that = this;
-      model.set('license', this.model.get('license'));
-      model.save(null, {
-        success: function(model) {
-          if (options.success) {
-            options.success(model);
-          }
-        },
-        error: function(model) {
-          that.dispatcher.trigger('error', gettext('Error saving the featured image'));
-        }
-      });
+  initializeForm: function() {
+    if (this.form) {
+      // If there was a previous version of the form, remove it from the 
+      // DOM and detach event listeners 
+      this.form.remove();
     }
-  })
-);
+    // Create a new form with a new bound model instance
+    this.form = new Backbone.Form({
+      model: new this.options.assetModelClass({
+        language: this.options.language,
+        type: 'image'
+      })
+    });
+    this.updateFormLabels(); 
+    this.form.render();
+    // Set a flag to tell render() that the form element
+    // needs to be appended to the view element
+    this._appendForm = true;
+    return this;
+  },
+
+  updateFormLabels: function() {
+    if (this.form.schema.url) {
+      this.form.schema.url.title = capfirst(gettext("enter the featured image URL"));
+    }
+    if (this.form.schema.image) {
+      this.form.schema.image.title = capfirst(gettext("select the featured image from your own computer"));
+    }
+  },
+
+  setStory: function(story) {
+    this.model = story;
+  },
+
+  renderUploading: function() {
+    this.$el.html(this.template());
+    return this;
+  },
+
+  render: function(options) {
+    options = options ? options : {};
+
+    if (options.uploading) {
+      return this.renderUploading();
+    }
+
+    if (this._appendForm) {
+      this.form.$el.append('<input type="reset" value="' + gettext("Cancel") + '" />').append('<input type="submit" value="' + gettext("Save Changes") + '" />');
+      this.$el.append(this.form.el);
+      this._appendForm = false;
+    }
+
+    return this;
+  },
+
+  cancel: function() {
+    this.trigger('cancel');
+  },
+
+  /**
+   * Event handler for submitting form
+   */
+  processForm: function(e) {
+    var errors = this.form.commit();
+
+    e.preventDefault();
+    console.debug(this.form.getValue());
+
+    if (!errors) {
+      this.saveModel(this.form.model);
+    }
+    else {
+      // Remove any previous error messages
+      this.form.$('.bbf-model-errors').remove();
+      if (!_.isUndefined(errors._others)) {
+        this.form.$el.prepend('<ul class="bbf-model-errors">');
+        _.each(errors._others, function(msg) {
+          this.form.$('.bbf-model-errors').append('<li>' + msg + '</li>');
+        }, this);
+      }
+    }
+  },
+
+  saveModel: function(model) {
+    var view = this;
+    var image = model.get('image');
+    var options = {
+      error: function(model) {
+        view.dispatcher.trigger('error', gettext('Error saving the featured image'));
+      },
+      success: function(model, response) {
+        view.model.setFeaturedAsset(model);
+        view.model.assets.add(model);
+        view.initializeForm().render();
+      }
+    };
+
+    model.set('license', this.model.get('license'));
+
+    if (image) {
+      _.extend(options, {
+        upload: true,
+        form: this.form.$el,
+        progressHandler: this.handleUploadProgress
+      });
+
+      if (!_.isString(image)) {
+        this.render({uploading: true});
+      }
+    }
+
+    model.save(null, options);
+  }
+});
 
 
 storybase.builder.views.FeaturedAssetView = Backbone.View.extend({
