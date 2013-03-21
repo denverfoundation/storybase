@@ -58,7 +58,7 @@ class MultipartFileUploadModelResource(ModelResource):
         if not request:
             return False
 
-        return 'iframe' in request.REQUEST
+        return 'iframe' in request.GET
 
     def wrap_in_textarea(self, format, body):
         """
