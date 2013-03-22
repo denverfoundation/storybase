@@ -446,7 +446,9 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
                 relation_type='connected')
         # Wait to ensure that seed story database write has
         # finished
-        sleep(0.05)
+        # TODO: Figure out why there's this race condition. I couldn't get
+        # it to fail consistently
+        sleep(0.25)
         # Create another story.  This should have a greater
         # sort weight than the seed story because it was
         # published later
@@ -454,7 +456,9 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
             byline="Test Byline", status='published')
         self.assertTrue(story.weight > seed_story.weight)
         # Wait to ensure that the story database write has completed 
-        sleep(0.05)
+        # TODO: Figure out why there's this race condition. I couldn't get
+        # it to fail consistently
+        sleep(0.25)
         # Publish the connected story.  This should bump
         # the sort weight of the seed story 
         connected_story.status = 'published'
