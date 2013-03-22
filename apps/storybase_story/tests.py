@@ -1373,6 +1373,57 @@ class TemplateTagTest(TestCase):
         self.assertIn(story2.title, rendered)
         self.assertNotIn(connected_story.title, rendered)
 
+    def test_latest_stories_ordering_after_on_homepage_toggle(self):
+        """
+        Test that the ordering of latest stories doesn't change after a
+        story's ``on_homepage`` flag is toggled.
+
+        This tests the behavior described in #625
+        """
+        user = User.objects.create_user(username='test',
+                email='test@floodlightproject.org',
+                password='password')
+        # Create some stories
+        story1 = create_story(title="Test Featured Story", 
+                summary="Test summary", byline="Test byline", 
+                author=user, status='published', on_homepage=True)
+        story2 = create_story(title="Test Story 2", 
+                summary="Test summary", byline="Test byline", 
+                author=user, status='published')
+        story3 = create_story(title="Test Story 3", 
+                summary="Test summary", byline="Test byline", 
+                author=user, status='published')
+        story4 = create_story(title="Test Story 4", 
+                summary="Test summary", byline="Test byline", 
+                author=user, status='published')
+
+        # Render the latest story list
+        t = Template("{% load story %}{% latest_stories %}")
+        c = Context()
+        rendered = t.render(c)
+
+        # Stories 2, 3, and 4 should be in the rendered output because
+        # they're the most recently published
+        self.assertNotIn(story1.title, rendered)
+        self.assertIn(story2.title, rendered)
+        self.assertIn(story3.title, rendered)
+        self.assertIn(story4.title, rendered)
+
+        # Toggle the ``on_homepage`` flag of story1
+        story1.on_homepage = False
+        story1.save()
+
+        # Re-render the template and confirm that the first story still
+        # doesn't appear in the latest stories list. Even though it's
+        # last-updated date is changed when the ``on_homepage`` flag is
+        # updated, the ``weight`` field, used to generate the latest
+        # stories list shouldn't be affected.
+        rendered = t.render(c)
+        self.assertNotIn(story1.title, rendered)
+        self.assertIn(story2.title, rendered)
+        self.assertIn(story3.title, rendered)
+        self.assertIn(story4.title, rendered)
+
 
 class SectionRenderTest(TestCase):
     """Test Case for rendering section assets"""
