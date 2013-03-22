@@ -16,6 +16,11 @@ Changelog
 
 * Add display of connected story featured images in viewer (#610)
 
+0.8.6
+~~~~~
+
+* Maintain section list height, even when there are a large number of sections (#556)
+
 0.8.5
 ~~~~~
 
