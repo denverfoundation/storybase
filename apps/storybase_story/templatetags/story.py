@@ -56,7 +56,7 @@ def connected_story(story):
 def latest_stories(count=3, img_width=100):
     return latest_context(
             Story.objects.exclude(source__relation_type='connected'), 
-            count, img_width)
+            count, img_width, '-weight')
 
 @register.simple_tag
 def connected_story_section(section):

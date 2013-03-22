@@ -188,12 +188,12 @@ def is_file(data):
     """Is the value a File object"""
     return hasattr(data, 'read') and callable(data.read)
 
-def latest_context(qs, count=3, img_width=100):
+def latest_context(qs, count=3, img_width=100, order_by='-published'):
     """Popuplate the context for latest_* template tags"""
     return {
         'objects': [obj.normalize_for_view(img_width)
                     for obj in qs.published().not_featured()
-                                 .order_by('-last_edited')[:count]],
+                                 .order_by(order_by)[:count]],
     }
 
 def escape_json_for_html(json_str):
