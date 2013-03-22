@@ -38,7 +38,9 @@
     {% endcomment %}
 
     {% render_block "css" %}
+    {% if not debug %}
     {% compress css %}<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css">{% endcompress %}
+    {% endif %}
     <!-- end CSS-->
 
     {% include "storybase/js_error.html" %}
