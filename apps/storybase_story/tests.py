@@ -425,8 +425,42 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
             byline="Test Byline", license="CC BY-NC-SA")
         self.assertEqual(story.license, 'CC BY-NC-SA')
 
+    def test_weight_follows_published_date(self):
+        create_story(title="Test Story", summary="Test Summary",
+            byline="Test Byline", status="published")
+        sleep(1)
+        create_story(title="Test Story 2", summary="Test Summary 2",
+            byline="Test Byline 2", status="published")
+        ordered_by_weight = [s.story_id for s in Story.objects.all().order_by('weight')]
+        ordered_by_published = [s.story_id for s in Story.objects.all().order_by('published')]
+        self.assertEqual(ordered_by_weight, ordered_by_published)
 
-
+    def test_weight_reflects_connected_stories_published_date(self):
+        # Create a seed story
+        seed_story = create_story(title="Test Seed Story", summary="Test Summary",
+            byline="Test Byline", status='published', allow_connected=True)
+        # Create a connected story
+        connected_story = create_story(title="Test Connected Story",
+                byline="Test byline", status="draft")
+        StoryRelation.objects.create(source=seed_story, target=connected_story,
+                relation_type='connected')
+        # Create another story.  This should have a greater
+        # sort weight than the seed story because it was
+        # published later
+        story = create_story(title="Test Story", summary="Test Summary",
+            byline="Test Byline", status='published')
+        self.assertTrue(story.weight > seed_story.weight)
+        # Publish the connected story.  This should bump
+        # the sort weight of the seed story 
+        connected_story.status = 'published'
+        connected_story.save()
+        # Refresh the seed story
+        seed_story = Story.objects.get(story_id=seed_story.story_id)
+        # The seed story' sort weight should now be greater
+        # than the other story
+        self.assertTrue(seed_story.weight > story.weight)
+        
+        
 class StoryPermissionTest(PermissionTestCase):
     """Test case for story permissions"""
     def setUp(self):
@@ -633,22 +667,6 @@ class StorySignalsTest(TestCase):
         self._test_invalidate_related_cache('projects', 'projects',
                                             'clear', project)
 
-    def test_update_last_edited_for_connected(self):
-        user = User.objects.create_user(username='test',
-                email='test@floodlightproject.org',
-                password='password')
-        story1 = create_story(title="Test Story", 
-                summary="Test summary", byline="Test byline", 
-                author=user, status='published', allow_connected=True)
-        connected_story = create_story(title="Test Connected Story",
-                author=user, byline="Test byline", status="draft")
-        StoryRelation.objects.create(source=story1, target=connected_story,
-                relation_type='connected')
-        old_last_edited = story1.last_edited
-        connected_story.status = 'published'
-        connected_story.save()
-        story1 = Story.objects.get(story_id=story1.story_id)
-        self.assertTrue(old_last_edited < story1.last_edited)
 
     def test_set_story_slug_on_publish(self):
         story = create_story(title="Test Story", 
@@ -2302,7 +2320,8 @@ class StoryResourceTest(ResourceTestCase):
                                 'template_story',
                                 'title',
                                 'topics',
-                                'url']
+                                'url',
+                                'weight',]
                                 
         story = create_story(title="Test Story", summary="Test Summary",
                              byline="Test Byline", status="published",

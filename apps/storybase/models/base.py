@@ -103,3 +103,26 @@ class TimestampedModel(models.Model):
     class Meta:
         """Model metadata options"""
         abstract = True
+
+
+class WeightedModel(models.Model):
+    """
+    Abstract base class for models with a field that defines the relative
+    "weight" of instances when sorting
+    """
+
+    # Fields
+    weight = models.IntegerField(default=0)
+
+    class Meta:
+        """Model metadata options"""
+        abstract = True
+
+    def get_weight(self):
+        """
+        Calculate a new value for the weight fieldi
+        
+        This should be implemented in subclasses that inherit
+        from weighted model.
+        """
+        raise NotImplemented

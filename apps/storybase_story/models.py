@@ -1,5 +1,5 @@
 """Models for stories and story sections"""
-
+import time
 from datetime import datetime
 
 from django.conf import settings
@@ -22,7 +22,7 @@ from uuidfield.fields import UUIDField
 from storybase.fields import ShortTextField
 from storybase.models import (TzDirtyFieldsMixin, LicensedModel, PermissionMixin,
     PublishedModel, TimestampedModel, TranslatedModel, TranslationModel,
-    set_date_on_published)
+    WeightedModel)
 from storybase.utils import key_from_instance, unique_slugify
 from storybase_asset.models import (Asset, DataSet, ASSET_TYPES, FeaturedAssetsMixin)
 from storybase_help.models import Help
@@ -98,9 +98,9 @@ class StoryTranslation(TranslationModel):
         return self.title
 
 
-class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
-            TranslatedModel, LicensedModel, PublishedModel,
-            TimestampedModel, StoryPermission):
+class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
+            TranslatedModel, LicensedModel, PublishedModel, 
+           TimestampedModel, StoryPermission):
     """Metadata for a story
 
     The Story model stores a story's metadata and aggregates a story's
@@ -558,6 +558,12 @@ class Story(FeaturedAssetsMixin, TzDirtyFieldsMixin,
 
         return context
 
+    def get_weight(self):
+        if self.published:
+            return time.mktime(self.published.timetuple())
+        else:
+            return 0
+
 
 def set_story_slug(sender, instance, **kwargs):
     """
@@ -585,6 +591,23 @@ def set_story_slug_on_publish(sender, instance, **kwargs):
         # * Has been previously saved
         unique_slugify(instance, instance.title)
 
+def set_date_and_weight_on_published(sender, instance, **kwargs):
+    """Set the published date of a story on status change"""
+    try:
+        old_instance = sender.objects.get(pk=instance.pk)
+    except sender.DoesNotExist:
+        # Object is new, so field won't have changed.
+        # Just check status.
+        if instance.status == 'published':
+            instance.published = datetime.now()
+            # Update the weight, based on the new published date
+            instance.weight = instance.get_weight()
+    else:
+        if (instance.status == 'published' and 
+            old_instance.status != 'published'):
+            instance.published = datetime.now()
+            # Update the weight, based on the new published date
+            instance.weight = instance.get_weight()
 
 def update_last_edited(sender, instance, **kwargs):
     """
@@ -683,9 +706,9 @@ def invalidate_projects_cache(sender, instance, **kwargs):
     invalidate_related_cache(sender, instance, 'projects', **kwargs)
 
 
-def update_last_edited_for_connected(sender, instance, **kwargs):
+def update_weight_for_connected(sender, instance, **kwargs):
     """
-    Update the last_edited field on the seed story when a 
+    Update the weight field on the seed story when a 
     connected story is published.
     """
     if instance.status == 'published':
@@ -697,16 +720,16 @@ def update_last_edited_for_connected(sender, instance, **kwargs):
                 # Story is a connected story
                 # Save it's seed story to update the seed story's
                 # last_edited field
+                connected_to.weight = instance.get_weight()
                 connected_to.save()
 
 
 # Hook up some signal handlers
 pre_save.connect(set_story_slug_on_publish, sender=Story)
-pre_save.connect(set_date_on_published, sender=Story)
+pre_save.connect(set_date_and_weight_on_published, sender=Story)
 pre_save.connect(set_default_featured_asset, sender=Story)
 pre_save.connect(set_asset_license, sender=Story)
-pre_save.connect(update_last_edited_for_connected, sender=Story)
-pre_save.connect(set_date_on_published, sender=Story)
+pre_save.connect(update_weight_for_connected, sender=Story)
 post_save.connect(set_story_slug, sender=StoryTranslation)
 m2m_changed.connect(update_last_edited, sender=Story.organizations.through)
 m2m_changed.connect(update_last_edited, sender=Story.projects.through)
