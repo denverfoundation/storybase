@@ -174,7 +174,7 @@ class ProjectDetailView(RelatedStoriesDetailView):
 class ProjectListView(ListView):
     """Display a list of all Projects"""
     context_object_name = "projects"
-    queryset = Project.objects.published().order_by('-last_edited')
+    queryset = Project.objects.published().order_by('-published')
 
 
 class UserProfileDetailView(RelatedStoriesDetailView):
