@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.8.6
+~~~~~
+
+* Maintain section list height, even when there are a large number of sections (#556)
+
 0.8.5
 ~~~~~
 

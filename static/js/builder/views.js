@@ -2777,7 +2777,8 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
   setWidth: function() {
     var $thumbnails = this.$('.sections').children();
     this._thumbnailWidth = this._thumbnailWidth ||  $thumbnails.eq(0).outerWidth(true);
-    var newWidth = ($thumbnails.length * this._thumbnailWidth) + (3 * this._thumbnailWidth);
+    this._spacerWidth = this._spacerWidth || this.$('.sections .spacer').first().outerWidth(true);
+    var newWidth = ($thumbnails.length * this._thumbnailWidth) + (($thumbnails.length + 2) * this._spacerWidth);
     this.$('.sections').width(newWidth); 
   },
 
