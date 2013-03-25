@@ -11,6 +11,12 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.8.7
+~~~~~
+
+* Fix regression where section list width was being incorrectly set for
+  newly created stories (#556)
+
 0.8.6
 ~~~~~
 
