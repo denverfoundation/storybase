@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.8.8
+~~~~~
+
+* Properly evaluate logged-in-user when previewing stories (#690)
+
 0.8.7
 ~~~~~
 
