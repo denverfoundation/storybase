@@ -1,4 +1,3 @@
-import json
 import logging
 from django.http import HttpResponse
 from django.utils.decorators import method_decorator
@@ -23,5 +22,7 @@ class JSErrorHandlerView(View):
 
         # Serialize the error dictionary as JSON, to make it easier to
         # parse the logs on the other side
-        logger.error("javascript error: %s", json.dumps(error_dict))
+        logger.error("javascript error: %s", error_dict['message'], extra={
+            'data': error_dict,    
+        })
         return HttpResponse('Error logged')
