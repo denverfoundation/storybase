@@ -16,6 +16,12 @@ Changelog
 
 * Add display of connected story featured images in viewer (#610)
 
+0.8.7
+~~~~~
+
+* Fix regression where section list width was being incorrectly set for
+  newly created stories (#556)
+
 0.8.6
 ~~~~~
 

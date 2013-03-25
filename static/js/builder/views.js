@@ -2638,9 +2638,15 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
 
   setWidth: function() {
     var $thumbnails = this.$('.sections').children();
+    var spacerWidth;
     this._thumbnailWidth = this._thumbnailWidth ||  $thumbnails.eq(0).outerWidth(true);
     this._spacerWidth = this._spacerWidth || this.$('.sections .spacer').first().outerWidth(true);
-    var newWidth = ($thumbnails.length * this._thumbnailWidth) + (($thumbnails.length + 2) * this._spacerWidth);
+    // Set a default spacer width if it hasn't already been defined or 
+    // can't be detected from the DOM. This is needed because when a story
+    // is initially created, there aren't any spacers.  They appear once
+    // the story is saved.
+    spacerWidth = this._spacerWidth || 32;
+    var newWidth = ($thumbnails.length * this._thumbnailWidth) + (($thumbnails.length + 2) * spacerWidth);
     this.$('.sections').width(newWidth); 
   },
 
