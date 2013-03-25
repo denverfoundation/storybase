@@ -13,6 +13,7 @@ from django.http import HttpRequest, Http404
 from django.template import Context, Template
 from django.test import TestCase, TransactionTestCase
 from django.utils import simplejson
+from django.utils.translation import get_language
 
 from tastypie.bundle import Bundle
 from tastypie.test import ResourceTestCase
@@ -466,7 +467,31 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
         # than the other story
         self.assertTrue(seed_story.weight > story.weight)
         
-        
+    def test_get_related_list(self):
+        story = create_story(title="Test Story", summary="Test Summary",
+            byline="Test Byline", license="CC BY-NC-SA")
+        field = 'topics'
+        topic = create_category(name="Schools")
+        language = get_language()
+        key = story.related_key(field, language)
+        # Make that the value is not cached
+        cache.delete(key)
+        story.topics.add(topic)
+        topics_list = story.get_related_list(field, 'pk', 'name')
+        # Confirm that the topic is in the result
+        self.assertEqual(len(topics_list), 1)
+        self.assertEqual(topics_list[0]['id'], topic.pk)
+        self.assertEqual(topics_list[0]['name'], topic.name)
+        # Confirm that the topic list has been cached
+        self.assertEqual(cache.get(key, None), topics_list)
+        # Call the method again to make sure we get the same value
+        topics_list_2 = story.get_related_list(field, 'pk', 'name')
+        # Confirm that the topic list has been cached
+        self.assertEqual(topics_list_2, topics_list)
+        # Clean up the cache
+        cache.delete(key)
+
+
 class StoryPermissionTest(PermissionTestCase):
     """Test case for story permissions"""
     def setUp(self):

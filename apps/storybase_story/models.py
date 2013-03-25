@@ -324,6 +324,7 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
         obj_list = [{ 'id': getattr(obj, id_field), 'name': getattr(obj, name_field) }
                     for obj in manager.all()]
         cache.set(key, obj_list)
+        return obj_list
 
     def topics_list(self):
         """Get a list of id, name pairs for the Story's topics"""
