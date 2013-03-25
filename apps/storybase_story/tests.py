@@ -444,21 +444,18 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
                 byline="Test byline", status="draft")
         StoryRelation.objects.create(source=seed_story, target=connected_story,
                 relation_type='connected')
-        # Wait to ensure that seed story database write has
-        # finished
-        # TODO: Figure out why there's this race condition. I couldn't get
-        # it to fail consistently
-        sleep(0.25)
+        # Wait to ensure that the published timestamps of the two stories
+        # differ by >= 1 second
+        sleep(1)
         # Create another story.  This should have a greater
         # sort weight than the seed story because it was
         # published later
         story = create_story(title="Test Story", summary="Test Summary",
             byline="Test Byline", status='published')
         self.assertTrue(story.weight > seed_story.weight)
-        # Wait to ensure that the story database write has completed 
-        # TODO: Figure out why there's this race condition. I couldn't get
-        # it to fail consistently
-        sleep(0.25)
+        # Wait to ensure that the published timestamps of the two stories
+        # differ by >= 1 second
+        sleep(1)
         # Publish the connected story.  This should bump
         # the sort weight of the seed story 
         connected_story.status = 'published'
