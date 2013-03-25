@@ -92,7 +92,7 @@ class StoryViewerView(ModelIdDetailView):
     def get_context_data(self, **kwargs):
         context = super(StoryViewerView, self).get_context_data(**kwargs)
         preview = self.kwargs.get('preview', False)
-        if preview and self.request.user:
+        if preview and self.request.user.is_authenticated():
             # Previewing the story in the viewer, include draft
             # connected stories belonging to this user
             context['connected_stories'] = self.object.connected_stories(published_only=False, draft_author=self.request.user)

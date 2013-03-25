@@ -16,6 +16,11 @@ Changelog
 
 * Add display of connected story featured images in viewer (#610)
 
+0.8.8
+~~~~~
+
+* Properly evaluate logged-in-user when previewing stories (#690)
+
 0.8.7
 ~~~~~
 
