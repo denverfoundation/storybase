@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.8.9
+~~~~~
+
+* Properly dehydrate related fields when they haven't been cached (#556)
+
 0.8.8
 ~~~~~
 
