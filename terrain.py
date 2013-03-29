@@ -350,6 +350,8 @@ def admin_login(step):
         button = world.browser.find_by_css('.submit-row input').first
         button.click()
 
+# TODO: Make this the functionality for the "Given the User .. exists" step.
+# That seems a lot more semantically correct
 @step(u'Given an admin creates the User "([^"]*)"')
 def create_user(step, username):
     try:
@@ -534,21 +536,39 @@ def user_first_and_last_name_group3(step, username, first_name,
     user.last_name = last_name
     user.save()
 
+def get_or_create_story(title, username=None, **extra_create_kwargs):
+    lookup_kwargs = {
+        'storytranslation_title': title,
+    }
+
+    create_kwargs = {
+        'title': title,
+    }
+
+    if username:
+        user = User.objects.get(username=username)
+        lookup_kwargs['author'] = user
+        create_kwargs['author'] = user
+    else:
+        user = None
+
+    try:
+        Story.objects.get(**lookup_kwargs)
+    except Story.DoesNotExist:
+        create_kwargs.update(extra_create_kwargs)
+        create_story(**create_kwargs)
+
 @step(u'Given the Story "([^"]*)" has been created$')
 def story_created(step, title):
-    try:
-        Story.objects.get(storytranslation__title=title)
-    except Story.DoesNotExist:
-        create_story(title)
+    get_or_create_story(title)
 
 @step(u'Given the Story "([^"]*)" has been created with author "([^"]*)"')
 def story_created_with_author(step, title, username):
-    user = User.objects.get(username=username)
-    try:
-        story = Story.objects.get(storytranslation__title=title,
-                author=user)
-    except Story.DoesNotExist:
-        create_story(title=title, author=user)
+    get_or_create_story(title, username)
+
+@step(u'Given the seed Story "([^"]*)" has been created with author "([^"]*)"')
+def seed_story_created_with_author(step, title, username):
+    get_or_create_story(title, username, allow_connected=True)
 
 @step(u'Given the Story "([^"]*)" is published')
 def story_published(step, title):
