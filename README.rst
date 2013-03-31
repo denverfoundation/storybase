@@ -16,6 +16,11 @@ Changelog
 
 * Add display of connected story featured images in viewer (#610)
 
+0.8.10
+~~~~~~
+
+* Fix positioning of builder workflow step tabs (#695)
+
 0.8.9
 ~~~~~
 
