@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.8.10
+~~~~~~
+
+* Fix positioning of builder workflow step tabs (#695)
+
 0.8.9
 ~~~~~
 
