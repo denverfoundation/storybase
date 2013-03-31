@@ -10,7 +10,7 @@ def setup(feature):
     call_command('loaddata', 'section_layouts', interactive=False)
     call_command('loaddata', 'story_templates', interactive=False)
 
-@step(u'Given the connected story "([^"]*)" has been created with prompt "([^"]*)"')
+@step(u'Given the seed story "([^"]*)" has been created with prompt "([^"]*)"')
 def connected_story_created(step, title, prompt):
     create_story(title=title, connected_prompt=prompt, allow_connected=True)
 

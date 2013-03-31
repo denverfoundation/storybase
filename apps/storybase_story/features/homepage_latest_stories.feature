@@ -4,7 +4,7 @@ Feature: A list of recently published stories appears on the homepage
         Scenario: Publishing a connected story promotes its seed story to the top of the latest stories list on the homepage
                 Given an admin creates the User "test_user@floodlightproject.org"
                 Given the user "test_user@floodlightproject.org" exists
-                Given the seed Story "Test Seed Story" has been created with author "test_user@floodlightproject.org"
+                Given the seed Story "Test Seed Story" has been created with prompt "Tell your story."
                 Given the Story "Test Seed Story" is published
                 Given the Story "Test Connected Story" has been created
                 Given the Story "Test Connected Story" is a connected story to "Test Seed Story"
