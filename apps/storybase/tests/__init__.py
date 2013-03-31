@@ -13,7 +13,8 @@ from django.utils import simplejson
 from storybase.models import PermissionMixin
 from storybase.forms import UserEmailField 
 from storybase.tests.base import SettingsChangingTestCase
-from storybase.utils import escape_json_for_html, full_url, is_file
+from storybase.utils import (escape_json_for_html, full_url,
+    get_language_name, is_file)
 
 class ContextProcessorTest(TestCase):
     def test_conf(self):
@@ -211,3 +212,6 @@ class UtilsTestCase(TestCase):
         escaped_json_str = escape_json_for_html(json_str)
         self.assertEqual(simplejson.loads(json_str)['body'],
                          simplejson.loads(escaped_json_str)['body'])
+
+    def test_get_language_name(self):
+        self.assertEqual("English", get_language_name("en"))

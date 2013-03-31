@@ -6,7 +6,7 @@ import re
 from django.conf import settings
 from django.contrib.sites.models import get_current_site
 from django.template.defaultfilters import slugify as django_slugify
-from django.utils.translation import ugettext_lazy as _
+from django.utils.translation import ugettext as _
 
 def get_language_name(language_code):
     """Convert a language code into its full (localized) name"""
