@@ -721,7 +721,7 @@ class SectionAssetResource(DelayedAuthorizationResource, HookedModelResource):
             # container
             
             # Roll back the transaction
-            transaction.rollback()
+            transaction.rollback_unless_managed()
             logger.warn("Attempted duplicate assignment of asset %s to "
                         "section %s in container %s" % 
                         (bundle.obj.asset.asset_id, 
