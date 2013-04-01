@@ -14,7 +14,15 @@ Changelog
 0.9
 ~~~
 
+* Prevent assigning multiple assets to the same section/container (#595)
+* Prevent submitting the builder asset creation form when either a file or
+  URL has not been specified (#606)
 * Add display of connected story featured images in viewer (#610)
+* Add weight field to Story model and sort latest stories by this field
+  (#625) 
+* Sort latest projects and latest organizations lists by published
+  timestamp (#625)
+* Sort projects in the projects list view by published timestamp (#625)
 
 0.8.10
 ~~~~~~
@@ -24,7 +32,7 @@ Changelog
 0.8.9
 ~~~~~
 
-* Properly dehydrate related fields when they haven't been cached (#556)
+* Properly dehydrate related fields when they haven't been cached (#566)
 
 0.8.8
 ~~~~~
@@ -72,6 +80,7 @@ Changelog
 
 * Prevent saving multiple assets to the same section and container (#535)
 * Quote styles in viewer (#565)
+* Make placeholder behavior in builder form fields more consistent (#616)
 * Use django-compressor to compress and version static assets (#624)
 * Add space to content in viewer to accomdate bottom bar (#627)
 * Fix alignment of builder toolbar icons in Chrome >= 0.25 (#649)
