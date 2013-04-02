@@ -3271,6 +3271,9 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     // Object to keep track of asset edit views.  Keys are
     // the container ids.
     this._assetEditViews = {};
+    // Container ID that should have it's model updated from
+    // this.assets when rendering asset views after a sync
+    this._refreshModelForContainer = null;
     
     // Edit the story information within the section edit view
     // This is mostly used in the connected story builder
@@ -3284,7 +3287,8 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
 
     _.bindAll(this, 'renderAssetViews');
     this.dispatcher.on('do:add:sectionasset', this.addAsset, this);
-    this.dispatcher.on('do:remove:sectionasset', this.removeAsset, this);
+    this.dispatcher.on('do:remove:sectionasset',
+                       this.handleDoRemoveSectionAsset, this);
     this.dispatcher.on('select:section', this.show, this);
     this.model.on("change:layout", this.changeLayout, this);
     this.model.on("sync", this.saveSectionAssets, this);
@@ -3299,7 +3303,8 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     this.undelegateEvents();
     this.unbind();
     this.dispatcher.off('do:add:sectionasset', this.addAsset, this);
-    this.dispatcher.off('do:remove:sectionasset', this.removeAsset, this);
+    this.dispatcher.on('do:remove:sectionasset',
+                       this.handleDoRemoveSectionAsset, this);
     this.dispatcher.off('select:section', this.show, this);
     this.model.off("change:layout", this.changeLayout, this);
     this.model.off("sync", this.saveSectionAssets, this);
@@ -3373,13 +3378,34 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
 
   renderAssetViews: function() {
     var view = this;
+    var containerAssets;
     this.$(this.options.containerEl).each(function(index, el) {
       var container = $(el).attr('id');
       var assetEditView = view.getAssetEditView(container);
-      // If there isn't a view for this container, create it
       if (!assetEditView) {
+        // If there isn't a view for this container, create it
         assetEditView = view.createAssetEditView(container, el);
       }
+      else if (assetEditView.el != el) {
+        // If the view's element isn't the one detected in the DOM,  update 
+        // the view's element. This occurs when switching back to the build 
+        // step view from another workflow step
+        assetEditView.setElement(el);
+      }
+
+      if (view._refreshModelForContainer === container) {
+        // Update the model for the edit view for a particular
+        // container. This is neccesary when the assets have been
+        // re-fetched after the user has tried to create an asset
+        // when one has already been assigned to the section/container
+        view._refreshModelForContainer = null;
+        containerAssets = view.assets.where({container: container});
+        if (containerAssets.length && assetEditView.model != containerAssets[0]) {
+          assetEditView.setModel(containerAssets[0]); 
+          assetEditView.setState('display');
+        }
+      }
+
       assetEditView.render();
     });
   },
@@ -3478,7 +3504,9 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
    */
   removeAssets: function() {
     this.assets.each(function(asset) {
-      this.removeAsset(this.model, asset);
+      this.removeAsset(asset, {
+        removeView: true
+      });
     }, this);
   },
 
@@ -3533,24 +3561,44 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
 
   /**
    * Callback for when an asset is removed from the section
+   *
+   * This should be be bound to the do:removesectionasset event.
+   *
+   * @param {Section} Section from which the asset is to be removed
+   * @param {Asset} Asset to be removed from the section
    */
-  removeAsset: function(section, asset) {
+  handleDoRemoveSectionAsset: function(section, asset) {
     if (section == this.model) {
-      var view = this;
-      var sectionAsset = this.getSectionAsset(asset);
-      sectionAsset.id = asset.id;
-      sectionAsset.destroy({
-        success: function(model, response) {
-          view.removeEditViewForAsset(asset);
-          view.assets.remove(asset);
-          view.dispatcher.trigger("remove:sectionasset", asset);
-          view.dispatcher.trigger("alert", "info", "You removed an asset, but it's not gone forever. You can re-add it to a section from the asset list");
-        },
-        error: function(model, response) {
-          view.dispatcher.trigger("error", "Error removing asset from section");
-        }
-      });
+      this.removeAsset(asset);
     }
+  },
+
+  /**
+   * Remove an asset from this section
+   *
+   * @param asset Asset to be removed
+   * @param {Object} [options] Options for performing this operation.
+   * @param options.removeView Should the view for editing the asset also
+   *        be removed.
+   */
+  removeAsset: function(asset, options) {
+    options = options || {};
+    var view = this;
+    var sectionAsset = this.getSectionAsset(asset);
+    sectionAsset.id = asset.id;
+    sectionAsset.destroy({
+      success: function(model, response) {
+        if (options.removeView) {
+          view.removeEditViewForAsset(asset);
+        }
+        view.assets.remove(asset);
+        view.dispatcher.trigger("remove:sectionasset", asset);
+        view.dispatcher.trigger("alert", "info", "You removed an asset, but it's not gone forever. You can re-add it to a section from the asset list");
+      },
+      error: function(model, response) {
+        view.dispatcher.trigger("error", "Error removing asset from section");
+      }
+    });
   },
 
   getSectionAsset: function(asset, container) {
@@ -3587,6 +3635,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
         // Re-fetch this section's assets from the server to get the
         // assets that were added in the other window/tab. The resulting
         // ``sync`` event will also force the UI to re-render.
+        view._refreshModelForContainer = container;
         view.assets.fetch();
         // TODO: Should we add the asset to the story's asset list ?
       }
@@ -3713,7 +3762,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
     events: {
       "hover .wrapper": "toggleTypeListVisible",
       "click .asset-type": "selectType", 
-      "click .remove": "handleRemove",
+      "click .remove": "handleClickRemove",
       "click .edit": "edit",
       "click .help": "showHelp",
       'click input[type="reset"]': "cancel",
@@ -3748,10 +3797,12 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
 
     bindModelEvents: function() {
       this.model.on("change", this.initializeForm, this);
+      this.model.on("remove", this.handleModelRemove, this);
     },
 
     unbindModelEvents: function() {
       this.model.off("change", this.initializeForm, this);
+      this.model.off("remove", this.handleModelRemove, this);
     },
 
     /**
@@ -4071,14 +4122,33 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       this.setState('edit').render();
     },
 
-    handleRemove: function(evt) {
+    /**
+     * Event handler for clicking the remove icon
+     */
+    handleClickRemove: function(evt) {
       evt.preventDefault();
+      this.dispatcher.trigger('do:remove:sectionasset', this.section, this.model);
+    },
+
+    /**
+     * Update the model property of the view, taking event callbacks into
+     * account
+     */
+    setModel: function(model) {
       // This view should no longer listen to events on this model
       this.unbindModelEvents();
-      this.dispatcher.trigger('do:remove:sectionasset', this.section, this.model);
-      this.model = new storybase.models.Asset(this.modelOptions);
+      this.model = model; 
       // Listen to events on the new model
       this.bindModelEvents();
+    },
+
+    /**
+     * Callback for when a model is removed from this.assets
+     *
+     * @param {Asset} model Asset model instance that was removed
+     */
+    handleModelRemove: function(model) {
+      this.setModel(new storybase.models.Asset(this.modelOptions));
       this.setState('select').render();
     },
 
