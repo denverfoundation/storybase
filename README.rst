@@ -23,6 +23,7 @@ Changelog
 * Sort latest projects and latest organizations lists by published
   timestamp (#625)
 * Sort projects in the projects list view by published timestamp (#625)
+* Show asset views after switching between workflow steps (#696)
 
 0.8.10
 ~~~~~~
