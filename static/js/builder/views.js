@@ -1493,9 +1493,35 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         that.nudgeIntoWindow($(this));
       });
     }; 
+
+    // Set a cookie so the builder tour is not shown again
+    var setCookie = function() {
+      $.cookie("storybase_show_builder_tour", false, {
+        path: '/',
+        // Don't show the tour for a very long time
+        expires: 365
+      });
+    };
+
+    // Default options when constructing the guiders
+    var defaultOpts = {
+      buttons: [
+        {
+          name: gettext("Prev"),
+          onclick: guiders.prev
+        },
+        {
+          name: gettext("Next"),
+          onclick: guiders.next
+        }
+      ],
+      xButton: true,
+      onShow: bindNudge,
+      onClose: setCookie
+    };
     
     if (this.showTour(force)) { 
-      guiders.createGuider({
+      guiders.createGuider(_.defaults({
         id: 'workflow-step-guider',
         attachTo: '#workflow-step #build',
         buttons: [
@@ -1507,127 +1533,55 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         position: 6,
         title: gettext("Building a story takes five simple steps."),
         description: this.template['workflow-step-guider'](),
-        next: 'section-list-guider',
-        xButton: true,
-        onShow: bindNudge 
-      });
-      guiders.createGuider({
+        next: 'section-list-guider'
+      }, defaultOpts));
+      guiders.createGuider(_.defaults({
         id: 'section-list-guider',
         attachTo: '#section-list',
-        buttons: [
-          {
-            name: gettext("Prev"),
-            onclick: guiders.prev
-          },
-          {
-            name: gettext("Next"),
-            onclick: guiders.next
-          }
-        ],
         position: 6,
         title: gettext("This is your table of contents."),
         description: gettext('This bar shows the sections in your story.'),
         prev: 'workflow-step-guider',
-        next: 'section-thumbnail-guider',
-        xButton: true,
-        onShow: bindNudge
-      });
-      guiders.createGuider({
+        next: 'section-thumbnail-guider'
+      }, defaultOpts));
+      guiders.createGuider(_.defaults({
         id: 'section-thumbnail-guider',
         attachTo: '.section-thumbnail:first',
-        buttons: [
-          {
-            name: gettext("Prev"),
-            onclick: guiders.prev
-          },
-          {
-            name: gettext("Next"),
-            onclick: guiders.next
-          }
-        ],
         position: 6,
         title: gettext("Select the section you want to edit."),
         description: gettext("Click on a section to edit it. The section you are actively editing is highlighted."),
         prev: 'section-list-guider',
-        next: 'section-manipulation-guider',
-        xButton: true,
-        onShow: bindNudge
-      });
-      guiders.createGuider({
+        next: 'section-manipulation-guider'
+      }, defaultOpts));
+      guiders.createGuider(_.defaults({
         id: 'section-manipulation-guider',
         attachTo: '.section-thumbnail',
-        buttons: [
-          {
-            name: gettext("Prev"),
-            onclick: guiders.prev
-          },
-          {
-            name: gettext("Next"),
-            onclick: guiders.next
-          }
-        ],
         position: 6,
         title: gettext("You can also add, move or delete sections."),
         description: this.template['section-manipulation-guider'](),
         prev: 'section-thumbnail-guider',
-        next: 'preview-guider',
-        xButton: true,
-        onShow: bindNudge
-      });
-      guiders.createGuider({
+        next: 'preview-guider'
+      }, defaultOpts));
+      guiders.createGuider(_.defaults({
         id: 'preview-guider',
         attachTo: '#tools .preview',
-        buttons: [
-          {
-            name: gettext("Prev"),
-            onclick: guiders.prev
-          },
-          {
-            name: gettext("Next"),
-            onclick: guiders.next
-          }
-        ],
         position: 6,
         title: gettext("Preview your story at any time."),
         description: gettext("Clicking here lets you preview your story in a new window"),
         prev: 'section-manipulation-guider',
-        next: 'exit-guider',
-        xButton: true,
-        onShow: bindNudge
-      });
-      guiders.createGuider({
+        next: 'exit-guider'
+      }, defaultOpts));
+      guiders.createGuider(_.defaults({
         id: 'exit-guider',
         attachTo: '#tools .exit',
-        buttons: [
-          {
-            name: gettext("Prev"),
-            onclick: guiders.prev
-          },
-          {
-            name: gettext("Next"),
-            onclick: guiders.next
-          }
-        ],
         position: 6,
         title: gettext("You can leave your story at any time and come back later."),
         description: this.template['exit-guider'](),
         prev: 'preview-guider',
-        next: 'help-guider',
-        xButton: true,
-        onShow: bindNudge
-      });
-      guiders.createGuider({
+        next: 'help-guider'
+      }, defaultOpts));
+      guiders.createGuider(_.defaults({
         attachTo: '#drawer-controls [title="Help"]',
-        buttons: [
-          {
-            name: gettext("Prev"),
-            onclick: guiders.prev
-          },
-          {
-            name: gettext("Next"),
-            onclick: guiders.next
-          }
-        ],
         position: 6,
         id: 'help-guider',
         title: gettext("Get tips on how to make a great story."),
@@ -1636,36 +1590,21 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
           bindNudge(myGuider);
           that.dispatcher.trigger('do:show:help');
         },
-        next: 'repeat-tour-guider',
-        xButton: true
-      });
-      guiders.createGuider({
+        next: 'repeat-tour-guider'
+      }, defaultOpts));
+      guiders.createGuider(_.defaults({
         attachTo: '#repeat-tour-button',
-        buttons: [
-          {
-            name: gettext("Prev"),
-            onclick: guiders.prev
-          },
-          {
-            name: gettext("Next"),
-            onclick: guiders.next
-          }
-        ],
         position: 9,
         offset: { left: 10, top: 11 },
         id: 'repeat-tour-guider',
         title: gettext("View this tour again"),
         description: gettext("You can view this tour again by clicking this icon."),
-        onShow: function(myGuider) {
-          bindNudge(myGuider);
-        },
         onHide: function() {
           that.dispatcher.trigger('do:hide:help');
         },
-        next: 'tooltip-guider',
-        xButton: true
-      });
-      guiders.createGuider({
+        next: 'tooltip-guider'
+      }, defaultOpts));
+      guiders.createGuider(_.defaults({
         attachTo: '#workflow-step #build',
         buttons: [
           {
@@ -1687,16 +1626,10 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
           $('#workflow-step #build').triggerHandler('mouseover');
         },
         onHide: function() {
-          // Set a cookie so the user doesn't see the builder tour again
-          $.cookie("storybase_show_builder_tour", false, {
-            path: '/',
-            // Don't show the tour for a very long time
-            expires: 365
-          });
+          setCookie();
           $('#workflow-step #build').triggerHandler('mouseout');
-        },
-        xButton: true
-      });
+        }
+      }, defaultOpts));
       guiders.show('workflow-step-guider');
       // HACK: Workaround for #415.  In IE, re-nudge the first guider element
       // after waiting a little bit. In some cases, the initial CSS change 

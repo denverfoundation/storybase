@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.9.1dev
+~~~~~~~~
+
+* Supress builder tour when user clicks the "X" icon (#697)
+
 0.9
 ~~~
 
