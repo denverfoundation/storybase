@@ -1847,9 +1847,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
     this.dispatcher.on("select:template", this.setStoryTemplate, this);
     this.dispatcher.on("do:save:story", this.save, this);
-    this.dispatcher.on("add:sectionasset", this.showSaved, this);
-    this.dispatcher.on("save:section", this.showSaved, this);
-    this.dispatcher.on("save:story", this.showSaved, this);
     this.dispatcher.on("ready:story", this.createEditViews, this);
     this.dispatcher.on("save:story", this.setTitle, this);
     this.dispatcher.on("ready:story", this.setTitle, this);
@@ -2006,17 +2003,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     }
     else {
       return this.workflowNavView;
-    }
-  },
-
-  /**
-   * Event callback that displays an alert indicating the story has been
-   * saved.
-   */
-  showSaved: function(model, showAlert) {
-    showAlert = _.isUndefined(showAlert) || showAlert;
-    if (showAlert) {
-      this.dispatcher.trigger('alert', 'success', "The story has been saved");
     }
   },
 
@@ -2212,6 +2198,8 @@ storybase.builder.views.LastSavedView = Backbone.View.extend({
     this.lastSaved = !!this.options.lastSaved ? this.parseDate(this.options.lastSaved) : null;
 
     this.dispatcher = this.options.dispatcher;
+    this.dispatcher.on("add:sectionasset", this.updateLastSaved, this);
+    this.dispatcher.on('save:asset', this.updateLastSaved, this);
     this.dispatcher.on('save:section', this.updateLastSaved, this);
     this.dispatcher.on('save:story', this.updateLastSaved, this);
     this.dispatcher.on('ready:story', this.showButton, this);
@@ -2232,7 +2220,7 @@ storybase.builder.views.LastSavedView = Backbone.View.extend({
     this.lastSaved = new Date(); 
     this.render();
     this.showText();
-    this.$textEl.fadeOut(20000, function() {
+    this.$textEl.fadeOut(10000, function() {
       that.showButton();
     });
   },
@@ -4082,6 +4070,9 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
             view.dispatcher.trigger("do:add:sectionasset", view.section,
               view.model, view.container
             );
+          }
+          else {
+            view.dispatcher.trigger("save:asset", view.model);
           }
         },
         error: function(model, xhr) {
