@@ -8,9 +8,7 @@ distribute==0.6.14
 django-classy-tags==0.3.4.1
 django-cms==2.3.5
 django-email-confirmation==0.2
-# Install django-filer develop branch because it fixes 
-# https://github.com/stefanfoulis/django-filer/issues/59
-git+git://github.com/stefanfoulis/django-filer.git
+django-filer>=0.9.3
 git+https://github.com/toastdriven/django-haystack.git@master#egg=django-haystack
 django-mptt==0.5.2
 django-reversion>=1.6,<1.7
