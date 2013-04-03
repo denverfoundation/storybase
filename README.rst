@@ -11,6 +11,12 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.9.1
+~~~~~
+
+* Use mock geocoder in tests unless user explicitely specifies a geocoder
+  in the settings (#700)
+
 0.9
 ~~~
 
