@@ -226,6 +226,11 @@ storybase.builder.views.AppView = Backbone.View.extend({
       );
     }
 
+    this.subviews.alert = new storybase.builder.views.AlertManagerView({
+      el: this.$(this.options.alertsEl),
+      dispatcher: this.dispatcher
+    });
+
     // IMPORTANT: Create the builder view last because it triggers
     // events that the other views need to listen to
     this.subviews.build = new storybase.builder.views.BuilderView(buildViewOptions);
@@ -235,18 +240,12 @@ storybase.builder.views.AppView = Backbone.View.extend({
     });
     this.$workflowContainerEl.append(this.lastSavedView.render().el);
 
-    // Initialize the properties that store the last alert level
-    // and message.
-    this.lastLevel = null;
-    this.lastMessage = null;
-
     // Bind callbacks for custom events
     this.dispatcher.on("open:drawer", this.openDrawer, this);
     this.dispatcher.on("close:drawer", this.closeDrawer, this);
     this.dispatcher.on("select:template", this.setTemplate, this);
     this.dispatcher.on("select:workflowstep", this.updateStep, this); 
     this.dispatcher.on("error", this.error, this);
-    this.dispatcher.on("alert", this.showAlert, this);
   },
 
   openDrawer: function() {
@@ -376,7 +375,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
     if (!this.checkBrowserSupport() && !$.cookie(cookieKey)) {
       // If the user has an unsupported browser and hasn't already seen
       // and closed the message, show an alert
-      this.showAlert('error', this.options.browserSupportMessage, {
+      this.dispatcher.trigger('alert', 'error', this.options.browserSupportMessage, {
         // Don't automatically close the alert
         timeout: null,
         // When the alert is closed, set a cookie so the alert is not shown
@@ -400,39 +399,7 @@ storybase.builder.views.AppView = Backbone.View.extend({
    */
   error: function(msg) {
     console.error(msg);
-    this.showAlert('error', msg);
-  },
-
-  /**
-   * Show an alert message.
-   *
-   * @param {String} level Message level. Used to style the message.
-   * @param {String} msg Message text.
-   * @param {Integer|null} [options.timeout=15000] Milliseconds to show the message
-   *   before it is hidden. If null, the message remains visible.
-   *
-   */
-  showAlert: function(level, msg, options) {
-    options = options || {};
-    options.timeout = _.isUndefined(options.timeout) ? 15000 : options.timeout;
-    options.level = level;
-    options.message = msg;
-    var $el = this.$(this.options.alertsEl);
-    var numAlerts = $el.children().length;
-    var view;
-
-    // Check for duplicate messages and only show the message
-    // if it's different.
-    if (!(level === this.lastLevel && msg === this.lastMessage && numAlerts > 0)) {
-      view = new storybase.builder.views.AlertView(options);
-      
-      $el.prepend(view.render().el);
-      if (options.timeout) {
-        view.fadeOut();
-      }
-    }
-    this.lastLevel = level;
-    this.lastMessage = msg;
+    this.dispatcher.trigger('alert', 'error', msg);
   },
 
   /**
@@ -464,6 +431,49 @@ storybase.builder.views.AppView = Backbone.View.extend({
 
     // If we haven't returned yet, we have support for everything needed
     return true; 
+  }
+});
+
+storybase.builder.views.AlertManagerView = Backbone.View.extend({
+  initialize: function() {
+    this.dispatcher = this.options.dispatcher;
+    // Initialize the properties that store the last alert level
+    // and message.
+    this.lastLevel = null;
+    this.lastMessage = null;
+
+    this.dispatcher.on("alert", this.showAlert, this);
+  },
+
+  /**
+   * Show an alert message.
+   *
+   * @param {String} level Message level. Used to style the message.
+   * @param {String} msg Message text.
+   * @param {Integer|null} [options.timeout=15000] Milliseconds to show the message
+   *   before it is hidden. If null, the message remains visible.
+   *
+   */
+  showAlert: function(level, msg, options) {
+    options = options || {};
+    options.timeout = _.isUndefined(options.timeout) ? 15000 : options.timeout;
+    options.level = level;
+    options.message = msg;
+    var numAlerts = this.$el.children().length;
+    var view;
+
+    // Check for duplicate messages and only show the message
+    // if it's different.
+    if (!(level === this.lastLevel && msg === this.lastMessage && numAlerts > 0)) {
+      view = new storybase.builder.views.AlertView(options);
+      
+      this.$el.prepend(view.render().el);
+      if (options.timeout) {
+        view.fadeOut();
+      }
+    }
+    this.lastLevel = level;
+    this.lastMessage = msg;
   }
 });
 
