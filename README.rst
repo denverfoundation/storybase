@@ -14,6 +14,7 @@ Changelog
 0.9.1dev
 ~~~~~~~~
 
+* Add ability to close alerts before they fade out
 * Supress builder tour when user clicks the "X" icon (#697)
 
 0.9

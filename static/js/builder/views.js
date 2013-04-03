@@ -352,6 +352,10 @@ storybase.builder.views.AppView = Backbone.View.extend({
     console.debug('Rendering main view');
     var activeView = this.getActiveView();
     var $container = this.$(this.options.subviewContainerEl);
+    // Lookup for getting/setting the cookie to determine if the user
+    // has already seen and closed the unsupported browser warning
+    var cookieKey = 'storybase_hide_browser_support_warning';
+
     this.renderWorkflowNavView(activeView);
     this.renderSubNavView(activeView);
     $container.empty();
@@ -369,8 +373,21 @@ storybase.builder.views.AppView = Backbone.View.extend({
     this.toolsView.render();
     this.drawerView.setElement(this.options.drawerEl).render();
     this.pushDown(this.drawerView.$el);
-    if (!this.checkBrowserSupport()) {
-      this.showAlert('error', this.options.browserSupportMessage, null);
+    if (!this.checkBrowserSupport() && !$.cookie(cookieKey)) {
+      // If the user has an unsupported browser and hasn't already seen
+      // and closed the message, show an alert
+      this.showAlert('error', this.options.browserSupportMessage, {
+        // Don't automatically close the alert
+        timeout: null,
+        // When the alert is closed, set a cookie so the alert is not shown
+        // again
+        onClose: function() {
+          $.cookie(cookieKey, true, {
+            path: '/',
+            expires: 365
+          });
+        }
+      });
     }
     return this;
   },
@@ -391,26 +408,27 @@ storybase.builder.views.AppView = Backbone.View.extend({
    *
    * @param {String} level Message level. Used to style the message.
    * @param {String} msg Message text.
-   * @param {Integer|null} [timeout=15000] Milliseconds to show the message
+   * @param {Integer|null} [options.timeout=15000] Milliseconds to show the message
    *   before it is hidden. If null, the message remains visible.
    *
    */
-  showAlert: function(level, msg, timeout) {
-    timeout = _.isUndefined(timeout) ? 15000 : timeout;
+  showAlert: function(level, msg, options) {
+    options = options || {};
+    options.timeout = _.isUndefined(options.timeout) ? 15000 : options.timeout;
+    options.level = level;
+    options.message = msg;
     var $el = this.$(this.options.alertsEl);
     var numAlerts = $el.children().length;
-    var view = new storybase.builder.views.AlertView({
-      level: level,
-      message: msg
-    });
+    var view;
+
     // Check for duplicate messages and only show the message
     // if it's different.
     if (!(level === this.lastLevel && msg === this.lastMessage && numAlerts > 0)) {
+      view = new storybase.builder.views.AlertView(options);
+      
       $el.prepend(view.render().el);
-      if (timeout) {
-        view.$el.fadeOut(timeout, function() {
-          $(this).remove();
-        });
+      if (options.timeout) {
+        view.fadeOut();
       }
     }
     this.lastLevel = level;
@@ -1369,15 +1387,50 @@ storybase.builder.views.AlertView = Backbone.View.extend({
 
   className: 'alert',
 
-  initialize: function() {
-    this.level = this.options.level;
-    this.message = this.options.message;
+  options: {
+    closeButton: true,
+    closeButtonHtml: '<span class="close-icon"></span>',
+    closeButtonSelector: '.close-icon'
+  },
+
+  events: function() {
+    var events = {};
+    if (this.options.closeButton) {
+      events['click ' + this.options.closeButtonSelector] = "close";
+    }
+    return events;
   },
 
   render: function() {
-    this.$el.addClass('alert-' + this.level);
-    this.$el.html(this.message);
+    var view = this;
+    var html = this.options.message;
+
+    if (this.options.closeButton) {
+      html = html + this.options.closeButtonHtml
+    }
+    this.$el.addClass('alert-' + this.options.level);
+    this.$el.html(html);
+    
     return this;
+  },
+
+  /**
+   * Trigger a fadeOut animation on the element, then remove the view
+   *
+   * This must be called after the view has been added to the DOM 
+   */
+  fadeOut: function() {
+    if (this.options.timeout) {
+      this.$el.fadeOut(this.options.timeout, _.bind(this.close, this)); 
+    }
+    return this;
+  },
+
+  close: function() {
+    if (this.options.onClose) {
+      this.options.onClose(this);
+    }
+    this.remove();
   }
 });
 
