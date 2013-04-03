@@ -11,8 +11,8 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
-0.9.1dev
-~~~~~~~~
+dev
+~~~
 
 * Add ability to close alerts before they fade out
 * Avoid duplicate alert messages
