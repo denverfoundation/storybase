@@ -15,6 +15,7 @@ Changelog
 ~~~~~~~~
 
 * Add ability to close alerts before they fade out
+* Avoid duplicate alert messages
 * Supress builder tour when user clicks the "X" icon (#697)
 
 0.9

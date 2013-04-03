@@ -385,7 +385,8 @@ storybase.builder.views.AppView = Backbone.View.extend({
             path: '/',
             expires: 365
           });
-        }
+        },
+        sticky: true
       });
     }
     return this;
@@ -437,12 +438,42 @@ storybase.builder.views.AppView = Backbone.View.extend({
 storybase.builder.views.AlertManagerView = Backbone.View.extend({
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
-    // Initialize the properties that store the last alert level
-    // and message.
-    this.lastLevel = null;
-    this.lastMessage = null;
+    // Track messages that are currently visible 
+    this._visible = {};
 
     this.dispatcher.on("alert", this.showAlert, this);
+  },
+
+  _hashAlert: function(level, msg) {
+    return level + ':' + msg;
+  },
+  
+  /**
+   * Callback for when an AlertView is closed
+   *
+   * Should be bound an AlertView's 'close' event
+   */
+  removeAlert: function(alertView) {
+    this.clearVisible(alertView.options.level, alertView.options.message);
+  },
+
+  isVisible: function(level, msg) {
+    if (this._visible[this._hashAlert(level, msg)]) {
+      return true;
+    }
+
+    return false;
+  },
+
+  setVisible: function(level, msg) {
+    this._visible[this._hashAlert(level, msg)] = true;
+  },
+
+  clearVisible: function(level, msg) {
+    var key = this._hashAlert(level, msg);
+    if (this._visible[key]) {
+      delete this._visible[key];
+    }
   },
 
   /**
@@ -452,28 +483,89 @@ storybase.builder.views.AlertManagerView = Backbone.View.extend({
    * @param {String} msg Message text.
    * @param {Integer|null} [options.timeout=15000] Milliseconds to show the message
    *   before it is hidden. If null, the message remains visible.
+   * @param {Boolean} [options.sticky] Stick the alert to the top of the list
    *
    */
   showAlert: function(level, msg, options) {
+    var view, $sticky;
     options = options || {};
     options.timeout = _.isUndefined(options.timeout) ? 15000 : options.timeout;
     options.level = level;
     options.message = msg;
-    var numAlerts = this.$el.children().length;
-    var view;
 
     // Check for duplicate messages and only show the message
     // if it's different.
-    if (!(level === this.lastLevel && msg === this.lastMessage && numAlerts > 0)) {
+    if (!this.isVisible(level, msg)) {
       view = new storybase.builder.views.AlertView(options);
-      
-      this.$el.prepend(view.render().el);
+      $sticky = this.$('.sticky').last();
+      if (options.sticky) {
+        view.$el.addClass('sticky');
+      }
+      if ($sticky.length) {
+        $sticky.after(view.render().el);
+      }
+      else {
+        this.$el.prepend(view.render().el);
+      }
+      this.setVisible(level, msg);
+      view.once('close', this.removeAlert, this);
       if (options.timeout) {
         view.fadeOut();
       }
     }
-    this.lastLevel = level;
-    this.lastMessage = msg;
+  }
+});
+
+storybase.builder.views.AlertView = Backbone.View.extend({
+  tagName: 'div',
+
+  className: 'alert',
+
+  options: {
+    closeButton: true,
+    closeButtonHtml: '<span class="close-icon"></span>',
+    closeButtonSelector: '.close-icon'
+  },
+
+  events: function() {
+    var events = {};
+    if (this.options.closeButton) {
+      events['click ' + this.options.closeButtonSelector] = "close";
+    }
+    return events;
+  },
+
+  render: function() {
+    var view = this;
+    var html = this.options.message;
+
+    if (this.options.closeButton) {
+      html = html + this.options.closeButtonHtml
+    }
+    this.$el.addClass('alert-' + this.options.level);
+    this.$el.html(html);
+    
+    return this;
+  },
+
+  /**
+   * Trigger a fadeOut animation on the element, then remove the view
+   *
+   * This must be called after the view has been added to the DOM 
+   */
+  fadeOut: function() {
+    if (this.options.timeout) {
+      this.$el.fadeOut(this.options.timeout, _.bind(this.close, this)); 
+    }
+    return this;
+  },
+
+  close: function() {
+    if (this.options.onClose) {
+      this.options.onClose(this);
+    }
+    this.remove();
+    this.trigger('close', this);
   }
 });
 
@@ -1390,58 +1482,6 @@ storybase.builder.views.StoryTemplateView = Backbone.View.extend({
     e.preventDefault();
   },
 
-});
-
-storybase.builder.views.AlertView = Backbone.View.extend({
-  tagName: 'div',
-
-  className: 'alert',
-
-  options: {
-    closeButton: true,
-    closeButtonHtml: '<span class="close-icon"></span>',
-    closeButtonSelector: '.close-icon'
-  },
-
-  events: function() {
-    var events = {};
-    if (this.options.closeButton) {
-      events['click ' + this.options.closeButtonSelector] = "close";
-    }
-    return events;
-  },
-
-  render: function() {
-    var view = this;
-    var html = this.options.message;
-
-    if (this.options.closeButton) {
-      html = html + this.options.closeButtonHtml
-    }
-    this.$el.addClass('alert-' + this.options.level);
-    this.$el.html(html);
-    
-    return this;
-  },
-
-  /**
-   * Trigger a fadeOut animation on the element, then remove the view
-   *
-   * This must be called after the view has been added to the DOM 
-   */
-  fadeOut: function() {
-    if (this.options.timeout) {
-      this.$el.fadeOut(this.options.timeout, _.bind(this.close, this)); 
-    }
-    return this;
-  },
-
-  close: function() {
-    if (this.options.onClose) {
-      this.options.onClose(this);
-    }
-    this.remove();
-  }
 });
 
 /**
