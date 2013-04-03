@@ -18,6 +18,12 @@ dev
 * Avoid duplicate alert messages
 * Supress builder tour when user clicks the "X" icon (#697)
 
+0.9.1
+~~~~~
+
+* Use mock geocoder in tests unless user explicitely specifies a geocoder
+  in the settings (#700)
+
 0.9
 ~~~
 

@@ -5,7 +5,7 @@ from tastypie import fields, http
 from tastypie.authentication import Authentication
 from tastypie.authorization import ReadOnlyAuthorization
 from tastypie.constants import ALL, ALL_WITH_RELATIONS 
-from tastypie.exceptions import BadRequest, ImmediateHttpResponse
+from tastypie.exceptions import ImmediateHttpResponse
 from tastypie.resources import Resource, ModelResource
 from tastypie.utils import trailing_slash
 
@@ -136,7 +136,7 @@ class GeocoderResource(Resource):
         allowed_methods = ['get']
         detail_allowed_methods = []
         include_resource_uri = False
-	# Allow open access to this resource for now since it's read-only
+        # Allow open access to this resource for now since it's read-only
         authentication = Authentication()
         authorization = ReadOnlyAuthorization()
 
