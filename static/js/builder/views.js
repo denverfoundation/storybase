@@ -523,8 +523,8 @@ storybase.builder.views.AlertView = Backbone.View.extend({
 
   options: {
     closeButton: true,
-    closeButtonHtml: '<span class="close-icon"></span>',
-    closeButtonSelector: '.close-icon'
+    closeButtonHtml: '<button type="button" class="close"><i class="icon-remove-sign"></i></button>',
+    closeButtonSelector: 'button.close'
   },
 
   events: function() {

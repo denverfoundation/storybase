@@ -1,6 +1,5 @@
 // Common Styles
 header {
-  border-bottom:1px solid white;
   background:url(../img/builder/header-bg.png) repeat-x top left;
 
   > div {
@@ -58,18 +57,27 @@ li.select2-search-field {
   background-color: #DFF0D8;
   border-color: #D6E9C6;
   color: #468847;
+  button.close {
+    color: #468847 !important;
+  }
 }
 
 .alert-error {
   background-color: #F2DEDE;
   border-color: #EED3D7;
   color: #B94A48;
+  button.close {
+    color: #B94A48 !important;
+  }
 }
 
 .alert-info {
   background-color: #D9EDF7;
   border-color: #BCE8F1;
   color: #3A87AD;
+  button.close {
+    color: #3A87AD !important;
+  }
 }
 
 .introduction {
@@ -185,9 +193,12 @@ button.help {
   padding: 1%;
   text-align: center;
 
-  .close-icon {
-    .remove-icon(14px);
-    margin-left: 4px;
+  button.close {
+    .button-reset;
+    position: relative;
+    float: right;
+    font-size: 20px;
+    line-height: 20px;
   }
 }
 

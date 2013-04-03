@@ -225,26 +225,19 @@ button, .button {
   }
 }
 
-.remove-icon-base(@size) {
+
+.remove-icon(@size, @color) {
   cursor:pointer;
+  color:@color;
+  &:hover {
+    color:darken(@color, 20%);
+  }
   &:after {
     font-family: "FontAwesome";
     content:"\f057";
     font-size:@size;
     width:@size;
     height:@size;
-  }
-}
-
-.remove-icon(@size) {
-  .remove-icon-base(@size);
-}
-
-.remove-icon(@size, @color) {
-  .remove-icon-base(@size);
-  color: @color;
-  &:hover {
-    color:darken(@color, 20%);
   }
 }
 
