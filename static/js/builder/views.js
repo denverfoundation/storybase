@@ -2204,7 +2204,7 @@ storybase.builder.views.LastSavedView = Backbone.View.extend({
     this.dispatcher.on('save:story', this.updateLastSaved, this);
     this.dispatcher.on('ready:story', this.showButton, this);
 
-    this.$textEl = $("<span></span>").attr('id', this.options.textId).appendTo(this.$el);
+    this.$textEl = $("<div></div>").attr('id', this.options.textId).appendTo(this.$el).hide();
     this.$buttonEl = $('<button type="button">' + gettext("Save") + '</button>')
       .attr('id', this.options.buttonId)
       .attr('title', gettext("Click to save your story"))
