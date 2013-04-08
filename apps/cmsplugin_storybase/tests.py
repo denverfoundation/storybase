@@ -9,6 +9,8 @@ from storybase_user.models import create_project
 
 
 class NewsItemModelTest(FileCleanupMixin, TestCase):
+    urls = 'cmsplugin_storybase.news_urls'
+
     def setUp(self):
         super(NewsItemModelTest, self).setUp()
 
@@ -37,7 +39,7 @@ class NewsItemModelTest(FileCleanupMixin, TestCase):
             self.assertIn('test_image.jpg',
                     normalized['image_html'])
             self.assertIn("This is a test news item", normalized['excerpt'])
-            self.assertNotIn('url', normalized)
+            self.assertIn(news_item.slug, normalized['url'])
 
 
 class TemplateTagTest(FileCleanupMixin, PermissionTestCase):
