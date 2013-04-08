@@ -18,6 +18,11 @@ dev
 * Avoid duplicate alert messages
 * Supress builder tour when user clicks the "X" icon (#697)
 
+0.9.2
+~~~~~
+
+* Wire up links to detail view of news items in homepage slider (#703)
+
 0.9.1
 ~~~~~
 

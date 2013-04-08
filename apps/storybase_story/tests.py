@@ -22,8 +22,8 @@ from storybase.admin import toggle_featured
 from storybase.tests.base import (SloppyComparisonTestMixin, 
         PermissionTestCase, FixedTestApiClient)
 from storybase.utils import slugify
-from storybase_asset.models import (Asset, HtmlAsset, HtmlAssetTranslation,
-        create_html_asset, create_external_asset)
+from storybase_asset.models import (Asset, create_html_asset,
+        create_external_asset)
 from storybase_geo.models import Location, GeoLevel, Place
 from storybase_help.models import create_help 
 from storybase_story.api import (SectionAssetResource, SectionResource, 
