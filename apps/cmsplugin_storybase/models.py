@@ -80,8 +80,8 @@ class NewsItem(NewsItemPermission, PublishedModel, TimestampedModel,
             kwargs['year'] = self.published.year
             kwargs['month'] = self.published.month
         else:
-            kwargs['year'] = self.last_updated.year
-            kwargs['month'] = self.last_updated.month
+            kwargs['year'] = self.last_edited.year
+            kwargs['month'] = self.last_edited.month
 
         # IMPORTANT: The AppHook needs to be connected in all languages
         # for the call to reverse() below to work correctly.
@@ -106,6 +106,7 @@ class NewsItem(NewsItemPermission, PublishedModel, TimestampedModel,
             "date": self.created, 
             "image_html":' <img src="%s" />' % (self.image.url),
             "excerpt": self.body,
+            "url": self.get_absolute_url(),
         }
 
 
