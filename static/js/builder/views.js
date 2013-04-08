@@ -2146,8 +2146,10 @@ storybase.builder.views.LastSavedView = Backbone.View.extend({
   id: 'last-saved',
 
   options: {
-    textId: 'last-saved-text',
-    buttonId: 'save-button'
+    //textId: 'last-saved-text',
+    buttonId: 'save-button',
+    buttonText: gettext("Save"),
+    buttonTextSaved: gettext("Saved")
   },
 
   events: function() {
@@ -2204,8 +2206,8 @@ storybase.builder.views.LastSavedView = Backbone.View.extend({
     this.dispatcher.on('save:story', this.updateLastSaved, this);
     this.dispatcher.on('ready:story', this.showButton, this);
 
-    this.$textEl = $("<div></div>").attr('id', this.options.textId).appendTo(this.$el).hide();
-    this.$buttonEl = $('<button type="button">' + gettext("Save") + '</button>')
+    //this.$textEl = $("<div></div>").attr('id', this.options.textId).appendTo(this.$el).hide();
+    this.$buttonEl = $('<button type="button">' + this.options.buttonText + '</button>')
       .attr('id', this.options.buttonId)
       .attr('title', gettext("Click to save your story"))
       .hide()
@@ -2215,14 +2217,28 @@ storybase.builder.views.LastSavedView = Backbone.View.extend({
       }
   },
 
+  toggleButtonStyle: function() {
+    if (this.$buttonEl.hasClass('saved')) {
+      this.$buttonEl.html(this.options.buttonText);
+    }
+    else {
+      this.$buttonEl.html(this.options.buttonTextSaved);
+    }
+    this.$buttonEl.toggleClass('saved');
+  },
+
   updateLastSaved: function() {
-    var that = this;
+    var view = this;
     this.lastSaved = new Date(); 
     this.render();
-    this.showText();
-    this.$textEl.fadeOut(10000, function() {
-      that.showButton();
-    });
+    view.toggleButtonStyle();
+    setTimeout(function() {
+      view.toggleButtonStyle();
+    }, 4000);
+    //this.showText();
+    //this.$textEl.fadeOut(10000, function() {
+    //  view.showButton();
+    //});
   },
 
   /**
@@ -2252,16 +2268,16 @@ storybase.builder.views.LastSavedView = Backbone.View.extend({
   },
 
   showButton: function() {
-    this.$textEl.hide();
+  //  this.$textEl.hide();
     this.$buttonEl.show();
     return this;
   },
 
-  showText: function() {
-    this.$textEl.show();
-    this.$buttonEl.hide();
-    return this;
-  },
+  //showText: function() {
+  //  this.$textEl.show();
+  //  this.$buttonEl.hide();
+  //  return this;
+  //},
 
   handleClick: function(evt) {
     this.dispatcher.trigger('do:save:story');
@@ -2271,7 +2287,7 @@ storybase.builder.views.LastSavedView = Backbone.View.extend({
     var lastSavedStr;
     if (this.lastSaved) {
       lastSavedStr = gettext('Last Saved') + ' ' + this.formatDate(this.lastSaved);
-      this.$textEl.html(lastSavedStr);
+      //this.$textEl.html(lastSavedStr);
       this.$buttonEl.attr('title', lastSavedStr);
     }
     return this;
