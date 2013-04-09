@@ -2203,7 +2203,6 @@ storybase.builder.views.LastSavedView = Backbone.View.extend({
 
     if (jQuery().tooltipster) {
       this.$buttonEl.tooltipster(this.options.tooltipOptions);
-      
     }
   },
 
