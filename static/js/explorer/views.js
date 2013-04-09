@@ -994,7 +994,7 @@ storybase.explorer.views.Map = Backbone.View.extend({
         gridSize: 30 
       };
       this.clusterer = new LeafClusterer(this.map, null, clustererOpts);
-      this.$el.append(this.searchTemplate({
+      this.$el.prepend(this.searchTemplate({
         button_id: this.searchButtonId,
         field_id: this.searchFieldId,
         clear_button_id: this.clearButtonId
