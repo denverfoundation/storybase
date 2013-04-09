@@ -2154,7 +2154,10 @@ storybase.builder.views.LastSavedView = Backbone.View.extend({
       'saving': '<i class="icon-refresh icon-spin"></i> ' + gettext("Saving"),
       'saved': '<i class="icon-ok"></i> ' + gettext("Saved")
     },
-    updateInterval: 5000
+    updateInterval: 5000,
+    tooltipOptions: {
+      position: 'right'
+    }
   },
 
   events: function() {
@@ -2199,7 +2202,8 @@ storybase.builder.views.LastSavedView = Backbone.View.extend({
     setInterval(_.bind(this.render, this), this.options.updateInterval);
 
     if (jQuery().tooltipster) {
-      this.$buttonEl.tooltipster();
+      this.$buttonEl.tooltipster(this.options.tooltipOptions);
+      
     }
   },
 
