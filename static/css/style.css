@@ -623,7 +623,6 @@ body.story-builder #last-saved{height:34px;max-width:100px;margin:10px 0 0 10px;
 body.story-builder #save-button{padding:8px;background:#878787;font-family:"Museo300Regular";font-size:14px;border-radius:4px;border:none;font-weight:normal;color:white !important;cursor:pointer;text-decoration:none;text-shadow:0 -1px 0 rgba(0, 0, 0, 0.4);display:inline-block;background:#5a5a5a;font-style:normal;}body.story-builder #save-button.right{margin-left:8px;}
 body.story-builder #save-button:hover{text-decoration:none !important;}
 body.story-builder #save-button:hover{background:#414141;}
-body.story-builder #save-button.saved{background-color:#468847;}body.story-builder #save-button.saved[disabled]{opacity:1 !important;zoom:1 !important;filter:alpha(opacity=100) !important;}
 body.story-builder button.preview{font-size:1.5em;}
 body.story-builder #subnav-bar{background-color:#f0efef;width:100%;}
 body.story-builder #subnav-bar-contents{margin-left:auto;margin-right:auto;width:1020px;}

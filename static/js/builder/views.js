@@ -2149,8 +2149,11 @@ storybase.builder.views.LastSavedView = Backbone.View.extend({
 
   options: {
     buttonId: 'save-button',
-    buttonText: gettext("Save"),
-    buttonTextSaved: gettext("Saved"),
+    buttonText: {
+      'default': gettext("Save"),
+      'saving': '<i class="icon-refresh icon-spin"></i> ' + gettext("Saving"),
+      'saved': '<i class="icon-ok"></i> ' + gettext("Saved")
+    },
     updateInterval: 5000
   },
 
@@ -2178,6 +2181,7 @@ storybase.builder.views.LastSavedView = Backbone.View.extend({
 
   initialize: function() {
     this.lastSaved = !!this.options.lastSaved ? this._makeStrict(this.options.lastSaved) : null;
+    this.state = 'default';
 
     this.dispatcher = this.options.dispatcher;
     this.dispatcher.on("add:sectionasset", this.updateLastSaved, this);
@@ -2186,7 +2190,7 @@ storybase.builder.views.LastSavedView = Backbone.View.extend({
     this.dispatcher.on('save:story', this.updateLastSaved, this);
     this.dispatcher.on('ready:story', this.showButton, this);
 
-    this.$buttonEl = $('<button type="button">' + this.options.buttonText + '</button>')
+    this.$buttonEl = $('<button type="button">' + this.options.buttonText[this.state] + '</button>')
       .attr('id', this.options.buttonId)
       .attr('title', gettext("Click to save your story"))
       .hide()
@@ -2199,25 +2203,24 @@ storybase.builder.views.LastSavedView = Backbone.View.extend({
     }
   },
 
-  toggleButtonStyle: function() {
-    if (this.$buttonEl.hasClass('saved')) {
-      this.$buttonEl.html(this.options.buttonText);
+  setState: function(state) {
+    this.state = state;
+    if (this.state === 'default') {
       this.$buttonEl.prop('disabled', false);
     }
     else {
-      this.$buttonEl.html(this.options.buttonTextSaved);
       this.$buttonEl.prop('disabled', true);
     }
-    this.$buttonEl.toggleClass('saved');
+    this.$buttonEl.html(this.options.buttonText[this.state]);
   },
 
   updateLastSaved: function() {
     var view = this;
     this.lastSaved = new Date(); 
     this.render();
-    view.toggleButtonStyle();
+    view.setState('saved');
     setTimeout(function() {
-      view.toggleButtonStyle();
+      view.setState('default');
     }, 4000);
   },
 
@@ -2227,6 +2230,7 @@ storybase.builder.views.LastSavedView = Backbone.View.extend({
   },
 
   handleClick: function(evt) {
+    this.setState('saving');
     this.dispatcher.trigger('do:save:story');
   },
 
