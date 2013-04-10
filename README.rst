@@ -17,6 +17,7 @@ dev
 * Add ability to close alerts before they fade out
 * Avoid duplicate alert messages
 * Supress builder tour when user clicks the "X" icon (#697)
+* More subtle response when story is saved (#548)
 
 0.9.2
 ~~~~~
@@ -298,6 +299,7 @@ This project includes a number of excellent open-source libraries:
 * `Handlebars <http://handlebarsjs.com/>`_ by Yehuda Katz
 * `HTML5 Boilerplate <http://html5boilerplate.com/>`_
 * `imagesLoaded <https://github.com/desandro/imagesloaded>`_ by David DeSandro
+* `JavaScript Pretty Date <http://ejohn.org/blog/javascript-pretty-date/>`_ by John Resig
 * `jQuery <http://jquery.org/>`_ by John Resig
 * `jQuery Cookie <https://github.com/carhartl/jquery-cookie/>`_ by Klaus Hartl
 * `jQuery Condense Plugin <https://github.com/jsillitoe/jquery-condense-plugin>`_ by Joe Sillitoe

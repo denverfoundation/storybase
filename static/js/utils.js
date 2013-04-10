@@ -172,6 +172,45 @@ Namespace('storybase.utils', {
     else {
       return false;
     }
+  },
+
+
+  /**
+   * Takes an ISO time and returns a string representing how long ago the
+   * date represents.
+   *
+   * @param {String|Date} time An ISO time or Date object
+   * @param {Function} gettext Function to translate string into local
+   *   language. Defaults to a function that passes through the English
+   *   string.
+   *
+   * Based on JavaScript Pretty Date
+   * Copyright (c) 2011 John Resig (ejohn.org)
+   * Licensed under the MIT and GPL licenses.
+   *
+   * Updated by Geoff Hing (geoffhing@gmail.com) to take either a Date 
+   * object or a string representation of a date and to support localizing
+   * strings, 2013.
+   *
+   */
+  prettyDate: function(time, gettext){
+    var date = toString.call(time) == '[object Date]' ? time : new Date((time || "").replace(/-/g,"/").replace(/[TZ]/g," ")),
+      diff = (((new Date()).getTime() - date.getTime()) / 1000),
+      day_diff = Math.floor(diff / 86400);
+    gettext = gettext || function(s) { return s; };
+        
+    if ( isNaN(day_diff) || day_diff < 0 || day_diff >= 31 )
+      return;
+        
+    return day_diff == 0 && (
+        diff < 60 && gettext("just now") ||
+        diff < 120 && gettext("1 minute ago") ||
+        diff < 3600 && Math.floor( diff / 60 ) + gettext(" minutes ago") ||
+        diff < 7200 && "1 hour ago" ||
+        diff < 86400 && Math.floor( diff / 3600 ) + gettext(" hours ago")) ||
+      day_diff == 1 && gettext("Yesterday") ||
+      day_diff < 7 && day_diff + gettext(" days ago") ||
+      day_diff < 31 && Math.ceil( day_diff / 7 ) + gettext(" weeks ago");
   }
 });
 

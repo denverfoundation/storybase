@@ -54,29 +54,29 @@ li.select2-search-field {
 }
 
 .alert-success {
-  background-color: #DFF0D8;
-  border-color: #D6E9C6;
-  color: #468847;
+  background-color: @success-background; 
+  border-color: @success-border;
+  color: @success-text; 
   button.close {
-    color: #468847 !important;
+    color: @success-text !important;
   }
 }
 
 .alert-error {
-  background-color: #F2DEDE;
-  border-color: #EED3D7;
-  color: #B94A48;
+  background-color: @error-background;
+  border-color: @error-border;
+  color: @error-text;
   button.close {
-    color: #B94A48 !important;
+    color: @error-text !important;
   }
 }
 
 .alert-info {
-  background-color: #D9EDF7;
-  border-color: #BCE8F1;
-  color: #3A87AD;
+  background-color: @info-background;
+  border-color: @info-border;
+  color: @info-text;
   button.close {
-    color: #3A87AD !important;
+    color: @info-text !important;
   }
 }
 
@@ -407,11 +407,20 @@ button.help {
   font-style: italic;
 }
 
+//#last-saved-text {
+//  .rounded-corners(2px);
+//  padding: 2px 4px;
+//  color: @success-text;
+//  background-color: @success-background;
+//  background-border: @success-border;
+//}
+
 #save-button {
   .button-style(gray);
   // Explicitely set the font-style to normal, otherwise
   // IE inherits the italic style from the #last-saved rule
   font-style: normal;
+  min-width: 6em;
 }
 
 button.preview {

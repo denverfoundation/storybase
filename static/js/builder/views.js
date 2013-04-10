@@ -3,6 +3,8 @@ Namespace.use('storybase.utils.hasAnalytics');
 Namespace.use('storybase.utils.capfirst');
 Namespace.use('storybase.utils.geocode');
 
+var prettyDate = storybase.utils.prettyDate;
+
 /**
  * Default visible steps of the story builder workflow.  
  *
@@ -1847,9 +1849,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
 
     this.dispatcher.on("select:template", this.setStoryTemplate, this);
     this.dispatcher.on("do:save:story", this.save, this);
-    this.dispatcher.on("add:sectionasset", this.showSaved, this);
-    this.dispatcher.on("save:section", this.showSaved, this);
-    this.dispatcher.on("save:story", this.showSaved, this);
     this.dispatcher.on("ready:story", this.createEditViews, this);
     this.dispatcher.on("save:story", this.setTitle, this);
     this.dispatcher.on("ready:story", this.setTitle, this);
@@ -2009,17 +2008,6 @@ storybase.builder.views.BuilderView = Backbone.View.extend({
     }
   },
 
-  /**
-   * Event callback that displays an alert indicating the story has been
-   * saved.
-   */
-  showSaved: function(model, showAlert) {
-    showAlert = _.isUndefined(showAlert) || showAlert;
-    if (showAlert) {
-      this.dispatcher.trigger('alert', 'success', "The story has been saved");
-    }
-  },
-
   triggerSaved: function() {
     this.dispatcher.trigger('save:story', this.model);
   },
@@ -2160,8 +2148,16 @@ storybase.builder.views.LastSavedView = Backbone.View.extend({
   id: 'last-saved',
 
   options: {
-    textId: 'last-saved-text',
-    buttonId: 'save-button'
+    buttonId: 'save-button',
+    buttonText: {
+      'default': gettext("Save"),
+      'saving': '<i class="icon-refresh icon-spin"></i> ' + gettext("Saving"),
+      'saved': '<i class="icon-ok"></i> ' + gettext("Saved")
+    },
+    updateInterval: 5000,
+    tooltipOptions: {
+      position: 'right'
+    }
   },
 
   events: function() {
@@ -2182,108 +2178,69 @@ storybase.builder.views.LastSavedView = Backbone.View.extend({
     return dateStr.replace(re, "");
   },
 
-  /**
-   * Convert an ISO-8601 formatted date string into a Date object.
-   *
-   * Takes into account minor browser differences.
-   */
-  parseDate: function(date) {
-    var parsedDate;
-
-    if (_.isDate(date)) {
-      // If the argument is already a date object, just return it
-      return date;
-    }
-
-    // Otherwise, it's a string and we need to make a Date object out of it
-    parsedDate = new Date(date);
-    if (!isNaN(parsedDate.getTime())) {
-      // We successfully parsed the date string. Return the Date object
-      return parsedDate;
-    }
-
-    // The date wasn't successfully parsed, this is likely because the browser
-    // doesn't support microseconds in the ISO-8601 datestring as returned
-    // by the API (IE).
-    return new Date(this._makeStrict(date));
+  prettyDate: function(time) {
+    return prettyDate(time, gettext);
   },
 
   initialize: function() {
-    this.lastSaved = !!this.options.lastSaved ? this.parseDate(this.options.lastSaved) : null;
+    this.lastSaved = !!this.options.lastSaved ? this._makeStrict(this.options.lastSaved) : null;
+    this.state = 'default';
 
     this.dispatcher = this.options.dispatcher;
+    this.dispatcher.on("add:sectionasset", this.updateLastSaved, this);
+    this.dispatcher.on('save:asset', this.updateLastSaved, this);
     this.dispatcher.on('save:section', this.updateLastSaved, this);
     this.dispatcher.on('save:story', this.updateLastSaved, this);
     this.dispatcher.on('ready:story', this.showButton, this);
 
-    this.$textEl = $("<span></span>").attr('id', this.options.textId).appendTo(this.$el);
-    this.$buttonEl = $('<button type="button">' + gettext("Save") + '</button>')
+    this.$buttonEl = $('<button type="button">' + this.options.buttonText[this.state] + '</button>')
       .attr('id', this.options.buttonId)
       .attr('title', gettext("Click to save your story"))
       .hide()
       .appendTo(this.$el);
-      if (jQuery().tooltipster) {
-        this.$buttonEl.tooltipster();
-      }
+
+    setInterval(_.bind(this.render, this), this.options.updateInterval);
+
+    if (jQuery().tooltipster) {
+      this.$buttonEl.tooltipster(this.options.tooltipOptions);
+    }
+  },
+
+  setState: function(state) {
+    this.state = state;
+    if (this.state === 'default') {
+      this.$buttonEl.prop('disabled', false);
+    }
+    else {
+      this.$buttonEl.prop('disabled', true);
+    }
+    this.$buttonEl.html(this.options.buttonText[this.state]);
   },
 
   updateLastSaved: function() {
-    var that = this;
+    var view = this;
     this.lastSaved = new Date(); 
     this.render();
-    this.showText();
-    this.$textEl.fadeOut(20000, function() {
-      that.showButton();
-    });
-  },
-
-  /**
-   * Ensure that an hour or minute value is 2 digits
-   *
-   * This is necesary because Date.getHours and Date.getDate return 
-   * integer values starting from 0
-   *
-   */
-  twoDigit: function(val) {
-    var newVal = val + "";
-    if (newVal.length == 1) {
-      newVal = "0" + newVal;
-    }
-    return newVal;
-  },
-
-  formatDate: function(date) {
-    var year = this.lastSaved.getFullYear();
-    var month = this.lastSaved.getMonth() + 1;
-    var day = this.lastSaved.getDate();
-    var hour = this.lastSaved.getHours();
-    var minute = this.lastSaved.getMinutes();
-
-    return month + "/" + day + "/" + year + " " + this.twoDigit(hour) +
-           ":" + this.twoDigit(minute);
+    view.setState('saved');
+    setTimeout(function() {
+      view.setState('default');
+    }, 4000);
   },
 
   showButton: function() {
-    this.$textEl.hide();
     this.$buttonEl.show();
     return this;
   },
 
-  showText: function() {
-    this.$textEl.show();
-    this.$buttonEl.hide();
-    return this;
-  },
-
   handleClick: function(evt) {
+    this.setState('saving');
     this.dispatcher.trigger('do:save:story');
   },
 
   render: function() {
-    var lastSavedStr;
-    if (this.lastSaved) {
-      lastSavedStr = gettext('Last Saved') + ' ' + this.formatDate(this.lastSaved);
-      this.$textEl.html(lastSavedStr);
+    var date = this.prettyDate(this.lastSaved);
+    if (date) {
+      lastSavedStr = gettext('Last saved') + ' ' + date;
       this.$buttonEl.attr('title', lastSavedStr);
     }
     return this;
@@ -4082,6 +4039,9 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
             view.dispatcher.trigger("do:add:sectionasset", view.section,
               view.model, view.container
             );
+          }
+          else {
+            view.dispatcher.trigger("save:asset", view.model);
           }
         },
         error: function(model, xhr) {
