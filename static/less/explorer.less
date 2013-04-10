@@ -81,19 +81,15 @@
 }
 
 #proximity-search-form {
-  margin: 0 0 2% 0;
-}
+  margin: 2% 0;
 
-#proximity-search-form input {
-  .border-box;
-}
+  #proximity-search-address {
+    width: 79%; // this should work at 80% but does not in Firefox
+  }
 
-#proximity-search-form #proximity-search-address {
-  width: 79%; // this should work at 80% but does not in Firefox
-}
-
-#proximity-search-form input[type=button] {
-  width:10%;
+  input[type="submit"], input[type="reset"] {
+    width:10%;
+  }
 }
 
 @media only screen and (min-width: 480px) {

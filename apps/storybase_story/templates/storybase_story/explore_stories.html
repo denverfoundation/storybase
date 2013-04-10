@@ -147,11 +147,11 @@ Handlebars templates for rendering Backbone views.
 </script>
 
 <script type="text/x-handlebars-template" id="proximity-search-template">
-<div id="proximity-search-form">
+<form id="proximity-search-form" onsubmit="return false;">
     <input id="{{field_id}}" type="text" placeholder="{{gettext "Highlight stories near this address"}}" />
-    <input id="{{button_id}}" type="button" value="{{gettext "Search"}}" />
-    <input id="{{clear_button_id}}" type="button" value="{{gettext "Clear"}}" />
-</div>
+    <input id="{{button_id}}" type="submit" value="{{gettext "Search"}}" />
+    <input id="{{clear_button_id}}" type="reset" value="{{gettext "Clear"}}" />
+</form>
 </script>
 
 {% endverbatim %}
