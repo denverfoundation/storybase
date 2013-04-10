@@ -926,7 +926,7 @@ body.explorer #view-selector li{display:inline-block;}
 body.explorer #story-list{padding:0;list-style-type:none;}
 body.explorer #story-list .byline{font-style:italic;}
 body.explorer .leaflet-popup ul{list-style-type:none;padding:0;}
-body.explorer #proximity-search-form{margin:2% 0;}body.explorer #proximity-search-form #proximity-search-address{width:79%;}
+body.explorer #proximity-search-form{margin:2% 0;}body.explorer #proximity-search-form #proximity-search-address{width:78%;}
 body.explorer #proximity-search-form input[type="submit"],body.explorer #proximity-search-form input[type="reset"]{width:10%;}
 @media only screen and (min-width:480px){}@media only screen and (min-width:768px){}body.explorer #filters{padding-bottom:18px;border-bottom:1px solid #ccc;margin-bottom:22px;padding-top:20px;position:relative;z-index:1000;}
 body.explorer #filter-proxy{display:none;}body.explorer #filter-proxy.shown{display:block;}
