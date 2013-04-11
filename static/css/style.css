@@ -652,7 +652,7 @@ body.story-builder #app input[type=submit]:hover,body.story-builder #app button[
 body.story-builder #app input[type=submit]:hover,body.story-builder #app button[type=submit]:hover{background:#8b5910;}
 body.story-builder .drawer-open #app{width:70%;}
 body.story-builder .drawer-open .view-container{width:98%;}
-body.story-builder #drawer-container{position:absolute;right:0;height:100%;z-index:998;}
+body.story-builder #drawer-container{position:fixed;right:0;height:100%;z-index:998;}
 body.story-builder .drawer-open #drawer-container{width:30%;}
 body.story-builder #drawer-controls{float:left;height:100%;border-right:solid 2px #2a88db;}body.story-builder #drawer-controls .btn{display:block;margin-bottom:70px;border:none;padding:8px 14px;color:white;font-family:'Museo300Regular';font-size:16px;background-color:#2a88db;border-radius:4px 4px 0 0;text-align:center;cursor:pointer;transform-origin:100% 100%;-webkit-transform-origin:100% 100%;-moz-transform-origin:100% 100%;-ms-transform-origin:100% 100%;-o-transform-origin:100% 100%;transform:rotate(-90deg);-webkit-transform:rotate(-90deg);-moz-transform:rotate(-90deg);-ms-transform:rotate(-90deg);-o-transform:rotate(-90deg);}
 body.story-builder #drawer-contents{position:relative;max-height:60%;overflow:hidden;display:none;}body.story-builder #drawer-contents:hover{overflow-y:auto;}
