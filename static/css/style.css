@@ -943,7 +943,7 @@ body.explorer .select2-drop .select2-drop-active{border:none !important;}
 body.explorer #filters .field label{display:none;}
 body.explorer #filters .select2-container .select2-choice abbr{right:22px;top:11px;background-image:url(../img/select2.png);}
 body.explorer #filters a.clear-filters{padding-right:17px;padding-top:10px;text-align:right;color:#FE9703;font-family:'MuseoSlab500Regular';font-size:14px;}
-body.explorer h6.story-count{color:#777777;display:inline;float:left;font-size:22px;font-style:italic;font-weight:normal;width:680px;}
+body.explorer h6.story-count{color:#777777;display:inline;float:left;font-size:22px;font-style:italic;font-weight:normal;width:100%;}
 body.explorer ul#view-selector{list-style:none;float:right;position:relative;}
 body.explorer ul#view-selector li{float:left;display:block;padding-left:25px;position:relative;width:25px;height:40px;}
 body.explorer ul#view-selector li a{background:url('../img/cols-icons.png') no-repeat 0 0;position:relative;height:29px;}
