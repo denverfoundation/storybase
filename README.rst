@@ -11,11 +11,13 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
-dev
-~~~
+0.9.3
+~~~~~
 
 * Add ability to close alerts before they fade out
 * Avoid duplicate alert messages
+* Move search bar to top of map in explorer (#559)
+* Fix scrolling of asset drawer (#692)
 * Supress builder tour when user clicks the "X" icon (#697)
 * More subtle response when story is saved (#548)
 
