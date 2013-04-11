@@ -572,7 +572,6 @@ storybase.builder.views.AlertView = Backbone.View.extend({
 });
 
 storybase.builder.views.DrawerButtonView = Backbone.View.extend({
-  //tagName: 'button',
   tagName: 'div',
 
   className: 'btn',
@@ -584,7 +583,6 @@ storybase.builder.views.DrawerButtonView = Backbone.View.extend({
   initialize: function() {
     this.buttonId = this.options.buttonId;
     this.dispatcher = this.options.dispatcher;
-    this.template = Handlebars.compile(this.options.templateSource);
   },
 
   render: function() {
