@@ -41,9 +41,6 @@
       
       // Has the view been rendered yet?
       this._rendered = false;
-      // TODO: Decide whether to re-enable updating the section title in the
-      // header
-      //this.headerView = new StoryHeader();
       this.setSection(this.sections.at(0), {showActiveSection: false});
       _.bindAll(this, 'handleScroll');
       $(window).scroll(this.handleScroll);
@@ -175,33 +172,6 @@
     }
   });
 
-  /**
-   * View for the story viewer header.
-   *
-   * Updates the section heading title when the active section changes
-   *
-   * Currently unused to conserve vertical space.
-   */
-  /*
-  var StoryHeader = Views.StoryHeader = Backbone.View.extend({
-    el: 'header',
-
-    render: function() {
-      var $titleEl = this.$el.find('.section-title').first();
-      if ($titleEl.length == 0) {
-        $titleEl = $('<h2 class="section-title">');
-        this.$el.append($titleEl);
-      }
-      $titleEl.text(this.section.get('title'));
-      return this;
-    },
-
-    setSection: function(section) {
-      this.section = section;
-      this.render();
-    }
-  });
-  */
 
   // View to provide previous/next buttons to navigate between sections
   var StoryNavigation = Views.StoryNavigation = HandlebarsTemplateView.extend({
@@ -647,9 +617,6 @@
         addlLinks: [{text: gettext("Topic Map"), id: 'topic-map'}]
       });
       this.navigationView.setNextSection(firstSection);
-      // TODO: Decide whether to re-enable updating the section title in the
-      // header
-      //this.headerView = new StoryHeader();
       this.initialView = new Spider({
         el: this.$('#body'),
         sections: this.options.sections,
