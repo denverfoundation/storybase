@@ -4,8 +4,9 @@
 Namespace('storybase.explorer');
 
 Handlebars.registerPartial("story", $("#story-partial-template").html());
-
 Handlebars.registerPartial("story_link", $("#story-link-partial-template").html());
+
+var HandlebarsTemplateView = storybase.views.HandlebarsTemplateView;
 
 StoryMarker = L.Marker.extend({
   initialize: function (latlng, story, options) {
@@ -103,10 +104,12 @@ StoryClusterMarker.template = Handlebars.compile($('#story-list-marker-template'
 // class
 ClusterMarker_ = StoryClusterMarker;
 
-storybase.explorer.views.ExplorerApp = Backbone.View.extend({
+storybase.explorer.views.ExplorerApp = HandlebarsTemplateView.extend({
   el: $('#explorer'),
 
-  templateSource: $('#explorer-template').html(),
+  options: {
+    templateSource: $('#explorer-template').html()
+  },
 
   defaults: {
     selectedFilters: {},
@@ -148,7 +151,7 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
         seen: false
       }
     };
-    this.template = Handlebars.compile(this.templateSource);
+    this.compileTemplates(); 
     this.counterView = new storybase.explorer.views.StoryCount({
       count: this.stories.length,
       total: this.totalMatchingStories,
@@ -497,18 +500,20 @@ storybase.explorer.views.ExplorerApp = Backbone.View.extend({
   }
 });
 
-storybase.explorer.views.StoryCount = Backbone.View.extend({
+storybase.explorer.views.StoryCount = HandlebarsTemplateView.extend({
   tagName: 'div',
 
   id: 'story-count',
 
-  templateSource: $('#story-count-template').html(),
+  options: {
+    templateSource: $('#story-count-template').html()
+  },
 
   initialize: function() {
     this.count = this.options.count;
     this.hasMore = this.options.hasMore;
     this.total = this.options.total;
-    this.template = Handlebars.compile(this.templateSource);
+    this.compileTemplates();
   },
 
   render: function(options) {
@@ -542,13 +547,15 @@ storybase.explorer.views.StoryCount = Backbone.View.extend({
 
 });
 
-storybase.explorer.views.Filters = Backbone.View.extend({
+storybase.explorer.views.Filters = HandlebarsTemplateView.extend({
   tagName: 'div',
 
   id: 'filters',
   className: 'filters',
 
-  templateSource: $('#filters-template').html(),
+  options: {
+    templateSource: $('#filters-template').html()
+  },
 
   events: {
     // Hide fancy tooltips when filter dropdown is opened, otherwise
@@ -559,7 +566,7 @@ storybase.explorer.views.Filters = Backbone.View.extend({
   initialize: function() {
     var that = this;
     this.initialOffset = null;
-    this.template = Handlebars.compile(this.templateSource);
+    this.compileTemplates();
 
     // Manually bind window events 
     $(window).bind('scroll', function(ev) {
@@ -697,16 +704,18 @@ storybase.explorer.views.Filters = Backbone.View.extend({
   }
 });
 
-storybase.explorer.views.StoryList = Backbone.View.extend({
+storybase.explorer.views.StoryList = HandlebarsTemplateView.extend({
   tagName: 'ul',
 
   id: 'story-list',
 
-  templateSource: $('#story-template').html(),
+  options: {
+    templateSource: $('#story-template').html()
+  },
 
   initialize: function() {
     this.newStories = this.options.stories.toArray();
-    this.template = Handlebars.compile(this.templateSource);
+    this.compileTemplates();
     this.renderStyle = 'append';
   },
 
@@ -819,7 +828,7 @@ storybase.explorer.views.StoryList = Backbone.View.extend({
 
 });
 
-storybase.explorer.views.Map = Backbone.View.extend({
+storybase.explorer.views.Map = HandlebarsTemplateView.extend({
   tagName: 'div',
   
   id: 'map-container',  
@@ -839,14 +848,20 @@ storybase.explorer.views.Map = Backbone.View.extend({
     return events;
   },
 
+  options: {
+    templateSource: {
+      'marker': $("#story-marker-template").html(),
+      'search': $('#proximity-search-template').html(),
+      'map-move-popup': $('#map-move-popup-template').html()
+    }
+  },
+
   initialize: function() {
     this.parentView = this.options.parentView;
     this.stories = this.options.stories;
     this.boundaryPoints = this.options.boundaryPoints;
-    this.boundaryLayers = new L.FeatureGroup(); 
-    this.markerTemplate = Handlebars.compile($("#story-marker-template").html()); 
-    this.searchTemplate = Handlebars.compile($('#proximity-search-template').html());
-    this.mapMovePopupTemplate = Handlebars.compile($('#map-move-popup-template').html());
+    this.boundaryLayers = new L.FeatureGroup();
+    this.compileTemplates();
     this.initialCenter = new L.LatLng(storybase.explorer.globals.MAP_CENTER[0],
                                       storybase.explorer.globals.MAP_CENTER[1]);
     this.initialZoom = storybase.explorer.globals.MAP_ZOOM_LEVEL;
@@ -916,7 +931,7 @@ storybase.explorer.views.Map = Backbone.View.extend({
       var mapBounds = this.map.getBounds();
       if (!mapBounds.intersects(boundaryBounds) &&
           !this.parentView.messageSeen('placeNotVisible')) {
-        var popupContent = this.mapMovePopupTemplate({}); 
+        var popupContent = this.getTemplate('map-move-popup')();
         var popup = new L.Popup();
         popup.setLatLng(this.map.getCenter());
         popup.setContent(popupContent);
@@ -957,8 +972,9 @@ storybase.explorer.views.Map = Backbone.View.extend({
   _placeMarker: function(bundle) {
     var latlng = new L.LatLng(bundle.point[0], bundle.point[1]);
     var marker = new StoryMarker(latlng, bundle.story);
+    var template = this.getTemplate('marker');
     this.clusterer.addMarker(marker);
-    var popupContent = this.markerTemplate(bundle.story.toJSON());
+    var popupContent = template(bundle.story.toJSON());
     marker.bindPopup(popupContent);
   },
 
@@ -972,6 +988,7 @@ storybase.explorer.views.Map = Backbone.View.extend({
 
   render: function() {
     var that = this;
+    var searchTemplate = this.getTemplate('search');
     if (this.map === null) {
       // Map has not yet been initialized
       this.$('#' + this.mapId).width(this.$el.parent().width());
@@ -994,7 +1011,7 @@ storybase.explorer.views.Map = Backbone.View.extend({
         gridSize: 30 
       };
       this.clusterer = new LeafClusterer(this.map, null, clustererOpts);
-      this.$el.prepend(this.searchTemplate({
+      this.$el.prepend(searchTemplate({
         button_id: this.searchButtonId,
         field_id: this.searchFieldId,
         clear_button_id: this.clearButtonId

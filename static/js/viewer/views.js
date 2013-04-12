@@ -3,6 +3,8 @@
  */
 Namespace('storybase.viewer');
 
+var HandlebarsTemplateView = storybase.views.HandlebarsTemplateView;
+
 // Container view for the viewer application.
 // It delegates rendering and events for the entire app to views
 // rendering more specific "widgets"
@@ -197,12 +199,14 @@ storybase.viewer.views.StoryHeader = Backbone.View.extend({
 */
 
 // View to provide previous/next buttons to navigate between sections
-storybase.viewer.views.StoryNavigation = Backbone.View.extend({
+storybase.viewer.views.StoryNavigation = HandlebarsTemplateView.extend({
   tagName: 'nav',
 
   id: 'story-nav',
 
-  templateSource: $('#navigation-template').html(),
+  options: {
+    templateSource: $('#navigation-template').html()
+  },
   
   events: {
     'click a': 'handleNavClick'
@@ -212,7 +216,7 @@ storybase.viewer.views.StoryNavigation = Backbone.View.extend({
     this.activeSection = null;
     this.showingConnectedStory = false;
     this.sections = this.options.sections;
-    this.template = Handlebars.compile(this.templateSource);
+    this.compileTemplates();
     if (this.options.hasOwnProperty('addlLinks')) {
       this.addlLinks = this.options.addlLinks.map(function(link) {
         return {

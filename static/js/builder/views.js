@@ -4,6 +4,9 @@ Namespace.use('storybase.utils.capfirst');
 Namespace.use('storybase.utils.geocode');
 
 var prettyDate = storybase.utils.prettyDate;
+var HandlebarsTemplateMixin = storybase.views.HandlebarsTemplateMixin;
+var HandlebarsTemplateView = storybase.views.HandlebarsTemplateView;
+
 
 /**
  * Default visible steps of the story builder workflow.  
@@ -603,7 +606,7 @@ storybase.builder.views.DrawerButtonView = Backbone.View.extend({
 /**
  * View to toggle other views in a slide-out drawer.
  */
-storybase.builder.views.DrawerView = Backbone.View.extend({
+storybase.builder.views.DrawerView = HandlebarsTemplateView.extend({
   options: {
     templateSource: $('#drawer-template').html(),
     controlsEl: '#drawer-controls',
@@ -611,13 +614,12 @@ storybase.builder.views.DrawerView = Backbone.View.extend({
   },
 
   initialize: function() {
+    this.compileTemplates();
     this.dispatcher = this.options.dispatcher;
     this.dispatcher.on('register:drawerview', this.registerView, this);
     this.dispatcher.on('unregister:drawerview', this.unregisterView, this);
     this.dispatcher.on('do:toggle:drawer', this.toggle, this);
 
-    this.template = Handlebars.compile(this.options.templateSource);
-    this.buttonTemplate = Handlebars.compile(this.options.buttonTemplateSource);
     // The state of the drawer
     this._open = false;
     // Store the button views 
@@ -784,7 +786,7 @@ storybase.builder.views.HelpDrawerMixin = {
   drawerCloseEvents: 'do:hide:help'
 };
 
-storybase.builder.views.BuildHelpActionsView = Backbone.View.extend({
+storybase.builder.views.BuildHelpActionsView = HandlebarsTemplateView.extend({
   options: {
     templateSource: $('#build-help-actions-template').html()
   },
@@ -794,8 +796,8 @@ storybase.builder.views.BuildHelpActionsView = Backbone.View.extend({
   },
 
   initialize: function() {
+    this.compileTemplates();
     this.dispatcher = this.options.dispatcher;
-    this.template = Handlebars.compile(this.options.templateSource);
   },
 
   render: function() {
@@ -815,7 +817,7 @@ storybase.builder.views.BuildHelpActionsView = Backbone.View.extend({
   }
 });
 
-storybase.builder.views.HelpView = Backbone.View.extend(
+storybase.builder.views.HelpView = HandlebarsTemplateView.extend(
   _.extend({}, storybase.builder.views.HelpDrawerMixin, {
     tagName: 'div',
 
@@ -827,9 +829,9 @@ storybase.builder.views.HelpView = Backbone.View.extend(
     },
 
     initialize: function() {
+      this.compileTemplates();
       this.dispatcher = this.options.dispatcher;
       this.help = null;
-      this.template = Handlebars.compile(this.options.templateSource);
      
       this.$el.hide();
 
@@ -922,16 +924,13 @@ storybase.builder.views.HelpView = Backbone.View.extend(
  * Base class for views that represent a list of items that trigger
  * some action when clicked.
  */
-storybase.builder.views.ClickableItemsView = Backbone.View.extend({
+storybase.builder.views.ClickableItemsView = HandlebarsTemplateView.extend({
   items: [],
 
-  itemTemplateSource: $('#clickable-item-template').html(),
-
-  getItemTemplate: function() {
-    if (_.isUndefined(this.itemTemplate)) {
-      this.itemTemplate = Handlebars.compile(this.itemTemplateSource);
+  options: {
+    templateSource: {
+      'item': $('#clickable-item-template').html()
     }
-    return this.itemTemplate; 
   },
 
   events: function() {
@@ -943,6 +942,10 @@ storybase.builder.views.ClickableItemsView = Backbone.View.extend({
       }
     });
     return events;
+  },
+
+  initialize: function() {
+    this.compileTemplates();
   },
 
   getItem: function(id) {
@@ -1017,7 +1020,8 @@ storybase.builder.views.ClickableItemsView = Backbone.View.extend({
   },
 
   renderItem: function(itemOptions) {
-    this.$el.append(this.itemTemplate({
+    var template = this.getTemplate('item');
+    this.$el.append(template({
       id: itemOptions.id,
       className: this.getItemClass(itemOptions),
       title: itemOptions.title,
@@ -1049,7 +1053,11 @@ storybase.builder.views.WorkflowNavView = storybase.builder.views.ClickableItems
 
   className: 'workflow-nav',
 
-  itemTemplateSource: $('#workflow-nav-item-template').html(),
+  options: {
+    templateSource: {
+      'item': $('#workflow-nav-item-template').html()
+    }
+  },
 
   items: [],
 
@@ -1065,10 +1073,9 @@ storybase.builder.views.WorkflowNavView = storybase.builder.views.ClickableItems
   },
 
   initialize: function() {
+    storybase.builder.views.ClickableItemsView.prototype.initialize.apply(this, arguments);
     this.dispatcher = this.options.dispatcher;
     this.items = _.isUndefined(this.options.items) ? this.items : this.options.items;
-    this.itemTemplateSource = _.isUndefined(this.options.itemTemplateSource) ? this.itemTemplateSource : this.options.itemTemplateSource;
-    this.itemTemplate = this.getItemTemplate();
     // Include story ID in paths?  This should only happen for stories
     // created in this session.
     this._includeStoryId = _.isUndefined(this.model) || this.model.isNew();
@@ -1141,7 +1148,11 @@ storybase.builder.views.WorkflowStepView = storybase.builder.views.WorkflowNavVi
 
   className: 'nav',
 
-  itemTemplateSource: $('#workflow-item-template').html(),
+  options: {
+    templateSource: {
+      'item': $('#workflow-item-template').html()
+    }
+  },
 
   /**
    * Initialize items.
@@ -1284,12 +1295,12 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
   },
 
   initialize: function() {
+    storybase.builder.views.ClickableItemsView.prototype.initialize.apply(this, arguments);
     this.dispatcher = this.options.dispatcher;
     this.items = this._initItems();
-    this.itemTemplate = this.getItemTemplate();
     this.activeStep = null;
     this.hasAssetList = false;
-    this.previewURLTemplate = Handlebars.compile(this.options.previewURLTemplate);
+    this.previewURLTemplate = this.templates['previewUrl'] = this.compileTemplate(this.options.previewURLTemplate);
 
     this.dispatcher.on('ready:story', this.handleStorySave, this);
     this.dispatcher.on('save:story', this.handleStorySave, this);
@@ -1347,16 +1358,18 @@ storybase.builder.views.ToolsView = storybase.builder.views.ClickableItemsView.e
 /**
  * Story template selector
  */
-storybase.builder.views.SelectStoryTemplateView = Backbone.View.extend({
+storybase.builder.views.SelectStoryTemplateView = HandlebarsTemplateView.extend({
   tagName: 'ul',
  
   className: 'story-templates view-container',
 
-  templateSource: $('#story-template-list-template').html(),
+  options: {
+    templateSource: $('#story-template-list-template').html()
+  },
 
   initialize: function() {
+    this.compileTemplates(); 
     this.dispatcher = this.options.dispatcher;
-    this.template = Handlebars.compile(this.templateSource);
     _.bindAll(this, 'addTemplateEntry');
   },
 
@@ -1383,7 +1396,7 @@ storybase.builder.views.SelectStoryTemplateView = Backbone.View.extend({
 /**
  * Story template listing
  */
-storybase.builder.views.StoryTemplateView = Backbone.View.extend({
+storybase.builder.views.StoryTemplateView = HandlebarsTemplateView.extend({
   tagName: 'li',
 
   attributes: function() {
@@ -1395,7 +1408,9 @@ storybase.builder.views.StoryTemplateView = Backbone.View.extend({
     };
   },
 
-  templateSource: $('#story-template-template').html(),
+  options: {
+    templateSource: $('#story-template-template').html()
+  },
 
   events: {
     "click a.show-details": "toggleDetailPane",
@@ -1404,9 +1419,9 @@ storybase.builder.views.StoryTemplateView = Backbone.View.extend({
 
   initialize: function() {
     console.info('initializing form');
+    this.compileTemplates(); 
     this.dispatcher = this.options.dispatcher;
     this.dispatcher.on('do:hide:template:detail', this.removeDetailPane, this);
-    this.template = Handlebars.compile(this.templateSource);
   },
 
   render: function() {
@@ -1488,36 +1503,28 @@ storybase.builder.views.StoryTemplateView = Backbone.View.extend({
  * Class to encapsulate builder tour logic.
  */
 storybase.builder.views.BuilderTour = function(options) {
-  this.options = _.extend({}, options);
+  _.extend(this.options, options);
   this.initialize.apply(this, arguments);
 };
 
-_.extend(storybase.builder.views.BuilderTour.prototype, {
-  // Load some of the longer guider bodies from a template, because
-  // the text is too cumbersome to have inline.  Should all of the
-  // bodies be in a template for consistency?
-  //
-  // The properties of this object correspond to the ids defined in
-  // the guiders
-  templateSource: {
-    'workflow-step-guider': $('#workflow-step-guider-template').html(),
-    'section-manipulation-guider': $('#section-manipulation-guider-template').html(),
-    'exit-guider': $('#exit-guider-template').html()
+_.extend(storybase.builder.views.BuilderTour.prototype, HandlebarsTemplateMixin, {
+  options: {
+    // Load some of the longer guider bodies from a template, because
+    // the text is too cumbersome to have inline.  Should all of the
+    // bodies be in a template for consistency?
+    //
+    // The properties of this object correspond to the ids defined in
+    // the guiders
+    templateSource: {
+      'workflow-step-guider': $('#workflow-step-guider-template').html(),
+      'section-manipulation-guider': $('#section-manipulation-guider-template').html(),
+      'exit-guider': $('#exit-guider-template').html()
+    }
   },
 
   initialize: function() {
+    this.compileTemplates();
     this.dispatcher = this.options.dispatcher;
-    this._initTemplates();
-  },
-
-  /**
-   * Precompile the templates.
-   */
-  _initTemplates: function() {
-    this.template = {};
-    _.each(this.templateSource, function(source, id) {
-      this.template[id] = Handlebars.compile(source);
-    }, this);
   },
 
   /**
@@ -1635,7 +1642,7 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         ],
         position: 6,
         title: gettext("Building a story takes five simple steps."),
-        description: this.template['workflow-step-guider'](),
+        description: this.getTemplate('workflow-step-guider')(),
         next: 'section-list-guider'
       }, defaultOpts));
       guiders.createGuider(_.defaults({
@@ -1661,7 +1668,7 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         attachTo: '.section-thumbnail',
         position: 6,
         title: gettext("You can also add, move or delete sections."),
-        description: this.template['section-manipulation-guider'](),
+        description: this.getTemplate('section-manipulation-guider')(),
         prev: 'section-thumbnail-guider',
         next: 'preview-guider'
       }, defaultOpts));
@@ -1679,7 +1686,7 @@ _.extend(storybase.builder.views.BuilderTour.prototype, {
         attachTo: '#tools .exit',
         position: 6,
         title: gettext("You can leave your story at any time and come back later."),
-        description: this.template['exit-guider'](),
+        description: this.getTemplate('exit-guider')(),
         prev: 'preview-guider',
         next: 'help-guider'
       }, defaultOpts));
@@ -2279,17 +2286,19 @@ storybase.builder.views.UnusedAssetDrawerMixin = {
 /** 
  * A list of assets associated with the story but not used in any section.
  */
-storybase.builder.views.UnusedAssetView = Backbone.View.extend(
+storybase.builder.views.UnusedAssetView = HandlebarsTemplateView.extend(
   _.extend({}, storybase.builder.views.UnusedAssetDrawerMixin, {
     tagName: 'div',
 
     id: 'unused-assets',
 
-    templateSource: $('#unused-assets-template').html(),
+    options: {
+      templateSource: $('#unused-assets-template').html()
+    },
 
     initialize: function() {
+      this.compileTemplates(); 
       this.dispatcher = this.options.dispatcher;
-      this.template = Handlebars.compile(this.templateSource);
       this.assets = this.options.assets;
 
       // When the assets are synced with the server, re-render this view
@@ -2527,14 +2536,16 @@ storybase.builder.views.NavViewMixin = {
 /**
  * A table of contents for navigating between sections in the builder.
  */
-storybase.builder.views.SectionListView = Backbone.View.extend({
+storybase.builder.views.SectionListView = HandlebarsTemplateView.extend({
   tagName: 'div',
   
   id: 'section-list',
 
   className: 'section-list',
 
-  templateSource: $('#section-list-template').html(),
+  options: {
+    templateSource: $('#section-list-template').html()
+  },
 
   events: {
     'click .spacer': 'clickAddSection',
@@ -2545,6 +2556,7 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
   },
 
   initialize: function() {
+    this.compileTemplates();
     this.dispatcher = this.options.dispatcher;
     /**
      * A lookup table of SectionThumbnailView instances by their
@@ -2566,8 +2578,6 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
     this._thumbnailsAdded = false;
     this._doScroll = false;
     this._thumbnailWidth = 0;
-
-    this.template = Handlebars.compile(this.templateSource);
 
     this.dispatcher.on("do:remove:section", this.removeSection, this);
     this.dispatcher.on("ready:story", this.addSectionThumbnails, this);
@@ -2898,13 +2908,15 @@ storybase.builder.views.SectionListView = Backbone.View.extend({
   }
 });
 
-storybase.builder.views.SectionThumbnailView = Backbone.View.extend(
+storybase.builder.views.SectionThumbnailView = HandlebarsTemplateView.extend(
   _.extend({}, storybase.builder.views.ThumbnailHighlightMixin, {
     tagName: 'li',
 
     className: 'section-thumbnail-container',
 
-    templateSource: $('#section-thumbnail-template').html(),
+    options: {
+      templateSource: $('#section-thumbnail-template').html()
+    },
 
     events: {
       "click .section-thumbnail": "select",
@@ -2912,8 +2924,8 @@ storybase.builder.views.SectionThumbnailView = Backbone.View.extend(
     },
 
     initialize: function() {
+      this.compileTemplates();
       this.dispatcher = this.options.dispatcher;
-      this.template = Handlebars.compile(this.templateSource);
       this.editView = this.options.editView;
       this._selected = false;
 
@@ -2976,23 +2988,25 @@ storybase.builder.views.SectionThumbnailView = Backbone.View.extend(
     }
 }));
 
-storybase.builder.views.PseudoSectionThumbnailView = Backbone.View.extend(
+storybase.builder.views.PseudoSectionThumbnailView = HandlebarsTemplateView.extend(
   _.extend({}, storybase.builder.views.ThumbnailHighlightMixin, {
     tagName: 'li',
 
     className: 'section-thumbnail-container pseudo',
 
-    templateSource: $('#section-thumbnail-template').html(),
+    options: {
+      templateSource: $('#section-thumbnail-template').html()
+    },
 
     events: {
       "click": "select"
     },
 
     initialize: function() {
+      this.compileTemplates();
       this.dispatcher = this.options.dispatcher;
       this.pseudoSectionId = this.options.pseudoSectionId;
       this.title = this.options.title;
-      this.template = Handlebars.compile(this.templateSource);
       this.dispatcher.on("select:section", this.highlightSection, this);
     },
 
@@ -3020,15 +3034,15 @@ storybase.builder.views.PseudoSectionThumbnailView = Backbone.View.extend(
     }
 }));
 
-storybase.builder.views.PseudoSectionEditView = Backbone.View.extend(
+storybase.builder.views.PseudoSectionEditView = HandlebarsTemplateView.extend(
   _.extend({}, storybase.builder.views.RichTextEditorMixin, 
            storybase.builder.views.StoryAttributeSavingMixin, {
     tagName: 'div',
 
     initialize: function() {
+      this.compileTemplates();
       this.dispatcher = this.options.dispatcher;
       this.help = this.options.help;
-      this.template = Handlebars.compile(this.templateSource);
 
       this.dispatcher.on('select:section', this.show, this);
     },
@@ -3076,8 +3090,6 @@ storybase.builder.views.StoryInfoEditView = storybase.builder.views.PseudoSectio
 
   pseudoSectionId: 'story-info',
 
-  templateSource: $('#story-info-edit-template').html(),
-
   events: function() {
     var events = {};
     events['change ' + this.options.summaryEl] = 'change';
@@ -3089,7 +3101,8 @@ storybase.builder.views.StoryInfoEditView = storybase.builder.views.PseudoSectio
   options: {
     titleEl: '[name="title"]',
     bylineEl: '[name="byline"]',
-    summaryEl: 'textarea[name="summary"]' 
+    summaryEl: 'textarea[name="summary"]',
+    templateSource: $('#story-info-edit-template').html()
   },
 
   render: function() {
@@ -3118,15 +3131,14 @@ storybase.builder.views.StoryInfoEditView = storybase.builder.views.PseudoSectio
  * This view should be attached inside the section edit view
  *
  */
-storybase.builder.views.InlineStoryInfoEditView = Backbone.View.extend(
+storybase.builder.views.InlineStoryInfoEditView = HandlebarsTemplateView.extend(
   _.extend({}, storybase.builder.views.StoryAttributeSavingMixin, {
     className: 'edit-story-info-inline',
 
-    templateSource: $('#story-info-edit-inline-template').html(),
-
     options: {
       titleEl: '[name="title"]',
-      bylineEl: '[name="byline"]'
+      bylineEl: '[name="byline"]',
+      templateSource: $('#story-info-edit-inline-template').html()
     },
 
     events: function() {
@@ -3137,7 +3149,7 @@ storybase.builder.views.InlineStoryInfoEditView = Backbone.View.extend(
     },
 
     initialize: function() {
-      this.template = Handlebars.compile(this.templateSource);
+      this.compileTemplates();
       this.dispatcher = this.options.dispatcher;
     },
 
@@ -3179,10 +3191,9 @@ storybase.builder.views.CallToActionEditView = storybase.builder.views.PseudoSec
   options: {
     callToActionEl: 'textarea[name="call_to_action"]',
     connectedEl: 'input[name="allow_connected"]',
-    connectedPromptEl: 'textarea[name="connected_prompt"]'
+    connectedPromptEl: 'textarea[name="connected_prompt"]',
+    templateSource: $('#story-call-to-action-edit-template').html()
   },
-
-  templateSource: $('#story-call-to-action-edit-template').html(),
 
   events: function() {
     var events = {};
@@ -3226,17 +3237,17 @@ storybase.builder.views.CallToActionEditView = storybase.builder.views.PseudoSec
 /**
  * View for editing a section
  */
-storybase.builder.views.SectionEditView = Backbone.View.extend({
+storybase.builder.views.SectionEditView = HandlebarsTemplateView.extend({
   tagName: 'div',
 
   className: 'edit-section',
 
-  templateSource: $('#section-edit-template').html(),
 
   options: {
     containerEl: '.storybase-container-placeholder',
     titleEl: '.section-title',
-    selectLayoutEl: 'select.layout'
+    selectLayoutEl: 'select.layout',
+    templateSource: $('#section-edit-template').html()
   },
 
   events: function() {
@@ -3254,7 +3265,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
     this.defaultHelp = this.options.defaultHelp;
     this.templateSource = this.options.templateSource || this.templateSource;
     this.templateSection = this.options.templateSection;
-    this.template = Handlebars.compile(this.templateSource);
+    this.compileTemplates();
     this.assets = this.model.assets;
     this._unsavedAssets = [];
     this._doConditionalRender = false;
@@ -3723,7 +3734,7 @@ storybase.builder.views.SectionEditView = Backbone.View.extend({
   }
 });
 
-storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
+storybase.builder.views.SectionAssetEditView = HandlebarsTemplateView.extend(
   _.extend({}, storybase.builder.views.RichTextEditorMixin, {
     tagName: 'div',
 
@@ -3731,22 +3742,14 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
 
     options: {
       wrapperEl: '.wrapper',
-    },
-
-    templateSource: function() {
-      var state = this.getState(); 
-      if (state === 'display') {
-        return $('#section-asset-display-template').html();
-      }
-      else if (state === 'edit') {
-        return $('#section-asset-edit-template').html();
-      }
-      else if (state === 'upload') {
-        return $('#asset-uploadprogress-template').html();
-      }
-      else {
-        // state === 'select'
-        return $('#section-asset-select-type-template').html();
+      templateSource: {
+        'display': $('#section-asset-display-template').html(),
+        'edit': $('#section-asset-edit-template').html(),
+        'upload': $('#asset-uploadprogress-template').html(),
+        'select': $('#section-asset-select-type-template').html(),
+        'image-help': $('#image-help-template').html(),
+        'text-help': $('#text-help-template').html(), 
+        'video-help': $('#video-help-template').html()
       }
     },
 
@@ -3765,6 +3768,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
 
     initialize: function() {
       console.debug("Initializing new section asset edit view");
+      this.compileTemplates();
       this.modelOptions = {
         language: this.options.language
       }
@@ -3887,8 +3891,8 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
         return value;
       };
       var state = this.getState();
+      var template = this.getTemplate(state);
       var $wrapperEl;
-      this.template = Handlebars.compile(this.templateSource());
       if (state === 'select') {
         context.assetTypes = this.getAssetTypes();
         context.help = this.options.help;
@@ -3896,7 +3900,7 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       else if (state === 'display') {
         context.model = this.model.toJSON()
       }
-      this.$el.html(this.template(context));
+      this.$el.html(template(context));
       $wrapperEl = this.$(this.options.wrapperEl);
       this.setClass();
       if (state == 'select') {
@@ -4146,14 +4150,8 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
       this.setState('select').render();
     },
 
-    assetTypeHelp: {
-      image: Handlebars.compile($('#image-help-template').html()),
-      text: Handlebars.compile($('#text-help-template').html()), 
-      video: Handlebars.compile($('#video-help-template').html())
-    },
-
     getAssetTypeHelp: function(type) {
-      var help = this.assetTypeHelp[type]; 
+      var help = this.getTemplate(type + '-help');
       if (_.isFunction(help)) {
         help = help();
       }
@@ -4193,11 +4191,13 @@ storybase.builder.views.SectionAssetEditView = Backbone.View.extend(
   })
 );
 
-storybase.builder.views.DataView = Backbone.View.extend(
+storybase.builder.views.DataView = HandlebarsTemplateView.extend(
   _.extend({}, storybase.builder.views.NavViewMixin, {
     className: 'view-container',
 
-    templateSource: $('#data-template').html(),
+    options: {
+      templateSource: $('#data-template').html()
+    },
 
     events: {
       'click .add-dataset': 'showForm',
@@ -4208,7 +4208,7 @@ storybase.builder.views.DataView = Backbone.View.extend(
 
     initialize: function() {
       this.dispatcher = this.options.dispatcher;
-      this.template = Handlebars.compile(this.templateSource);
+      this.compileTemplates();
 
       this.collection = new storybase.collections.DataSets;
       if (_.isUndefined(this.model)) {
@@ -4366,11 +4366,13 @@ storybase.builder.views.DataView = Backbone.View.extend(
   })
 );
 
-storybase.builder.views.ReviewView = Backbone.View.extend(
+storybase.builder.views.ReviewView = HandlebarsTemplateView.extend(
   _.extend({}, storybase.builder.views.NavViewMixin, {
     className: 'view-container',
 
-    templateSource: $('#review-template').html(),
+    options: {
+      templateSource: $('#review-template').html()
+    },
 
     events: {
       'click .preview': 'previewStory'
@@ -4378,7 +4380,7 @@ storybase.builder.views.ReviewView = Backbone.View.extend(
 
     initialize: function() {
       this.dispatcher = this.options.dispatcher;
-      this.template = Handlebars.compile(this.templateSource);
+      this.compileTemplates();
       this.previewed = false;
       // Need to bind validate to this before it's passed as a callback to
       // the WorkflowNavView instance
@@ -4436,17 +4438,19 @@ storybase.builder.views.ReviewView = Backbone.View.extend(
   })
 );
 
-storybase.builder.views.TaxonomyView = Backbone.View.extend(
+storybase.builder.views.TaxonomyView = HandlebarsTemplateView.extend(
   _.extend({}, storybase.builder.views.NavViewMixin, {
     id: 'share-taxonomy',
 
     className: 'view-container',
 
-    templateSource: $('#share-taxonomy-template').html(),
+    options: {
+      templateSource: $('#share-taxonomy-template').html()
+    },
 
     initialize: function() {
       this.dispatcher = this.options.dispatcher;
-      this.template = Handlebars.compile(this.templateSource);
+      this.compileTemplates();
       this.workflowNavView = new storybase.builder.views.WorkflowNavView({
         model: this.model,
         dispatcher: this.dispatcher,
@@ -4631,7 +4635,7 @@ storybase.builder.views.TaxonomyView = Backbone.View.extend(
   })
 );
 
-storybase.builder.views.AddLocationView = Backbone.View.extend({
+storybase.builder.views.AddLocationView = HandlebarsTemplateView.extend({
   id: 'add-location',
 
   mapId: 'map',
@@ -4642,14 +4646,16 @@ storybase.builder.views.AddLocationView = Backbone.View.extend({
     'submit': 'addLocation'
   },
 
-  templateSource: $('#add-location-template').html(),
-
-  locationTemplateSource: $('#add-location-location-item-template').html(),
+  options: {
+    templateSource: {
+      '__main':  $('#add-location-template').html(),
+      'location': $('#add-location-location-item-template').html()
+    }
+  },
 
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
-    this.template = Handlebars.compile(this.templateSource);
-    this.locationTemplate = Handlebars.compile(this.locationTemplateSource);
+    this.compileTemplates();
     this.initialCenter = new L.LatLng(storybase.globals.MAP_CENTER[0],
                                       storybase.globals.MAP_CENTER[1]);
     this.initialZoom = storybase.globals.MAP_ZOOM_LEVEL;
@@ -4691,9 +4697,10 @@ storybase.builder.views.AddLocationView = Backbone.View.extend({
 
   renderLocationList: function(collection) {
     console.debug("In renderLocationList()");
+    var template = this.getTemplate('location');
     this.$('#locations').empty(); 
     this.collection.each(function(loc) {
-      this.$('#locations').append($(this.locationTemplate(loc.toJSON())));
+      this.$('#locations').append($(template(loc.toJSON())));
     }, this);
   },
 
@@ -4766,10 +4773,12 @@ storybase.builder.views.AddLocationView = Backbone.View.extend({
   }
 });
 
-storybase.builder.views.TagView = Backbone.View.extend({
+storybase.builder.views.TagView = HandlebarsTemplateView.extend({
   id: 'story-tags',
 
-  templateSource: $('#tags-template').html(),
+  options: {
+    templateSource: $('#tags-template').html()
+  },
 
   events: {
     'change #tags': 'tagsChanged'
@@ -4777,7 +4786,7 @@ storybase.builder.views.TagView = Backbone.View.extend({
 
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
-    this.template = Handlebars.compile(this.templateSource);
+    this.compileTemplates();
     this.collection = new storybase.collections.Tags(null, {
       story: this.model
     });
@@ -4930,7 +4939,7 @@ storybase.builder.views.LicenseDisplayView = Backbone.View.extend({
   }
 });
 
-storybase.builder.views.LicenseView = Backbone.View.extend({
+storybase.builder.views.LicenseView = HandlebarsTemplateView.extend({
   id: 'share-license',
 
   events: {
@@ -4939,7 +4948,11 @@ storybase.builder.views.LicenseView = Backbone.View.extend({
 
   options: {
     title: gettext("Select a license"),
-    templateSource: $('#share-license-template').html()
+    templateSource: {
+      '__main': $('#share-license-template').html(),
+      'commercial': $('#share-cc-commercial-template').html(),
+      'derivatives': $('#share-cc-derivatives-template').html()
+    }
   },
 
   schema: function() {
@@ -4947,13 +4960,13 @@ storybase.builder.views.LicenseView = Backbone.View.extend({
       'commercial': {
         type: 'Radio',
         title: '',
-        options: Handlebars.compile($('#share-cc-commercial-template').html())(),
+        options: this.getTemplate('commercial')(),
         validators: ['required']
       },
       'derivatives': {
         type: 'Radio',
         title: '',
-        options: Handlebars.compile($('#share-cc-derivatives-template').html())(),
+        options: this.getTemplate('derivatives')(),
         validators: ['required']
       }
     };
@@ -4966,6 +4979,7 @@ storybase.builder.views.LicenseView = Backbone.View.extend({
   initialize: function() {
     var license = this.model ? this.model.get('license') : null;
     var formVals = storybase.utils.licenseStrToParams(license);
+    this.compileTemplates();
     this.dispatcher = this.options.dispatcher;
     this.form = new Backbone.Form({
       schema: this.schema(),
@@ -4976,7 +4990,6 @@ storybase.builder.views.LicenseView = Backbone.View.extend({
       model: this.model,
       licenseEndpoint: this.options.licenseEndpoint
     });
-    this.template = Handlebars.compile(this.options.templateSource);
     if (_.isUndefined(this.model)) {
       this.dispatcher.on("ready:story", this.setStory, this);
     }
@@ -5033,7 +5046,7 @@ storybase.builder.views.LicenseView = Backbone.View.extend({
  * Common functionality and initialization used throughout
  * subviews for the Publish workflow step.
  */
-storybase.builder.views.PublishViewBase = Backbone.View.extend({
+storybase.builder.views.PublishViewBase = HandlebarsTemplateView.extend({
   /**
    * Set the model for this view.
    * This should be used as a "ready:story" event handler.
@@ -5059,10 +5072,7 @@ storybase.builder.views.PublishViewBase = Backbone.View.extend({
   },
 
   initialize: function() {
-    // Compile the template for the view
-    if (this.options.templateSource) {
-      this.template = Handlebars.compile(this.options.templateSource);
-    }
+    this.compileTemplates();
     this.dispatcher = this.options.dispatcher;
     this.initListeners();
   }
@@ -5320,7 +5330,7 @@ storybase.builder.views.FeaturedAssetDisplayView = Backbone.View.extend({
   }
 });
 
-storybase.builder.views.FeaturedAssetSelectView = Backbone.View.extend({
+storybase.builder.views.FeaturedAssetSelectView = HandlebarsTemplateView.extend({
   id: 'featured-asset-select',
 
   tagName: 'ul',
@@ -5351,7 +5361,7 @@ storybase.builder.views.FeaturedAssetSelectView = Backbone.View.extend({
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
     this.initListeners();
-    this.template = Handlebars.compile(this.options.templateSource);
+    this.compileTemplates();
   },
 
   setStory: function(story) {
@@ -5412,7 +5422,7 @@ storybase.builder.views.FeaturedAssetSelectView = Backbone.View.extend({
   }
 });
 
-storybase.builder.views.FeaturedAssetAddView = Backbone.View.extend({
+storybase.builder.views.FeaturedAssetAddView = HandlebarsTemplateView.extend({
   id: 'featured-asset-add',
 
   options: {
@@ -5427,7 +5437,7 @@ storybase.builder.views.FeaturedAssetAddView = Backbone.View.extend({
   },
 
   initialize: function() {
-    this.template = Handlebars.compile(this.options.templateSource);
+    this.compileTemplates();
     this.dispatcher = this.options.dispatcher;
     this.initializeForm();
     this.initListeners();
@@ -5556,7 +5566,7 @@ storybase.builder.views.FeaturedAssetAddView = Backbone.View.extend({
 });
 
 
-storybase.builder.views.FeaturedAssetView = Backbone.View.extend({
+storybase.builder.views.FeaturedAssetView = HandlebarsTemplateView.extend({
   id: 'featured-asset',
 
   events: {
@@ -5565,8 +5575,10 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend({
 
   options: {
     title: gettext("Select a featured image"),
-    templateSource: $('#featured-asset-template').html(),
-    navItemTemplateSource: '<li{{#if class}} class="{{class}}"{{/if}}><a href="#{{viewId}}">{{title}}</li>',
+    templateSource: {
+      '__main': $('#featured-asset-template').html(),
+      'nav-item': '<li{{#if class}} class="{{class}}"{{/if}}><a href="#{{viewId}}">{{title}}</li>'
+    },
     addViewClass: storybase.builder.views.FeaturedAssetAddView,
     displayViewClass: storybase.builder.views.FeaturedAssetDisplayView,
     selectViewClass: storybase.builder.views.FeaturedAssetSelectView
@@ -5611,9 +5623,7 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend({
 
   initialize: function() {
     this.dispatcher = this.options.dispatcher;
-    this.template = Handlebars.compile(this.options.templateSource);
-    this.navItemTemplate = Handlebars.compile(
-      this.options.navItemTemplateSource);
+    this.compileTemplates();
     this.displayView = new this.options.displayViewClass({
       defaultImageUrl: this.options.defaultImageUrl,
       dispatcher: this.dispatcher,
@@ -5677,7 +5687,8 @@ storybase.builder.views.FeaturedAssetView = Backbone.View.extend({
 
   appendNavItem: function(view) {
     var enabled = _.result(view, 'enabled');
-    var $navItemEl = $(this.navItemTemplate({
+    var template = this.getTemplate('nav-item');
+    var $navItemEl = $(template({
         title: view.options.title,
         viewId: view.id
     })).appendTo(this.getNavContainer());
@@ -5782,8 +5793,10 @@ storybase.builder.views.PublishedButtonsView = storybase.builder.views.PublishVi
   },
 
   options: {
-    templateSource: $('#published-buttons-template').html(),
-    viewURLTemplate: '/stories/{{slug}}/viewer/'
+    templateSource: {
+      '__main': $('#published-buttons-template').html(),
+      'view-url':  '/stories/{{slug}}/viewer/'
+    }
   },
 
   initListeners: function() {
@@ -5799,7 +5812,6 @@ storybase.builder.views.PublishedButtonsView = storybase.builder.views.PublishVi
 
   initialize: function() {
     storybase.builder.views.PublishViewBase.prototype.initialize.apply(this);
-    this.viewURLTemplate = Handlebars.compile(this.options.viewURLTemplate); 
     this._rendered = false;
   },
 
@@ -5836,7 +5848,7 @@ storybase.builder.views.PublishedButtonsView = storybase.builder.views.PublishVi
       // We only need to render the contents once, after that
       // rendering just accounts to showing or hiding the element
       this.$el.html(this.template({
-        url: this.model ? this.viewURLTemplate(this.model.toJSON()) : ''
+        url: this.model ? this.getTemplate('view-url')(this.model.toJSON()) : ''
       }));
       this._rendered = true;
     }
