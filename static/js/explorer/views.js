@@ -2,14 +2,13 @@
  * Views for the story explorer Backbone application
  */
 ;(function(_, Backbone, Handlebars, storybase) {
-
-  if (_.isUndefined(storybase.explorer.views)) {
-    storybase.explorer.views = {};
+  var Explorer = storybase.explorer;
+  if (_.isUndefined(Explorer.views)) {
+    Explorer.views = {};
   }
-  var Views = storybase.explorer.views;
+  var Views = Explorer.views;
 
   var HandlebarsTemplateView = storybase.views.HandlebarsTemplateView;
-  var Globals = storybase.explorer.globals;
   var Story = storybase.models.Story;
   var Stories = storybase.collections.Stories;
 
@@ -141,7 +140,7 @@
       // Point around which to filter stories 
       this.near = null;
       // Radius in miles around this.near to filter stories
-      this.distance = Globals.SEARCH_DISTANCE;
+      this.distance = Explorer.SEARCH_DISTANCE;
       // Should only stories with geographic points be shown
       this.onlyPoints = false;
       // Flag to keep from re-fetching the same page of items when we're 
@@ -870,9 +869,9 @@
       this.boundaryPoints = this.options.boundaryPoints;
       this.boundaryLayers = new L.FeatureGroup();
       this.compileTemplates();
-      this.initialCenter = new L.LatLng(Globals.MAP_CENTER[0],
-                                        Globals.MAP_CENTER[1]);
-      this.initialZoom = Globals.MAP_ZOOM_LEVEL;
+      this.initialCenter = new L.LatLng(Explorer.MAP_CENTER[0],
+                                        Explorer.MAP_CENTER[1]);
+      this.initialZoom = Explorer.MAP_ZOOM_LEVEL;
 
       // Bind our callbacks to the view object
       _.bindAll(this, 'redrawMap', 'geocode', 'geocodeFail', 
@@ -1130,7 +1129,7 @@
       // Recenter the map based on the geocoded point 
       console.debug("Found point (" + point.lat + "," + point.lng + ")")
       var center = new L.LatLng(point.lat, point.lng);
-      this.map.setView(center, Globals.MAP_POINT_ZOOM_LEVEL);
+      this.map.setView(center, Explorer.MAP_POINT_ZOOM_LEVEL);
       this.parentView.setNear(point);
       this.parentView.fetchStories();
     },

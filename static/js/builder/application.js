@@ -10,5 +10,5 @@
     Builder.globals = {};
   }
   // TODO: Just use Backbone for this
-  Builder.globals.dispatcher =  _.clone(Backbone.Events);
+  Builder.dispatcher =  _.clone(Backbone.Events);
 })(_, Backbone, storybase);

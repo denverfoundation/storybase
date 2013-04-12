@@ -129,11 +129,11 @@
 
     <script type="text/javascript">
     $(document).ready(function() {
-        storybase.builder.globals.APP_ROOT = storybase.utils.getRoot(["build", "build-connected"], window.location.pathname, 1);
-        storybase.globals.API_ROOT = '/api/0.1/';
-        storybase.globals.MAP_CENTER = {{ storybase_map_center }};
-        storybase.globals.MAP_ZOOM_LEVEL = {{ storybase_map_zoom_level }};
-        storybase.globals.MAP_POINT_ZOOM_LEVEL = {{ storybase_map_point_zoom_level }};
+        storybase.builder.APP_ROOT = storybase.utils.getRoot(["build", "build-connected"], window.location.pathname, 1);
+        storybase.API_ROOT = '/api/0.1/';
+        storybase.MAP_CENTER = {{ storybase_map_center }};
+        storybase.MAP_ZOOM_LEVEL = {{ storybase_map_zoom_level }};
+        storybase.MAP_POINT_ZOOM_LEVEL = {{ storybase_map_point_zoom_level }};
         var storyTemplatesData = {{ story_template_json }};
         var helpData = {{ help_json }};
         var options = _.extend({
@@ -141,7 +141,7 @@
             browserSupportMessage: "{{ storybase_browser_support_msg|safe }}",
             containerTemplates: new storybase.builder.collections.ContainerTemplates,
             el: $('#builder'),
-            dispatcher: storybase.builder.globals.dispatcher,
+            dispatcher: storybase.builder.dispatcher,
             help: new Backbone.Collection,
             language: '{{ LANGUAGE_CODE }}',
             layouts: {{ layouts_json }},
@@ -202,14 +202,14 @@
         options.help.reset(helpData.objects);
         
         storybase.builder.router = new storybase.builder.routers.Router({
-          dispatcher: storybase.builder.globals.dispatcher,
+          dispatcher: storybase.builder.dispatcher,
           hasStory: !_.isUndefined(options.model),
           hasTemplate: !_.isUndefined(options.templateStory)
         });
         storybase.builder.app = new storybase.builder.views.AppView(
             options
         );
-        Backbone.history.start({pushState: true, root: storybase.builder.globals.APP_ROOT});
+        Backbone.history.start({pushState: true, root: storybase.builder.APP_ROOT});
     });
     </script>
   </body>

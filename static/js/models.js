@@ -11,7 +11,6 @@
   var Models = storybase.models;
 
   var Forms = storybase.forms;
-  var Globals = storybase.globals;
 
   /**
    * Mixin that expects the model attributes to be within an objects attribute
@@ -245,7 +244,7 @@
       },
 
       url: function() {
-        var url = Globals.API_ROOT + 'datasets/';
+        var url = storybase.API_ROOT + 'datasets/';
         if (this._story !== null) {
           url = url + 'stories/' + this._story.id + '/';
         }
@@ -266,7 +265,7 @@
     idAttribute: 'location_id',
 
     urlRoot: function() {
-      return Globals.API_ROOT + 'locations';
+      return storybase.API_ROOT + 'locations';
     },
 
     /**
@@ -297,7 +296,7 @@
       },
 
       url: function() {
-        var url = Globals.API_ROOT + 'locations/';
+        var url = storybase.API_ROOT + 'locations/';
         if (this._story) {
           url = url + 'stories/' + this._story.id + '/';
         }
@@ -315,7 +314,7 @@
       idAttribute: "story_id",
 
       urlRoot: function() {
-        return Globals.API_ROOT + 'stories';
+        return storybase.API_ROOT + 'stories';
       },
 
       defaults: {
@@ -344,8 +343,8 @@
       setCollectionUrls: function() {
         if (!this.isNew()) {
           this.sections.url = this.url() + 'sections/';
-          this.unusedAssets.url = Globals.API_ROOT + 'assets/stories/' + this.id + '/sections/none/'; 
-          this.assets.url = Globals.API_ROOT + 'assets/stories/' + this.id + '/';
+          this.unusedAssets.url = storybase.API_ROOT + 'assets/stories/' + this.id + '/sections/none/'; 
+          this.assets.url = storybase.API_ROOT + 'assets/stories/' + this.id + '/';
         }
       },
 
@@ -467,7 +466,7 @@
       model: Story,
 
       url: function() {
-        return Globals.API_ROOT + 'stories';
+        return storybase.API_ROOT + 'stories';
       }
   });
 
@@ -506,7 +505,7 @@
       },
 
       urlRoot: function() {
-        return Globals.API_ROOT + 'sections';
+        return storybase.API_ROOT + 'sections';
       },
 
       /**
@@ -532,7 +531,7 @@
     _.extend({}, TastypieCollectionMixin, {
       model: Section,
 
-      url: Globals.API_ROOT + 'sections/',
+      url: storybase.API_ROOT + 'sections/',
 
       initialize: function() {
         _.bindAll(this, '_assetsFetchedSuccess', '_assetsFetchedError');
@@ -751,7 +750,7 @@
       idAttribute: "asset_id",
 
       urlRoot: function() {
-        return Globals.API_ROOT + 'assets/'
+        return storybase.API_ROOT + 'assets/'
       },
 
       /**
@@ -812,7 +811,7 @@
       },
 
       url: function() {
-        return Globals.API_ROOT + 'assets/stories/' + this._story.id + '/featured/';
+        return storybase.API_ROOT + 'assets/stories/' + this._story.id + '/featured/';
       }
     })
   );
@@ -847,7 +846,7 @@
       },
 
       url: function() {
-        var url = Globals.API_ROOT + 'tags/';
+        var url = storybase.API_ROOT + 'tags/';
         if (this._story) {
           url = url + 'stories/' + this._story.id + '/';
         }

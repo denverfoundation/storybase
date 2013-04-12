@@ -3,13 +3,8 @@
  */
 ;(function() {
   var root = this;
-  var storybase;
   if (_.isUndefined(root.storybase)) {
     root.storybase = {};
   }
-  storybase = this.storybase;
-
-  if (_.isUndefined(storybase.globals)) {
-    storybase.globals = {};
-  }
+  var storybase = this.storybase;
 }).call(this);

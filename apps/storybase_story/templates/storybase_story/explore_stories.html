@@ -200,10 +200,10 @@ $ = jQuery;
 {% endcompress js %}
 <script type="text/javascript">
 $(document).ready(function() {
-  storybase.explorer.globals.MAP_CENTER = {{ storybase_map_center }};
-  storybase.explorer.globals.MAP_ZOOM_LEVEL = {{ storybase_map_zoom_level }};
-  storybase.explorer.globals.MAP_POINT_ZOOM_LEVEL = {{ storybase_map_point_zoom_level }};
-  storybase.explorer.globals.SEARCH_DISTANCE = {{ storybase_search_distance }};
+  storybase.explorer.MAP_CENTER = {{ storybase_map_center }};
+  storybase.explorer.MAP_ZOOM_LEVEL = {{ storybase_map_zoom_level }};
+  storybase.explorer.MAP_POINT_ZOOM_LEVEL = {{ storybase_map_point_zoom_level }};
+  storybase.explorer.SEARCH_DISTANCE = {{ storybase_search_distance }};
   var storyData = {{ stories_json }};
   var selectedFilters = {{ selected_filters }};
   var explorer = new storybase.explorer.views.ExplorerApp({

@@ -16,7 +16,6 @@
   <!-- Applicaton dependencies -->
   <script src="libs/jquery-1.7.2.min.js"></script>
   <script src="libs/jquery-ui-1.8.22.custom.min.js"></script>
-  <script src="libs/Namespace.js"></script>
   <script src="libs/underscore-min.js"></script>
   <script src="libs/json2.js"></script>
   <script src="libs/handlebars-1.0.0.beta.6.js"></script>
@@ -61,15 +60,17 @@
   <!-- Spec fixtures and helpers -->
   <script src="spec/fixtures.js"></script>
   <script src="spec/helpers.js"></script>
-  <script type="text/javascript">
-      storybase.globals.API_ROOT = '/api/0.1/';
-  </script>
 
   <!-- Specs -->
   <script type="text/javascript" src="spec/error.js"></script>
+  <script type="text/javascript" src="spec/storybase.js"></script>
   <script type="text/javascript" src="spec/models.js"></script>
   <script type="text/javascript" src="spec/utils.js"></script>
   <script type="text/javascript" src="spec/builder/views.js"></script>
+
+  <script type="text/javascript">
+      storybase.API_ROOT = '/api/0.1/';
+  </script>
 
   <script type="text/javascript">
     (function() {

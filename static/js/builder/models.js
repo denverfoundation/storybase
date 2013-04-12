@@ -10,7 +10,6 @@
   var Collections = storybase.builder.collections;
 
   var TastypieMixin = storybase.collections.TastyPieMixin;
-  var Globals = storybase.globals;
 
   var StoryTemplate = Models.StoryTemplate = Backbone.Model.extend({
     idAttribute: "template_id",
@@ -65,7 +64,7 @@
       },
 
       url: function() {
-        var url = Globals.API_ROOT + 'stories/containertemplates/';
+        var url = storybase.API_ROOT + 'stories/containertemplates/';
         if (this._template) {
           url = url + 'templates/' + this._template.id + '/';
         }

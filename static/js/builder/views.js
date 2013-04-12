@@ -1,8 +1,9 @@
 ;(function($, _, Backbone, storybase) {
-  if (_.isUndefined(storybase.builder.views)) {
-    storybase.builder.views = {};
+  var Builder = storybase.builder;
+  if (_.isUndefined(Builder.views)) {
+    Builder.views = {};
   }
-  var Views = storybase.builder.views;
+  var Views = Builder.views;
 
   var Asset = storybase.models.Asset;
   var DataSet = storybase.models.DataSet;
@@ -12,8 +13,6 @@
   var Section = storybase.models.Section;
   var Story = storybase.models.Story;
   var Tags = storybase.collections.Tags;
-  var Globals = storybase.globals;
-  var BuilderGlobals = storybase.builder.globals;
   var capfirst = storybase.utils.capfirst;
   var geocode = storybase.utils.geocode;
   var hasAnalytics = storybase.utils.hasAnalytics;
@@ -1125,7 +1124,7 @@
         if (!_.isUndefined(this.model) && this._includeStoryId) {
           path = this.model.id + '/' + path;
         }
-        path = BuilderGlobals.APP_ROOT + path;
+        path = Builder.APP_ROOT + path;
       }
       return path;
     },
@@ -1142,7 +1141,7 @@
       if (!$button.hasClass("disabled") && !$button.parent().hasClass("disabled") && valid) { 
         href = $button.attr("href");
         // Strip the base path of this app
-        route = href.substr(BuilderGlobals.APP_ROOT.length);
+        route = href.substr(Builder.APP_ROOT.length);
         this.dispatcher.trigger('navigate', route, 
           {trigger: true, replace: true});
       }
@@ -4670,11 +4669,11 @@
     initialize: function() {
       this.dispatcher = this.options.dispatcher;
       this.compileTemplates();
-      this.initialCenter = new L.LatLng(Globals.MAP_CENTER[0],
-                                        Globals.MAP_CENTER[1]);
-      this.initialZoom = Globals.MAP_ZOOM_LEVEL;
+      this.initialCenter = new L.LatLng(storybase.MAP_CENTER[0],
+                                        storybase.MAP_CENTER[1]);
+      this.initialZoom = storybase.MAP_ZOOM_LEVEL;
       this.collection = new Locations([], {story: this.model});
-      this.pointZoom = Globals.MAP_POINT_ZOOM_LEVEL;
+      this.pointZoom = storybase.MAP_POINT_ZOOM_LEVEL;
       this.latLng = null;
       this._collectionFetched = false;
       this.collection.on("reset", this.renderLocationList, this);
@@ -4818,7 +4817,7 @@
     render: function() {
       var s2opts = {
         ajax: {
-          url: Globals.API_ROOT + 'tags/',
+          url: storybase.API_ROOT + 'tags/',
           data: function(term, page) {
             return {
               'name__istartswith': term
@@ -4892,7 +4891,7 @@
           model = this.collection.get(evt.removed.id);
           id = evt.removed.id;
         }
-        model.url = Globals.API_ROOT + 'tags/' + id + '/stories/' + this.model.id + '/';
+        model.url = storybase.API_ROOT + 'tags/' + id + '/stories/' + this.model.id + '/';
         model.destroy();
       }
     }

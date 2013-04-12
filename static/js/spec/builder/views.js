@@ -1,8 +1,8 @@
 var initializeGlobals = function() {
-  storybase.globals.API_ROOT = '/api/0.1/';
-  storybase.globals.MAP_CENTER = [39.74151, -104.98672];
-  storybase.globals.MAP_ZOOM_LEVEL = 11;
-  storybase.globals.MAP_POINT_ZOOM_LEVEL = 14; 
+  storybase.API_ROOT = '/api/0.1/';
+  storybase.MAP_CENTER = [39.74151, -104.98672];
+  storybase.MAP_ZOOM_LEVEL = 11;
+  storybase.MAP_POINT_ZOOM_LEVEL = 14; 
 };
 
 describe('AppView', function() {
