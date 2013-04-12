@@ -553,8 +553,11 @@ storybase.viewer.views.Spider = Backbone.View.extend({
 storybase.viewer.views.LinearViewerApp = storybase.viewer.views.ViewerApp.extend({
   elClass: 'linear',
 
-  events: {
-    'click .connected-story-item a': 'handleConnectedStoryClick'
+  events: function() {
+    var events = storybase.viewer.views.ViewerApp.prototype.events.apply(this, arguments);
+    return _.extend(events, {
+      'click .connected-story-item a': 'handleConnectedStoryClick'
+    });
   },
 
   // override to hook into our own render event.
@@ -622,9 +625,12 @@ storybase.viewer.views.LinearViewerApp = storybase.viewer.views.ViewerApp.extend
 storybase.viewer.views.SpiderViewerApp = storybase.viewer.views.ViewerApp.extend({
   elClass: 'spider',
 
-  events: {
-    "click #topic-map": "clickTopicMapLink",
-    "click g.node": "clickSectionNode"
+  events: function() {
+    var events = storybase.viewer.views.ViewerApp.prototype.events.apply(this, arguments);
+    return _.extend(events, {
+      "click #topic-map": "clickTopicMapLink",
+      "click g.node": "clickSectionNode"
+    });
   },
 
   initialize: function() {

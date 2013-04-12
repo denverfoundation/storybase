@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.9.4
+~~~~~
+
+* Fix table of contents toggling (#709)
+
 0.9.3
 ~~~~~
 
