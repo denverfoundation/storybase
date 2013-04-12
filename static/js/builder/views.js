@@ -300,7 +300,6 @@
       // active view is initiated by the router triggering the ``select:
       // workflowstep`` signal
       if (this.activeStep != step) {
-        console.debug('Updating active step to ' + step);
         activeView = this.getActiveView();
         if (activeView && activeView.onHide) {
           activeView.onHide();
@@ -317,7 +316,6 @@
      * Get the sub-view for the currently active step
      */
     getActiveView: function() {
-      console.debug('Getting active view for step ' + this.activeStep);
       return this.subviews[this.activeStep];
     },
 
@@ -367,7 +365,6 @@
     },
 
     render: function() {
-      console.debug('Rendering main view');
       var activeView = this.getActiveView();
       var $container = this.$(this.options.subviewContainerEl);
       // Lookup for getting/setting the cookie to determine if the user
@@ -1131,7 +1128,6 @@
 
 
     handleClick: function(evt) {
-      console.debug('handling click of navigation button');
       evt.preventDefault();
       var $button = $(evt.target);
       var item = this.getItem($button.attr('id'));
@@ -1432,7 +1428,6 @@
     },
 
     initialize: function() {
-      console.info('initializing form');
       this.compileTemplates(); 
       this.dispatcher = this.options.dispatcher;
       this.dispatcher.on('do:hide:template:detail', this.removeDetailPane, this);
@@ -1886,7 +1881,6 @@
     },
 
     triggerReady: function() {
-      console.info('Story sections initialized');
       this.dispatcher.trigger('ready:story', this.model);
     },
 
@@ -1967,7 +1961,6 @@
     },
 
     render: function() {
-      console.info('Rendering builder view');
       var that = this;
       this.$el.prepend(this.unusedAssetView.render().$el.hide());
       if (this.sectionListView) {
@@ -2032,7 +2025,6 @@
     },
 
     setStoryTemplate: function(template) {
-      console.info("Setting story template");
       var that = this;
       this.storyTemplate = template;
       this.storyTemplate.getStory({
@@ -2044,7 +2036,6 @@
     },
 
     setTemplateStory: function(story) {
-      console.info("Setting template story");
       var that = this;
       this.templateStory = story;
       this.templateStory.sections.on("reset", this.getContainerTemplates, this);
@@ -2064,7 +2055,6 @@
     },
 
     initializeStoryFromTemplate: function() {
-      console.info("Initializing sections");
       this.model.fromTemplate(this.templateStory, {
         language: this.options.language
       });
@@ -2084,7 +2074,6 @@
     },
 
     save: function() {
-      console.info("Saving story");
       var that = this;
       var isNew = this.model.isNew();
       this.model.save(null, {
@@ -2516,7 +2505,6 @@
         else {
           this.model.save();
         }
-        console.info("Updated " + key + " to " + value);
       }
     }
   };
@@ -2666,7 +2654,6 @@
     },
 
     render: function() {
-      console.info('Rendering the section list');
       var i = 0;
       var numThumbnails;
       var thumbnailView;
@@ -2718,7 +2705,6 @@
     },
 
     removeSection: function(section) {
-      console.debug("Removing section " + section.get("title"));
       var doRemove = false;
       var view = this.getThumbnailView(section);
       var handleSuccess = function(section, response) {
@@ -2784,7 +2770,6 @@
     },
 
     handleSort: function(evt, ui) {
-      console.debug('Handling sort');
       var that = this;
       var sortedIds = this.$('.sections').sortable('toArray');
       this._sortedThumbnailViews = [];
@@ -2991,7 +2976,6 @@
       },
 
       select: function() {
-        console.info("Clicked thumbnail for section " + this.model.get('title'));
         this.dispatcher.trigger("select:section", this.model);
       },
 
@@ -3063,14 +3047,12 @@
       show: function(id) {
         id = _.isUndefined(id) ? this.pseudoSectionId : id;
         if (id == this.pseudoSectionId) {
-          console.debug("Showing editor for pseduo-section " + this.pseudoSectionId);
           this.$el.show();
           // For now, don't automatically show help
           //this.dispatcher.trigger('do:show:help', this.help.toJSON()); 
           this.dispatcher.trigger('do:set:help', this.help.toJSON());
         }
         else {
-          console.debug("Hiding editor for pseduo-section " + this.pseudoSectionId);
           this.$el.hide();
         }
         return this;
@@ -3218,7 +3200,6 @@
 
     changeConnectedEl: function(evt) {
       this.change(evt);
-      console.debug('In changeConnectedEl');
       if ($(evt.target).prop('checked')) {
         this.$(this.options.connectedPromptEl).show(); 
       }
@@ -3455,14 +3436,12 @@
       section = _.isUndefined(section) ? this.model : section;
       var help = this.model.get('help') || this.defaultHelp.toJSON();
       if (section == this.model) {
-        console.debug('showing section ' + section.get('title'));
         this.$el.show();
         // For now, don't show help automatically
         //this.dispatcher.trigger('do:show:help', help); 
         this.dispatcher.trigger('do:set:help', help);
       }
       else {
-        console.debug('hiding section ' + this.model.get('title'));
         this.$el.hide();
       }
       return this;
@@ -3488,7 +3467,6 @@
         else {
           this.model.save();
         }
-        console.info("Updated " + key + " to " + value);
       }
     },
 
@@ -3678,7 +3656,6 @@
      * Callback for the 'destroy' event on the view's model.
      */
     handleDestroy: function() {
-      console.debug("Section is being destroyed!");
       var triggerUnused = function(asset) {
         this.dispatcher.trigger("remove:sectionasset", asset);
       };
@@ -3690,7 +3667,6 @@
       if (this.$el.is(':visible')) {
         // Destroying the currently active view
         var index = this.model.collection.indexOf(this.model);
-        console.debug('Destroying active view with index ' + index);
         if (index) {
           // If this isn't the first section, make the previous section
           // the active one
@@ -3780,7 +3756,6 @@
       states: ['select', 'display', 'edit'],
 
       initialize: function() {
-        console.debug("Initializing new section asset edit view");
         this.compileTemplates();
         this.modelOptions = {
           language: this.options.language
@@ -3853,7 +3828,6 @@
        * Set the view's form property based on the current state of the model.
        */
       initializeForm: function() {
-        console.debug("Initializing asset edit form");
         this.form = new Backbone.Form({
           model: this.model
         });
@@ -4188,7 +4162,6 @@
       },
 
       handleDrop: function(evt, ui) {
-        console.debug("Asset dropped");
         var id = ui.draggable.data('asset-id');
         if (id) {
           this.model = this.story.unusedAssets.get(id);
@@ -4292,7 +4265,6 @@
           this.fetchCollection();
         }
         else {
-          console.info('Rendering data view');
           var context = {
             datasets: this.collection.toJSON()
           };
@@ -4428,7 +4400,6 @@
       },
 
       render: function() {
-        console.info('Rendering review view');
         var context = {};
         this.$el.html(this.template(context));
         this.workflowNavView.render();
@@ -4682,7 +4653,6 @@
     },
 
     render: function() {
-      console.debug("Rendering add location view");
       if (!this._collectionFetched) {
         this.collection.fetch();
       }
@@ -4709,7 +4679,6 @@
     },
 
     renderLocationList: function(collection) {
-      console.debug("In renderLocationList()");
       var template = this.getTemplate('location');
       this.$('#locations').empty(); 
       this.collection.each(function(loc) {
@@ -4719,7 +4688,6 @@
 
     searchAddress: function(evt) {
       evt.preventDefault();
-      console.debug("Entering searchAddress");
       var address = this.$("#address").val();
       var that = this;
       this.rawAddress = '';
@@ -4757,7 +4725,6 @@
 
     addLocation: function(evt) {
       evt.preventDefault();
-      console.debug('Adding location');
       var name = this.$('#address-name').val();
       // Make sure we found a point
       if (this.latLng) {
@@ -5529,7 +5496,6 @@
       var errors = this.form.commit();
 
       e.preventDefault();
-      console.debug(this.form.getValue());
 
       if (!errors) {
         this.saveModel(this.form.model);
