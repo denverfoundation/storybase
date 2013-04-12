@@ -1,4 +1,4 @@
-(function(_, Backbone, Handlebars, storybase) {
+;(function(_, Backbone, Handlebars, storybase) {
   var HandlebarsTemplateMixin = {
     compileTemplate: function(templateSource) {
       return Handlebars.compile(templateSource);

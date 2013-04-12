@@ -11,6 +11,12 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+dev
+~~~
+
+* Wrap Backbone modules in self-executing anonymous functions (#710)
+* Remove dependency on Namespace.js
+
 0.9.4
 ~~~~~
 
@@ -318,7 +324,6 @@ This project includes a number of excellent open-source libraries:
 * `Leaflet <http://leaflet.cloudmade.com/>` by CloudMade, Vladimir Agafonkin 
 * `LeafClusterer <https://github.com/ideak/leafclusterer/>`_ by Imre Deak
 * `Modernizr <http://modernizr.com/>`_
-* `Namespace.js <https://github.com/maximebf/Namespace.js>`_ by Maxime Bouroumeau-Fuseau
 * `Normalize.css <http://github.com/necolas/normalize.css>`_ by Nicolas Gallagher and Jonathan Neal
 * `Select2 <http://ivaynberg.github.com/select2/>`_ by Igor Vaynberg
 * `SimpleModal <http://simplemodal.com>`_ by Eric Martin

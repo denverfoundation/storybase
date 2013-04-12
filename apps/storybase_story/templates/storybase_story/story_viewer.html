@@ -107,7 +107,6 @@
     <script>window.jQuery || document.write('<script src="{{ STATIC_URL }}js/libs/jquery-1.7.2.min.js"><\/script>')</script>
 
     <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
-    <script src="{{ STATIC_URL }}js/libs/Namespace.js"></script>
     <script src="{{ STATIC_URL }}js/libs/underscore-min.js"></script>
     <script src="{{ STATIC_URL }}js/libs/json2.js"></script>
     <script src="{{ STATIC_URL }}js/libs/backbone-min.js"></script>
@@ -118,6 +117,7 @@
     <script src="{{ STATIC_URL }}js/jquery.storybaseshare.js"></script>
 
     {% compress js %}
+    <script src="{{ STATIC_URL }}js/storybase.js"></script>
     <script src="{{ STATIC_URL }}js/models.js"></script>
     <script src="{{ STATIC_URL }}js/utils.js"></script>
     <script src="{{ STATIC_URL }}js/views.js"></script>
@@ -129,7 +129,6 @@
     <script type="text/javascript">
     $(document).ready(function() {
         var storyStructureType = '{{ story.structure_type }}';        
-        Namespace('storybase.viewer');
         var story = new storybase.models.Story({{ story.structure.to_json }});
         var sections = new storybase.collections.Sections;
 	var viewerContext = '{{ context }}';

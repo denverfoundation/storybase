@@ -180,7 +180,6 @@ jQuery = jqLatest;
 $ = jQuery;
 </script>
 <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
-<script src="{{ STATIC_URL }}js/libs/Namespace.js"></script>
 <script src="{{ STATIC_URL }}js/libs/underscore-min.js"></script>
 <script src="{{ STATIC_URL }}js/libs/json2.js"></script>
 <script src="{{ STATIC_URL }}js/libs/backbone-min.js"></script>
@@ -192,6 +191,7 @@ $ = jQuery;
 <script src="{{ STATIC_URL}}js/libs/spin.min.js"></script>
 <script src="{{ STATIC_URL }}js/libs/tooltipster-1.2/js/jquery.tooltipster.min.js"></script>
 {% compress js %}
+<script src="{{ STATIC_URL }}js/storybase.js"></script>
 <script src="{{ STATIC_URL }}js/models.js"></script>
 <script src="{{ STATIC_URL }}js/utils.js"></script>
 <script src="{{ STATIC_URL }}js/views.js"></script>
