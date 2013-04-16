@@ -2379,8 +2379,10 @@
 
   var RichTextEditorMixin = {
     toolbarTemplateSource: $('#editor-toolbar-template').html(),
-    editor: null,
+    characterCountTemplateSource: $('#editor-toolbar-character-counter').html(),
+    showCharacterCount: false,
     characterCountTimer: null,
+    editor: null,
 
     getEditorToolbarHtml: function() {
       return this.toolbarTemplateSource; 
@@ -2389,12 +2391,16 @@
     getEditorToolbarEl: function() {
       if (_.isUndefined(this._editorToolbarEl)) {
         this._editorToolbarEl = $(this.getEditorToolbarHtml())[0];
+        if (this.showCharacterCount) {
+          $(this._editorToolbarEl).prepend(this.characterCountTemplateSource);
+        }
       }
       return this._editorToolbarEl; 
     },
 
-    getEditor: function(el, callbacks) {
+    getEditor: function(el, callbacks, showCharacterCount) {
       var view = this;
+      this.showCharacterCount = showCharacterCount || false;
       var defaultCallbacks = {
         'focus': function() {
           $(this.toolbar.container).show();
@@ -3112,7 +3118,8 @@
         this.$(this.options.summaryEl)[0],
         {
           change: handleChange
-        }
+        },
+        true
       );
         
       this.delegateEvents(); 
