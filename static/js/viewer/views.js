@@ -3,10 +3,31 @@
  */
 Namespace('storybase.viewer');
 
+
+// For views containing links to story sections.
+storybase.viewer.views.NavigableMixin = {
+  handleNavClick: function(event) {
+    if (!$(event.target).hasClass('disabled')) {
+      if (storybase.viewer.router) {
+        // we allow our router to handle the location change.
+        return true;
+      }
+      
+      // if there is no router we trigger an event for internal 
+      // use and prevent the anchor click from bubbling.
+      var sectionId = $(event.target).attr('href').split('/')[1];
+      this.trigger('navigate:section', sectionId);
+      
+      return false;
+    }
+  }
+};
+
 // Container view for the viewer application.
 // It delegates rendering and events for the entire app to views
 // rendering more specific "widgets"
-storybase.viewer.views.ViewerApp = Backbone.View.extend({
+storybase.viewer.views.ViewerApp = Backbone.View.extend(
+  _.extend({}, storybase.viewer.views.NavigableMixin, {
   options: {
     tocEl: '#toc .story-toc',
     tocButtonEl: '#toggle-toc',
@@ -19,6 +40,7 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
     var events = {};
     events['click ' + this.options.tocButtonEl] = 'toggleToc';
     events['resize figure img'] = 'handleImgResize';
+    events['click ' + this.options.tocEl + ' a'] = 'handleNavClick';
     return events;
   },
 
@@ -31,6 +53,7 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
       sections: this.options.sections
     }); 
     this.navigationView.on('navigate:section', this.setSectionById, this);
+    this.on('navigate:section', this.setSectionById, this);
     
     // Has the view been rendered yet?
     this._rendered = false;
@@ -166,7 +189,8 @@ storybase.viewer.views.ViewerApp = Backbone.View.extend({
     }
     return false;
   }
-});
+})
+);
 
 /**
  * View for the story viewer header.
@@ -197,7 +221,8 @@ storybase.viewer.views.StoryHeader = Backbone.View.extend({
 */
 
 // View to provide previous/next buttons to navigate between sections
-storybase.viewer.views.StoryNavigation = Backbone.View.extend({
+storybase.viewer.views.StoryNavigation = Backbone.View.extend(
+  _.extend({}, storybase.viewer.views.NavigableMixin, {
   tagName: 'nav',
 
   id: 'story-nav',
@@ -278,24 +303,10 @@ storybase.viewer.views.StoryNavigation = Backbone.View.extend({
   showConnectedStory: function() {
     this.showingConnectedStory = true; 
     this.render();
-  },
-  
-  handleNavClick: function(event) {
-    if (!$(event.target).hasClass('disabled')) {
-      if (storybase.viewer.router) {
-        // we allow our router to handle the location change.
-        return true;
-      }
-      
-      // if there is no router we trigger an event for internal 
-      // use and prevent the anchor click from bubbling.
-      var sectionId = $(event.target).attr('href').split('/')[1];
-      this.trigger('navigate:section', sectionId);
-      
-      return false;
-    }
   }
-});
+
+})
+);
 
 // Interative visualization of a spider story structure
 storybase.viewer.views.Spider = Backbone.View.extend({
