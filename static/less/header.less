@@ -28,6 +28,13 @@
 				padding-left:0;
 			}
 			
+			// avoid wrapping in text in last child (currently where usernames are, 
+			// which can be of arbitrary length).
+			&:last-child {
+				white-space:nowrap;
+				width:0;
+				overflow:visible;
+			}
 			a {
 				.header-item
 			}

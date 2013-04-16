@@ -370,6 +370,7 @@ body.base-template a.button.gray:hover{text-decoration:none !important;}
 body.base-template a.button.gray:hover{background:#414141;}
 body.base-template{}body.base-template .header-item{font-size:12px;color:#909090;font-family:'MuseoSlab500Regular';}
 body.base-template .header-right{width:284px;float:right;display:inline;padding-top:18px;}body.base-template .header-right ul{list-style:none;}body.base-template .header-right ul li{float:left;display:inline;background:url('../img/sep2.png') no-repeat 0 2px;padding-left:11px;margin-left:5px;font-size:12px;color:#909090;font-family:'MuseoSlab500Regular';}body.base-template .header-right ul li:first-child{margin-left:0;background:none;padding-left:0;}
+body.base-template .header-right ul li:last-child{white-space:nowrap;width:0;overflow:visible;}
 body.base-template .header-right ul li a{font-size:12px;color:#909090;font-family:'MuseoSlab500Regular';}
 body.base-template .header-right #search-placeholder{padding-top:12px;height:37px;}
 body.base-template .header-right form#search{padding-top:12px;}body.base-template .header-right form#search input{float:left;display:inline;border:0;}body.base-template .header-right form#search input.field{width:233px;background:url('../img/search.png') no-repeat 0 0;font-size:18px;color:#535353;font-family:'Museo300Regular';padding:8px 0 8px 5px;border:none;border-radius:0;box-shadow:none;font-style:normal;}
