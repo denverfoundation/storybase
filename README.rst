@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.9.5
+~~~~~
+
+* Fix table of contents elements (#715)
+
 0.9.4
 ~~~~~
 
