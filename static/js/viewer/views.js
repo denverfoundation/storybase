@@ -3,170 +3,194 @@
  */
 Namespace('storybase.viewer');
 
+
+// For views containing links to story sections.
+storybase.viewer.views.NavigableMixin = {
+  handleNavClick: function(event) {
+    if (!$(event.target).hasClass('disabled')) {
+      if (storybase.viewer.router) {
+        // we allow our router to handle the location change.
+        return true;
+      }
+      
+      // if there is no router we trigger an event for internal 
+      // use and prevent the anchor click from bubbling.
+      var sectionId = $(event.target).attr('href').split('/')[1];
+      this.trigger('navigate:section', sectionId);
+      
+      return false;
+    }
+  }
+};
+
 // Container view for the viewer application.
 // It delegates rendering and events for the entire app to views
 // rendering more specific "widgets"
-storybase.viewer.views.ViewerApp = Backbone.View.extend({
-  options: {
-    tocEl: '#toc .story-toc',
-    tocButtonEl: '#toggle-toc',
-    tocIconEl: '[class^="icon-"]',
-    tocOpenClass: 'icon-caret-down',
-    tocClosedClass: 'icon-caret-up'
-  },
+storybase.viewer.views.ViewerApp = Backbone.View.extend(
+  _.extend({}, storybase.viewer.views.NavigableMixin, {
+    options: {
+      tocEl: '#toc .story-toc',
+      tocButtonEl: '#toggle-toc',
+      tocIconEl: '[class^="icon-"]',
+      tocOpenClass: 'icon-caret-down',
+      tocClosedClass: 'icon-caret-up'
+    },
 
-  events: function() {
-    var events = {};
-    events['click ' + this.options.tocButtonEl] = 'toggleToc';
-    events['resize figure img'] = 'handleImgResize';
-    return events;
-  },
+    events: function() {
+      var events = {};
+      events['click ' + this.options.tocButtonEl] = 'toggleToc';
+      events['resize figure img'] = 'handleImgResize';
+      events['click ' + this.options.tocEl + ' a'] = 'handleNavClick';
+      return events;
+    },
 
-  // Initialize the view
-  initialize: function() {
-    this.showingConnectedStory = false;
-    this.sections = this.options.sections;
-    this.story = this.options.story;
-    this.navigationView = new storybase.viewer.views.StoryNavigation({
-      sections: this.options.sections
-    }); 
-    this.navigationView.on('navigate:section', this.setSectionById, this);
+    // Initialize the view
+    initialize: function() {
+      this.showingConnectedStory = false;
+      this.sections = this.options.sections;
+      this.story = this.options.story;
+      this.navigationView = new storybase.viewer.views.StoryNavigation({
+        sections: this.options.sections
+      }); 
+      this.navigationView.on('navigate:section', this.setSectionById, this);
+      this.on('navigate:section', this.setSectionById, this);
     
-    // Has the view been rendered yet?
-    this._rendered = false;
-    // TODO: Decide whether to re-enable updating the section title in the
-    // header
-    //this.headerView = new storybase.viewer.views.StoryHeader();
-    this.setSection(this.sections.at(0), {showActiveSection: false});
-    _.bindAll(this, 'handleScroll');
-    $(window).scroll(this.handleScroll);
-  },
+      // Has the view been rendered yet?
+      this._rendered = false;
+      // TODO: Decide whether to re-enable updating the section title in the
+      // header
+      //this.headerView = new storybase.viewer.views.StoryHeader();
+      this.setSection(this.sections.at(0), {showActiveSection: false});
+      _.bindAll(this, 'handleScroll');
+      $(window).scroll(this.handleScroll);
+    },
 
-  // Add the view's container element to the DOM and render the sub-views
-  render: function() {
-    this.$el.addClass(this.elClass);
-    this.$('footer').append(this.navigationView.el);
-    this.navigationView.render();
-    this.$('.summary').show();
-    this.$('.section').show();
-    // When images are finally loaded, resize the <figure> containers
-    // and the image captions to fit the images 
-    this.$el.imagesLoaded($.proxy(this.sizeFigCaptions, this));
-    this.$('.storybase-share-widget').storybaseShare();
-    this._rendered = true;
-    this.trigger("render");
-    return this;
-  },
+    // Add the view's container element to the DOM and render the sub-views
+    render: function() {
+      this.$el.addClass(this.elClass);
+      this.$('footer').append(this.navigationView.el);
+      this.navigationView.render();
+      this.$('.summary').show();
+      this.$('.section').show();
+      // When images are finally loaded, resize the <figure> containers
+      // and the image captions to fit the images 
+      this.$el.imagesLoaded($.proxy(this.sizeFigCaptions, this));
+      this.$('.storybase-share-widget').storybaseShare();
+      this._rendered = true;
+      this.trigger("render");
+      return this;
+    },
 
-  // Update the active story section in the sub-views
-  updateSubviewSections: function() {
-    this.navigationView.setSection(this.activeSection);
+    // Update the active story section in the sub-views
+    updateSubviewSections: function() {
+      this.navigationView.setSection(this.activeSection);
     
-    // highlight TOC entry
-    this.$(this.options.tocEl).find('a')
-      .removeClass('current')
-      .filter('a[href="#sections/' + this.activeSection.id + '"]')
-        .addClass('current');
+      // highlight TOC entry
+      this.$(this.options.tocEl).find('a')
+        .removeClass('current')
+        .filter('a[href="#sections/' + this.activeSection.id + '"]')
+          .addClass('current');
 
-    // TODO: Decide whether to re-enable updating the section title in the
-    // header
-    //this.headerView.setSection(this.activeSection);
-  },
+      // TODO: Decide whether to re-enable updating the section title in the
+      // header
+      //this.headerView.setSection(this.activeSection);
+    },
 
-  // Show the active section
-  showActiveSection: function() {
-    throw "showActiveSection() is not implemented";
-  },
+    // Show the active section
+    showActiveSection: function() {
+      throw "showActiveSection() is not implemented";
+    },
 
-  // Set the active story section
-  setSection: function(section, options) {
-    options = typeof options !== 'undefined' ? options : {};
-    var showActiveSection = options.hasOwnProperty('showActiveSection') ? options.showActiveSection : true;
-    this.activeSection = section;
-    if (showActiveSection) {
-      this.showActiveSection();
-    }
-    this.updateSubviewSections();
-  },
-
-  // Like setSection(), but takes a section ID as an argument instead of
-  // a Section model instance object
-  setSectionById: function(id) {
-    this.setSection(this.sections.get(id));
-  },
-
-  // Convenience method to get the element for the active section
-  activeSectionEl: function() {
-      return this.activeSection ? this.$('#' + this.activeSection.id) : null;
-  },
-
-  // Event handler for scroll event
-  handleScroll: function(e) {
-    // Do nothing. Subclasses might want to implement this to do some work
-  },
-  
-  sizeFigCaption: function(el) {
-    var width = $(el).width();
-    this.$(el).next('figcaption').width(width);
-    // Resize the figure element as well
-    this.$(el).parent('figure').width(width);
-  },
-  
-  sizeFigCaptions: function() {
-    var view = this;
-    this.$('figure img, figure iframe').each(function() {
-      if ($(this).width()) {
-        view.sizeFigCaption(this);
+    // Set the active story section
+    setSection: function(section, options) {
+      options = typeof options !== 'undefined' ? options : {};
+      var showActiveSection = options.hasOwnProperty('showActiveSection') ? options.showActiveSection : true;
+      this.activeSection = section;
+      if (showActiveSection) {
+        this.showActiveSection();
       }
-      // however, set up a handler anyway.
-      $(this).on('load', function() {
-        view.sizeFigCaption(this);
+      this.updateSubviewSections();
+    },
+
+    // Like setSection(), but takes a section ID as an argument instead of
+    // a Section model instance object
+    setSectionById: function(id) {
+      this.setSection(this.sections.get(id));
+    },
+
+    // Convenience method to get the element for the active section
+    activeSectionEl: function() {
+        return this.activeSection ? this.$('#' + this.activeSection.id) : null;
+    },
+
+    // Event handler for scroll event
+    handleScroll: function(e) {
+      // Do nothing. Subclasses might want to implement this to do some work
+    },
+  
+    sizeFigCaption: function(el) {
+      var width = $(el).width();
+      this.$(el).next('figcaption').width(width);
+      // Resize the figure element as well
+      this.$(el).parent('figure').width(width);
+    },
+  
+    sizeFigCaptions: function() {
+      var view = this;
+      this.$('figure img, figure iframe').each(function() {
+        if ($(this).width()) {
+          view.sizeFigCaption(this);
+        }
+        // however, set up a handler anyway.
+        $(this).on('load', function() {
+          view.sizeFigCaption(this);
+        });
       });
-    });
-  },
+    },
   
-  handleImgResize: function(event) {
-    this.sizeFigCaption(event.target);
-  },
+    handleImgResize: function(event) {
+      this.sizeFigCaption(event.target);
+    },
   
-  openToc: function() {
-    var $tocEl = $(this.options.tocEl);
-    if (!$tocEl.data('open') || _.isUndefined($tocEl.data('open'))) {
-      $tocEl.slideDown().data('open', true);
-      $(this.options.tocButtonEl)
-        .children(this.options.tocIconEl)
-        .removeClass(this.options.tocClosedClass)
-        .addClass(this.options.tocOpenClass);
-      $('body').on('click.toc', $.proxy(function() {
+    openToc: function() {
+      var $tocEl = $(this.options.tocEl);
+      if (!$tocEl.data('open') || _.isUndefined($tocEl.data('open'))) {
+        $tocEl.slideDown().data('open', true);
+        $(this.options.tocButtonEl)
+          .children(this.options.tocIconEl)
+          .removeClass(this.options.tocClosedClass)
+          .addClass(this.options.tocOpenClass);
+        $('body').on('click.toc', $.proxy(function() {
+          this.closeToc();
+        }, this));
+      }
+      return false;
+    },
+  
+    closeToc: function() {
+      var $tocEl = $(this.options.tocEl);
+      if ($tocEl.data('open')) {
+        $tocEl.slideUp().data('open', false);
+        $(this.options.tocButtonEl)
+          .children(this.options.tocIconEl)
+          .addClass(this.options.tocClosedClass)
+          .removeClass(this.options.tocOpenClass);
+        $('body').off('click.toc');
+      }
+      return false;
+    },
+  
+    toggleToc: function() {
+      if ($(this.options.tocEl).data('open')) {
         this.closeToc();
-      }, this));
+      }
+      else {
+        this.openToc();
+      }
+      return false;
     }
-    return false;
-  },
-  
-  closeToc: function() {
-    var $tocEl = $(this.options.tocEl);
-    if ($tocEl.data('open')) {
-      $tocEl.slideUp().data('open', false);
-      $(this.options.tocButtonEl)
-        .children(this.options.tocIconEl)
-        .addClass(this.options.tocClosedClass)
-        .removeClass(this.options.tocOpenClass);
-      $('body').off('click.toc');
-    }
-    return false;
-  },
-  
-  toggleToc: function() {
-    if ($(this.options.tocEl).data('open')) {
-      this.closeToc();
-    }
-    else {
-      this.openToc();
-    }
-    return false;
-  }
-});
+  })
+);
 
 /**
  * View for the story viewer header.
@@ -197,105 +221,92 @@ storybase.viewer.views.StoryHeader = Backbone.View.extend({
 */
 
 // View to provide previous/next buttons to navigate between sections
-storybase.viewer.views.StoryNavigation = Backbone.View.extend({
-  tagName: 'nav',
+storybase.viewer.views.StoryNavigation = Backbone.View.extend(
+  _.extend({}, storybase.viewer.views.NavigableMixin, {
+    tagName: 'nav',
 
-  id: 'story-nav',
+    id: 'story-nav',
 
-  templateSource: $('#navigation-template').html(),
+    templateSource: $('#navigation-template').html(),
   
-  events: {
-    'click a': 'handleNavClick'
-  },
+    events: {
+      'click a': 'handleNavClick'
+    },
 
-  initialize: function() {
-    this.activeSection = null;
-    this.showingConnectedStory = false;
-    this.sections = this.options.sections;
-    this.template = Handlebars.compile(this.templateSource);
-    if (this.options.hasOwnProperty('addlLinks')) {
-      this.addlLinks = this.options.addlLinks.map(function(link) {
-        return {
-         text: link.text,
-         id: link.id,
-         href: link.hasOwnProperty('href') ? link.href: '#'
-       }
-      });
-    }
-    else {
-      this.addlLinks = [];
-    }
-  },
-
-  // Render the view
-  // Updates the next/previous buttons and where the links point
-  render: function() {
-    var context = {
-      'addl_links': this.addlLinks,
-      'showing_connected_story': this.showingConnectedStory
-    };
-
-    context.next_section = this.nextSection || null;
-    if (context.next_section) {
-      context.next_section.title = this.nextSection.get('title');
-    }
-    context.previous_section = this.previousSection || null;
-    if (context.previous_section) {
-      context.previous_section.title = this.previousSection.get('title');
-    }
-    context.totalSectionsNum = this.sections.length;
-    context.currentSectionNum = this.sections.models.indexOf(this.activeSection) + 1;
-    
-    this.$el.html(this.template(context));
-    return this;
-  },
-
-  // Set the section pointed to by the next button
-  setNextSection: function(section) {
-    this.nextSection = section ? section : null; 
-  },
-
-  // Set the section pointed to by the previous button
-  setPreviousSection: function(section) { 
-    this.previousSection = section ? section : null;
-  },
-
-  // Set the active section of the view 
-  setSection: function(section) {
-    this.showingConnectedStory = false;
-    this.activeSection = section;
-    if (this.activeSection) {
-      this.setNextSection(this.sections.get(
-        this.activeSection.get('next_section_id')
-      ));
-      this.setPreviousSection(this.sections.get( 	
-        this.activeSection.get('previous_section_id')
-      ));
-    }
-    this.render();
-  },
-
-  showConnectedStory: function() {
-    this.showingConnectedStory = true; 
-    this.render();
-  },
-  
-  handleNavClick: function(event) {
-    if (!$(event.target).hasClass('disabled')) {
-      if (storybase.viewer.router) {
-        // we allow our router to handle the location change.
-        return true;
+    initialize: function() {
+      this.activeSection = null;
+      this.showingConnectedStory = false;
+      this.sections = this.options.sections;
+      this.template = Handlebars.compile(this.templateSource);
+      if (this.options.hasOwnProperty('addlLinks')) {
+        this.addlLinks = this.options.addlLinks.map(function(link) {
+          return {
+           text: link.text,
+           id: link.id,
+           href: link.hasOwnProperty('href') ? link.href: '#'
+         }
+        });
       }
-      
-      // if there is no router we trigger an event for internal 
-      // use and prevent the anchor click from bubbling.
-      var sectionId = $(event.target).attr('href').split('/')[1];
-      this.trigger('navigate:section', sectionId);
-      
-      return false;
+      else {
+        this.addlLinks = [];
+      }
+    },
+
+    // Render the view
+    // Updates the next/previous buttons and where the links point
+    render: function() {
+      var context = {
+        'addl_links': this.addlLinks,
+        'showing_connected_story': this.showingConnectedStory
+      };
+
+      context.next_section = this.nextSection || null;
+      if (context.next_section) {
+        context.next_section.title = this.nextSection.get('title');
+      }
+      context.previous_section = this.previousSection || null;
+      if (context.previous_section) {
+        context.previous_section.title = this.previousSection.get('title');
+      }
+      context.totalSectionsNum = this.sections.length;
+      context.currentSectionNum = this.sections.models.indexOf(this.activeSection) + 1;
+    
+      this.$el.html(this.template(context));
+      return this;
+    },
+
+    // Set the section pointed to by the next button
+    setNextSection: function(section) {
+      this.nextSection = section ? section : null; 
+    },
+
+    // Set the section pointed to by the previous button
+    setPreviousSection: function(section) { 
+      this.previousSection = section ? section : null;
+    },
+
+    // Set the active section of the view 
+    setSection: function(section) {
+      this.showingConnectedStory = false;
+      this.activeSection = section;
+      if (this.activeSection) {
+        this.setNextSection(this.sections.get(
+          this.activeSection.get('next_section_id')
+        ));
+        this.setPreviousSection(this.sections.get( 	
+          this.activeSection.get('previous_section_id')
+        ));
+      }
+      this.render();
+    },
+
+    showConnectedStory: function() {
+      this.showingConnectedStory = true; 
+      this.render();
     }
-  }
-});
+
+  })
+);
 
 // Interative visualization of a spider story structure
 storybase.viewer.views.Spider = Backbone.View.extend({
