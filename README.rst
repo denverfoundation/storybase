@@ -17,6 +17,11 @@ dev
 * Wrap Backbone modules in self-executing anonymous functions (#710)
 * Remove dependency on Namespace.js
 
+0.9.5
+~~~~~
+
+* Fix table of contents elements (#715)
+
 0.9.4
 ~~~~~
 
