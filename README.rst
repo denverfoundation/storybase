@@ -19,6 +19,11 @@ dev
 * Wrap Backbone modules in self-executing anonymous functions (#710)
 * Remove dependency on Namespace.js
 
+0.9.6
+~~~~~
+
+* Fix race condition when updating Solr index when a section is removed (#723)
+
 0.9.5
 ~~~~~
 
