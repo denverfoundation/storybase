@@ -156,6 +156,19 @@ class StoryIndex(indexes.SearchIndex, indexes.Indexable):
             for story in stories:
                 self.update_object(story)
 
+    def cache_story_for_delete(self, sender, instance, **kwargs):
+        """
+        Store a reference to the section asset's story
+
+        This makes the story available to post_delete signal handlers, because
+        it won't neccessarily be available via instance.section.story at
+        that point.
+
+        This is designed to be attached to the pre_delete signal 
+
+        """
+        instance._story = instance.section.story
+
     def asset_relation_update_object(self, sender, instance, **kwargs):
         """
         Signal handler for when an asset to section relationship is 
@@ -166,7 +179,14 @@ class StoryIndex(indexes.SearchIndex, indexes.Indexable):
 
         """
         if instance.asset.type == 'text':
-            self.update_object(instance.section.story)
+            # Try using the cached story. This will be present if
+            # we're deleting the section asset
+            story = getattr(instance, '_story', None)
+            if story is None:
+                # No cached story present, it's safe to get it by following
+                # the relations
+                story = instance.section.story
+            self.update_object(story)
     
     def _setup_save(self):
         super(StoryIndex, self)._setup_save()
@@ -182,6 +202,8 @@ class StoryIndex(indexes.SearchIndex, indexes.Indexable):
                                   sender=HtmlAssetTranslation)
         signals.post_save.connect(self.asset_relation_update_object,
                                   sender=SectionAsset)
+        signals.pre_delete.connect(self.cache_story_for_delete,
+                                   sender=SectionAsset)
         signals.post_delete.connect(self.asset_relation_update_object,
                                     sender=SectionAsset)
         signals.post_save.connect(self.section_translation_update_object,

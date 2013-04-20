@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.9.6
+~~~~~
+
+* Fix race condition when updating Solr index when a section is removed (#723)
+
 0.9.5
 ~~~~~
 
