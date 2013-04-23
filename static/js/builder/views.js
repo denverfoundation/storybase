@@ -2598,7 +2598,23 @@
       index = _.isUndefined(index) ? this._sortedThumbnailViews.length - 1 : index + 1; 
       this._sortedThumbnailViews.splice(index, 0, view);
       this._thumbnailViews[sectionId] = view;
+      if (section.isNew()) {
+        section.once('sync', this.updateSectionThumbnailId, this);
+      }
       return view;
+    },
+
+    /**
+     * Event callback to update the key for the map of seciton IDs to
+     * views
+     */
+    updateSectionThumbnailId: function(section) {
+      var view;
+      if (!_.isUndefined(this._thumbnailViews[section.cid])) {
+        view = this._thumbnailViews[section.cid];
+        this._thumbnailViews[section.id] = view;
+        delete this._thumbnailViews[section.cid];
+      }
     },
 
     addStoryInfoThumbnail: function() {
