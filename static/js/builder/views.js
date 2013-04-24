@@ -2200,6 +2200,7 @@
       this.dispatcher.on('save:section', this.updateLastSaved, this);
       this.dispatcher.on('save:story', this.updateLastSaved, this);
       this.dispatcher.on('ready:story', this.showButton, this);
+      this.dispatcher.on('do:save:story', this.setSaving, this); 
 
       this.$buttonEl = $('<button type="button">' + this.options.buttonText[this.state] + '</button>')
         .attr('id', this.options.buttonId)
@@ -2225,6 +2226,10 @@
       this.$buttonEl.html(this.options.buttonText[this.state]);
     },
 
+    setSaving: function() {
+      this.setState('saving');
+    },
+
     updateLastSaved: function() {
       var view = this;
       this.lastSaved = new Date(); 
@@ -2241,7 +2246,6 @@
     },
 
     handleClick: function(evt) {
-      this.setState('saving');
       this.dispatcher.trigger('do:save:story');
     },
 
