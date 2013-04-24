@@ -164,7 +164,8 @@ class GeocoderResourceTest(MockGeocoderTestMixin, SloppyComparisonTestMixin,
         req = HttpRequest()
         req.method = 'GET'
         req.GET['q'] = "370 17th St, Denver, CO 80202"
-        results = resource.obj_get_list(req)
+        bundle = resource.build_bundle(request=req)
+        results = resource.obj_get_list(bundle)
         self.assertApxEqual(results[0].lat, 39.7434926) 
         self.assertApxEqual(results[0].lng, -104.9886368) 
 
@@ -175,7 +176,8 @@ class GeocoderResourceTest(MockGeocoderTestMixin, SloppyComparisonTestMixin,
         req = HttpRequest()
         req.method = 'GET'
         req.GET['q'] = "colfax and chambers, aurora, co"
-        results = resource.obj_get_list(req)
+        bundle = resource.build_bundle(request=req)
+        results = resource.obj_get_list(bundle)
         self.assertApxEqual(results[0].lat, 39.7399986) 
         self.assertApxEqual(results[0].lng, -104.8099387) 
 
@@ -186,7 +188,8 @@ class GeocoderResourceTest(MockGeocoderTestMixin, SloppyComparisonTestMixin,
         req = HttpRequest()
         req.method = 'GET'
         req.GET['q'] = "golden, co"
-        results = resource.obj_get_list(req)
+        bundle = resource.build_bundle(request=req)
+        results = resource.obj_get_list(bundle)
         self.assertApxEqual(results[0].lat, 39.756655, .001) 
         self.assertApxEqual(results[0].lng, -105.224949, .001) 
 
@@ -197,7 +200,8 @@ class GeocoderResourceTest(MockGeocoderTestMixin, SloppyComparisonTestMixin,
         req = HttpRequest()
         req.method = 'GET'
         req.GET['q'] = "80202"
-        results = resource.obj_get_list(req)
+        bundle = resource.build_bundle(request=req)
+        results = resource.obj_get_list(bundle)
         self.assertApxEqual(results[0].lat, 39.7541032, .01)
         self.assertApxEqual(results[0].lng, -105.000224, .01) 
 
@@ -208,7 +212,8 @@ class GeocoderResourceTest(MockGeocoderTestMixin, SloppyComparisonTestMixin,
         req = HttpRequest()
         req.method = 'GET'
         req.GET['q'] = "Denver"
-        results = resource.obj_get_list(req)
+        bundle = resource.build_bundle(request=req)
+        results = resource.obj_get_list(bundle)
         self.assertApxEqual(results[0].lat, 39.737567, .01)
         self.assertApxEqual(results[0].lng, -104.9847179, .01)
 
@@ -219,7 +224,8 @@ class GeocoderResourceTest(MockGeocoderTestMixin, SloppyComparisonTestMixin,
         req = HttpRequest()
         req.method = 'GET'
         req.GET['q'] = "11zzzzzzzzzz1234asfdasdasgw"
-        results = resource.obj_get_list(req)
+        bundle = resource.build_bundle(request=req)
+        results = resource.obj_get_list(bundle)
         self.assertEqual(len(results), 0)
 
 

@@ -1,17 +1,16 @@
 from django.conf.urls.defaults import url
 from django.core.exceptions import ObjectDoesNotExist
 
-from tastypie import fields, http
+from tastypie import http
 from tastypie.authentication import Authentication
-from tastypie.exceptions import BadRequest, ImmediateHttpResponse, NotFound
-#from tastypie.resources import ModelResource
+from tastypie.exceptions import ImmediateHttpResponse, NotFound
 from tastypie.utils import trailing_slash
 
-from storybase.api import DelayedAuthorizationResource, LoggedInAuthorization
+from storybase.api import HookedModelResource, LoggedInAuthorization
 from storybase_story.models import Story
 from storybase_taxonomy.models import Tag
 
-class TagResource(DelayedAuthorizationResource):
+class TagResource(HookedModelResource):
     class Meta:
         always_return_data = True
         queryset = Tag.objects.all()
@@ -26,8 +25,6 @@ class TagResource(DelayedAuthorizationResource):
         filtering = {
             'name': ('exact', 'startswith', 'istartswith'), 
         }
-
-        delayed_authorization_methods = ['delete_detail']
 
     def prepend_urls(self):
         return [
@@ -52,29 +49,29 @@ class TagResource(DelayedAuthorizationResource):
 
         return story
 
-    def apply_request_kwargs(self, obj_list, request=None, **kwargs):
+    def apply_request_kwargs(self, obj_list, bundle, **kwargs):
         story_id = kwargs.get('story_id')
         if story_id:
-            story = self.get_related_object(request, **kwargs)
+            story = self.get_related_object(bundle.request, **kwargs)
             return story.tags.all() 
         else:
             return obj_list
 
-    def obj_create(self, bundle, request=None, **kwargs):
+    def obj_create(self, bundle, **kwargs):
         story_id = kwargs.get('story_id')
         if story_id:
-            story = self.get_related_object(request, **kwargs)
+            story = self.get_related_object(bundle.request, **kwargs)
        
         tag_id = bundle.data.get('tag_id')
         if tag_id:
             # Existing tag, don't create it, just retrieve it
             try:
-                bundle.obj = self.obj_get(bundle.request, tag_id=tag_id)
+                bundle.obj = self.obj_get(bundle, tag_id=tag_id)
             except ObjectDoesNotExist:
                 pass
         else:
             # Let the superclass create the object
-            bundle = super(TagResource, self).obj_create(bundle, request, **kwargs)
+            bundle = super(TagResource, self).obj_create(bundle, **kwargs)
 
         if story_id:
             # Associate the retrieved or newly created object with the story
@@ -83,17 +80,17 @@ class TagResource(DelayedAuthorizationResource):
 
         return bundle
 
-    def obj_delete(self, request=None, **kwargs):
+    def obj_delete(self, bundle, **kwargs):
         obj = kwargs.pop('_obj', None)
 
         story_id = kwargs.get('story_id')
         if story_id:
-            story = self.get_related_object(request, **kwargs)
+            story = self.get_related_object(bundle.request, **kwargs)
             kwargs.pop('story_id')
 
             if not hasattr(obj, 'delete'):
                 try:
-                    obj = self.obj_get(request, **kwargs)
+                    obj = self.obj_get(bundle, **kwargs)
                 except ObjectDoesNotExist:
                     raise NotFound("A model instance matching the provided arguments could not be found.")
             story.tags.remove(obj)

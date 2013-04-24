@@ -3,12 +3,11 @@ from django.conf.urls.defaults import url
 from tastypie import fields
 from tastypie import http
 from tastypie.authentication import Authentication
-from tastypie.exceptions import ImmediateHttpResponse
+from tastypie.exceptions import ImmediateHttpResponse, Unauthorized
 from tastypie.utils import trailing_slash
 from tastypie.validation import Validation
 
-from storybase.api import (DelayedAuthorizationResource,
-    TranslatedModelResource, LoggedInAuthorization)
+from storybase.api import TranslatedModelResource, LoggedInAuthorization
 from storybase_story.models import Section
 from storybase_help.models import Help
 
@@ -18,6 +17,7 @@ class HelpValidation(Validation):
         if bundle.data.get('help_id', None) is None:
             errors['__all__'] = 'You must specify a help_id value'
         return errors
+
 
 class HelpResource(TranslatedModelResource):
     # Explicitly declare fields that are on the translation model
@@ -52,7 +52,7 @@ class HelpResource(TranslatedModelResource):
                 name="api_dispatch_list"),
         ]
 
-    def apply_request_kwargs(self, obj_list, request=None, **kwargs):
+    def apply_request_kwargs(self, obj_list, bundle, **kwargs):
         filters = {}
         section_id = kwargs.get('section_id')
         if section_id:
@@ -61,41 +61,48 @@ class HelpResource(TranslatedModelResource):
         new_obj_list = obj_list.filter(**filters)
 
         return new_obj_list
-
-    def is_authorized(self, request, object=None, **kwargs):
-        super(HelpResource, self).is_authorized(request, object, **kwargs)
-
-        # The call upstream didn't return an error, let's check some
-        # more resource-specific things
-        auth_result = True 
-        if request.method == 'POST':
-            section_id = kwargs.get('section_id', None)
-            if section_id:
-                # Lookup the section. It's owner should match the request's
-                section = Section.objects.get(section_id=section_id)
-                if not section.story.author == request.user:
-                    auth_result = False 
-            else:
-                # We only allow posting when a section_id is provided
-                auth_result = False
-                    
-        if not auth_result is True:
-            raise ImmediateHttpResponse(response=http.HttpUnauthorized())
-
-    def assign_help_to_section(self, bundle, request=None, **kwargs):
-        self.is_valid(bundle, request)
+    
+    def assign_help_to_section(self, bundle, **kwargs):
+        self.is_valid(bundle)
         # We can assume that there will be a section id because of 
         # this resource's implementation of is_authorized
         section_id = kwargs.get('section_id', None)
         section = Section.objects.get(section_id=section_id)
-        bundle.obj = self.obj_get(request, help_id=bundle.data['help_id'])
+        bundle.obj = self.obj_get(bundle, help_id=bundle.data['help_id'])
         section.help = bundle.obj
         section.save()
         return bundle
 
-    def obj_create(self, bundle, request=None, **kwargs):
+    def authorized_create_detail(self, object_list, bundle, **kwargs):
+        """
+        Handles checking of permissions to see if the user has authorization
+        to POST this resource.
+        """
+        try: 
+            auth_result = self._meta.authorization.create_detail(object_list, bundle)
+            section_id = kwargs.get('section_id', None)
+
+            if section_id is None:
+                auth_result = False 
+            else:
+                # Lookup the section. It's owner should match the request's
+                section = Section.objects.get(section_id=section_id)
+                if not section.story.author == bundle.request.user:
+                    auth_result = False 
+
+            if auth_result is not True:
+                raise Unauthorized("You are not allowed to access that resource.")
+
+        except Unauthorized, e:
+            self.unauthorized_result(e)
+
+        return auth_result
+
+    def obj_create(self, bundle, **kwargs):
         """
         Instead of actually creating an object, delegate to another
         hook
         """
-        return self.assign_help_to_section(bundle, request, **kwargs)
+        self.authorized_create_detail(self.get_object_list(bundle.request), 
+                bundle, **kwargs)
+        return self.assign_help_to_section(bundle, **kwargs)

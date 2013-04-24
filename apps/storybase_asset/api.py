@@ -1,4 +1,3 @@
-from django.db.models import Q
 from django.conf.urls.defaults import url
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.uploadedfile import UploadedFile
@@ -6,23 +5,21 @@ from django.core.files.uploadedfile import UploadedFile
 from tastypie import fields, http
 from tastypie.authentication import Authentication
 from tastypie.bundle import Bundle
-from tastypie.exceptions import BadRequest, ImmediateHttpResponse
+from tastypie.exceptions import BadRequest, ImmediateHttpResponse, Unauthorized
 from tastypie.utils import trailing_slash
 from tastypie.validation import Validation
 
 from filer.models import File, Image
 
 from storybase.api import (DataUriResourceMixin,
-   DelayedAuthorizationResource, TranslatedModelResource,
-   LoggedInAuthorization)
+   TranslatedModelResource, PublishedOwnerAuthorization)
 from storybase_asset.models import (Asset, ExternalAsset, HtmlAsset, 
     LocalImageAsset, DataSet, ExternalDataSet, LocalDataSet)
 from storybase_asset.utils import image_type_supported
 from storybase_story.models import Story
 
 
-class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource, 
-                    TranslatedModelResource):
+class AssetResource(DataUriResourceMixin, TranslatedModelResource):
     # Explicitly declare fields that are on the translation model, or the
     # subclass
     title = fields.CharField(attribute='title', blank=True, default='')
@@ -43,15 +40,14 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
         resource_name = 'assets'
         allowed_methods = ['get', 'post', 'put']
         authentication = Authentication()
-        authorization = LoggedInAuthorization()
+        authorization = PublishedOwnerAuthorization()
         # Hide the underlying id
         excludes = ['id']
 
         featured_list_allowed_methods = ['get', 'put']
         featured_detail_allowed_methods = []
-        delayed_authorization_methods = ['put_detail', 'put_featured_list']
 
-    def get_object_class(self, bundle=None, request=None, **kwargs):
+    def get_object_class(self, bundle=None, **kwargs):
         content_fields = ('body', 'image', 'url')
         num_content_fields = 0
         for name in content_fields:
@@ -114,7 +110,12 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
     def put_featured_list(self, request, **kwargs):
         story_id = kwargs.pop('story_id')
         story = Story.objects.get(story_id=story_id)
-        self.is_authorized(request, story)
+        try:
+            self._meta.authorization.obj_has_perms(story, 
+                    request.user, ['change']) 
+        except Unauthorized, e:
+            self.unauthorized_result(e)
+
         deserialized = self.deserialize(request, request.raw_post_data, format=request.META.get('CONTENT_TYPE', 'application/json'))
         deserialized = self.alter_deserialized_list_data(request, deserialized)
         # Clear out existing relations
@@ -179,22 +180,22 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
             # file
             return self._hydrate_file(bundle, Image, 'image', 'filename')
 
-    def build_bundle(self, obj=None, data=None, request=None):
+    def build_bundle(self, obj=None, data=None, request=None, objects_saved=None):
         if obj and obj.__class__ == Asset:
             # We don't have a subclass instance.  This is likely because
             # the object was retrieved through a RelatedField on another
             # resource
             obj = self._meta.queryset.get(asset_id=obj.asset_id)
 
-        return super(AssetResource, self).build_bundle(obj, data, request)
+        return super(AssetResource, self).build_bundle(obj, data, request, objects_saved)
 
-    def obj_create(self, bundle, request=None, **kwargs):
+    def obj_create(self, bundle, **kwargs):
         # Set the asset's owner to the request's user
-        if request.user:
-            kwargs['owner'] = request.user
-        return super(AssetResource, self).obj_create(bundle, request, **kwargs)
+        if bundle.request.user:
+            kwargs['owner'] = bundle.request.user
+        return super(AssetResource, self).obj_create(bundle, **kwargs)
 
-    def apply_request_kwargs(self, obj_list, request=None, **kwargs):
+    def apply_request_kwargs(self, obj_list, bundle, **kwargs):
         filters = {}
         story_id = kwargs.get('story_id')
         section_id = kwargs.get('section_id')
@@ -216,31 +217,6 @@ class AssetResource(DataUriResourceMixin, DelayedAuthorizationResource,
 
         return new_obj_list
 
-    def obj_get_list(self, request=None, **kwargs):
-        """
-        Get a list of assets, filtering based on the request's user and 
-        the publication status
-        
-        """
-        # TODO: This code is really similar to that in ``StoryResource``
-        # Maybe it's possible to refactor them into a common base class?
-        # However, it's probably best to think about this when moving to
-        # support Tastypie 0.9.13
-
-        # Only show published assets 
-        q = Q(status='published')
-        if hasattr(request, 'user') and request.user.is_authenticated():
-            if request.user.is_superuser:
-                # If the user is a superuser, don't restrict the asset 
-                # list at all
-                q = Q()
-            else:
-                # If the user is logged in, show their unpublished assets as
-                # well
-                q = q | Q(owner=request.user)
-
-        return super(AssetResource, self).obj_get_list(request, **kwargs).filter(q)
-
     def dehydrate(self, bundle):
         # Exclude the filename field from the output
         del bundle.data['filename']
@@ -260,8 +236,7 @@ class DataSetValidation(Validation):
 
         return errors
 
-class DataSetResource(DataUriResourceMixin,DelayedAuthorizationResource, 
-                      TranslatedModelResource):
+class DataSetResource(DataUriResourceMixin, TranslatedModelResource):
     # Explicitly declare fields that are on the translation model, or the
     # subclass
     title = fields.CharField(attribute='title')
@@ -281,13 +256,11 @@ class DataSetResource(DataUriResourceMixin,DelayedAuthorizationResource,
         list_allowed_methods = ['get', 'post']
         detail_allowed_methods = ['get', 'delete']
         authentication = Authentication()
-        authorization = LoggedInAuthorization()
+        authorization = PublishedOwnerAuthorization()
         validation = DataSetValidation()
         detail_uri_name = 'dataset_id'
         # Hide the underlying id
         excludes = ['id']
-
-        delayed_authorization_methods = ['delete_detail']
 
     def detail_uri_kwargs(self, bundle_or_obj):
         """
@@ -305,7 +278,7 @@ class DataSetResource(DataUriResourceMixin,DelayedAuthorizationResource,
 
         return kwargs
 
-    def get_object_class(self, bundle=None, request=None, **kwargs):
+    def get_object_class(self, bundle=None, **kwargs):
         if bundle.data.get('file', None):
             return LocalDataSet
         elif bundle.data.get('url', None):
@@ -313,7 +286,7 @@ class DataSetResource(DataUriResourceMixin,DelayedAuthorizationResource,
         else:
             raise BadRequest("You must provide either a file or URL when creating a data set")
 
-    def apply_request_kwargs(self, obj_list, request=None, **kwargs):
+    def apply_request_kwargs(self, obj_list, bundle, **kwargs):
         filters = {}
         story_id = kwargs.get('story_id')
         if story_id:
@@ -323,52 +296,28 @@ class DataSetResource(DataUriResourceMixin,DelayedAuthorizationResource,
 
         return new_obj_list
 
-    def obj_get_list(self, request=None, **kwargs):
-        """
-        Get a list of assets, filtering based on the request's user and 
-        the publication status
-        
-        """
-        # TODO: This code is really similar to that in ``StoryResource``
-        # Maybe it's possible to refactor them into a common base class?
-        # However, it's probably best to think about this when moving to
-        # support Tastypie 0.9.13
-
-        # Only show published datasets 
-        q = Q(status='published')
-        if hasattr(request, 'user') and request.user.is_authenticated():
-            if request.user.is_superuser:
-                # If the user is a superuser, don't restrict the data set
-                # list at all
-                q = Q()
-            else:
-                # If the user is logged in, show their unpublished data sets
-                # as well
-                q = q | Q(owner=request.user)
-        return super(DataSetResource, self).obj_get_list(request, **kwargs).filter(q)
-
     def prepend_urls(self):
         return [
             url(r"^(?P<resource_name>%s)/stories/(?P<story_id>[0-9a-f]{32,32})%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
         ]
 
-    def obj_create(self, bundle, request=None, **kwargs):
+    def obj_create(self, bundle, **kwargs):
         story_id = kwargs.get('story_id')
         if story_id:
             try:
                 story = Story.objects.get(story_id=story_id) 
-                if not story.has_perm(request.user, 'change'):
+                if not story.has_perm(bundle.request.user, 'change'):
                     raise ImmediateHttpResponse(response=http.HttpUnauthorized("You are not authorized to change the story matching the provided story ID"))
             except ObjectDoesNotExist:
                 raise ImmediateHttpResponse(response=http.HttpNotFound("A story matching the provided story ID could not be found"))
 
         # Set the asset's owner to the request's user
-        if request.user:
-            kwargs['owner'] = request.user
+        if bundle.request.user:
+            kwargs['owner'] = bundle.request.user
 
         # Let the superclass create the object
         bundle = super(DataSetResource, self).obj_create(
-            bundle, request, **kwargs)
+            bundle, **kwargs)
 
         if story_id:
             # Associate the newly created dataset with the story

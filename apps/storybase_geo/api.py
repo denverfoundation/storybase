@@ -9,7 +9,7 @@ from tastypie.exceptions import ImmediateHttpResponse
 from tastypie.resources import Resource, ModelResource
 from tastypie.utils import trailing_slash
 
-from storybase.api import DelayedAuthorizationResource, LoggedInAuthorization
+from storybase.api import HookedModelResource, LoggedInAuthorization
 from storybase_geo import settings
 from storybase_geo.models import GeoLevel, Location, Place
 from storybase_geo.utils import get_geocoder
@@ -31,7 +31,7 @@ class GeoLevelResource(ModelResource):
         }
 
 
-class LocationResource(DelayedAuthorizationResource):
+class LocationResource(HookedModelResource):
     class Meta:
         always_return_data = True
         queryset = Location.objects.all()
@@ -44,9 +44,6 @@ class LocationResource(DelayedAuthorizationResource):
         # Hide the underlying id
         excludes = ['id', 'point']
 
-        # Custom
-        delayed_authorization_methods = ['delete_detail']
-
     def prepend_urls(self):
         return [
             url(r"^(?P<resource_name>%s)/stories/(?P<story_id>[0-9a-f]{32,32})%s$" %
@@ -55,7 +52,7 @@ class LocationResource(DelayedAuthorizationResource):
                 name="api_dispatch_list"),
         ]
 
-    def apply_request_kwargs(self, obj_list, request=None, **kwargs):
+    def apply_request_kwargs(self, obj_list, bundle, **kwargs):
         filters = {}
         story_id = kwargs.get('story_id')
         if story_id:
@@ -65,23 +62,23 @@ class LocationResource(DelayedAuthorizationResource):
 
         return new_obj_list
 
-    def obj_create(self, bundle, request=None, **kwargs):
+    def obj_create(self, bundle, **kwargs):
         story_id = kwargs.get('story_id')
         if story_id:
             try:
                 story = Story.objects.get(story_id=story_id) 
-                if not story.has_perm(request.user, 'change'):
+                if not story.has_perm(bundle.request.user, 'change'):
                     raise ImmediateHttpResponse(response=http.HttpUnauthorized("You are not authorized to change the story matching the provided story ID"))
             except ObjectDoesNotExist:
                 raise ImmediateHttpResponse(response=http.HttpNotFound("A story matching the provided story ID could not be found"))
 
         # Set the asset's owner to the request's user
-        if request.user:
-            kwargs['owner'] = request.user
+        if bundle.request.user:
+            kwargs['owner'] = bundle.request.user
 
         # Let the superclass create the object
         bundle = super(LocationResource, self).obj_create(
-            bundle, request, **kwargs)
+            bundle, **kwargs)
 
         if story_id:
             # Associate the newly created object with the story
@@ -110,7 +107,7 @@ class PlaceResource(ModelResource):
 
 # TODO: Document, error handling
 class GeocodeObject(object):
-    def __init__(self, place, lat, lng):
+    def __init__(self, place=None, lat=None, lng=None):
         self.place = place
         self.lat = lat
         self.lng =lng
@@ -132,6 +129,7 @@ class GeocoderResource(Resource):
     place = fields.CharField(attribute='place')
 
     class Meta:
+        object_class = GeocodeObject
         resource_name = 'geocode'
         allowed_methods = ['get']
         detail_allowed_methods = []
@@ -143,10 +141,10 @@ class GeocoderResource(Resource):
     def get_geocoder(self):
         return get_geocoder()
         
-    def obj_get_list(self, request=None, **kwargs):
+    def obj_get_list(self, bundle, **kwargs):
         results = []
         geocoder = self.get_geocoder()
-        address = request.GET.get('q', None)
+        address = bundle.request.GET.get('q', None)
         if address:
             geocoding_kwargs = {
                 'exactly_one': settings.STORYBASE_GEOCODE_EXACTLY_ONE
@@ -159,4 +157,4 @@ class GeocoderResource(Resource):
                 # No match for address found, results list will be empty
                 pass
 
-        return results 
+        return results
