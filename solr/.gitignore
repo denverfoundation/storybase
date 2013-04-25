@@ -1,0 +1,10 @@
+/*
+!/solr/
+!Makefile
+!.gitignore
+/solr/*
+!/solr/solr.xml
+!/solr/maincore
+/solr/maincore/*
+!/solr/maincore/conf
+!/solr/maincore/conf/*
