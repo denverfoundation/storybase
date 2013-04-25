@@ -16,6 +16,9 @@ webapps/solr.war: webapps solr-content
 solr-instance: solr-content webapps/solr.war
 	cp solr-content/example/{contexts,etc,lib,start.jar} -r .
 
+run-solr:
+	java -Djetty.host="${IP}" -Djetty.port="${PORT}" -jar start.jar
+
 clean:
 	rm -rf solr.tgz solr-content
 
@@ -23,4 +26,4 @@ mrproper: clean
 	rm -rf contexts etc lib webapps start.jar solr-webapp
 	rm -rf solr/${CORENAME}/data
 
-.PHONY: solr-instance clean mrproper
+.PHONY: solr-instance clean mrproper run-solr
