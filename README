@@ -23,5 +23,4 @@ Commands :
 
 
 For running solr, just do :
- $ cd solr
  $ ./run_solr.sh

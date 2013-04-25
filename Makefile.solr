@@ -9,13 +9,20 @@ export
 schema-xml:
 	python manage.py build_solr_schema > solr/solr/${CORENAME}/conf/schema.xml 2> /dev/null
 
-solr-instance:
+solr-instance: run_solr.sh
 	make -C solr/ $@
+
+run_solr.sh:
+	echo '#!/bin/sh -e' > $@
+	echo 'cd solr/' >> $@
+	echo 'java -Djetty.host="${IP}" -Djetty.port="${PORT}" -jar start.jar' >> $@
+	chmod a+x $@
 
 clean:
 	make -C solr/ $@
 
 mrproper:
 	make -C solr/ $@
+	rm -f run_solr.sh
 
 .PHONY: schema-xml solr-instance clean mrproper
