@@ -11,6 +11,8 @@
        <openSearcher>false</openSearcher> 
      </autoCommit>
   </updateHandler>
+  <requestHandler name="standard" class="solr.StandardRequestHandler" />
+  <requestHandler name="/update" class="solr.XmlUpdateRequestHandler" />
   <requestHandler name="/admin/" class="solr.admin.AdminHandlers" />
   <!-- Legacy config for the admin interface -->
   <admin>
