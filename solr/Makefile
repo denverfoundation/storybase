@@ -1,3 +1,5 @@
+SHELL=/bin/bash
+
 all: solr-instance
 
 solr.tgz:
