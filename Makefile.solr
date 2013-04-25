@@ -20,6 +20,5 @@ clean:
 
 mrproper:
 	make -C solr/ $@
-	rm -f run_solr.sh
 
 .PHONY: schema-xml solr-instance clean mrproper run-solr
