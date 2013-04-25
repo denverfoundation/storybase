@@ -1,6 +1,6 @@
 SOLR_TGZ_URL ?= http://apache.mirrors.tds.net/lucene/solr/4.2.1/solr-4.2.1.tgz
 PORT         ?= 8983
-IP           ?= 0.0.0.0
+IP           ?= 127.0.0.1
 
 CORENAME     ?= maincore
 
