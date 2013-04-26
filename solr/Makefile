@@ -17,7 +17,10 @@ webapps/solr.war: webapps solr-content
 
 solr-instance: solr-content webapps/solr.war
 	cp solr-content/example/{contexts,etc,lib,start.jar} -r .
-	cp solr-content/{contrib,dist} -r .
+	mkdir -p contrib dist
+	# copying files for ExtractingRequestHandler
+	cp solr-content/contrib/extraction -r contrib/
+	cp solr-content/dist/solr-cell-*.jar dist/
 
 run-solr:
 	java -Djetty.host="${IP}" -Djetty.port="${PORT}" -jar start.jar
