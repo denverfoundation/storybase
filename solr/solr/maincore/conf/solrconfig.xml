@@ -18,5 +18,7 @@
   <admin>
     <defaultQuery>*:*</defaultQuery>
   </admin>
-
+  <lib dir="../../contrib/extraction/lib" regex=".*\.jar" />
+  <lib dir="../../dist/" regex="solr-cell-\d.*\.jar" />
+  <requestHandler name="/update/extract" class="solr.extraction.ExtractingRequestHandler" />
 </config>

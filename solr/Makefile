@@ -17,6 +17,10 @@ webapps/solr.war: webapps solr-content
 
 solr-instance: solr-content webapps/solr.war
 	cp solr-content/example/{contexts,etc,lib,start.jar} -r .
+	mkdir -p contrib dist
+	# copying files for ExtractingRequestHandler
+	cp solr-content/contrib/extraction -r contrib/
+	cp solr-content/dist/solr-cell-*.jar dist/
 
 run-solr:
 	java -Djetty.host="${IP}" -Djetty.port="${PORT}" -jar start.jar
@@ -25,7 +29,7 @@ clean:
 	rm -rf solr.tgz solr-content
 
 mrproper: clean
-	rm -rf contexts etc lib webapps start.jar solr-webapp
+	rm -rf contexts etc lib webapps start.jar solr-webapp contrib dist
 	rm -rf solr/${CORENAME}/data
 
 .PHONY: solr-instance clean mrproper run-solr
