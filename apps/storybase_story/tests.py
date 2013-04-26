@@ -491,6 +491,39 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
         # Clean up the cache
         cache.delete(key)
 
+    def test_places_list_updated(self):
+        """Test that places list returns the correct place IDs after a story's places relation has been updated
+
+        Test for regression found as #730
+        """
+        def get_place_ids(places_list):
+            return [p['id'] for p in places_list]
+
+        story = create_story(title="Test Story", summary="Test Summary",
+            byline="Test Byline", license="CC BY-NC-SA")
+        neighborhood = GeoLevel.objects.create(name='Neighborhood',
+            slug='neighborhood')
+        for name in ("Humboldt Park", "Wicker Park", "Logan Square"):
+            Place.objects.create(name=name, geolevel=neighborhood)
+        self.assertEqual(len(story.places_list()), 0)
+        hp = Place.objects.get(name="Humboldt Park")
+        wp = Place.objects.get(name="Wicker Park")
+        ls = Place.objects.get(name="Logan Square")
+        story.places.add(hp)
+        story.places.add(wp)
+        places_list = story.places_list()
+        place_ids = get_place_ids(places_list)
+        self.assertEqual(len(places_list), 2)
+        self.assertIn(hp.place_id, place_ids)
+        self.assertIn(wp.place_id, place_ids)
+        story.places.add(ls)
+        places_list = story.places_list()
+        place_ids = get_place_ids(places_list)
+        self.assertEqual(len(places_list), 3)
+        self.assertIn(hp.place_id, place_ids)
+        self.assertIn(wp.place_id, place_ids)
+        self.assertIn(ls.place_id, place_ids)
+
 
 class StoryPermissionTest(PermissionTestCase):
     """Test case for story permissions"""

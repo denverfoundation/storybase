@@ -19,6 +19,7 @@ dev
 * Wrap Backbone modules in self-executing anonymous functions (#710)
 * Update thumbnail view lookup keys when initial sections are first saved (#725)
 * Fix race condition on initial save (#728)
+* Invalidate cached places list when story's places are updated (#730)
 * Remove dependency on Namespace.js
 
 0.9.6
