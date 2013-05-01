@@ -11,8 +11,8 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
-dev
-~~~
+0.9.6
+~~~~~
 
 * Make viewer header not be position:fixed (#684)
 * Prevent wrapping in header-right menu (#702)
