@@ -11,7 +11,7 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
-0.9.6
+0.9.7
 ~~~~~
 
 * Make viewer header not be position:fixed (#684)
