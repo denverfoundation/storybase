@@ -1,5 +1,4 @@
 """REST API for Stories"""
-
 import logging
 
 from django.conf.urls.defaults import url
@@ -19,11 +18,11 @@ from tastypie import fields, http
 from tastypie.authentication import Authentication
 from tastypie.bundle import Bundle
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
-from tastypie.exceptions import BadRequest, ImmediateHttpResponse
+from tastypie.exceptions import BadRequest, ImmediateHttpResponse, Unauthorized
 from tastypie.utils import dict_strip_unicode_keys, trailing_slash
 
-from storybase.api import (DelayedAuthorizationResource,
-    HookedModelResource, LoggedInAuthorization, TranslatedModelResource)
+from storybase.api import (HookedModelResource, TranslatedModelResource,
+                           LoggedInAuthorization, PublishedOwnerAuthorization)
 from storybase.utils import get_language_name
 from storybase_asset.api import AssetResource
 from storybase_geo.models import Place
@@ -36,7 +35,10 @@ from storybase_user.models import Organization, Project
 
 logger = logging.getLogger("storybase")
 
-class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
+class StoryAuthorization(PublishedOwnerAuthorization):
+    owner_field = 'author'
+
+class StoryResource(TranslatedModelResource):
     # Explicitly declare fields that are on the translation model
     title = fields.CharField(attribute='title', blank=True)
     summary = fields.CharField(attribute='summary', blank=True)
@@ -63,7 +65,7 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
         resource_name = 'stories'
         allowed_methods = ['get', 'post', 'patch', 'put']
         authentication = Authentication()
-        authorization = LoggedInAuthorization()
+        authorization = StoryAuthorization()
         # Hide the underlying id
         excludes = ['id']
         filtering = {
@@ -71,18 +73,9 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
         }
 
         # Custom meta attributes
-        # Methods that handle authorization later than normain in the flow
-        delayed_authorization_methods = ('patch_detail', 'put_detail')
         # Filter arguments for custom explore endpoint
         explore_filter_fields = ['topics', 'projects', 'organizations', 'languages', 'places']
         explore_point_field = 'points'
-
-   
-    # TODO: If not using the development branch of tastypie, uncomment this
-    # as the prepend_urls was called override_urls in previous versions. This
-    # code can be removed altogether when Tastypie reaches 1.0
-    #def override_urls(self):
-    #    return self.prepend_urls()
 
     def prepend_urls(self):
         return [
@@ -119,29 +112,11 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
 
         return kwargs
 
-
-    def get_object_list(self, request):
-        """Get a list of stories, filtering based on the request's user"""
-        # Only show published stories  
-        q = Q(status='published')
-        if hasattr(request, 'user') and request.user.is_authenticated():
-            if request.user.is_superuser:
-                # If the user is a superuser, don't restrict the story
-                # list at all
-                q = Q()
-            else:
-                # If the user is logged in, show their unpublished stories as
-                # well
-                q = q | Q(author=request.user)
-
-        return super(StoryResource, self).get_object_list(request).filter(q)
-
-
-    def obj_create(self, bundle, request=None, **kwargs):
+    def obj_create(self, bundle, **kwargs):
         # Set the story's author to the request's user
-        if request.user:
-            kwargs['author'] = request.user
-        return super(StoryResource, self).obj_create(bundle, request, **kwargs)
+        if bundle.request.user.is_authenticated():
+            kwargs['author'] = bundle.request.user
+        return super(StoryResource, self).obj_create(bundle, **kwargs)
 
     def dehydrate_template_story(self, bundle):
         if bundle.obj.template_story:
@@ -403,7 +378,8 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
             # the story, saving it to pass to SectionResource.dispatch_detail
             # later
             section_id = kwargs.pop('section_id')
-            obj = self.cached_obj_get(request=request, **self.remove_api_resource_names(kwargs))
+            base_bundle = self.build_bundle(request=request)
+            obj = self.cached_obj_get(bundle=base_bundle, **self.remove_api_resource_names(kwargs))
         except ObjectDoesNotExist:
             return http.HttpNotFound()
         except MultipleObjectsReturned:
@@ -416,7 +392,8 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
 
     def dispatch_section_list(self, request, **kwargs):
         try:
-            obj = self.cached_obj_get(request=request, **self.remove_api_resource_names(kwargs))
+            base_bundle = self.build_bundle(request=request)
+            obj = self.cached_obj_get(bundle=base_bundle, **self.remove_api_resource_names(kwargs))
         except ObjectDoesNotExist:
             return http.HttpNotFound()
         except MultipleObjectsReturned:
@@ -428,7 +405,11 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
     def dispatch_sectionasset_list(self, request, **kwargs):
         try:
             section_id = kwargs.pop('section_id')
-            story = self.cached_obj_get(request=request, **self.remove_api_resource_names(kwargs))
+            # We fetch the story just to check that the
+            # story_id to which the sub-resource is related
+            # exists
+            base_bundle = self.build_bundle(request=request)
+            story = self.cached_obj_get(bundle=base_bundle, **self.remove_api_resource_names(kwargs))
         except ObjectDoesNotExist:
             return http.HttpNotFound()
         except MultipleObjectsReturned:
@@ -438,15 +419,15 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
         return resource.dispatch_list(request, 
             section__section_id=section_id)
 
-
     def dispatch_sectionasset_detail(self, request, **kwargs):
         try:
-            # Remove the section id from the keyword arguments to lookup the
-            # the story, saving it to pass to SectionResource.dispatch_detail
-            # later
             section_id = kwargs.pop('section_id')
             asset_id = kwargs.pop('asset_id')
-            story = self.cached_obj_get(request=request, **self.remove_api_resource_names(kwargs))
+            # We fetch the story just to check that the
+            # story_id to which the sub-resource is related
+            # exists
+            base_bundle = self.build_bundle(request=request)
+            story = self.cached_obj_get(bundle=base_bundle, **self.remove_api_resource_names(kwargs))
         except ObjectDoesNotExist:
             return http.HttpNotFound()
         except MultipleObjectsReturned:
@@ -477,7 +458,8 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
 
         """
         try:
-            story = self.cached_obj_get(request=request, **self.remove_api_resource_names(kwargs))
+            base_bundle = self.build_bundle(request=request)
+            story = self.cached_obj_get(bundle=base_bundle, **self.remove_api_resource_names(kwargs))
         except ObjectDoesNotExist:
             return http.HttpNotFound()
         except MultipleObjectsReturned:
@@ -500,7 +482,7 @@ class StoryResource(DelayedAuthorizationResource, TranslatedModelResource):
     def dispatch_storyrelation_list(self, request, **kwargs):
         return self.dispatch_metadata_list(request, StoryRelationResource(), **kwargs)
 
-class SectionResource(DelayedAuthorizationResource, TranslatedModelResource):
+class SectionResource(TranslatedModelResource):
     # Explicitly declare fields that are on the translation model
     title = fields.CharField(attribute='title')
     story = fields.ToOneField(StoryResource, 'story')
@@ -529,9 +511,6 @@ class SectionResource(DelayedAuthorizationResource, TranslatedModelResource):
         # Custom meta attributes
         # Class of the resource under which this is nested
         parent_resource = StoryResource
-        # Methods that handle authorization later than normain in the flow
-        delayed_authorization_methods = ('patch_detail', 'put_detail',
-                                         'delete_detail')
 
     def detail_uri_kwargs(self, bundle_or_obj):
         """
@@ -587,13 +566,17 @@ class SectionResource(DelayedAuthorizationResource, TranslatedModelResource):
         except NoReverseMatch:
             return ''
 
-    def obj_create(self, bundle, request=None, **kwargs):
+    def authorized_create_detail(self, object_list, bundle):
+        try:
+            return self._meta.authorization.obj_has_perms(bundle.obj.story, 
+                    bundle.request.user, ['change']) 
+        except Unauthorized, e:
+            self.unauthorized_result(e)
+
+    def obj_create(self, bundle, **kwargs):
         story_id = kwargs.pop('story__story_id')
         kwargs['story'] = Story.objects.get(story_id=story_id)
-        return super(SectionResource, self).obj_create(bundle, request, **kwargs)
-
-    def obj_get(self, request=None, **kwargs):
-        return super(SectionResource, self).obj_get(request, **kwargs)
+        return super(SectionResource, self).obj_create(bundle, **kwargs)
 
     def dehydrate_layout(self, bundle):
         return bundle.obj.layout.layout_id
@@ -639,15 +622,34 @@ class SectionResource(DelayedAuthorizationResource, TranslatedModelResource):
             bundle.data['template_section'] = Section.objects.get(section_id=template_section)
         return bundle
 
+class PatchedToOneField(fields.ToOneField):
+    def should_full_dehydrate(self, bundle):
+        """
+        Patched version of RelatedField.should_full_dehydrate
 
-class SectionAssetResource(DelayedAuthorizationResource, HookedModelResource):
-    asset = fields.ToOneField(AssetResource, 'asset', full=True)
+        This version doesn't try to differentiate between
+        whether the request represents a list or detail request
+        by resolving the request's path. It just honors
+        ``full``, as in previous versions of Tastypie.
+
+        This makes it possible to use RelatedField outside of
+        a request (for instance, inside a normal view to
+        bootstrap some client-side Backbone code.
+
+        See https://github.com/toastdriven/django-tastypie/issues/917
+        
+        """
+        return self.full
+
+class SectionAssetResource(HookedModelResource):
+    asset = PatchedToOneField(AssetResource, 'asset', full=True)
     container = fields.CharField(attribute='container')
 
     class Meta:
         queryset = SectionAsset.objects.all()
         resource_name = 'sectionassets'
-        allowed_methods = ['get', 'post', 'delete']
+        detail_allowed_methods = ['get', 'post', 'delete']
+        list_allowed_methods = ['get', 'post']
         authentication = Authentication()
         authorization = LoggedInAuthorization()
         # Hide the underlying id
@@ -655,7 +657,6 @@ class SectionAssetResource(DelayedAuthorizationResource, HookedModelResource):
 
         # Custom meta attributes
         parent_resource = StoryResource
-        delayed_authorization_methods = ['delete_detail']
 
     def detail_uri_kwargs(self, bundle_or_obj):
         kwargs = {}
@@ -711,11 +712,11 @@ class SectionAssetResource(DelayedAuthorizationResource, HookedModelResource):
         bundle.data['container'] = Container.objects.get(name=bundle.data['container'])
         return bundle
 
-    def obj_create(self, bundle, request=None, **kwargs):
+    def obj_create(self, bundle, **kwargs):
         section_id = kwargs.pop('section__section_id')
         kwargs['section'] = Section.objects.get(section_id=section_id)
         try:
-            return super(SectionAssetResource, self).obj_create(bundle, request, **kwargs)
+            return super(SectionAssetResource, self).obj_create(bundle, **kwargs)
         except IntegrityError:
             # An asset is already assigned to this section/
             # container
@@ -731,9 +732,7 @@ class SectionAssetResource(DelayedAuthorizationResource, HookedModelResource):
                     "container")
             raise ImmediateHttpResponse(response=http.HttpBadRequest(msg))
 
-
-
-    def apply_request_kwargs(self, obj_list, request=None, **kwargs):
+    def apply_request_kwargs(self, obj_list, bundle, **kwargs):
         section_id = kwargs.get('section__section_id')
         if section_id:
             return obj_list.filter(section__section_id=section_id)
@@ -828,7 +827,7 @@ class StoryTemplateResource(TranslatedModelResource):
             return []
 
 
-class PutListSubResource(DelayedAuthorizationResource,HookedModelResource):
+class PutListSubResource(HookedModelResource):
     """Base resource class for replacing a Story's related models from a list of ids"""
     class Meta:
         list_allowed_methods = ['put']
@@ -837,7 +836,6 @@ class PutListSubResource(DelayedAuthorizationResource,HookedModelResource):
 
         # Custom meta attributes
         parent_resource = StoryResource
-        delayed_authorization_methods = ['put_list']
         related_id_name = 'pk'
         related_queryset = None
 
@@ -859,10 +857,18 @@ class PutListSubResource(DelayedAuthorizationResource,HookedModelResource):
         """Hook to limit the list of objects that will be associated with the story"""
         return object_list
 
+    def authorized_update_related_obj(self, request, related_obj):
+        try:
+            return self._meta.authorization.obj_has_perms(related_obj, 
+                    request.user, ['change']) 
+        except Unauthorized, e:
+            self.unauthorized_result(e)
+
     def put_list(self, request, **kwargs):
         story_id = kwargs.pop('story_id')
         obj = Story.objects.get(story_id=story_id)
-        self.is_authorized(request, obj)
+        self.authorized_update_related_obj(request=request, related_obj=obj)
+
         related_ids = self.deserialize(request, request.raw_post_data, format=request.META.get('CONTENT_TYPE', 'application/json'))
         related_ids = self.alter_deserialized_list_data(request, related_ids)
         filter_kwargs = {}
@@ -929,7 +935,7 @@ class StoryProjectResource(PutListSubResource):
         return object_list
 
 
-class StoryRelationResource(DelayedAuthorizationResource):
+class StoryRelationResource(HookedModelResource):
     source = fields.CharField(attribute='source')
     target = fields.CharField(attribute='target')
 
@@ -943,11 +949,7 @@ class StoryRelationResource(DelayedAuthorizationResource):
         # Hide the underlying id
         excludes = ['id']
 
-        # Custom meta attributes
-        # Methods that handle authorization later than normain in the flow
-        delayed_authorization_methods = ('post_list', 'put_list')
-
-    def apply_request_kwargs(self, obj_list, request=None, **kwargs):
+    def apply_request_kwargs(self, obj_list, bundle, **kwargs):
         story_id = kwargs.get('story_id')
         if story_id:
             q = Q(source__story_id=story_id)
@@ -956,14 +958,7 @@ class StoryRelationResource(DelayedAuthorizationResource):
         else:
             return obj_list
 
-    def apply_authorization_limits(self, request, object_list):
-        if request.method == 'GET':
-            return object_list
-        else:
-            return [obj for obj in object_list
-                    if self._meta.authorization.is_authorized(request, obj)]
-
-    def obj_delete_list(self, request=None, **kwargs):
+    def obj_delete_list(self, bundle, **kwargs):
         """
         A ORM-specific implementation of ``obj_delete_list``.
 
@@ -975,14 +970,14 @@ class StoryRelationResource(DelayedAuthorizationResource):
             q = q | Q(target__story_id=story_id)
             q = q & Q(**kwargs)
 
-        base_object_list = self.get_object_list(request).filter(q)
-        authed_object_list = self.apply_authorization_limits(request, base_object_list)
+        objects_to_delete = self.obj_get_list(bundle=bundle, **kwargs).filter(q)
+        deletable_objects = self.authorized_delete_list(objects_to_delete, bundle)
 
-        if hasattr(authed_object_list, 'delete'):
+        if hasattr(deletable_objects, 'delete'):
             # It's likely a ``QuerySet``. Call ``.delete()`` for efficiency.
-            authed_object_list.delete()
+            deletable_objects.delete()
         else:
-            for authed_obj in authed_object_list:
+            for authed_obj in deletable_objects:
                 authed_obj.delete()
 
     def put_list(self, request, **kwargs):
@@ -995,7 +990,8 @@ class StoryRelationResource(DelayedAuthorizationResource):
         deserialized = self.deserialize(request, request.raw_post_data, format=request.META.get('CONTENT_TYPE', 'application/json'))
         deserialized = self.alter_deserialized_list_data(request, deserialized)
 
-        self.obj_delete_list(request=request, **self.remove_api_resource_names(kwargs))
+        basic_bundle = self.build_bundle(request=request)
+        self.obj_delete_list_for_update(bundle=basic_bundle, **self.remove_api_resource_names(kwargs))
         bundles_seen = []
 
         for object_data in deserialized:
@@ -1014,20 +1010,9 @@ class StoryRelationResource(DelayedAuthorizationResource):
             return http.HttpNoContent()
         else:
             to_be_serialized = {}
-            to_be_serialized['objects'] = [self.full_dehydrate(bundle) for bundle in bundles_seen]
+            to_be_serialized[self._meta.collection_name] = [self.full_dehydrate(bundle) for bundle in bundles_seen]
             to_be_serialized = self.alter_list_data_to_serialize(request, to_be_serialized)
             return self.create_response(request, to_be_serialized, response_class=http.HttpAccepted)
-
-    def pre_bundle_obj_hydrate(self, bundle, request=None, **kwargs):
-        # Override the authorization check that happens in the
-        # default DelayedAuthorizationResource test.  This is needed
-        # because we need to check the related fields on the model
-        # which are not available until hydration
-        pass
-
-    def post_full_hydrate(self, bundle, request=None, **kwargs):
-        # Check the authorization on the object
-        self.is_authorized(request, bundle.obj, **kwargs)
 
     def dehydrate_source(self, bundle):
         if bundle.obj.source:
@@ -1090,7 +1075,7 @@ class ContainerTemplateResource(HookedModelResource):
     def dehydrate_template(self, bundle):
         return bundle.obj.template.template_id
 
-    def apply_request_kwargs(self, obj_list, request=None, **kwargs):
+    def apply_request_kwargs(self, obj_list, bundle, **kwargs):
         story_id = kwargs.get('story_id')
         template_id = kwargs.get('template_id')
         if story_id:

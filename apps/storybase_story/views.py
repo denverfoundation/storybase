@@ -279,7 +279,8 @@ class StoryBuilderView(DetailView):
             story = self.object
         resource = SectionResource()
         to_be_serialized = {}
-        objects = resource.obj_get_list(story__story_id=story.story_id)
+        bundle = resource.build_bundle()
+        objects = resource.obj_get_list(bundle, story__story_id=story.story_id)
         sorted_objects = resource.apply_sorting(objects)
         to_be_serialized['objects'] = sorted_objects
 
@@ -307,7 +308,8 @@ class StoryBuilderView(DetailView):
         to_be_serialized = {}
         for section in story.sections.all():
             sa_to_be_serialized = {}
-            objects = resource.obj_get_list(section__section_id=section.section_id)
+            bundle = resource.build_bundle()
+            objects = resource.obj_get_list(bundle, section__section_id=section.section_id)
             sorted_objects = resource.apply_sorting(objects)
             sa_to_be_serialized['objects'] = sorted_objects
 
@@ -324,7 +326,11 @@ class StoryBuilderView(DetailView):
             story = self.object
         resource = AssetResource()
         to_be_serialized = {}
-        objects = resource.obj_get_list(self.request, featured=featured,
+        bundle = resource.build_bundle()
+        # Set the resource request's user to match this view's
+        # request's user.  Otherwise authorization checks won't work
+        bundle.request.user = self.request.user
+        objects = resource.obj_get_list(bundle, featured=featured,
                                         story_id=story.story_id)
         sorted_objects = resource.apply_sorting(objects)
         to_be_serialized['objects'] = sorted_objects
@@ -338,7 +344,8 @@ class StoryBuilderView(DetailView):
     def get_story_template_json(self):
         to_be_serialized = {}
         resource = StoryTemplateResource()
-        objects = resource.obj_get_list()
+        bundle = resource.build_bundle()
+        objects = resource.obj_get_list(bundle)
         bundles = [resource.build_bundle(obj=obj) for obj in objects]
         to_be_serialized['objects'] = [resource.full_dehydrate(bundle) for bundle in bundles]
         return resource.serialize(None, to_be_serialized, 'application/json')
@@ -359,7 +366,8 @@ class StoryBuilderView(DetailView):
         help_slugs = ['story-information', 'call-to-action', 'new-section']
         to_be_serialized = {}
         resource = HelpResource()
-        objects = resource.obj_get_list().filter(slug__in=help_slugs)
+        bundle = resource.build_bundle()
+        objects = resource.obj_get_list(bundle).filter(slug__in=help_slugs)
         bundles = [resource.build_bundle(obj=obj) for obj in objects]
         to_be_serialized['objects'] = [resource.full_dehydrate(bundle) for bundle in bundles]
         return resource.serialize(None, to_be_serialized, 'application/json')
@@ -435,7 +443,8 @@ class StoryBuilderView(DetailView):
             story = self.object
         resource = ContainerTemplateResource()
         to_be_serialized = {}
-        objects = resource.obj_get_list(self.request,
+        bundle = resource.build_bundle()
+        objects = resource.obj_get_list(bundle,
                                         story_id=story.story_id)
         sorted_objects = resource.apply_sorting(objects)
         to_be_serialized['objects'] = sorted_objects
