@@ -622,27 +622,9 @@ class SectionResource(TranslatedModelResource):
             bundle.data['template_section'] = Section.objects.get(section_id=template_section)
         return bundle
 
-class PatchedToOneField(fields.ToOneField):
-    def should_full_dehydrate(self, bundle):
-        """
-        Patched version of RelatedField.should_full_dehydrate
-
-        This version doesn't try to differentiate between
-        whether the request represents a list or detail request
-        by resolving the request's path. It just honors
-        ``full``, as in previous versions of Tastypie.
-
-        This makes it possible to use RelatedField outside of
-        a request (for instance, inside a normal view to
-        bootstrap some client-side Backbone code.
-
-        See https://github.com/toastdriven/django-tastypie/issues/917
-        
-        """
-        return self.full
 
 class SectionAssetResource(HookedModelResource):
-    asset = PatchedToOneField(AssetResource, 'asset', full=True)
+    asset = fields.ToOneField(AssetResource, 'asset', full=True)
     container = fields.CharField(attribute='container')
 
     class Meta:

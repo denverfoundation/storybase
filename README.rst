@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+dev
+~~~
+
+* Support latest version of Tastypie (#614)
+
 0.9.7
 ~~~~~
 
