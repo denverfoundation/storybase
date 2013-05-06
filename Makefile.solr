@@ -15,6 +15,10 @@ solr-instance:
 run-solr: solr-instance schema-xml
 	make -C solr/ $@
 
+run-clean-solr: schema-xml
+	@test -f solr/start.jar || (echo 'Run `make solr-instance` before running this' && exit 1)
+	make -C solr/ run-solr
+
 clean:
 	make -C solr/ $@
 
