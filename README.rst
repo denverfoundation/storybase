@@ -15,6 +15,7 @@ dev
 ~~~
 
 * Support latest version of Tastypie (#614)
+* Don't automatically add linebreaks (#740)
 
 0.9.7
 ~~~~~
