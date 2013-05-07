@@ -15,7 +15,8 @@ dev
 ~~~
 
 * Support latest version of Tastypie (#614)
-* Don't automatically add linebreaks (#740)
+* Support replacing uploaded image assets (#738)
+* Don't automatically add linebreaks to story summary (#740)
 
 0.9.7
 ~~~~~
