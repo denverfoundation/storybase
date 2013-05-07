@@ -153,6 +153,26 @@ class AssetResource(DataUriResourceMixin, TranslatedModelResource):
 
         return kwargs
 
+    def hydrate(self, bundle):
+        """Manipulated data before all methods/fields have built out the hydrated data."""
+        # If a DateTimeField field's data is passed as an empty string,
+        # convert it to None.  
+        # 
+        # This is needed when doing a PUT using multipart/form-data as
+        # the empty date/time fields are sent as empty strings instead of
+        # ``null`` values.  They're passed as ``null`` values when the
+        # PUT is sent JSON. If we don't convert the empty strings to None,
+        # we get errors trying to convert an empty string to a datetime
+        # object.
+        for field in ['asset_created', 'published',]:
+            if (field in bundle.data and
+                isinstance(bundle.data[field], basestring) and
+                len(bundle.data[field]) == 0):
+                
+                bundle.data[field] = None
+
+        return bundle
+
     def hydrate_image(self, bundle):
         if bundle.obj.asset_id and hasattr(bundle.obj, 'image'):
             try:

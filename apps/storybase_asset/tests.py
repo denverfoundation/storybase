@@ -1500,6 +1500,64 @@ class AssetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
             self.deserialize(resp)['objects'][0]['title'],
             asset3.title)
 
+    def test_put_detail_image_as_multipart(self):
+        """Test updating an existing image asset with the image sent as multipart form data"""
+        image_filename = "test_image.jpg"
+        replacement_image_filename = "test_image_2.png"
+        app_dir = os.path.dirname(os.path.abspath(__file__))
+        img_path = os.path.join(app_dir, "test_files", image_filename)
+        with open(img_path) as image:
+            asset = create_local_image_asset(
+                type='image',
+                image=image,
+                image_filename="test_image.jpg",
+                title="Test Image Asset",
+                owner=self.user
+            )
+            self.add_file_to_cleanup(asset.image.file.path)
+
+        img_path = os.path.join(app_dir, "test_files", replacement_image_filename)
+        original_hash = hashlib.sha1(file(img_path, 'r').read()).digest()
+        with open(img_path) as image:
+            detail_url = '/api/0.1/assets/%s/' % (asset.asset_id)
+            put_data = {
+                'language': 'en',
+                'type': 'image',
+                'url': '',
+                'image': image,
+                'license': 'CC BY',
+                'asset_created': '',
+                'asset_id': asset.asset_id,
+                'attribution': '',
+                'body': '',
+                'content': asset.render_html(),
+                'created': asset.created.isoformat(),
+                'display_title': 'test_image.jpg',
+                'languages': asset.get_language_names(),
+                'last_edited': asset.last_edited.isoformat(),
+                'published': '',
+                'resource_uri': detail_url,
+                'section_specific': 'false',
+                'source_url': '',
+                'status': 'draft',
+                'thumbnail_url': asset.get_thumbnail_url(width=222, height=222),
+                'title': '',
+                'container': '',
+            }
+            self.api_client.client.login(username=self.username,
+                                         password=self.password)
+            resp = self.api_client.client.put(detail_url,
+                                               data=put_data)
+            self.assertHttpAccepted(resp)
+            self.assertEqual(Asset.objects.count(), 1)
+            # Refresh the asset
+            asset = Asset.objects.get_subclass(asset_id=asset.asset_id)
+            # Set our created file to be cleaned up
+            self.add_file_to_cleanup(asset.image.file.path)
+            # Compare the uploaded image and the original 
+            created_hash = hashlib.sha1(file(asset.image.path, 'r').read()).digest()
+            self.assertEqual(original_hash, created_hash)
+
 
 class AssetResourceFeaturedTest(FileCleanupMixin, ResourceTestCase):
     """Test featured asset endpoints of AssetResource"""

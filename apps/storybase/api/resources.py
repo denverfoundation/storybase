@@ -1,8 +1,44 @@
+"""Base Resource classes for Tastypie-based API"""
+
+# Significant portions of this code are based on Tastypie
+# (http://tastypieapi.org)
+# 
+# This is mostly because I had to patch methods in the Tastypie API
+# to provide additional hooks or workarounds.
+#
+# Tastypie's license is as follows:
+#
+# Copyright (c) 2010, Daniel Lindsley
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#    * Redistributions of source code must retain the above copyright
+#      notice, this list of conditions and the following disclaimer.
+#    * Redistributions in binary form must reproduce the above copyright
+#      notice, this list of conditions and the following disclaimer in the
+#      documentation and/or other materials provided with the distribution.
+#    * Neither the name of the tastypie nor the
+#      names of its contributors may be used to endorse or promote products
+#      derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL tastypie BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 from cStringIO import StringIO
 import base64
 import os
 import re
 
+import django
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.files.uploadedfile import InMemoryUploadedFile
@@ -13,6 +49,7 @@ from tastypie.bundle import Bundle
 from tastypie.exceptions import ImmediateHttpResponse, NotFound
 from tastypie.resources import (ModelResource, 
                                 convert_post_to_patch)
+from tastypie.utils import dict_strip_unicode_keys
 from tastypie.utils.mime import build_content_type
 
 class MultipartFileUploadModelResource(ModelResource):
@@ -46,6 +83,56 @@ class MultipartFileUploadModelResource(ModelResource):
         else:
             deserialized = self._meta.serializer.deserialize(data, format=request.META.get('CONTENT_TYPE', 'application/json'))
         return deserialized
+
+    def put_detail(self, request, **kwargs):
+        """
+        Either updates an existing resource or creates a new one with the
+        provided data.
+
+        Calls ``obj_update`` with the provided data first, but falls back to
+        ``obj_create`` if the object does not already exist.
+
+        If a new resource is created, return ``HttpCreated`` (201 Created).
+        If ``Meta.always_return_data = True``, there will be a populated body
+        of serialized data.
+
+        If an existing resource is modified and
+        ``Meta.always_return_data = False`` (default), return ``HttpNoContent``
+        (204 No Content).
+        If an existing resource is modified and
+        ``Meta.always_return_data = True``, return ``HttpAccepted`` (202
+        Accepted).
+        """
+        fmt = request.META.get('CONTENT_TYPE', 'application/json')
+        if fmt.startswith('multipart'):
+            body = None
+        elif django.VERSION >= (1, 4):
+            body = request.body
+        else:
+            body = request.raw_post_data
+        deserialized = self.deserialize(request, body, format=fmt)
+        deserialized = self.alter_deserialized_detail_data(request, deserialized)
+        bundle = self.build_bundle(data=dict_strip_unicode_keys(deserialized), request=request)
+
+        try:
+            updated_bundle = self.obj_update(bundle=bundle, **self.remove_api_resource_names(kwargs))
+
+            if not self._meta.always_return_data:
+                return http.HttpNoContent()
+            else:
+                updated_bundle = self.full_dehydrate(updated_bundle)
+                updated_bundle = self.alter_detail_data_to_serialize(request, updated_bundle)
+                return self.create_response(request, updated_bundle, response_class=http.HttpAccepted)
+        except (NotFound, MultipleObjectsReturned):
+            updated_bundle = self.obj_create(bundle=bundle, **self.remove_api_resource_names(kwargs))
+            location = self.get_resource_uri(updated_bundle)
+
+            if not self._meta.always_return_data:
+                return http.HttpCreated(location=location)
+            else:
+                updated_bundle = self.full_dehydrate(updated_bundle)
+                updated_bundle = self.alter_detail_data_to_serialize(request, updated_bundle)
+                return self.create_response(request, updated_bundle, response_class=http.HttpCreated, location=location)
 
     def iframed_request(self, request):
         """
