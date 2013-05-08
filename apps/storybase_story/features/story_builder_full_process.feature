@@ -41,8 +41,8 @@ Feature: A user can create, edit and publish a story
                 Given the user clicks the "Save" button
                 Given the user changes the layout to "Above/Below"
                 Then the text "You removed an asset, but it's not gone forever" is present
-                Then the image "https://raw.github.com/PitonFoundation/atlas/develop/apps/storybase_asset/test_files/test_image.jpg" is visible
                 Given the user drags the image "https://raw.github.com/PitonFoundation/atlas/develop/apps/storybase_asset/test_files/test_image.jpg" from the asset drawer to the "top" container
+                Then the image "https://raw.github.com/PitonFoundation/atlas/develop/apps/storybase_asset/test_files/test_image.jpg" is visible
                 Given the user clicks the "Quotation" icon in the "bottom" container
                 Given the user inputs "Be curious. Read widely. Try new things. I think a lot of what people call intelligence just boils down to curiosity." in the "Enter the quotation text" textarea
                 Given the user inputs "Aaron Swartz" in the "Attribution" textarea
@@ -79,9 +79,14 @@ Feature: A user can create, edit and publish a story
                 Given the user inputs "FOIA No Heats 2011 to Present" in the "Data set name" input
                 Given the user inputs "City of Chicago" in the "Data source" input
                 Given the user inputs "https://docs.google.com/spreadsheet/ccc?key=0AvaXS4x_XvJmdGthMFBSb1BJOUNPTnhaNWN4UDZnZkE#gid=0" in the "Link to a data set" input
+                Given the user clicks the "Save" button
                 Then "FOIA No Heats 2011 to Present" appears in the data set list
                 Given the user clicks the "Tag" workflow tab
-                Given the user inputs the tags
+                Given the user inputs the topics
+                    | name         |
+                    | Children     |
+                    | Demographics |
+                Given the user inputs the keywords
                     | name    |
                     | testing |
                     | dev     |
@@ -96,6 +101,7 @@ Feature: A user can create, edit and publish a story
                     | name                                |
                     | StoryCorps visits Denver and Aurora |
                 Given the user clicks the "Review" workflow tab
+                Given the user clicks the "Preview Story" button
                 Then the Story "Test story" opens in the viewer in a new tab 
                 Then the text "Test story" is present
                 Then the text "By Test User" is present
