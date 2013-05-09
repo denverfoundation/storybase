@@ -137,6 +137,28 @@ class AssetResource(DataUriResourceMixin, TranslatedModelResource):
             to_be_serialized = self.alter_list_data_to_serialize(request, to_be_serialized)
             return self.create_response(request, to_be_serialized, response_class=http.HttpAccepted)
 
+    def post_detail(self, request, **kwargs):
+        """
+        Emulate put_detail in a very specific case
+
+        The Tastypie docs describe the semantics of this method as
+        "Creates a new subcollection of the resource under a resource"
+
+        This isn't what we want, but we need to implement this
+        method in order to support replacing an image asset's image
+        in older browsers such as IE9. For the older browsers, we have to
+        send the request via a form in a hidden IFRAME. We can use the
+        PUT method with forms, so we have to use POST.
+        """
+        # Only support POST to the detail endpoint if we're making the
+        # request from inside a hidden iframe 
+        if not self.iframed_request(request):
+            return http.HttpNotImplemented()
+
+        # In the case of a POST from inside a hidden iframe, delegate
+        # to put_detail
+        return self.put_detail(request, **kwargs)
+
     def detail_uri_kwargs(self, bundle_or_obj):
         """
         Given a ``Bundle`` or an object (typically a ``Model`` instance),

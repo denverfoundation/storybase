@@ -1500,8 +1500,41 @@ class AssetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
             self.deserialize(resp)['objects'][0]['title'],
             asset3.title)
 
-    def test_put_detail_image_as_multipart(self):
-        """Test updating an existing image asset with the image sent as multipart form data"""
+    def get_put_detail_data(self, asset, image):
+        """Get PUT data for a given image asset"""
+        return {
+            'language': 'en',
+            'type': 'image',
+            'url': '',
+            'image': image,
+            'license': 'CC BY',
+            'asset_created': '',
+            'asset_id': asset.asset_id,
+            'attribution': '',
+            'body': '',
+            'content': asset.render_html(),
+            'created': asset.created.isoformat(),
+            'display_title': 'test_image.jpg',
+            'languages': asset.get_language_names(),
+            'last_edited': asset.last_edited.isoformat(),
+            'published': '',
+            'resource_uri': '/api/0.1/assets/%s/' % (asset.asset_id),
+            'section_specific': 'false',
+            'source_url': '',
+            'status': 'draft',
+            'thumbnail_url': asset.get_thumbnail_url(width=222, height=222),
+            'title': '',
+            'container': '',
+        }
+
+    def do_request_detail(self, method='put', qs=None):
+        """
+        Construct and asset instance, create a payload and make a request
+        to the detail endpoint to try to replace the asset's attributes
+
+        Returns a tuple of the created asset, the hash of the original
+        asset image and the response
+        """
         image_filename = "test_image.jpg"
         replacement_image_filename = "test_image_2.png"
         app_dir = os.path.dirname(os.path.abspath(__file__))
@@ -1518,45 +1551,61 @@ class AssetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
 
         img_path = os.path.join(app_dir, "test_files", replacement_image_filename)
         original_hash = hashlib.sha1(file(img_path, 'r').read()).digest()
+        detail_url = '/api/0.1/assets/%s/' % (asset.asset_id)
+        if qs is not None:
+            detail_url += qs
         with open(img_path) as image:
-            detail_url = '/api/0.1/assets/%s/' % (asset.asset_id)
-            put_data = {
-                'language': 'en',
-                'type': 'image',
-                'url': '',
-                'image': image,
-                'license': 'CC BY',
-                'asset_created': '',
-                'asset_id': asset.asset_id,
-                'attribution': '',
-                'body': '',
-                'content': asset.render_html(),
-                'created': asset.created.isoformat(),
-                'display_title': 'test_image.jpg',
-                'languages': asset.get_language_names(),
-                'last_edited': asset.last_edited.isoformat(),
-                'published': '',
-                'resource_uri': detail_url,
-                'section_specific': 'false',
-                'source_url': '',
-                'status': 'draft',
-                'thumbnail_url': asset.get_thumbnail_url(width=222, height=222),
-                'title': '',
-                'container': '',
-            }
+            put_data = self.get_put_detail_data(asset, image) 
             self.api_client.client.login(username=self.username,
                                          password=self.password)
-            resp = self.api_client.client.put(detail_url,
-                                               data=put_data)
-            self.assertHttpAccepted(resp)
-            self.assertEqual(Asset.objects.count(), 1)
-            # Refresh the asset
-            asset = Asset.objects.get_subclass(asset_id=asset.asset_id)
-            # Set our created file to be cleaned up
-            self.add_file_to_cleanup(asset.image.file.path)
-            # Compare the uploaded image and the original 
-            created_hash = hashlib.sha1(file(asset.image.path, 'r').read()).digest()
-            self.assertEqual(original_hash, created_hash)
+            func = getattr(self.api_client.client, method)
+            resp = func(detail_url, data=put_data)
+            return (asset, original_hash, resp)
+
+    def _test_put_detail_success(self, asset, original_hash, resp):
+        """
+        Test that a PUT request to a detail endpoint successfully
+        updates an image asset's image file
+
+        This is a helper to make individual tests more DRY
+        """
+        self.assertHttpAccepted(resp)
+        self.assertEqual(Asset.objects.count(), 1)
+        # Refresh the asset
+        asset = Asset.objects.get_subclass(asset_id=asset.asset_id)
+        # Set our created file to be cleaned up
+        self.add_file_to_cleanup(asset.image.file.path)
+        # Compare the uploaded image and the original 
+        created_hash = hashlib.sha1(file(asset.image.path, 'r').read()).digest()
+        self.assertEqual(original_hash, created_hash)
+         
+    def test_put_detail_image_as_multipart(self):
+        """Test updating an existing image asset with the image sent as multipart form data"""
+        (asset, original_hash, resp) = self.do_request_detail()
+        self._test_put_detail_success(asset, original_hash, resp)
+
+    def test_post_detail_image_as_multipart_non_iframe(self):
+        """
+        Test that a POST to the detail endpoint fails without the
+        ``iframe`` querystring parameter.
+        """
+        (asset, original_hash, resp) = self.do_request_detail(method='post')
+        self.assertHttpNotImplemented(resp)
+        self.assertEqual(Asset.objects.count(), 1)
+        # Refresh the asset
+        asset = Asset.objects.get_subclass(asset_id=asset.asset_id)
+        # Compare the uploaded image and the original 
+        created_hash = hashlib.sha1(file(asset.image.path, 'r').read()).digest()
+        self.assertNotEqual(original_hash, created_hash)
+
+    def test_post_detail_image_as_multipart_iframe(self):
+        """
+        Test that a POST to the detail endpoint works the same as a
+        PUT when the ``iframe`` querystring parameter is present.
+        """
+        (asset, original_hash, resp) = self.do_request_detail(method='post',
+                qs="?iframe=iframe")
+        self._test_put_detail_success(asset, original_hash, resp)
 
 
 class AssetResourceFeaturedTest(FileCleanupMixin, ResourceTestCase):
