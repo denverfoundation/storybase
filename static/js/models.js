@@ -65,9 +65,15 @@
      */
     toFormData: function(options) {
       var attrs = options.attrs || this.attributes;
+      console.debug(attrs);
       var formData = new FormData();
       _.each(attrs, function(value, key) {
-        formData.append(key, value); 
+        // Only add non-null values as it seems like Firefox
+        // encodes null values as strings with a value of 'null',
+        // confusing the server-side code
+        if (!_.isNull(value)) {
+          formData.append(key, value); 
+        }
       }, this);
       return formData;
     },
