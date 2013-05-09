@@ -578,7 +578,7 @@ body.story-builder .bbf-help{margin-bottom:1em;}
 body.story-builder .bbf-error .bbf-help{color:#ee6666;}
 body.story-builder .bbf-error input{border-color:#ee6666;}
 body.story-builder ul.select2-choices{margin:0 !important;padding:0 !important;}
-body.story-builder li.select2-search-field{list-style-type:none !important;}
+body.story-builder li.select2-search-field,body.story-builder li.select2-search-choice{list-style-type:none !important;}
 body.story-builder .view-container{margin-left:auto;margin-right:auto;width:1020px;}
 body.story-builder .alert-success{background-color:#dff0d8;border-color:#d6e9c6;color:#468847;}body.story-builder .alert-success button.close{color:#468847 !important;}
 body.story-builder .alert-error{background-color:#f2dede;border-color:#eed3d7;color:#b94a48;}body.story-builder .alert-error button.close{color:#b94a48 !important;}
