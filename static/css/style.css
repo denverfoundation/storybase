@@ -487,6 +487,7 @@ body.base-template .content-page a.bab{padding:8px;background:#878787;font-famil
 body.base-template .content-page a.bab:hover{text-decoration:none !important;}
 body.base-template .content-page a.bab:hover{background:#8b5910;}
 body.base-template .content-page a.bab.right{float:right;margin-left:1.5em;}
+body.base-template #comment-form label[for="id_comment"]{display:none;}
 body.base-template form{overflow:hidden;position:relative;}body.base-template form fieldset{border:none;}body.base-template form fieldset+fieldset{margin-top:1em;}
 body.base-template form fieldset legend{font-weight:bold;}
 body.base-template form.lengthy-labels label{line-height:1em;}
