@@ -328,6 +328,9 @@ THUMBNAIL_PROCESSORS = (
     'filer.thumbnail_processors.scale_and_crop_with_subject_location',
 )
 
+# Always create thumbnails as the same type as the original
+THUMBNAIL_PRESERVE_EXTENSIONS = True
+
 HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
 
 # storybase settings

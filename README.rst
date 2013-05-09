@@ -15,6 +15,7 @@ dev
 ~~~
 
 * Support latest version of Tastypie (#614)
+* Preserve file type when creating thumbnails (#726)
 * Support replacing uploaded image assets (#738)
 * Don't automatically add linebreaks to story summary (#740)
 

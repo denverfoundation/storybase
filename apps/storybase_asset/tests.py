@@ -254,6 +254,32 @@ class ExternalAssetModelTest(TestCase):
         self.assertEqual(asset.get_thumbnail_url(), None)
 
 
+class LocalImageAssetModelTest(FileCleanupMixin, TestCase):
+    def test_get_thumbnail_url_indexed_png(self):
+        """
+        Test that get_thumbnail_url works when an indexed PNG is
+        used for the image.
+
+        See #726
+        """
+        asset_type = 'image'
+        asset_title = "Test Image Asset"
+        asset_caption = "This is a test image"
+        image_filename = "test_image-indexed.png"
+
+        app_dir = os.path.dirname(os.path.abspath(__file__))
+        img_path = os.path.join(app_dir, "test_files", image_filename)
+        with open(img_path) as image:
+            asset = create_local_image_asset(
+                type=asset_type,
+                image=image,
+                image_filename=image_filename,
+                title=asset_title,
+                caption=asset_caption)
+            self.add_file_to_cleanup(asset.image.file.path)
+            url = asset.get_thumbnail_url(width=222, height=222)
+            self.assertIn(image_filename, url)
+
 
 class HtmlAssetModelTest(TestCase):
     def test_string_representation_from_title(self):
