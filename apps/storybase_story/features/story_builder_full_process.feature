@@ -23,6 +23,7 @@ Feature: A user can create, edit and publish a story
                 Given the user inputs "My summary, so exciting!" for the "summary" textarea 
                 Given the user clicks on "Untitled Section" in the section list
                 Given the user inputs "Let's try an audio clip" for the section title
+                Then the section "Untitled Section" should be after the section "Story Information" in the section list
                 Given the user clicks the "Audio" icon in the "center" container
                 Given the user inputs "http://soundcloud.com/inews/long-term-care-for-kcfr-public-radio-day-1" in the "Enter audio URL" field
                 Given the user clicks the "Save Changes" button
@@ -31,18 +32,27 @@ Feature: A user can create, edit and publish a story
                 Given the user inputs "This is a news story about Colorado disabled people living on their own" in the caption textarea
                 Given the user clicks the "Save" button
                 Given the user clicks the add section button after "Let's try an audio clip"
+                Then the section "Untitled Section" should be after the section "Let's try an audio clip" in the section list
                 Given the user inputs "This is another section" for the section title
+                Then the section "This is another section" should be after the section "Let's try an audio clip" in the section list
                 Given the user clicks the "Image" icon in the "center" container
                 Given the user inputs "https://raw.github.com/PitonFoundation/atlas/develop/apps/storybase_asset/test_files/test_image.jpg" in the "Enter image URL" field
                 Given the user clicks the "Save Changes" button
-                Then the image "https://raw.github.com/PitonFoundation/atlas/develop/apps/storybase_asset/test_files/test_image.jpg" is visible
+                Then the image "https://raw.github.com/PitonFoundation/atlas/develop/apps/storybase_asset/test_files/test_image.jpg" is visible in the "center" container
                 Given the user clicks the text "Click to edit caption"
                 Given the user inputs "This is a test image" in the caption textarea
                 Given the user clicks the "Save" button
                 Given the user changes the layout to "Above/Below"
+                Then the "top" container should be visible
+                Then the "bottom" container should be visible
+                Then the "center" container should not be visible
                 Then the text "You removed an asset, but it's not gone forever" is present
+                Given the user opens the asset drawer
+                Then the image "https://raw.github.com/PitonFoundation/atlas/develop/apps/storybase_asset/test_files/test_image.jpg" is visible in the asset drawer
                 Given the user drags the image "https://raw.github.com/PitonFoundation/atlas/develop/apps/storybase_asset/test_files/test_image.jpg" from the asset drawer to the "top" container
-                Then the image "https://raw.github.com/PitonFoundation/atlas/develop/apps/storybase_asset/test_files/test_image.jpg" is visible
+                Then the image "https://raw.github.com/PitonFoundation/atlas/develop/apps/storybase_asset/test_files/test_image.jpg" is visible in the "top" container
+                Then the image "https://raw.github.com/PitonFoundation/atlas/develop/apps/storybase_asset/test_files/test_image.jpg" is not visible in the asset drawer
+                Given the user closes the asset drawer
                 Given the user clicks the "Quotation" icon in the "bottom" container
                 Given the user inputs "Be curious. Read widely. Try new things. I think a lot of what people call intelligence just boils down to curiosity." in the "Enter the quotation text" textarea
                 Given the user inputs "Aaron Swartz" in the "Attribution" textarea
@@ -53,7 +63,12 @@ Feature: A user can create, edit and publish a story
                 Given the user clicks the add section button after "Let's try an audio clip"
                 Then the section "Untitled Section" should be after the section "Let's try an audio clip" in the section list
                 Given the user inputs "Yet another section ..." for the section title
+                Then the section "Yet another section ..." should be after the section "Let's try an audio clip" in the section list
                 Given the user changes the layout to "Side by Side"
+                Then the "left" container should be visible
+                Then the "right" container should be visible
+                Then the "top" container should not be visible
+                Then the "bottom" container should not be visible
                 Given the user clicks the "Text" icon in the "left" container
                 Given the user inputs "This is my text asset" in the text asset textarea
                 Given the user clicks the "Save Changes" button
@@ -67,7 +82,7 @@ Feature: A user can create, edit and publish a story
                 Given the user clicks on "Let's try an audio clip" in the section list
                 Given the user inputs "Changing a section title" for the section title
                 Given the user clicks the "Save" button
-                Then "Let's try an audio clip" should appear in the section list
+                Then "Changing a section title" should appear in the section list
                 Given the user clicks "Call to Action" in the section list
                 Given the user clicks on the text "Click to edit the call to action"
                 Given the user inputs "Read the story! Do it!" in the call to action textarea
@@ -122,7 +137,7 @@ Feature: A user can create, edit and publish a story
                 Then the text "What is your favorite ice cream flavor?" is present
                 Given the user clicks the "Click her to contribute to this story" link
                 Then the connected story builder for the story "Test story" opens in a new tab
-                Given the user clicks on the story builder tab
+                Given the user clicks on the story builder browser tab
                 Given the user clicks the "Publish/Share" workflow tab
                 Then the image "https://raw.github.com/PitonFoundation/atlas/develop/apps/storybase_asset/test_files/test_image.jpg" is selected as the featured image
                 Given the user clicks the "Add a new image" link
@@ -130,7 +145,7 @@ Feature: A user can create, edit and publish a story
                 Given the user selects the image "test_image2.png"
                 Given the user clicks the "Save Changes" button
                 Then the image "test_image2.png" is selected as the featured image
-                Given the user clicks the "Publish your story" button
+                Given the user clicks the "Publish My Story" button
                 Then a "Story published" alert is shown
                 Given the user clicks the "View my story" button
                 Then the Story "Test story" opens in the viewer in a new tab 
@@ -170,7 +185,8 @@ Feature: A user can create, edit and publish a story
                 Then the text "Read the story! Do it!" is present
 
         Scenario: Edit tags for an existing story
-                # TODO: Figure out how to implement this.  I asked about this on SO at
+                # TODO: Figure out how to implement dependencies in Lettuce 
+                # features such as this.  I asked about this on SO at
                 # http://stackoverflow.com/questions/16344801/how-do-i-handle-dependencies-between-scenarios-in-lettuce
                 Given the scenario "A user can create, edit and publish a story" has been run
                 Given an admin creates the User "test_user@fakedomain.com"
@@ -245,4 +261,3 @@ Feature: A user can create, edit and publish a story
                 Then these data sets are listed
                     | name                          |
                     | FOIA No Heats 2011 to Present |
-                # BOOKMARK
