@@ -2384,7 +2384,7 @@
   var RichTextEditorMixin = {
     toolbarTemplateSource: $('#editor-toolbar-template').html(),
     characterCountTemplateSource: $('#editor-toolbar-character-counter').html(),
-    showCharacterCount: false,
+    characterCountLimit: false,
     characterCountTimer: null,
     editor: null,
 
@@ -2395,27 +2395,36 @@
     getEditorToolbarEl: function() {
       if (_.isUndefined(this._editorToolbarEl)) {
         this._editorToolbarEl = $(this.getEditorToolbarHtml())[0];
-        if (this.showCharacterCount) {
+        if (this.characterCountLimit) {
           $(this._editorToolbarEl).prepend(this.characterCountTemplateSource);
         }
       }
       return this._editorToolbarEl; 
     },
 
-    getEditor: function(el, callbacks, showCharacterCount) {
+    /**
+     * @param characterCountLimit 
+     *        Pass true to use the default limit (250); or pass a non-zero 
+     *        number to specify a limit.
+     */
+    getEditor: function(el, callbacks, characterCountLimit) {
       var view = this;
-      this.showCharacterCount = showCharacterCount || false;
+      this.characterCountLimit = (characterCountLimit === true ? 250 : characterCountLimit);
       var defaultCallbacks = {
         'focus': function() {
           $(this.toolbar.container).show();
-          view.startPollingCharacterCount();
+          if (view.characterCountLimit) {
+            view.startPollingCharacterCount();
+          }
         },
 
         'blur': function() {
           if (this._okToHideToolbar) {
             $(this.toolbar.container).hide();
           }
-          view.stopPollingCharacterCount();
+          if (view.characterCountLimit) {
+            view.stopPollingCharacterCount();
+          }
         },
 
         'load': function() {
@@ -2472,7 +2481,7 @@
     },
     
     updateCharacterCount: function() {
-      if (this.editor) {
+      if (this.editor && this.characterCountLimit && !isNaN(this.characterCountLimit)) {
         var $toolbar = $(this.getEditorToolbarEl());
         var $counter = $toolbar.find('.character-counter');
         if ($counter.length) {
@@ -2487,8 +2496,7 @@
           $counter.find('.count').html(text.length);
           var $warning = $counter.find('.warning');
           if ($warning.length) {
-            var limit = parseInt($warning.data('character-limit'), 10);
-            if (!isNaN(limit) && text.length > limit) {
+            if (text.length > this.characterCountLimit) {
               $warning.show();
             }
             else {
