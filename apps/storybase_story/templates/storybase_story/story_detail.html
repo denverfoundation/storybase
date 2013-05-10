@@ -35,7 +35,7 @@
 					</header>
 					<section class="object-summary">
 						<section class="summary">
-							{{ story.summary|safe|linebreaks }}
+							{{ story.summary|safe }}
 						</section>
 						<a id="launch-story-viewer" class="button" href="{% url story_viewer slug=story.slug %}">{% trans "View Story" %}</a>
 					</section>
@@ -139,8 +139,7 @@
 				</div>
 				<div class="grid_6">
 					<section class="citizen-comments">
-						<h4>{% trans "Citizen Comments" %}</h4>
-						{# TODO: comment view #}
+						<h4>{% trans "Comments" %}</h4>
 	                    {% include "storybase_story/story_comments.html" %} 
 					</section>
 				</div>

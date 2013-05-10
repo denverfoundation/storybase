@@ -491,6 +491,39 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
         # Clean up the cache
         cache.delete(key)
 
+    def test_places_list_updated(self):
+        """Test that places list returns the correct place IDs after a story's places relation has been updated
+
+        Test for regression found as #730
+        """
+        def get_place_ids(places_list):
+            return [p['id'] for p in places_list]
+
+        story = create_story(title="Test Story", summary="Test Summary",
+            byline="Test Byline", license="CC BY-NC-SA")
+        neighborhood = GeoLevel.objects.create(name='Neighborhood',
+            slug='neighborhood')
+        for name in ("Humboldt Park", "Wicker Park", "Logan Square"):
+            Place.objects.create(name=name, geolevel=neighborhood)
+        self.assertEqual(len(story.places_list()), 0)
+        hp = Place.objects.get(name="Humboldt Park")
+        wp = Place.objects.get(name="Wicker Park")
+        ls = Place.objects.get(name="Logan Square")
+        story.places.add(hp)
+        story.places.add(wp)
+        places_list = story.places_list()
+        place_ids = get_place_ids(places_list)
+        self.assertEqual(len(places_list), 2)
+        self.assertIn(hp.place_id, place_ids)
+        self.assertIn(wp.place_id, place_ids)
+        story.places.add(ls)
+        places_list = story.places_list()
+        place_ids = get_place_ids(places_list)
+        self.assertEqual(len(places_list), 3)
+        self.assertIn(hp.place_id, place_ids)
+        self.assertIn(wp.place_id, place_ids)
+        self.assertIn(ls.place_id, place_ids)
+
 
 class StoryPermissionTest(PermissionTestCase):
     """Test case for story permissions"""
@@ -1089,14 +1122,18 @@ class StoryBuilderViewTest(TestCase):
                                   layout=layout)
         section2 = create_section(title="Test Section 2", story=self.story,
                                   layout=layout)
+        section3 = create_section(title="Test Section 2", story=self.story,
+                                  layout=layout)
         create_html_asset(type='text', title='Test Asset', 
-            body='Test content')
+            body='Test content', owner=self.user)
         create_html_asset(type='text', title='Test Asset 2',
-            body='Test content 2')
+            body='Test content 2', owner=self.user)
         create_html_asset(type='text', title='Test Asset 3',
-            body='Test content 3')
+            body='Test content 3', owner=self.user)
         create_html_asset(type='text', title='Test Asset 4',
-            body='Test content 4')
+            body='Test content 4', owner=self.user)
+        self.featured_asset = create_external_asset(type='image', title='',
+                url='http://fakedomain.com/uploads/image.jpg', owner=self.user)
         left = Container.objects.get(name='left')
         right = Container.objects.get(name='right')
         assets = Asset.objects.all()
@@ -1104,7 +1141,15 @@ class StoryBuilderViewTest(TestCase):
         SectionAsset.objects.create(section=section1, asset=assets[1], container=right)
         SectionAsset.objects.create(section=section2, asset=assets[2], container=left)
         SectionAsset.objects.create(section=section2, asset=assets[3], container=right)
+        SectionAsset.objects.create(section=section3, asset=self.featured_asset, container=left)
         self.view = StoryBuilderView()
+        # Make a fake request and bind the user to it,
+        # otherwise the permission checks for retrieving
+        # items in the API resources don't work correctly
+        req = HttpRequest()
+        req.method = 'GET'
+        req.user = self.user
+        self.view.dispatch(req, story_id=self.story.story_id)
 
     def test_get_sections_json(self):
         """Test getting serialized section data for a story"""
@@ -1114,6 +1159,28 @@ class StoryBuilderViewTest(TestCase):
         section_ids = [section_data['section_id'] for section_data in data['objects']]
         for section in self.story.sections.all():
             self.assertIn(section.section_id, section_ids)
+
+    def test_get_assets_json(self):
+        """Test fetching story assets in JSON for bootstrapping Backbone views"""
+        self.assertEqual(self.story.assets.all().count(), 5)
+        json_data = self.view.get_assets_json(
+                story=self.story)
+        data = json.loads(json_data)
+        self.assertEqual(len(data['objects']), len(self.story.assets.all()))
+        asset_ids = [asset['asset_id'] for asset
+                     in data['objects']]
+        for asset in self.story.assets.all():
+            self.assertIn(asset.asset_id, asset_ids)
+
+    def test_get_assets_json_featured(self):
+        """Test fetching story featured assets in JSON for bootstrapping Backbone views"""
+        self.assertEqual(self.story.featured_assets.all().count(), 1)
+        json_data = self.view.get_assets_json(
+                story=self.story, featured=True)
+        data = json.loads(json_data)
+        self.assertEqual(len(data['objects']), len(self.story.featured_assets.all()))
+        self.assertEqual(data['objects'][0]['asset_id'],
+                         self.featured_asset.asset_id)
 
     def test_get_section_assets_json(self):
         """Test getting serialized asset data for a story"""
@@ -3411,7 +3478,7 @@ class SectionAssetResourceTest(ResourceTestCase):
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)['objects']), 2)
         resp = self.api_client.delete(uri)
-        self.assertHttpUnauthorized(resp)
+        self.assertHttpMethodNotAllowed(resp)
         self.assertEqual(SectionAsset.objects.count(), 2)
 
 

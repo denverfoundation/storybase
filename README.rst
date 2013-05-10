@@ -14,8 +14,31 @@ Changelog
 dev
 ~~~
 
+* Support latest version of Tastypie (#614)
+* Preserve file type when creating thumbnails (#726)
+* Support replacing uploaded image assets (#738)
+* Don't automatically add linebreaks to story summary (#740)
+
+0.9.7
+~~~~~
+
+* Make viewer header not be position:fixed (#684)
+* Prevent wrapping in header-right menu (#702)
 * Wrap Backbone modules in self-executing anonymous functions (#710)
+* Update thumbnail view lookup keys when initial sections are first saved (#725)
+* Fix race condition on initial save (#728)
+* Invalidate cached places list when story's places are updated (#730)
 * Remove dependency on Namespace.js
+
+0.9.6
+~~~~~
+
+* Fix race condition when updating Solr index when a section is removed (#723)
+
+0.9.5
+~~~~~
+
+* Fix table of contents elements (#715)
 
 0.9.4
 ~~~~~

@@ -2200,6 +2200,7 @@
       this.dispatcher.on('save:section', this.updateLastSaved, this);
       this.dispatcher.on('save:story', this.updateLastSaved, this);
       this.dispatcher.on('ready:story', this.showButton, this);
+      this.dispatcher.on('do:save:story', this.setSaving, this); 
 
       this.$buttonEl = $('<button type="button">' + this.options.buttonText[this.state] + '</button>')
         .attr('id', this.options.buttonId)
@@ -2225,6 +2226,10 @@
       this.$buttonEl.html(this.options.buttonText[this.state]);
     },
 
+    setSaving: function() {
+      this.setState('saving');
+    },
+
     updateLastSaved: function() {
       var view = this;
       this.lastSaved = new Date(); 
@@ -2241,7 +2246,6 @@
     },
 
     handleClick: function(evt) {
-      this.setState('saving');
       this.dispatcher.trigger('do:save:story');
     },
 
@@ -2604,7 +2608,23 @@
       index = _.isUndefined(index) ? this._sortedThumbnailViews.length - 1 : index + 1; 
       this._sortedThumbnailViews.splice(index, 0, view);
       this._thumbnailViews[sectionId] = view;
+      if (section.isNew()) {
+        section.once('sync', this.updateSectionThumbnailId, this);
+      }
       return view;
+    },
+
+    /**
+     * Event callback to update the key for the map of seciton IDs to
+     * views
+     */
+    updateSectionThumbnailId: function(section) {
+      var view;
+      if (!_.isUndefined(this._thumbnailViews[section.cid])) {
+        view = this._thumbnailViews[section.cid];
+        this._thumbnailViews[section.id] = view;
+        delete this._thumbnailViews[section.cid];
+      }
     },
 
     addStoryInfoThumbnail: function() {

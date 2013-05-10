@@ -240,3 +240,10 @@
 	}
 }
 
+// HACK: Hide the comment form label for the comment textarea
+// We should eliminate this via the form, but a custom form class
+// or template seemed a little heavyweight
+#comment-form label[for="id_comment"] {
+  display: none;
+}
+

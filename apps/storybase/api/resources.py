@@ -1,8 +1,44 @@
+"""Base Resource classes for Tastypie-based API"""
+
+# Significant portions of this code are based on Tastypie
+# (http://tastypieapi.org)
+# 
+# This is mostly because I had to patch methods in the Tastypie API
+# to provide additional hooks or workarounds.
+#
+# Tastypie's license is as follows:
+#
+# Copyright (c) 2010, Daniel Lindsley
+# All rights reserved.
+#
+# Redistribution and use in source and binary forms, with or without
+# modification, are permitted provided that the following conditions are met:
+#    * Redistributions of source code must retain the above copyright
+#      notice, this list of conditions and the following disclaimer.
+#    * Redistributions in binary form must reproduce the above copyright
+#      notice, this list of conditions and the following disclaimer in the
+#      documentation and/or other materials provided with the distribution.
+#    * Neither the name of the tastypie nor the
+#      names of its contributors may be used to endorse or promote products
+#      derived from this software without specific prior written permission.
+#
+# THIS SOFTWARE IS PROVIDED BY THE COPYRIGHT HOLDERS AND CONTRIBUTORS "AS IS" AND
+# ANY EXPRESS OR IMPLIED WARRANTIES, INCLUDING, BUT NOT LIMITED TO, THE IMPLIED
+# WARRANTIES OF MERCHANTABILITY AND FITNESS FOR A PARTICULAR PURPOSE ARE
+# DISCLAIMED. IN NO EVENT SHALL tastypie BE LIABLE FOR ANY
+# DIRECT, INDIRECT, INCIDENTAL, SPECIAL, EXEMPLARY, OR CONSEQUENTIAL DAMAGES
+# (INCLUDING, BUT NOT LIMITED TO, PROCUREMENT OF SUBSTITUTE GOODS OR SERVICES;
+# LOSS OF USE, DATA, OR PROFITS; OR BUSINESS INTERRUPTION) HOWEVER CAUSED AND
+# ON ANY THEORY OF LIABILITY, WHETHER IN CONTRACT, STRICT LIABILITY, OR TORT
+# (INCLUDING NEGLIGENCE OR OTHERWISE) ARISING IN ANY WAY OUT OF THE USE OF THIS
+# SOFTWARE, EVEN IF ADVISED OF THE POSSIBILITY OF SUCH DAMAGE.
+
 from cStringIO import StringIO
 import base64
 import os
 import re
 
+import django
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.files.uploadedfile import InMemoryUploadedFile
@@ -11,8 +47,9 @@ from django.http import HttpResponse
 from tastypie import fields, http
 from tastypie.bundle import Bundle
 from tastypie.exceptions import ImmediateHttpResponse, NotFound
-from tastypie.resources import (ModelResource, convert_post_to_put, 
-                                convert_post_to_patch, NOT_AVAILABLE)
+from tastypie.resources import (ModelResource, 
+                                convert_post_to_patch)
+from tastypie.utils import dict_strip_unicode_keys
 from tastypie.utils.mime import build_content_type
 
 class MultipartFileUploadModelResource(ModelResource):
@@ -46,6 +83,56 @@ class MultipartFileUploadModelResource(ModelResource):
         else:
             deserialized = self._meta.serializer.deserialize(data, format=request.META.get('CONTENT_TYPE', 'application/json'))
         return deserialized
+
+    def put_detail(self, request, **kwargs):
+        """
+        Either updates an existing resource or creates a new one with the
+        provided data.
+
+        Calls ``obj_update`` with the provided data first, but falls back to
+        ``obj_create`` if the object does not already exist.
+
+        If a new resource is created, return ``HttpCreated`` (201 Created).
+        If ``Meta.always_return_data = True``, there will be a populated body
+        of serialized data.
+
+        If an existing resource is modified and
+        ``Meta.always_return_data = False`` (default), return ``HttpNoContent``
+        (204 No Content).
+        If an existing resource is modified and
+        ``Meta.always_return_data = True``, return ``HttpAccepted`` (202
+        Accepted).
+        """
+        fmt = request.META.get('CONTENT_TYPE', 'application/json')
+        if fmt.startswith('multipart'):
+            body = None
+        elif django.VERSION >= (1, 4):
+            body = request.body
+        else:
+            body = request.raw_post_data
+        deserialized = self.deserialize(request, body, format=fmt)
+        deserialized = self.alter_deserialized_detail_data(request, deserialized)
+        bundle = self.build_bundle(data=dict_strip_unicode_keys(deserialized), request=request)
+
+        try:
+            updated_bundle = self.obj_update(bundle=bundle, **self.remove_api_resource_names(kwargs))
+
+            if not self._meta.always_return_data:
+                return http.HttpNoContent()
+            else:
+                updated_bundle = self.full_dehydrate(updated_bundle)
+                updated_bundle = self.alter_detail_data_to_serialize(request, updated_bundle)
+                return self.create_response(request, updated_bundle, response_class=http.HttpAccepted)
+        except (NotFound, MultipleObjectsReturned):
+            updated_bundle = self.obj_create(bundle=bundle, **self.remove_api_resource_names(kwargs))
+            location = self.get_resource_uri(updated_bundle)
+
+            if not self._meta.always_return_data:
+                return http.HttpCreated(location=location)
+            else:
+                updated_bundle = self.full_dehydrate(updated_bundle)
+                updated_bundle = self.alter_detail_data_to_serialize(request, updated_bundle)
+                return self.create_response(request, updated_bundle, response_class=http.HttpCreated, location=location)
 
     def iframed_request(self, request):
         """
@@ -118,7 +205,7 @@ class HookedModelResource(MultipartFileUploadModelResource):
         """
         setattr(bundle.obj, key, value)
 
-    def get_object_class(self, bundle=None, request=None, **kwargs):
+    def get_object_class(self, bundle=None, **kwargs):
         """Get the resource's object class dynamically
         
         By default just returns ``object_class`` as defined in the resource
@@ -128,30 +215,30 @@ class HookedModelResource(MultipartFileUploadModelResource):
         """
         return self._meta.object_class
 
-    def post_bundle_obj_construct(self, bundle, request=None, **kwargs):
+    def post_bundle_obj_construct(self, bundle, **kwargs):
         """Hook executed after the object is constructed, but not saved"""
         pass
 
-    def pre_bundle_obj_hydrate(self, bundle, request=None, **kwargs):
+    def pre_bundle_obj_hydrate(self, bundle, **kwargs):
         """Hook executed before the bundle is hydrated"""
         pass
 
-    def post_bundle_obj_hydrate(self, bundle, request=None):
+    def post_bundle_obj_hydrate(self, bundle):
         """Hook executed after the bundle is hydrated"""
         pass
 
-    def post_bundle_obj_save(self, bundle, request=None, **kwargs):
+    def post_bundle_obj_save(self, bundle, **kwargs):
         """Hook executed after the bundle is saved"""
         pass
 
-    def post_bundle_obj_get(self, bundle, request=None):
+    def post_bundle_obj_get(self, bundle):
         """Hook executed after the object is retrieved"""
         pass
 
-    def post_obj_get(self, obj, request=None, **kwargs):
+    def post_obj_get(self, obj, **kwargs):
         pass
 
-    def post_full_hydrate(self, obj, request=None, **kwargs):
+    def post_full_hydrate(self, obj, **kwargs):
         pass
 
     def full_hydrate(self, bundle):
@@ -162,8 +249,10 @@ class HookedModelResource(MultipartFileUploadModelResource):
         if bundle.obj is None:
             bundle.obj = self._meta.object_class()
             self.post_bundle_obj_construct(bundle)
+
         bundle = self.hydrate(bundle)
         self.post_bundle_obj_hydrate(bundle)
+
         for field_name, field_object in self.fields.items():
             if field_object.readonly is True:
                 continue
@@ -173,6 +262,7 @@ class HookedModelResource(MultipartFileUploadModelResource):
 
             if method:
                 bundle = method(bundle)
+
             if field_object.attribute:
                 value = field_object.hydrate(bundle)
 
@@ -195,59 +285,95 @@ class HookedModelResource(MultipartFileUploadModelResource):
 
         return bundle
 
-    def obj_create(self, bundle, request=None, **kwargs):
-        """
-        A ORM-specific implementation of ``obj_create``.
-        """
+    def save(self, bundle, skip_errors=False, **kwargs):
+        self.is_valid(bundle)
 
-        object_class = self.get_object_class(bundle, request, **kwargs)
-        bundle.obj = object_class()
-        self.post_bundle_obj_construct(bundle, request, **kwargs)
+        if bundle.errors and not skip_errors:
+            raise ImmediateHttpResponse(response=self.error_response(bundle.request, bundle.errors))
 
-        for key, value in kwargs.items():
-            self.bundle_obj_setattr(bundle, key, value)
-        self.pre_bundle_obj_hydrate(bundle, request, **kwargs)
-        bundle = self.full_hydrate(bundle)
-        self.post_full_hydrate(bundle, request, **kwargs)
-        self.is_valid(bundle,request)
-
-        if bundle.errors:
-            self.error_response(bundle.errors, request)
+        # Check if they're authorized.
+        if bundle.obj.pk:
+            self.authorized_update_detail(self.get_object_list(bundle.request), bundle)
+        else:
+            self.authorized_create_detail(self.get_object_list(bundle.request), bundle)
 
         # Save FKs just in case.
         self.save_related(bundle)
 
-        # Save parent
+        # Save the main object.
         bundle.obj.save()
-        self.post_bundle_obj_save(bundle, request, **kwargs)
+        self.post_bundle_obj_save(bundle, **kwargs)
+        bundle.objects_saved.add(self.create_identifier(bundle.obj))
 
         # Now pick up the M2M bits.
         m2m_bundle = self.hydrate_m2m(bundle)
         self.save_m2m(m2m_bundle)
         return bundle
 
-    def obj_update(self, bundle, request=None, skip_errors=False, **kwargs):
+    def obj_create(self, bundle, **kwargs):
+        """
+        A ORM-specific implementation of ``obj_create``.
+        """
+        object_class = self.get_object_class(bundle, **kwargs)
+        bundle.obj = object_class()
+        self.post_bundle_obj_construct(bundle, **kwargs)
+
+        for key, value in kwargs.items():
+            self.bundle_obj_setattr(bundle, key, value)
+
+        self.authorized_create_detail(self.get_object_list(bundle.request), bundle)
+        self.pre_bundle_obj_hydrate(bundle, **kwargs)
+        bundle = self.full_hydrate(bundle)
+        self.post_full_hydrate(bundle, **kwargs)
+        return self.save(bundle)
+
+    def lookup_kwargs_with_identifiers(self, bundle, kwargs):
+        """
+        Kwargs here represent uri identifiers Ex: /repos/<user_id>/<repo_name>/
+        We need to turn those identifiers into Python objects for generating
+        lookup parameters that can find them in the DB
+        """
+        lookup_kwargs = {}
+        bundle.obj = self.get_object_list(bundle.request).model()
+        self.post_bundle_obj_construct(bundle, **kwargs)
+        # Override data values, we rely on uri identifiers
+        bundle.data.update(kwargs)
+        # We're going to manually hydrate, as opposed to calling
+        # ``full_hydrate``, to ensure we don't try to flesh out related
+        # resources & keep things speedy.
+        bundle = self.hydrate(bundle)
+
+        for identifier in kwargs:
+            if identifier == self._meta.detail_uri_name:
+                lookup_kwargs[identifier] = kwargs[identifier]
+                continue
+
+            field_object = self.fields[identifier]
+
+            # Skip readonly or related fields.
+            if field_object.readonly is True or getattr(field_object, 'is_related', False):
+                continue
+
+            # Check for an optional method to do further hydration.
+            method = getattr(self, "hydrate_%s" % identifier, None)
+
+            if method:
+                bundle = method(bundle)
+
+            if field_object.attribute:
+                value = field_object.hydrate(bundle)
+
+            lookup_kwargs[identifier] = value
+
+        return lookup_kwargs
+
+    def obj_update(self, bundle, skip_errors=False, **kwargs):
         """
         A ORM-specific implementation of ``obj_update``.
         """
-        if not bundle.obj or not bundle.obj.pk:
-            # Attempt to hydrate data from kwargs before doing a lookup for the object.
-            # This step is needed so certain values (like datetime) will pass model validation.
+        if not bundle.obj or not self.get_bundle_detail_data(bundle):
             try:
-                bundle.obj = self.get_object_list(bundle.request).model()
-                self.post_bundle_obj_construct(bundle, request, **kwargs)
-                bundle.data.update(kwargs)
-                bundle = self.full_hydrate(bundle)
-                self.post_full_hydrate(bundle, request, **kwargs)
-                lookup_kwargs = kwargs.copy()
-
-                for key in kwargs.keys():
-                    if key == 'pk':
-                        continue
-                    elif getattr(bundle.obj, key, NOT_AVAILABLE) is not NOT_AVAILABLE:
-                        lookup_kwargs[key] = getattr(bundle.obj, key)
-                    else:
-                        del lookup_kwargs[key]
+                lookup_kwargs = self.lookup_kwargs_with_identifiers(bundle, kwargs)
             except:
                 # if there is trouble hydrating the data, fall back to just
                 # using kwargs by itself (usually it only contains a "pk" key
@@ -255,46 +381,32 @@ class HookedModelResource(MultipartFileUploadModelResource):
                 lookup_kwargs = kwargs
 
             try:
-                bundle.obj = self.obj_get(bundle.request, **lookup_kwargs)
-                self.post_obj_get(bundle.obj, request)
+                bundle.obj = self.obj_get(bundle, **lookup_kwargs)
+                self.post_obj_get(bundle.obj)
             except ObjectDoesNotExist:
                 raise NotFound("A model instance matching the provided arguments could not be found.")
 
+        self.authorized_update_detail(self.get_object_list(bundle.request), bundle)
         bundle = self.full_hydrate(bundle)
-        self.is_valid(bundle,request)
+        self.post_full_hydrate(bundle, **kwargs)
+        return self.save(bundle, skip_errors=skip_errors)
 
-        if bundle.errors and not skip_errors:
-            self.error_response(bundle.errors, request)
-
-        # Save FKs just in case.
-        self.save_related(bundle)
-
-        # Save the main object.
-        bundle.obj.save()
-        self.post_bundle_obj_save(bundle, request, **kwargs)
-
-        # Now pick up the M2M bits.
-        m2m_bundle = self.hydrate_m2m(bundle)
-        self.save_m2m(m2m_bundle)
-        return bundle
-
-    def obj_delete(self, request=None, **kwargs):
+    def obj_delete(self, bundle, **kwargs):
         """
         A ORM-specific implementation of ``obj_delete``.
 
         Takes optional ``kwargs``, which are used to narrow the query to find
         the instance.
         """
-        obj = kwargs.pop('_obj', None)
-
-        if not hasattr(obj, 'delete'):
+        if not hasattr(bundle.obj, 'delete'):
             try:
-                obj = self.obj_get(request, **kwargs)
-                self.post_obj_get(obj, request)
+                bundle.obj = self.obj_get(bundle=bundle, **kwargs)
+                self.post_obj_get(bundle.obj)
             except ObjectDoesNotExist:
                 raise NotFound("A model instance matching the provided arguments could not be found.")
 
-        obj.delete()
+        self.authorized_delete_detail(self.get_object_list(bundle.request), bundle)
+        bundle.obj.delete()
 
     def patch_detail(self, request, **kwargs):
         """
@@ -306,6 +418,7 @@ class HookedModelResource(MultipartFileUploadModelResource):
         If the resource did not exist, return ``HttpNotFound`` (404 Not Found).
         """
         request = convert_post_to_patch(request)
+        basic_bundle = self.build_bundle(request=request)
 
         # We want to be able to validate the update, but we can't just pass
         # the partial data into the validator since all data needs to be
@@ -314,13 +427,13 @@ class HookedModelResource(MultipartFileUploadModelResource):
         # So first pull out the original object. This is essentially
         # ``get_detail``.
         try:
-            obj = self.cached_obj_get(request=request, **self.remove_api_resource_names(kwargs))
+            obj = self.cached_obj_get(bundle=basic_bundle, **self.remove_api_resource_names(kwargs))
         except ObjectDoesNotExist:
             return http.HttpNotFound()
         except MultipleObjectsReturned:
             return http.HttpMultipleChoices("More than one resource is found at this URI.")
 
-        self.post_obj_get(obj, request)
+        self.post_obj_get(obj)
 
         bundle = self.build_bundle(obj=obj, request=request)
         bundle = self.full_dehydrate(bundle)
@@ -328,10 +441,13 @@ class HookedModelResource(MultipartFileUploadModelResource):
 
         # Now update the bundle in-place.
         deserialized = self.deserialize(request, request.raw_post_data, format=request.META.get('CONTENT_TYPE', 'application/json'))
-        try:
-            self.update_in_place(request, bundle, deserialized)
-        except ObjectDoesNotExist:
-            return http.HttpNotFound()
+        self.update_in_place(request, bundle, deserialized)
+        # TODO: Check if this try/except is neccessary
+        #try:
+        #    self.update_in_place(request, bundle, deserialized)
+        #except ObjectDoesNotExist:
+        #    return http.HttpNotFound()
+        #
 
         if not self._meta.always_return_data:
             return http.HttpAccepted()
@@ -340,119 +456,19 @@ class HookedModelResource(MultipartFileUploadModelResource):
             bundle = self.alter_detail_data_to_serialize(request, bundle)
             return self.create_response(request, bundle, response_class=http.HttpAccepted)
 
-    def apply_request_kwargs(self, obj_list, request, **kwargs):
+    def apply_request_kwargs(self, obj_list, bundle, **kwargs):
         """
         Hook for altering the default object list based on keyword
         arguments
         """
         return obj_list
 
-    def obj_get_list(self, request=None, **kwargs):
+    def obj_get_list(self, bundle, **kwargs):
         """
         Modify the default queryset based on keyword arguments
         """
-        obj_list = super(HookedModelResource, self).obj_get_list(request, **kwargs)
-        return self.apply_request_kwargs(obj_list, request, **kwargs)
-
-    def is_authorized(self, request, object=None, **kwargs):
-        """
-        Handles checking of permissions to see if the user has authorization
-        to GET, POST, PUT, or DELETE this resource.  If ``object`` is provided,
-        the authorization backend can apply additional row-level permissions
-        checking.
-
-        This version also takes the keyword arguments.  It doesn't do
-        anything with them, but this could be implemented in a subclass
-        to check authorization based on the arguments.
-        """
-        super(HookedModelResource, self).is_authorized(request, object)
-
-    def dispatch(self, request_type, request, **kwargs):
-        """
-        Handles the common operations (allowed HTTP method, authentication,
-        throttling, method lookup) surrounding most CRUD interactions.
-
-        This version passes the keyword arguments to the authorization
-        method.
-        """
-        allowed_methods = getattr(self._meta, "%s_allowed_methods" % request_type, None)
-        request_method = self.method_check(request, allowed=allowed_methods)
-        method = getattr(self, "%s_%s" % (request_method, request_type), None)
-
-        if method is None:
-            raise ImmediateHttpResponse(response=http.HttpNotImplemented())
-
-        self.is_authenticated(request)
-        self.is_authorized(request, **kwargs)
-        self.throttle_check(request)
-
-        # All clear. Process the request.
-        request = convert_post_to_put(request)
-        response = method(request, **kwargs)
-
-        # Add the throttled request.
-        self.log_throttled_access(request)
-
-        # If what comes back isn't a ``HttpResponse``, assume that the
-        # request was accepted and that some action occurred. This also
-        # prevents Django from freaking out.
-        if not isinstance(response, HttpResponse):
-            return http.HttpNoContent()
-
-        return response
-
-
-class DelayedAuthorizationResource(HookedModelResource):
-    def dispatch(self, request_type, request, **kwargs):
-        """
-        Handles the common operations (allowed HTTP method, authentication,
-        throttling, method lookup) surrounding most CRUD interactions.
-
-        This version moves the authorization check to later in the pipeline
-        """
-        allowed_methods = getattr(self._meta, "%s_allowed_methods" % request_type, None)
-        request_method = self.method_check(request, allowed=allowed_methods)
-        method_name = "%s_%s" % (request_method, request_type)
-        method = getattr(self, method_name, None)
-
-        if method is None:
-            raise ImmediateHttpResponse(response=http.HttpNotImplemented())
-
-        self.is_authenticated(request)
-        if method_name not in self._meta.delayed_authorization_methods:
-            self.is_authorized(request, **kwargs)
-        self.throttle_check(request)
-
-        # All clear. Process the request.
-        request = convert_post_to_put(request)
-        response = method(request, **kwargs)
-
-        # Add the throttled request.
-        self.log_throttled_access(request)
-
-        # If what comes back isn't a ``HttpResponse``, assume that the
-        # request was accepted and that some action occurred. This also
-        # prevents Django from freaking out.
-        if not isinstance(response, HttpResponse):
-            return http.HttpNoContent()
-
-        return response
-
-    def pre_bundle_obj_hydrate(self, bundle, request=None, **kwargs):
-        """
-        Check authorization of the bundle's object
-        
-        Simply calls through to is_authorized.
-        """
-        self.is_authorized(request, bundle.obj, **kwargs)
-
-    def post_obj_get(self, obj, request=None, **kwargs):
-        """
-        Check authorization of an object based on the request
-
-        Simply calls through to the is_authorized method of the resource
-        """
-        self.is_authorized(request, obj, **kwargs)
+        obj_list = super(HookedModelResource, self).obj_get_list(bundle, **kwargs)
+        return self.apply_request_kwargs(obj_list, bundle, **kwargs)
 
 
 class TranslatedModelResource(HookedModelResource):
@@ -463,15 +479,15 @@ class TranslatedModelResource(HookedModelResource):
     def dehydrate_languages(self, bundle):
         return bundle.obj.get_language_info()
 
-    def post_bundle_obj_construct(self, bundle, request=None, **kwargs):
+    def post_bundle_obj_construct(self, bundle, **kwargs):
         """
         Create a translation object and add it to the bundle
         """
-        object_class = self.get_object_class(bundle, request, **kwargs)
+        object_class = self.get_object_class(bundle, **kwargs)
         translation_class = object_class.translation_class
         bundle.translation_obj = translation_class()
 
-    def post_bundle_obj_save(self, bundle, request, **kwargs):
+    def post_bundle_obj_save(self, bundle, **kwargs):
         """
         Associate the translation object with its parent and save
         """
@@ -483,7 +499,7 @@ class TranslatedModelResource(HookedModelResource):
         # so further steps will get our fresh data
         bundle.obj.set_translation_cache_item(bundle.translation_obj.language, bundle.translation_obj)
 
-    def post_bundle_obj_hydrate(self, bundle, request=None):
+    def post_bundle_obj_hydrate(self, bundle):
         """
         Get the associated translation model instance
         """
@@ -508,6 +524,12 @@ class TranslatedModelResource(HookedModelResource):
     def put_detail(self, request, **kwargs):
         try:
             return super(TranslatedModelResource, self).put_detail(request, **kwargs)
+        except ObjectDoesNotExist:
+            return http.HttpNotFound()
+
+    def patch_detail(self, request, **kwargs):
+        try:
+            return super(TranslatedModelResource, self).patch_detail(request, **kwargs)
         except ObjectDoesNotExist:
             return http.HttpNotFound()
 

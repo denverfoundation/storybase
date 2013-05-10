@@ -2,6 +2,15 @@
 Upgrading
 =========
 
+0.9.* to 0.10.0
+===============
+
+With version 0.10.0, the new Tastypie Authorization API is used, requiring
+an upgrade to at least version 0.9.15 of Tastypie.  You'll need to 
+upgrade Tastypie.  Assuming you're using pip, this looks like::
+
+    pip install --upgrade django-tastypie
+
 0.7 to 0.8
 ==========
 

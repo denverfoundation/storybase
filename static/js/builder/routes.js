@@ -72,7 +72,6 @@
     },
 
     selectStep: function(step, subStep) {
-      console.debug('Router matched ' + step + '/' + subStep);
       if (!this.hasStory && step != 'build' && step != 'selecttemplate') {
         this.handleHashedId(!this.hasStory);
       }

@@ -686,6 +686,11 @@ def invalidate_related_cache(sender, instance, field_name, language_key=True,
                 cache.delete_many(keys)
 
 
+def invalidate_places_cache(sender, instance, **kwargs): 
+    """Invalidate the cached version of a Story's ``places`` field"""
+    invalidate_related_cache(sender, instance, 'places', **kwargs)
+
+
 def invalidate_points_cache(sender, instance, **kwargs): 
     """Invalidate the cached version of a Story's ``locations`` field"""
     invalidate_related_cache(sender, instance, 'points', language_key=False,
@@ -735,6 +740,7 @@ post_save.connect(set_story_slug, sender=StoryTranslation)
 m2m_changed.connect(update_last_edited, sender=Story.organizations.through)
 m2m_changed.connect(update_last_edited, sender=Story.projects.through)
 m2m_changed.connect(add_assets, sender=Story.featured_assets.through)
+m2m_changed.connect(invalidate_places_cache, sender=Story.places.through)
 m2m_changed.connect(invalidate_points_cache, sender=Story.locations.through)
 m2m_changed.connect(invalidate_topics_cache, sender=Story.topics.through)
 m2m_changed.connect(invalidate_projects_cache, sender=Story.projects.through)

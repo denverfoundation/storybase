@@ -59,7 +59,8 @@
   }
 
   #header {
-    position: fixed;
+    
+    .border-box;
     width: 100%;
     padding: @viewer-bar-padding;
     z-index: 9999;
@@ -90,10 +91,7 @@
   #body {
     .standard-headers(left);
     .body-copy-lists;
-    position: absolute;
-    top: 0;
     width: 100%;
-    padding-top: 80px;
     padding-bottom: 120px;
   }
 

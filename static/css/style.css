@@ -370,6 +370,7 @@ body.base-template a.button.gray:hover{text-decoration:none !important;}
 body.base-template a.button.gray:hover{background:#414141;}
 body.base-template{}body.base-template .header-item{font-size:12px;color:#909090;font-family:'MuseoSlab500Regular';}
 body.base-template .header-right{width:284px;float:right;display:inline;padding-top:18px;}body.base-template .header-right ul{list-style:none;}body.base-template .header-right ul li{float:left;display:inline;background:url('../img/sep2.png') no-repeat 0 2px;padding-left:11px;margin-left:5px;font-size:12px;color:#909090;font-family:'MuseoSlab500Regular';}body.base-template .header-right ul li:first-child{margin-left:0;background:none;padding-left:0;}
+body.base-template .header-right ul li:last-child{white-space:nowrap;width:0;overflow:visible;}
 body.base-template .header-right ul li a{font-size:12px;color:#909090;font-family:'MuseoSlab500Regular';}
 body.base-template .header-right #search-placeholder{padding-top:12px;height:37px;}
 body.base-template .header-right form#search{padding-top:12px;}body.base-template .header-right form#search input{float:left;display:inline;border:0;}body.base-template .header-right form#search input.field{width:233px;background:url('../img/search.png') no-repeat 0 0;font-size:18px;color:#535353;font-family:'Museo300Regular';padding:8px 0 8px 5px;border:none;border-radius:0;box-shadow:none;font-style:normal;}
@@ -486,6 +487,7 @@ body.base-template .content-page a.bab{padding:8px;background:#878787;font-famil
 body.base-template .content-page a.bab:hover{text-decoration:none !important;}
 body.base-template .content-page a.bab:hover{background:#8b5910;}
 body.base-template .content-page a.bab.right{float:right;margin-left:1.5em;}
+body.base-template #comment-form label[for="id_comment"]{display:none;}
 body.base-template form{overflow:hidden;position:relative;}body.base-template form fieldset{border:none;}body.base-template form fieldset+fieldset{margin-top:1em;}
 body.base-template form fieldset legend{font-weight:bold;}
 body.base-template form.lengthy-labels label{line-height:1em;}
@@ -577,7 +579,7 @@ body.story-builder .bbf-help{margin-bottom:1em;}
 body.story-builder .bbf-error .bbf-help{color:#ee6666;}
 body.story-builder .bbf-error input{border-color:#ee6666;}
 body.story-builder ul.select2-choices{margin:0 !important;padding:0 !important;}
-body.story-builder li.select2-search-field{list-style-type:none !important;}
+body.story-builder li.select2-search-field,body.story-builder li.select2-search-choice{list-style-type:none !important;}
 body.story-builder .view-container{margin-left:auto;margin-right:auto;width:1020px;}
 body.story-builder .alert-success{background-color:#dff0d8;border-color:#d6e9c6;color:#468847;}body.story-builder .alert-success button.close{color:#468847 !important;}
 body.story-builder .alert-error{background-color:#f2dede;border-color:#eed3d7;color:#b94a48;}body.story-builder .alert-error button.close{color:#b94a48 !important;}
@@ -839,10 +841,10 @@ body.story-builder .guider .x_button:after{font-family:"FontAwesome";content:"\f
 .story-viewer a.button{padding:5px;background-color:#dcdcdc;border:1px solid #666;text-decoration:none;}
 .story-viewer .intro{font-size:2em;font-family:georgia;}
 .story-viewer .caption{font-style:italic;color:#777777;}
-.story-viewer #header{position:fixed;width:100%;padding:10px;z-index:9999;color:#fff;background-color:#000;}.story-viewer #header .title{text-align:left;font-family:'Museo300Regular';font-weight:normal;padding:2px 0;font-size:28.8px;line-height:1.2em;}
+.story-viewer #header{box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;width:100%;padding:10px;z-index:9999;color:#fff;background-color:#000;}.story-viewer #header .title{text-align:left;font-family:'Museo300Regular';font-weight:normal;padding:2px 0;font-size:28.8px;line-height:1.2em;}
 .story-viewer #header .byline{margin:0;padding:0 0 2px 0;font-style:italic;}
 .story-viewer #header .section-title{font-size:1em;margin:0;padding:0.25% 0;}
-.story-viewer #body{position:absolute;top:0;width:100%;padding-top:80px;padding-bottom:120px;}.story-viewer #body h1{font-size:36px;color:#5a5a5a;text-align:left;font-family:'Museo300Regular';font-weight:normal;background:url('../img/h3-line.png') repeat-x 0 8px;margin-bottom:10px;line-height:1em;}.story-viewer #body h1 span{background:#fff;padding-left:16px;padding-right:16px;}
+.story-viewer #body{width:100%;padding-bottom:120px;}.story-viewer #body h1{font-size:36px;color:#5a5a5a;text-align:left;font-family:'Museo300Regular';font-weight:normal;background:url('../img/h3-line.png') repeat-x 0 8px;margin-bottom:10px;line-height:1em;}.story-viewer #body h1 span{background:#fff;padding-left:16px;padding-right:16px;}
 .story-viewer #body h1.no-line{background:none;margin-bottom:inherit;}
 .story-viewer #body h2{font-size:28.8px;color:#5a5a5a;text-align:left;font-family:'Museo300Regular';font-weight:normal;}
 .story-viewer #body h3{font-size:25.2px;color:#999999;text-align:left;font-family:'Museo300Regular';font-weight:normal;}
