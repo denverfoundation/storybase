@@ -11,8 +11,8 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
-dev
-~~~
+0.10.0
+~~~~~~
 
 * Support latest version of Tastypie (#614)
 * Preserve file type when creating thumbnails (#726)
