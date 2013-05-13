@@ -2403,13 +2403,11 @@
     },
 
     /**
-     * @param characterCountLimit 
-     *        Pass true to use the default limit (250); or pass a non-zero 
-     *        number to specify a limit.
+     * @param characterCountLimit Optionally pass a number to specify a limit.
      */
     getEditor: function(el, callbacks, characterCountLimit) {
       var view = this;
-      this.characterCountLimit = (characterCountLimit === true ? 250 : characterCountLimit);
+      this.characterCountLimit = !isNaN(characterCountLimit) ? characterCountLimit : false;
       var defaultCallbacks = {
         'focus': function() {
           $(this.toolbar.container).show();
@@ -2481,9 +2479,8 @@
     },
     
     updateCharacterCount: function() {
-      if (this.editor && this.characterCountLimit && !isNaN(this.characterCountLimit)) {
-        var $toolbar = $(this.getEditorToolbarEl());
-        var $counter = $toolbar.find('.character-counter');
+      if (this.editor && this.characterCountLimit) {
+        var $counter = $(this.getEditorToolbarEl()).find('.character-counter');
         if ($counter.length) {
           var text = this.editor.getValue();
           
@@ -3147,7 +3144,7 @@
         {
           change: handleChange
         },
-        true
+        250
       );
         
       this.delegateEvents(); 
