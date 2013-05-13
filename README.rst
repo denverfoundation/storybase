@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.10.1
+~~~~~~
+
+* Fix restriction of asset types in templates (#763)
+
 0.10.0
 ~~~~~~
 

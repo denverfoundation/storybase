@@ -9,7 +9,7 @@
   }
   var Collections = storybase.builder.collections;
 
-  var TastypieMixin = storybase.collections.TastyPieMixin;
+  var TastypieMixin = storybase.collections.TastypieMixin;
 
   var StoryTemplate = Models.StoryTemplate = Backbone.Model.extend({
     idAttribute: "template_id",
