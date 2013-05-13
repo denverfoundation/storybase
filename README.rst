@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.10.2
+~~~~~~
+
+* Only show character count warning for summary (#673)
+
 0.10.1
 ~~~~~~
 
