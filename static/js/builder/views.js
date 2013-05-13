@@ -2383,8 +2383,10 @@
 
   var RichTextEditorMixin = {
     toolbarTemplateSource: $('#editor-toolbar-template').html(),
-    editor: null,
+    characterCountTemplateSource: $('#editor-toolbar-character-counter').html(),
+    characterCountLimit: false,
     characterCountTimer: null,
+    editor: null,
 
     getEditorToolbarHtml: function() {
       return this.toolbarTemplateSource; 
@@ -2393,23 +2395,34 @@
     getEditorToolbarEl: function() {
       if (_.isUndefined(this._editorToolbarEl)) {
         this._editorToolbarEl = $(this.getEditorToolbarHtml())[0];
+        if (this.characterCountLimit) {
+          $(this._editorToolbarEl).prepend(this.characterCountTemplateSource);
+        }
       }
       return this._editorToolbarEl; 
     },
 
-    getEditor: function(el, callbacks) {
+    /**
+     * @param characterCountLimit Optionally pass a number to specify a limit.
+     */
+    getEditor: function(el, callbacks, characterCountLimit) {
       var view = this;
+      this.characterCountLimit = !isNaN(characterCountLimit) ? characterCountLimit : false;
       var defaultCallbacks = {
         'focus': function() {
           $(this.toolbar.container).show();
-          view.startPollingCharacterCount();
+          if (view.characterCountLimit) {
+            view.startPollingCharacterCount();
+          }
         },
 
         'blur': function() {
           if (this._okToHideToolbar) {
             $(this.toolbar.container).hide();
           }
-          view.stopPollingCharacterCount();
+          if (view.characterCountLimit) {
+            view.stopPollingCharacterCount();
+          }
         },
 
         'load': function() {
@@ -2466,9 +2479,8 @@
     },
     
     updateCharacterCount: function() {
-      if (this.editor) {
-        var $toolbar = $(this.getEditorToolbarEl());
-        var $counter = $toolbar.find('.character-counter');
+      if (this.editor && this.characterCountLimit) {
+        var $counter = $(this.getEditorToolbarEl()).find('.character-counter');
         if ($counter.length) {
           var text = this.editor.getValue();
           
@@ -2481,8 +2493,7 @@
           $counter.find('.count').html(text.length);
           var $warning = $counter.find('.warning');
           if ($warning.length) {
-            var limit = parseInt($warning.data('character-limit'), 10);
-            if (!isNaN(limit) && text.length > limit) {
+            if (text.length > this.characterCountLimit) {
               $warning.show();
             }
             else {
@@ -3132,7 +3143,8 @@
         this.$(this.options.summaryEl)[0],
         {
           change: handleChange
-        }
+        },
+        250
       );
         
       this.delegateEvents(); 
