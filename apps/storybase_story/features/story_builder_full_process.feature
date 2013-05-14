@@ -23,7 +23,7 @@ Feature: A user can create, edit and publish a story
                 Given the user inputs "My summary, so exciting!" for the "summary" textarea 
                 Given the user clicks on "Untitled Section" in the section list
                 Given the user inputs "Let's try an audio clip" for the section title
-                Then the section "Untitled Section" should be after the section "Story Information" in the section list
+                Then the section "Let's try an audio clip" should be after the section "Story Information" in the section list
                 Given the user clicks the "Audio" icon in the "center" container
                 Given the user inputs "http://soundcloud.com/inews/long-term-care-for-kcfr-public-radio-day-1" in the "Enter audio URL" field
                 Given the user clicks the "Save Changes" button
