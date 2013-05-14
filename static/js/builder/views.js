@@ -2275,19 +2275,7 @@
 
     drawerOpenEvents: 'do:show:assetlist',
 
-    drawerCloseEvents: 'do:hide:assetlist',
-
-    // Workaround for issue where draggable element is hidden when its
-    // container element has an overflow property that is not visible
-    extraEvents: {
-      'start:drag:asset': function() {
-        this.$el.addClass('dragging');
-      },
-
-      'stop:drag:asset': function() {
-        this.$el.removeClass('dragging');
-      },
-    }
+    drawerCloseEvents: 'do:hide:assetlist'
   };
 
   /** 
@@ -2334,7 +2322,7 @@
             attrs.body = assetJSON.body;
           }
 
-          if (assetJSON.url) {
+          if (assetJSON.url && assetJSON.type !== 'image') {
             attrs.url = assetJSON.url;
           }
           return attrs;
@@ -2343,16 +2331,15 @@
           assets: assetsJSON
         };
         this.$el.html(this.template(context));
+        // Enable draggable functionality using jQuery UI
         this.$('.unused-asset').draggable({
           revert: 'invalid',
-        // Workaround for issue where draggable element is hidden when its
-        // container element has an overflow property that is not visible
-          start: function() {
-            that.dispatcher.trigger("start:drag:asset")
-          },
-          stop: function() {
-            that.dispatcher.trigger("stop:drag:asset")
-          }
+          // Clone the element while dragging and append the cloned
+          // element to the body. This allows us to display the draggable
+          // element as it's being dragged, even though the container
+          // element has ``overflow:hidden``
+          helper: 'clone',
+          appendTo: 'body'
         });
         return this;
       },
@@ -3331,7 +3318,7 @@
       this.undelegateEvents();
       this.unbind();
       this.dispatcher.off('do:add:sectionasset', this.addAsset, this);
-      this.dispatcher.on('do:remove:sectionasset',
+      this.dispatcher.off('do:remove:sectionasset',
                          this.handleDoRemoveSectionAsset, this);
       this.dispatcher.off('select:section', this.show, this);
       this.model.off("change:layout", this.changeLayout, this);
@@ -4164,9 +4151,14 @@
        *
        * @param {Asset} model Asset model instance that was removed
        */
-      handleModelRemove: function(model) {
-        this.setModel(new Asset(this.modelOptions));
-        this.setState('select').render();
+      handleModelRemove: function(model, collection) {
+        // Check whether the model is being removed from the section's
+        // asset list. It could also be removed from the unused asset
+        // list
+        if (collection === this.section.assets) {
+          this.setModel(new Asset(this.modelOptions));
+          this.setState('select').render();
+        }
       },
 
       getAssetTypeHelp: function(type) {
@@ -4195,9 +4187,19 @@
 
       handleDrop: function(evt, ui) {
         var id = ui.draggable.data('asset-id');
+        var view = this;
         if (id) {
-          this.model = this.story.unusedAssets.get(id);
-          this.story.unusedAssets.remove(this.model);
+          this.setModel(this.story.unusedAssets.get(id));
+          // HACK: The call to this.story.unusedAssets.remove results in
+          // removing the draggable element before the ``stop`` event is 
+          // handled, causing an exception when the jQuery-UI tries to
+          // update the cursor when the dragging stops. Delaying the call
+          // seems to work around this.
+          //
+          // See http://stackoverflow.com/a/13151132/386210
+          setTimeout(function() {
+            view.story.unusedAssets.remove(view.model);
+          }, 0);  
           if (!this.story.unusedAssets.length) {
             this.dispatcher.trigger('has:assetlist', false);
           }

@@ -570,10 +570,6 @@ button.preview {
   padding: 1em;
 }
 
-.dragging #drawer-contents {
-  overflow: visible; 
-}
-
 // Help Drawer
 
 #help-actions {
@@ -875,14 +871,25 @@ button.preview {
     text-align: left;
   }
 
+  .url {
+    // Make URLs wrap to width of drawer
+    word-wrap: break-word;
+  }
+
   &:last-child {
     border-bottom: none;
   }
 
-  // Uncomment this and add styles if we want specific styles for when
-  // the asset is being dragged
-  //&.ui-draggable-dragging {
-  //}
+  // Styles for asset while it is being dragged
+  &.ui-draggable-dragging {
+    list-style: none;
+    width: 200px;
+
+    // Hide URL field when dragging
+    .url {
+      display: none;
+    }
+  }
 
   .thumbnail {
     max-width: 100%;
@@ -893,6 +900,8 @@ button.preview {
     &:before {
       font-family: FontAwesome;
       font-size: 4em;
+      padding: 20px 0;
+      display: block;
     }
     &.image:before { content: "\f03e"; }
     &.audio:before { content: "\f025"; }

@@ -11,6 +11,12 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+dev
+~~~
+
+* Fix behavior and display of assets when dragging from unused asset
+  drawer (#746)
+
 0.10.2
 ~~~~~~
 

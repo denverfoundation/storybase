@@ -659,7 +659,6 @@ body.story-builder .drawer-open #drawer-container{width:30%;}
 body.story-builder #drawer-controls{float:left;height:100%;border-right:solid 2px #2a88db;}body.story-builder #drawer-controls .btn{display:block;margin-bottom:70px;border:none;padding:8px 14px;color:white;font-family:'Museo300Regular';font-size:16px;background-color:#2a88db;border-radius:4px 4px 0 0;text-align:center;cursor:pointer;transform-origin:100% 100%;-webkit-transform-origin:100% 100%;-moz-transform-origin:100% 100%;-ms-transform-origin:100% 100%;-o-transform-origin:100% 100%;transform:rotate(-90deg);-webkit-transform:rotate(-90deg);-moz-transform:rotate(-90deg);-ms-transform:rotate(-90deg);-o-transform:rotate(-90deg);}
 body.story-builder #drawer-contents{position:relative;max-height:60%;overflow:hidden;display:none;}body.story-builder #drawer-contents:hover{overflow-y:auto;}
 body.story-builder .drawer-open #drawer-contents{display:block;padding:1em;}
-body.story-builder .dragging #drawer-contents{overflow:visible;}
 body.story-builder #help-actions{text-align:right;}
 body.story-builder #repeat-tour-button{color:#2a88db !important;}body.story-builder #repeat-tour-button:before{padding-right:2px;}
 body.story-builder #repeat-tour-button:hover:before{font-family:FontAwesome;font-weight:normal;font-style:normal;display:inline-block;text-decoration:inherit;content:"\f075";}
@@ -699,9 +698,11 @@ body.story-builder .graphic-select-container .item-list .item.selected.above-bel
 body.story-builder .graphic-select-container .item-list .item.selected.three-stacked{background-position:0 -581px;}
 body.story-builder #unused-assets ul{list-style:none;padding:0;text-align:center;}
 body.story-builder .unused-asset{width:80%;margin:0 auto;cursor:pointer;padding:10px 0;border-bottom:1px solid #f0efef;}body.story-builder .unused-asset .body,body.story-builder .unused-asset .url{text-align:left;}
+body.story-builder .unused-asset .url{word-wrap:break-word;}
 body.story-builder .unused-asset:last-child{border-bottom:none;}
+body.story-builder .unused-asset.ui-draggable-dragging{list-style:none;width:200px;}body.story-builder .unused-asset.ui-draggable-dragging .url{display:none;}
 body.story-builder .unused-asset .thumbnail{max-width:100%;margin:0 auto;}
-body.story-builder .unused-asset .default-thumbnail:before{font-family:FontAwesome;font-size:4em;}
+body.story-builder .unused-asset .default-thumbnail:before{font-family:FontAwesome;font-size:4em;padding:20px 0;display:block;}
 body.story-builder .unused-asset .default-thumbnail.image:before{content:"\f03e";}
 body.story-builder .unused-asset .default-thumbnail.audio:before{content:"\f025";}
 body.story-builder .unused-asset .default-thumbnail.video:before{content:"\f03d";}
