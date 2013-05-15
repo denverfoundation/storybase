@@ -3289,6 +3289,8 @@
       // Container ID that should have it's model updated from
       // this.assets when rendering asset views after a sync
       this._refreshModelForContainer = null;
+      // Have the section assets been fetched at least once?
+      this._assetsFetched = false;
       
       // Edit the story information within the section edit view
       // This is mostly used in the connected story builder
@@ -3310,6 +3312,7 @@
       this.model.on("sync", this.conditionalRender, this);
       this.model.on("sync", this.triggerSaved, this);
       this.model.on("destroy", this.handleDestroy, this);
+      this.assets.once("sync", this.setAssetsFetched, this);
       this.assets.on("sync", this.renderAssetViews, this);
     },
 
@@ -3391,6 +3394,16 @@
       return this._assetEditViews[container];
     },
 
+    /**
+     * Indicate that the assets have been fetched. 
+     *
+     * This should be connected to the ``sync`` event
+     * of ``this.assets``.
+     */
+    setAssetsFetched: function() {
+      this._assetsFetched = true;
+    },
+
     renderAssetViews: function() {
       var view = this;
       var containerAssets;
@@ -3435,10 +3448,16 @@
       if (this.storyInfoEditView) {
         this.$el.prepend(this.storyInfoEditView.render().el);
       }
-      if (this.model.isNew()) {
+      if (this.model.isNew() || this._assetsFetched) {
+        // The model is new (so there are no assets) or
+        // they've already been fetched.  Just (re)render
+        // the views for each asset in the section
         this.renderAssetViews();
       }
       else {
+        // Editing an existing story, but the assets have
+        // not yet been retrieved.  Fetch them, which
+        // will in turn trigger ``this.renderAssetViews``
         this.assets.fetch();
       }
       // Turn the basic select element into a fancy graphical selection

@@ -16,6 +16,7 @@ dev
 
 * Fix behavior and display of assets when dragging from unused asset
   drawer (#746)
+* Fix removal of assets after switching workflow steps (#764)
 
 0.10.2
 ~~~~~~
