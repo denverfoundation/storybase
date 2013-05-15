@@ -1962,7 +1962,6 @@
 
     render: function() {
       var that = this;
-      this.$el.prepend(this.unusedAssetView.render().$el.hide());
       if (this.sectionListView) {
         this.sectionListView.render();
       }
