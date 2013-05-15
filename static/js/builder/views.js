@@ -207,7 +207,7 @@
         selecttemplate: new SelectStoryTemplateView({
           dispatcher: this.dispatcher,
           collection: this.options.storyTemplates
-        }),
+        })
       };
 
       // Create views for additional workflow steps if they're enabled
@@ -326,7 +326,7 @@
       if (this._activeWorkflowNavView) {
         // Remove the previous active workflow nav view
         this._activeWorkflowNavView.$el.remove();
-      };
+      }
       // Update the workflow nav view
       this._activeWorkflowNavView = _.isUndefined(activeView.getWorkflowNavView) ? null: activeView.getWorkflowNavView();
       if (this._activeWorkflowNavView) {
@@ -556,7 +556,7 @@
       var html = this.options.message;
 
       if (this.options.closeButton) {
-        html = html + this.options.closeButtonHtml
+        html = html + this.options.closeButtonHtml;
       }
       this.$el.addClass('alert-' + this.options.level);
       this.$el.html(html);
@@ -611,7 +611,7 @@
       if (this.options.callback) {
         this.options.callback(evt);
       }
-    },
+    }
   });
 
   /**
@@ -1201,7 +1201,7 @@
           visible: true,
           enabled: 'isStorySaved',
           selected: false,
-          path: 'tag/',
+          path: 'tag/'
         });
       }
       if (this.options.visibleSteps.review) {
@@ -1310,7 +1310,7 @@
       this.items = this._initItems();
       this.activeStep = null;
       this.hasAssetList = false;
-      this.previewURLTemplate = this.templates['previewUrl'] = this.compileTemplate(this.options.previewURLTemplate);
+      this.previewURLTemplate = this.templates.previewUrl = this.compileTemplate(this.options.previewURLTemplate);
 
       this.dispatcher.on('ready:story', this.handleStorySave, this);
       this.dispatcher.on('save:story', this.handleStorySave, this);
@@ -1361,7 +1361,7 @@
     },
 
     isStorySaved: function() {
-      return !_.isUndefined(this.storyId)
+      return !_.isUndefined(this.storyId);
     }
   });
 
@@ -1484,7 +1484,6 @@
             this.$el.find('.show-details').toggleClass('icon-chevron-right icon-chevron-down');
             this.scrollToDetailPane();
           }, this));
-      ;
     },
     
     scrollToDetailPane: function() {
@@ -1504,8 +1503,7 @@
     select: function(e) {
       this.dispatcher.trigger("select:template", this.model);
       e.preventDefault();
-    },
-
+    }
   });
 
   /**
@@ -1540,9 +1538,9 @@
      * Move a guider's element to the left or right.
      */
     nudge: function($guiderEl, amount) {
-      var guiderElemLeft = parseInt($guiderEl.css("left").replace('px', ''));
+      var guiderElemLeft = parseInt($guiderEl.css("left").replace('px', ''), 10);
       var myGuiderArrow = $guiderEl.find(".guider_arrow");
-      var arrowElemLeft = parseInt(myGuiderArrow.css("left").replace('px', ''));
+      var arrowElemLeft = parseInt(myGuiderArrow.css("left").replace('px', ''), 10);
       $guiderEl.css("left", (guiderElemLeft + amount) + "px");
       myGuiderArrow.css("left", (arrowElemLeft - amount) + "px");
     },
@@ -1778,7 +1776,7 @@
       var navViewOptions;
       var isNew = _.bind(function() {
         return !this.model.isNew();
-      }, this)
+      }, this);
 
       this.containerTemplates = this.options.containerTemplates;
       this.dispatcher = this.options.dispatcher;
@@ -2422,7 +2420,7 @@
             that._okToHideToolbar = true;
           });
           view.updateCharacterCount();
-        },
+        }
         
         // @todo: what we really want is a change event that fires on every 
         // visible change in the editor. for some reason, the published 
@@ -2460,6 +2458,7 @@
     startPollingCharacterCount: function() {
       this.characterCountTimer = setInterval($.proxy(this.updateCharacterCount, this), 500);
     },
+
     stopPollingCharacterCount: function() {
       clearInterval(this.characterCountTimer);
     },
@@ -2488,8 +2487,7 @@
           }
         }
       }
-    },
-    
+    }
   };
 
   /**
@@ -2555,7 +2553,7 @@
       'sortupdate': 'handleSort',
       'mousedown .scroll-right': 'scrollRight',
       'mousedown .scroll-left': 'scrollLeft',
-      'mouseup': 'stopScroll',
+      'mouseup': 'stopScroll'
     },
 
     initialize: function() {
@@ -3796,7 +3794,7 @@
         this.compileTemplates();
         this.modelOptions = {
           language: this.options.language
-        }
+        };
         var modelOptions = _.extend({}, this.modelOptions);
         this.container = this.options.container;
         this.dispatcher = this.options.dispatcher;
@@ -3922,7 +3920,7 @@
           context.help = this.options.help;
         }
         else if (state === 'display') {
-          context.model = this.model.toJSON()
+          context.model = this.model.toJSON();
         }
         this.$el.html(template(context));
         $wrapperEl = this.$(this.options.wrapperEl);
@@ -4050,8 +4048,8 @@
         // If this is the initial save and the story has a license
         // defined and the asset has no explicit license defined, set the
         // asset license to that of the story.
-        if (isNew && _.isUndefined(attributes['license']) && storyLicense) {
-          attributes['license'] = storyLicense;
+        if (isNew && _.isUndefined(attributes.license) && storyLicense) {
+          attributes.license = storyLicense;
         }
 
         // Initialize callbacks for saving the model
@@ -4248,7 +4246,7 @@
         this.dispatcher = this.options.dispatcher;
         this.compileTemplates();
 
-        this.collection = new DataSets;
+        this.collection = new DataSets();
         if (_.isUndefined(this.model)) {
           this.dispatcher.on("ready:story", this.setStory, this);
         }
@@ -4399,7 +4397,7 @@
             that.dispatcher.trigger('error', 'Error removing the data set');
           }
         });
-      },
+      }
     })
   );
 
@@ -4599,7 +4597,7 @@
         return _.map(rawOptions, function(value) {
           return {
             val: value[valAttr], 
-            label: value[labelAttr],
+            label: value[labelAttr]
           };
         });
       },
@@ -4637,8 +4635,8 @@
       render: function() {
         var initialValues = {
           'topics': _.pluck(this.model.get('topics'), 'id'),
-          'places': _.pluck(this.model.get('places'), 'id'),
-        }
+          'places': _.pluck(this.model.get('places'), 'id')
+        };
         this.$el.html(this.template());
         this.$('#taxonomy').append(this.officialForm.render().el);
         if (this.officialForm.fields.organizations) {
@@ -5318,7 +5316,7 @@
 
     options: {
       title: gettext("Current image"),
-      defaultImageAlt: gettext('Default story image'),
+      defaultImageAlt: gettext('Default story image')
     },
 
     initListeners: function() {
@@ -5625,8 +5623,8 @@
      */
     setInitialFeaturedAsset: function() {
       var imgAsset;
-      if (this.model && this.model.featuredAssets.length == 0 &&
-          this.model.assets.length != 0) {
+      if (this.model && this.model.featuredAssets.length === 0 &&
+          this.model.assets.length !== 0) {
         imgAsset = this.model.assets.find(function(asset) {
           return asset.get('type') === 'image';
         });
@@ -5641,7 +5639,7 @@
         this.listenTo(this.model.assets, "add", this.render);
         this.listenTo(this.model, "set:featuredasset", this.handleFeaturedAsset);
         this.listenTo(this.addView, "cancel", this.switchToDisplay);
-        if (this.model.featuredAssets.length == 0) {
+        if (this.model.featuredAssets.length === 0) {
           // If the model doesn't have a featured asset set, try to
           // set it when new assets are added to the story
           this.listenTo(this.model.assets, "add", this.handleAddAsset);
@@ -5684,7 +5682,7 @@
     setStory: function(story) {
       this.model = story;
       this.model.setFeaturedAssets(
-        new FeaturedAssets
+        new FeaturedAssets()
       );
       this.initListeners();
     },
@@ -5897,7 +5895,7 @@
     id: 'publish-button',
 
     events: {
-      'click .publish': 'handlePublish',
+      'click .publish': 'handlePublish'
     },
 
     options: {
