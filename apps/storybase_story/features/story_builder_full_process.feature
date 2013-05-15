@@ -235,7 +235,7 @@ Feature: A user can create, edit and publish a story
                     | name                                |
                     | StoryCorps visits Denver and Aurora |
                 Given the user clicks the "Build" workflow tab
-                Given the user inputs "This is another section" for the section title
+                Given the user clicks on "This is another section" in the section list 
                 Then the image "https://raw.github.com/PitonFoundation/atlas/develop/apps/storybase_asset/test_files/test_image.jpg" is visible
                 Given the user clicks the remove icon for the section "This is another section"
                 Then a confirmation dialog is shown
