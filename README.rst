@@ -18,6 +18,11 @@ dev
   drawer (#746)
 * Fix removal of assets after switching workflow steps (#764)
 
+0.10.3
+~~~~~~
+
+* Wrap long URLs on organization and project detail pages (#759)
+
 0.10.2
 ~~~~~~
 
