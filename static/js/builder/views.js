@@ -2299,7 +2299,6 @@
         this.dispatcher.on("remove:sectionasset", this.addAsset, this);
         this.dispatcher.on("do:show:assetlist", this.show, this);
         this.dispatcher.on("do:hide:assetlist", this.hide, this);
-        this.assets.on("remove", this.handleRemove, this);
       },
 
       render: function() {
@@ -2346,13 +2345,6 @@
        */
       addAsset: function(asset) {
         this.assets.push(asset);
-      },
-
-      handleRemove: function() {
-        // If the last asset was removed, hide the element
-        if (!this.assets.length) {
-          this.$el.hide(); 
-        }
       },
 
       show: function() {
