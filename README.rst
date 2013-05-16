@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.10.3
+~~~~~~
+
+* Wrap long URLs on organization and project detail pages (#759)
+
 0.10.2
 ~~~~~~
 

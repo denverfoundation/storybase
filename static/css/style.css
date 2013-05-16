@@ -472,6 +472,7 @@ body.base-template .content-page.object-detail .call-to-action ul{list-style:dis
 body.base-template .content-page.object-detail .object-metadata{color:#444;margin:20px 0;}body.base-template .content-page.object-detail .object-metadata dt,body.base-template .content-page.object-detail .object-metadata dd{float:left;}
 body.base-template .content-page.object-detail .object-metadata dt{clear:left;margin-right:4px;}
 body.base-template .content-page.object-detail .object-metadata dt:after{content:": ";}
+body.base-template .content-page.object-detail .object-metadata .website-url{display:block;word-wrap:break-word;word-break:break-all;}
 body.base-template .content-page.object-detail .featured-story img{width:100%;}
 body.base-template .content-page.object-detail .story-list ul{margin-bottom:30px;}
 body.base-template .content-page.object-detail .story-list li{margin-bottom:10px;overflow:hidden;}body.base-template .content-page.object-detail .story-list li div{min-height:1px;}

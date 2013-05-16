@@ -152,6 +152,13 @@
 			dt, dd { float:left; }
 			dt { clear:left; margin-right:4px }
 			dt:after { content:": " }
+
+                        .website-url {
+                          // Force long URLs to wrap
+                          display: block;
+                          word-wrap: break-word;      
+                          word-break: break-all; 
+                        }
 		}
 		.featured-story img { width: 100%; }
 		.story-list ul { margin-bottom: 30px; }
