@@ -192,7 +192,7 @@ describe('Story model', function() {
       var templateStory = new storybase.models.Story(templateFixture);
       var story = new storybase.models.Story;
       var storyProps = ['structure_type', 'summary', 'call_to_action'];
-      var sectionProps = ['title', 'layout', 'root', 'layout_template', 'help'];
+      var sectionProps = ['layout', 'root', 'layout_template', 'help'];
       templateStory.sections.reset(templateSectionsFixture.objects);
 
       expect(story.id == templateStory.id).toBe(false);
@@ -202,12 +202,12 @@ describe('Story model', function() {
       });
       expect(story.get('template_story')).toEqual(templateStory.get('story_id'));
       expect(story.sections.length).toBeTruthy();
-      expect(story.sections.length).toEqual(templateStory.sections.length);
       templateStory.sections.each(function(section) {
         var sectionCopy = story.sections.where({
-          title: section.get('title')
+          title_placeholder: section.get('title')
         })[0];
         expect(sectionCopy).toBeDefined();
+        expect(sectionCopy.get('title')).toEqual('');
         _.each(sectionProps, function(prop) {
           expect(sectionCopy.get(prop)).toEqual(section.get(prop));
         });

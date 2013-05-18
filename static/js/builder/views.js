@@ -16,6 +16,7 @@
   var capfirst = storybase.utils.capfirst;
   var geocode = storybase.utils.geocode;
   var hasAnalytics = storybase.utils.hasAnalytics;
+  var licenseParamsToStr = storybase.utils.licenseParamsToStr;
   var licenseStrToParams = storybase.utils.licenseStrToParams;
   var prettyDate = storybase.utils.prettyDate;
   var HandlebarsTemplateMixin = storybase.views.HandlebarsTemplateMixin;
