@@ -215,11 +215,6 @@
       // in options. We don't iterate through the steps because the
       // views use different constructor, options. If this gets to
       // unwieldy, maybe use a factory function.
-      if (this.options.visibleSteps.data) {
-        this.subviews.data = new DataView(
-          _.clone(commonOptions)
-        );
-      }
       if (this.options.visibleSteps.tag) {
         this.subviews.tag =  new TaxonomyView(
           _.defaults({
@@ -1183,17 +1178,6 @@
           path: ''
         });
       }
-      if (this.options.visibleSteps.data) {
-        items.push({
-          id: 'data',
-          title: gettext("Upload or link to source data referenced in your story’s charts, maps, graphs and visualizations"),
-          text: gettext('Add Data'),
-          visible: true,
-          enabled: 'isStorySaved',
-          selected: false,
-          path: 'data/'
-        });
-      }
       if (this.options.visibleSteps.tag) {
         items.push({
           id: 'tag',
@@ -1816,17 +1800,17 @@
         dispatcher: this.dispatcher,
         items: []
       };
-      // The next step will either be data (in the normal builder) or
+      // The next step will either be tag (in the normal builder) or
       // publish (in the connected story builder). If this gets more
       // complicated, it might make more sense to have a global set
       // of items. 
-      if (this.options.visibleSteps.data) {
+      if (this.options.visibleSteps.tag) {
         navViewOptions.items.push({
-          id: 'workflow-nav-data-fwd',
+          id: 'workflow-nav-tag-fwd',
           className: 'next',
-          title: gettext("Add Data to Your Story"),
+          title: gettext("Label your story to help others discover it on Floodlight"),
           text: gettext("Next"),
-          path: 'data/',
+          path: 'tag/',
           enabled: isNew 
         });
       }
@@ -4220,6 +4204,7 @@
     })
   );
 
+  // TODO: Remove this once asset datasets are implemented
   var DataView = Views.DataView = HandlebarsTemplateView.extend(
     _.extend({}, NavViewMixin, {
       className: 'view-container',
@@ -4483,11 +4468,11 @@
           dispatcher: this.dispatcher,
           items: [
             {
-              id: 'workflow-nav-data-back',
+              id: 'workflow-nav-build-back',
               className: 'prev',
-              title: gettext("Back to Add Data"),
+              title: gettext("Continue Writing Story"),
               text: gettext("Previous"),
-              path: 'data/'
+              path: ''
             },
             {
               id: 'workflow-nav-review-fwd',

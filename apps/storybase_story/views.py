@@ -463,7 +463,6 @@ class StoryBuilderView(DetailView):
             # Show only the builder workflow steps
             'visibleSteps': {
                 'build': True,
-                'data': True, 
                 'tag': True,
                 'review': True,
                 'publish': True
