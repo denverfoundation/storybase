@@ -65,7 +65,6 @@
      */
     toFormData: function(options) {
       var attrs = options.attrs || this.attributes;
-      console.debug(attrs);
       var formData = new FormData();
       _.each(attrs, function(value, key) {
         // Only add non-null values as it seems like Firefox
@@ -275,6 +274,47 @@
        */
       setStory: function(story) {
         this._story = story;
+      },
+
+      // TODO: Test this method, particularly checking which events are fired on
+      // the removed model
+      /**
+       * Remove a single model from a collection at the server
+       *
+       * This method is for endpoints that support support removing an
+       * item from a collection with a DELETE request to an endpoint like
+       * /<collection-url>/<model-id>/.
+       */
+      removeSync: function(models, options) {
+        models = _.isArray(models) ? models.slice() : [models];
+        var i, l, index, model, url;
+        for (i = 0, l = models.length; i < l; i++) {
+          model = models[i]; 
+          url = _.result(this, 'url') + model.id + '/';
+          this.sync('delete', model, {
+            url: url
+          });
+        }
+        return this;
+      },
+
+      /**
+       * Remove a model (or an array of models) from the collection.
+       *
+       * Unlike the default ``Collection.remove`` this takes an additional
+       * ``sync`` option that, if truthy, will cause the models to be 
+       * removed on the server.
+       */
+      remove: function(models, options) {
+        var model = this;
+        if (!_.isUndefined(options.sync)) {
+          if(_.result(options, 'sync')) {
+            this.once('remove', function() {
+              model.removeSync(models, options);
+            }, this);
+          }
+        }
+        Backbone.Collection.prototype.remove.apply(this, arguments);
       }
     })
   );
@@ -788,6 +828,28 @@
         if (found.length > 1) {
           return "You must specify only one of the following values " + found.join(', ');
         }
+      },
+
+      /**
+       * Can this asset type accept related data?
+       */
+      acceptsData: function() {
+        var type = this.get('type');
+        if (type === 'map' || type === 'chart' || type === 'table') {
+          return true;
+        }
+        else {
+          return false;
+        }
+      },
+
+      /**
+       * Set the asset's datasets collection.
+       */
+      setDataSets: function(collection) {
+        this.datasets = collection;
+        this.datasets.setAsset(this);
+        this.trigger('set:datasets', this.datasets);
       }
     })
   );

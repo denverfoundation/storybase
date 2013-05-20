@@ -236,6 +236,7 @@ Handlebars.js templates for story builder Backbone application
 {{>help-icon}}
 <div class="wrapper">
 <ul class="section-asset-controls">
+    {{#if acceptsData}}<li><a href="#" class="edit-data">{{gettext "Data"}}</a></li>{{/if}}
     <li><a href="#" class="edit">{{gettext "Edit"}}</a></li>
     <li><a href="#" class="remove">{{gettext "Remove"}}</a></li>
 </ul>
@@ -245,6 +246,46 @@ Handlebars.js templates for story builder Backbone application
 
 <script type="text/x-handlebars-template" id="asset-uploadprogress-template">
 <div class="uploadprogress"></div>
+</script>
+
+<script type="text/x-handlebars-template" id="asset-dataset-list-template">
+<div class="wrapper"> 
+  <div class="dataset-list-container">
+    {{#if collectionFetched}}
+    {{#if datasets}}
+    <table class="datasets">
+      <thead>
+        <tr>
+          <th>Data Set</th>
+          <th></th>
+        </tr>
+      </thead>
+      <tbody>
+        {{#each datasets}}
+        <tr class="dataset">
+          <td>
+            <p class="title">{{title}}</p>
+            {{#if source}}
+            <p class="source">{{gettext "Source"}}: {{source}}</p>
+            {{/if}}
+            <p class="url"><a href="{{download_url}}">{{gettext "Download data"}}</a></p>
+          </td>
+          <td><a class="remove-dataset" data-dataset-id="{{dataset_id}}" href="#">{{gettext "Remove"}}</a></td>
+        </tr>
+        {{/each}}
+      </tbody>
+    </table>
+    {{else}}
+    <p>{{gettext "There are no datasets"}}</p>
+    {{/if}}
+    <button class="add-dataset">{{gettext "Add Dataset"}}</button>
+    {{else}}
+    <p>{{gettext "Fetching datasets ..."}}</p>
+    {{/if}}
+    <button type="reset">{{gettext "Cancel"}}</button>
+  </div>
+  <div class="add-dataset-form-container"></div>
+</div>
 </script>
 
 <script type="text/x-handlebars-template" id="featured-asset-template">
@@ -287,6 +328,7 @@ Handlebars.js templates for story builder Backbone application
 {{/if}}
 </script>
 
+<!-- TODO: Remove this when the switch to asset-related datasets (#583) is complete -->
 <script type="text/x-handlebars-template" id="data-template">
 <h2>Data Sets</h2>
 <p>{{gettext "Providing the raw source data you used to make your story’s charts, maps and graphs encourages readers to dig deeper and discover their own stories in the data."}}</p>

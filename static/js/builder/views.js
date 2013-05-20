@@ -3735,6 +3735,238 @@
     }
   });
 
+  var AssetDataSetAddView = Views.AssetDataSetAddView = Backbone.View.extend({
+    events: {
+      'submit form': 'processForm',
+      'click [type="reset"]': 'cancel'
+    },
+
+    initialize: function(options) {
+      this.dispatcher = options.dispatcher;
+      this.form = new Backbone.Form({
+        schema: this.getFormSchema()
+      });
+    },
+
+    /**
+     * Get the Backbone Forms schema for the data set addition form
+     */
+    getFormSchema: function() {
+      // Start with the schema defined in the model
+      var schema = DataSet.prototype.schema();
+      // Update some labels
+      schema.title.title = gettext("Data set name");
+      schema.source.title = gettext("Data source");
+      schema.url.title = gettext("Link to a data set");
+      schema.file.title = gettext("Or, upload a data file from your computer");
+      return schema;
+    },
+
+    render: function() {
+      this.$el.append(
+        this.form.render().$el
+            .append("<input type='reset' value='" + gettext("Cancel") + "' />")
+            .append("<input type='submit' value='" + gettext("Save") + "' />")
+      );
+      return this;
+    },
+
+    /**
+     * Handler for clicking the "Cancel" button
+     */
+    cancel: function(evt) {
+      this.trigger('click:cancel');
+      // Without the call to stopPropagation, the click event will bubble
+      // up to the parent view's event handlers.  This might be desireable
+      // if we just want to jump to the display view instead of back to the
+      // dataset list view
+      evt.stopPropagation();
+    },
+
+    addDataSet: function(attrs, form) {
+      var view = this;
+      var file = null;
+      var options = {
+        success: function(model, response) {
+          view.trigger('save:dataset', model);
+          view.dispatcher.trigger('alert', 'success', "Data set added");
+        },
+        error: function(model, response) {
+          view.dispatcher.trigger('error', 'Error saving the data set');
+        }
+      };
+
+      if (attrs.file) {
+        _.extend(options, {
+          upload: true,
+          form: $(form)
+        });
+      }
+
+      this.collection.create(attrs, options);
+    },
+
+    /**
+     * Handler for form submission
+     */
+    processForm: function(evt) {
+      var errors = this.form.validate();
+      if (!errors) {
+        this.addDataSet(this.form.getValue(), evt.target);
+      }
+      else {
+        // Remove any previous error messages
+        this.form.$('.bbf-model-errors').remove();
+        if (!_.isUndefined(errors._others)) {
+          this.form.$el.prepend('<ul class="bbf-model-errors">');
+          _.each(errors._others, function(msg) {
+            this.form.$('.bbf-model-errors').append('<li>' + msg + '</li>');
+          }, this);
+        }
+      }
+      evt.preventDefault();
+      evt.stopPropagation();
+    },
+
+    unsetCollection: function() {
+      this.collection = undefined;
+    },
+
+    setCollection: function(collection) {
+      this.collection = collection;
+    }
+  });
+
+  var AssetDataSetListView = Views.AssetDataSetListView = HandlebarsTemplateView.extend({
+    options: {
+      templateSource: $('#asset-dataset-list-template').html()
+    },
+
+    events: {
+      'click button[type="reset"]': 'clickCancel',
+      'click .add-dataset': 'clickAdd',
+      'click .remove-dataset': 'clickRemove'
+    },
+
+    bindModelEvents: function() {
+      this.collection.on('add remove', this.render, this);
+    },
+
+    unbindModelEvents: function() {
+      this.collection.off('add remove', this.render, this);
+    },
+
+    bindSubviewEvents: function() {
+      this.addView.on('click:cancel', this.clickAddCancel, this);
+    },
+
+    unbindSubviewEvents: function() {
+      this.addView.off('click:cancel', this.clickAddCancel, this);
+    },
+
+    /**
+     * Initialize and fetch the asset's datasets collection
+     */
+    _initCollection: function() {
+      var view = this;
+      if (!_.isObject(this.model.datasets)) {
+        this.model.setDataSets(new DataSets());
+        this.collection = this.model.datasets;
+        this.collection.fetch({
+          success: function() {
+            view._collectionFetched = true;
+          }
+        });
+      }
+      else {
+        this.collection = this.model.datasets;
+      }
+    },
+
+    initialize: function(options) {
+      this.dispatcher = options.dispatcher;
+      // Flag to indicate whether or not the colleciton has
+      // been fetched yet. This is used to defer rendering
+      // until after the collection has been fetched.
+      this._collectionFetched = false;
+      this._initCollection();
+      this.addView = new AssetDataSetAddView({
+        collection: this.collection,
+        dispatcher: this.dispatcher
+      });
+      this.compileTemplates();
+      this.bindModelEvents();
+      this.bindSubviewEvents();
+    },
+
+    close: function() {
+      this.unbindModelEvents();
+      this.unbindSubviewEvents();
+    },
+
+    render: function() {
+      console.debug('Rendering DataSetListView');
+      var context = {
+        collectionFetched: this._collectionFetched
+      };
+
+      if (!this._collectionFetched) {
+        // If the collection has not yet been fetched,
+        // defer rendering until the collection has
+        // been fetched
+        this.collection.once('reset', this.render, this);
+      }
+      else {
+        context.datasets = this.collection.toJSON();
+      }
+      this.$el.html(this.template(context));
+      this.delegateEvents();
+      this.addView.setElement(this.$('.add-dataset-form-container')).
+                  render().$el.hide();
+      return this;
+    },
+
+    clickCancel: function(evt) {
+      // Tell other views that may be listening to this view
+      // that the cancel button was clicked
+      this.trigger('click:cancel');
+    },
+
+    clickAdd: function(evt) {
+      this.$('.dataset-list-container').hide();
+      this.addView.$el.show();
+    },
+
+    clickAddCancel: function(evt) {
+      this.addView.$el.hide();
+      this.$('.dataset-list-container').show();
+    },
+    
+    clickRemove: function(evt) {
+      var datasetId = $(evt.target).data('dataset-id');
+      var model = this.collection.get(datasetId);
+      this.collection.remove(model, {
+        sync: true
+      });
+      evt.preventDefault();
+    },
+
+    unsetModel: function() {
+      this.addView.unsetCollection();
+      this.unbindModelEvents();
+      this.model = undefined;
+      this.collection = undefined;
+    },
+
+    setModel: function(model) {
+      console.debug('Setting model for DataSetListView');
+      this.model = model;
+      this._initCollection();
+      this.bindModelEvents();
+      this.addView.setCollection(this.collection);
+    }
+  });
+
   var SectionAssetEditView = Views.SectionAssetEditView = HandlebarsTemplateView.extend(
     _.extend({}, RichTextEditorMixin, {
       tagName: 'div',
@@ -3759,6 +3991,7 @@
         "click .asset-type": "selectType", 
         "click .remove": "handleClickRemove",
         "click .edit": "edit",
+        "click .edit-data": "handleClickEditData",
         "click .help": "showHelp",
         'click input[type="reset"]': "cancel",
         'submit form.bbf-form': 'processForm',
@@ -3779,10 +4012,17 @@
         this.section = this.options.section;
         this.story = this.options.story;
         if (_.isUndefined(this.model)) {
+          // If no model is passed to the constructor, create
+          // an empty Asset model
           if (this.options.suggestedType) {
             modelOptions.type = this.options.suggestedType;
           }
           this.model = new Asset(modelOptions);
+        }
+        else {
+          // If it's an existing model, initialize views for
+          // associated data
+          this.initializeDataViews(); 
         }
         _.bindAll(this, 'handleUploadProgress', 'editCaption'); 
         this.bindModelEvents();
@@ -3793,11 +4033,15 @@
       bindModelEvents: function() {
         this.model.on("change", this.initializeForm, this);
         this.model.on("remove", this.handleModelRemove, this);
+        if (this.model.isNew()) {
+          this.model.once("sync", this.initializeDataViews, this);
+        }
       },
 
       unbindModelEvents: function() {
         this.model.off("change", this.initializeForm, this);
         this.model.off("remove", this.handleModelRemove, this);
+        this.model.off("sync", this.initializeDataViews, this);
       },
 
       /**
@@ -3882,6 +4126,37 @@
         return result;
       },
 
+      /**
+       * Initialize subviews for related data sets
+       *
+       * The first time this method is called, it creates a new instance 
+       * of the subviews. On subsequent calls, it binds the subviews to
+       * this view's model. The latter behavior is useful for when the
+       * model is updated, either because a new asset has been created
+       * or an asset has been dragged and dropped from the unused asset
+       * list.
+       */
+      initializeDataViews: function() {
+        if (this.model.acceptsData()) {
+          if (_.isUndefined(this.datasetListView)) {
+            // There's no data set list view - create one
+            this.datasetListView = new AssetDataSetListView({
+              model: this.model,
+              dispatcher: this.dispatcher
+            });
+            // If the cancel button is clicked inside the dataset
+            // list view, hide that view and show the display
+            // view
+            this.datasetListView.on('click:cancel', function() {
+              this.setState('display').render();
+            }, this);
+          }
+          else {
+            // There's already a data set list view - reuse it
+            this.datasetListView.setModel(this.model);
+          }
+        }
+      },
 
       render: function() {
         var context = {};
@@ -3898,8 +4173,15 @@
         }
         else if (state === 'display') {
           context.model = this.model.toJSON();
+          // Set context variable to toggle display of icon to edit data
+          context.acceptsData = this.model.acceptsData();
         }
-        this.$el.html(template(context));
+        if (template) {
+          this.$el.html(template(context));
+        }
+        else {
+          this.$el.empty();
+        }
         $wrapperEl = this.$(this.options.wrapperEl);
         this.setClass();
         if (state == 'select') {
@@ -3936,6 +4218,9 @@
             this.bodyEditor.stopObserving('load');
           }
           $wrapperEl.append(this.form.el);
+        }
+        if (state === 'editData') {
+          this.$el.append(this.datasetListView.render().el);
         }
 
         return this;
@@ -4128,6 +4413,14 @@
       },
 
       /**
+       * Event handler for clicking the edit data icon
+       */
+      handleClickEditData: function(evt) {
+        evt.preventDefault();
+        this.setState('editData').render();
+      },
+
+      /**
        * Update the model property of the view, taking event callbacks into
        * account
        */
@@ -4137,6 +4430,7 @@
         this.model = model; 
         // Listen to events on the new model
         this.bindModelEvents();
+        this.initializeDataViews();
       },
 
       /**
@@ -4151,6 +4445,9 @@
         if (collection === this.section.assets) {
           this.setModel(new Asset(this.modelOptions));
           this.setState('select').render();
+          if (this.datasetListView) {
+            this.datasetListView.unsetModel();
+          }
         }
       },
 
