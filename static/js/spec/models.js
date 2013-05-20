@@ -47,6 +47,19 @@ describe('DataSets collection', function() {
       expect(this.collection.url()).toEqual('/api/0.1/datasets/stories/' + this.story.id + '/');
     });
   });
+
+  describe('A collection associated with an asset', function() {
+    beforeEach(function() {
+      this.asset = new Backbone.Model({
+        id: '78b26070d5d211e19b230800200c9a66'
+      });
+      this.collection.setAsset(this.asset);
+    });
+
+    it('should have a URL of "/api/0.1/datasets/assets/<asset_id>/"', function() {
+      expect(this.collection.url()).toEqual('/api/0.1/datasets/assets/' + this.asset.id + '/');
+    });
+  });
 });
 
 describe("Section model", function() {

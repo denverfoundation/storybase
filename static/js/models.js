@@ -247,14 +247,26 @@
 
       initialize: function() {
         this._story = null;
+        this._asset = null;
       },
 
       url: function() {
         var url = storybase.API_ROOT + 'datasets/';
-        if (this._story !== null) {
+        if (this._asset !== null) {
+          url = url + 'assets/' + this._asset.id + '/';
+        }
+        else if (this._story !== null) {
           url = url + 'stories/' + this._story.id + '/';
         }
         return url; 
+      },
+
+      /**
+       * Specify that this collection represent's a particular asset's
+       * dataset.
+       */
+      setAsset: function(asset) {
+        this._asset = asset;
       },
 
       /**

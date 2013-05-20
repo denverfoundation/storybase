@@ -209,6 +209,26 @@ class AssetModelTest(TestCase):
         asset.save()
         self.assertIn(dataset_title, asset.full_caption_html())
 
+    def test_datasets_added_to_story(self):
+        """
+        Test that adding a dataset to an asset also adds it to the assets'
+        stories.
+        """
+        asset = create_html_asset(type='image', title='Test Asset')
+        story = create_story(title="Test Story", summary="Test Summary",
+            byline="Test Byline", status="published", language="en")
+        story.assets.add(asset)
+        dataset_title = ("Metro Denver Free and Reduced Lunch Trends by "
+                         "School District")
+        dataset_url = 'http://www.box.com/s/erutk9kacq6akzlvqcdr'
+        dataset = create_external_dataset(
+            title=dataset_title,
+            url=dataset_url,
+            source="Colorado Department of Education for Source",
+            attribution="The Piton Foundation")
+        asset.datasets.add(dataset)
+        self.assertIn(dataset, story.datasets.select_subclasses())
+
 
 class ExternalAssetModelTest(TestCase):
     def test_get_oembed_response_youtube_short(self):
@@ -480,6 +500,11 @@ class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         self.story = create_story(title="Test Story", summary="Test Summary",
             byline="Test Byline", status="published", language="en", 
             author=self.user)
+        self.asset = create_html_asset(type='chart',
+                title="", caption="",
+                body="This would be an embed code",
+                status='published',
+                owner=self.user)
         self.dataset_attrs = [
             {
                 'title': "Metro Denver Free and Reduced Lunch Trends by School District",
@@ -679,7 +704,7 @@ class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
                 'language': "en",
                 'file': fp, 
             }
-            self.assertEqual(Asset.objects.count(), 0)
+            self.assertEqual(DataSet.objects.count(), 0)
             self.api_client.client.login(username=self.username,
                                          password=self.password)
             resp = self.api_client.client.post(uri,
@@ -771,13 +796,10 @@ class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
             'links_to_file': False,
             'language': "en",
         }
-        nonexistant_story_id = '15844bc0d5c911e19b230800200c9a66'
         self.assertEqual(DataSet.objects.count(), 0)
-        self.api_client.client.login(username=self.username,
-                                     password=self.password)
-        uri = '/api/0.1/datasets/stories/%s/' % (nonexistant_story_id)
+        uri = '/api/0.1/datasets/stories/%s/' % (self.story.story_id)
         resp = self.api_client.post(uri, format='json', data=post_data)
-        self.assertHttpNotFound(resp)
+        self.assertHttpUnauthorized(resp)
         self.assertEqual(DataSet.objects.count(), 0)
 
     def test_post_list_with_story_unauthorized(self):
@@ -812,11 +834,201 @@ class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
             'links_to_file': False,
             'language': "en",
         }
+        nonexistant_story_id = '15844bc0d5c911e19b230800200c9a66'
         self.assertEqual(DataSet.objects.count(), 0)
-        uri = '/api/0.1/datasets/stories/%s/' % (self.story.story_id)
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        uri = '/api/0.1/datasets/stories/%s/' % (nonexistant_story_id)
+        resp = self.api_client.post(uri, format='json', data=post_data)
+        self.assertHttpNotFound(resp)
+        self.assertEqual(DataSet.objects.count(), 0)
+
+    def test_post_list_with_asset_url(self):
+        post_data = {
+            'title': "Chicago Street Names",
+            'description': "List of all Chicago streets with suffixes and minimum and maximum address numbers.",
+            'url': 'https://data.cityofchicago.org/Transportation/Chicago-Street-Names/i6bp-fvbx',
+            'links_to_file': False,
+            'language': "en",
+        }
+        self.assertEqual(DataSet.objects.count(), 0)
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        uri = '/api/0.1/datasets/assets/%s/' % (self.asset.asset_id)
+        resp = self.api_client.post(uri, format='json', data=post_data)
+        self.assertHttpCreated(resp)
+        self.assertEqual(DataSet.objects.count(), 1)
+        # Compare the response data with the post data
+        self.assertEqual(self.deserialize(resp)['title'], 
+                         post_data['title'])
+        self.assertEqual(self.deserialize(resp)['description'], 
+                         post_data['description'])
+        self.assertEqual(self.deserialize(resp)['url'], 
+                         post_data['url'])
+        self.assertEqual(self.deserialize(resp)['links_to_file'], 
+                         post_data['links_to_file'])
+        # Compare the created model instance with the post data
+        created_dataset = DataSet.objects.get_subclass()
+        self.assertEqual(created_dataset.title, post_data['title'])
+        self.assertEqual(created_dataset.description, post_data['description'])
+        self.assertEqual(created_dataset.url, post_data['url'])
+        self.assertEqual(created_dataset.links_to_file, post_data['links_to_file'])
+        # Test that the owner of the dataset is our logged-in user
+        self.assertEqual(created_dataset.owner, self.user)
+        # Test that the created dataset is associated with a story 
+        self.assertIn(self.asset, created_dataset.assets.select_subclasses())
+
+    def test_get_list_for_asset(self):
+        """
+        Test that a user can get a list of datasets associated with an asset
+        """
+        for dataset_attr in self.dataset_attrs:
+            self.datasets.append(create_external_dataset(**dataset_attr))
+        self.asset.datasets.add(self.datasets[0], self.datasets[1])
+        self.asset.save()
+        self.assertEqual(len(self.asset.datasets.all()), 2)
+        uri = '/api/0.1/datasets/assets/%s/' % (self.asset.asset_id)
+        resp = self.api_client.get(uri)
+        self.assertValidJSONResponse(resp)
+        self.assertEqual(len(self.deserialize(resp)['objects']), 2)
+        for resp_obj in self.deserialize(resp)['objects']:
+            attrs = self.filter_dict(self.dataset_attrs, 'title',
+                                     resp_obj['title'])[0]
+            for key, value in attrs.items():
+                if key != 'owner':
+                    self.assertEqual(resp_obj[key], value)
+
+    def test_post_list_with_asset_unauthorized(self):
+        """
+        Test that a user can't create a dataset associated with another
+        user's asset 
+        """
+        post_data = {
+            'title': "Test Dataset",
+            'description': "A test dataset",
+            'url': 'https://data.cityofchicago.org/Transportation/Chicago-Street-Names/i6bp-fvbx',
+            'links_to_file': False,
+            'language': "en",
+        }
+        self.asset.owner = self.user2
+        self.asset.save()
+        self.assertEqual(DataSet.objects.count(), 0)
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        uri = '/api/0.1/datasets/assets/%s/' % (self.asset.asset_id)
         resp = self.api_client.post(uri, format='json', data=post_data)
         self.assertHttpUnauthorized(resp)
         self.assertEqual(DataSet.objects.count(), 0)
+
+    def test_post_list_with_asset_nonexistant_asset(self):
+        """Test that dataset creation fails when a asset matching
+        the specified asset_id doesn't exist"""
+        post_data = {
+            'title': "Test Dataset",
+            'description': "A test dataset",
+            'url': 'https://data.cityofchicago.org/Transportation/Chicago-Street-Names/i6bp-fvbx',
+            'links_to_file': False,
+            'language': "en",
+        }
+        nonexistant_asset_id = '15844bc0d5c911e19b230800200c9a66'
+        self.assertEqual(DataSet.objects.count(), 0)
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        uri = '/api/0.1/datasets/assets/%s/' % (nonexistant_asset_id)
+        resp = self.api_client.post(uri, format='json', data=post_data)
+        self.assertHttpNotFound(resp)
+        self.assertEqual(DataSet.objects.count(), 0)
+
+    def test_delete_detail_for_asset(self):
+        """
+        Test that a user can disassociate a datasets from an asset
+        """
+        for dataset_attr in self.dataset_attrs:
+            self.datasets.append(create_external_dataset(**dataset_attr))
+        self.asset.datasets.add(self.datasets[0], self.datasets[1])
+        self.asset.save()
+        self.assertEqual(len(self.asset.datasets.all()), 2)
+        disassociate_dataset = self.datasets[0]
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        uri = '/api/0.1/datasets/assets/%s/%s/' % (self.asset.asset_id,
+                disassociate_dataset.dataset_id)
+        resp = self.api_client.delete(uri)
+        self.assertHttpAccepted(resp)
+        try:
+            # Test that we didn't delete the dataset
+            dataset = DataSet.objects.get(
+                    dataset_id=disassociate_dataset.dataset_id)
+            self.assertNotEqual(dataset.status, 'deleted') 
+            # Refresh the asset
+            asset = Asset.objects.get_subclass(asset_id=self.asset.asset_id)
+            # Check that the dataset is no longer associated
+            self.assertNotIn(disassociate_dataset, asset.datasets.all())
+            # Check that we didn't accidently clobber other
+            # datasets associated with the asset
+            self.assertEqual(asset.datasets.all().count(), 1)
+            self.assertIn(self.datasets[1], asset.datasets.select_subclasses())
+        except DataSet.DoesNotExist:
+            self.fail("Data set was removed, it should only have been disassociated")
+
+    def test_delete_detail_for_asset_unauthorized(self):
+        """
+        Test that a user cannot disassociate datasets from another user's asset
+        """
+        for dataset_attr in self.dataset_attrs:
+            self.datasets.append(create_external_dataset(**dataset_attr))
+        self.asset.datasets.add(self.datasets[0], self.datasets[1])
+        self.asset.owner = self.user2
+        self.asset.save()
+        self.assertEqual(len(self.asset.datasets.all()), 2)
+        disassociate_dataset = self.datasets[0]
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        uri = '/api/0.1/datasets/assets/%s/%s/' % (self.asset.asset_id,
+                disassociate_dataset.dataset_id)
+        resp = self.api_client.delete(uri)
+        self.assertHttpUnauthorized(resp)
+        self.assertEqual(len(self.asset.datasets.all()), 2)
+
+    def test_delete_detail_for_asset_not_found(self):
+        """
+        Test that a user cannot disassociate datasets from another user's asset
+        """
+        for dataset_attr in self.dataset_attrs:
+            self.datasets.append(create_external_dataset(**dataset_attr))
+        self.asset.datasets.add(self.datasets[0], self.datasets[1])
+        self.asset.owner = self.user2
+        self.asset.save()
+        self.assertEqual(len(self.asset.datasets.all()), 2)
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        uri = '/api/0.1/datasets/assets/%s/%s/' % (self.asset.asset_id,
+                'this-is-not-a-uuid')
+        resp = self.api_client.delete(uri)
+        self.assertHttpNotFound(resp)
+        self.assertEqual(len(self.asset.datasets.all()), 2)
+
+    def test_non_delete_detail_for_assets(self):
+        """
+        Test that methods other than delete aren't supported for the asset
+        detail
+        """
+        for dataset_attr in self.dataset_attrs:
+            self.datasets.append(create_external_dataset(**dataset_attr))
+        self.asset.datasets.add(self.datasets[0], self.datasets[1])
+        self.asset.save()
+        self.assertEqual(len(self.asset.datasets.all()), 2)
+        disassociate_dataset = self.datasets[0]
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        uri = '/api/0.1/datasets/assets/%s/%s/' % (self.asset.asset_id,
+                disassociate_dataset.dataset_id)
+        resp = self.api_client.get(uri)
+        self.assertHttpMethodNotAllowed(resp)
+        resp = self.api_client.post(uri, format='json', data={})
+        self.assertHttpMethodNotAllowed(resp)
+        resp = self.api_client.put(uri, format='json', data={})
+        self.assertHttpMethodNotAllowed(resp)
 
     def test_delete_detail_file(self):
         """

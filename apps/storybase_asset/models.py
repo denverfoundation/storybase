@@ -9,7 +9,7 @@ from django.contrib.sites.models import Site
 from django.core.files import File
 from django.core.cache import cache
 from django.db import models
-from django.db.models.signals import pre_save, post_delete
+from django.db.models.signals import pre_save, post_delete, m2m_changed
 from django.utils.html import strip_tags
 from django.utils.text import truncate_words
 from django.utils.translation import ugettext_lazy as _
@@ -557,11 +557,30 @@ class LocalImageAsset(Asset):
             return thumbnail.url
 
 
+def add_dataset_to_story(sender, **kwargs):
+    """
+    When datasets are added to an asset, also add them to the assets' stories
+
+    This is meant to be connected to the m2m_changed signal for
+    Asset.datasets.through
+    """
+    action = kwargs.get('action')
+    if action == 'post_add':
+        model = kwargs.get('model')
+        instance = kwargs.get('instance')
+        pk_set = kwargs.get('pk_set')
+        datasets = model.objects.filter(pk__in=pk_set)
+        for story in instance.stories.all():
+            for dataset in datasets:
+                story.datasets.add(dataset)
+
+
 # Hook up some signals so the publication date gets changed
 # on status changes
 pre_save.connect(set_date_on_published, sender=ExternalAsset)
 pre_save.connect(set_date_on_published, sender=HtmlAsset)
-pre_save.connect(set_date_on_published, sender=LocalImageAsset)
+pre_save.connect(set_date_on_published, sender=LocalImageAsset) 
+m2m_changed.connect(add_dataset_to_story, sender=Asset.datasets.through)
 
 
 class DefaultImageMixin(object):

@@ -304,6 +304,8 @@ class DataSetResource(DataUriResourceMixin, TranslatedModelResource):
         # Hide the underlying id
         excludes = ['id']
 
+        related_detail_allowed_methods = ['delete']
+
     def detail_uri_kwargs(self, bundle_or_obj):
         """
         Given a ``Bundle`` or an object (typically a ``Model`` instance),
@@ -331,8 +333,13 @@ class DataSetResource(DataUriResourceMixin, TranslatedModelResource):
     def apply_request_kwargs(self, obj_list, bundle, **kwargs):
         filters = {}
         story_id = kwargs.get('story_id')
+        asset_id = kwargs.get('asset_id')
+
         if story_id:
             filters['stories__story_id'] = story_id
+
+        if asset_id:
+            filters['assets__asset_id'] = asset_id
 
         new_obj_list = obj_list.filter(**filters)
 
@@ -341,11 +348,23 @@ class DataSetResource(DataUriResourceMixin, TranslatedModelResource):
     def prepend_urls(self):
         return [
             url(r"^(?P<resource_name>%s)/stories/(?P<story_id>[0-9a-f]{32,32})%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
+            url(r"^(?P<resource_name>%s)/assets/(?P<asset_id>[0-9a-f]{32,32})%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
+            url(r"^(?P<resource_name>%s)/stories/(?P<story_id>[0-9a-f]{32,32})/(?P<dataset_id>[0-9a-f]{32,32})%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_related_detail'), name="api_dispatch_related_detail"),
+            url(r"^(?P<resource_name>%s)/assets/(?P<asset_id>[0-9a-f]{32,32})/(?P<dataset_id>[0-9a-f]{32,32})%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_related_detail'), name="api_dispatch_related_detail"),
         ]
 
     def obj_create(self, bundle, **kwargs):
         story_id = kwargs.get('story_id')
-        if story_id:
+        asset_id = kwargs.get('asset_id')
+
+        if asset_id:
+            try:
+                asset = Asset.objects.get(asset_id=asset_id) 
+                if not asset.has_perm(bundle.request.user, 'change'):
+                    raise ImmediateHttpResponse(response=http.HttpUnauthorized("You are not authorized to change the asset matching the provided asset ID"))
+            except ObjectDoesNotExist:
+                raise ImmediateHttpResponse(response=http.HttpNotFound("An asset matching the provided asset ID could not be found"))
+        elif story_id:
             try:
                 story = Story.objects.get(story_id=story_id) 
                 if not story.has_perm(bundle.request.user, 'change'):
@@ -361,10 +380,11 @@ class DataSetResource(DataUriResourceMixin, TranslatedModelResource):
         bundle = super(DataSetResource, self).obj_create(
             bundle, **kwargs)
 
-        if story_id:
+        if asset_id:
+            asset.datasets.add(bundle.obj)
+        elif story_id:
             # Associate the newly created dataset with the story
             story.datasets.add(bundle.obj)
-            story.save()
 
         return bundle
 
@@ -385,3 +405,39 @@ class DataSetResource(DataUriResourceMixin, TranslatedModelResource):
         # Exclude the filename field from the output
         del bundle.data['filename']
         return bundle
+
+    def dispatch_related_detail(self, request, **kwargs):
+        # This is defined as a separate method
+        # so dispatch will check which method is allowed separately
+        # from the other method handlers
+        return self.dispatch('related_detail', request, **kwargs)
+
+    def delete_related_detail(self, request, **kwargs):
+        bundle = Bundle(request=request)
+        dataset_id = kwargs.get('dataset_id')
+        story_id = kwargs.pop('story_id', None)
+        asset_id = kwargs.pop('asset_id', None)
+
+        if asset_id:
+            try:
+                asset = Asset.objects.get(asset_id=asset_id) 
+                if not asset.has_perm(bundle.request.user, 'change'):
+                    raise ImmediateHttpResponse(response=http.HttpUnauthorized("You are not authorized to change the asset matching the provided asset ID"))
+            except ObjectDoesNotExist:
+                raise ImmediateHttpResponse(response=http.HttpNotFound("An asset matching the provided asset ID could not be found"))
+        elif story_id:
+            try:
+                story = Story.objects.get(story_id=story_id) 
+                if not story.has_perm(bundle.request.user, 'change'):
+                    raise ImmediateHttpResponse(response=http.HttpUnauthorized("You are not authorized to change the story matching the provided story ID"))
+            except ObjectDoesNotExist:
+                raise ImmediateHttpResponse(response=http.HttpNotFound("A story matching the provided story ID could not be found"))
+
+        self.obj_get(bundle, dataset_id=dataset_id)
+
+        if asset_id:
+            asset.datasets.remove(bundle.obj)
+        elif story_id:
+            story.datasets.remove(bundle.obj)
+
+        return http.HttpNoContent()
