@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.10.5
+~~~~~~
+
+* Fix broken viewer in IE < 9 due to lack of support for Array.indexOf (#766)
+
 0.10.4
 ~~~~~~
 
