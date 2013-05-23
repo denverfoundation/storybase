@@ -246,7 +246,7 @@
           context.previous_section.title = this.previousSection.get('title');
         }
         context.totalSectionsNum = this.sections.length;
-        context.currentSectionNum = this.sections.models.indexOf(this.activeSection) + 1;
+        context.currentSectionNum = this.sections.indexOf(this.activeSection) + 1;
         
         this.$el.html(this.template(context));
         return this;
