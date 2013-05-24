@@ -3880,6 +3880,9 @@
       }
       else {
         this.collection = this.model.datasets;
+        // Since the dataset collection has been initialized, assume its
+        // also been already fetched from the server.
+        this._collectionFetched = true;
       }
     },
 
