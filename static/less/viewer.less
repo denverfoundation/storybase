@@ -464,3 +464,37 @@
     .button-reset;
   }
 }
+
+// Styles that apply to both the builder and viewer
+.story-viewer .section, .story-builder .edit-section {
+  // Asset data set list
+  .datasets-label {
+    font-weight: bold;
+    margin: 0.25em 0 !important;
+  }
+
+  ul.datasets {
+    list-style: none;
+    margin: 0 0 0 2em;
+    text-indent: -.8em;
+    padding-left: 0 !important;
+    width: 95%;
+
+    li {
+      list-style-type: none !important;
+      padding-bottom: 0.25em;
+
+      a {
+        &:before { 
+          font-family: FontAwesome; 
+          display: inline-block;
+          padding-right: 0.5em;
+        }
+        // Use the icon-external icon from FontAwesome
+        &.view:before { content: "\f08e"; }
+        // Use the icon-download-alt icon from FontAwesome
+        &.download:before { content: "\f019"; }
+      }
+    }
+  }
+}

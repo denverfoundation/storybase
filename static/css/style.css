@@ -913,6 +913,10 @@ body.story-builder .guider .x_button:after{font-family:"FontAwesome";content:"\f
 .story-viewer legend{font-size:1.5em;}
 #story-viewer-modal #modal-controls{position:absolute;top:0;right:10px;padding:10px;text-align:right;}#story-viewer-modal #modal-controls a{color:#fff;text-decoration:none;}
 #story-viewer-modal button.simplemodal-close{border:none;background:none;padding:0;margin:0;width:auto;text-align:center;text-shadow:none;}#story-viewer-modal button.simplemodal-close:hover{background:none;}
+.story-viewer .section .datasets-label,.story-builder .edit-section .datasets-label{font-weight:bold;margin:0.25em 0 !important;}
+.story-viewer .section ul.datasets,.story-builder .edit-section ul.datasets{list-style:none;margin:0 0 0 2em;text-indent:-0.8em;padding-left:0 !important;width:95%;}.story-viewer .section ul.datasets li,.story-builder .edit-section ul.datasets li{list-style-type:none !important;padding-bottom:0.25em;}.story-viewer .section ul.datasets li a:before,.story-builder .edit-section ul.datasets li a:before{font-family:FontAwesome;display:inline-block;padding-right:0.5em;}
+.story-viewer .section ul.datasets li a.view:before,.story-builder .edit-section ul.datasets li a.view:before{content:"\f08e";}
+.story-viewer .section ul.datasets li a.download:before,.story-builder .edit-section ul.datasets li a.download:before{content:"\f019";}
 body.explorer{}body.explorer #explorer{position:relative;width:100%;}
 body.explorer .list-view .box{background:none;width:100%;padding-top:12px;padding-bottom:9px;border-top:1px dotted #777777;}
 body.explorer .list-view .box img{float:left;display:inline;margin-right:16px;width:160px;margin-top:8px;}
