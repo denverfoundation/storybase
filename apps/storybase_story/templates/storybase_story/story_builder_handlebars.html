@@ -248,44 +248,46 @@ Handlebars.js templates for story builder Backbone application
 <div class="uploadprogress"></div>
 </script>
 
-<script type="text/x-handlebars-template" id="asset-dataset-list-template">
+<script type="text/x-handlebars-template" id="asset-dataset-list-container-template">
 <div class="wrapper"> 
-  <div class="dataset-list-container">
-    {{#if collectionFetched}}
-    {{#if datasets}}
-    <table class="datasets">
-      <thead>
-        <tr>
-          <th>Data Set</th>
-          <th></th>
-        </tr>
-      </thead>
-      <tbody>
-        {{#each datasets}}
-        <tr class="dataset">
-          <td>
-            <p class="title">{{title}}</p>
-            {{#if source}}
-            <p class="source">{{gettext "Source"}}: {{source}}</p>
-            {{/if}}
-            <p class="url"><a href="{{download_url}}">{{gettext "Download data"}}</a></p>
-          </td>
-          <td><a class="remove-dataset" data-dataset-id="{{dataset_id}}" href="#">{{gettext "Remove"}}</a></td>
-        </tr>
-        {{/each}}
-      </tbody>
-    </table>
-    {{else}}
-    <p>{{gettext "There are no datasets"}}</p>
-    {{/if}}
-    <button class="add-dataset">{{gettext "Add Dataset"}}</button>
-    {{else}}
-    <p>{{gettext "Fetching datasets ..."}}</p>
-    {{/if}}
-    <button type="reset">{{gettext "Cancel"}}</button>
-  </div>
+  <div class="dataset-list-container"></div>
   <div class="add-dataset-form-container"></div>
 </div>
+</script>
+
+<script type="text/x-handlebars-template" id="asset-dataset-list-list-template">
+{{#if collectionFetched}}
+{{#if datasets}}
+<table class="datasets">
+  <thead>
+    <tr>
+      <th>Data Set</th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each datasets}}
+    <tr class="dataset">
+      <td>
+        <p class="title">{{title}}</p>
+        {{#if source}}
+        <p class="source">{{gettext "Source"}}: {{source}}</p>
+        {{/if}}
+        <p class="url"><a href="{{download_url}}">{{gettext "Download data"}}</a></p>
+      </td>
+      <td><a class="remove-dataset" data-dataset-id="{{dataset_id}}" href="#">{{gettext "Remove"}}</a></td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>
+{{else}}
+<p>{{gettext "There are no datasets"}}</p>
+{{/if}}
+<button class="add-dataset">{{gettext "Add Dataset"}}</button>
+{{else}}
+<p>{{gettext "Fetching datasets ..."}}</p>
+{{/if}}
+<button type="reset">{{gettext "Cancel"}}</button>
 </script>
 
 <script type="text/x-handlebars-template" id="featured-asset-template">

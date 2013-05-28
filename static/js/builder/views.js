@@ -3738,14 +3738,17 @@
   var AssetDataSetAddView = Views.AssetDataSetAddView = Backbone.View.extend({
     events: {
       'submit form': 'processForm',
+      'click [type="submit"]': 'clickSubmit',
       'click [type="reset"]': 'cancel'
     },
 
     initialize: function(options) {
       this.dispatcher = options.dispatcher;
-      this.form = new Backbone.Form({
-        schema: this.getFormSchema()
-      });
+      this.form = this.getForm();
+      // Action to be taken after the form is submitted. Default is
+      // 'close' which will hide this view. 'add' will show a blank
+      // form allowing the user to add another
+      this._postSaveAction = 'close'; 
     },
 
     /**
@@ -3762,13 +3765,42 @@
       return schema;
     },
 
+    getForm: function() {
+      return new Backbone.Form({
+        schema: this.getFormSchema()
+      });
+    },
+
+    resetForm: function() {
+      // BOOOKMARK
+      // Remove the old form from the DOM and remove event listeners
+      this.form.remove();
+      // Initialize a new form view
+      this.form = this.getForm();
+      // Re-render this view to add the new form to the DOM
+      return this.render();
+    },
+
     render: function() {
       this.$el.append(
         this.form.render().$el
             .append("<input type='reset' value='" + gettext("Cancel") + "' />")
-            .append("<input type='submit' value='" + gettext("Save") + "' />")
+            .append("<input type='submit' name='save' value='" + gettext("Save") + "' />")
+            .append("<input type='submit' name='save-and-add' value='" + gettext("Save and Add Another") + "' />")
       );
       return this;
+    },
+
+    /**
+     * Handler for clicking a submit button
+     */
+    clickSubmit: function(evt) {
+      if ($(evt.target).attr('name') === 'save-and-add') {
+        this._postSaveAction = 'add';
+      }
+      else {
+        this._postSaveAction = 'close'; 
+      }
     },
 
     /**
@@ -3783,6 +3815,7 @@
       evt.stopPropagation();
     },
 
+
     addDataSet: function(attrs, form) {
       var view = this;
       var file = null;
@@ -3790,6 +3823,10 @@
         success: function(model, response) {
           view.trigger('save:dataset', model);
           view.dispatcher.trigger('alert', 'success', "Data set added");
+          view.resetForm();
+          if (view._postSaveAction === 'close') {
+            view.trigger('hide');
+          }
         },
         error: function(model, response) {
           view.dispatcher.trigger('error', 'Error saving the data set');
@@ -3839,7 +3876,10 @@
 
   var AssetDataSetListView = Views.AssetDataSetListView = HandlebarsTemplateView.extend({
     options: {
-      templateSource: $('#asset-dataset-list-template').html()
+      templateSource: {
+        '__main': $('#asset-dataset-list-container-template').html(),
+        'list': $('#asset-dataset-list-list-template').html()
+      }
     },
 
     events: {
@@ -3849,19 +3889,20 @@
     },
 
     bindModelEvents: function() {
-      this.collection.on('add remove', this.render, this);
+      this.collection.on('add remove', this.renderList, this);
     },
 
     unbindModelEvents: function() {
-      this.collection.off('add remove', this.render, this);
+      this.collection.off('add remove', this.renderList, this);
     },
 
     bindSubviewEvents: function() {
-      this.addView.on('click:cancel', this.clickAddCancel, this);
+      // TODO: Hide this view entirely when a dataset has been saved
+      this.addView.on('click:cancel hide', this.clickAddCancel, this);
     },
 
     unbindSubviewEvents: function() {
-      this.addView.off('click:cancel', this.clickAddCancel, this);
+      this.addView.off('click:cancel hide', this.clickAddCancel, this);
     },
 
     /**
@@ -3907,8 +3948,28 @@
       this.unbindSubviewEvents();
     },
 
-    render: function() {
-      console.debug('Rendering DataSetListView');
+    hideAdd: function() {
+      this.addView.$el.hide();
+      return this;
+    },
+
+    showAdd: function() {
+      this.addView.$el.show();
+      return this;
+    },
+
+    hideList: function() {
+      this.$('.dataset-list-container').hide();
+      return this;
+    },
+
+    showList: function() {
+      this.$('.dataset-list-container').show();
+      return this;
+    },
+
+    renderList: function() {
+      var template = this.getTemplate('list');
       var context = {
         collectionFetched: this._collectionFetched
       };
@@ -3917,13 +3978,19 @@
         // If the collection has not yet been fetched,
         // defer rendering until the collection has
         // been fetched
-        this.collection.once('reset', this.render, this);
+        this.collection.once('reset', this.renderList, this);
       }
       else {
         context.datasets = this.collection.toJSON();
       }
-      this.$el.html(this.template(context));
+      this.$('.dataset-list-container').html(template(context));
       this.delegateEvents();
+      return this;
+    },
+
+    render: function() {
+      this.$el.html(this.template());
+      this.renderList();
       this.addView.setElement(this.$('.add-dataset-form-container')).
                   render().$el.hide();
       return this;
@@ -3936,13 +4003,11 @@
     },
 
     clickAdd: function(evt) {
-      this.$('.dataset-list-container').hide();
-      this.addView.$el.show();
+      this.hideList().showAdd();
     },
 
     clickAddCancel: function(evt) {
-      this.addView.$el.hide();
-      this.$('.dataset-list-container').show();
+      this.hideAdd().showList();
     },
     
     clickRemove: function(evt) {
@@ -3962,7 +4027,6 @@
     },
 
     setModel: function(model) {
-      console.debug('Setting model for DataSetListView');
       this.model = model;
       this._initCollection();
       this.bindModelEvents();
