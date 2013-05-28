@@ -229,18 +229,17 @@ class Asset(ImageRenderingMixin, TranslatedModel, LicensedModel,
         """Return an HTML list of associated datasets"""
         output = []
         if self.datasets.count():
-            download_label = _("Download the data")
-            output.append("<p class=\"datasets-label\">%s:</p>" %
+            output.append(u"<p class=\"datasets-label\">%s:</p>" %
                           label)
-            output.append("<ul class=\"datasets\">")
+            output.append(u"<ul class=\"datasets\">")
             for dataset in self.datasets.select_subclasses():
                 download_label = (_("Download the data") 
 				  if dataset.links_to_file
 				  else _("View the data"))
-                output.append("<li>%s <a href=\"%s\">%s</a></li>" % 
+                output.append(u"<li>%s <a href=\"%s\">%s</a></li>" % 
                               (dataset.title, dataset.download_url(),
                                download_label))
-            output.append("</ul>")
+            output.append(u"</ul>")
         return mark_safe(u'\n'.join(output))
 
     def full_caption_html(self, wrapper='figcaption'):
