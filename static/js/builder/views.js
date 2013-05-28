@@ -3735,6 +3735,16 @@
     }
   });
 
+  /**
+   * Form for adding a new data set and associating it with an asset
+   *
+   * Events:
+   *
+   * "create:dataset" (model, postSaveAction) - when the data set has been
+   * succesfully saved to the server. ``model`` is the data set that was saved. ``postSaveAction`` is the suggested
+   * action to take with the view. A value of ``add`` means to keep the view
+   * visible. A value of ``close`` means to hide the view.
+   */
   var AssetDataSetAddView = Views.AssetDataSetAddView = Backbone.View.extend({
     events: {
       'submit form': 'processForm',
@@ -3772,7 +3782,6 @@
     },
 
     resetForm: function() {
-      // BOOOKMARK
       // Remove the old form from the DOM and remove event listeners
       this.form.remove();
       // Initialize a new form view
@@ -3821,12 +3830,9 @@
       var file = null;
       var options = {
         success: function(model, response) {
-          view.trigger('save:dataset', model);
           view.dispatcher.trigger('alert', 'success', "Data set added");
           view.resetForm();
-          if (view._postSaveAction === 'close') {
-            view.trigger('hide');
-          }
+          view.trigger('create:dataset', model, view._postSaveAction);
         },
         error: function(model, response) {
           view.dispatcher.trigger('error', 'Error saving the data set');
@@ -3897,12 +3903,13 @@
     },
 
     bindSubviewEvents: function() {
-      // TODO: Hide this view entirely when a dataset has been saved
-      this.addView.on('click:cancel hide', this.clickAddCancel, this);
+      this.addView.on('click:cancel', this.clickAddCancel, this);
+      this.addView.on('create:dataset', this.handleAdd, this);
     },
 
     unbindSubviewEvents: function() {
-      this.addView.off('click:cancel hide', this.clickAddCancel, this);
+      this.addView.off('click:cancel', this.clickAddCancel, this);
+      this.addView.off('create:dataset', this.handleAdd, this);
     },
 
     /**
@@ -4008,6 +4015,19 @@
 
     clickAddCancel: function(evt) {
       this.hideAdd().showList();
+    },
+
+    /**
+     * Event handler for ``create:dataset`` event
+     */
+    handleAdd: function(dataset, postSaveAction) {
+      if (postSaveAction === 'close') {
+        // Hide the add data set subview and show the
+        // list of datasets
+        this.hideAdd().showList();
+      }
+      // Proxy the event upstream
+      this.trigger('create:dataset', dataset, postSaveAction);
     },
     
     clickRemove: function(evt) {
@@ -4194,6 +4214,38 @@
       },
 
       /**
+       * Event handler for clicking "cancel" button inside the data set list
+       * view
+       */
+      handleDataSetListCancel: function() {
+        this.setState('display').render();
+      },
+
+      /**
+       * Event handler for adding a new data set to the asset
+       */
+      handleCreateDataSet: function(dataset, postSaveAction) {
+        var view;
+        if (postSaveAction === 'close') {
+          // The user wants to close the add data set form
+          view = this;
+          // Refresh the asset model to get the updated rendered data set
+          // list (in the model's ``content`` attribute).
+          // Then switch to the display state and re-render
+          this.model.fetch({
+            success: function() {
+              view.setState('display').render();
+            },
+            error: function() {
+              // TODO: Handle this error in a more meaningful way, perhaps by
+              // showing an alert. For now, just render the old information 
+              view.setState('display').render();
+            }
+          });
+        }
+      },
+
+      /**
        * Initialize subviews for related data sets
        *
        * The first time this method is called, it creates a new instance 
@@ -4212,11 +4264,11 @@
               dispatcher: this.dispatcher
             });
             // If the cancel button is clicked inside the dataset
-            // list view, hide that view and show the display
+            // list view, or if a data set has been added and (without
+            // choosing to add another) hide the data set list view and show the display
             // view
-            this.datasetListView.on('click:cancel', function() {
-              this.setState('display').render();
-            }, this);
+            this.datasetListView.on('click:cancel', this.handleDataSetListCancel, this);
+            this.datasetListView.on('create:dataset', this.handleCreateDataSet, this);
           }
           else {
             // There's already a data set list view - reuse it
