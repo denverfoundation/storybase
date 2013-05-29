@@ -4021,13 +4021,13 @@
      * Event handler for ``create:dataset`` event
      */
     handleAdd: function(dataset, postSaveAction) {
+      // Proxy the event upstream
+      this.trigger('create:dataset', dataset, postSaveAction);
       if (postSaveAction === 'close') {
         // Hide the add data set subview and show the
         // list of datasets
         this.hideAdd().showList();
       }
-      // Proxy the event upstream
-      this.trigger('create:dataset', dataset, postSaveAction);
     },
     
     clickRemove: function(evt) {
@@ -4067,6 +4067,7 @@
           'edit': $('#section-asset-edit-template').html(),
           'upload': $('#asset-uploadprogress-template').html(),
           'select': $('#section-asset-select-type-template').html(),
+          'sync': $('#section-asset-sync-template').html(),
           'image-help': $('#image-help-template').html(),
           'text-help': $('#text-help-template').html(), 
           'video-help': $('#video-help-template').html()
@@ -4085,7 +4086,7 @@
         'drop': 'handleDrop'
       },
 
-      states: ['select', 'display', 'edit'],
+      states: ['select', 'display', 'edit', 'editData', 'sync'],
 
       initialize: function() {
         this.compileTemplates();
@@ -4229,6 +4230,7 @@
         if (postSaveAction === 'close') {
           // The user wants to close the add data set form
           view = this;
+          this.setState('sync').render();
           // Refresh the asset model to get the updated rendered data set
           // list (in the model's ``content`` attribute).
           // Then switch to the display state and re-render
