@@ -282,6 +282,7 @@ Handlebars.js templates for story builder Backbone application
         <p class="url"><a href="{{download_url}}">{{gettext "Download data"}}</a></p>
       </td>
       <td><a class="remove-dataset" data-dataset-id="{{dataset_id}}" href="#">{{gettext "Remove"}}</a></td>
+      <td><a class="edit-dataset" data-dataset-id="{{dataset_id}}" href="#">{{gettext "Edit"}}</a></td>
     </tr>
     {{/each}}
   </tbody>
@@ -293,7 +294,7 @@ Handlebars.js templates for story builder Backbone application
 {{else}}
 <p>{{gettext "Fetching datasets ..."}}</p>
 {{/if}}
-<button type="reset">{{gettext "Cancel"}}</button>
+<button type="reset">{{gettext "Close"}}</button>
 </script>
 
 <script type="text/x-handlebars-template" id="featured-asset-template">

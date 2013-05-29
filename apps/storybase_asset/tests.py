@@ -1100,6 +1100,60 @@ class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         self.assertHttpUnauthorized(resp)
         self.assertEqual(DataSet.objects.count(), 1)
 
+    def _assert_put_unauthorized(self, resp, dataset, put_data):
+        self.assertHttpUnauthorized(resp)
+        dataset = DataSet.objects.get_subclass(pk=dataset.pk)
+        self.assertNotEqual(dataset.title, put_data['title'])
+        self.assertNotEqual(dataset.url, put_data['url'])
+
+    def test_put_detail_unauthenticated(self):
+        """Test that an unauthenticated user can't update a dataset"""
+        put_data = {
+            'title': "Chicago Street Names",
+            'description': "List of all Chicago streets with suffixes and minimum and maximum address numbers.",
+            'url': 'https://data.cityofchicago.org/Transportation/Chicago-Street-Names/i6bp-fvbx',
+            'links_to_file': False,
+            'language': "en",
+        }
+        dataset = create_external_dataset(**self.dataset_attrs[0])
+        self.assertEqual(DataSet.objects.count(), 1)
+        uri = '/api/0.1/datasets/%s/' % (dataset.dataset_id)
+        resp = self.api_client.put(uri, format='json', data=put_data)
+        self._assert_put_unauthorized(resp, dataset, put_data)
+
+    def test_put_detail_unauthorized(self):
+        put_data = {
+            'title': "Chicago Street Names",
+            'description': "List of all Chicago streets with suffixes and minimum and maximum address numbers.",
+            'url': 'https://data.cityofchicago.org/Transportation/Chicago-Street-Names/i6bp-fvbx',
+            'links_to_file': False,
+            'language': "en",
+        }
+        self.dataset_attrs[0]['owner'] = self.user2
+        dataset = create_external_dataset(**self.dataset_attrs[0])
+        self.assertEqual(DataSet.objects.count(), 1)
+        uri = '/api/0.1/datasets/%s/' % (dataset.dataset_id)
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        resp = self.api_client.put(uri, format='json', data=put_data)
+        self._assert_put_unauthorized(resp, dataset, put_data)
+
+    def test_put_detail_url(self):
+        dataset = create_external_dataset(**self.dataset_attrs[0])
+        self.assertEqual(DataSet.objects.count(), 1)
+        uri = '/api/0.1/datasets/%s/' % (dataset.dataset_id)
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        resp = self.api_client.get(uri, format='json')
+        put_data = self.deserialize(resp)
+        put_data['title'] = "New Title"
+        put_data['url'] = "http://floodlightproject.org/data.csv"
+        resp = self.api_client.put(uri, format='json', data=put_data)
+        self.assertHttpAccepted(resp)
+        dataset = DataSet.objects.get_subclass(pk=dataset.pk)
+        self.assertEqual(dataset.title, put_data['title'])
+        self.assertEqual(dataset.url, put_data['url'])
+
 
 class DataSetApiTest(TestCase):
     """ Test the public API for creating DataSets """

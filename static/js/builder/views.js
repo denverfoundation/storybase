@@ -3735,6 +3735,60 @@
     }
   });
 
+  var DataSetFormView = Backbone.View.extend({
+    /**
+     * Get the Backbone Forms schema for the data set form
+     */
+    getFormSchema: function(model) {
+      var schema;
+      
+      // Start with the schema defined in either the model instance
+      // or class
+      if (_.isUndefined(model)) {
+        schema = DataSet.prototype.schema();
+      }
+      else {
+        schema = model.schema();
+      }
+
+      // Update some labels
+      schema.title.title = gettext("Data set name");
+      schema.source.title = gettext("Data source");
+      if (!_.isUndefined(schema.url)) {
+        schema.url.title = gettext("Link to a data set");
+      }
+      if (!_.isUndefined(schema.file)) {
+        schema.file.title = gettext("Or, upload a data file from your computer");
+      }
+
+      return schema;
+    },
+
+    /**
+     * Handler for form submission
+     */
+    processForm: function(evt) {
+      var errors = this.form.validate();
+      if (!errors) {
+        this.handleSave(this.form.getValue(), evt.target);
+      }
+      else {
+        // Remove any previous error messages
+        this.form.$('.bbf-model-errors').remove();
+        if (!_.isUndefined(errors._others)) {
+          this.form.$el.prepend('<ul class="bbf-model-errors">');
+          _.each(errors._others, function(msg) {
+            this.form.$('.bbf-model-errors').append('<li>' + msg + '</li>');
+          }, this);
+        }
+      }
+      evt.preventDefault();
+      evt.stopPropagation();
+    },
+
+    handleSave: function(attrs, form) { }
+  });
+
   /**
    * Form for adding a new data set and associating it with an asset
    *
@@ -3745,7 +3799,7 @@
    * action to take with the view. A value of ``add`` means to keep the view
    * visible. A value of ``close`` means to hide the view.
    */
-  var AssetDataSetAddView = Views.AssetDataSetAddView = Backbone.View.extend({
+  var AssetDataSetAddView = Views.AssetDataSetAddView = DataSetFormView.extend({
     events: {
       'submit form': 'processForm',
       'click [type="submit"]': 'clickSubmit',
@@ -3759,20 +3813,7 @@
       // 'close' which will hide this view. 'add' will show a blank
       // form allowing the user to add another
       this._postSaveAction = 'close'; 
-    },
-
-    /**
-     * Get the Backbone Forms schema for the data set addition form
-     */
-    getFormSchema: function() {
-      // Start with the schema defined in the model
-      var schema = DataSet.prototype.schema();
-      // Update some labels
-      schema.title.title = gettext("Data set name");
-      schema.source.title = gettext("Data source");
-      schema.url.title = gettext("Link to a data set");
-      schema.file.title = gettext("Or, upload a data file from your computer");
-      return schema;
+      this.handleSave = this.addDataSet;
     },
 
     getForm: function() {
@@ -3849,26 +3890,81 @@
       this.collection.create(attrs, options);
     },
 
+    unsetCollection: function() {
+      this.collection = undefined;
+    },
+
+    setCollection: function(collection) {
+      this.collection = collection;
+    }
+  });
+
+  var DataSetEditView = Views.DataSetEditView = DataSetFormView.extend({
+    className: 'edit-dataset-form-container',
+
+    events: {
+      'submit form': 'processForm',
+      'click [type="reset"]': 'cancel'
+    },
+
+    initialize: function(options) {
+      this.dispatcher = options.dispatcher;
+      this.form = new Backbone.Form({
+        model: this.model,
+        schema: this.getFormSchema(this.model)
+      });
+      this.handleSave = this.saveDataSet;
+    },
+
+    render: function() {
+      this.$el.append(
+        this.form.render().$el
+            .append("<input type='reset' value='" + gettext("Cancel") + "' />")
+            .append("<input type='submit' name='save' value='" + gettext("Save Changes") + "' />")
+      );
+      return this;
+    },
+
     /**
-     * Handler for form submission
+     * Handler for clicking the "Cancel" button
      */
-    processForm: function(evt) {
-      var errors = this.form.validate();
-      if (!errors) {
-        this.addDataSet(this.form.getValue(), evt.target);
-      }
-      else {
-        // Remove any previous error messages
-        this.form.$('.bbf-model-errors').remove();
-        if (!_.isUndefined(errors._others)) {
-          this.form.$el.prepend('<ul class="bbf-model-errors">');
-          _.each(errors._others, function(msg) {
-            this.form.$('.bbf-model-errors').append('<li>' + msg + '</li>');
-          }, this);
-        }
-      }
-      evt.preventDefault();
+    cancel: function(evt) {
+      this.trigger('click:cancel');
+      // Without the call to stopPropagation, the click event will bubble
+      // up to the parent view's event handlers.  This might be desireable
+      // if we just want to jump to the display view instead of back to the
+      // dataset list view
       evt.stopPropagation();
+    },
+
+    saveDataSet: function(attrs, form) {
+      var view = this;
+      var file = null;
+      var options = {
+        success: function(model, response) {
+          view.dispatcher.trigger('alert', 'success', "Data set saved");
+          view.trigger('save:dataset', model);
+        },
+        error: function(model, response) {
+          view.dispatcher.trigger('error', 'Error saving the data set');
+        }
+      };
+
+      if (!_.isUndefined(attrs.file)) {
+        _.extend(options, {
+          upload: true,
+          form: $(form)
+        });
+      }
+      else if (_.has(attrs, 'file')) { 
+        // The attributes have a ``file`` key, but it's undefined.
+        // This means we're not updating the file field.  Just throw away
+        // the undefined file attribute so we keep whatever value is in the
+        // model
+        delete attrs.file;
+      }
+
+      this.model.save(attrs, options);
     },
 
     unsetCollection: function() {
@@ -3889,9 +3985,10 @@
     },
 
     events: {
-      'click button[type="reset"]': 'clickCancel',
+      'click button[type="reset"]': 'clickClose',
       'click .add-dataset': 'clickAdd',
-      'click .remove-dataset': 'clickRemove'
+      'click .remove-dataset': 'clickRemove',
+      'click .edit-dataset': 'clickEdit'
     },
 
     bindModelEvents: function() {
@@ -3940,6 +4037,8 @@
       // been fetched yet. This is used to defer rendering
       // until after the collection has been fetched.
       this._collectionFetched = false;
+      // Have the datasets been changed
+      this.hasChanged = false;
       this._initCollection();
       this.addView = new AssetDataSetAddView({
         collection: this.collection,
@@ -3955,6 +4054,13 @@
       this.unbindSubviewEvents();
     },
 
+    scrollTo: function($el) {
+      // TODO: Refine scrolling behavior
+      $('html, body').animate({
+        scrollTop: $el.offset().top
+      }, 500);
+    },
+
     hideAdd: function() {
       this.addView.$el.hide();
       return this;
@@ -3962,6 +4068,7 @@
 
     showAdd: function() {
       this.addView.$el.show();
+      this.scrollTo(this.addView.$el);
       return this;
     },
 
@@ -3995,6 +4102,13 @@
       return this;
     },
 
+    renderEdit: function() {
+      if (this.editView) {
+        this.$('.wrapper').append(this.editView.render().$el);
+      }
+      return this;
+    },
+
     render: function() {
       this.$el.html(this.template());
       this.renderList();
@@ -4003,17 +4117,24 @@
       return this;
     },
 
-    clickCancel: function(evt) {
-      // Tell other views that may be listening to this view
-      // that the cancel button was clicked
-      this.trigger('click:cancel');
+    /**
+     * Tell upstream views that the user has requested that
+     * this view be closed
+     */
+    triggerClose: function() {
+      this.trigger('close', this.hasChanged);
+      this.hasChanged = false;
+    },
+
+    clickClose: function(evt) {
+      this.triggerClose();
     },
 
     clickAdd: function(evt) {
       this.hideList().showAdd();
     },
 
-    clickAddCancel: function(evt) {
+    clickAddCancel: function() {
       this.hideAdd().showList();
     },
 
@@ -4021,13 +4142,29 @@
      * Event handler for ``create:dataset`` event
      */
     handleAdd: function(dataset, postSaveAction) {
+      this.hasChanged = true;
       // Proxy the event upstream
-      this.trigger('create:dataset', dataset, postSaveAction);
       if (postSaveAction === 'close') {
+        this.triggerClose();
         // Hide the add data set subview and show the
         // list of datasets
         this.hideAdd().showList();
       }
+    },
+
+    closeEdit: function(dataset) {
+      this.editView.remove();
+      this.editView = null;
+      this.hideAdd().showList();
+    },
+
+    /**
+     * Event handler for ``save:dataset`` event
+     */
+    handleEdit: function(dataset) {
+      this.hasChanged = true;
+      this.renderList();
+      this.closeEdit();
     },
     
     clickRemove: function(evt) {
@@ -4036,6 +4173,20 @@
       this.collection.remove(model, {
         sync: true
       });
+      evt.preventDefault();
+    },
+
+    clickEdit: function(evt) {
+      var datasetId = $(evt.target).data('dataset-id');
+      var model = this.collection.get(datasetId);
+      this.editView = new DataSetEditView({
+        model: model,
+        dispatcher: this.dispatcher
+      });
+      this.editView.once('click:cancel', this.closeEdit, this);
+      this.editView.once('save:dataset', this.handleEdit, this);
+      this.hideAdd().hideList().renderEdit();
+      this.scrollTo(this.editView.$el);
       evt.preventDefault();
     },
 
@@ -4215,19 +4366,11 @@
       },
 
       /**
-       * Event handler for clicking "cancel" button inside the data set list
-       * view
-       */
-      handleDataSetListCancel: function() {
-        this.setState('display').render();
-      },
-
-      /**
        * Event handler for adding a new data set to the asset
        */
-      handleCreateDataSet: function(dataset, postSaveAction) {
+      handleDataSetListClose: function(refresh) {
         var view;
-        if (postSaveAction === 'close') {
+        if (refresh) {
           // The user wants to close the add data set form
           view = this;
           this.setState('sync').render();
@@ -4244,6 +4387,9 @@
               view.setState('display').render();
             }
           });
+        }
+        else {
+          this.setState('display').render();
         }
       },
 
@@ -4269,8 +4415,7 @@
             // list view, or if a data set has been added and (without
             // choosing to add another) hide the data set list view and show the display
             // view
-            this.datasetListView.on('click:cancel', this.handleDataSetListCancel, this);
-            this.datasetListView.on('create:dataset', this.handleCreateDataSet, this);
+            this.datasetListView.on('close', this.handleDataSetListClose, this);
           }
           else {
             // There's already a data set list view - reuse it

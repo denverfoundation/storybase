@@ -214,6 +214,17 @@
             url: {type: 'Text', validators: ['url']},
             file: {type: Forms.File}
           };
+
+          if (!this.isNew()) {
+            // For a saved model, only show the fields that have a value set.
+            _.each(['file', 'url'], function(field) {
+              var value = this.get(field);
+              if (!value) {
+                delete schema[field];
+              }
+            }, this);
+          }
+
           return schema;
         }
       },

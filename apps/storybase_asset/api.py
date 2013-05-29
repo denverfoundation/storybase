@@ -296,7 +296,7 @@ class DataSetResource(DataUriResourceMixin, TranslatedModelResource):
         queryset = DataSet.objects.select_subclasses()
         resource_name = 'datasets'
         list_allowed_methods = ['get', 'post']
-        detail_allowed_methods = ['get', 'delete']
+        detail_allowed_methods = ['get', 'delete', 'put']
         authentication = Authentication()
         authorization = PublishedOwnerAuthorization()
         validation = DataSetValidation()
@@ -389,6 +389,18 @@ class DataSetResource(DataUriResourceMixin, TranslatedModelResource):
         return bundle
 
     def hydrate_file(self, bundle):
+        if bundle.obj.dataset_id and hasattr(bundle.obj, 'file'):
+            # The object is an existing model. Check if the
+            # file attribute has changed, and if not, just
+            # load the existing value
+            try:
+                f = File.objects.get(localdataset__dataset_id=bundle.obj.dataset_id)
+                if f.file.url == bundle.data['file']:
+                    bundle.data["file"] = f
+                    return bundle
+            except Exception:
+                pass
+
         if ('file' in bundle.data and
             isinstance(bundle.data['file'], UploadedFile)):
             # The file data is an uploaded file, create a file object
