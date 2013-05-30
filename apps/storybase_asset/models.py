@@ -10,6 +10,7 @@ from django.core.files import File
 from django.core.cache import cache
 from django.db import models
 from django.db.models.signals import pre_save, post_delete, m2m_changed
+from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.utils.text import truncate_words
 from django.utils.translation import ugettext_lazy as _
@@ -227,23 +228,13 @@ class Asset(ImageRenderingMixin, TranslatedModel, LicensedModel,
 
     def dataset_html(self, label=_("Get the Data")):
         """Return an HTML list of associated datasets"""
-        output = []
-        if self.datasets.count():
-            output.append(u"<p class=\"datasets-label\">%s</p>" %
-                          label)
-            output.append(u"<ul class=\"datasets\">")
-            for dataset in self.datasets.select_subclasses():
-                if dataset.links_to_file:
-                    link_label = _("Download the data")
-                    link_class = "download"
-                else:
-                    link_label = _("View the data") 
-                    link_class = "view"
-                output.append(u"<li><a href=\"%s\" title=\"%s\" class=\"%s\">%s</a></li>" % 
-                              (dataset.download_url(), link_label, link_class,
-                               dataset.title))
-            output.append(u"</ul>")
-        return mark_safe(u'\n'.join(output))
+        if not self.datasets.count():
+            return u""
+        
+        return render_to_string("storybase_asset/asset_datasets.html", {
+            'label': label,
+            'datasets': self.datasets.select_subclasses()
+        })
 
     def full_caption_html(self, wrapper='figcaption'):
         """Return the caption and attribution text together"""

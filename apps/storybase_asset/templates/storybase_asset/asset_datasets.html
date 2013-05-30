@@ -1,0 +1,7 @@
+{% load i18n %}
+<p class="datasets-label">{{ label }}</p>
+<ul class="datasets">
+  {% for dataset in datasets %}
+  <li><span class="title">{{ dataset.title }}</span> <a href="{{ dataset.download_url }}" title="{% if dataset.links_to_file %}{% trans "Download the data" %}{% else %}{% trans "View the data" %}{% endif %}"><i class="{% if dataset.links_to_file %}icon-download-alt{% else %}icon-external-link{% endif %}"></i></a></li>
+  {% endfor %}
+</ul>
