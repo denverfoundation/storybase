@@ -4054,10 +4054,17 @@
       this.unbindSubviewEvents();
     },
 
+    /**
+     * Scroll the browser window so the top of an element is visible
+     * just below the header.
+     */
     scrollTo: function($el) {
-      // TODO: Refine scrolling behavior
+      var $header = $('header:first');
+      // Assume header is fixed, so the top is at 0
+      var headerBottom = $header.outerHeight();
+      var scrollTo = $el.offset().top - headerBottom;
       $('html, body').animate({
-        scrollTop: $el.offset().top
+        scrollTop: scrollTo 
       }, 500);
     },
 
