@@ -1196,43 +1196,31 @@ button.preview {
 }
 
 .section-asset-controls {
-  display: none;
   top: 0;
   right: 0;
   position: absolute;
   margin: 0;
   padding: 10px 10px 0 0;
   text-align: right;
-  z-index: 998;
-  
+  // The controls need to be above asset content, but below the layout
+  // selector
+  z-index: 200;
+ 
+  // TODO: If we decide to definitely use text instead of icons,
+  // delete img/builder/asset-edit-remove-icons.png 
   li {
     list-style: none !important;
-    float:left;
+    display: inline-block;
     margin-right:5px;
-        
-    a {
-      background:url(../img/builder/asset-edit-remove-icons.png);
-      width:21px;
-      height:21px;
-      text-indent:100%;
-      display:block;
-      overflow:hidden;
-      position: relative;
 
-      &.edit {
-        background-position:0 0;
-      }
-      &.remove {
-        background-position:0 -21px;
-        position: relative;
-        top:2px;
+    a {
+      text-decoration: none;
+
+      &:hover {
+        text-decoration: underline;
       }
     }
   }
-}
-
-.storybase-container-placeholder:hover .section-asset-controls {
-  display: block;
 }
 
 #app .bbf-form {

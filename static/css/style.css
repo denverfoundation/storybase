@@ -753,9 +753,7 @@ body.story-builder .storybase-container-placeholder .help{display:block;position
 body.story-builder .storybase-container-placeholder#right .help{left:auto;right:-24px;}
 body.story-builder .asset-help-container{background-color:#fff;max-width:450px;}
 body.story-builder .storybase-container-placeholder [name=body]{height:150px;}
-body.story-builder .section-asset-controls{display:none;top:0;right:0;position:absolute;margin:0;padding:10px 10px 0 0;text-align:right;z-index:998;}body.story-builder .section-asset-controls li{list-style:none !important;float:left;margin-right:5px;}body.story-builder .section-asset-controls li a{background:url(../img/builder/asset-edit-remove-icons.png);width:21px;height:21px;text-indent:100%;display:block;overflow:hidden;position:relative;}body.story-builder .section-asset-controls li a.edit{background-position:0 0;}
-body.story-builder .section-asset-controls li a.remove{background-position:0 -21px;position:relative;top:2px;}
-body.story-builder .storybase-container-placeholder:hover .section-asset-controls{display:block;}
+body.story-builder .section-asset-controls{top:0;right:0;position:absolute;margin:0;padding:10px 10px 0 0;text-align:right;z-index:200;}body.story-builder .section-asset-controls li{list-style:none !important;display:inline-block;margin-right:5px;}body.story-builder .section-asset-controls li a{text-decoration:none;}body.story-builder .section-asset-controls li a:hover{text-decoration:underline;}
 body.story-builder #app .bbf-form{overflow:hidden;padding:20px;}body.story-builder #app .bbf-form fieldset{border:none;}
 body.story-builder #app .bbf-form .bbf-field{list-style-type:none;}body.story-builder #app .bbf-form .bbf-field label{float:none;width:100%;}
 body.story-builder #app .bbf-form .bbf-field .bbf-editor{margin-left:0;width:100%;}body.story-builder #app .bbf-form .bbf-field .bbf-editor input[type=text],body.story-builder #app .bbf-form .bbf-field .bbf-editor input[type=password],body.story-builder #app .bbf-form .bbf-field .bbf-editor textarea{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;-ms-box-sizing:border-box;width:100%;}
