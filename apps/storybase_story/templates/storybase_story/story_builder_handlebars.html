@@ -243,7 +243,7 @@ Handlebars.js templates for story builder Backbone application
 <div class="wrapper">
 <ul class="section-asset-controls">
     {{#if acceptsData}}<li><a href="#" class="edit-data">{{gettext "Data Sources"}}</a></li>{{/if}}
-    <li><a href="#" class="edit">{{gettext "Edit"}}</a></li>
+    <li><a href="#" class="edit">{{gettext "Edit"}} {{model.type}}</a></li>
     <li><a href="#" class="remove">{{gettext "Remove"}}</a></li>
 </ul>
 {{{model.content}}}
