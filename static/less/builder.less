@@ -1492,37 +1492,42 @@ button.preview {
   margin: 10px;
 }
 
-// Add Data View
-.data-view {
-  .container_12;
-}
+// Asset Data Set List 
+// TODO: Move this closer to the asset styles
 
 .datasets {
   margin: 2% 0;
   width: 100%;
-}
 
-.datasets th,
-.datasets td {
-  text-align: left;
-}
+  .col1 {
+    width: 75%;
+  }
 
-.datasets th {
-  font-weight: bold;
-  border-bottom: solid 2px;
-}
+  .col2 {
+    width: 25%;
+  }
 
-.datasets td {
-  padding: 6px 0;
-  border-bottom: 1px solid #CCCCCC;
+  th, td {
+    text-align: left;
+  }
+
+  th {
+    font-weight: bold;
+    border-bottom: solid 2px;
+  }
+
+  td {
+    padding: 6px;
+    border-bottom: 1px solid #CCCCCC;
+  }
+  
+  .url a {
+    text-decoration: none;
+  }
 }
 
 .dataset {
   padding: 1% 0;
-}
-
-.dataset p {
-  padding: 0;
 }
 
 // Legal agreement view
