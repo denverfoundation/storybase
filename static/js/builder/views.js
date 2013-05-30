@@ -4173,7 +4173,7 @@
       this.collection.remove(model, {
         sync: true
       });
-      evt.preventDefault();
+      this.hasChanged = true;
     },
 
     clickEdit: function(evt) {
@@ -4187,7 +4187,6 @@
       this.editView.once('save:dataset', this.handleEdit, this);
       this.hideAdd().hideList().renderEdit();
       this.scrollTo(this.editView.$el);
-      evt.preventDefault();
     },
 
     unsetModel: function() {
