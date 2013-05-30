@@ -74,9 +74,6 @@
         this.navigationView.render();
         this.$('.summary').show();
         this.$('.section').show();
-        // When images are finally loaded, resize the <figure> containers
-        // and the image captions to fit the images 
-        this.$el.imagesLoaded($.proxy(this.sizeFigCaptions, this));
         this.$('.storybase-share-widget').storybaseShare();
         this._rendered = true;
         this.trigger("render");
@@ -561,7 +558,7 @@
 
     // override to hook into our own render event.
     initialize: function() {
-      this.on('render', this.showActiveSection, this);
+      this.on('render', this.handleRendered, this);
       ViewerApp.prototype.initialize.apply(this, arguments);
     },
 
@@ -569,10 +566,17 @@
       return this.$('footer').offset().top;
     },
     
+    handleRendered: function() {
+      storybase.views.deferSrcLoad({ 
+        selector: 'iframe.sandboxed-asset', 
+        scope: this.$el
+      });
+      this.showActiveSection();
+    },
+    
     // Show the active section
     showActiveSection: function() {
       var $section = this.$('#' + this.activeSection.id);
-      //console.log('show active section: ' + $section.find('h2').html());
 
       this.showingConnectedStory = false;
       // Hide connected stories
@@ -581,6 +585,8 @@
       this.$('.section')
         .not($section.show())
         .hide();
+
+      storybase.views.loadDeferredAssetsAndAutosize({ scope: $section });
     },
 
     getLastSection: function() {
