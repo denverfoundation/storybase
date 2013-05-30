@@ -482,7 +482,7 @@
       list-style-type: none !important;
       padding-bottom: 0.25em;
 
-      .title, a {
+      a {
         display: inline-block;
         vertical-align: middle;
       }
@@ -494,6 +494,10 @@
 
       a {
         text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
       }
     }
   }

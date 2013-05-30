@@ -281,12 +281,12 @@ Handlebars.js templates for story builder Backbone application
     {{#each datasets}}
     <tr class="dataset">
       <td>
-        <span class="title">{{title}}</span>
+          <a href="{{download_url}}" class="title{{#if links_to_file}} external{{/if}}">{{title}}</a>
         {{#if source}}
         (<span class="source">{{source}}</span>)
         {{/if}}
       </td>
-      <td class="url"><a href="{{download_url}}" title="{{#if links_to_file}}{{gettext "Download the data"}}{{else}}{{gettext "View the data"}}{{/if}}"><i class="{{#if links_to_file}}icon-download-alt{{else}}icon-external-link{{/if}}"></i></a></td>
+      <td class="url"><a href="{{download_url}}" title="{{#if links_to_file}}{{gettext "Download the data"}}{{else}}{{gettext "View the data"}}{{/if}}" class="{{#if links_to_file}}external{{/if}}"><i class="{{#if links_to_file}}icon-download-alt{{else}}icon-external-link{{/if}}"></i></a></td>
       <td><button class="remove-dataset" data-dataset-id="{{dataset_id}}" href="#">{{gettext "Remove"}}</button></td>
       <td><button class="edit-dataset" data-dataset-id="{{dataset_id}}" href="#">{{gettext "Edit"}}</button></td>
     </tr>
