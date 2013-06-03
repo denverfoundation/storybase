@@ -18,6 +18,7 @@
   var hasAnalytics = storybase.utils.hasAnalytics;
   var licenseParamsToStr = storybase.utils.licenseParamsToStr;
   var licenseStrToParams = storybase.utils.licenseStrToParams;
+  var openInNewWindow = storybase.utils.openInNewWindow;
   var prettyDate = storybase.utils.prettyDate;
   var HandlebarsTemplateMixin = storybase.views.HandlebarsTemplateMixin;
   var HandlebarsTemplateView = storybase.views.HandlebarsTemplateView;
@@ -130,6 +131,10 @@
       toolsContainerEl: '#title-bar-contents',
       visibleSteps: VISIBLE_STEPS, 
       workflowContainerEl: '#workflow-bar-contents'
+    },
+
+    events: {
+      'click a.external': openInNewWindow
     },
 
     registerPartials: function() {
@@ -6189,8 +6194,7 @@
     id: 'published-buttons',
 
     events: {
-      'click .unpublish': 'handleUnpublish',
-      'click a.popup': 'handleView'
+      'click .unpublish': 'handleUnpublish'
     },
 
     options: {

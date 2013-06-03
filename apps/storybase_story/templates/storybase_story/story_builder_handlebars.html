@@ -281,14 +281,14 @@ Handlebars.js templates for story builder Backbone application
     {{#each datasets}}
     <tr class="dataset">
       <td>
-          <a href="{{download_url}}" class="title{{#if links_to_file}} external{{/if}}">{{title}}</a>
+          <a href="{{download_url}}" class="title external">{{title}}</a>
         {{#if source}}
         (<span class="source">{{source}}</span>)
         {{/if}}
       </td>
-      <td class="url"><a href="{{download_url}}" title="{{#if links_to_file}}{{gettext "Download the data"}}{{else}}{{gettext "View the data"}}{{/if}}" class="{{#if links_to_file}}external{{/if}}"><i class="{{#if links_to_file}}icon-download-alt{{else}}icon-external-link{{/if}}"></i></a></td>
-      <td><button class="remove-dataset" data-dataset-id="{{dataset_id}}" href="#">{{gettext "Remove"}}</button></td>
-      <td><button class="edit-dataset" data-dataset-id="{{dataset_id}}" href="#">{{gettext "Edit"}}</button></td>
+      <td class="url"><a href="{{download_url}}" title="{{#if links_to_file}}{{gettext "Download the data"}}{{else}}{{gettext "View the data"}}{{/if}}" class="external"><i class="{{#if links_to_file}}icon-download-alt{{else}}icon-external-link{{/if}}"></i></a></td>
+      <td><button class="remove-dataset" data-dataset-id="{{dataset_id}}">{{gettext "Remove"}}</button></td>
+      <td><button class="edit-dataset" data-dataset-id="{{dataset_id}}">{{gettext "Edit"}}</button></td>
     </tr>
     {{/each}}
   </tbody>
@@ -411,7 +411,7 @@ Handlebars.js templates for story builder Backbone application
 <script type="text/x-handlebars-template" id="published-buttons-template">
 <p>{{gettext "Congratulations, your story has been published."}}</p>
 <div class="centered button-container">
-    <a href="{{url}}" class="view-story popup button hot">{{gettext "View my story"}}</a>
+    <a href="{{url}}" class="view-story external button hot">{{gettext "View my story"}}</a>
     <button type="button" class="unpublish">{{gettext "Unpublish My Story"}}</button>
 </div>
 </script>
