@@ -16,7 +16,7 @@ from storybase.tests.base import FixedTestApiClient, FileCleanupMixin
 from storybase_story.models import (create_section, create_story,
     Container, SectionAsset, SectionLayout, Story)
 from storybase_asset.models import (Asset, ExternalAsset, HtmlAsset,
-    HtmlAssetTranslation, LocalImageAsset, DataSet, LocalDataSet,
+    HtmlAssetTranslation, ExternalDataSet, DataSet,
     create_html_asset, create_external_asset, create_local_image_asset,
     create_external_dataset)
 from storybase_asset.oembed.providers import GoogleSpreadsheetProvider
@@ -160,14 +160,14 @@ class AssetModelTest(TestCase):
         """
         dataset_title = ("Metro Denver Free and Reduced Lunch Trends by "
                          "School District")
-        dataset_url = 'http://www.box.com/s/erutk9kacq6akzlvqcdr'
+        dataset_url = 'http://floodlightproject.org/test_data.csv'
         asset = create_html_asset(type='image', title='Test Asset')
         dataset = create_external_dataset(
             title=dataset_title,
             url=dataset_url,
             source="Colorado Department of Education for Source",
             attribution="The Piton Foundation",
-	    links_to_file=True)
+	    )
         asset.datasets.add(dataset)
         asset.save()
         self.assertIn("Download the data", asset.dataset_html()) 
@@ -186,7 +186,7 @@ class AssetModelTest(TestCase):
             url=dataset_url,
             source="Colorado Department of Education for Source",
             attribution="The Piton Foundation",
-	    links_to_file=False)
+	    )
         asset.datasets.add(dataset)
         asset.save()
         self.assertIn("View the data", asset.dataset_html()) 
@@ -1153,6 +1153,22 @@ class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         dataset = DataSet.objects.get_subclass(pk=dataset.pk)
         self.assertEqual(dataset.title, put_data['title'])
         self.assertEqual(dataset.url, put_data['url'])
+
+
+class ExternalDataSetModelTest(TestCase):
+    def test_url_is_for_file(self):
+        self.assertFalse(ExternalDataSet.url_is_for_file('http://www.box.com/s/erutk9kacq6akzlvqcdr'))
+        self.assertTrue(ExternalDataSet.url_is_for_file("http://floodlightproject.org/data.csv"))
+
+    def test_set_links_to_file(self):
+        """
+        Test that ``links_to_file`` attribute is properly set when a 
+        DataSet is created
+        """
+        dataset = create_external_dataset(title="Test DataSet", url="http://www.box.com/s/erutk9kacq6akzlvqcdr")
+        self.assertFalse(dataset.links_to_file)
+        dataset = create_external_dataset(title="Test DataSet", url="http://floodlightproject.org/data.csv")
+        self.assertTrue(dataset.links_to_file)
 
 
 class DataSetApiTest(TestCase):

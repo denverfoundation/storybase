@@ -1,4 +1,5 @@
 """Models for story content assets"""
+import mimetypes
 import os
 
 import lxml.html
@@ -772,9 +773,26 @@ class ExternalDataSet(DataSet):
     """A data set stored on a different system from the application"""
     url = models.URLField()
 
+    @classmethod
+    def url_is_for_file(cls, url):
+        """Guess whether a URL represents a downloadable file"""
+        (url_type, encoding) = mimetypes.guess_type(url)
+        if url_type is None:
+            return False
+        
+        return True
+
     def download_url(self):
         """Returns the URL to the downloadable version of the data set"""
         return self.url 
+
+    def save(self, *args, **kwargs):
+        # Take a guess at whether the url links to a file and set the
+        # flag accordingly
+        # TODO: Do this somewhere where a user can override it in the
+        # admin
+        self.links_to_file = self.url_is_for_file(self.url)
+        super(ExternalDataSet, self).save(*args, **kwargs)
 
 
 class LocalDataSet(DataSet):
