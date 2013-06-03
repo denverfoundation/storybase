@@ -14,7 +14,7 @@
         <div class="bbf-editor">{{editor}}</div>\
         <div class="bbf-help">{{help}}</div>\
       </li>\
-    ',
+    '
   });
 
 
@@ -77,5 +77,37 @@
     if (!value.length) {
       return err;
     }
+  };
+
+  /**
+   * Update a field's schema definiton with properties
+   * relevant to a required field
+   */
+  storybase.forms.makeRequired = function(fieldDef) {
+    var validators = fieldDef.validators || [];
+    var fieldClass = fieldDef.fieldClass || '';
+    var editorAttrs = fieldDef.editorAttrs || {};
+
+    validators.push('required');
+    fieldClass += ' required'; 
+    editorAttrs.required = 'required';
+
+    return _.extend(fieldDef, {
+      validators: validators,
+      fieldClass: fieldClass,
+      editorAttrs: editorAttrs
+    });
+  };
+
+  /**
+   * Output text for a form field's label, taking
+   * into account whehter or not the field is required.
+   */
+  storybase.forms.getLabelText = function(s, required) {
+    var labelText = s;
+    if (required) {
+      labelText += " (" + gettext("required") + ")";
+    }
+    return labelText;
   };
 })(_, Backbone, storybase);

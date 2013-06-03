@@ -13,6 +13,7 @@
   var Section = storybase.models.Section;
   var Story = storybase.models.Story;
   var Tags = storybase.collections.Tags;
+  var getLabelText = storybase.forms.getLabelText;
   var capfirst = storybase.utils.capfirst;
   var geocode = storybase.utils.geocode;
   var hasAnalytics = storybase.utils.hasAnalytics;
@@ -3757,16 +3758,64 @@
       }
 
       // Update some labels
-      schema.title.title = gettext("Data set name");
+      schema.title.title = getLabelText(gettext("Data set name"), true);
       schema.source.title = gettext("Data source");
       if (!_.isUndefined(schema.url)) {
         schema.url.title = gettext("Link to a data set");
       }
       if (!_.isUndefined(schema.file)) {
-        schema.file.title = gettext("Or, upload a data file from your computer");
+        if (!_.isUndefined(schema.url)) {
+          schema.file.title = gettext("Or, upload a data file from your computer");
+        }
+        else {
+          schema.file.title = gettext("Change the data file by uploading a new data file from your computer");
+        }
+      }
+
+      // Add the required text to the content fields' label only if
+      // one field is present, i.e. when an existing DataSet is being
+      // edited
+      if (!_.isUndefined(schema.url) && _.isUndefined(schema.file)) {
+        schema.url.title = getLabelText(schema.url.title, true); 
       }
 
       return schema;
+    },
+
+    getForm: function(model, options) {
+      var schema = this.getFormSchema(model);
+      var contentFields = [];
+      var contentFieldset;
+
+      // HACK: There isn't a good way to show that one field OR the other
+      // is required.  For now, use a fieldset legend to indicate 
+      // requirements, but clean this up in #767
+      if (schema.url) {
+        contentFields.push('url');
+      }
+      if (schema.file) {
+        contentFields.push('file');
+      }
+      if (contentFields.length === 1) {
+        contentFieldset = contentFields;
+      }
+      else {
+        contentFieldset = {
+          legend: gettext("One of these is required"),
+          fields: contentFields
+        };
+      }
+      
+      options = options || {}; 
+      _.extend(options, {
+        schema: schema,
+        model: model,
+        fieldsets: [
+          ['title', 'source'],
+          contentFieldset
+        ]
+      });
+      return new Backbone.Form(options);
     },
 
     /**
@@ -3821,11 +3870,6 @@
       this.handleSave = this.addDataSet;
     },
 
-    getForm: function() {
-      return new Backbone.Form({
-        schema: this.getFormSchema()
-      });
-    },
 
     resetForm: function() {
       // Remove the old form from the DOM and remove event listeners
@@ -3914,10 +3958,7 @@
 
     initialize: function(options) {
       this.dispatcher = options.dispatcher;
-      this.form = new Backbone.Form({
-        model: this.model,
-        schema: this.getFormSchema(this.model)
-      });
+      this.form = this.getForm(this.model);
       this.handleSave = this.saveDataSet;
     },
 

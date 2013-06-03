@@ -11,6 +11,7 @@
   var Models = storybase.models;
 
   var Forms = storybase.forms;
+  var makeRequired = Forms.makeRequired;
 
   /**
    * Mixin that expects the model attributes to be within an objects attribute
@@ -209,10 +210,19 @@
       schema: function() {
         if (!_.isUndefined(Forms)) {
           var schema = {
-            title: {type: 'Text', validators: ['required']},
-            source: {type: 'Text', validators: []},
-            url: {type: 'Text', validators: ['url']},
-            file: {type: Forms.File}
+            title: makeRequired({
+              type: 'Text'
+            }),
+            source: {
+              type: 'Text'
+            },
+            url: {
+              type: 'Text',
+              validators: ['url']
+            },
+            file: {
+              type: Forms.File
+            }
           };
 
           if (!this.isNew()) {
@@ -223,6 +233,13 @@
                 delete schema[field];
               }
             }, this);
+
+            // Mark a standalone URL field as required.  Don't mark the file URL as
+            // required because the user doesn't have to specify a new
+            // file
+            if (schema.url) {
+              makeRequired(schema.url);
+            }
           }
 
           return schema;

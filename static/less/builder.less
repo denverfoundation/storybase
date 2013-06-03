@@ -1519,6 +1519,15 @@ button.preview {
   padding: 1% 0;
 }
 
+// HACK: Use legend to show that one or the other field
+// is required
+// TODO: Remove this when #767 is implemented
+.add-dataset-form-container, .edit-dataset-form-container {
+  legend {
+    padding-bottom: 8px;
+  }
+}
+
 // Legal agreement view
 #share-legal #permission ul {
   margin: 1em 0;

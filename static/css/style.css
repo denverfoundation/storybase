@@ -795,6 +795,7 @@ body.story-builder .datasets th{font-weight:bold;border-bottom:solid 2px;}
 body.story-builder .datasets td{padding:6px;border-bottom:1px solid #CCCCCC;}
 body.story-builder .datasets .url a{text-decoration:none;}
 body.story-builder .dataset{padding:1% 0;}
+body.story-builder .add-dataset-form-container legend,body.story-builder .edit-dataset-form-container legend{padding-bottom:8px;}
 body.story-builder #share-legal #permission ul{margin:1em 0;padding:0 0 0 40px;}
 body.story-builder #share-taxonomy select{width:300px;}
 body.story-builder #taxonomy{width:50%;float:left;}body.story-builder #taxonomy .select2-input{min-width:200px;}
