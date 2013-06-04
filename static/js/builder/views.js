@@ -3758,22 +3758,26 @@
         schema = DataSet.prototype.schema();
       }
 
-      // Update some labels
+      // Update some labels and help text
+      // TODO: Refine this microcopy
       schema.title.title = getLabelText(gettext("Data set name"), true);
       schema.source.title = gettext("Data source");
+      schema.source.help = gettext("The organization or entity that created the data set.");
       if (schema.url) {
-        schema.url.title = gettext("Link to a data set");
+        schema.url.title = gettext("Data URL");
+        schema.url.help = gettext("Enter the URL of a data set hosted on a web site or in the cloud. Alternately, you can upload a file below.");
       }
       if (schema.file) {
+        schema.file.title = gettext("Data file");
         if (schema.url) {
           // Both the file and url fields should be shown, i.e. creating a new
           // model
-          schema.file.title = gettext("Or, upload a data file from your computer");
+          schema.file.help = gettext("Upload a data file from your computer. Alternately, you can provide a link to a data set above.");
         }
         else {
           // Only the file field is present, i.e. editing an existing model
           filename = _.last(model.get('file').split('/'));
-          schema.file.title = gettext("Change the data file by uploading a new data file from your computer.") + " "+  gettext("Current file is") + " " + filename;
+          schema.file.help = gettext("Current file is") + " <em>" + filename + ".</em> " + gettext("Change the data file by uploading a new data file from your computer.");
         }
       }
 
@@ -3793,20 +3797,22 @@
       var contentFieldset;
 
       // HACK: There isn't a good way to show that one field OR the other
-      // is required.  For now, use a fieldset legend to indicate 
-      // requirements, but clean this up in #767
+      // is required. Separate out the metadata and content fields in
+      // anticipation of cleaning this up in #767
       if (schema.url) {
         contentFields.push('url');
       }
       if (schema.file) {
         contentFields.push('file');
       }
+
+      // Editing an existing DataSet, so only one content field or the
+      // other will be present
       if (contentFields.length === 1) {
         contentFieldset = contentFields;
       }
       else {
         contentFieldset = {
-          legend: gettext("One of these is required"),
           fields: contentFields
         };
       }
