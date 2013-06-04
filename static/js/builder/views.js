@@ -3747,28 +3747,33 @@
      */
     getFormSchema: function(model) {
       var schema;
+      var filename;
       
       // Start with the schema defined in either the model instance
       // or class
-      if (_.isUndefined(model)) {
-        schema = DataSet.prototype.schema();
+      if (model) {
+        schema = model.schema();
       }
       else {
-        schema = model.schema();
+        schema = DataSet.prototype.schema();
       }
 
       // Update some labels
       schema.title.title = getLabelText(gettext("Data set name"), true);
       schema.source.title = gettext("Data source");
-      if (!_.isUndefined(schema.url)) {
+      if (schema.url) {
         schema.url.title = gettext("Link to a data set");
       }
-      if (!_.isUndefined(schema.file)) {
-        if (!_.isUndefined(schema.url)) {
+      if (schema.file) {
+        if (schema.url) {
+          // Both the file and url fields should be shown, i.e. creating a new
+          // model
           schema.file.title = gettext("Or, upload a data file from your computer");
         }
         else {
-          schema.file.title = gettext("Change the data file by uploading a new data file from your computer");
+          // Only the file field is present, i.e. editing an existing model
+          filename = _.last(model.get('file').split('/'));
+          schema.file.title = gettext("Change the data file by uploading a new data file from your computer.") + " "+  gettext("Current file is") + " " + filename;
         }
       }
 
