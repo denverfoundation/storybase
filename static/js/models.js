@@ -11,7 +11,10 @@
   var Models = storybase.models;
 
   var Forms = storybase.forms;
-  var makeRequired = Forms.makeRequired;
+  var makeRequired;
+  if (Forms) {
+    makeRequired = Forms.makeRequired;
+  }
 
   /**
    * Mixin that expects the model attributes to be within an objects attribute
