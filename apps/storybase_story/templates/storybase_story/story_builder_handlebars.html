@@ -250,10 +250,6 @@ Handlebars.js templates for story builder Backbone application
 </div>
 </script>
 
-<script type="text/x-handlebars-template" id="asset-uploadprogress-template">
-<div class="uploadprogress"></div>
-</script>
-
 <script type="text/x-handlebars-template" id="asset-dataset-list-container-template">
 <div class="wrapper"> 
   <div class="dataset-list-container"></div>
@@ -301,6 +297,24 @@ Handlebars.js templates for story builder Backbone application
 <p>{{gettext "Fetching datasets ..."}}</p>
 {{/if}}
 <button type="reset">{{gettext "Close"}}</button>
+</script>
+
+<script type="text/x-handlebars-template" id="uploadprogress-template">
+<div class="uploadprogress">
+  <div class="meter">
+    <span style="width: 0%;"></span>
+  </div>
+</div>
+</script>
+
+<script type="text/x-handlebars-template" id="asset-uploadprogress-template">
+<div class="wrapper">
+    <div class="uploadprogress">
+      <div class="meter">
+        <span style="width: 0%;"></span>
+      </div>
+    </div>
+</div>
 </script>
 
 <script type="text/x-handlebars-template" id="featured-asset-template">

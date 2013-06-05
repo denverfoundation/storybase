@@ -110,6 +110,17 @@
     */
 
   /**
+   * Event callback for updating the progress of an upload.
+   */
+  var handleUploadProgress = function(evt) {
+    var percentage;
+    if (evt.lengthComputable) {
+      percentage = Math.round((evt.loaded * 100) / evt.total);
+      this.$('.uploadprogress .meter > span').width(percentage + '%');
+    }
+  };
+
+  /**
    * Master view for the story builder
    *
    * Dispatches to sub-views.
@@ -3741,7 +3752,13 @@
     }
   });
 
-  var DataSetFormView = Backbone.View.extend({
+  var DataSetFormView = HandlebarsTemplateView.extend({
+    options: {
+      templateSource: {
+        'upload': $('#uploadprogress-template').html()
+      }
+    },
+
     /**
      * Get the Backbone Forms schema for the data set form
      */
@@ -3829,6 +3846,16 @@
       return new Backbone.Form(options);
     },
 
+    initialize: function(options) {
+      this.dispatcher = options.dispatcher;
+      this.form = this.getForm(this.model);
+      this._formRemoved = false; // Has the form been removed during upload
+
+      this.handleUploadProgress = _.bind(handleUploadProgress, this);
+
+      this.compileTemplates();
+    },
+
     /**
      * Handler for form submission
      */
@@ -3851,7 +3878,33 @@
       evt.stopPropagation();
     },
 
-    handleSave: function(attrs, form) { }
+    handleSave: function(attrs, form) { },
+
+    /**
+     * Replace the form with an upload progress meter
+     *
+     * The form element is kept around so it can be reattached
+     * in the case of an error.
+     */
+    renderUploading: function() {
+      this.form.$el.detach();
+      this.$el.html(this.getTemplate('upload')());
+      return this;
+    },
+
+    /**
+     * Reattach the form
+     *
+     * This is needed after the form has been detached in
+     * ``renderUpload``.
+     */
+    reattachForm: function() {
+      this.$el.empty();
+      this.$el.append(this.form.$el);
+      // TODO: Is this needed since we're detaching the
+      // child element rather than removing it?
+      this.delegateEvents();
+    }
   });
 
   /**
@@ -3872,15 +3925,13 @@
     },
 
     initialize: function(options) {
-      this.dispatcher = options.dispatcher;
-      this.form = this.getForm();
+      DataSetFormView.prototype.initialize.apply(this, arguments);
       // Action to be taken after the form is submitted. Default is
       // 'close' which will hide this view. 'add' will show a blank
       // form allowing the user to add another
       this._postSaveAction = 'close'; 
       this.handleSave = this.addDataSet;
     },
-
 
     resetForm: function() {
       // Remove the old form from the DOM and remove event listeners
@@ -3892,6 +3943,7 @@
     },
 
     render: function() {
+      this.$('.uploadprogress').remove();
       this.$el.append(
         this.form.render().$el
             .append("<input type='reset' value='" + gettext("Cancel") + "' />")
@@ -3936,6 +3988,7 @@
           view.trigger('create:dataset', model, view._postSaveAction);
         },
         error: function(model, response) {
+          view.reattachForm(); 
           view.dispatcher.trigger('error', 'Error saving the data set');
         }
       };
@@ -3943,8 +3996,17 @@
       if (attrs.file) {
         _.extend(options, {
           upload: true,
-          form: $(form)
+          form: $(form),
+          progressHandler: this.handleUploadProgress
         });
+
+        if (!_.isString(attrs.file)) {
+          // If the file field is not a string (meaning it's a File object),
+          // remove the form so we can show the upload status.
+          // Otherwise, we need to keep the form around to be able to access the
+          // file input element when posting the form through a hidden IFRAME
+          this.renderUploading();
+        }
       }
 
       this.collection.create(attrs, options);
@@ -3968,12 +4030,12 @@
     },
 
     initialize: function(options) {
-      this.dispatcher = options.dispatcher;
-      this.form = this.getForm(this.model);
+      DataSetFormView.prototype.initialize.apply(this, arguments);
       this.handleSave = this.saveDataSet;
     },
 
     render: function() {
+      this.$('.uploadprogress').remove();
       this.$el.append(
         this.form.render().$el
             .append("<input type='reset' value='" + gettext("Cancel") + "' />")
@@ -4003,6 +4065,7 @@
           view.trigger('save:dataset', model);
         },
         error: function(model, response) {
+          view.reattachForm(); 
           view.dispatcher.trigger('error', 'Error saving the data set');
         }
       };
@@ -4010,8 +4073,17 @@
       if (!_.isUndefined(attrs.file)) {
         _.extend(options, {
           upload: true,
-          form: $(form)
+          form: $(form),
+          progressHandler: this.handleUploadProgress
         });
+
+        if (!_.isString(attrs.file)) {
+          // If the file field is not a string (meaning it's a File object),
+          // remove the form so we can show the upload status.
+          // Otherwise, we need to keep the form around to be able to access the
+          // file input element when posting the form through a hidden IFRAME
+          this.renderUploading();
+        }
       }
       else if (_.has(attrs, 'file')) { 
         // The attributes have a ``file`` key, but it's undefined.
@@ -4326,7 +4398,8 @@
           // associated data
           this.initializeDataViews(); 
         }
-        _.bindAll(this, 'handleUploadProgress', 'editCaption'); 
+        _.bindAll(this, 'editCaption'); 
+        this.handleUploadProgress = _.bind(handleUploadProgress, this);
         this.bindModelEvents();
         this.initializeForm();
         this.setInitialState();
@@ -4690,16 +4763,6 @@
         }
 
         this.model.save(attributes, options); 
-      },
-
-      /**
-       * Event callback for updating the progress of an upload.
-       */
-      handleUploadProgress: function(evt) {
-        if (evt.lengthComputable) {
-          var percentage = Math.round((evt.loaded * 100) / evt.total);
-          this.$('.uploadprogress').text(gettext('Uploading') + ': ' + percentage + '%');
-        }
       },
 
       /**

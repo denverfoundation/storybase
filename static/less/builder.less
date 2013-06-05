@@ -1802,3 +1802,27 @@ ol#publish-steps {
     right: 0px;
   }
 }
+
+// Upload progress bar
+// Based on a technique by Chris Coyier,
+// http://css-tricks.com/css3-progress-bars/
+.uploadprogress {
+  // Vertically center the progress bar
+  position: absolute;
+  top: 50%;
+  width: 100%;
+
+  .meter {
+    position: relative; 
+    width: 80%;
+    height: 20px;
+    border: @builder-input-border-width solid #bbb;
+    margin: -10px auto 0; 
+  }
+
+  .meter > span {
+    display: block;
+    height: 100%;
+    background-color: @highlight-blue;
+  }
+}
