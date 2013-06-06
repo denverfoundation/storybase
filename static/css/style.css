@@ -916,6 +916,7 @@ body.story-builder .uploadprogress .meter>span{display:block;height:100%;backgro
 .story-viewer .section .datasets-label,.story-builder .edit-section .datasets-label{font-weight:bold;margin:0.25em 0 !important;}
 .story-viewer .section ul.datasets,.story-builder .edit-section ul.datasets{list-style:none;width:95%;padding-left:0 !important;}.story-viewer .section ul.datasets li,.story-builder .edit-section ul.datasets li{list-style-type:none !important;padding-bottom:0.25em;}.story-viewer .section ul.datasets li .title,.story-builder .edit-section ul.datasets li .title{max-width:95%;word-wrap:break-word;}
 .story-viewer .section ul.datasets li a,.story-builder .edit-section ul.datasets li a{text-decoration:none;}.story-viewer .section ul.datasets li a:hover,.story-builder .edit-section ul.datasets li a:hover{text-decoration:underline;}
+.dataset-source{display:block;text-indent:0;color:#777777;font-size:12px;line-height:12px;}
 body.explorer{}body.explorer #explorer{position:relative;width:100%;}
 body.explorer .list-view .box{background:none;width:100%;padding-top:12px;padding-bottom:9px;border-top:1px dotted #777777;}
 body.explorer .list-view .box img{float:left;display:inline;margin-right:16px;width:160px;margin-top:8px;}
