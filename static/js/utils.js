@@ -222,7 +222,7 @@
      */
     openInNewWindow: function(evt) {
       // TODO: Use this instead of similar handlers elsewhere in the code
-      var url = $(evt.target).attr('href'); 
+      var url = $(evt.currentTarget).attr('href'); 
       var windowName = $(evt.target).data('new-window-name') || '_blank';
       window.open(url, windowName);
       evt.preventDefault();
