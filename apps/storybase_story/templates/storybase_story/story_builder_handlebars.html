@@ -261,14 +261,9 @@ Handlebars.js templates for story builder Backbone application
 {{#if collectionFetched}}
 {{#if datasets}}
 <table class="datasets">
-  <colgroup>
-    <col class="col1" span="1"></col>
-    <col class="col2" span="3"></col>
-  </colgroup>
   <thead>
     <tr>
-      <th>Data Set</th>
-      <th></th>
+      <th colspan="2">Data Set</th>
       <th></th>
       <th></th>
     </tr>
@@ -276,13 +271,13 @@ Handlebars.js templates for story builder Backbone application
   <tbody>
     {{#each datasets}}
     <tr class="dataset">
+      <td class="url"><a href="{{download_url}}" title="{{#if links_to_file}}{{gettext "Download the data"}}{{else}}{{gettext "View the data"}}{{/if}}" class="external"><i class="{{#if links_to_file}}icon-download-alt{{else}}icon-external-link{{/if}}"></i></a></td>
       <td>
           <a href="{{download_url}}" class="title external">{{title}}</a>
         {{#if source}}
         (<span class="source">{{source}}</span>)
         {{/if}}
       </td>
-      <td class="url"><a href="{{download_url}}" title="{{#if links_to_file}}{{gettext "Download the data"}}{{else}}{{gettext "View the data"}}{{/if}}" class="external"><i class="{{#if links_to_file}}icon-download-alt{{else}}icon-external-link{{/if}}"></i></a></td>
       <td><button class="remove-dataset" data-dataset-id="{{dataset_id}}">{{gettext "Remove"}}</button></td>
       <td><button class="edit-dataset" data-dataset-id="{{dataset_id}}">{{gettext "Edit"}}</button></td>
     </tr>

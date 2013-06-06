@@ -1224,6 +1224,43 @@ button.preview {
   }
 }
 
+// Asset Data Set List 
+
+table.datasets {
+  margin: 2% 0;
+  width: 100%;
+
+  .col1 {
+    width: 75%;
+  }
+
+  .col2 {
+    width: 25%;
+  }
+
+  th, td {
+    text-align: left;
+  }
+
+  th {
+    font-weight: bold;
+    border-bottom: solid 2px;
+  }
+
+  td {
+    padding: 6px;
+    border-bottom: 1px solid #CCCCCC;
+  }
+  
+  .url a {
+    text-decoration: none;
+  }
+}
+
+.dataset {
+  padding: 1% 0;
+}
+
 #app .bbf-form {
   overflow:hidden;
   padding:20px;
@@ -1481,52 +1518,6 @@ button.preview {
   margin: 10px;
 }
 
-// Asset Data Set List 
-// TODO: Move this closer to the asset styles
-
-.datasets {
-  margin: 2% 0;
-  width: 100%;
-
-  .col1 {
-    width: 75%;
-  }
-
-  .col2 {
-    width: 25%;
-  }
-
-  th, td {
-    text-align: left;
-  }
-
-  th {
-    font-weight: bold;
-    border-bottom: solid 2px;
-  }
-
-  td {
-    padding: 6px;
-    border-bottom: 1px solid #CCCCCC;
-  }
-  
-  .url a {
-    text-decoration: none;
-  }
-}
-
-.dataset {
-  padding: 1% 0;
-}
-
-// HACK: Use legend to show that one or the other field
-// is required
-// TODO: Remove this when #767 is implemented
-.add-dataset-form-container, .edit-dataset-form-container {
-  legend {
-    padding-bottom: 8px;
-  }
-}
 
 // Legal agreement view
 #share-legal #permission ul {
