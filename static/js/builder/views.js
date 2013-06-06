@@ -3760,7 +3760,7 @@
     },
 
     /**
-     * Get the Backbone Forms schema for the data set form
+     * Get the Backbone Forms schema for the dataset form
      */
     getFormSchema: function(model) {
       var schema;
@@ -3777,19 +3777,19 @@
 
       // Update some labels and help text
       // TODO: Refine this microcopy
-      schema.title.title = getLabelText(gettext("Data set name"), true);
-      schema.source.title = gettext("Data source");
-      schema.source.help = gettext("The organization or entity that created the data set.");
+      schema.title.title = getLabelText(gettext("Dataset name"), true);
+      schema.source.title = gettext("Source");
+      schema.source.help = gettext("The organization or entity that created the dataset");
       if (schema.url) {
         schema.url.title = gettext("Data URL");
-        schema.url.help = gettext("Enter the URL of a data set hosted on a web site or in the cloud. Alternately, you can upload a file below.");
+        schema.url.help = gettext("Enter the URL of a dataset hosted on a web site or in the cloud. Alternately, you can upload a file below.");
       }
       if (schema.file) {
         schema.file.title = gettext("Data file");
         if (schema.url) {
           // Both the file and url fields should be shown, i.e. creating a new
           // model
-          schema.file.help = gettext("Upload a data file from your computer. Alternately, you can provide a link to a data set above.");
+          schema.file.help = gettext("Upload a data file from your computer. Alternately, you can provide a link to a dataset above.");
         }
         else {
           // Only the file field is present, i.e. editing an existing model
@@ -3908,12 +3908,12 @@
   });
 
   /**
-   * Form for adding a new data set and associating it with an asset
+   * Form for adding a new dataset and associating it with an asset
    *
    * Events:
    *
-   * "create:dataset" (model, postSaveAction) - when the data set has been
-   * succesfully saved to the server. ``model`` is the data set that was saved. ``postSaveAction`` is the suggested
+   * "create:dataset" (model, postSaveAction) - when the dataset has been
+   * succesfully saved to the server. ``model`` is the dataset that was saved. ``postSaveAction`` is the suggested
    * action to take with the view. A value of ``add`` means to keep the view
    * visible. A value of ``close`` means to hide the view.
    */
@@ -3983,13 +3983,13 @@
       var file = null;
       var options = {
         success: function(model, response) {
-          view.dispatcher.trigger('alert', 'success', "Data set added");
+          view.dispatcher.trigger('alert', 'success', "Dataset added");
           view.resetForm();
           view.trigger('create:dataset', model, view._postSaveAction);
         },
         error: function(model, response) {
           view.reattachForm(); 
-          view.dispatcher.trigger('error', 'Error saving the data set');
+          view.dispatcher.trigger('error', 'Error saving the dataset');
         }
       };
 
@@ -4061,12 +4061,12 @@
       var file = null;
       var options = {
         success: function(model, response) {
-          view.dispatcher.trigger('alert', 'success', "Data set saved");
+          view.dispatcher.trigger('alert', 'success', "Dataset saved");
           view.trigger('save:dataset', model);
         },
         error: function(model, response) {
           view.reattachForm(); 
-          view.dispatcher.trigger('error', 'Error saving the data set');
+          view.dispatcher.trigger('error', 'Error saving the dataset');
         }
       };
 
@@ -4282,7 +4282,7 @@
       // Proxy the event upstream
       if (postSaveAction === 'close') {
         this.triggerClose();
-        // Hide the add data set subview and show the
+        // Hide the add dataset subview and show the
         // list of datasets
         this.hideAdd().showList();
       }
@@ -4502,15 +4502,15 @@
       },
 
       /**
-       * Event handler for adding a new data set to the asset
+       * Event handler for adding a new dataset to the asset
        */
       handleDataSetListClose: function(refresh) {
         var view;
         if (refresh) {
-          // The user wants to close the add data set form
+          // The user wants to close the add dataset form
           view = this;
           this.setState('sync').render();
-          // Refresh the asset model to get the updated rendered data set
+          // Refresh the asset model to get the updated rendered dataset
           // list (in the model's ``content`` attribute).
           // Then switch to the display state and re-render
           this.model.fetch({
@@ -4530,7 +4530,7 @@
       },
 
       /**
-       * Initialize subviews for related data sets
+       * Initialize subviews for related datasets
        *
        * The first time this method is called, it creates a new instance 
        * of the subviews. On subsequent calls, it binds the subviews to
@@ -4542,19 +4542,19 @@
       initializeDataViews: function() {
         if (this.model.acceptsData()) {
           if (_.isUndefined(this.datasetListView)) {
-            // There's no data set list view - create one
+            // There's no dataset list view - create one
             this.datasetListView = new AssetDataSetListView({
               model: this.model,
               dispatcher: this.dispatcher
             });
             // If the cancel button is clicked inside the dataset
-            // list view, or if a data set has been added and (without
-            // choosing to add another) hide the data set list view and show the display
+            // list view, or if a dataset has been added and (without
+            // choosing to add another) hide the dataset list view and show the display
             // view
             this.datasetListView.on('close', this.handleDataSetListClose, this);
           }
           else {
-            // There's already a data set list view - reuse it
+            // There's already a dataset list view - reuse it
             this.datasetListView.setModel(this.model);
           }
         }

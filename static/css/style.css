@@ -577,6 +577,7 @@ body.story-builder fieldset{border:none;}
 body.story-builder .bbf-form>fieldset>ul{margin:0 !important;padding:0 !important;}
 body.story-builder .field-body .bbf-editor{margin-left:0;width:100%;}
 body.story-builder .bbf-help{margin-bottom:1em;}
+body.story-builder .bbf-editor+.bbf-help{font-style:italic;color:#777777;}
 body.story-builder .bbf-error .bbf-help{color:#ee6666;}
 body.story-builder .bbf-error input{border-color:#ee6666;}
 body.story-builder ul.select2-choices{margin:0 !important;padding:0 !important;}
