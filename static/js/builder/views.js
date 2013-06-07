@@ -2316,7 +2316,7 @@
           if (assetJSON.thumbnail_url) {
             attrs.thumbnail_url = assetJSON.thumbnail_url;
           }
-          else if (assetJSON.body) {
+          else if (assetJSON.body && assetJSON.type === 'text') {
             attrs.body = assetJSON.body;
           }
 
