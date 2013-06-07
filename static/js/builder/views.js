@@ -5550,12 +5550,12 @@
 
     processForm: function(evt) {
       if (this.validate()) {
+        var values = this.form.getValue();
         this.dispatcher.trigger("select:license");
-        // Update the form data to the new value of the form, otherwise
-        // the new values will get clobbered when the form is re-rendered
-        // in render()
-        this.form.data = this.form.getValue();
-        this.render();
+        // Update the form values
+        _.each(values, function(value, attr) {
+          this.form.setValue(attr, value);
+        }, this);
       }
     },
 
