@@ -37,12 +37,20 @@ fieldset {
   color: @gray;
 }
 
-.bbf-error .bbf-help {
+.bbf-error, .bbf-error .bbf-help, .error label {
   color: @error-color;
 }
 
 .bbf-error input {
   border-color: @error-color;
+}
+
+.error .bbf-help {
+  margin-bottom: (@body-copy-margin-bottom * 0.5);
+}
+
+.error .bbf-error {
+  margin-bottom: @body-copy-margin-bottom;
 }
 
 // Select2 also uses an li for some of its elements

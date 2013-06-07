@@ -3837,7 +3837,9 @@
       options = options || {}; 
       _.extend(options, {
         schema: schema,
-        model: model,
+        // HACK: If a model instance wasn't specified, create an empty instance 
+        // to force the form to use model validation
+        model: model || new DataSet(),
         fieldsets: [
           ['title', 'source'],
           contentFieldset
@@ -4444,7 +4446,15 @@
         }
         if (this.form.schema.body) {
           if (type === 'text') {
-            this.form.schema.body.template = 'noLabelField';
+            //this.form.schema.body.template = 'noLabelField';
+            // BOOKMARK
+            this.form.schema.body.template = _.template('\
+                <li class="bbf-field field-{{key}}">\
+                  <div class="bbf-editor">{{editor}}</div>\
+                  <div class="bbf-help">{{help}}</div>\
+                </li>\
+              '
+              );
           }
           else if (type === 'quotation') {
             this.form.schema.body.title = capfirst(prefix + gettext("enter the quotation text"));

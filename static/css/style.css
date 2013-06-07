@@ -578,8 +578,10 @@ body.story-builder .bbf-form>fieldset>ul{margin:0 !important;padding:0 !importan
 body.story-builder .field-body .bbf-editor{margin-left:0;width:100%;}
 body.story-builder .bbf-help{margin-bottom:1em;}
 body.story-builder .bbf-editor+.bbf-help{font-style:italic;color:#777777;}
-body.story-builder .bbf-error .bbf-help{color:#ee6666;}
+body.story-builder .bbf-error,body.story-builder .bbf-error .bbf-help,body.story-builder .error label{color:#ee6666;}
 body.story-builder .bbf-error input{border-color:#ee6666;}
+body.story-builder .error .bbf-help{margin-bottom:0.5em;}
+body.story-builder .error .bbf-error{margin-bottom:1em;}
 body.story-builder ul.select2-choices{margin:0 !important;padding:0 !important;}
 body.story-builder li.select2-search-field,body.story-builder li.select2-search-choice{list-style-type:none !important;}
 body.story-builder .view-container{margin-left:auto;margin-right:auto;width:1020px;}

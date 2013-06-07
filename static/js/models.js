@@ -185,89 +185,93 @@
 
 
   var DataSet = Models.DataSet = FileUploadModel.extend({
-      idAttribute: "dataset_id",
+    idAttribute: "dataset_id",
 
-      /**
-       * Return the server URL for a model instance.
-       *
-       * This version always uses the collection's URL if the instance is new,
-       * otherwise it uses the value returned by the API.  This is needed
-       * because sometimes a collection will have a URL set to fetch a
-       * particular story's data sets.  By default, Backbone uses the 
-       * collection's URL to build an individual model's URL.  We don't want
-       * to do this.
-       */
-      url: function() {
-        var url = Backbone.Model.prototype.url.call(this);
-        if (!this.isNew() && this.has('resource_uri')) {
-          url = this.get('resource_uri');
-        }
-        // Make sure the URL ends in a '/'
-        url = url + (url.charAt(url.length - 1) == '/' ? '' : '/');
-        return url; 
-      },
-
-      /**
-       * Schema for backbone-forms
-       */
-      schema: function() {
-        if (!_.isUndefined(Forms)) {
-          var schema = {
-            title: makeRequired({
-              type: 'Text'
-            }),
-            source: {
-              type: 'Text'
-            },
-            url: {
-              type: 'Text',
-              validators: ['url']
-            },
-            file: {
-              type: Forms.File
-            }
-          };
-
-          if (!this.isNew()) {
-            // For a saved model, only show the fields that have a value set.
-            _.each(['file', 'url'], function(field) {
-              var value = this.get(field);
-              if (!value) {
-                delete schema[field];
-              }
-            }, this);
-
-            // Mark a standalone URL field as required.  Don't mark the file URL as
-            // required because the user doesn't have to specify a new
-            // file
-            if (schema.url) {
-              makeRequired(schema.url);
-            }
-          }
-
-          return schema;
-        }
-      },
-
-      /**
-       * Validate the model attributes
-       *
-       * Make sure only one of the content variables is set to a truthy
-       * value.
-       */
-      validate: function(attrs) {
-        var contentAttrNames = ['file', 'url'];
-        var found = [];
-        _.each(contentAttrNames, function(attrName) {
-          if (_.has(attrs, attrName) && attrs[attrName]) {
-            found.push(attrName);
-          }
-        });
-        if (found.length > 1) {
-          // TODO: Translate this
-          return "You must specify only one of the following values " + found.join(', ');
-        }
+    /**
+     * Return the server URL for a model instance.
+     *
+     * This version always uses the collection's URL if the instance is new,
+     * otherwise it uses the value returned by the API.  This is needed
+     * because sometimes a collection will have a URL set to fetch a
+     * particular story's data sets.  By default, Backbone uses the 
+     * collection's URL to build an individual model's URL.  We don't want
+     * to do this.
+     */
+    url: function() {
+      var url = Backbone.Model.prototype.url.call(this);
+      if (!this.isNew() && this.has('resource_uri')) {
+        url = this.get('resource_uri');
       }
+      // Make sure the URL ends in a '/'
+      url = url + (url.charAt(url.length - 1) == '/' ? '' : '/');
+      return url; 
+    },
+
+    /**
+     * Schema for backbone-forms
+     */
+    schema: function() {
+      if (!_.isUndefined(Forms)) {
+        var schema = {
+          title: makeRequired({
+            type: 'Text'
+          }),
+          source: {
+            type: 'Text'
+          },
+          url: {
+            type: 'Text',
+            validators: ['url']
+          },
+          file: {
+            type: Forms.File
+          }
+        };
+
+        if (!this.isNew()) {
+          // For a saved model, only show the fields that have a value set.
+          _.each(['file', 'url'], function(field) {
+            var value = this.get(field);
+            if (!value) {
+              delete schema[field];
+            }
+          }, this);
+
+          // Mark a standalone URL field as required.  Don't mark the file URL as
+          // required because the user doesn't have to specify a new
+          // file
+          if (schema.url) {
+            makeRequired(schema.url);
+          }
+        }
+
+        return schema;
+      }
+    },
+
+    /**
+     * Validate the model attributes
+     *
+     * Make sure only one of the content variables is set to a truthy
+     * value.
+     */
+    validate: function(attrs) {
+      var contentAttrNames = ['file', 'url'];
+      var found = [];
+      var msg = gettext("You must specify either the file or url field, but not both.");
+      _.each(contentAttrNames, function(attrName) {
+        if (_.has(attrs, attrName) && attrs[attrName]) {
+          found.push(attrName);
+        }
+      });
+
+      if (found.length !== 1) {
+        return {
+          file: msg,
+          url: msg
+        };
+      }
+    }
   });
 
 

@@ -8,16 +8,6 @@
   }
   var forms = storybase.forms;
 
-  Backbone.Form.setTemplates({
-    noLabelField: '\
-      <li class="bbf-field field-{{key}}">\
-        <div class="bbf-editor">{{editor}}</div>\
-        <div class="bbf-help">{{help}}</div>\
-      </li>\
-    '
-  });
-
-
   storybase.forms.File = Backbone.Form.editors.Text.extend({
     initialize: function(options) {
       Backbone.Form.editors.Base.prototype.initialize.call(this, options);
