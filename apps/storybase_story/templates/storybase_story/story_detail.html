@@ -37,7 +37,23 @@
 						<section class="summary">
 							{{ story.summary|safe }}
 						</section>
-						<a id="launch-story-viewer" class="button" href="{% url story_viewer slug=story.slug %}">{% trans "View Story" %}</a>
+                        <a id="launch-story-viewer" class="button" href="{% url story_viewer slug=story.slug %}">{% trans "View Story" %}</a>
+                        {% if story.asset_datasets %}
+                        <div class="btn-group datasets-button">
+                            <button class="btn dropdown-toggle" data-toggle="dropdown">
+                                {% trans "Get the Data" %}
+                                <span class="icon-caret-down"></span>
+                            </button>
+                            <ul class="dropdown-menu datasets icons">
+                                {% for dataset in story.asset_datasets %} 
+                                <li>
+                                  <a class="title external" href="{{ dataset.download_url }}" title="{% if dataset.links_to_file %}{% trans "Download the data" %}{% else %}{% trans "View the data" %}{% endif %}"><i class="{% if dataset.links_to_file %}icon-download-alt{% else %}icon-external-link{% endif %}"></i>{{ dataset.title }}</a>
+                                  {% if dataset.source %}<span class="dataset-source">{{ dataset.source }}{% endif %}</span>
+                                </li>
+                                {% endfor %}
+                            </ul>
+                        </div>
+                        {% endif %}
 					</section>
 				</div>
 			</section>
@@ -161,6 +177,7 @@
 
 {% block extrajs %}
 <script defer src="{{ STATIC_URL }}js/libs/jquery.simplemodal.1.4.2.min.js"></script>
+<script src="{{ STATIC_URL}}js/libs/bootstrap-dropdown.js"></script>
 <script type="text/javascript">
 $(document).ready(function () {
     // Display the story viewer in a modal dialog

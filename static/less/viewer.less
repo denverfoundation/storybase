@@ -503,9 +503,16 @@
 }
 
 .dataset-source {
-display: block;
-text-indent: 0;
-color: @gray;
-font-size: ceil(@base-font-size * 0.8);
-line-height: ceil(@base-font-size * 0.8);
+  display: block;
+  text-indent: 0;
+  color: @gray;
+  font-size: ceil(@base-font-size * 0.8);
+  line-height: ceil(@base-font-size * 0.8);
+}
+
+.dropdown-menu > li > .dataset-source {
+  clear: both;
+  display: block;
+  padding: 3px 20px;
+  white-space: nowrap;
 }

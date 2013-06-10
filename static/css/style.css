@@ -310,6 +310,11 @@ button[disabled],.button[disabled],button.disabled,.button.disabled{opacity:0.65
 .pullquote.right{float:right;padding:0 0 0 2%;}
 .button:hover{text-decoration:none;}
 .button:active{position:relative;top:1px;}
+.btn-group{display:inline-block;}
+.dropdown-menu{background-color:#FFFFFF;border:1px solid rgba(0, 0, 0, 0.2);border-radius:6px 6px 6px 6px;box-shadow:0 5px 10px rgba(0, 0, 0, 0.2);display:none;float:left;left:0;list-style:none outside none;margin:2px 0 0;min-width:160px;max-width:300px;padding:5px 0;position:absolute;top:100%;z-index:1000;}
+.open>.dropdown-menu{display:block;}
+.dropdown-menu>li>a{clear:both;display:block;padding:3px 20px;}
+.dropdown-menu.icons{margin-left:0;padding-left:1em;}
 .icon-paragraph:before{content:"\00b6";}
 .icon-heading-h3:before{content:"H3";}
 .icon-comment-mixin:before{font-family:FontAwesome;font-weight:normal;font-style:normal;display:inline-block;text-decoration:inherit;content:"\f075";}
@@ -464,7 +469,8 @@ body.base-template .content-page.object-detail hr{border:0;height:1px;padding:7p
 body.base-template .content-page.object-detail h3,body.base-template .content-page.object-detail h4{background:none;text-align:left;font-family:'Museo300Regular';font-weight:normal;margin-bottom:12px;}
 body.base-template .content-page.object-detail h4{font-size:18px;color:#333;margin-bottom:0;}
 body.base-template .content-page.object-detail .object img{width:100%;}
-body.base-template .content-page.object-detail .object #launch-story-viewer{margin:5px 0;font-size:16px;}
+body.base-template .content-page.object-detail .object #launch-story-viewer{margin:5px 0;min-height:22px;line-height:22px;}
+body.base-template .content-page.object-detail .object #launch-story-viewer,body.base-template .content-page.object-detail .datasets-button button{font-size:16px;text-shadow:none;}
 body.base-template .content-page.object-detail .object+hr,body.base-template .content-page.object-detail .story-outreach{clear:left;}
 body.base-template .content-page.object-detail .connected-stories dl{margin:10px;}
 body.base-template .content-page.object-detail .call-to-action{word-wrap:break-word;overflow-wrap:break-word;}
@@ -920,6 +926,7 @@ body.story-builder .uploadprogress .meter>span{display:block;height:100%;backgro
 .story-viewer .section ul.datasets,.story-builder .edit-section ul.datasets{list-style:none;width:95%;padding-left:0 !important;}.story-viewer .section ul.datasets li,.story-builder .edit-section ul.datasets li{list-style-type:none !important;padding-bottom:0.25em;}.story-viewer .section ul.datasets li .title,.story-builder .edit-section ul.datasets li .title{max-width:95%;word-wrap:break-word;}
 .story-viewer .section ul.datasets li a,.story-builder .edit-section ul.datasets li a{text-decoration:none;}.story-viewer .section ul.datasets li a:hover,.story-builder .edit-section ul.datasets li a:hover{text-decoration:underline;}
 .dataset-source{display:block;text-indent:0;color:#777777;font-size:12px;line-height:12px;}
+.dropdown-menu>li>.dataset-source{clear:both;display:block;padding:3px 20px;white-space:nowrap;}
 body.explorer{}body.explorer #explorer{position:relative;width:100%;}
 body.explorer .list-view .box{background:none;width:100%;padding-top:12px;padding-bottom:9px;border-top:1px dotted #777777;}
 body.explorer .list-view .box img{float:left;display:inline;margin-right:16px;width:160px;margin-top:8px;}

@@ -565,6 +565,19 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
         else:
             return 0
 
+    def asset_datasets(self):
+        """
+        Return datasets used in the story
+        
+        Story.datasets contains *all* datasets associated
+        with the story, but could include datasets associated
+        with assets that are no longer displayed in sections
+        """
+        if not hasattr(self, '_asset_datasets'):
+            self._asset_datasets = self.datasets.filter(assets__sectionasset__section__story=self).select_subclasses()
+
+        return self._asset_datasets
+
 
 def set_story_slug(sender, instance, **kwargs):
     """
