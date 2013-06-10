@@ -4446,8 +4446,6 @@
         }
         if (this.form.schema.body) {
           if (type === 'text') {
-            //this.form.schema.body.template = 'noLabelField';
-            // BOOKMARK
             this.form.schema.body.template = _.template('\
                 <li class="bbf-field field-{{key}}">\
                   <div class="bbf-editor">{{editor}}</div>\
