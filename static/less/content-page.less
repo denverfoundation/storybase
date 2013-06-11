@@ -127,11 +127,18 @@
 		}
 		.object img { width:100%; }
 		.object #launch-story-viewer {
+                        .button-style(hot);
 			margin: 5px 0;
-                        // Match the height of the "Get the Data" button
+                        // Match the size of the "Get the Data" button
+                        min-width: 104px;
+                        text-align: center;
                         min-height: 22px;
                         line-height: 22px;
 		}
+
+                .datasets-button button {
+                  .button-style(gray);
+                }
 
                 .object #launch-story-viewer,
                 .datasets-button button {

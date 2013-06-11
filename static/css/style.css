@@ -469,7 +469,12 @@ body.base-template .content-page.object-detail hr{border:0;height:1px;padding:7p
 body.base-template .content-page.object-detail h3,body.base-template .content-page.object-detail h4{background:none;text-align:left;font-family:'Museo300Regular';font-weight:normal;margin-bottom:12px;}
 body.base-template .content-page.object-detail h4{font-size:18px;color:#333;margin-bottom:0;}
 body.base-template .content-page.object-detail .object img{width:100%;}
-body.base-template .content-page.object-detail .object #launch-story-viewer{margin:5px 0;min-height:22px;line-height:22px;}
+body.base-template .content-page.object-detail .object #launch-story-viewer{padding:8px;background:#878787;font-family:"Museo300Regular";font-size:14px;border-radius:4px;border:none;font-weight:normal;color:white !important;cursor:pointer;text-decoration:none;text-shadow:0 -1px 0 rgba(0, 0, 0, 0.4);display:inline-block;background:#fe9703;margin:5px 0;min-width:104px;text-align:center;min-height:22px;line-height:22px;}body.base-template .content-page.object-detail .object #launch-story-viewer.right{margin-left:8px;}
+body.base-template .content-page.object-detail .object #launch-story-viewer:hover{text-decoration:none !important;}
+body.base-template .content-page.object-detail .object #launch-story-viewer:hover{background:#8b5910;}
+body.base-template .content-page.object-detail .datasets-button button{padding:8px;background:#878787;font-family:"Museo300Regular";font-size:14px;border-radius:4px;border:none;font-weight:normal;color:white !important;cursor:pointer;text-decoration:none;text-shadow:0 -1px 0 rgba(0, 0, 0, 0.4);display:inline-block;background:#5a5a5a;}body.base-template .content-page.object-detail .datasets-button button.right{margin-left:8px;}
+body.base-template .content-page.object-detail .datasets-button button:hover{text-decoration:none !important;}
+body.base-template .content-page.object-detail .datasets-button button:hover{background:#414141;}
 body.base-template .content-page.object-detail .object #launch-story-viewer,body.base-template .content-page.object-detail .datasets-button button{font-size:16px;text-shadow:none;}
 body.base-template .content-page.object-detail .object+hr,body.base-template .content-page.object-detail .story-outreach{clear:left;}
 body.base-template .content-page.object-detail .connected-stories dl{margin:10px;}
