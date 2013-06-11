@@ -265,7 +265,11 @@
         }
       });
 
-      if (found.length !== 1) {
+      // We allow existing datasets with a file attribute to have a
+      // missing file and url attributes, which is the case when updating
+      // an existing dataset. Otherwise, one and only one of the fields
+      // is required
+      if (found.length !== 1 && (this.isNew() || !this.get('file'))) {
         return {
           file: msg,
           url: msg
