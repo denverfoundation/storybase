@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n cms_tags menu_tags sekizai_tags storybase_tags storybase_addthis %}
+{% load i18n cms_tags menu_tags sekizai_tags storybase_tags storybase_addthis dataset %}
 
 {% block head_title %}{{ story.title }}{% endblock %}
 
@@ -44,14 +44,7 @@
                                 {% trans "Get the Data" %}
                                 <span class="icon-caret-down"></span>
                             </button>
-                            <ul class="dropdown-menu datasets icons">
-                                {% for dataset in story.asset_datasets %} 
-                                <li>
-                                  <a class="title external" href="{{ dataset.download_url }}" title="{% if dataset.links_to_file %}{% trans "Download the data" %}{% else %}{% trans "View the data" %}{% endif %}"><i class="{% if dataset.links_to_file %}icon-download-alt{% else %}icon-external-link{% endif %}"></i>{{ dataset.title }}</a>
-                                  {% if dataset.source %}<span class="dataset-source">{{ dataset.source }}{% endif %}</span>
-                                </li>
-                                {% endfor %}
-                            </ul>
+                            {% dataset_list story.asset_datasets "dropdown-menu datasets icons" %}
                         </div>
                         {% endif %}
 					</section>
