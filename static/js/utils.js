@@ -215,17 +215,6 @@
         day_diff == 1 && gettext("Yesterday") ||
         day_diff < 7 && day_diff + gettext(" days ago") ||
         day_diff < 31 && Math.ceil( day_diff / 7 ) + gettext(" weeks ago");
-    },
-
-    /**
-     * Click handler that opens a link in a new window
-     */
-    openInNewWindow: function(evt) {
-      // TODO: Use this instead of similar handlers elsewhere in the code
-      var url = $(evt.currentTarget).attr('href'); 
-      var windowName = $(evt.target).data('new-window-name') || '_blank';
-      window.open(url, windowName);
-      evt.preventDefault();
     }
   });
 

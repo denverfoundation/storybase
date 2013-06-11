@@ -19,7 +19,7 @@
   var hasAnalytics = storybase.utils.hasAnalytics;
   var licenseParamsToStr = storybase.utils.licenseParamsToStr;
   var licenseStrToParams = storybase.utils.licenseStrToParams;
-  var openInNewWindow = storybase.utils.openInNewWindow;
+  var openInNewWindow = storybase.openInNewWindow;
   var prettyDate = storybase.utils.prettyDate;
   var HandlebarsTemplateMixin = storybase.views.HandlebarsTemplateMixin;
   var HandlebarsTemplateView = storybase.views.HandlebarsTemplateView;

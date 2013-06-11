@@ -9,7 +9,7 @@
   var Router = storybase.viewer.router;
 
   var HandlebarsTemplateView = storybase.views.HandlebarsTemplateView;
-  var openInNewWindow = storybase.utils.openInNewWindow;
+  var openInNewWindow = storybase.openInNewWindow;
 
   var NavigableMixin = {
     handleNavClick: function(event) {
