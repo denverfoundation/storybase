@@ -258,7 +258,13 @@
     validate: function(attrs) {
       var contentAttrNames = ['file', 'url'];
       var found = [];
-      var msg = gettext("You must specify either the file or url field, but not both.");
+      var msg = gettext("You must specify either the file or url field, but not both");
+      var errs = {};
+
+      if (_.isUndefined(attrs.title)) {
+        errs.title = gettext("You must specify a title");
+      }
+
       _.each(contentAttrNames, function(attrName) {
         if (_.has(attrs, attrName) && attrs[attrName]) {
           found.push(attrName);
@@ -270,10 +276,12 @@
       // an existing dataset. Otherwise, one and only one of the fields
       // is required
       if (found.length !== 1 && (this.isNew() || !this.get('file'))) {
-        return {
-          file: msg,
-          url: msg
-        };
+        errs.file = msg;
+        errs.url = msg;
+      }
+
+      if (_.size(errs) > 0) {
+        return errs;
       }
     }
   });
