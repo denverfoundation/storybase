@@ -4431,22 +4431,25 @@
         this.unbindModelEvents();
       },
 
-      /** 
-       * Update the view's form labels based on the asset type.
+
+      /**
+       * Get the Backbone Forms schema for the asset form
        */
-      updateFormLabels: function() {
+      getFormSchema: function() {
+        var schema = _.result(this.model, 'schema');
         var type = this.model.get('type');
-        var num_elements = _.size(_.pick(this.form.schema, 'image', 'body', 'url')); 
+        var num_elements = _.size(_.pick(schema, 'image', 'body', 'url')); 
         var prefix = num_elements > 1 ? gettext("or") + ", " : "";
-        if (this.form.schema.url) {
-          this.form.schema.url.title = capfirst(gettext("enter") + " " + type + " " + gettext("URL"));
+
+        if (schema.url) {
+          schema.url.title = capfirst(gettext("enter") + " " + type + " " + gettext("URL"));
         }
-        if (this.form.schema.image) {
-          this.form.schema.image.title = capfirst(prefix + gettext("select an image from your own computer to be included in your story."));
+        if (schema.image) {
+          schema.image.title = capfirst(prefix + gettext("select an image from your own computer to be included in your story."));
         }
-        if (this.form.schema.body) {
+        if (schema.body) {
           if (type === 'text') {
-            this.form.schema.body.template = _.template('\
+            schema.body.template = _.template('\
                 <li class="bbf-field field-{{key}}">\
                   <div class="bbf-editor">{{editor}}</div>\
                   <div class="bbf-help">{{help}}</div>\
@@ -4455,12 +4458,14 @@
               );
           }
           else if (type === 'quotation') {
-            this.form.schema.body.title = capfirst(prefix + gettext("enter the quotation text"));
+            schema.body.title = capfirst(prefix + gettext("enter the quotation text"));
           }
           else {
-            this.form.schema.body.title = capfirst(prefix + gettext("paste the embed code for the") + " " + type);
+            schema.body.title = capfirst(prefix + gettext("paste the embed code for the") + " " + type);
           }
         }
+
+        return schema;
       },
 
       /**
@@ -4468,9 +4473,9 @@
        */
       initializeForm: function() {
         this.form = new Backbone.Form({
+          schema: this.getFormSchema(),
           model: this.model
         });
-        this.updateFormLabels(); 
         this.form.render();
       },
 
@@ -5980,7 +5985,25 @@
       this.dispatcher.once('ready:story', this.setStory, this);
     },
 
+    getFormSchema: function(model) {
+      var schema = _.result(model, 'schema');
+
+      if (schema.url) {
+        schema.url.title = capfirst(gettext("enter the featured image URL"));
+      }
+      if (schema.image) {
+        schema.image.title = capfirst(gettext("select the featured image from your own computer"));
+      }
+
+      return schema;
+    },
+
     initializeForm: function() {
+      var model = new this.options.assetModelClass({
+          language: this.options.language,
+          type: 'image'
+      });
+
       if (this.form) {
         // If there was a previous version of the form, remove it from the 
         // DOM and detach event listeners 
@@ -5988,26 +6011,14 @@
       }
       // Create a new form with a new bound model instance
       this.form = new Backbone.Form({
-        model: new this.options.assetModelClass({
-          language: this.options.language,
-          type: 'image'
-        })
+        schema: this.getFormSchema(model),
+        model: model
       });
-      this.updateFormLabels(); 
       this.form.render();
       // Set a flag to tell render() that the form element
       // needs to be appended to the view element
       this._appendForm = true;
       return this;
-    },
-
-    updateFormLabels: function() {
-      if (this.form.schema.url) {
-        this.form.schema.url.title = capfirst(gettext("enter the featured image URL"));
-      }
-      if (this.form.schema.image) {
-        this.form.schema.image.title = capfirst(gettext("select the featured image from your own computer"));
-      }
     },
 
     setStory: function(story) {
