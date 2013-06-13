@@ -9,6 +9,7 @@
   var Router = storybase.viewer.router;
 
   var HandlebarsTemplateView = storybase.views.HandlebarsTemplateView;
+  var openInNewWindow = storybase.openInNewWindow;
 
   var NavigableMixin = {
     handleNavClick: function(event) {
@@ -42,9 +43,11 @@
       },
 
       events: function() {
-        var events = {};
+        var events = {
+          'resize figure img': 'handleImgResize',
+          'click a.external': openInNewWindow
+        };
         events['click ' + this.options.tocButtonEl] = 'toggleToc';
-        events['resize figure img'] = 'handleImgResize';
         events['click ' + this.options.tocEl + ' a'] = 'handleNavClick';
         return events;
       },

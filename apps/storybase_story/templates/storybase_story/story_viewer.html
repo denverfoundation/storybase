@@ -154,15 +154,6 @@
 
         storybase.viewer.app.render();
     });
-    // Launch the connected builder in a new window
-    $("a.external").click(
-        function (evt) {
-            evt.preventDefault();
-            var url = $(evt.target).attr('href'); 
-            var newWindowName = $(evt.target).data('new-window-name');
-            window.open(url, newWindowName, '');
-        }
-    );
     </script>
   </body>
 </html>

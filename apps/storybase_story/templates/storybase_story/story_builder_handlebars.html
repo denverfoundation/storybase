@@ -207,6 +207,12 @@ Handlebars.js templates for story builder Backbone application
 </div>
 </script>
 
+<script type="text/x-handlebars-template" id="section-asset-sync-template">
+<div class="wrapper">
+    <p>{{gettext "Updating"}} &hellip;</p>
+</div>
+</script>
+
 <script type="text/x-handlebars-template" id="image-help-template">
 <p>{{gettext "Click on \"Add your image,\" then enter a URL or upload an image from your computer. If you’d like to add a different type of asset, click Cancel."}}</p>
 </script>
@@ -236,15 +242,74 @@ Handlebars.js templates for story builder Backbone application
 {{>help-icon}}
 <div class="wrapper">
 <ul class="section-asset-controls">
-    <li><a href="#" class="edit">{{gettext "Edit"}}</a></li>
+    {{#if acceptsData}}<li><a href="#" class="edit-data">{{gettext "Data Sources"}}</a></li>{{/if}}
+    <li><a href="#" class="edit">{{gettext "Edit"}} {{model.type}}</a></li>
     <li><a href="#" class="remove">{{gettext "Remove"}}</a></li>
 </ul>
 {{{model.content}}}
 </div>
 </script>
 
+<script type="text/x-handlebars-template" id="asset-dataset-list-container-template">
+<div class="wrapper"> 
+  <div class="dataset-list-container"></div>
+  <div class="add-dataset-form-container"></div>
+</div>
+</script>
+
+<script type="text/x-handlebars-template" id="asset-dataset-list-list-template">
+{{#if collectionFetched}}
+{{#if datasets}}
+<table class="datasets">
+  <thead>
+    <tr>
+      <th colspan="2">Data Set</th>
+      <th></th>
+      <th></th>
+    </tr>
+  </thead>
+  <tbody>
+    {{#each datasets}}
+    <tr class="dataset">
+      <td class="url"><a href="{{download_url}}" title="{{#if links_to_file}}{{gettext "Download the data"}}{{else}}{{gettext "View the data"}}{{/if}}" class="external"><i class="{{#if links_to_file}}icon-download-alt{{else}}icon-external-link{{/if}}"></i></a></td>
+      <td>
+          <a href="{{download_url}}" class="title external">{{title}}</a>
+        {{#if source}}
+        <span class="dataset-source">{{source}}</span>
+        {{/if}}
+      </td>
+      <td><button class="remove-dataset" data-dataset-id="{{dataset_id}}">{{gettext "Remove"}}</button></td>
+      <td><button class="edit-dataset" data-dataset-id="{{dataset_id}}">{{gettext "Edit"}}</button></td>
+    </tr>
+    {{/each}}
+  </tbody>
+</table>
+{{else}}
+<p>{{gettext "There are no datasets"}}.</p>
+{{/if}}
+<button class="add-dataset">{{gettext "Add Dataset"}}</button>
+{{else}}
+<p>{{gettext "Fetching datasets ..."}}</p>
+{{/if}}
+<button type="reset">{{gettext "Close"}}</button>
+</script>
+
+<script type="text/x-handlebars-template" id="uploadprogress-template">
+<div class="uploadprogress">
+  <div class="meter">
+    <span style="width: 0%;"></span>
+  </div>
+</div>
+</script>
+
 <script type="text/x-handlebars-template" id="asset-uploadprogress-template">
-<div class="uploadprogress"></div>
+<div class="wrapper">
+    <div class="uploadprogress">
+      <div class="meter">
+        <span style="width: 0%;"></span>
+      </div>
+    </div>
+</div>
 </script>
 
 <script type="text/x-handlebars-template" id="featured-asset-template">
@@ -285,41 +350,6 @@ Handlebars.js templates for story builder Backbone application
 {{else}}
 <p>{{gettext "You have no unused assets"}}</p>
 {{/if}}
-</script>
-
-<script type="text/x-handlebars-template" id="data-template">
-<h2>Data Sets</h2>
-<p>{{gettext "Providing the raw source data you used to make your story’s charts, maps and graphs encourages readers to dig deeper and discover their own stories in the data."}}</p>
-<p>{{gettext "You can upload data sets from your computer if they are CSV or Excel files. You can link to data stored elsewhere on the web, like the Colorado Data Engine, Google Docs, or the U.S. Census Bureau."}}</p>
-<p>{{gettext "Add as many data sets as you like."}}</p>
-{{#if datasets.length}}
-<table class="datasets">
-    <thead>
-        <tr>
-            <th>Data Set</th>
-            <th>Delete</th>
-        </tr>
-    </thead>
-    <tbody>
-        {{#each datasets}}
-        <tr class="dataset">
-            <td>
-                <p class="title">{{title}}</p>
-		{{#if source}}
-		<p class="source">{{gettext "Source"}}: {{source}}</p>
-		{{/if}}
-		<p class="url"><a href="{{download_url}}">{{gettext "Download data"}}</a></p>
-            </td>
-            <td><a class="delete-dataset" data-dataset-id="{{dataset_id}}" href="#">Delete</a></td>
-
-        </tr>
-        {{/each}}
-    </tbody>
-</table>
-{{else}}
-<p>There are no data sets for this story.</p>
-{{/if}}
-<div><button class="add-dataset" type="button">{{gettext "Add Data"}}</button></div>
 </script>
 
 <script type="text/x-handlebars-template" id="review-template">
@@ -390,7 +420,7 @@ Handlebars.js templates for story builder Backbone application
 <script type="text/x-handlebars-template" id="published-buttons-template">
 <p>{{gettext "Congratulations, your story has been published."}}</p>
 <div class="centered button-container">
-    <a href="{{url}}" class="view-story popup button hot">{{gettext "View my story"}}</a>
+    <a href="{{url}}" class="view-story external button hot">{{gettext "View my story"}}</a>
     <button type="button" class="unpublish">{{gettext "Unpublish My Story"}}</button>
 </div>
 </script>

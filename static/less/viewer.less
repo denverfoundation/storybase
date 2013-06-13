@@ -145,11 +145,15 @@
     padding: 0 6%;
   }
 
-  .section .title {
-    font-size: 24px;
-    font-weight: normal;
-    color: @orange; 
-    padding: 0;
+  .section {
+    h1, h2, h3 {
+      &.title {
+        font-size: 24px;
+        font-weight: normal;
+        color: @orange; 
+        padding: 0;
+      }
+    }
   }
 
   #footer {
@@ -463,4 +467,52 @@
   button.simplemodal-close {
     .button-reset;
   }
+}
+
+// Styles that apply to both the builder and viewer
+.story-viewer .section, .story-builder .edit-section {
+  // Asset data set list
+  .datasets-label {
+    font-weight: bold;
+    margin: 0.25em 0 !important;
+  }
+
+  ul.datasets {
+    list-style: none;
+    width: 95%;
+    padding-left: 0 !important;
+
+    li {
+      list-style-type: none !important;
+      padding-bottom: 0.25em;
+
+      .title {
+        max-width: 95%;
+        word-wrap: break-word;
+      }
+
+      a {
+        text-decoration: none;
+
+        &:hover {
+          text-decoration: underline;
+        }
+      }
+    }
+  }
+}
+
+.dataset-source {
+  display: block;
+  text-indent: 0;
+  color: @gray;
+  font-size: ceil(@base-font-size * 0.8);
+  line-height: ceil(@base-font-size * 0.8);
+}
+
+.dropdown-menu > li > .dataset-source {
+  clear: both;
+  display: block;
+  padding: 3px 20px;
+  white-space: nowrap;
 }

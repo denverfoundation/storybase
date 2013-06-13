@@ -11,6 +11,10 @@
   var Models = storybase.models;
 
   var Forms = storybase.forms;
+  var makeRequired;
+  if (Forms) {
+    makeRequired = Forms.makeRequired;
+  }
 
   /**
    * Mixin that expects the model attributes to be within an objects attribute
@@ -65,7 +69,6 @@
      */
     toFormData: function(options) {
       var attrs = options.attrs || this.attributes;
-      console.debug(attrs);
       var formData = new FormData();
       _.each(attrs, function(value, key) {
         // Only add non-null values as it seems like Firefox
@@ -182,62 +185,105 @@
 
 
   var DataSet = Models.DataSet = FileUploadModel.extend({
-      idAttribute: "dataset_id",
+    idAttribute: "dataset_id",
 
-      /**
-       * Return the server URL for a model instance.
-       *
-       * This version always uses the collection's URL if the instance is new,
-       * otherwise it uses the value returned by the API.  This is needed
-       * because sometimes a collection will have a URL set to fetch a
-       * particular story's data sets.  By default, Backbone uses the 
-       * collection's URL to build an individual model's URL.  We don't want
-       * to do this.
-       */
-      url: function() {
-        var url = Backbone.Model.prototype.url.call(this);
-        if (!this.isNew() && this.has('resource_uri')) {
-          url = this.get('resource_uri');
-        }
-        // Make sure the URL ends in a '/'
-        url = url + (url.charAt(url.length - 1) == '/' ? '' : '/');
-        return url; 
-      },
-
-      /**
-       * Schema for backbone-forms
-       */
-      schema: function() {
-        if (!_.isUndefined(Forms)) {
-          var schema = {
-            title: {type: 'Text', validators: ['required']},
-            source: {type: 'Text', validators: []},
-            url: {type: 'Text', validators: ['url']},
-            file: {type: Forms.File}
-          };
-          return schema;
-        }
-      },
-
-      /**
-       * Validate the model attributes
-       *
-       * Make sure only one of the content variables is set to a truthy
-       * value.
-       */
-      validate: function(attrs) {
-        var contentAttrNames = ['file', 'url'];
-        var found = [];
-        _.each(contentAttrNames, function(attrName) {
-          if (_.has(attrs, attrName) && attrs[attrName]) {
-            found.push(attrName);
-          }
-        });
-        if (found.length > 1) {
-          // TODO: Translate this
-          return "You must specify only one of the following values " + found.join(', ');
-        }
+    /**
+     * Return the server URL for a model instance.
+     *
+     * This version always uses the collection's URL if the instance is new,
+     * otherwise it uses the value returned by the API.  This is needed
+     * because sometimes a collection will have a URL set to fetch a
+     * particular story's data sets.  By default, Backbone uses the 
+     * collection's URL to build an individual model's URL.  We don't want
+     * to do this.
+     */
+    url: function() {
+      var url = Backbone.Model.prototype.url.call(this);
+      if (!this.isNew() && this.has('resource_uri')) {
+        url = this.get('resource_uri');
       }
+      // Make sure the URL ends in a '/'
+      url = url + (url.charAt(url.length - 1) == '/' ? '' : '/');
+      return url; 
+    },
+
+    /**
+     * Schema for backbone-forms
+     */
+    schema: function() {
+      if (!_.isUndefined(Forms)) {
+        var schema = {
+          title: makeRequired({
+            type: 'Text'
+          }),
+          source: {
+            type: 'Text'
+          },
+          url: {
+            type: 'Text',
+            validators: ['url']
+          },
+          file: {
+            type: Forms.File
+          }
+        };
+
+        if (!this.isNew()) {
+          // For a saved model, only show the fields that have a value set.
+          _.each(['file', 'url'], function(field) {
+            var value = this.get(field);
+            if (!value) {
+              delete schema[field];
+            }
+          }, this);
+
+          // Mark a standalone URL field as required.  Don't mark the file URL as
+          // required because the user doesn't have to specify a new
+          // file
+          if (schema.url) {
+            makeRequired(schema.url);
+          }
+        }
+
+        return schema;
+      }
+    },
+
+    /**
+     * Validate the model attributes
+     *
+     * Make sure only one of the content variables is set to a truthy
+     * value.
+     */
+    validate: function(attrs) {
+      var contentAttrNames = ['file', 'url'];
+      var found = [];
+      var msg = gettext("You must specify either the file or url field, but not both");
+      var errs = {};
+
+      if (_.isUndefined(attrs.title)) {
+        errs.title = gettext("You must specify a title");
+      }
+
+      _.each(contentAttrNames, function(attrName) {
+        if (_.has(attrs, attrName) && attrs[attrName]) {
+          found.push(attrName);
+        }
+      });
+
+      // We allow existing datasets with a file attribute to have a
+      // missing file and url attributes, which is the case when updating
+      // an existing dataset. Otherwise, one and only one of the fields
+      // is required
+      if (found.length !== 1 && (this.isNew() || !this.get('file'))) {
+        errs.file = msg;
+        errs.url = msg;
+      }
+
+      if (_.size(errs) > 0) {
+        return errs;
+      }
+    }
   });
 
 
@@ -247,14 +293,26 @@
 
       initialize: function() {
         this._story = null;
+        this._asset = null;
       },
 
       url: function() {
         var url = storybase.API_ROOT + 'datasets/';
-        if (this._story !== null) {
+        if (this._asset !== null) {
+          url = url + 'assets/' + this._asset.id + '/';
+        }
+        else if (this._story !== null) {
           url = url + 'stories/' + this._story.id + '/';
         }
         return url; 
+      },
+
+      /**
+       * Specify that this collection represent's a particular asset's
+       * dataset.
+       */
+      setAsset: function(asset) {
+        this._asset = asset;
       },
 
       /**
@@ -263,6 +321,47 @@
        */
       setStory: function(story) {
         this._story = story;
+      },
+
+      // TODO: Test this method, particularly checking which events are fired on
+      // the removed model
+      /**
+       * Remove a single model from a collection at the server
+       *
+       * This method is for endpoints that support support removing an
+       * item from a collection with a DELETE request to an endpoint like
+       * /<collection-url>/<model-id>/.
+       */
+      removeSync: function(models, options) {
+        models = _.isArray(models) ? models.slice() : [models];
+        var i, l, index, model, url;
+        for (i = 0, l = models.length; i < l; i++) {
+          model = models[i]; 
+          url = _.result(this, 'url') + model.id + '/';
+          this.sync('delete', model, {
+            url: url
+          });
+        }
+        return this;
+      },
+
+      /**
+       * Remove a model (or an array of models) from the collection.
+       *
+       * Unlike the default ``Collection.remove`` this takes an additional
+       * ``sync`` option that, if truthy, will cause the models to be 
+       * removed on the server.
+       */
+      remove: function(models, options) {
+        var model = this;
+        if (!_.isUndefined(options.sync)) {
+          if(_.result(options, 'sync')) {
+            this.once('remove', function() {
+              model.removeSync(models, options);
+            }, this);
+          }
+        }
+        Backbone.Collection.prototype.remove.apply(this, arguments);
       }
     })
   );
@@ -776,6 +875,28 @@
         if (found.length > 1) {
           return "You must specify only one of the following values " + found.join(', ');
         }
+      },
+
+      /**
+       * Can this asset type accept related data?
+       */
+      acceptsData: function() {
+        var type = this.get('type');
+        if (type === 'map' || type === 'chart' || type === 'table') {
+          return true;
+        }
+        else {
+          return false;
+        }
+      },
+
+      /**
+       * Set the asset's datasets collection.
+       */
+      setDataSets: function(collection) {
+        this.datasets = collection;
+        this.datasets.setAsset(this);
+        this.trigger('set:datasets', this.datasets);
       }
     })
   );

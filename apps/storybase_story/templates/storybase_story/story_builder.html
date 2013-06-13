@@ -86,7 +86,6 @@
     <script src="{{ STATIC_URL }}js/libs/json2.js"></script>
     <script src="{{ STATIC_URL }}js/libs/backbone-min.js"></script>
     <script src="{{ STATIC_URL }}js/libs/handlebars-1.0.0.beta.6.js"></script>
-    <!-- Default styles for backbone forms templates are included above -->
     <script src="{{ STATIC_URL }}js/libs/backbone-forms/backbone-forms.min.js"></script>
     <!-- TODO: Finalize editor matching views -->
     <script src="{{ STATIC_URL}}js/libs/wysihtml5/advanced.js"></script>
@@ -103,6 +102,14 @@
     <script src="{{ STATIC_URL }}js/jquery.storybaseshare.js"></script>
 
     {% compress js %}
+    {% comment %}
+    Override the current Backbone Forms templatee with a cleaned-up version
+    of the old templates for now so the markup matches our styles.
+
+    TODO: Update styles to reflect current Backbone Forms templates and switch
+    to current templates
+    {% endcomment %}
+    <script src="{{ STATIC_URL }}js/forms-templates.js"></script>
     <script src="{{ STATIC_URL }}js/storybase.js"></script>
     <script src="{{ STATIC_URL }}js/utils.js"></script>
     <script src="{{ STATIC_URL }}js/forms.js"></script>

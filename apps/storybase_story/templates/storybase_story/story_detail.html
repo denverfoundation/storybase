@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load i18n cms_tags menu_tags sekizai_tags storybase_tags storybase_addthis %}
+{% load i18n cms_tags menu_tags sekizai_tags storybase_tags storybase_addthis dataset %}
 
 {% block head_title %}{{ story.title }}{% endblock %}
 
@@ -37,7 +37,16 @@
 						<section class="summary">
 							{{ story.summary|safe }}
 						</section>
-						<a id="launch-story-viewer" class="button" href="{% url story_viewer slug=story.slug %}">{% trans "View Story" %}</a>
+                        <a id="launch-story-viewer" class="button" href="{% url story_viewer slug=story.slug %}">{% trans "View Story" %}</a>
+                        {% if story.asset_datasets.count %}
+                        <div class="btn-group datasets-button">
+                            <button class="btn dropdown-toggle" data-toggle="dropdown">
+                                {% trans "Get the Data" %}
+                                <span class="icon-caret-down"></span>
+                            </button>
+                            {% dataset_list story.asset_datasets "dropdown-menu datasets icons" %}
+                        </div>
+                        {% endif %}
 					</section>
 				</div>
 			</section>
@@ -99,19 +108,6 @@
 							</dd>
 							{% endif %}
 
-                            {% if story.datasets.count %}
-                            <dt>{% trans "Data Sets" %}</dt>
-                            <dd>
-                                <ul class="datasets">
-                                    {% for ds in story.datasets.select_subclasses.all %}
-                                      <li{% if forloop.last %} class="last"{% endif %}>
-                                      {{ ds.title }} <a href="{{ ds.download_url }}" title="{% trans "Access the data" %}"><i class="icon-download-alt"></i></a>
-                                      </li>
-                                    {% endfor %}
-                                </ul>
-                            </dd>
-                            {% endif %}
-
 							{% if story.contact_info %}
 							<dt>{% trans "Contact Info" %}</dt>
 							<dd>
@@ -152,7 +148,7 @@
 {% block bodyend %}
 <div id="story-viewer-modal" class="modal">
   <div id="modal-controls">
-      <a id="launch-viewer-window" href="{% url story_viewer slug=story.slug %}" title="{%trans "View in new window"%}"><i class="icon-share"></i><span class="hide-text">{%trans "View in new window"%}</span></a>
+      <a id="launch-viewer-window" href="{% url story_viewer slug=story.slug %}" title="{%trans "View in new window"%}" data-window-name="story-viewer" data-window-features=""><i class="icon-share"></i><span class="hide-text">{%trans "View in new window"%}</span></a>
       <button class="simplemodal-close" title="{% trans "Close" %}"><i class="icon-remove-sign"></i><span class="hide-text">{% trans "Close" %}</span></button>
   </div>
   <iframe src="{% url story_viewer slug=story.slug %}?context=iframe"></iframe>
@@ -161,6 +157,8 @@
 
 {% block extrajs %}
 <script defer src="{{ STATIC_URL }}js/libs/jquery.simplemodal.1.4.2.min.js"></script>
+<script src="{{ STATIC_URL }}js/storybase.js"></script>
+<script src="{{ STATIC_URL }}js/libs/bootstrap-dropdown.js"></script>
 <script type="text/javascript">
 $(document).ready(function () {
     // Display the story viewer in a modal dialog
@@ -187,15 +185,14 @@ $(document).ready(function () {
     });
 
     // Launch the viewer in a new window
-    $("#story-viewer-modal #modal-controls #launch-viewer-window").click(
-        function (evt) {
-            evt.preventDefault();
-            var viewerUrl = $(evt.currentTarget).attr('href');
-            window.open(viewerUrl, 'story-viewer', '');
-            $.modal.close();
-            return false
-        }
-    );
+    $("#story-viewer-modal #modal-controls #launch-viewer-window").click(storybase.openInNewWindow)
+        .click(function(evt) {
+          $.modal.close();
+          return false;
+        });
+
+    // Open dataset links in a new window
+    $('a.external').click(storybase.openInNewWindow);
 });
 </script>
 {% endblock %}

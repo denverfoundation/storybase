@@ -5,6 +5,11 @@ var initializeGlobals = function() {
   storybase.MAP_POINT_ZOOM_LEVEL = 14; 
 };
 
+var MockAsset = Backbone.Model.extend({
+  idAttribute: 'asset_id',
+  acceptsData: function() { return false; }
+});
+
 describe('AppView', function() {
   beforeEach(function() {
     initializeGlobals();
@@ -328,7 +333,7 @@ describe('SectionAssetEditView view', function() {
 
   describe('with the model property set to an existing text asset', function() {
     beforeEach(function() {
-       this.view.model = new Backbone.Model({
+       this.view.model = new MockAsset({
          id: 'bef53407591f4fd8bd169f9cc02672f9',
          type: 'text',
          body: 'Test text asset body',
@@ -351,6 +356,7 @@ describe('SectionAssetEditView view', function() {
         });
 
         it("should display the model's body", function() {
+          console.debug(this.view.model);
           expect(this.view.$el.text()).toContain(this.view.model.get('body'));
         });
       });
@@ -520,9 +526,6 @@ var MockStory = Backbone.Model.extend({
   }
 });
 
-var MockAsset = Backbone.Model.extend({
-  idAttribute: 'asset_id'
-});
 
 describe('PublishButtonView', function() {
   beforeEach(function() {
@@ -641,19 +644,6 @@ describe('PublishedButtonsView', function() {
 
       it('should set the story status to "draft"', function() {
         expect(this.story.get('status')).toEqual('draft');
-      });
-    });
-
-    describe("clicking on the view button", function() {
-      beforeEach(function() {
-        var $button = this.view.render().$('a,button').filter(':contains("View")');
-        spyOn(window, 'open');
-        $button.click();
-        this.url = $button.attr('href'); 
-      });
-
-      it('opens the story in a new window', function() {
-        expect(window.open).toHaveBeenCalledWith(this.url);
       });
     });
   });

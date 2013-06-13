@@ -16,7 +16,7 @@ from storybase.tests.base import FixedTestApiClient, FileCleanupMixin
 from storybase_story.models import (create_section, create_story,
     Container, SectionAsset, SectionLayout, Story)
 from storybase_asset.models import (Asset, ExternalAsset, HtmlAsset,
-    HtmlAssetTranslation, LocalImageAsset, DataSet, LocalDataSet,
+    HtmlAssetTranslation, ExternalDataSet, DataSet,
     create_html_asset, create_external_asset, create_local_image_asset,
     create_external_dataset)
 from storybase_asset.oembed.providers import GoogleSpreadsheetProvider
@@ -160,14 +160,14 @@ class AssetModelTest(TestCase):
         """
         dataset_title = ("Metro Denver Free and Reduced Lunch Trends by "
                          "School District")
-        dataset_url = 'http://www.box.com/s/erutk9kacq6akzlvqcdr'
+        dataset_url = 'http://floodlightproject.org/test_data.csv'
         asset = create_html_asset(type='image', title='Test Asset')
         dataset = create_external_dataset(
             title=dataset_title,
             url=dataset_url,
             source="Colorado Department of Education for Source",
             attribution="The Piton Foundation",
-	    links_to_file=True)
+	    )
         asset.datasets.add(dataset)
         asset.save()
         self.assertIn("Download the data", asset.dataset_html()) 
@@ -186,7 +186,7 @@ class AssetModelTest(TestCase):
             url=dataset_url,
             source="Colorado Department of Education for Source",
             attribution="The Piton Foundation",
-	    links_to_file=False)
+	    )
         asset.datasets.add(dataset)
         asset.save()
         self.assertIn("View the data", asset.dataset_html()) 
@@ -1099,6 +1099,76 @@ class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         resp = self.api_client.delete(uri, format='json')
         self.assertHttpUnauthorized(resp)
         self.assertEqual(DataSet.objects.count(), 1)
+
+    def _assert_put_unauthorized(self, resp, dataset, put_data):
+        self.assertHttpUnauthorized(resp)
+        dataset = DataSet.objects.get_subclass(pk=dataset.pk)
+        self.assertNotEqual(dataset.title, put_data['title'])
+        self.assertNotEqual(dataset.url, put_data['url'])
+
+    def test_put_detail_unauthenticated(self):
+        """Test that an unauthenticated user can't update a dataset"""
+        put_data = {
+            'title': "Chicago Street Names",
+            'description': "List of all Chicago streets with suffixes and minimum and maximum address numbers.",
+            'url': 'https://data.cityofchicago.org/Transportation/Chicago-Street-Names/i6bp-fvbx',
+            'links_to_file': False,
+            'language': "en",
+        }
+        dataset = create_external_dataset(**self.dataset_attrs[0])
+        self.assertEqual(DataSet.objects.count(), 1)
+        uri = '/api/0.1/datasets/%s/' % (dataset.dataset_id)
+        resp = self.api_client.put(uri, format='json', data=put_data)
+        self._assert_put_unauthorized(resp, dataset, put_data)
+
+    def test_put_detail_unauthorized(self):
+        put_data = {
+            'title': "Chicago Street Names",
+            'description': "List of all Chicago streets with suffixes and minimum and maximum address numbers.",
+            'url': 'https://data.cityofchicago.org/Transportation/Chicago-Street-Names/i6bp-fvbx',
+            'links_to_file': False,
+            'language': "en",
+        }
+        self.dataset_attrs[0]['owner'] = self.user2
+        dataset = create_external_dataset(**self.dataset_attrs[0])
+        self.assertEqual(DataSet.objects.count(), 1)
+        uri = '/api/0.1/datasets/%s/' % (dataset.dataset_id)
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        resp = self.api_client.put(uri, format='json', data=put_data)
+        self._assert_put_unauthorized(resp, dataset, put_data)
+
+    def test_put_detail_url(self):
+        dataset = create_external_dataset(**self.dataset_attrs[0])
+        self.assertEqual(DataSet.objects.count(), 1)
+        uri = '/api/0.1/datasets/%s/' % (dataset.dataset_id)
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        resp = self.api_client.get(uri, format='json')
+        put_data = self.deserialize(resp)
+        put_data['title'] = "New Title"
+        put_data['url'] = "http://floodlightproject.org/data.csv"
+        resp = self.api_client.put(uri, format='json', data=put_data)
+        self.assertHttpAccepted(resp)
+        dataset = DataSet.objects.get_subclass(pk=dataset.pk)
+        self.assertEqual(dataset.title, put_data['title'])
+        self.assertEqual(dataset.url, put_data['url'])
+
+
+class ExternalDataSetModelTest(TestCase):
+    def test_url_is_for_file(self):
+        self.assertFalse(ExternalDataSet.url_is_for_file('http://www.box.com/s/erutk9kacq6akzlvqcdr'))
+        self.assertTrue(ExternalDataSet.url_is_for_file("http://floodlightproject.org/data.csv"))
+
+    def test_set_links_to_file(self):
+        """
+        Test that ``links_to_file`` attribute is properly set when a 
+        DataSet is created
+        """
+        dataset = create_external_dataset(title="Test DataSet", url="http://www.box.com/s/erutk9kacq6akzlvqcdr")
+        self.assertFalse(dataset.links_to_file)
+        dataset = create_external_dataset(title="Test DataSet", url="http://floodlightproject.org/data.csv")
+        self.assertTrue(dataset.links_to_file)
 
 
 class DataSetApiTest(TestCase):

@@ -1,15 +1,16 @@
 """Models for story content assets"""
+import mimetypes
 import os
 
 import lxml.html
 
 from django.conf import settings
 from django.contrib.auth.models import User
-from django.contrib.sites.models import Site
 from django.core.files import File
 from django.core.cache import cache
 from django.db import models
 from django.db.models.signals import pre_save, post_delete, m2m_changed
+from django.template.loader import render_to_string
 from django.utils.html import strip_tags
 from django.utils.text import truncate_words
 from django.utils.translation import ugettext_lazy as _
@@ -225,23 +226,15 @@ class Asset(ImageRenderingMixin, TranslatedModel, LicensedModel,
         except AttributeError:
             return self.__unicode__()
 
-    def dataset_html(self, label=_("Associated Datasets")):
+    def dataset_html(self, label=_("Get the Data")):
         """Return an HTML list of associated datasets"""
-        output = []
-        if self.datasets.count():
-            download_label = _("Download the data")
-            output.append("<p class=\"datasets-label\">%s:</p>" %
-                          label)
-            output.append("<ul class=\"datasets\">")
-            for dataset in self.datasets.select_subclasses():
-                download_label = (_("Download the data") 
-				  if dataset.links_to_file
-				  else _("View the data"))
-                output.append("<li>%s <a href=\"%s\">%s</a></li>" % 
-                              (dataset.title, dataset.download_url(),
-                               download_label))
-            output.append("</ul>")
-        return mark_safe(u'\n'.join(output))
+        if not self.datasets.count():
+            return u""
+        
+        return render_to_string("storybase_asset/asset_datasets.html", {
+            'label': label,
+            'datasets': self.datasets.select_subclasses()
+        })
 
     def full_caption_html(self, wrapper='figcaption'):
         """Return the caption and attribution text together"""
@@ -779,9 +772,26 @@ class ExternalDataSet(DataSet):
     """A data set stored on a different system from the application"""
     url = models.URLField()
 
+    @classmethod
+    def url_is_for_file(cls, url):
+        """Guess whether a URL represents a downloadable file"""
+        (url_type, encoding) = mimetypes.guess_type(url)
+        if url_type is None:
+            return False
+        
+        return True
+
     def download_url(self):
         """Returns the URL to the downloadable version of the data set"""
         return self.url 
+
+    def save(self, *args, **kwargs):
+        # Take a guess at whether the url links to a file and set the
+        # flag accordingly
+        # TODO: Do this somewhere where a user can override it in the
+        # admin
+        self.links_to_file = self.url_is_for_file(self.url)
+        super(ExternalDataSet, self).save(*args, **kwargs)
 
 
 class LocalDataSet(DataSet):

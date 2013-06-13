@@ -32,12 +32,25 @@ fieldset {
   margin-bottom: @body-copy-margin-bottom; 
 }
 
-.bbf-error .bbf-help {
+.bbf-editor + .bbf-help {
+  font-style: italic;
+  color: @gray;
+}
+
+.bbf-error, .bbf-error .bbf-help, .error label {
   color: @error-color;
 }
 
 .bbf-error input {
   border-color: @error-color;
+}
+
+.error .bbf-help {
+  margin-bottom: (@body-copy-margin-bottom * 0.5);
+}
+
+.error .bbf-error {
+  margin-bottom: @body-copy-margin-bottom;
 }
 
 // Select2 also uses an li for some of its elements
@@ -1196,43 +1209,74 @@ button.preview {
 }
 
 .section-asset-controls {
-  display: none;
   top: 0;
   right: 0;
   position: absolute;
   margin: 0;
-  padding: 10px 10px 0 0;
+  padding: 5px 10px 5px 0;
   text-align: right;
-  z-index: 998;
-  
+  // The controls need to be above asset content, but below the layout
+  // selector
+  z-index: 200;
+  background-color: fadeout(#fff, 20%);
+  border: solid 1px #bbb;
+  .rounded-corners(5px);
+  border-radius: 0 5px 0 5px; 
+  box-shadow: inset 0 0 3px #ccc;
+ 
+  // TODO: If we decide to definitely use text instead of icons,
+  // delete img/builder/asset-edit-remove-icons.png 
   li {
     list-style: none !important;
-    float:left;
+    display: inline-block;
     margin-right:5px;
-        
-    a {
-      background:url(../img/builder/asset-edit-remove-icons.png);
-      width:21px;
-      height:21px;
-      text-indent:100%;
-      display:block;
-      overflow:hidden;
-      position: relative;
 
-      &.edit {
-        background-position:0 0;
-      }
-      &.remove {
-        background-position:0 -21px;
-        position: relative;
-        top:2px;
+    a {
+      text-decoration: none;
+      text-transform: capitalize;
+
+      &:hover {
+        text-decoration: underline;
       }
     }
   }
 }
 
-.storybase-container-placeholder:hover .section-asset-controls {
-  display: block;
+// Asset Data Set List 
+
+table.datasets {
+  margin: 2% 0;
+  width: 100%;
+
+  .col1 {
+    width: 75%;
+  }
+
+  .col2 {
+    width: 25%;
+  }
+
+  th, td {
+    text-align: left;
+  }
+
+  th {
+    font-weight: bold;
+    border-bottom: solid 2px;
+  }
+
+  td {
+    padding: 6px;
+    border-bottom: 1px solid #CCCCCC;
+  }
+  
+  .url a {
+    text-decoration: none;
+  }
+}
+
+.dataset {
+  padding: 1% 0;
 }
 
 #app .bbf-form {
@@ -1492,38 +1536,6 @@ button.preview {
   margin: 10px;
 }
 
-// Add Data View
-.data-view {
-  .container_12;
-}
-
-.datasets {
-  margin: 2% 0;
-  width: 100%;
-}
-
-.datasets th,
-.datasets td {
-  text-align: left;
-}
-
-.datasets th {
-  font-weight: bold;
-  border-bottom: solid 2px;
-}
-
-.datasets td {
-  padding: 6px 0;
-  border-bottom: 1px solid #CCCCCC;
-}
-
-.dataset {
-  padding: 1% 0;
-}
-
-.dataset p {
-  padding: 0;
-}
 
 // Legal agreement view
 #share-legal #permission ul {
@@ -1797,5 +1809,29 @@ ol#publish-steps {
     position:absolute;
     top: -10px;
     right: 0px;
+  }
+}
+
+// Upload progress bar
+// Based on a technique by Chris Coyier,
+// http://css-tricks.com/css3-progress-bars/
+.uploadprogress {
+  // Vertically center the progress bar
+  position: absolute;
+  top: 50%;
+  width: 100%;
+
+  .meter {
+    position: relative; 
+    width: 80%;
+    height: 20px;
+    border: @builder-input-border-width solid #bbb;
+    margin: -10px auto 0; 
+  }
+
+  .meter > span {
+    display: block;
+    height: 100%;
+    background-color: @highlight-blue;
   }
 }

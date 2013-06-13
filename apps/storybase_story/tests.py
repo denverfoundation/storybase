@@ -23,7 +23,7 @@ from storybase.tests.base import (SloppyComparisonTestMixin,
         PermissionTestCase, FixedTestApiClient)
 from storybase.utils import slugify
 from storybase_asset.models import (Asset, create_html_asset,
-        create_external_asset)
+        create_external_asset, create_external_dataset)
 from storybase_geo.models import Location, GeoLevel, Place
 from storybase_help.models import create_help 
 from storybase_story.api import (SectionAssetResource, SectionResource, 
@@ -523,6 +523,46 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
         self.assertIn(hp.place_id, place_ids)
         self.assertIn(wp.place_id, place_ids)
         self.assertIn(ls.place_id, place_ids)
+
+    def test_asset_datasets(self):
+        story = create_story(title="Test Story", summary="Test Summary",
+            byline="Test Byline", license="CC BY-NC-SA")
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        section = create_section(title="Test Section 1", story=story,
+                                 layout=layout)
+        left = Container.objects.get(name='left')
+        right = Container.objects.get(name='right')
+        body = "<p>Mock chart HTML</p>" 
+        asset1 = create_html_asset(type='chart', title="Test Asset 1",
+                                  body=body)
+        asset2 = create_html_asset(type='chat', title="Test Asset 2",
+                                   body=body)
+        SectionAsset.objects.create(section=section, asset=asset1, 
+                                    container=left)
+        SectionAsset.objects.create(section=section, asset=asset2, 
+                                    container=right)
+        dataset1 = create_external_dataset(
+            title=("Metro Denver Free and Reduced Lunch Trends by "
+                         "School District"),
+            url='http://www.box.com/s/erutk9kacq6akzlvqcdr',
+            source="Colorado Department of Education",
+            attribution="The Piton Foundation")
+        dataset2 = create_external_dataset(
+            title="2010-2011 Colorado School CSAP Summary",
+            url='http://codataengine.org/find/2010-2011-colorado-school-csap-summary',
+            source="Colorado Department of Education")
+        dataset3 = create_external_dataset(
+            title="Physically Active Rate by Race by County in Metro Denver Region in 2009",
+            url="http://codataengine.org/find/physically-active-rate-race-county-metro-denver-region-2009",
+            source="Colorado BRFSS")
+        asset1.datasets.add(dataset1)
+        asset2.datasets.add(dataset2)
+        story.datasets.add(dataset3)
+        asset_datasets = story.asset_datasets()
+        self.assertEqual(len(asset_datasets), 2)
+        self.assertIn(dataset1, asset_datasets)
+        self.assertIn(dataset2, asset_datasets)
+        self.assertNotIn(dataset3, asset_datasets)
 
 
 class StoryPermissionTest(PermissionTestCase):

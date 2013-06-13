@@ -225,6 +225,43 @@ button, .button {
   }
 }
 
+.btn-group {
+  display: inline-block;
+}
+
+// Use Bootstrap's JavaScript for Dropdown buttons
+.dropdown-menu {
+  background-color: #FFFFFF;
+  border: 1px solid rgba(0, 0, 0, 0.2);
+  border-radius: 6px 6px 6px 6px;
+  box-shadow: 0 5px 10px rgba(0, 0, 0, 0.2);
+  display: none;
+  float: left;
+  left: 0;
+  list-style: none outside none;
+  margin: 2px 0 0;
+  min-width: 160px;
+  max-width: 300px;
+  padding: 5px 0;
+  position: absolute;
+  top: 100%;
+  z-index: 1000;
+}
+
+.open > .dropdown-menu {
+  display: block;
+}
+
+.dropdown-menu > li > a {
+  clear: both;
+  display: block;
+  padding: 3px 20px;
+}
+
+.dropdown-menu.icons {
+  margin-left: 0;        
+  padding-left: 1em;
+}
 
 .remove-icon(@size, @color) {
   cursor:pointer;

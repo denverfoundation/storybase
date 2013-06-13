@@ -3,7 +3,7 @@ describe('TastypieMixin collection mixin', function() {
     this.collectionClass = Backbone.Collection.extend(
       _.extend({}, storybase.collections.TastypieMixin)
     );
-    this.collection = new this.collectionClass;
+    this.collection = new this.collectionClass();
   });
 
   it('should parse its model objects from an "objects" property of the response', function() {
@@ -24,9 +24,70 @@ describe('TastypieMixin collection mixin', function() {
   });
 });
 
+describe('DataSet model', function() {
+  beforeEach(function() {
+    this.model = new storybase.models.DataSet();
+  });
+
+  describe('validate method', function() {
+    it('should return errors when no attributes is present', function() {
+      var attrs = {};
+      var errs = this.model.validate(attrs);
+      expect(errs.title).toBeDefined();
+      expect(errs.file).toBeDefined();
+      expect(errs.url).toBeDefined();
+    });
+
+    it('should return errors when neither the file nor url attribute is present', function() {
+      var attrs = {
+        title: 'Dataset title'
+      };
+      var errs = this.model.validate(attrs);
+      expect(errs.title).toBeUndefined();
+      expect(errs.file).toBeDefined();
+      expect(errs.url).toBeDefined();
+    });
+
+    it('should return errors when both a file and url attribute are present', function() {
+      var attrs = {
+        title: 'Dataset title',
+        file: 'mock file',
+        url: 'http://codataengine.org/find/physically-active-rate-race-county-metro-denver-region-2009'
+      };
+      var errs = this.model.validate(attrs);
+      expect(errs.title).toBeUndefined();
+      expect(errs.file).toBeDefined();
+      expect(errs.url).toBeDefined();
+    });
+
+    it('should not return errors when only a file or url is present', function() {
+      var attrs = {
+        title: 'Dataset title',
+        file: 'mock file'
+      };
+      var errs = this.model.validate(attrs);
+      expect(errs).toBeUndefined();
+      delete attrs.file;
+      attrs.url = 'http://codataengine.org/find/physically-active-rate-race-county-metro-denver-region-2009';
+      errs = this.model.validate(attrs);
+      expect(errs).toBeUndefined();
+    });
+
+    it('should not return errors when no file is present for an existing dataset', function() {
+      this.model.id = '501593a0-d372-11e2-8b8b-0800200c9a66';
+      this.model.set('file', 'mock file');
+      var attrs = {
+        'title': 'New title'
+      };
+      var errs = this.model.validate(attrs);
+      expect(errs).toBeUndefined();
+    });
+  });
+});
+
 describe('DataSets collection', function() {
   beforeEach(function() {
-    this.collection = new storybase.collections.DataSets;
+    this.collection = new storybase.collections.DataSets();
   });
 
   describe('A newly created collection', function() {
@@ -45,6 +106,19 @@ describe('DataSets collection', function() {
 
     it('should have a URL of "/api/0.1/datasets/stories/<story_id>/"', function() {
       expect(this.collection.url()).toEqual('/api/0.1/datasets/stories/' + this.story.id + '/');
+    });
+  });
+
+  describe('A collection associated with an asset', function() {
+    beforeEach(function() {
+      this.asset = new Backbone.Model({
+        id: '78b26070d5d211e19b230800200c9a66'
+      });
+      this.collection.setAsset(this.asset);
+    });
+
+    it('should have a URL of "/api/0.1/datasets/assets/<asset_id>/"', function() {
+      expect(this.collection.url()).toEqual('/api/0.1/datasets/assets/' + this.asset.id + '/');
     });
   });
 });
@@ -321,7 +395,7 @@ describe('Tag model', function() {
         });
       });
       it('should return the collection url', function() {
-        this.collection = new Backbone.Collection;
+        this.collection = new Backbone.Collection();
         this.collection.url = '/api/0.1/tags/stories/472d5039b37748ba8d78d685aa898475/';
         this.collection.add(this.model);
         expect(this.model.url()).toEqual(this.collection.url);

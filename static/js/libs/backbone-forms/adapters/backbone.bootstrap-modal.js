@@ -30,7 +30,7 @@
         <h3>{{title}}</h3>\
       </div>\
     <% } %>\
-    <div class="modal-body"><p>{{content}}</p></div>\
+    <div class="modal-body">{{content}}</div>\
     <div class="modal-footer">\
       <% if (allowCancel) { %>\
         <% if (cancelText) { %>\
@@ -54,19 +54,32 @@
         event.preventDefault();
 
         this.trigger('cancel');
-        this.close();
+
+        if (this.options.content && this.options.content.trigger) {
+          this.options.content.trigger('cancel', this);
+        }
       },
       'click .cancel': function(event) {
         event.preventDefault();
 
         this.trigger('cancel');
-        this.close();
+
+        if (this.options.content && this.options.content.trigger) {
+          this.options.content.trigger('cancel', this);
+        }
       },
       'click .ok': function(event) {
         event.preventDefault();
 
         this.trigger('ok');
-        this.close();
+
+        if (this.options.content && this.options.content.trigger) {
+          this.options.content.trigger('ok', this);
+        }
+
+        if (this.options.okCloses) {
+          this.close();
+        }
       }
     },
 
@@ -89,6 +102,8 @@
       this.options = _.extend({
         title: null,
         okText: 'OK',
+        focusOk: true,
+        okCloses: true,
         cancelText: 'Cancel',
         allowCancel: true,
         escape: true,
@@ -110,11 +125,12 @@
       //Create the modal container
       $el.html(options.template(options));
 
-      var $content = this.$content = $el.find('.modal-body p')
+      var $content = this.$content = $el.find('.modal-body')
 
       //Insert the main content if it's a view
       if (content.$el) {
-        $el.find('.modal-body p').html(content.render().$el);
+        content.render();
+        $el.find('.modal-body').html(content.$el);
       }
 
       if (options.animate) $el.addClass('fade');
@@ -126,22 +142,30 @@
 
     /**
      * Renders and shows the modal
+     *
+     * @param {Function} [cb]     Optional callback that runs only when OK is pressed.
      */
-    open: function() {
+    open: function(cb) {
       if (!this.isRendered) this.render();
 
       var self = this,
           $el = this.$el;
 
       //Create it
-      $el.modal({
+      $el.modal(_.extend({
         keyboard: this.options.allowCancel,
         backdrop: this.options.allowCancel ? true : 'static'
-      });
+      }, this.options.modalOptions));
 
       //Focus OK button
       $el.one('shown', function() {
-        $el.find('.btn.ok').focus();
+        if (self.options.focusOk) {
+          $el.find('.btn.ok').focus();
+        }
+
+        if (self.options.content && self.options.content.trigger) {
+          self.options.content.trigger('shown', self);
+        }
 
         self.trigger('shown');
       });
@@ -149,13 +173,40 @@
       //Adjust the modal and backdrop z-index; for dealing with multiple modals
       var numModals = Modal.count,
           $backdrop = $('.modal-backdrop:eq('+numModals+')'),
-          backdropIndex = $backdrop.css('z-index'),
-          elIndex = $backdrop.css('z-index');
+          backdropIndex = parseInt($backdrop.css('z-index'),10),
+          elIndex = parseInt($backdrop.css('z-index'), 10);
 
       $backdrop.css('z-index', backdropIndex + numModals);
       this.$el.css('z-index', elIndex + numModals);
 
+      if (this.options.allowCancel) {
+        $backdrop.one('click', function() {
+          if (self.options.content && self.options.content.trigger) {
+            self.options.content.trigger('cancel', self);
+          }
+
+          self.trigger('cancel');
+        });
+        
+        $(document).one('keyup.dismiss.modal', function (e) {
+          e.which == 27 && self.trigger('cancel');
+
+          if (self.options.content && self.options.content.trigger) {
+            e.which == 27 && self.options.content.trigger('shown', self);
+          }
+        });
+      }
+
+      this.on('cancel', function() {
+        self.close();
+      });
+
       Modal.count++;
+
+      //Run callback on OK if provided
+      if (cb) {
+        self.on('ok', cb);
+      }
       
       return this;
     },
@@ -173,13 +224,21 @@
         return;
       }
 
-      $el.modal('hide');
-
-      $el.one('hidden', function() {
+      $el.one('hidden', function onHidden(e) {
+        // Ignore events propagated from interior objects, like bootstrap tooltips
+        if(e.target !== e.currentTarget){
+          return $el.one('hidden', onHidden);
+        }
         self.remove();
+
+        if (self.options.content && self.options.content.trigger) {
+          self.options.content.trigger('hidden', self);
+        }
 
         self.trigger('hidden');
       });
+
+      $el.modal('hide');
 
       Modal.count--;
     },
@@ -201,14 +260,14 @@
 
   //EXPORTS
   //CommonJS
-  if (typeof require == 'function' && module && exports) {
+  if (typeof require == 'function' && typeof module !== 'undefined' && exports) {
     module.exports = Modal;
   }
 
   //AMD / RequireJS
   if (typeof define === 'function' && define.amd) {
     return define(function() {
-      return Modal;
+      Backbone.BootstrapModal = Modal;
     })
   }
 

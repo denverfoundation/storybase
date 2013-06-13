@@ -13,11 +13,13 @@
   var Section = storybase.models.Section;
   var Story = storybase.models.Story;
   var Tags = storybase.collections.Tags;
+  var getLabelText = storybase.forms.getLabelText;
   var capfirst = storybase.utils.capfirst;
   var geocode = storybase.utils.geocode;
   var hasAnalytics = storybase.utils.hasAnalytics;
   var licenseParamsToStr = storybase.utils.licenseParamsToStr;
   var licenseStrToParams = storybase.utils.licenseStrToParams;
+  var openInNewWindow = storybase.openInNewWindow;
   var prettyDate = storybase.utils.prettyDate;
   var HandlebarsTemplateMixin = storybase.views.HandlebarsTemplateMixin;
   var HandlebarsTemplateView = storybase.views.HandlebarsTemplateView;
@@ -108,6 +110,17 @@
     */
 
   /**
+   * Event callback for updating the progress of an upload.
+   */
+  var handleUploadProgress = function(evt) {
+    var percentage;
+    if (evt.lengthComputable) {
+      percentage = Math.round((evt.loaded * 100) / evt.total);
+      this.$('.uploadprogress .meter > span').width(percentage + '%');
+    }
+  };
+
+  /**
    * Master view for the story builder
    *
    * Dispatches to sub-views.
@@ -130,6 +143,10 @@
       toolsContainerEl: '#title-bar-contents',
       visibleSteps: VISIBLE_STEPS, 
       workflowContainerEl: '#workflow-bar-contents'
+    },
+
+    events: {
+      'click a.external': openInNewWindow
     },
 
     registerPartials: function() {
@@ -215,11 +232,6 @@
       // in options. We don't iterate through the steps because the
       // views use different constructor, options. If this gets to
       // unwieldy, maybe use a factory function.
-      if (this.options.visibleSteps.data) {
-        this.subviews.data = new DataView(
-          _.clone(commonOptions)
-        );
-      }
       if (this.options.visibleSteps.tag) {
         this.subviews.tag =  new TaxonomyView(
           _.defaults({
@@ -1183,17 +1195,6 @@
           path: ''
         });
       }
-      if (this.options.visibleSteps.data) {
-        items.push({
-          id: 'data',
-          title: gettext("Upload or link to source data referenced in your story’s charts, maps, graphs and visualizations"),
-          text: gettext('Add Data'),
-          visible: true,
-          enabled: 'isStorySaved',
-          selected: false,
-          path: 'data/'
-        });
-      }
       if (this.options.visibleSteps.tag) {
         items.push({
           id: 'tag',
@@ -1816,17 +1817,17 @@
         dispatcher: this.dispatcher,
         items: []
       };
-      // The next step will either be data (in the normal builder) or
+      // The next step will either be tag (in the normal builder) or
       // publish (in the connected story builder). If this gets more
       // complicated, it might make more sense to have a global set
       // of items. 
-      if (this.options.visibleSteps.data) {
+      if (this.options.visibleSteps.tag) {
         navViewOptions.items.push({
-          id: 'workflow-nav-data-fwd',
+          id: 'workflow-nav-tag-fwd',
           className: 'next',
-          title: gettext("Add Data to Your Story"),
+          title: gettext("Label your story to help others discover it on Floodlight"),
           text: gettext("Next"),
-          path: 'data/',
+          path: 'tag/',
           enabled: isNew 
         });
       }
@@ -2315,7 +2316,7 @@
           if (assetJSON.thumbnail_url) {
             attrs.thumbnail_url = assetJSON.thumbnail_url;
           }
-          else if (assetJSON.body) {
+          else if (assetJSON.body && assetJSON.type === 'text') {
             attrs.body = assetJSON.body;
           }
 
@@ -3751,6 +3752,596 @@
     }
   });
 
+  var DataSetFormView = HandlebarsTemplateView.extend({
+    options: {
+      templateSource: {
+        'upload': $('#uploadprogress-template').html()
+      }
+    },
+
+    /**
+     * Get the Backbone Forms schema for the dataset form
+     */
+    getFormSchema: function(model) {
+      var schema;
+      var filename;
+      
+      // Start with the schema defined in either the model instance
+      // or class
+      if (model) {
+        schema = model.schema();
+      }
+      else {
+        schema = DataSet.prototype.schema();
+      }
+
+      // Update some labels and help text
+      // TODO: Refine this microcopy
+      schema.title.title = getLabelText(gettext("Dataset name"), true);
+      schema.source.title = gettext("Source");
+      schema.source.help = gettext("The organization or entity that created the dataset");
+      if (schema.url) {
+        schema.url.title = gettext("Data URL");
+        schema.url.help = gettext("Enter the URL of a dataset hosted on a web site or in the cloud. Alternately, you can upload a file below.");
+      }
+      if (schema.file) {
+        schema.file.title = gettext("Data file");
+        if (schema.url) {
+          // Both the file and url fields should be shown, i.e. creating a new
+          // model
+          schema.file.help = gettext("Upload a data file from your computer. Alternately, you can provide a link to a dataset above.");
+        }
+        else {
+          // Only the file field is present, i.e. editing an existing model
+          filename = _.last(model.get('file').split('/'));
+          schema.file.help = gettext("Current file is") + " <em>" + filename + ".</em> " + gettext("Change the data file by uploading a new data file from your computer.");
+        }
+      }
+
+      // Add the required text to the content fields' label only if
+      // one field is present, i.e. when an existing DataSet is being
+      // edited
+      if (!_.isUndefined(schema.url) && _.isUndefined(schema.file)) {
+        schema.url.title = getLabelText(schema.url.title, true); 
+      }
+
+      return schema;
+    },
+
+    getForm: function(model, options) {
+      var schema = this.getFormSchema(model);
+      var contentFields = [];
+      var contentFieldset;
+
+      // HACK: There isn't a good way to show that one field OR the other
+      // is required. Separate out the metadata and content fields in
+      // anticipation of cleaning this up in #767
+      if (schema.url) {
+        contentFields.push('url');
+      }
+      if (schema.file) {
+        contentFields.push('file');
+      }
+
+      // Editing an existing DataSet, so only one content field or the
+      // other will be present
+      if (contentFields.length === 1) {
+        contentFieldset = contentFields;
+      }
+      else {
+        contentFieldset = {
+          fields: contentFields
+        };
+      }
+      
+      options = options || {}; 
+      _.extend(options, {
+        schema: schema,
+        // HACK: If a model instance wasn't specified, create an empty instance 
+        // to force the form to use model validation
+        model: model || new DataSet(),
+        fieldsets: [
+          ['title', 'source'],
+          contentFieldset
+        ]
+      });
+      return new Backbone.Form(options);
+    },
+
+    initialize: function(options) {
+      this.dispatcher = options.dispatcher;
+      this.form = this.getForm(this.model);
+      this._formRemoved = false; // Has the form been removed during upload
+
+      this.handleUploadProgress = _.bind(handleUploadProgress, this);
+
+      this.compileTemplates();
+    },
+
+    /**
+     * Handler for form submission
+     */
+    processForm: function(evt) {
+      var errors = this.form.validate();
+      if (!errors) {
+        this.handleSave(this.form.getValue(), evt.target);
+      }
+      else {
+        // Remove any previous error messages
+        this.form.$('.bbf-model-errors').remove();
+        if (!_.isUndefined(errors._others)) {
+          this.form.$el.prepend('<ul class="bbf-model-errors">');
+          _.each(errors._others, function(msg) {
+            this.form.$('.bbf-model-errors').append('<li>' + msg + '</li>');
+          }, this);
+        }
+      }
+      evt.preventDefault();
+      evt.stopPropagation();
+    },
+
+    handleSave: function(attrs, form) { },
+
+    /**
+     * Replace the form with an upload progress meter
+     *
+     * The form element is kept around so it can be reattached
+     * in the case of an error.
+     */
+    renderUploading: function() {
+      this.form.$el.detach();
+      this.$el.html(this.getTemplate('upload')());
+      return this;
+    },
+
+    /**
+     * Reattach the form
+     *
+     * This is needed after the form has been detached in
+     * ``renderUpload``.
+     */
+    reattachForm: function() {
+      this.$el.empty();
+      this.$el.append(this.form.$el);
+      // TODO: Is this needed since we're detaching the
+      // child element rather than removing it?
+      this.delegateEvents();
+    }
+  });
+
+  /**
+   * Form for adding a new dataset and associating it with an asset
+   *
+   * Events:
+   *
+   * "create:dataset" (model, postSaveAction) - when the dataset has been
+   * succesfully saved to the server. ``model`` is the dataset that was saved. ``postSaveAction`` is the suggested
+   * action to take with the view. A value of ``add`` means to keep the view
+   * visible. A value of ``close`` means to hide the view.
+   */
+  var AssetDataSetAddView = Views.AssetDataSetAddView = DataSetFormView.extend({
+    events: {
+      'submit form': 'processForm',
+      'click [type="submit"]': 'clickSubmit',
+      'click [type="reset"]': 'cancel'
+    },
+
+    initialize: function(options) {
+      DataSetFormView.prototype.initialize.apply(this, arguments);
+      // Action to be taken after the form is submitted. Default is
+      // 'close' which will hide this view. 'add' will show a blank
+      // form allowing the user to add another
+      this._postSaveAction = 'close'; 
+      this.handleSave = this.addDataSet;
+    },
+
+    resetForm: function() {
+      // Remove the old form from the DOM and remove event listeners
+      this.form.remove();
+      // Initialize a new form view
+      this.form = this.getForm();
+      // Re-render this view to add the new form to the DOM
+      return this.render();
+    },
+
+    render: function() {
+      this.$('.uploadprogress').remove();
+      this.$el.append(
+        this.form.render().$el
+            .append("<input type='reset' value='" + gettext("Cancel") + "' />")
+            .append("<input type='submit' name='save' value='" + gettext("Save") + "' />")
+            .append("<input type='submit' name='save-and-add' value='" + gettext("Save and Add Another") + "' />")
+      );
+      return this;
+    },
+
+    /**
+     * Handler for clicking a submit button
+     */
+    clickSubmit: function(evt) {
+      if ($(evt.target).attr('name') === 'save-and-add') {
+        this._postSaveAction = 'add';
+      }
+      else {
+        this._postSaveAction = 'close'; 
+      }
+    },
+
+    /**
+     * Handler for clicking the "Cancel" button
+     */
+    cancel: function(evt) {
+      this.trigger('click:cancel');
+      // Without the call to stopPropagation, the click event will bubble
+      // up to the parent view's event handlers.  This might be desireable
+      // if we just want to jump to the display view instead of back to the
+      // dataset list view
+      evt.stopPropagation();
+    },
+
+
+    addDataSet: function(attrs, form) {
+      var view = this;
+      var file = null;
+      var options = {
+        success: function(model, response) {
+          view.dispatcher.trigger('alert', 'success', "Dataset added");
+          view.resetForm();
+          view.trigger('create:dataset', model, view._postSaveAction);
+        },
+        error: function(model, response) {
+          view.reattachForm(); 
+          view.dispatcher.trigger('error', 'Error saving the dataset');
+        }
+      };
+
+      if (attrs.file) {
+        _.extend(options, {
+          upload: true,
+          form: $(form),
+          progressHandler: this.handleUploadProgress
+        });
+
+        if (!_.isString(attrs.file)) {
+          // If the file field is not a string (meaning it's a File object),
+          // remove the form so we can show the upload status.
+          // Otherwise, we need to keep the form around to be able to access the
+          // file input element when posting the form through a hidden IFRAME
+          this.renderUploading();
+        }
+      }
+
+      this.collection.create(attrs, options);
+    },
+
+    unsetCollection: function() {
+      this.collection = undefined;
+    },
+
+    setCollection: function(collection) {
+      this.collection = collection;
+    }
+  });
+
+  var DataSetEditView = Views.DataSetEditView = DataSetFormView.extend({
+    className: 'edit-dataset-form-container',
+
+    events: {
+      'submit form': 'processForm',
+      'click [type="reset"]': 'cancel'
+    },
+
+    initialize: function(options) {
+      DataSetFormView.prototype.initialize.apply(this, arguments);
+      this.handleSave = this.saveDataSet;
+    },
+
+    render: function() {
+      this.$('.uploadprogress').remove();
+      this.$el.append(
+        this.form.render().$el
+            .append("<input type='reset' value='" + gettext("Cancel") + "' />")
+            .append("<input type='submit' name='save' value='" + gettext("Save Changes") + "' />")
+      );
+      return this;
+    },
+
+    /**
+     * Handler for clicking the "Cancel" button
+     */
+    cancel: function(evt) {
+      this.trigger('click:cancel');
+      // Without the call to stopPropagation, the click event will bubble
+      // up to the parent view's event handlers.  This might be desireable
+      // if we just want to jump to the display view instead of back to the
+      // dataset list view
+      evt.stopPropagation();
+    },
+
+    saveDataSet: function(attrs, form) {
+      var view = this;
+      var file = null;
+      var options = {
+        success: function(model, response) {
+          view.dispatcher.trigger('alert', 'success', "Dataset saved");
+          view.trigger('save:dataset', model);
+        },
+        error: function(model, response) {
+          view.reattachForm(); 
+          view.dispatcher.trigger('error', 'Error saving the dataset');
+        }
+      };
+
+      if (!_.isUndefined(attrs.file)) {
+        _.extend(options, {
+          upload: true,
+          form: $(form),
+          progressHandler: this.handleUploadProgress
+        });
+
+        if (!_.isString(attrs.file)) {
+          // If the file field is not a string (meaning it's a File object),
+          // remove the form so we can show the upload status.
+          // Otherwise, we need to keep the form around to be able to access the
+          // file input element when posting the form through a hidden IFRAME
+          this.renderUploading();
+        }
+      }
+      else if (_.has(attrs, 'file')) { 
+        // The attributes have a ``file`` key, but it's undefined.
+        // This means we're not updating the file field.  Just throw away
+        // the undefined file attribute so we keep whatever value is in the
+        // model
+        delete attrs.file;
+      }
+
+      this.model.save(attrs, options);
+    },
+
+    unsetCollection: function() {
+      this.collection = undefined;
+    },
+
+    setCollection: function(collection) {
+      this.collection = collection;
+    }
+  });
+
+  var AssetDataSetListView = Views.AssetDataSetListView = HandlebarsTemplateView.extend({
+    options: {
+      templateSource: {
+        '__main': $('#asset-dataset-list-container-template').html(),
+        'list': $('#asset-dataset-list-list-template').html()
+      }
+    },
+
+    events: {
+      'click button[type="reset"]': 'clickClose',
+      'click .add-dataset': 'clickAdd',
+      'click .remove-dataset': 'clickRemove',
+      'click .edit-dataset': 'clickEdit'
+    },
+
+    bindModelEvents: function() {
+      this.collection.on('add remove', this.renderList, this);
+    },
+
+    unbindModelEvents: function() {
+      this.collection.off('add remove', this.renderList, this);
+    },
+
+    bindSubviewEvents: function() {
+      this.addView.on('click:cancel', this.clickAddCancel, this);
+      this.addView.on('create:dataset', this.handleAdd, this);
+    },
+
+    unbindSubviewEvents: function() {
+      this.addView.off('click:cancel', this.clickAddCancel, this);
+      this.addView.off('create:dataset', this.handleAdd, this);
+    },
+
+    /**
+     * Initialize and fetch the asset's datasets collection
+     */
+    _initCollection: function() {
+      var view = this;
+      if (!_.isObject(this.model.datasets)) {
+        this.model.setDataSets(new DataSets());
+        this.collection = this.model.datasets;
+        this.collection.fetch({
+          success: function() {
+            view._collectionFetched = true;
+          }
+        });
+      }
+      else {
+        this.collection = this.model.datasets;
+        // Since the dataset collection has been initialized, assume its
+        // also been already fetched from the server.
+        this._collectionFetched = true;
+      }
+    },
+
+    initialize: function(options) {
+      this.dispatcher = options.dispatcher;
+      // Flag to indicate whether or not the colleciton has
+      // been fetched yet. This is used to defer rendering
+      // until after the collection has been fetched.
+      this._collectionFetched = false;
+      // Have the datasets been changed
+      this.hasChanged = false;
+      this._initCollection();
+      this.addView = new AssetDataSetAddView({
+        collection: this.collection,
+        dispatcher: this.dispatcher
+      });
+      this.compileTemplates();
+      this.bindModelEvents();
+      this.bindSubviewEvents();
+    },
+
+    close: function() {
+      this.unbindModelEvents();
+      this.unbindSubviewEvents();
+    },
+
+    /**
+     * Scroll the browser window so the top of an element is visible
+     * just below the header.
+     */
+    scrollTo: function($el) {
+      var $header = $('header:first');
+      // Assume header is fixed, so the top is at 0
+      var headerBottom = $header.outerHeight();
+      var scrollTo = $el.offset().top - headerBottom;
+      $('html, body').animate({
+        scrollTop: scrollTo 
+      }, 500);
+    },
+
+    hideAdd: function() {
+      this.addView.$el.hide();
+      return this;
+    },
+
+    showAdd: function() {
+      this.addView.$el.show();
+      this.scrollTo(this.addView.$el);
+      return this;
+    },
+
+    hideList: function() {
+      this.$('.dataset-list-container').hide();
+      return this;
+    },
+
+    showList: function() {
+      this.$('.dataset-list-container').show();
+      return this;
+    },
+
+    renderList: function() {
+      var template = this.getTemplate('list');
+      var context = {
+        collectionFetched: this._collectionFetched
+      };
+
+      if (!this._collectionFetched) {
+        // If the collection has not yet been fetched,
+        // defer rendering until the collection has
+        // been fetched
+        this.collection.once('reset', this.renderList, this);
+      }
+      else {
+        context.datasets = this.collection.toJSON();
+      }
+      this.$('.dataset-list-container').html(template(context));
+      this.delegateEvents();
+      return this;
+    },
+
+    renderEdit: function() {
+      if (this.editView) {
+        this.$('.wrapper').append(this.editView.render().$el);
+      }
+      return this;
+    },
+
+    render: function() {
+      this.$el.html(this.template());
+      this.renderList();
+      this.addView.setElement(this.$('.add-dataset-form-container')).
+                  render().$el.hide();
+      return this;
+    },
+
+    /**
+     * Tell upstream views that the user has requested that
+     * this view be closed
+     */
+    triggerClose: function() {
+      this.trigger('close', this.hasChanged);
+      this.hasChanged = false;
+    },
+
+    clickClose: function(evt) {
+      this.triggerClose();
+    },
+
+    clickAdd: function(evt) {
+      this.hideList().showAdd();
+    },
+
+    clickAddCancel: function() {
+      this.hideAdd().showList();
+    },
+
+    /**
+     * Event handler for ``create:dataset`` event
+     */
+    handleAdd: function(dataset, postSaveAction) {
+      this.hasChanged = true;
+      // Proxy the event upstream
+      if (postSaveAction === 'close') {
+        this.triggerClose();
+        // Hide the add dataset subview and show the
+        // list of datasets
+        this.hideAdd().showList();
+      }
+    },
+
+    closeEdit: function(dataset) {
+      this.editView.remove();
+      this.editView = null;
+      this.hideAdd().showList();
+    },
+
+    /**
+     * Event handler for ``save:dataset`` event
+     */
+    handleEdit: function(dataset) {
+      this.hasChanged = true;
+      this.renderList();
+      this.closeEdit();
+    },
+    
+    clickRemove: function(evt) {
+      var datasetId = $(evt.target).data('dataset-id');
+      var model = this.collection.get(datasetId);
+      this.collection.remove(model, {
+        sync: true
+      });
+      this.hasChanged = true;
+    },
+
+    clickEdit: function(evt) {
+      var datasetId = $(evt.target).data('dataset-id');
+      var model = this.collection.get(datasetId);
+      this.editView = new DataSetEditView({
+        model: model,
+        dispatcher: this.dispatcher
+      });
+      this.editView.once('click:cancel', this.closeEdit, this);
+      this.editView.once('save:dataset', this.handleEdit, this);
+      this.hideAdd().hideList().renderEdit();
+      this.scrollTo(this.editView.$el);
+    },
+
+    unsetModel: function() {
+      this.addView.unsetCollection();
+      this.unbindModelEvents();
+      this.model = undefined;
+      this.collection = undefined;
+    },
+
+    setModel: function(model) {
+      this.model = model;
+      this._initCollection();
+      this.bindModelEvents();
+      this.addView.setCollection(this.collection);
+    }
+  });
+
   var SectionAssetEditView = Views.SectionAssetEditView = HandlebarsTemplateView.extend(
     _.extend({}, RichTextEditorMixin, {
       tagName: 'div',
@@ -3764,6 +4355,7 @@
           'edit': $('#section-asset-edit-template').html(),
           'upload': $('#asset-uploadprogress-template').html(),
           'select': $('#section-asset-select-type-template').html(),
+          'sync': $('#section-asset-sync-template').html(),
           'image-help': $('#image-help-template').html(),
           'text-help': $('#text-help-template').html(), 
           'video-help': $('#video-help-template').html()
@@ -3775,13 +4367,14 @@
         "click .asset-type": "selectType", 
         "click .remove": "handleClickRemove",
         "click .edit": "edit",
+        "click .edit-data": "handleClickEditData",
         "click .help": "showHelp",
         'click input[type="reset"]': "cancel",
         'submit form.bbf-form': 'processForm',
         'drop': 'handleDrop'
       },
 
-      states: ['select', 'display', 'edit'],
+      states: ['select', 'display', 'edit', 'editData', 'sync'],
 
       initialize: function() {
         this.compileTemplates();
@@ -3795,12 +4388,20 @@
         this.section = this.options.section;
         this.story = this.options.story;
         if (_.isUndefined(this.model)) {
+          // If no model is passed to the constructor, create
+          // an empty Asset model
           if (this.options.suggestedType) {
             modelOptions.type = this.options.suggestedType;
           }
           this.model = new Asset(modelOptions);
         }
-        _.bindAll(this, 'handleUploadProgress', 'editCaption'); 
+        else {
+          // If it's an existing model, initialize views for
+          // associated data
+          this.initializeDataViews(); 
+        }
+        _.bindAll(this, 'editCaption'); 
+        this.handleUploadProgress = _.bind(handleUploadProgress, this);
         this.bindModelEvents();
         this.initializeForm();
         this.setInitialState();
@@ -3809,11 +4410,15 @@
       bindModelEvents: function() {
         this.model.on("change", this.initializeForm, this);
         this.model.on("remove", this.handleModelRemove, this);
+        if (this.model.isNew()) {
+          this.model.once("sync", this.initializeDataViews, this);
+        }
       },
 
       unbindModelEvents: function() {
         this.model.off("change", this.initializeForm, this);
         this.model.off("remove", this.handleModelRemove, this);
+        this.model.off("sync", this.initializeDataViews, this);
       },
 
       /**
@@ -3826,30 +4431,41 @@
         this.unbindModelEvents();
       },
 
-      /** 
-       * Update the view's form labels based on the asset type.
+
+      /**
+       * Get the Backbone Forms schema for the asset form
        */
-      updateFormLabels: function() {
+      getFormSchema: function() {
+        var schema = _.result(this.model, 'schema');
         var type = this.model.get('type');
-        var num_elements = _.size(_.pick(this.form.schema, 'image', 'body', 'url')); 
+        var num_elements = _.size(_.pick(schema, 'image', 'body', 'url')); 
         var prefix = num_elements > 1 ? gettext("or") + ", " : "";
-        if (this.form.schema.url) {
-          this.form.schema.url.title = capfirst(gettext("enter") + " " + type + " " + gettext("URL"));
+
+        if (schema.url) {
+          schema.url.title = capfirst(gettext("enter") + " " + type + " " + gettext("URL"));
         }
-        if (this.form.schema.image) {
-          this.form.schema.image.title = capfirst(prefix + gettext("select an image from your own computer to be included in your story."));
+        if (schema.image) {
+          schema.image.title = capfirst(prefix + gettext("select an image from your own computer to be included in your story."));
         }
-        if (this.form.schema.body) {
+        if (schema.body) {
           if (type === 'text') {
-            this.form.schema.body.template = 'noLabelField';
+            schema.body.template = _.template('\
+                <li class="bbf-field field-{{key}}">\
+                  <div class="bbf-editor">{{editor}}</div>\
+                  <div class="bbf-help">{{help}}</div>\
+                </li>\
+              '
+              );
           }
           else if (type === 'quotation') {
-            this.form.schema.body.title = capfirst(prefix + gettext("enter the quotation text"));
+            schema.body.title = capfirst(prefix + gettext("enter the quotation text"));
           }
           else {
-            this.form.schema.body.title = capfirst(prefix + gettext("paste the embed code for the") + " " + type);
+            schema.body.title = capfirst(prefix + gettext("paste the embed code for the") + " " + type);
           }
         }
+
+        return schema;
       },
 
       /**
@@ -3857,9 +4473,9 @@
        */
       initializeForm: function() {
         this.form = new Backbone.Form({
+          schema: this.getFormSchema(),
           model: this.model
         });
-        this.updateFormLabels(); 
         this.form.render();
       },
 
@@ -3898,6 +4514,64 @@
         return result;
       },
 
+      /**
+       * Event handler for adding a new dataset to the asset
+       */
+      handleDataSetListClose: function(refresh) {
+        var view;
+        if (refresh) {
+          // The user wants to close the add dataset form
+          view = this;
+          this.setState('sync').render();
+          // Refresh the asset model to get the updated rendered dataset
+          // list (in the model's ``content`` attribute).
+          // Then switch to the display state and re-render
+          this.model.fetch({
+            success: function() {
+              view.setState('display').render();
+            },
+            error: function() {
+              // TODO: Handle this error in a more meaningful way, perhaps by
+              // showing an alert. For now, just render the old information 
+              view.setState('display').render();
+            }
+          });
+        }
+        else {
+          this.setState('display').render();
+        }
+      },
+
+      /**
+       * Initialize subviews for related datasets
+       *
+       * The first time this method is called, it creates a new instance 
+       * of the subviews. On subsequent calls, it binds the subviews to
+       * this view's model. The latter behavior is useful for when the
+       * model is updated, either because a new asset has been created
+       * or an asset has been dragged and dropped from the unused asset
+       * list.
+       */
+      initializeDataViews: function() {
+        if (this.model.acceptsData()) {
+          if (_.isUndefined(this.datasetListView)) {
+            // There's no dataset list view - create one
+            this.datasetListView = new AssetDataSetListView({
+              model: this.model,
+              dispatcher: this.dispatcher
+            });
+            // If the cancel button is clicked inside the dataset
+            // list view, or if a dataset has been added and (without
+            // choosing to add another) hide the dataset list view and show the display
+            // view
+            this.datasetListView.on('close', this.handleDataSetListClose, this);
+          }
+          else {
+            // There's already a dataset list view - reuse it
+            this.datasetListView.setModel(this.model);
+          }
+        }
+      },
 
       render: function() {
         var context = {};
@@ -3914,8 +4588,15 @@
         }
         else if (state === 'display') {
           context.model = this.model.toJSON();
+          // Set context variable to toggle display of icon to edit data
+          context.acceptsData = this.model.acceptsData();
         }
-        this.$el.html(template(context));
+        if (template) {
+          this.$el.html(template(context));
+        }
+        else {
+          this.$el.empty();
+        }
         $wrapperEl = this.$(this.options.wrapperEl);
         this.setClass();
         if (state == 'select') {
@@ -3952,6 +4633,9 @@
             this.bodyEditor.stopObserving('load');
           }
           $wrapperEl.append(this.form.el);
+        }
+        if (state === 'editData') {
+          this.$el.append(this.datasetListView.render().el);
         }
 
         return this;
@@ -4095,16 +4779,6 @@
       },
 
       /**
-       * Event callback for updating the progress of an upload.
-       */
-      handleUploadProgress: function(evt) {
-        if (evt.lengthComputable) {
-          var percentage = Math.round((evt.loaded * 100) / evt.total);
-          this.$('.uploadprogress').text(gettext('Uploading') + ': ' + percentage + '%');
-        }
-      },
-
-      /**
        * Event handler for submitting form
        */
       processForm: function(e) {
@@ -4144,6 +4818,14 @@
       },
 
       /**
+       * Event handler for clicking the edit data icon
+       */
+      handleClickEditData: function(evt) {
+        evt.preventDefault();
+        this.setState('editData').render();
+      },
+
+      /**
        * Update the model property of the view, taking event callbacks into
        * account
        */
@@ -4153,6 +4835,7 @@
         this.model = model; 
         // Listen to events on the new model
         this.bindModelEvents();
+        this.initializeDataViews();
       },
 
       /**
@@ -4167,6 +4850,9 @@
         if (collection === this.section.assets) {
           this.setModel(new Asset(this.modelOptions));
           this.setState('select').render();
+          if (this.datasetListView) {
+            this.datasetListView.unsetModel();
+          }
         }
       },
 
@@ -4216,180 +4902,6 @@
           this.dispatcher.trigger("do:add:sectionasset", this.section, this.model, this.container);
           this.render();
         }
-      }
-    })
-  );
-
-  var DataView = Views.DataView = HandlebarsTemplateView.extend(
-    _.extend({}, NavViewMixin, {
-      className: 'view-container',
-
-      options: {
-        templateSource: $('#data-template').html()
-      },
-
-      events: {
-        'click .add-dataset': 'showForm',
-        'click .cancel': 'hideForm',
-        'click .delete-dataset': 'handleDelete',
-        'submit form': 'processForm'
-      },
-
-      initialize: function() {
-        this.dispatcher = this.options.dispatcher;
-        this.compileTemplates();
-
-        this.collection = new DataSets();
-        if (_.isUndefined(this.model)) {
-          this.dispatcher.on("ready:story", this.setStory, this);
-        }
-        else {
-          this.collection.setStory(this.model);
-        }
-        this.collection.on('reset', this.render, this);
-        this._collectionFetched = false;
-
-        this.workflowNavView = new WorkflowNavView({
-          model: this.model,
-          dispatcher: this.dispatcher,
-          items: [
-            {
-              id: 'workflow-nav-build-back',
-              className: 'prev',
-              title: gettext("Continue Writing Story"),
-              text: gettext("Previous"),
-              path: ''
-            },
-            {
-              id: 'workflow-nav-tag-fwd',
-              className: 'next',
-              title: gettext("Tag"),
-              text: gettext("Next"),
-              path: 'tag/'
-            }
-          ]
-        });
-
-        this.form = new Backbone.Form({
-          schema: this.getFormSchema() 
-        }); 
-      },
-
-      /**
-       * Get the Backbone Forms schema for the data set addition form
-       */
-      getFormSchema: function() {
-        // Start with the schema defined in the model
-        var schema = DataSet.prototype.schema();
-        // Update some labels
-        schema.title.title = gettext("Data set name");
-        schema.source.title = gettext("Data source");
-        schema.url.title = gettext("Link to a data set");
-        schema.file.title = gettext("Or, upload a data file from your computer");
-        return schema;
-      },
-
-      setStory: function(story) {
-        this.model = story;
-        this.collection.setStory(this.model);
-      },
-
-      fetchCollection: function() {
-        var that = this;
-        this.collection.fetch({
-          success: function() {
-            that._collectionFetched = true;
-          }
-        });
-      },
-
-      render: function() {
-        if (!this._collectionFetched) {
-          this.fetchCollection();
-        }
-        else {
-          var context = {
-            datasets: this.collection.toJSON()
-          };
-          this.$el.html(this.template(context));
-          this.$('.add-dataset').before(this.form.render().$el.append('<input class="cancel" type="reset" value="Cancel" />').append('<input type="submit" value="Save" />').hide());
-          this.workflowNavView.render();
-          this.delegateEvents();
-        }
-        return this;
-      },
-
-      showForm: function(evt) {
-        evt.preventDefault();
-        this.form.$el.show();
-        this.$('.add-dataset').hide();
-      },
-
-      hideForm: function(evt) {
-        evt.preventDefault();
-        this.form.$el.hide();
-        this.$('.add-dataset').show();
-      },
-
-      processForm: function(evt) {
-        evt.preventDefault();
-        var that = this;
-        var errors = this.form.validate();
-        if (!errors) {
-          var formData = this.form.getValue();
-          this.addDataSet(formData, evt.target);
-        }
-        else {
-          // Remove any previous error messages
-          this.form.$('.bbf-model-errors').remove();
-          if (!_.isUndefined(errors._others)) {
-            that.form.$el.prepend('<ul class="bbf-model-errors">');
-            _.each(errors._others, function(msg) {
-              that.form.$('.bbf-model-errors').append('<li>' + msg + '</li>');
-            });
-          }
-        }
-      },
-
-      addDataSet: function(attrs, form) {
-        var view = this;
-        var file = null;
-        var options = {
-          success: function(model, response) {
-            view.trigger('save:dataset', model);
-            view.dispatcher.trigger('alert', 'success', "Data set added");
-            view.render();
-          },
-          error: function(model, response) {
-            view.dispatcher.trigger('error', 'Error saving the data set');
-          }
-        };
-
-        if (attrs.file) {
-          _.extend(options, {
-            upload: true,
-            form: $(form)
-          });
-        }
-
-        this.collection.create(attrs, options);
-      },
-
-      handleDelete: function(evt) {
-        evt.preventDefault();
-        var that = this;
-        var datasetId = $(evt.target).data('dataset-id');
-        var dataset = this.collection.get(datasetId);
-        dataset.destroy({
-          success: function(model, response) {
-            that.dispatcher.trigger('delete:dataset', model);
-            that.dispatcher.trigger('alert', 'success', "Data set deleted");
-            that.render();
-          },
-          error: function(model, response) {
-            that.dispatcher.trigger('error', 'Error removing the data set');
-          }
-        });
       }
     })
   );
@@ -4483,11 +4995,11 @@
           dispatcher: this.dispatcher,
           items: [
             {
-              id: 'workflow-nav-data-back',
+              id: 'workflow-nav-build-back',
               className: 'prev',
-              title: gettext("Back to Add Data"),
+              title: gettext("Continue Writing Story"),
               text: gettext("Previous"),
-              path: 'data/'
+              path: ''
             },
             {
               id: 'workflow-nav-review-fwd',
@@ -5041,12 +5553,12 @@
 
     processForm: function(evt) {
       if (this.validate()) {
+        var values = this.form.getValue();
         this.dispatcher.trigger("select:license");
-        // Update the form data to the new value of the form, otherwise
-        // the new values will get clobbered when the form is re-rendered
-        // in render()
-        this.form.data = this.form.getValue();
-        this.render();
+        // Update the form values
+        _.each(values, function(value, attr) {
+          this.form.setValue(attr, value);
+        }, this);
       }
     },
 
@@ -5473,7 +5985,25 @@
       this.dispatcher.once('ready:story', this.setStory, this);
     },
 
+    getFormSchema: function(model) {
+      var schema = _.result(model, 'schema');
+
+      if (schema.url) {
+        schema.url.title = capfirst(gettext("enter the featured image URL"));
+      }
+      if (schema.image) {
+        schema.image.title = capfirst(gettext("select the featured image from your own computer"));
+      }
+
+      return schema;
+    },
+
     initializeForm: function() {
+      var model = new this.options.assetModelClass({
+          language: this.options.language,
+          type: 'image'
+      });
+
       if (this.form) {
         // If there was a previous version of the form, remove it from the 
         // DOM and detach event listeners 
@@ -5481,26 +6011,14 @@
       }
       // Create a new form with a new bound model instance
       this.form = new Backbone.Form({
-        model: new this.options.assetModelClass({
-          language: this.options.language,
-          type: 'image'
-        })
+        schema: this.getFormSchema(model),
+        model: model
       });
-      this.updateFormLabels(); 
       this.form.render();
       // Set a flag to tell render() that the form element
       // needs to be appended to the view element
       this._appendForm = true;
       return this;
-    },
-
-    updateFormLabels: function() {
-      if (this.form.schema.url) {
-        this.form.schema.url.title = capfirst(gettext("enter the featured image URL"));
-      }
-      if (this.form.schema.image) {
-        this.form.schema.image.title = capfirst(gettext("select the featured image from your own computer"));
-      }
     },
 
     setStory: function(story) {
@@ -5810,8 +6328,7 @@
     id: 'published-buttons',
 
     events: {
-      'click .unpublish': 'handleUnpublish',
-      'click a.popup': 'handleView'
+      'click .unpublish': 'handleUnpublish'
     },
 
     options: {
