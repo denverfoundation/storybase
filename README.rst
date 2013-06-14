@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.10.6
+~~~~~~
+
+* Workaround for page width getting truncated in mobile Safari (#774)
+
 0.10.5
 ~~~~~~
 
