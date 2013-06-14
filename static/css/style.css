@@ -526,7 +526,7 @@ body.base-template table.account-stories td.action{text-align:center;}
 body.base-template .shell{width:1000px;margin:0 auto;position:relative;}
 body.base-template #header{height:165px;position:relative;z-index:2501;}
 body.base-template #container{width:100%;}
-body.base-template #main{overflow-x:hidden;min-height:200px;padding-bottom:8px;}body.base-template #main.inner{overflow-x:visible !important;}
+body.base-template #main{min-height:200px;padding-bottom:8px;}body.base-template #main.inner{overflow-x:visible !important;}
 body.base-template #main .col{width:486px;padding-bottom:55px;}
 body.base-template #main .bottom{margin-bottom:209px;}body.base-template #main .bottom .left{width:182px;float:left;display:inline;}
 body.base-template #main .bottom .right{width:721px;}
