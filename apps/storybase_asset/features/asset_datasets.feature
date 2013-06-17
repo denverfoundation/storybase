@@ -42,15 +42,13 @@ Feature: A user can associate datasets with assets
                 Given the user clicks on the "Add Dataset" button
                 Given the user inputs "Test CSV Data" in the "Data set name" input
                 Given the user inputs "City of Chicago" in the "Source" input
-                Given the user clicks the "choose file" button
-                Given the user selects the file "test_data.csv"
+                Given the user selects the file "test_data.csv" for the "Data file" field
                 Given the user clicks the "Save" button
                 Then "Test CSV Data" appears in the dataset list below the asset content
                 Then "Test CSV Data" has a "download" icon
                 Then "Test CSV Data" lists "City of Chicago" as the source
                 Given the user refreshes the browser
                 Given the user clicks on "Untitled Section" in the section list
-                
                 Given the user clicks on the "Data Sources" link
                 Then "Test CSV Data" appears in the dataset list
 
@@ -117,8 +115,7 @@ Feature: A user can associate datasets with assets
                 Given the user clicks on the "Add Dataset" button
                 Given the user inputs "Test CSV Data" in the "Data set name" input
                 Given the user inputs "City of Chicago" in the "Source" input
-                Given the user clicks the "choose file" button
-                Given the user selects the file "test_data.csv"
+                Given the user selects the file "test_data.csv" for the "Data file" field
                 Given the user clicks the "Save" button
                 Then "FOIA No Heats 2011 to Present" appears in the dataset list below the asset content
                 Then "FOIA No Heats 2011 to Present" has an "external" icon
@@ -132,20 +129,19 @@ Feature: A user can associate datasets with assets
                 Then "Test CSV Data" appears in the dataset list
                 Then "FOIA No Heats 2011 to Present" appears in the dataset list
 
+
         Scenario: Add an additional dataset to a table asset after re-adding it to a section 
                 Given the scenario "Add an external dataset to a new table asset" has been run
                 Given the user clicks the "Close" button
-                
                 Given the user clicks the "Remove" link for asset in the "center" container
                 Given the user opens the asset drawer
                 Given the user drags the asset "https://docs.google.com/spreadsheet/pub?key=0AvaXS4x_XvJmdGthMFBSb1BJOUNPTnhaNWN4UDZnZkE&output=html" from the asset drawer to the "center" container 
-                
                 Given the user clicks on the "Data Sources" link
                 Then "FOIA No Heats 2011 to Present" appears in the dataset list
                 Given the user clicks on the "Add Dataset" button
                 Given the user inputs "Test CSV Data" in the "Data set name" input
-                Given the user clicks the "choose file" button
-                Given the user selects the file "test_data.csv"
+                Given the user inputs "City of Chicago" in the "Source" input
+                Given the user selects the file "test_data.csv" for the "Data file" field
                 Given the user clicks the "Save" button
                 Then "FOIA No Heats 2011 to Present" appears in the dataset list below the asset content
                 Then "FOIA No Heats 2011 to Present" has an "external" icon
