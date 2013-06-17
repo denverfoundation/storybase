@@ -11,6 +11,15 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.11
+~~~~
+
+* Associate datasets with assets instead of the story (#583, #760)
+* Progress bar for asset and dataset file uploads (#732)
+* "Get the Data" button on story detail page to make datasets more 
+  prominent (#733)
+* Show HTML-based assets as icons in asset drawer (#770)
+
 0.10.6
 ~~~~~~
 
