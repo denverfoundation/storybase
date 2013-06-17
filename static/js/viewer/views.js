@@ -14,14 +14,14 @@
   var NavigableMixin = {
     handleNavClick: function(event) {
       if (!$(event.target).hasClass('disabled')) {
-        if (storybase.viewer.router) {
+        if (Router) {
           // we allow our router to handle the location change.
           return true;
         }
       
         // if there is no router we trigger an event for internal 
         // use and prevent the anchor click from bubbling.
-        var sectionId = $(event.target).attr('href').split('/')[1];
+        var sectionId = $(event.currentTarget).attr('href').split('/')[1];
         this.trigger('navigate:section', sectionId);
       
         return false;
@@ -283,22 +283,6 @@
       showConnectedStory: function() {
         this.showingConnectedStory = true; 
         this.render();
-      },
-      
-      handleNavClick: function(event) {
-        if (!$(event.target).hasClass('disabled')) {
-          if (Router) {
-            // we allow our router to handle the location change.
-            return true;
-          }
-          
-          // if there is no router we trigger an event for internal 
-          // use and prevent the anchor click from bubbling.
-          var sectionId = $(event.target).attr('href').split('/')[1];
-          this.trigger('navigate:section', sectionId);
-          
-          return false;
-        }
       }
     })
   );
