@@ -19,6 +19,7 @@ Changelog
 * "Get the Data" button on story detail page to make datasets more 
   prominent (#733)
 * Show HTML-based assets as icons in asset drawer (#770)
+* Properly handle click of chevron in next/previous buttons in viewer (#785)
 
 0.10.6
 ~~~~~~
