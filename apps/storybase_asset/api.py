@@ -48,6 +48,9 @@ class AssetResource(DataUriResourceMixin, TranslatedModelResource):
         featured_detail_allowed_methods = []
 
     def get_object_class(self, bundle=None, **kwargs):
+        if bundle and bundle.obj and bundle.obj.asset_id:
+            return bundle.obj.__class__
+
         content_fields = ('body', 'image', 'url')
         num_content_fields = 0
         for name in content_fields:

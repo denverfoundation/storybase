@@ -4774,6 +4774,13 @@
             this.setState('upload').render();
           }
         }
+        else if (_.has(attributes, 'image')) {
+          // The attributes have a ``image`` key, but it's undefined.
+          // This means we're not updating the image field.  Just throw away
+          // the undefined file attribute so we keep whatever value is in the
+          // model
+          delete attributes.image;
+        }
 
         this.model.save(attributes, options); 
       },
@@ -4782,11 +4789,11 @@
        * Event handler for submitting form
        */
       processForm: function(e) {
+        e.preventDefault();
+
         var errors = this.form.validate();
         var data;
         var view = this;
-
-        e.preventDefault();
 
         if (!errors) {
           data = this.form.getValue();

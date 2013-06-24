@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+dev
+~~~
+
+* Fix editing of image-based assets (#794)
+
 0.11
 ~~~~
 
