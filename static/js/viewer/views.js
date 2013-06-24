@@ -548,12 +548,49 @@
 
     // override to hook into our own render event.
     initialize: function() {
-      this.on('render', this.showActiveSection, this);
+      this.on('render', this.handleRendered, this);
       ViewerApp.prototype.initialize.apply(this, arguments);
     },
 
     footerTop: function() {
       return this.$('footer').offset().top;
+    },
+    
+    setStickyHeader: function(isSticky) {
+      if ('_stickyHeaderInfo' in this) {
+        if (isSticky) {
+          this.$('#header').css('position', 'fixed');
+          this.$('#body').css(
+            'padding-top',
+            this._stickyHeaderInfo.bodyPaddingTop + this._stickyHeaderInfo.headerHeight
+          );
+        }
+        else {
+          this.$('#header').css('position', 'relative');
+          this.$('#body').css(
+            'padding-top', 
+            this._stickyHeaderInfo.bodyPaddingTop
+          );
+        }
+      }
+    },
+    
+    handleScroll: function() {
+      var top = $(window).scrollTop();
+      if (top != 0) {
+        this.setStickyHeader(true);
+      }
+      else {
+        this.setStickyHeader(false);
+      }
+    },
+    
+    handleRendered: function() {
+      this._stickyHeaderInfo = {
+        headerHeight: this.$('#header').outerHeight(),
+        bodyPaddingTop: parseInt(this.$('#body').css('padding-top'), 10),
+      };
+      this.showActiveSection();
     },
     
     // Show the active section
