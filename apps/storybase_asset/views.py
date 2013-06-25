@@ -12,3 +12,8 @@ class DataSetDetailView(ModelIdDetailView):
     context_object_name = "dataset"
     queryset = DataSet.objects.select_subclasses()
     template_name = 'storybase_asset/datasset_detail.html'
+
+class AssetContentView(ModelIdDetailView):
+    context_object_name = "asset"
+    queryset = Asset.objects.select_subclasses()
+    template_name = 'storybase_asset/asset_content.html'

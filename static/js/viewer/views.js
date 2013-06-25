@@ -63,11 +63,17 @@
         this.on('navigate:section', this.setSectionById, this);
         this.navigationView.on('navigate:section', this.setSectionById, this);
         
+        $(window).on('resize.viewer', _.bind(this.handleResize, this));
+        
         // Has the view been rendered yet?
         this._rendered = false;
         this.setSection(this.sections.at(0), {showActiveSection: false});
         _.bindAll(this, 'handleScroll');
         $(window).scroll(this.handleScroll);
+      },
+      
+      remove: function() {
+        $(window).off('resize.viewer');
       },
 
       // Add the view's container element to the DOM and render the sub-views
@@ -77,9 +83,6 @@
         this.navigationView.render();
         this.$('.summary').show();
         this.$('.section').show();
-        // When images are finally loaded, resize the <figure> containers
-        // and the image captions to fit the images 
-        this.$el.imagesLoaded($.proxy(this.sizeFigCaptions, this));
         this.$('.storybase-share-widget').storybaseShare();
         this._rendered = true;
         this.trigger("render");
@@ -136,25 +139,18 @@
       sizeFigCaption: function(el) {
         var width = $(el).width();
         this.$(el).next('figcaption').width(width);
-        // Resize the figure element as well
         this.$(el).parent('figure').width(width);
       },
       
       sizeFigCaptions: function() {
         var view = this;
-        this.$('figure img, figure iframe').each(function() {
-          if ($(this).width()) {
-            view.sizeFigCaption(this);
-          }
-          // however, set up a handler anyway.
-          $(this).on('load', function() {
-            view.sizeFigCaption(this);
-          });
+        this.$el.find('figure img').each(function() {
+          view.sizeFigCaption(this);
         });
       },
       
-      handleImgResize: function(event) {
-        this.sizeFigCaption(event.target);
+      handleResize: function(event) {
+        this.sizeFigCaptions();
       },
       
       openToc: function() {
@@ -548,7 +544,7 @@
 
     // override to hook into our own render event.
     initialize: function() {
-      this.on('render', this.showActiveSection, this);
+      this.on('render', this.handleRendered, this);
       ViewerApp.prototype.initialize.apply(this, arguments);
     },
 
@@ -556,10 +552,17 @@
       return this.$('footer').offset().top;
     },
     
+    handleRendered: function() {
+      storybase.views.deferSrcLoad({ 
+        selector: 'iframe.sandboxed-asset', 
+        scope: this.$el
+      });
+      this.showActiveSection();
+    },
+    
     // Show the active section
     showActiveSection: function() {
       var $section = this.$('#' + this.activeSection.id);
-      //console.log('show active section: ' + $section.find('h2').html());
 
       this.showingConnectedStory = false;
       // Hide connected stories
@@ -568,6 +571,13 @@
       this.$('.section')
         .not($section.show())
         .hide();
+      
+      if (this._rendered) {
+        storybase.views.loadDeferredAssetsAndAutosize({
+          assetSelector: 'iframe.sandboxed-asset', 
+          scope: $section
+        });
+      }
     },
 
     getLastSection: function() {

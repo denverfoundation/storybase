@@ -363,6 +363,20 @@ In 2010, there were 66,346 births in Colorado. Of those births, 99.8% of mothers
                                   body=body, status='published')
         self.assertEqual(asset.strings(), striptags(body))
 
+    def test_has_script_google_charts(self):
+        body = "<script GOOGLE EMBED CODE GOES HERE> ... </script>"
+        asset = create_html_asset(type='chart', title="", caption="", body=body)
+        self.assertTrue(asset.has_script())
+
+    def test_has_script_google_charts_capitalized(self):
+        body = "<SCRIPT GOOGLE EMBED CODE GOES HERE> ... </script>"
+        asset = create_html_asset(type='chart', title="", caption="", body=body)
+        self.assertTrue(asset.has_script())
+
+    def test_has_script_fakeout(self):
+        body = "<p>This is a string with the word script in it</p>"
+        asset = create_html_asset(type='chart', title="", caption="", body=body)
+        self.assertFalse(asset.has_script())
 
 
 class MockProviderTest(TestCase):

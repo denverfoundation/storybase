@@ -8,6 +8,7 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.core.files import File
 from django.core.cache import cache
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.db.models.signals import pre_save, post_delete, m2m_changed
 from django.template.loader import render_to_string
@@ -409,7 +410,6 @@ class HtmlAssetTranslation(AssetTranslation):
     def strings(self):
         return strip_tags(self.body)
 
-
 class HtmlAsset(Asset):
     """An Asset that can be stored as a block of HTML.
 
@@ -459,19 +459,25 @@ class HtmlAsset(Asset):
 
     def render_html(self, **kwargs):
         """Render the asset as HTML"""
+
+        # sandbox content that has script tags
+        body = self.body
+        if self.has_script():
+            body = '<iframe class="sandboxed-asset" src="%s"></iframe>' % reverse('asset_content_view', kwargs={ "asset_id": self.asset_id })
+
         output = []
         if self.title:
             output.append('<h3>%s</h3>' % (self.title))
         if self.type in CAPTION_TYPES:
             output.append('<figure>')
-            output.append(self.body)
+            output.append(body)
             full_caption_html = self.full_caption_html()
             if full_caption_html:
                 output.append(full_caption_html)
             output.append('</figure>')
         elif self.type == 'quotation':
             output.append('<blockquote class="quotation">')
-            output.append(self.body)
+            output.append(body)
             if self.attribution:
                 attribution = self.attribution
                 if self.source_url:
@@ -481,10 +487,13 @@ class HtmlAsset(Asset):
                               (attribution))
             output.append('</blockquote>')
         else:
-            output.append(self.body)
+            output.append(body)
             
         return mark_safe(u'\n'.join(output))
 
+    def has_script(self, **kwargs):
+        """Return True if the asset has a script tag anywhere within it"""
+        return "<script" in self.body.lower()
 
 class LocalImageAssetTranslation(AssetTranslation):
     """Translatable fields for a LocalImageAsset model instance"""

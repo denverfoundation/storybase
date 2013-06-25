@@ -3473,6 +3473,10 @@
       else {
         this.$el.hide();
       }
+      storybase.views.loadDeferredAssetsAndAutosize({ 
+        assetSelector: 'iframe.sandboxed-asset',
+        scope: this.$el 
+      });
       return this;
     },
 
@@ -4616,6 +4620,18 @@
             placeholder: gettext("Click to edit caption"),
             height: '2.8em'
           });
+          if (this.$el.is(':visible')) {
+            storybase.views.autosizeAssetsOnLoad({
+              assetSelector: 'iframe.sandboxed-asset',
+              scope: this.$el
+            });
+          }
+          else {
+            storybase.views.deferSrcLoad({
+              assetSelector: 'iframe.sandboxed-asset',
+              scope: this.$el
+            });
+          }
         }
         if (state === 'edit') {
           this.form.render().$el.append('<input type="reset" value="' + gettext("Cancel") + '" />').append('<input type="submit" value="' + gettext("Save Changes") + '" />');
