@@ -11,9 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
-dev
-~~~
+0.11.1
+~~~~~~
 
+* Show embedded Google Charts in builder (#187)
+* Resize sharing widget with textarea (#545)
 * Fix editing of image-based assets (#794)
 
 0.11
