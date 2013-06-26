@@ -4628,7 +4628,7 @@
           }
           else {
             storybase.views.deferSrcLoad({
-              assetSelector: 'iframe.sandboxed-asset',
+              selector: 'iframe.sandboxed-asset',
               scope: this.$el
             });
           }
