@@ -4404,7 +4404,6 @@
           // associated data
           this.initializeDataViews(); 
         }
-        _.bindAll(this, 'editCaption'); 
         this.handleUploadProgress = _.bind(handleUploadProgress, this);
         this.bindModelEvents();
         this.initializeForm();
@@ -4609,17 +4608,6 @@
           $wrapperEl.droppable({ accept: ".unused-asset" });
         }
         if (state == 'display') {
-          if (!this.$('.caption').length && this.model.formFieldVisible('caption', this.model.get('type'))) {
-            $wrapperEl.append($('<div class="caption"></div>'));
-          }
-          this.$('.caption').editable(this.editCaption, {
-            type: 'textarea',
-            cancel: gettext("Cancel"),
-            submit: gettext("Save"),
-            tooltip: gettext("Click to edit"),
-            placeholder: gettext("Click to edit caption"),
-            height: '2.8em'
-          });
           if (this.$el.is(':visible')) {
             storybase.views.autosizeAssetsOnLoad({
               assetSelector: 'iframe.sandboxed-asset',
@@ -4655,18 +4643,6 @@
         }
 
         return this;
-      },
-
-      /**
-       * Callback for Jeditable plugin applied to caption.
-       */
-      editCaption: function(value, settings) {
-        // Call this.saveModel instead of this.model.save() mostly
-        // because calling this.model.save() without a callback causes
-        // the "sync" event to bubble up to the collection, which we don't
-        // want.
-        this.saveModel({caption: value});
-        return value;
       },
 
       setInitialState: function() {
