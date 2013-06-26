@@ -388,7 +388,6 @@ This project includes a number of excellent open-source libraries:
 * `jQuery Cookie <https://github.com/carhartl/jquery-cookie/>`_ by Klaus Hartl
 * `jQuery Condense Plugin <https://github.com/jsillitoe/jquery-condense-plugin>`_ by Joe Sillitoe
 * `jQuery Iframe Transport <http://cmlenz.github.com/jquery-iframe-transport/>`_ by Christopher Lenz
-* `jQuery Jeditable <http://www.appelsiini.net/projects/jeditable>`_ by Mika Tuupola
 * `jQuery Masonry <http://masonry.desandro.com/>`_ by David DeSandro
 * `json2.js <https://github.com/douglascrockford/JSON-js/>`_ by Douglas Crockford
 * `Formalize <http://formalize.me/>`_ by Nathan Smith
