@@ -273,6 +273,26 @@ class ExternalAssetModelTest(TestCase):
         asset = create_external_asset(type='video', title='', url=url)
         self.assertEqual(asset.get_thumbnail_url(), None)
 
+    def test_url_is_image_file(self):
+        asset = create_external_asset(type='image', title='',
+            url='http://fakedomain.com/files/image.png')
+        self.assertTrue(asset.url_is_image_file())
+        asset = create_external_asset(type='image', title='',
+            url='http://fakedomain.com/files/image.jpg')
+        self.assertTrue(asset.url_is_image_file())
+        asset = create_external_asset(type='image', title='',
+            url='http://fakedomain.com/files/image.gif')
+        self.assertTrue(asset.url_is_image_file())
+        asset = create_external_asset(type='image', title='',
+            url='http://fakedomain.com/files/image.svg')
+        self.assertTrue(asset.url_is_image_file())
+        asset = create_external_asset(type='image', title='',
+            url='http://fakedomain.com/files/image.bmp')
+        self.assertTrue(asset.url_is_image_file())
+        asset = create_external_asset(type='text', title='',
+            url='http://fakedomain.com/files/readme.txt')
+        self.assertFalse(asset.url_is_image_file())
+
 
 class LocalImageAssetModelTest(FileCleanupMixin, TestCase):
     def test_get_thumbnail_url_indexed_png(self):

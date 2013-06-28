@@ -293,6 +293,20 @@ class ExternalAsset(Asset):
 
     oembed_providers = bootstrap_providers() 
 
+    IMAGE_MIMETYPES = (
+        "image/jpeg", 
+        "image/gif",
+        "image/png",
+        "image/svg+xml",
+        "image/bmp",
+        "image/x-ms-bmp",
+    )
+    """Mimetypes that represent image files. 
+
+    Non-oembed URLs matching these mimetypes will be rendered using an
+    <img> tag. Otherwise, an <a> tag will be used.
+    """
+
     @classmethod
     def get_oembed_response(cls, url, **extra_params):
         return cls.oembed_providers.request(url, **extra_params)
@@ -309,6 +323,11 @@ class ExternalAsset(Asset):
         else:
             return "Asset %s" % self.asset_id
 
+    def url_is_image_file(self):
+        """Does the url represent a link directly to an image file?"""
+        (url_type, encoding) = mimetypes.guess_type(self.url)
+        return url_type in self.IMAGE_MIMETYPES
+         
     def get_img_url(self):
         return self.url
 
@@ -340,7 +359,7 @@ class ExternalAsset(Asset):
                 
         except ProviderNotFoundException:
             # URL not matched, just show an image or a link
-            if self.type == 'image':
+            if self.type == 'image' or self.url_is_image_file():
                 output.append(self.render_img_html())
             else:
                 output.append(self.render_link_html())
@@ -385,7 +404,7 @@ class ExternalAsset(Asset):
                 else:
                     self._thumbnail_url = resource_data.get('thumbnail_url')
             except ProviderNotFoundException:
-                if self.type == 'image':
+                if self.type == 'image' or self.url_is_image_file():
                     # There isn't an oEmbed provider for the URL. Just use the
                     # raw image URL.
                     self._thumbnail_url = self.url

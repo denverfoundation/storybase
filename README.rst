@@ -17,6 +17,7 @@ Changelog
 * Show embedded Google Charts in builder (#187)
 * Resize sharing widget with textarea (#545)
 * Fix editing of image-based assets (#794)
+* Render non-oEmbed URL-based chart assets using an img tag (#803)
 
 0.11
 ~~~~
