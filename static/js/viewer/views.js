@@ -44,7 +44,6 @@
 
       events: function() {
         var events = {
-          'resize figure img': 'handleImgResize',
           'click a.external': openInNewWindow
         };
         events['click ' + this.options.tocButtonEl] = 'toggleToc';
