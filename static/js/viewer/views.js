@@ -551,11 +551,40 @@
       return this.$('footer').offset().top;
     },
     
+    setStickyHeader: function(isSticky) {
+      if ('_stickyHeaderInfo' in this) {
+        if (isSticky) {
+          this.$('#header').css('position', 'fixed');
+          this.$('#body').css(
+            'padding-top',
+            this._stickyHeaderInfo.bodyPaddingTop + this._stickyHeaderInfo.headerHeight
+          );
+        }
+        else {
+          this.$('#header').css('position', 'relative');
+          this.$('#body').css(
+            'padding-top', 
+            this._stickyHeaderInfo.bodyPaddingTop
+          );
+        }
+      }
+    },
+    
+    handleScroll: function() {
+      var top = $(window).scrollTop();
+      if (top != 0) {
+        this.setStickyHeader(true);
+      }
+      else {
+        this.setStickyHeader(false);
+      }
+    },
+    
     handleRendered: function() {
-      storybase.views.deferSrcLoad({ 
-        selector: 'iframe.sandboxed-asset', 
-        scope: this.$el
-      });
+      this._stickyHeaderInfo = {
+        headerHeight: this.$('#header').outerHeight(),
+        bodyPaddingTop: parseInt(this.$('#body').css('padding-top'), 10),
+      };
       this.showActiveSection();
     },
     
