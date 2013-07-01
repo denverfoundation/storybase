@@ -827,7 +827,7 @@
             url: {title: gettext("URL"), type: 'Text', validators: ['url']},
             image: {title: gettext("Image file"), type: Forms.File},
             body: {title: gettext("Body"), type: 'TextArea'},
-            //caption: {title: gettext("Caption"), type: 'TextArea'},
+            caption: {title: gettext("Caption"), type: 'TextArea'},
             attribution: {title: gettext("Attribution"), type: 'TextArea'},
             source_url: {title: gettext("Source URL"), type: 'Text', validators: ['url']}
           };
