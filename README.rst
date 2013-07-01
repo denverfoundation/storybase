@@ -20,6 +20,8 @@ Changelog
 * Header always visible as section scrolls in viewer (#772)
 * Fix editing of image-based assets (#794)
 * Render non-oEmbed URL-based chart assets using an img tag (#803)
+* Ability to filter stories in admin based on whether or not they're used
+  as a template (#808)
 
 0.11
 ~~~~
