@@ -7,6 +7,7 @@ Feature: A user can create, edit and publish a story
                 Given these places exist
                     | name         |
                     | 80007        |
+                    | 80207        |
                     | Athmar Park  |
                 Given these organizations exist
                     | name                 |
@@ -28,9 +29,9 @@ Feature: A user can create, edit and publish a story
                 Given the user inputs "http://soundcloud.com/inews/long-term-care-for-kcfr-public-radio-day-1" in the "Enter audio URL" field
                 Given the user clicks the "Save Changes" button
                 Then the Soundcloud widget for "http://soundcloud.com/inews/long-term-care-for-kcfr-public-radio-day-1" is visible
-                Given the user clicks the text "Click to edit caption"
-                Given the user inputs "This is a news story about Colorado disabled people living on their own" in the caption textarea
-                Given the user clicks the "Save" button
+                Given the user clicks the text "Edit Audio"
+                Given the user inputs "This is a news story about Colorado disabled people living on their own" in the "caption" textarea
+                Given the user clicks the "Save Changes" button
                 Given the user clicks the add section button after "Let's try an audio clip"
                 Then the section "Untitled Section" should be after the section "Let's try an audio clip" in the section list
                 Given the user inputs "This is another section" for the section title
@@ -39,9 +40,9 @@ Feature: A user can create, edit and publish a story
                 Given the user inputs "https://raw.github.com/PitonFoundation/atlas/develop/apps/storybase_asset/test_files/test_image.jpg" in the "Enter image URL" field
                 Given the user clicks the "Save Changes" button
                 Then the image "https://raw.github.com/PitonFoundation/atlas/develop/apps/storybase_asset/test_files/test_image.jpg" is visible in the "center" container
-                Given the user clicks the text "Click to edit caption"
-                Given the user inputs "This is a test image" in the caption textarea
-                Given the user clicks the "Save" button
+                Given the user clicks the text "Edit Image"
+                Given the user inputs "This is a test image" in the "caption" textarea
+                Given the user clicks the "Save Changes" button
                 Given the user changes the layout to "Above/Below"
                 Then the "top" container should be visible
                 Then the "bottom" container should be visible
@@ -89,13 +90,14 @@ Feature: A user can create, edit and publish a story
                 Given the user clicks the "Make this a Connected Story" checkbox
                 Given the user clicks in the connected story prompt textarea
                 Given the user types "What is your favorite ice cream flavor" in the connected story prompt textarea
-                Given the user clicks the "Add Data" workflow tab
-                Given the user clicks the "Add Data" button 
+                Given the user clicks "Changing a section title" in the section list
+                Given the user clicks the "Data Sources" link 
+                Given the user clicks the "Add Dataset" button
                 Given the user inputs "FOIA No Heats 2011 to Present" in the "Data set name" input
                 Given the user inputs "City of Chicago" in the "Data source" input
-                Given the user inputs "https://docs.google.com/spreadsheet/ccc?key=0AvaXS4x_XvJmdGthMFBSb1BJOUNPTnhaNWN4UDZnZkE#gid=0" in the "Link to a data set" input
+                Given the user inputs "https://docs.google.com/spreadsheet/ccc?key=0AvaXS4x_XvJmdGthMFBSb1BJOUNPTnhaNWN4UDZnZkE#gid=0" in the "Data URL" input
                 Given the user clicks the "Save" button
-                Then "FOIA No Heats 2011 to Present" appears in the data set list
+                Then "FOIA No Heats 2011 to Present" appears in the dataset list below the asset content
                 Given the user clicks the "Tag" workflow tab
                 Given the user inputs the topics
                     | name         |
@@ -179,9 +181,8 @@ Feature: A user can create, edit and publish a story
                     | name         |
                     | Children     |
                     | Demographics |
-                Then these data sets are listed
-                    | name                          |
-                    | FOIA No Heats 2011 to Present |
+                Given the user clicks the "Get the Data" button
+                Then "FOIA No Heats 2011 to Present" appears in the dataset dropdown list
                 Then the text "Read the story! Do it!" is present
 
         Scenario: Edit tags for an existing story
@@ -258,6 +259,3 @@ Feature: A user can create, edit and publish a story
                 Then these topics are listed
                     | name         |
                     | Children     |
-                Then these data sets are listed
-                    | name                          |
-                    | FOIA No Heats 2011 to Present |
