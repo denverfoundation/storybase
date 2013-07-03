@@ -1858,7 +1858,6 @@
       this._editViews = [];
 
       this.model.on("sync", this.triggerSaved, this);
-      this.model.sections.on("reset", this.triggerReady, this);
       this.model.unusedAssets.on("sync reset add", this.hasAssetList, this);
 
       this.dispatcher.on("select:template", this.setStoryTemplate, this);
@@ -1870,6 +1869,15 @@
       this.dispatcher.on('do:show:tour', this.showTour, this);
 
       if (!this.model.isNew()) {
+        if (this.templateStory) {
+          // If we know about a template story, get suggestions for
+          // some story and section fields from the template. But, we
+          // have to wait for the sections to sync first
+          this.model.sections.once("reset", function(sections) {
+            this.model.suggestionsFromTemplate(this.templateStory); 
+            this.dispatcher.trigger('ready:story', this.model);
+          }, this);
+        }
         this.model.sections.fetch();
         this.model.unusedAssets.fetch();
       }
@@ -1878,10 +1886,6 @@
         // We don't have to wait to request the template from the server.
         this.initializeStoryFromTemplate();
       }
-    },
-
-    triggerReady: function() {
-      this.dispatcher.trigger('ready:story', this.model);
     },
 
     handleCreateSection: function(section) {
@@ -2758,7 +2762,7 @@
       // breaks if you remove all sections
       var section = new Section({
         title: '',
-        title_placeholder: '',
+        title_suggestion: '',
         layout: this.model.sections.at(0).get('layout'),
         root: true,
         template_section: this.model.sections.at(0).get('template_section'),

@@ -543,13 +543,13 @@
        */
       fromTemplate: function(story, sectionAttrs) {
         this.set('structure_type', story.get('structure_type'));
-        this.set('summary', story.get('summary'));
-        this.set('call_to_action', story.get('call_to_action'));
+        this.set('summary_suggestion', story.get('summary'));
+        this.set('call_to_action_suggestion', story.get('call_to_action'));
         this.set('template_story', story.get('story_id'));
                       
         story.sections.each(function(section) {
           var sectionCopy = new Section();
-          sectionCopy.set("title_placeholder", section.get("title"));
+          sectionCopy.set("title_suggestion", section.get("title"));
           sectionCopy.set("title", "");
           sectionCopy.set("layout", section.get("layout"));
           sectionCopy.set("root", section.get("root"));
@@ -561,6 +561,25 @@
             sectionCopy.set(sectionAttrs);
           }
           this.sections.push(sectionCopy);
+        }, this);
+      },
+
+      /**
+       * Get suggestions for some properties of a story from
+       * another story.
+       *
+       * @param {Object} story  Story model instance to use as the template
+       *   for this model
+       */
+      suggestionsFromTemplate: function(story) {
+        this.set('summary_suggestion', story.get('summary'));
+        this.set('call_to_action_suggestion', story.get('call_to_action'));
+        this.sections.each(function(section) {
+          var templateSection = story.sections.get(section.get('template_section'));
+
+          if (templateSection) {
+            section.set("title_suggestion", templateSection.get("title"));
+          }
         }, this);
       }
     })

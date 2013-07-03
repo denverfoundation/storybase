@@ -16,6 +16,8 @@ Changelog
 
 * Show embedded Google Charts in builder (#187)
 * Resize sharing widget with textarea (#545)
+* Show suggested summary, section titles and call to action as placeholders 
+  (#722)
 * Remove in-place editing of captions (#765)
 * Header always visible as section scrolls in viewer (#772)
 * Fix editing of image-based assets (#794)

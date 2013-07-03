@@ -140,7 +140,7 @@ Handlebars.js templates for story builder Backbone application
 <script type="text/x-handlebars-template" id="story-info-edit-template">
 <input class="story-title" name="title" value="{{title}}" placeholder="{{gettext "Edit your title"}}" />
 <input class="byline" name="byline" value="{{byline}}" placeholder="{{gettext "Your Name and/or Organization. Examples: Jon Denzler; Laura Frank, I-News"}}" />
-<textarea name="summary" id="summary-textarea" class="summary" placeholder='{{gettext "Click to edit the summary"}}'>{{summary}}</textarea>
+<textarea name="summary" id="summary-textarea" class="summary" placeholder='{{{default summary_suggestion "Click to edit the summary"}}}'>{{summary}}</textarea>
 </script>
 
 <script type="text/x-handlebars-template" id="story-info-edit-inline-template">
@@ -154,7 +154,7 @@ Handlebars.js templates for story builder Backbone application
 <form>
     <div class="section-layout side-by-side">
         <div class="left">
-            <textarea class="call-to-action" name="call_to_action" placeholder='{{gettext "Click to edit the call to action"}}'>{{call_to_action}}</textarea>
+            <textarea class="call-to-action" name="call_to_action" placeholder='{{{default call_to_action_suggestion "Click to edit the call to action"}}}'>{{call_to_action}}</textarea>
         </div>
         <div class="right">
             <h3>{{gettext "Create a Connected Story to collect audience feedback"}}</h3>
@@ -183,7 +183,7 @@ Handlebars.js templates for story builder Backbone application
     {{/if}}
 </div>
 {{#if showSectionTitles}}
-<input class="section-title" name="title" value="{{title}}" placeholder="{{{default title_placeholder "Section Title"}}}"/>
+<input class="section-title" name="title" value="{{title}}" placeholder="{{{default title_suggestion "Section Title"}}}"/>
 {{/if}}
 <div class="section-edit-layout">{{{layout_template}}}</div>
 </script>
