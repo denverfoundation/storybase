@@ -383,6 +383,7 @@ This project includes a number of excellent open-source libraries:
 * `Guiders.js <https://github.com/jeff-optimizely/Guiders-JS>`_ by Optimizely
 * `Handlebars <http://handlebarsjs.com/>`_ by Yehuda Katz
 * `HTML5 Boilerplate <http://html5boilerplate.com/>`_
+* `imagesLoaded <https://github.com/desandro/imagesloaded>`_ by David DeSandro
 * `JavaScript Pretty Date <http://ejohn.org/blog/javascript-pretty-date/>`_ by John Resig
 * `jQuery <http://jquery.org/>`_ by John Resig
 * `jQuery Cookie <https://github.com/carhartl/jquery-cookie/>`_ by Klaus Hartl
