@@ -135,21 +135,11 @@
         // Do nothing. Subclasses might want to implement this to do some work
       },
       
-      sizeFigCaption: function(el) {
-        var width = $(el).width();
-        this.$(el).next('figcaption').width(width);
-        this.$(el).parent('figure').width(width);
-      },
-      
-      sizeFigCaptions: function() {
-        var view = this;
-        this.$el.find('figure img').each(function() {
-          view.sizeFigCaption(this);
-        });
-      },
-      
       handleResize: function(event) {
-        this.sizeFigCaptions();
+        storybase.views.sizeAssets({
+          assetSelector: 'figure img',
+          scope: this.$('#' + this.activeSection.id)
+        });
       },
       
       openToc: function() {
@@ -585,6 +575,13 @@
         headerHeight: this.$('#header').outerHeight(),
         bodyPaddingTop: parseInt(this.$('#body').css('padding-top'), 10),
       };
+
+      // defer loading of iframed assets until their section is shown.
+      storybase.views.deferSrcLoad({ 
+        selector: 'iframe.sandboxed-asset', 
+        scope: this.$el
+      });
+
       this.showActiveSection();
     },
     
@@ -601,10 +598,20 @@
         .hide();
       
       if (this._rendered) {
-        storybase.views.loadDeferredAssetsAndAutosize({
+        // load any iframe assets in this section that were deferred
+        // after initial render.
+        storybase.views.loadDeferredAssetsAndSize({
           assetSelector: 'iframe.sandboxed-asset', 
           scope: $section
         });
+        // for image assets, we do some sizing logic once they have loaded.
+        // note that because image sizing depends on container dimensions, 
+        // they must be visible to run the sizing logic.
+        storybase.views.sizeAssetsOnLoad({
+          assetSelector: 'figure img',
+          scope: $section
+        });
+        
       }
     },
 

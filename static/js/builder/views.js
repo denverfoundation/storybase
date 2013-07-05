@@ -3477,7 +3477,7 @@
       else {
         this.$el.hide();
       }
-      storybase.views.loadDeferredAssetsAndAutosize({ 
+      storybase.views.loadDeferredAssetsAndSize({ 
         assetSelector: 'iframe.sandboxed-asset',
         scope: this.$el 
       });
@@ -4613,7 +4613,7 @@
         }
         if (state == 'display') {
           if (this.$el.is(':visible')) {
-            storybase.views.autosizeAssetsOnLoad({
+            storybase.views.sizeAssetsOnLoad({
               assetSelector: 'iframe.sandboxed-asset',
               scope: this.$el
             });

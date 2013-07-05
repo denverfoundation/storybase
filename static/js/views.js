@@ -100,124 +100,212 @@
   };
   
   /** 
-   * Selectors used as defaults in methods relating to asset autosizing.
+   * Selectors and other data used as defaults in methods relating to asset 
+   * sizing.
    */
   var defaultAssetStructure = {
     containerSelector: 'figure',
     assetSelector: 'iframe, img',
-    captionSelector: 'figcaption'
+    captionSelector: 'figcaption',
+    scope: undefined,
+    callback: null
   };
   
   /**
-   * Autosize passed iframe element based on its contents. Iframe must be 
-   * loaded.
    * 
-   * @param {Element|jQuery|String} iframe
    */
-  var autoSizeIframe = function(iframe) {
-    var iframeContent = $(iframe).prop('contentWindow');
-    if (iframeContent) {
-      var $body = $('body', iframeContent.document);
-      $(iframe)
-        .height($body.prop('scrollHeight'))
-        .width($body.prop('scrollWidth'))
-      ;
+  var sizeImgAsset = function(options) {
+    options = $.extend(defaultAssetStructure, options);
+    var $img = $(options.assetSelector);
+    var $container = $img.parent(options.containerSelector);
+    var setSizes = function() {
+      var nativeWidth = $img.data('native-width');
+      if ($container.width() < nativeWidth) {
+        $container.width('auto');
+      }
+      else {
+        $container.width(nativeWidth);
+      }
+      if (options.callback) {
+        options.callback.apply(this);
+      }
+    };
+    setDataNativeImgSize({ 
+      selector: $img,
+      callback: setSizes
+    });
+  };
+  
+  /**
+   * Size passed iframe element based on its contents. Size its container 
+   * and caption to match. Iframe must be loaded.
+   * 
+   * @param {hash} options @see {@link defaultAssetStructure}. 
+   */
+  var sizeIframeAsset = function(options) {
+    options = $.extend(defaultAssetStructure, options);
+    var iframe = $(options.assetSelector, options.scope);
+    if (iframe) {
+      var iframeContent = $(iframe).prop('contentWindow');
+      if (iframeContent) {
+        var $body = $('body', iframeContent.document);
+        $(iframe)
+          .height($body.prop('scrollHeight'))
+          .width($body.prop('scrollWidth'))
+        ;        
+        var calculatedWidth = $(iframe).width();
+        var $container = $(iframe).parent(options.containerSelector);
+        if ($container) {
+          $container.width(calculatedWidth);
+          $container.find(options.captionSelector).width(calculatedWidth);
+        }
+      }
+      if (options.callback) {
+        options.callback.apply(iframe);
+      }
     }
   };
   
   /**
-   * Autosize an asset. Assumes a structure of asset element in a container 
+   * Size an asset. Assumes a structure of asset element in a container 
    * with a sibling caption element. Iframes are sized to fit content. 
+   * Imgs are sized to fill container unless filling would require upsampling.
    * Container and caption are sized to fit asset. Asset must be loaded.
    * 
-   * @param {hash} [options] {
-   *   assetSelector:     selector for asset element
-   *   containerSelector: selector for asset container element
-   *   captionSelector:   selector for asset caption
+   * @param {hash} options @see {@link defaultAssetStructure}. 
    * }
-   * @param {Element|jQuery} [asset] Asset element to autosize.
    */
-  var autosizeAsset = function(options, asset) {
-    asset = asset || this;
+  var sizeAsset = function(options) {
     options = $.extend(defaultAssetStructure, options);
-    var tagName = $(asset).prop('tagName');
-    if (tagName && tagName.toLowerCase() == 'iframe') {
-      autoSizeIframe(asset);
-    }
-    // autosize container and caption, if any
-    var calculatedWidth = $(asset).width();
-    var $container = $(asset).parent(options.containerSelector);
-    if ($container) {
-      $container.width(calculatedWidth);
-      $container.find(options.captionSelector).width(calculatedWidth);
+    var $asset = $(options.assetSelector, options.scope);
+    if ($asset.length) {
+      switch ($asset.prop('tagName').toLowerCase()) {
+      case 'iframe':
+        sizeIframeAsset(options);
+        break;
+      case 'img':
+        sizeImgAsset(options);
+        break;
+      }
     }
   };
   
   /**
-   * Autosize assets when their load event is triggered.
-   *
-   * @param {hash} [options] {
-   *   assetSelector:     selector for asset element,
-   *   containerSelector: selector for asset container element,
-   *   captionSelector:   selector for asset caption,
-   *   scope:             scope element for limiting selectors,
-   *   callback:          invoked on each asset following load and autosize
-   * }
+   * Run sizing logic on selected assets.
+   * 
+   * @param {hash} options @see {@link defaultAssetStructure}. 
    */
-  var autosizeAssetsOnLoad = function(options) {
-    options = $.extend(defaultAssetStructure, {
-      scope: undefined,
-      callback: null
-    }, options);
+  var sizeAssets = function(options) {
+    options = $.extend(defaultAssetStructure, options);
     $(options.assetSelector, options.scope).each(function() {
-      $(this).on('load', function() { 
-        autosizeAsset(options, this);
-        if (options.callback) {
-          options.callback.call(this);
-        }
-      });
+      sizeAsset($.extend(options, {
+        assetSelector: this
+      }));
+    });
+  };
+  
+  /**
+   * Size assets when their load event is triggered.
+   *
+   * @param {hash} options @see {@link defaultAssetStructure}. 
+   */
+  var sizeAssetsOnLoad = function(options) {
+    options = $.extend(defaultAssetStructure, options);
+    $(options.assetSelector, options.scope).each(function() {
+      if ($(this).prop('tagName').toLowerCase() == 'img') {
+        $(this).imagesLoaded(function() {
+          sizeAsset($.extend(options, { 
+            assetSelector: this
+          }));
+        });
+      }
+      else {
+        $(this).on('load', function() { 
+          sizeAsset($.extend(options, {
+            assetSelector: this
+          }));
+        });
+      }
     });
   };
   
   /**
    * Load elements with deferred src attributes (@see {@link deferSrcLoad}). 
-   * On load, call {@link autosizeAsset}.
+   * On load, call {@link sizeAsset}.
    *
-   * @param {hash} [options] {
-   *   assetSelector:     selector for asset element,
-   *   containerSelector: selector for asset container element,
-   *   captionSelector:   selector for asset caption,
-   *   scope:             scope element for limiting selectors,
-   *   force:             boolean; true to overwrite src,
-   *   callback:          invoked on each asset following load and autosize
-   * }
+   * @param {hash} options @see {@link defaultAssetStructure}, with addition
+   * of `force` key to pass to {@link loadDeferredSrcs}.
    */
-  var loadDeferredAssetsAndAutosize = function(options) {
+  var loadDeferredAssetsAndSize = function(options) {
     options = $.extend(defaultAssetStructure, {
-      scope: undefined,
       force: false,
-      callback: null
     }, options);
     
     loadDeferredSrcs($.extend({}, options, { 
       selector: options.assetSelector,
       callback: function() {
-        autosizeAsset(options, this);
-        if (options.callback) {
-          options.callback.call(this);
-        }
+        sizeAsset($.extend(options, {
+          assetSelector: this
+        }));
       } 
     }));
   };
+
+  /**
+   * Mark selected img elements with data:
+   *  native-width
+   *  native-height
+   * 
+   * Ping a callback when data is available. Will invoke callback 
+   * immediately for elements that already have those data set.
+   * 
+   * @param {hash} [options] {
+   *   selector:          selector for img elements,
+   *   scope:             scope element for limiting selectors,
+   *   callback:          invoked once per img when data is available
+   * }
+   */
+  var setDataNativeImgSize = function(options) {
+    options = $.extend({
+      selector: 'img',
+      scope: undefined,
+      callback: null
+    }, options);
+    $(options.selector, options.scope).each(function() {
+      var $img = $(this);
+      if (_.isUndefined($img.data('native-width'))) {
+        // we don't know native size yet
+        var $copy = $(new Image());
+        $copy.prop('src', $img.prop('src'));
+        $copy.imagesLoaded(function() {
+          $img.data({
+            'native-width': $copy.prop('width'),
+            'native-height': $copy.prop('height')
+          });
+          $copy.remove();
+          if (options.callback) {
+            options.callback.call(this);
+          }
+        });
+      }
+      else {
+        // native size already set; just trigger the callback
+        if (options.callback) {
+          options.callback.call(this);
+        }
+      }
+    });
+  };
+  
 
   storybase.views = storybase.views || {};
   storybase.views.HandlebarsTemplateMixin = HandlebarsTemplateMixin;
   storybase.views.HandlebarsTemplateView = HandlebarsTemplateView;
   storybase.views.deferSrcLoad = deferSrcLoad;
   storybase.views.loadDeferredSrcs = loadDeferredSrcs;
-  storybase.views.autoSizeIframe = autoSizeIframe;
-  storybase.views.autosizeAsset = autosizeAsset;
-  storybase.views.autosizeAssetsOnLoad = autosizeAssetsOnLoad;
-  storybase.views.loadDeferredAssetsAndAutosize = loadDeferredAssetsAndAutosize;
+  storybase.views.sizeAsset = sizeAsset;
+  storybase.views.sizeAssets = sizeAssets;
+  storybase.views.sizeAssetsOnLoad = sizeAssetsOnLoad;
+  storybase.views.loadDeferredAssetsAndSize = loadDeferredAssetsAndSize;
 
 })(_, Backbone, Handlebars, storybase);
