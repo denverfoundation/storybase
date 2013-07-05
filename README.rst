@@ -16,6 +16,7 @@ Changelog
 
 * Show embedded Google Charts in builder (#187)
 * Resize sharing widget with textarea (#545)
+* Switch to section help from container help when drawer is closed (#641)
 * Show suggested summary, section titles and call to action as placeholders 
   (#722)
 * Remove in-place editing of captions (#765)

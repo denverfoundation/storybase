@@ -856,11 +856,13 @@
         this.compileTemplates();
         this.dispatcher = this.options.dispatcher;
         this.help = null;
+        this.helpHistory = [];
        
         this.$el.hide();
 
         this.dispatcher.on('do:show:help', this.show, this);
         this.dispatcher.on('do:set:help', this.set, this);
+        this.dispatcher.on('do:pop:help', this.pop, this);
         this.dispatcher.on('do:clear:help', this.clear, this);
         this.dispatcher.on('do:hide:help', this.hide, this);
         this.dispatcher.on('do:set:helpactions', this.setActions, this);
@@ -870,16 +872,18 @@
       /**
        * Show the help text.
        *
-       * @help object help Updated help information.  The object should have
+       * @param {Object} help Updated help information.  The object should have
        *     a body property and optionally a title property.
+       * @param {Object} [opts] Hash of options:
+       *     remember - Save the previous help value before replacing it
        *
-       * @returns object This view.
+       * @returns {Object} This view.
        */
-      show: function(help) {
+      show: function(help, opts) {
         if (!_.isUndefined(help)) {
           // A new help object was sent with the signal, update
           // our internal value
-          this.set(help);
+          this.set(help, opts);
         }
         this.render();
         this.delegateEvents();
@@ -894,9 +898,33 @@
         this.$el.hide();
       },
 
-      set: function(help) {
+      /**
+       * Set the help text.
+       *
+       * @param {Object} help Updated help information.  The object should have
+       *     a body property and optionally a title property.
+       * @param {Object} [opts] Hash of options:
+       *     remember - Save the previous help value before replacing it
+       */
+      set: function(help, opts) {
+        if (!_.isUndefined(opts) && opts.remember && this.help) {
+          // Save the current help value before replacing it 
+          this.helpHistory.push(this.help);
+        }
+
         this.help = help;
         this.render();
+      },
+
+      /**
+       * Set the help text to the last saved value
+       */
+      pop: function() {
+        var help = null;
+        if (this.helpHistory.length) {
+          help = this.helpHistory.pop();
+        }
+        this.set(help);
       },
 
       clear: function() {
@@ -4428,6 +4456,10 @@
         this.model.off("sync", this.initializeDataViews, this);
       },
 
+      unbindBusEvents: function() {
+        this.dispatcher.off('close:drawer', this.revertHelp, this);
+      },
+
       /**
        * Cleanup the view.
        */
@@ -4436,8 +4468,8 @@
         this.undelegateEvents();
         this.unbind();
         this.unbindModelEvents();
+        this.unbindBusEvents();
       },
-
 
       /**
        * Get the Backbone Forms schema for the asset form
@@ -4880,7 +4912,13 @@
         }, this.options.help);
         var assetHelp = this.getAssetTypeHelp(this.model.get('type'));
         help.body += assetHelp;
-        this.dispatcher.trigger('do:show:help', help);
+        this.dispatcher.trigger('do:show:help', help, {remember: true});
+        // When the drawer is closed, revert to the previous help item
+        this.dispatcher.once('close:drawer', this.revertHelp, this); 
+      },
+
+      revertHelp: function() {
+        this.dispatcher.trigger('do:pop:help');
       },
 
       handleDrop: function(evt, ui) {
