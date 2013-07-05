@@ -22,6 +22,7 @@ Changelog
 * Remove in-place editing of captions (#765)
 * Header always visible as section scrolls in viewer (#772)
 * Fix editing of image-based assets (#794)
+* Show suggested section title in section list for untitled sections (#798)
 * Render non-oEmbed URL-based chart assets using an img tag (#803)
 * Fix scaling of images and containers in viewer (#807)
 * Ability to filter stories in admin based on whether or not they're used
