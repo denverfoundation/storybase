@@ -15,6 +15,7 @@ Changelog
 ~~~~~~
 
 * Show embedded Google Charts in builder (#187)
+* More prominent confirmation messages (#533)
 * Resize sharing widget with textarea (#545)
 * Switch to section help from container help when drawer is closed (#641)
 * Show suggested summary, section titles and call to action as placeholders 

@@ -38,16 +38,29 @@
 }
 
 ul.messages {
+  padding-left: 0 !important;
+}
+
+ul.messages li {
 	.rounded-corners;
 	border:1px solid #bbb;
 	padding:10px;
 	margin:20px 0;
 	color:@medium-gray;
 	font-size:16px;
+        list-style-type: none !important;
 }
 
 ul.messages li.error {
-	color:@error-color;
+	color: @error-color;
+        border-color: @error-border-color;
+        background-color: @error-background-color;
+}
+
+ul.messages li.success {
+  color: @success-color;
+  border-color: @success-border-color;
+  background-color: @success-background-color;
 }
 
 ul.social { 
