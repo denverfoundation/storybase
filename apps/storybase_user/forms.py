@@ -62,5 +62,6 @@ class ProjectModelForm(StoryAggregatorModelFormBase):
 class UserNotificationsForm(ModelForm):
     class Meta:
         model = UserProfile
-        fields = ('notify_updates', 'notify_admin', 'notify_digest',
-                  'notify_story_featured', 'notify_story_comment')
+        fields = ('notify_admin', 'notify_digest',
+                  'notify_story_unpublished', 'notify_story_published',
+                  'notify_story_comment')

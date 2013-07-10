@@ -464,20 +464,21 @@ class UserProfile(RecentStoriesMixin, models.Model):
     # Notification preferences
     # Right now these represent e-mail contact
     # Floodlight updates
-    notify_updates = models.BooleanField("Floodlight Updates", default=True,
-        help_text="Updates about new Floodlight features, events and storytelling tips")
     notify_admin = models.BooleanField("Administrative Updates",
         default=True,
         help_text="Administrative account updates")
-    notify_digest = models.BooleanField("Monthly Digest", default=True,
-        help_text="A monthly digest of featured Floodlight stories")
+    notify_digest = models.BooleanField("Weekly Digest", default=True,
+        help_text="A weekly digest of Floodlight stories, events and new features")
     # Notifications about my stories
-    notify_story_featured = models.BooleanField("Homepage Notification",
+    notify_story_unpublished = models.BooleanField("Unpublished Story Reminder",
         default=True,
-        help_text="One of my stories is featured on the Floodlight homepage or newsletter")
+        help_text="Remind me to complete unpublished stories")
+    notify_story_published = models.BooleanField("Published Story Notification",
+        default=True,
+        help_text="Alert me when I publish a story")
     notify_story_comment = models.BooleanField("Comment Notification",
         default=True,
-        help_text="Someone comments on one of my stories")
+        help_text="Alert me when someone comments on one of my stories")
 
     def __unicode__(self):
         return unicode(self.user)

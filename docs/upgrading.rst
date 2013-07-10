@@ -2,6 +2,14 @@
 Upgrading
 =========
 
+0.11.* to 0.12.0
+================
+
+With 0.12.0, the notification types have changed so the user profile model
+has to be updated with::
+
+    python manage.py migrate storybase_user
+
 0.9.* to 0.10.0
 ===============
 
