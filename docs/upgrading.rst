@@ -10,6 +10,18 @@ has to be updated with::
 
     python manage.py migrate storybase_user
 
+There are also new models for the story reminder notifications whose
+database tables need to be initialized::
+
+    python manage.py syncdb
+
+Finally, in order schedule the regular sending of notification emails
+you'll need to set up a cron job to call the management command. The easiest
+way to set up the cron job is to copy and edit the script in
+``scripts/send_story_notifications`` and create a crontab entry like this::
+
+    *  *    * * *   root    /PATH_TO_SCRIPTS/send_story_notifications 
+
 0.9.* to 0.10.0
 ===============
 
