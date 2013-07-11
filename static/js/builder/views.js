@@ -4392,7 +4392,12 @@
           'upload': $('#asset-uploadprogress-template').html(),
           'select': $('#section-asset-select-type-template').html(),
           'sync': $('#section-asset-sync-template').html(),
+          'audio-help': $('#audio-help-template').html(),
+          'chart-help': $('#chart-help-template').html(),
           'image-help': $('#image-help-template').html(),
+          'map-help': $('#map-help-template').html(),
+          'quotation-help': $('#quotation-help-template').html(),
+          'table-help': $('#table-help-template').html(),
           'text-help': $('#text-help-template').html(), 
           'video-help': $('#video-help-template').html()
         }
@@ -4897,7 +4902,7 @@
           help = help();
         }
         else {
-          help = gettext("There isn't help for this type of asset yet, or you haven't selected an asset type.");
+          help = gettext("Select an asset type.");
         }
         return help;
       },

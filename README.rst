@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.11.2
+~~~~~~
+
+* Updated asset help (#641)
+
 0.11.1
 ~~~~~~
 
