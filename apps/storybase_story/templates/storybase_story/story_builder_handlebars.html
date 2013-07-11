@@ -213,8 +213,22 @@ Handlebars.js templates for story builder Backbone application
 </div>
 </script>
 
-<script type="text/x-handlebars-template" id="image-help-template">
-<p>{{gettext "Click on \"Add your image,\" then enter a URL or upload an image from your computer. If you’d like to add a different type of asset, click Cancel."}}</p>
+<script type="text/x-handlebars-template" id="select-help-template">
+<p>{{gettext "Click on an asset type to begin."}}</p>
+</script>
+
+
+<script type="text/x-handlebars-template" id="image-new-help-template">
+<p>{{gettext "Enter a URL or upload an image from your computer. If you’d like to add a different type of asset, click Cancel."}}</p>
+</script>
+
+<script type="text/x-handlebars-template" id="image-display-help-template">
+<p>{{gettext "You can remove this image or edit it. Removed assets are always available in the asset drawer."}}</p>
+</script>
+
+<script type="text/x-handlebars-template" id="image-edit-help-template">
+<p>{{gettext "You can replace this image with a new URL or new image from your computer, depending on how you originally defined it." }}</p>
+<p>{{gettext "If you think you'll want to use this image later, it's better to \"remove\" it and add a new one with your preferred image. Removed assets are always available in the asset drawer."}}</p>
 </script>
 
 <script type="text/x-handlebars-template" id="text-help-template">
@@ -234,7 +248,7 @@ Handlebars.js templates for story builder Backbone application
 <script type="text/x-handlebars-template" id="section-asset-edit-template">
 {{>help-icon}}
 <div class="wrapper">
-<h3>{{model.type}}</h3>
+<h3>{{capfirst action}} {{capfirst model.type}}</h3>
 </div>
 </script>
 

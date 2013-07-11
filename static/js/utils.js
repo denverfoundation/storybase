@@ -316,4 +316,12 @@
     }
     return new Handlebars.SafeString(gettext(ifEmpty));
   });
+  
+  /**
+   * Capitalize the first letter.
+   */
+  Handlebars.registerHelper('capfirst', function(s) {
+    return new Handlebars.SafeString(storybase.utils.capfirst(s));
+  });
+
 })(_, Handlebars, storybase);
