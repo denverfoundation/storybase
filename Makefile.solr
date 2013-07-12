@@ -7,7 +7,7 @@ CORENAME     ?= maincore
 export
 
 schema-xml:
-	python manage.py build_solr_schema > solr/solr/${CORENAME}/conf/schema.xml 2> /dev/null
+	python manage.py build_solr_schema --traceback -f solr/solr/${CORENAME}/conf/schema.xml
 
 solr-instance:
 	make -C solr/ $@
