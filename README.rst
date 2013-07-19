@@ -11,6 +11,12 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.11.3
+~~~~~~
+
+* Gracefully handle parse errors when trying to generate thumbnail from HTML
+  asset (#814)
+
 0.11.2
 ~~~~~~
 

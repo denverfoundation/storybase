@@ -2,6 +2,7 @@
 import mimetypes
 import os
 
+from lxml.etree import XMLSyntaxError
 import lxml.html
 
 from django.conf import settings
@@ -467,7 +468,11 @@ class HtmlAsset(Asset):
         This is a workaround for those cases.  New assets of this
         type won't ever be created because the builder doesn't allow it.
         """
-        fragment = lxml.html.fromstring(self.body)
+        try:
+            fragment = lxml.html.fromstring(self.body)
+        except XMLSyntaxError:
+            # If the body couldn't be parsed, just fail gracefully
+            return None
         matching = fragment.cssselect("img")
         if not len(matching):
             return None
