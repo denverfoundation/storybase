@@ -44,8 +44,8 @@ a {
                 <tr><td>
                     <table width="100%" border="0" cellpadding="0" cellspacing="0" align="left"><tbody>
                         <tr><td valign="top" align="left" style="padding: 10px; margin: 0px;">
-                            <table border="0" cellpadding="0" cellspacing="0" align="left"><tbody><tr><td valign="top" align="left" style="margin: 0px; padding: 0px 10px 10px 0px;"><div class="pl_image" style="line-height: 175px; width: 180px; height: 135px;"><img src="{% featured_asset_thumbnail_url story width=180 height=0 %}" style="max-width:180px;" /></div></td></tr></tbody></table>
-                            <a href="{{ detail_url }}{% ga_campaign_params "floodlight" "email reminder" "published story reminder" %}" title="{{ story.title }}" style="color: rgb(50, 197, 244);">{{ story.title }}</a><br /><div style=""><div style=""><span style="font-style: italic;">{{ story.byline }}</span></div><div style="">{{ story.summary }}</div><div style=""><br /></div><div style=""><a href="{{ viewer_url }}{% ga_campaign_params "floodlight" "email reminder" "published story reminder" %}" title="View the Story" style="color: rgb(50, 197, 244);">View This Story</a> | <a href="{{ explorer_url }}{% ga_campaign_params "floodlight" "email reminder" "published story reminder" %}" style="color: rgb(50, 197, 244);">View All Stories</a></div></div>
+                            <table border="0" cellpadding="0" cellspacing="0" align="left"><tbody><tr><td valign="top" align="left" style="margin: 0px; padding: 0px 10px 10px 0px;"><div class="pl_image" style="line-height: 175px; width: 180px; height: 135px;"><img src="{% featured_asset_thumbnail_url story width=180 height=0 %}" width="180" /></div></td></tr></tbody></table>
+                            <a href="{{ detail_url }}{% ga_campaign_params "floodlight" "email reminder" "published story reminder" %}" title="{{ story.title }}" style="color: rgb(50, 197, 244);">{{ story.title }}</a><br /><div style=""><div style=""><span style="font-style: italic;">{{ story.byline }}</span></div><div style="">{{ story.summary|safe }}</div><div style=""><br /></div><div style=""><a href="{{ viewer_url }}{% ga_campaign_params "floodlight" "email reminder" "published story reminder" %}" title="View the Story" style="color: rgb(50, 197, 244);">View This Story</a> | <a href="{{ explorer_url }}{% ga_campaign_params "floodlight" "email reminder" "published story reminder" %}" style="color: rgb(50, 197, 244);">View All Stories</a></div></div>
                         </td></tr>
                     </tbody></table>
                 </td></tr>
@@ -69,7 +69,7 @@ a {
                     <table width="100%" border="0" cellpadding="0" cellspacing="0" align="left"><tbody>
                         <tr><td valign="top" align="left" style="padding: 10px; margin: 0px;">
                             <table border="0" cellpadding="0" cellspacing="0" align="left"><tbody>
-                                <tr><td valign="top" align="left" style="margin: 0px; padding: 0px 10px 10px 0px;"><div class="pl_image" style="line-height: 109px; width: 180px; height: 135px;"><img src="{% featured_asset_thumbnail_url recent_story width=180 height=0 %}" style="max-width:180px;" /></div></td></tr>
+                                <tr><td valign="top" align="left" style="margin: 0px; padding: 0px 10px 10px 0px;"><div class="pl_image" style="line-height: 109px; width: 180px; height: 135px;"><img src="{% featured_asset_thumbnail_url recent_story width=180 height=0 %}" width="180" /></div></td></tr>
                             </tbody></table>
                             <a href="{% fullurl recent_story.get_absolute_url %}{% ga_campaign_params "floodlight" "email reminder" "published story reminder" %}" style="color: rgb(50, 197, 244);" title="{{ recent_story.title }}">{{ recent_story.title }}</a>
                         </td></tr>
