@@ -8,8 +8,20 @@ class EmailMessageList(list):
 
     def send(self):
         """Send all messages in this list"""
-        backend = get_connection()
-        backend.send_messages(self)
+        connection = get_connection()
+        connection.open()
+        for message in self:
+            message.connection = connection
+            try:
+                message.send()
+            except Exception, e:
+                # Catch Exception here because the different backends are
+                # likely to raise different exception classes
+                import logging
+                logger = logging.getLogger('storybase')
+                recipients = ", ".join(message.to)
+                logger.error("Error sending e-mail to %s (%s)" % (recipients, e))
+        connection.close()
 
 
 class StoryNotificationQuerySet(models.query.QuerySet):
