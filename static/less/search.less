@@ -85,20 +85,30 @@ body.search {
   padding-top: 20px;
   overflow: hidden;
 
-  h3, .summary, .metadata {
-    // Not all images are the same widget (e.g. oEmbedded ones that have
-    // a more narrow thumbnail.  Make sure the text elements are all
-    // aligned, regardless of image width. 
-    margin-left: 230px;
+  &.has-image {
+    h3, .type, .summary, .metadata {
+      // Not all images are the same widget (e.g. oEmbedded ones that have
+      // a more narrow thumbnail.  Make sure the text elements are all
+      // aligned, regardless of image width. 
+      margin-left: 230px;
+    }
   }
 
-  h3 { text-align: left !important; }
+  h3 { 
+    margin-top: 0 !important;
+    text-align: left !important; 
+  }
 
   img {
     float: left;
     // Downsize externally hosted images in the browser.  Locally hosted
     // images will be correctly resized server-side 
     max-width: 222px;
+  }
+
+  .type {
+    color: @medium-gray;
+    font-weight: bold;
   }
 
   .metadata {

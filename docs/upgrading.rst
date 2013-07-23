@@ -2,6 +2,30 @@
 Upgrading
 =========
 
+0.10.* to 0.11
+==============
+
+This version also adds some changes to the ``Help`` model and we need to
+use South to update the schema.  Since the ``storybase_help`` app wasn't
+previously managed with South, you'll need to convert your installations
+to use South for this app::
+
+    ./manage.py migrate storybase_help 0001 --fake
+
+Then you'll need to apply the schema migration::
+
+    ./manage.py migrate storybase_help
+
+There's also a new Django CMS Plugin, so you'll need to run schema a schema
+migration for that as well::
+
+    ./manage.py migrate cmsplugin_storybase
+
+Finally, if you create any searchable help, you'll need to update the
+search index::
+
+    ./manage.py rebuild_index
+
 0.9.* to 0.10.0
 ===============
 

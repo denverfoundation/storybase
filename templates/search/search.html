@@ -26,9 +26,11 @@
 
 <ol class="search-results">
 {% for result in page.object_list %}
-    <li class="search-result">
+    <li class="search-result {% if result.object.story_id %} has-image{% endif %}">
+        {% if result.object.story_id %}
         {% featured_asset result.object 222 %}
         <h3><a href="{{ result.object.get_absolute_url }}">{{ result.object.title }}</a></h3>
+        <p class="type">{{ result.object|classname }}</p>
         <div class="summary">
             {{ result.object.summary|safe }}
         </div>
@@ -44,6 +46,13 @@
             {% endif %}
             {% endfor %}
         </dl>
+        {% elif result.object.help_id %}
+        <h3><a href="{{ result.object.get_absolute_url }}">{{ result.object.title }}</a></h3>
+        <p class="type">{{ result.object|classname }}</p>
+        <div class="summary">
+            {{ result.object.body|safe|truncatewords_html:30 }}
+        </div>
+        {% endif %}
     </li>
 {% empty %}
     <li class="no-search-results">

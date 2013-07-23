@@ -1,0 +1,4 @@
+{% for tr in object.helptranslation_set.all %}
+{{ tr.title }}
+{{ tr.body }}
+{% endfor %}

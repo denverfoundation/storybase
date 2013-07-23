@@ -4,6 +4,7 @@ from django.db.models import signals
 
 from haystack import indexes
 
+from storybase.search.fields import GeoHashMultiValueField, TextSpellField
 from storybase_asset.models import HtmlAssetTranslation
 from storybase_geo.models import Location
 from storybase_story.models import (SectionAsset, SectionTranslation,
@@ -11,11 +12,6 @@ from storybase_story.models import (SectionAsset, SectionTranslation,
 
 logger = logging.getLogger('storybase')
 
-class GeoHashMultiValueField(indexes.MultiValueField):
-    field_type = 'geohash'
-
-class TextSpellField(indexes.CharField):
-    field_type = 'textSpell'
 
 class StoryIndex(indexes.SearchIndex, indexes.Indexable):
     text = indexes.CharField(document=True, use_template=True)
