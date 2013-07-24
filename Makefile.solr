@@ -1,4 +1,4 @@
-SOLR_TGZ_URL ?= http://apache.mirrors.tds.net/lucene/solr/4.2.1/solr-4.2.1.tgz
+SOLR_TGZ_URL ?= http://www.fightrice.com/mirrors/apache/lucene/solr/4.4.0/solr-4.4.0.tgz
 PORT         ?= 8983
 IP           ?= 127.0.0.1
 
