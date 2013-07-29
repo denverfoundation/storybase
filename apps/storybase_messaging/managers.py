@@ -7,13 +7,22 @@ class EmailMessageList(list):
     """A list of ``EmailMessage`` objects that can be sent all at once"""
 
     def send(self):
-        """Send all messages in this list"""
+        """
+        Send all messages in this list
+
+        Returns a tuple of lists of messages that were successfully sent and
+        those that were unsent
+        
+        """
+        sent = []
+        unsent = []
         connection = get_connection()
         connection.open()
         for message in self:
             message.connection = connection
             try:
                 message.send()
+                sent.append(message)
             except Exception, e:
                 # Catch Exception here because the different backends are
                 # likely to raise different exception classes
@@ -21,7 +30,9 @@ class EmailMessageList(list):
                 logger = logging.getLogger('storybase')
                 recipients = ", ".join(message.to)
                 logger.error("Error sending e-mail to %s (%s)" % (recipients, e))
+                unsent.append(message)
         connection.close()
+        return (sent, unsent)
 
 
 class StoryNotificationQuerySet(models.query.QuerySet):
@@ -59,6 +70,9 @@ class StoryNotificationManager(models.Manager):
         """
         Send all notification emails that are ready to send
 
+        Returns a tuple of lists of messages that were successfully sent and
+        those that were unsent
+
         Keyword arguments:
 
         * send_on - If the notification's ``send_on`` field is equal to or
@@ -66,5 +80,6 @@ class StoryNotificationManager(models.Manager):
                     Defaults to ``datetime.now()``.
         """
         qs = self.get_query_set().ready_to_send(send_on)
-        qs.emails().send()
+        (sent, unsent) = qs.emails().send()
         qs.update(sent=datetime.now())
+        return (sent, unsent)

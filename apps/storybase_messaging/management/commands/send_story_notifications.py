@@ -1,8 +1,10 @@
 from datetime import datetime
+import logging
 from optparse import make_option
 
 from django.core.management.base import BaseCommand
 
+logger = logging.getLogger('storybase.management')
 
 class Command(BaseCommand):
     help = ("Send story notification emails whose send on date/time is now\n"
@@ -25,4 +27,12 @@ class Command(BaseCommand):
             send_on = datetime.strptime(send_on)
 
         from storybase_messaging.models import StoryNotification
-        StoryNotification.objects.send_emails(send_on=send_on)
+        (sent, unsent) = StoryNotification.objects.send_emails(send_on=send_on)
+
+        message = "%d story notifications sent" % (len(sent))
+        if len(unsent):
+            message += " %d story notifications failed" % (len(unsent))
+
+        logger.info(message)
+        if int(options.get('verbosity')) > 1:
+            self.stdout.write(message + "\n")
