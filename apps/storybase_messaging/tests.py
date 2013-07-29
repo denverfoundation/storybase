@@ -1,6 +1,7 @@
 """Tests for the actions app"""
 
 from datetime import datetime, timedelta
+from unittest import skip
 
 from django.conf import settings
 from django.contrib.auth.models import Group, User
@@ -308,3 +309,20 @@ class StoryNotificationSignalsTest(SloppyComparisonTestMixin, TestCase):
         story.status = 'published'
         story.save()
         self.assertEqual(StoryNotification.objects.filter(story=story, notification_type='published').count(), 1)
+
+    def test_communication_preferences_honored(self):
+        """
+        Test that a user's communication preferences are honored and
+        a notification is not created if a user turns them off
+        """
+        profile = self.user.get_profile()
+        profile.notify_story_unpublished = False
+        profile.notify_story_published = False
+        profile.save()
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status='draft',
+                             author=self.user)
+        self.assertEqual(StoryNotification.objects.count(), 0)
+        story.status = 'published'
+        story.save()
+        self.assertEqual(StoryNotification.objects.count(), 0)

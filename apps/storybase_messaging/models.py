@@ -298,8 +298,13 @@ def update_story_unpublished_notification(sender, instance, **kwargs):
 
 
 def create_story_published_notification(sender, instance, **kwargs):
-    StoryNotification.objects.create(notification_type='published',
-        story=instance, send_on=datetime.now())
+    profile = instance.author.get_profile()
+    if profile.notify_story_published:
+        # The user wants to be notified of published stories
+        # so return early
+        StoryNotification.objects.create(notification_type='published',
+            story=instance, send_on=datetime.now())
+
     post_save.disconnect(create_story_published_notification,
         sender=Story,
         dispatch_uid="story_published_notification_%s" % (instance.story_id))
