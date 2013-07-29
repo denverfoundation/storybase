@@ -230,6 +230,7 @@ class StoryNotification(models.Model):
               'viewer_url': full_url(reverse('story_viewer', kwargs={'slug':self.story.slug})),
               'explorer_url': full_url(reverse('explore_stories')),
               'detail_url': full_url(self.story.get_absolute_url()),
+              'account_notifications_url': full_url(reverse('account_notifications')),
             })
             return self._context
 

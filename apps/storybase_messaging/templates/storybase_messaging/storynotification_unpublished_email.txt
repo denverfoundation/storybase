@@ -85,4 +85,6 @@ Links:
 [5]: http://floodlightproject.org/en/help/ "Help"
 
 [6]: {% fullurl '/account/stories/' %}{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %}
+
+{% include "storybase_messaging/unsubscribe_footer.txt" %}
 {% endautoescape %}

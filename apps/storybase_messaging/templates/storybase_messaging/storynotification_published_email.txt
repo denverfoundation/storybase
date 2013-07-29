@@ -32,4 +32,6 @@ Links:
 [1]: {% fullurl story.get_absolute_url %}{% ga_campaign_params "floodlight" "email reminder" "published story reminder" %} "{{ story.title }}"
 
 [2]: http://floodlightproject.org/{% ga_campaign_params "floodlight" "email reminder" "published story reminder" %}
+
+{% include "storybase_messaging/unsubscribe_footer.txt" %}
 {% endautoescape %}
