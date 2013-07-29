@@ -56,13 +56,16 @@ look at the [Floodlight FAQ][5] to see if it has what you’re looking for.
 If your question isn’t there, send it our way.
 
 You can manage your stories, including editing, deleting, and publishing/
-unpublishing, on your [account page][6]. Here is a list of your unpublished 
-stories:
+unpublishing, on your [account page][6]. 
+
+{% if unpublished_stories %}
+Here is a list of your unpublished stories:
 
 {% for story in unpublished_stories %}
 * {{ story.title }} 
   ({% fullurl story.builder_url %}{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %}) 
 {% endfor %}
+{% endif %}
 
 We can’t wait to see your story on Floodlight!
 
