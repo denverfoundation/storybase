@@ -62,7 +62,7 @@ unpublishing, on your [account page][6].
 Here is a list of your unpublished stories:
 
 {% for story in unpublished_stories %}
-* {{ story.title }} 
+* {{ story.title|default:"Untitled Story" }} 
   ({% fullurl story.builder_url %}{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %}) 
 {% endfor %}
 {% endif %}
@@ -74,15 +74,15 @@ The Floodlight Team
 
 Links:
 
-[1]: http://floodlightproject.org/stories/design-thinking-for-storytelling-your-story-in-5-e/ "Design Thinking for Storytelling: Your Story in 5 Easy Steps"
+[1]: http://floodlightproject.org/stories/design-thinking-for-storytelling-your-story-in-5-e/{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %} "Design Thinking for Storytelling: Your Story in 5 Easy Steps"
 
-[2]: http://floodlightproject.org/stories/stretch-your-storytelling-muscles/ "Stretch Your Storytelling Muscles"
+[2]: http://floodlightproject.org/stories/stretch-your-storytelling-muscles/{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %} "Stretch Your Storytelling Muscles"
 
-[3]: http://floodlightproject.org/en/projects/exploring-the-creative-process/ "Exploring the Creative Process"
+[3]: http://floodlightproject.org/en/projects/exploring-the-creative-process/{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %} "Exploring the Creative Process"
 
 [4]: http://rookiemag.com/2012/11/get-unstuck/ "Getting Unstuck"
 
-[5]: http://floodlightproject.org/en/help/ "Help"
+[5]: http://floodlightproject.org/en/help/{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %} "Help"
 
 [6]: {% fullurl '/account/stories/' %}{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %}
 

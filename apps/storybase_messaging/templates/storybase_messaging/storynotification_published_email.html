@@ -25,7 +25,7 @@ a {
 }
 
 h2 {
-  font-size: 20px;
+  font-size: 16px;
 }
 
 {% endcomment %}
@@ -49,7 +49,7 @@ h2 {
                     <table align="left" width="100%" border="0" cellpadding="0" cellspacing="0"><tbody>
                             <tr><td align="left" valign="top" style="margin: 0px; padding: 0px 0px 21px;">
                                 Dear {{ story.author.first_name }},<br /><br />
-                                Congratulations! Your story, <a href="{{ detail_url }}{% ga_campaign_params "floodlight" "email reminder" "published story reminder" %}" title ="{{ story.title }}" style="color: rgb(50, 197, 244);">{{ story.title }}</a> is now live on Floodlight.
+                                Congratulations! Your story, <a href="{{ detail_url }}{% ga_campaign_params "floodlight" "email reminder" "published story reminder" %}" title ="{{ story.title }}" style="color: rgb(50, 197, 244);">{{ story.title }}</a>, is now live on Floodlight.
                         </td></tr>
                     </tbody></table>
                 </td></tr>
@@ -57,8 +57,8 @@ h2 {
                 <tr><td>
                     <table width="100%" border="0" cellpadding="0" cellspacing="0" align="left"><tbody>
                         <tr><td valign="top" align="left" style="padding: 0px; margin: 0px;">
-                        <h2 style="font-size: 20px;">Here's a preview</h2>
-                            <h3 style="margin: 0; font-size: 18px;"><a href="{{ detail_url }}{% ga_campaign_params "floodlight" "email reminder" "published story reminder" %}" title="{{ story.title }}" style="color: rgb(50, 197, 244);">{{ story.title }}</a></h3>
+                        <h2 style="font-size: 16px;">Here's a preview</h2>
+                            <h3 style="margin: 0; font-size: 14px;"><a href="{{ detail_url }}{% ga_campaign_params "floodlight" "email reminder" "published story reminder" %}" title="{{ story.title }}" style="color: rgb(50, 197, 244);">{{ story.title }}</a></h3>
                             <div style="font-style: italic; margin-bottom: 8px;">{{ story.byline }}</div>
                             <div style="width: 180px; margin-bottom: 4px;"><img src="{% featured_asset_thumbnail_url story width=180 height=0 %}" width="180" /></div>
 			    <div style="margin-bottom: 4px;">{{ story.summary|safe }}</div>
@@ -70,7 +70,7 @@ h2 {
                 <tr><td valign="top" align="left" style="padding:0;margin:0;">                                
                     <table align="left" width="100%" border="0" cellpadding="0" cellspacing="0"><tbody>
                         <tr><td align="left" valign="top" style="padding: 10px 0px; margin: 0px;">
-                            <h2 style="font-size: 20px;">Now that your story is published, share it with the world!</h2>
+                            <h2 style="font-size: 16px;">Now that your story is published, share it with the world!</h2>
                             Here's the link to share via your social networks and email:<br />
                             <a href="{{ detail_url }}{% ga_campaign_params "floodlight" "email reminder" "published story reminder" %}" style="color: rgb(50, 197, 244);">{{ detail_url }}</a><br /><br />
                             You can also embed your story on your website or blog by <a href="{{ detail_url }}{% ga_campaign_params "floodlight" "email reminder" "published story reminder" %}" style="color: rgb(50, 197, 244);">grabbing its embed code</a>.
@@ -78,13 +78,13 @@ h2 {
                     </tbody></table>
                 </td></tr>
 
-		<tr><td valign="top" align="left"><h2 style="font-size: 20px;">See what others are publishing on Floodlight</h2></td></tr>
+		<tr><td valign="top" align="left"><h2 style="font-size: 16px;">See what others are publishing on Floodlight</h2></td></tr>
 
                 {% for recent_story in recent_stories %}
                 <tr><td>
                     <table width="100%" border="0" cellpadding="0" cellspacing="0" align="left"><tbody>
                         <tr><td valign="top" align="left" style="padding: 0px; margin: 0px;">
-                            <h3 style="margin-bottom: 8px; font-size: 18px;"><a href="{% fullurl recent_story.get_absolute_url %}{% ga_campaign_params "floodlight" "email reminder" "published story reminder" %}" style="color: rgb(50, 197, 244);" title="{{ recent_story.title }}">{{ recent_story.title }}</a></h3>
+                            <h3 style="margin-bottom: 8px; font-size: 14px;"><a href="{% fullurl recent_story.get_absolute_url %}{% ga_campaign_params "floodlight" "email reminder" "published story reminder" %}" style="color: rgb(50, 197, 244);" title="{{ recent_story.title }}">{{ recent_story.title }}</a></h3>
                             <div style="width: 180px; margin-bottom: 8px;"><img src="{% featured_asset_thumbnail_url recent_story width=180 height=0 %}" width="180" /></div>
                         </td></tr>
                     </tbody></table>

@@ -2,12 +2,12 @@
 {% autoescape off %}
 Dear {{ story.author.first_name }},
 
-Congratulations! Your story, ["{{ story.title }}"][1] is now live on
+Congratulations! Your story, ["{{ story.title }}"][1], is now live on
 [Floodlight][2].
 
 Here’s a preview of your story:
 
-{{ story.summary }}
+{{ story.summary|striptags }}
 
 Now that your story is published, share it with the world!
 
