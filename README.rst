@@ -11,6 +11,12 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.12
+~~~~
+
+* Searchable help (#507)
+* Story notification emails (#580)
+
 0.11.3
 ~~~~~~
 

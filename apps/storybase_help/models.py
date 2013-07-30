@@ -12,6 +12,7 @@ class HelpManager(models.Manager):
     def get_by_natural_key(self, help_id):
         return self.get(help_id=help_id)
 
+
 class HelpTranslation(TranslationModel):
     help = models.ForeignKey('Help')
     title = ShortTextField(blank=True) 
@@ -21,6 +22,7 @@ class HelpTranslation(TranslationModel):
 class Help(TranslatedModel):
     help_id = UUIDField(auto=True)
     slug = models.SlugField(blank=True)
+    searchable = models.BooleanField(default=False)
 
     objects = HelpManager()
 
@@ -39,6 +41,14 @@ class Help(TranslatedModel):
 
     def natural_key(self):
         return (self.help_id,)
+
+    @models.permalink
+    def get_absolute_url(self):
+        """Calculate the canonical URL for a Help item"""
+        if self.slug:
+            return ('help_detail', [self.slug])
+
+        return ('help_detail', [self.help_id])
 
 
 def create_help(title='', body='', language=settings.LANGUAGE_CODE, 

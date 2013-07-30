@@ -1023,9 +1023,10 @@ body.search h1{margin-top:0.5em;}
 .results-paging .next span,.results-paging .prev span{display:none;}
 .search-pagination-form{display:inline;}
 .search-result,.no-search-results{list-style-type:none;}
-.search-result{display:block;clear:left;padding-top:20px;overflow:hidden;}.search-result h3,.search-result .summary,.search-result .metadata{margin-left:230px;}
-.search-result h3{text-align:left !important;}
+.search-result{display:block;clear:left;padding-top:20px;overflow:hidden;}.search-result.has-image h3,.search-result.has-image .type,.search-result.has-image .summary,.search-result.has-image .metadata{margin-left:230px;}
+.search-result h3{margin-top:0 !important;text-align:left !important;}
 .search-result img{float:left;max-width:222px;}
+.search-result .type{color:#999999;font-weight:bold;}
 .search-result .metadata dt{display:block;float:left;}.search-result .metadata dt:after{content:':';}
 .search-result .metadata dd{clear:right;padding-left:0.5em;overflow:hidden;}
 .ir{display:block;border:0;text-indent:-999em;overflow:hidden;background-color:transparent;background-repeat:no-repeat;text-align:left;direction:ltr;}

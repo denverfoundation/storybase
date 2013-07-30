@@ -234,3 +234,10 @@ class StoryPlugin(CMSPlugin):
 
     def __unicode__(self):
         return self.story.title
+
+
+class HelpPlugin(CMSPlugin):
+    help = models.ForeignKey('storybase_help.Help', related_name='plugins')
+
+    def __unicode__(self):
+        return self.help.title
