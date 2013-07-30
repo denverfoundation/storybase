@@ -275,6 +275,12 @@ def update_story_unpublished_notification(sender, instance, **kwargs):
     if instance.status != 'draft':
         return
 
+    if instance.author is None:
+        # No author, so we can't send a notification
+        # This shoudln't happen in the wild, but happens in a number of places
+        # in the tests
+        return
+
     profile = instance.author.get_profile()
     if not profile.notify_story_unpublished:
         # The user doesn't want to be notified of unpublished stories
@@ -299,6 +305,12 @@ def update_story_unpublished_notification(sender, instance, **kwargs):
 
 
 def create_story_published_notification(sender, instance, **kwargs):
+    if instance.author is None:
+        # No author, so we can't send a notification
+        # This shoudln't happen in the wild, but happens in a number of places
+        # in the tests
+        return
+
     profile = instance.author.get_profile()
     if profile.notify_story_published:
         # The user wants to be notified of published stories
