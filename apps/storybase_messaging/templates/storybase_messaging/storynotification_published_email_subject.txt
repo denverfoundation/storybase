@@ -1,0 +1,2 @@
+{% autoescape off %}{{ story.title }} is live on Floodlight!{% endautoescape %}
+

@@ -1,0 +1,110 @@
+{% load storybase_tags %}
+{% comment %}
+Template for published story notification HTML email
+
+Available context variables:
+
+* story - Story model instance for the notification
+* unpublished_stories - List of user's unpublished stories
+* recent_stories - List of three most recently published stories, site-wide
+* viewer_url - Full URL (including hostname) of the story viewer for the story
+* explorer_url - Full URL (including hostname) of the explore page
+* detail_url - Full URL (including hostname) of the detail page for the story
+
+For maximum compatibility with different email clients, we should use inline
+styles instead of stylesheets.  Here are the styles that you can copy and
+paste as you update:
+
+table {
+  /* General font styles, put this on the outermost table element */
+  font-family: Arial, Helvetica, sans-serif; font-size: 14px;  color: rgb(38, 38, 38);
+}
+
+a {
+  color: rgb(50, 197, 244);
+}
+
+h2 {
+  font-size: 20px;
+}
+
+{% endcomment %}
+<html>
+<head>
+    <meta name="viewport" content="width=device-width, initial-scale=1.0, target-densitydpi=device-dpi"/>
+    <style type="text/css">
+    @media only screen and (max-device-width: 480px) {
+      table[class="storybase-content-table"] { width: 100% !important; }
+    }
+    </style>
+</head>
+<body>
+<table width="100%" cellpadding="0" cellspacing="0" border="0" dir="ltr" style="background-color: transparent; font-family: Arial, Helvetica, sans-serif; font-size: 14px;  color: rgb(38, 38, 38);">
+    <thead><tr><td align="center"><table cellpadding="0" cellspacing="0" border="0" width="555" style="width: 555px;"></table></td></tr></thead>
+    <tbody>
+        <tr><td align="center" valign="top" style="margin:0;padding-top:20px;padding-right:0;padding-bottom:0;padding-left:0;">
+            <table class="storybase-content-table" align="center" border="0" cellspacing="0" cellpadding="0" width="555" style="width: 555px;"><tbody>
+                
+                <tr><td valign="top" align="left" style="padding:0;margin:0;">
+                    <table align="left" width="100%" border="0" cellpadding="0" cellspacing="0"><tbody>
+                            <tr><td align="left" valign="top" style="margin: 0px; padding: 0px 0px 21px;">
+                                Dear {{ story.author.first_name }},<br /><br />
+                                Congratulations! Your story, <a href="{{ detail_url }}{% ga_campaign_params "floodlight" "email reminder" "published story reminder" %}" title ="{{ story.title }}" style="color: rgb(50, 197, 244);">{{ story.title }}</a> is now live on Floodlight.
+                        </td></tr>
+                    </tbody></table>
+                </td></tr>
+
+                <tr><td>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0" align="left"><tbody>
+                        <tr><td valign="top" align="left" style="padding: 0px; margin: 0px;">
+                        <h2 style="font-size: 20px;">Here's a preview</h2>
+                            <h3 style="margin: 0; font-size: 18px;"><a href="{{ detail_url }}{% ga_campaign_params "floodlight" "email reminder" "published story reminder" %}" title="{{ story.title }}" style="color: rgb(50, 197, 244);">{{ story.title }}</a></h3>
+                            <div style="font-style: italic; margin-bottom: 8px;">{{ story.byline }}</div>
+                            <div style="width: 180px; margin-bottom: 4px;"><img src="{% featured_asset_thumbnail_url story width=180 height=0 %}" width="180" /></div>
+			    <div style="margin-bottom: 4px;">{{ story.summary|safe }}</div>
+			    <div style=""><a href="{{ viewer_url }}{% ga_campaign_params "floodlight" "email reminder" "published story reminder" %}" title="View the Story" style="color: rgb(50, 197, 244);">View This Story</a> | <a href="{{ explorer_url }}{% ga_campaign_params "floodlight" "email reminder" "published story reminder" %}" style="color: rgb(50, 197, 244);">View All Stories</a></div>
+                        </td></tr>
+                    </tbody></table>
+                </td></tr>
+
+                <tr><td valign="top" align="left" style="padding:0;margin:0;">                                
+                    <table align="left" width="100%" border="0" cellpadding="0" cellspacing="0"><tbody>
+                        <tr><td align="left" valign="top" style="padding: 10px 0px; margin: 0px;">
+                            <h2 style="font-size: 20px;">Now that your story is published, share it with the world!</h2>
+                            Here's the link to share via your social networks and email:<br />
+                            <a href="{{ detail_url }}{% ga_campaign_params "floodlight" "email reminder" "published story reminder" %}" style="color: rgb(50, 197, 244);">{{ detail_url }}</a><br /><br />
+                            You can also embed your story on your website or blog by <a href="{{ detail_url }}{% ga_campaign_params "floodlight" "email reminder" "published story reminder" %}" style="color: rgb(50, 197, 244);">grabbing its embed code</a>.
+                        </td></tr>
+                    </tbody></table>
+                </td></tr>
+
+		<tr><td valign="top" align="left"><h2 style="font-size: 20px;">See what others are publishing on Floodlight</h2></td></tr>
+
+                {% for recent_story in recent_stories %}
+                <tr><td>
+                    <table width="100%" border="0" cellpadding="0" cellspacing="0" align="left"><tbody>
+                        <tr><td valign="top" align="left" style="padding: 0px; margin: 0px;">
+                            <h3 style="margin-bottom: 8px; font-size: 18px;"><a href="{% fullurl recent_story.get_absolute_url %}{% ga_campaign_params "floodlight" "email reminder" "published story reminder" %}" style="color: rgb(50, 197, 244);" title="{{ recent_story.title }}">{{ recent_story.title }}</a></h3>
+                            <div style="width: 180px; margin-bottom: 8px;"><img src="{% featured_asset_thumbnail_url recent_story width=180 height=0 %}" width="180" /></div>
+                        </td></tr>
+                    </tbody></table>
+                </td></tr>
+                {% endfor %}
+
+                <tr><td valign="top" align="left" style="margin:0;padding:0;">
+                    <table align="left" width="100%" border="0" cellpadding="0" cellspacing="0"><tbody>
+		        <tr><td align="left" valign="top" style="padding: 0px 0px 33px; margin: 0px;">We can't wait to see what you'll publish next!<br><br>Best,<br>The Floodlight Team</td></tr>
+                    </tbody></table>
+                </td></tr>
+
+                <tr><td valign="top" align="left" style="margin:0;padding:0;">
+                    <table align="left" width="100%" border="0" cellpadding="0" cellspacing="0"><tbody>
+		        <tr><td align="left" valign="top" style="padding: 0px 0px 33px; margin: 0px;">{% include "storybase_messaging/unsubscribe_footer.html" %}</td></tr>
+                    </tbody></table>
+                </td></tr>
+            </tbody></table>
+        </td></tr>
+    </tbody>
+</table>
+</body>
+</html>

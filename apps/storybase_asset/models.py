@@ -620,7 +620,7 @@ class DefaultImageMixin(object):
         raise NotImplemented
 
     @classmethod
-    def get_default_img_url(cls, width, height):
+    def get_default_img_url(cls, width, height, include_host=False):
         choices = cls.get_default_img_url_choices()
         lgst_width = 0
         lgst_src = None
@@ -628,6 +628,10 @@ class DefaultImageMixin(object):
             if img_width <= width and img_width > lgst_width: 
                 lgst_src = url
                 lgst_width = img_width
+
+        if include_host:
+            lgst_src = full_url(lgst_src)
+
         return lgst_src
 
     @classmethod
@@ -685,7 +689,8 @@ class FeaturedAssetsMixin(DefaultImageMixin):
             extra = extra + "_host"
         return key_from_instance(self, extra)
 
-    def featured_asset_thumbnail_url(self, include_host=True):
+    def featured_asset_thumbnail_url(self, include_host=True, 
+        width=240, height=240):
         """Return the URL of the featured asset's thumbnail
 
         Returns None if the asset cannot be converted to a thumbnail image.
@@ -700,11 +705,11 @@ class FeaturedAssetsMixin(DefaultImageMixin):
         featured_asset = self.get_featured_asset()
         if featured_asset is None:
             # No featured assets
-            url = self.get_default_img_url(width=222, height=222)
+            url = self.get_default_img_url(width=222, height=222, include_host=include_host)
         else:
             thumbnail_options = {
-                'width': 240,
-                'height': 240,
+                'width': width,
+                'height': height,
                 'include_host': include_host
             }
             url = featured_asset.get_thumbnail_url(**thumbnail_options)

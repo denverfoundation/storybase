@@ -53,7 +53,7 @@ class UserProfileInline(admin.StackedInline):
         (
              _('Notifications'), 
              {
-                 'fields': ('notify_updates', 'notify_admin', 'notify_digest', 'notify_story_featured', 'notify_story_comment'),
+                 'fields': ('notify_admin', 'notify_digest', 'notify_story_unpublished', 'notify_story_published', 'notify_story_comment'),
                  'description': _("Users will receive emails about these kind of events"),
              }
         ),

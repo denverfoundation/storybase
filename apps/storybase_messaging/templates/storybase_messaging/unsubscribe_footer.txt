@@ -1,0 +1,2 @@
+If you would no longer like to recieve these messages, please update your
+notification settings at {{ account_notifications_url }}.

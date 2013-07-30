@@ -1,0 +1,90 @@
+{% load storybase_tags %}
+{% autoescape off %}
+Dear {{ story.author.first_name }},
+
+We noticed you haven’t published the story you started,
+"{{ story.title }}". You can open this story in the story builder at
+{% fullurl story.builder_url %}{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %}
+
+Feeling stuck? It happens to everyone. Here are some tips to get unstuck:
+
+# Let it all out
+
+"Anything can be rewritten--except nothing." - Joss Whedon
+
+There’s nothing scarier than a blank slate. Free-writing is the process of
+getting all of your thoughts out in the open, no matter how messy they are.
+Set a timer for 10 minutes and don’t let your pen stop moving or fingers
+stop typing until the clock runs down. It’s ok if you’ve written gibberish.
+You can always go back and edit your ideas into a spectacular story.
+
+# Try a different medium
+
+If you’re story is highly visual, try writing instead. Already have a lot
+written? Record yourself telling the story -- out loud, no notes. Draw a
+picture that illustrates your story, or create a slideshow or video of it.
+How would you tell your story with LEGO blocks? When you switch to a new
+tool, you often find a new voice.
+
+# Give yourself a deadline
+
+A clock ticking down is a storyteller’s best friend. Try breaking youri
+story into manageable chunks and give yourself intermediate deadlines:
+complete at least one section by the end of the day, finish editing the
+photos and writing captions by the end of the week, etc. If you aren’t 
+good at setting your own deadlines, ask a friend or colleague to hold you 
+accountable.
+
+# Share your story with someone you trust
+
+Unleashing your story for the world to see is a daunting task, so try
+showing it to someone you trust first. Your story is better than you think,
+and getting feedback before you publish it will boost your confidence. 
+Tip: If you preview your Floodlight story, you can use the link to share it
+with others -- even if it’s not published yet.
+
+# More tips on getting unstuck
+
+Try some of exercises on Floodlight, like [design thinking][1] or
+[stretching for your storytelling brain][2]. Find out about the
+[personal creative processes of seasoned storytellers][3], or read 
+[tips from writers and comic book artists for overcoming writer’s block][4].
+
+Bogged down by technical problems? Send an email to help@floodlightproject.org
+and we’ll fix them as soon as we can. Have storytelling questions? Take a
+look at the [Floodlight FAQ][5] to see if it has what you’re looking for.
+If your question isn’t there, send it our way.
+
+You can manage your stories, including editing, deleting, and publishing/
+unpublishing, on your [account page][6]. 
+
+{% if unpublished_stories %}
+Here is a list of your unpublished stories:
+
+{% for story in unpublished_stories %}
+* {{ story.title }} 
+  ({% fullurl story.builder_url %}{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %}) 
+{% endfor %}
+{% endif %}
+
+We can’t wait to see your story on Floodlight!
+
+Best,
+The Floodlight Team
+
+Links:
+
+[1]: http://floodlightproject.org/stories/design-thinking-for-storytelling-your-story-in-5-e/ "Design Thinking for Storytelling: Your Story in 5 Easy Steps"
+
+[2]: http://floodlightproject.org/stories/stretch-your-storytelling-muscles/ "Stretch Your Storytelling Muscles"
+
+[3]: http://floodlightproject.org/en/projects/exploring-the-creative-process/ "Exploring the Creative Process"
+
+[4]: http://rookiemag.com/2012/11/get-unstuck/ "Getting Unstuck"
+
+[5]: http://floodlightproject.org/en/help/ "Help"
+
+[6]: {% fullurl '/account/stories/' %}{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %}
+
+{% include "storybase_messaging/unsubscribe_footer.txt" %}
+{% endautoescape %}

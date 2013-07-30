@@ -15,28 +15,28 @@
         <legend>{{ storybase_site_name }} {% trans "updates" %}</legend>
         <p>{% trans "Email me with" %}</p>
         <div class="form-field-container">
-        {{ form.notify_updates }}
-        <label for="{{ form.notify_updates.html_name }}">{% trans "Updates about new Floodlight features, events and storytelling tips" %}</label>
-        </div>
-        <div class="form-field-container">
             {{ form.notify_admin }}
             <label for="{{ form.notify_admin.html_name }}">{% trans "Administrative account updates" %}
         </div>
         <div class="form-field-container">
             {{ form.notify_digest }}
-            <label for="{{ form.notify_digest.html_name }}">{% trans "A monthly digest of featured Floodlight stories" %}
+            <label for="{{ form.notify_digest.html_name }}">{% trans "A weekly digest of Floodlight stories, events and new features" %}
         </div>
     </fieldset>
     <fieldset>
         <legend>{% trans "Notifications about my stories" %}</legend>
-        <p>{% trans "Email me when" %}</p>
+        <p>{% trans "Email me to" %}</p>
         <div class="form-field-container">
-            {{ form.notify_story_featured }}
-            <label for="{{ form.notify_story_featured.html_name }}">{% trans "One of my stories is featured on the Floodlight homepage or newsletter" %}</label>
+            {{ form.notify_story_unpublished }}
+            <label for="{{ form.notify_story_unpublished.html_name }}">{% trans "Remind me to complete unpublished stories" %}</label>
+        </div>
+        <div class="form-field-container">
+            {{ form.notify_story_published }}
+            <label for="{{ form.notify_story_published.html_name }}">{% trans "Alert me when I publish a story" %}</label>
         </div>
         <div class="form-field-container">
             {{ form.notify_story_comment }}
-            <label for="{{ form.notify_story_comment.html_name }}">{% trans "Someone comments on one of my stories" %}</label>
+            <label for="{{ form.notify_story_comment.html_name }}">{% trans "Alert me when someone comments on one of my stories" %}</label>
         </div>
     </fieldset>
     <input type="submit" value="{% trans "Save" %}" />

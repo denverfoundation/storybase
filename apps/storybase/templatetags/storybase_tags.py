@@ -75,6 +75,11 @@ def featured_asset(obj, width=500):
 
 
 @register.simple_tag
+def featured_asset_thumbnail_url(obj, include_host=True, width=240, height=240):
+    return obj.featured_asset_thumbnail_url(include_host, width, height)
+
+
+@register.simple_tag
 def ga_campaign_params(source, medium, campaign, term=None, content=None,
                        prefix="?"):
     """

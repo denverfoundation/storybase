@@ -1,0 +1,16 @@
+#!/usr/bin/env bash
+# Example script for running the send_story_notifications management command
+# from a cron job, e.g.:
+#
+# *  *    * * *   root    /srv/www/atlas_dev/atlas/scripts/send_story_notifications 
+#
+# You'll likely have to make a copy of this script and edit the PYTHONPATH,
+# VENV and DJANGO_SETTINGS_MODULE variable values below to match your 
+# environment
+
+export PYTHONPATH=/srv/www/atlas_dev/atlas/..:/srv/www/atlas_dev/atlas
+export DJANGO_SETTINGS_MODULE=atlas.settings.atlas_dev
+VENV=/srv/www/atlas_dev/venv
+
+. ${VENV}/bin/activate
+django-admin.py send_story_notifications 
