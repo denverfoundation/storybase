@@ -248,11 +248,8 @@ class StoryNotification(models.Model):
 
     def get_html_content(self):
         context = self.get_context()
-        if self.notification_type == "unpublished":
-            return None
-        else:
-            template = self.get_body_template("html")
-            return template.render(context)
+        template = self.get_body_template("html")
+        return template.render(context)
             
     def get_email(self):
         """
