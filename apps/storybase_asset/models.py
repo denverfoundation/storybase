@@ -717,6 +717,17 @@ class FeaturedAssetsMixin(DefaultImageMixin):
         return url
 
 
+def invalidate_featured_asset_url_cache(sender, instance, **kwargs): 
+    """Signal handler to invalidate a model's cached featured asset URL"""
+    action = kwargs.get('action')
+    reverse = kwargs.get('reverse')
+    if action in ("post_add", "post_remove", "post_clear") and not reverse:
+        key = instance.featured_asset_thumbnail_url_key()
+        key_with_host = instance.featured_asset_thumbnail_url_key(include_host=True)
+        cache.delete(key)
+        cache.delete(key_with_host)
+
+
 class DataSetPermission(PermissionMixin):
     """Permissions for the DataSet model"""
     def user_can_change(self, user):

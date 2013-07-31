@@ -24,7 +24,8 @@ from storybase.models import (TzDirtyFieldsMixin, LicensedModel, PermissionMixin
     PublishedModel, TimestampedModel, TranslatedModel, TranslationModel,
     WeightedModel)
 from storybase.utils import key_from_instance, unique_slugify
-from storybase_asset.models import (Asset, DataSet, ASSET_TYPES, FeaturedAssetsMixin)
+from storybase_asset.models import (Asset, DataSet, ASSET_TYPES,
+    FeaturedAssetsMixin, invalidate_featured_asset_url_cache)
 from storybase_help.models import Help
 from storybase_user.models import Organization, Project
 from storybase_user.utils import format_user_name
@@ -758,6 +759,7 @@ m2m_changed.connect(invalidate_points_cache, sender=Story.locations.through)
 m2m_changed.connect(invalidate_topics_cache, sender=Story.topics.through)
 m2m_changed.connect(invalidate_projects_cache, sender=Story.projects.through)
 m2m_changed.connect(invalidate_organizations_cache, sender=Story.organizations.through)
+m2m_changed.connect(invalidate_featured_asset_url_cache, sender=Story.featured_assets.through)
 
 
 class StoryRelationPermission(PermissionMixin):
