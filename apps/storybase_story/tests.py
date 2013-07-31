@@ -4,6 +4,7 @@
 import datetime
 import json
 from time import sleep
+from unittest import skipIf
 
 from django.conf import settings
 from django.core.cache import cache
@@ -3536,6 +3537,7 @@ class StoryExploreResourceTest(ResourceTestCase):
         from django.core.management import call_command
         call_command('rebuild_index', interactive=False, verbosity=0)
 
+    @skipIf(settings.HAYSTACK_CONNECTIONS['default']['ENGINE'] not in ('haystack.backends.solr_backend.SolrEngine', 'storybase_geo.search.backends.Solr2155Engine'), "non-Solr Haystack backend")
     def test_distance_query(self):
         """
         Test that resource can be filtered based on distance about a point
@@ -3567,6 +3569,7 @@ class StoryExploreResourceTest(ResourceTestCase):
         self.assertEqual(len(dehydrated['objects']), 1)
         self.assertEqual(dehydrated['objects'][0]['story_id'], story.story_id)
 
+    @skipIf(settings.HAYSTACK_CONNECTIONS['default']['ENGINE'] not in ('haystack.backends.solr_backend.SolrEngine', 'storybase_geo.search.backends.Solr2155Engine'), "non-Solr Haystack backend")
     def test_explore_get_list_only_published(self):
         """Test that story exploration endpoint doesn't show unpublished stories"""
         story1 = create_story(title="Test Story", summary="Test Summary",
