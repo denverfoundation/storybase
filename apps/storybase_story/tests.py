@@ -300,7 +300,8 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
         story = create_story(title="Test Story", summary="Test Summary",
                              byline="Test Byline", status='published')
         self.assertEqual(story.assets.count(), 0)
-        self.assertEqual(story.featured_asset_thumbnail_url(), '/static/img/default-image-story-222x132.png')
+        self.assertEqual(story.featured_asset_thumbnail_url(include_host=False),
+                         '/static/img/default-image-story-222x132.png')
 
     def test_unique_slug(self):
         """
