@@ -3799,51 +3799,83 @@
      */
     handleValidationErrors: function(errors) {
       var view = this;
-      
+
       // Remove any previous error-indicating UI state
       view.form.$('.bbf-error').hide();
       view.form.$('.bbf-combined-errors').remove();
       view.form.$('.nav.pills li').removeClass('error');
       
-      if (_.size(errors) > 0) {
-        $('<ul class="bbf-combined-errors">').prependTo(view.form.$el).hide();
-      }
+      // two ways to show errors: inline with field, or
+      // on top of the form.
+      var inlineErrors = {};
+      var formErrors = [];
       
       for (var fieldName in errors) {
+        // Allow errors in "_others" to be either field-keyed error objects
+        // or simple strings.
+        // @see https://github.com/powmedia/backbone-forms#model-validation
         if (fieldName == '_others') {
-          // treat "_others" specially—these will be simple raw strings.
-          _.each(errors._others, function(msg) {
-            view.form.$('.bbf-combined-errors').append('<li>' + msg + '</li>');
+          _.each(errors._others, function(error) {
+            if (_.isString(error)) {
+              formErrors.push(error);
+            }
+            else if (_.isObject(error)) {
+              for (var f in error) {
+                if (!(f in inlineErrors)) {
+                  inlineErrors[f] = [];
+                }
+                inlineErrors[f].push(error);
+              }
+            }
           });
-          view.form.$('.bbf-combined-errors').slideDown();
         }
         else {
           // if we can put in an error inline do so, otherwise throw into 
           // the combined basket up top.
           var inline = false;
-          if ('type' in errors[fieldName]) {
-            var $field = view.form.$('.field-' + fieldName);
-            if ($field.length) {
-              // show inline message
-              var $fieldError = $field.find('.bbf-error');
-              if ($fieldError.length) {
-                $fieldError.html(errors[fieldName].message).slideDown('fast');
-                inline = true;
+          var $field = view.form.$('.field-' + fieldName);
+          if ($field.length) {
+            var $fieldError = $field.find('.bbf-error');
+            if ($fieldError.length) {
+              if (!(fieldName in inlineErrors)) {
+                inlineErrors[fieldName] = [];
               }
-              // highlight relevant option pill, if any 
-              // (for storybase.MutexGroupedInputForms)
-              var optionIndex = $field.data('option-index');
-              if (!_.isUndefined(optionIndex)) {
-                view.form.$('.nav.pills li:eq(' + optionIndex + ')').addClass('error');
-              }
+              inlineErrors[fieldName].push(errors[fieldName].message);
+              inline = true;
             }
           }
+
           // this error was not inline; append it to the big bucket.
           if (!inline) {
-            view.form.$('.bbf-combined-errors').append('<li>' + errors[fieldName].message + '</li>');
+            formErrors.push(errors[fieldName].message);
           }
         }
-      } 
+      }
+      
+      // fill in/update elements
+      
+      _.each(inlineErrors, function(errors, fieldName) {
+        var $field = view.form.$('.field-' + fieldName);
+
+        // there may be multiple errors on a field, but we only show the first.
+        $field.find('.bbf-error').html(errors[0]).slideDown('fast');
+        
+        // highlight relevant option pill, if any 
+        // (for storybase.MutexGroupedInputForms)
+        var optionIndex = $field.data('option-index');
+        if (!_.isUndefined(optionIndex)) {
+          view.form.$('.nav.pills li:eq(' + optionIndex + ')').addClass('error');
+        }
+        
+      });
+
+      if (_.size(formErrors) > 0) {
+        $('<ul class="bbf-combined-errors">').prependTo(view.form.$el).slideDown('fast');
+      }
+      _.each(formErrors, function(error) {
+        view.form.$('.bbf-combined-errors').append('<li>' + error + '</li>');
+      });
+
     },
     
     /**
@@ -3916,7 +3948,7 @@
         else {
           // Only the file field is present, i.e. editing an existing model
           filename = _.last(model.get('file').split('/'));
-          schema.file.help = gettext("Current file is") + " <em>" + filename + ".</em> " + gettext("Change the data file by uploading a new data file from your computer.");
+          schema.file.help = gettext("Current file is") + " <strong>" + filename + "</strong>. " + gettext("Change the data file by uploading a new data file from your computer.");
         }
       }
 
@@ -4574,7 +4606,7 @@
             schema.image.title = capfirst(gettext('replace image file'));
             var imagePath = model.get('image');
             if (imagePath && _.isString(imagePath)) {
-              schema.image.help = capfirst(gettext('current image is ' + _.last(imagePath.split('/')) + '.'));
+              schema.image.help = capfirst(gettext('current image is <strong>' + _.last(imagePath.split('/')) + '</strong>.'));
               schema.image.help += ' ' + capfirst(gettext("change this by uploading a new image from your computer."));
             }
           }
