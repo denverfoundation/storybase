@@ -9,7 +9,7 @@ django-classy-tags==0.3.4.1
 django-cms==2.3.5
 django-email-confirmation==0.2
 django-filer>=0.9.3
-git+https://github.com/toastdriven/django-haystack.git@master#egg=django-haystack
+django-haystack
 django-mptt==0.5.2
 django-reversion>=1.6,<1.7
 django-sekizai==0.6.1

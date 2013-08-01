@@ -1,16 +1,7 @@
-import logging
-
-from django.db.models import signals
-
 from haystack import indexes
 
 from storybase.search.fields import GeoHashMultiValueField, TextSpellField
-from storybase_asset.models import HtmlAssetTranslation
-from storybase_geo.models import Location
-from storybase_story.models import (SectionAsset, SectionTranslation,
-                                    Story, StoryTranslation)
-
-logger = logging.getLogger('storybase')
+from storybase_story.models import Story
 
 
 class StoryIndex(indexes.SearchIndex, indexes.Indexable):
@@ -108,7 +99,7 @@ class StoryIndex(indexes.SearchIndex, indexes.Indexable):
         else:
             super(StoryIndex, self).update_object(instance, using, **kwargs)
 
-    def translation_update_object(self, sender, instance, **kwargs):
+    def translation_update_object(self, instance, **kwargs):
         """Signal handler for updating story index when the translation changes"""
         # Deal with race condition when stories are deleted
         # See issue #138
@@ -117,12 +108,12 @@ class StoryIndex(indexes.SearchIndex, indexes.Indexable):
         except Story.DoesNotExist:
             pass
 
-    def location_update_object(self, sender, instance, **kwargs):
+    def location_update_object(self, instance, **kwargs):
         """Signal handler for updating story index when a related location changes"""
         for story in instance.stories.all():
             self.update_object(story)
 
-    def section_translation_update_object(self, sender, instance, **kwargs):
+    def section_translation_update_object(self, instance, **kwargs):
         """
         Signal handler for updating story index when a related section
         translation changes
@@ -133,7 +124,7 @@ class StoryIndex(indexes.SearchIndex, indexes.Indexable):
         """
         self.update_object(instance.section.story)
 
-    def asset_translation_update_object(self, sender, instance, **kwargs):
+    def asset_translation_update_object(self, instance, **kwargs):
         """
         Signal handler for updating story index when a related text asset
         translation changes
@@ -152,7 +143,7 @@ class StoryIndex(indexes.SearchIndex, indexes.Indexable):
             for story in stories:
                 self.update_object(story)
 
-    def cache_story_for_delete(self, sender, instance, **kwargs):
+    def cache_story_for_delete(self, instance, **kwargs):
         """
         Store a reference to the section asset's story
 
@@ -165,7 +156,7 @@ class StoryIndex(indexes.SearchIndex, indexes.Indexable):
         """
         instance._story = instance.section.story
 
-    def asset_relation_update_object(self, sender, instance, **kwargs):
+    def asset_relation_update_object(self, instance, **kwargs):
         """
         Signal handler for when an asset to section relationship is 
         created or destroyed.
@@ -183,60 +174,3 @@ class StoryIndex(indexes.SearchIndex, indexes.Indexable):
                 # the relations
                 story = instance.section.story
             self.update_object(story)
-    
-    def _setup_save(self):
-        super(StoryIndex, self)._setup_save()
-        # Update object when many-to-many fields change
-        signals.m2m_changed.connect(self.update_object, sender=self.get_model().organizations.through)
-        signals.m2m_changed.connect(self.update_object, sender=self.get_model().projects.through)
-        signals.m2m_changed.connect(self.update_object, sender=self.get_model().tags.through)
-        signals.m2m_changed.connect(self.update_object, sender=self.get_model().topics.through)
-        signals.m2m_changed.connect(self.update_object, sender=self.get_model().locations.through)
-        signals.m2m_changed.connect(self.update_object, sender=self.get_model().places.through)
-
-        signals.post_save.connect(self.asset_translation_update_object,
-                                  sender=HtmlAssetTranslation)
-        signals.post_save.connect(self.asset_relation_update_object,
-                                  sender=SectionAsset)
-        signals.pre_delete.connect(self.cache_story_for_delete,
-                                   sender=SectionAsset)
-        signals.post_delete.connect(self.asset_relation_update_object,
-                                    sender=SectionAsset)
-        signals.post_save.connect(self.section_translation_update_object,
-                                  sender=SectionTranslation)
-        signals.post_save.connect(self.translation_update_object,
-                                  sender=StoryTranslation)
-        signals.post_save.connect(self.location_update_object,
-                                  sender=Location)
-
-    def _teardown_save(self):
-        super(StoryIndex, self)._teardown_save()
-        signals.m2m_changed.disconnect(self.update_object, sender=self.get_model().organizations.through)
-        signals.m2m_changed.disconnect(self.update_object, sender=self.get_model().projects.through)
-        signals.m2m_changed.disconnect(self.update_object, sender=self.get_model().topics.through)
-        signals.m2m_changed.disconnect(self.update_object, sender=self.get_model().tags.through)
-        signals.m2m_changed.disconnect(self.update_object, sender=self.get_model().locations.through)
-        signals.m2m_changed.disconnect(self.update_object, sender=self.get_model().places.through)
-
-        signals.post_save.disconnect(self.asset_translation_update_object,
-                                     sender=HtmlAssetTranslation)
-        signals.post_delete.disconnect(self.asset_relation_update_object,
-                                       sender=SectionAsset)
-        signals.post_save.disconnect(self.asset_relation_update_object,
-                                     sender=SectionAsset)
-        signals.post_save.disconnect(self.section_translation_update_object,
-                                     sender=SectionTranslation)
-        signals.post_save.disconnect(self.translation_update_object,
-                                     sender=StoryTranslation)
-        signals.post_save.disconnect(self.location_update_object,
-                                     sender=Location)
-
-    def _setup_delete(self):
-        super(StoryIndex, self)._setup_delete()
-        signals.post_delete.connect(self.translation_update_object,
-                                    sender=StoryTranslation)
-
-    def _teardown_delete(self):
-        super(StoryIndex, self)._teardown_delete()
-        signals.post_delete.disconnect(self.translation_update_object,
-                                      sender=StoryTranslation)

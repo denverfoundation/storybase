@@ -331,7 +331,7 @@ THUMBNAIL_PROCESSORS = (
 # Always create thumbnails as the same type as the original
 THUMBNAIL_PRESERVE_EXTENSIONS = True
 
-HAYSTACK_SIGNAL_PROCESSOR = 'haystack.signals.RealtimeSignalProcessor'
+HAYSTACK_SIGNAL_PROCESSOR = 'storybase.search.signals.RealtimeSignalProcessor'
 
 # storybase settings
 # The name of the group used for site administrators

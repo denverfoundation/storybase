@@ -38,10 +38,17 @@ migration for that as well::
 
     ./manage.py migrate cmsplugin_storybase
 
-Finally, if you create any searchable help, you'll need to update the
+If you create any searchable help, you'll need to update the
 search index::
 
     ./manage.py rebuild_index
+
+We also updated the code base to use the current stable version of Haystack.
+We had referenced the GitHub URL for Haystack in the REQUIREMENTS file, so
+it's best to uninstall and reinstall Haystack::
+
+    pip uninstall django-haystack
+    pip install django-haystack
 
 0.9.* to 0.10.0
 ===============

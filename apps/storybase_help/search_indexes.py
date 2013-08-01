@@ -37,3 +37,12 @@ class HelpIndex(indexes.SearchIndex, indexes.Indexable):
             self.remove_object(instance, using, **kwargs)
         else:
             super(HelpIndex, self).update_object(instance, using, **kwargs)
+
+    def translation_update_object(self, instance, **kwargs):
+        """Signal handler for updating search index when the translation changes"""
+        # Deal with race condition when items are deleted
+        # See issue #138
+        try:
+            self.update_object(instance.help)
+        except Help.DoesNotExist:
+            pass
