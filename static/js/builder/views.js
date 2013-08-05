@@ -5005,6 +5005,7 @@
         // Listen to events on the new model
         this.bindModelEvents();
         this.initializeDataViews();
+        this.initializeForm();
       },
 
       /**
