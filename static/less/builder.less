@@ -1304,11 +1304,13 @@ table.datasets {
   
   fieldset {
     border:none;
+    min-width:100%;
   }
   
   .bbf-field, .mutex-group {
     list-style-type:none;
     clear:both;
+    min-width:100%;
     
     label {
       float: none;
@@ -1322,6 +1324,10 @@ table.datasets {
       input[type=text], input[type=password], textarea {
         .box-sizing(border-box);
         width:100%
+      }
+      
+      input[type=file] {
+        max-width:60%;
       }
       
       .file-thumbnail, .not-set-thumbnail, .data-thumbnail {
