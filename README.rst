@@ -17,6 +17,8 @@ Changelog
 * Searchable help (#507)
 * Story notification emails (#580)
 * Real-time search index updates that use Haystack 2.0+ APIs (#817)
+* Fix formatting of header on intermediary page in social registration
+  flow (#826)
 
 0.11.3
 ~~~~~~
