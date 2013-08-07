@@ -80,12 +80,13 @@
 
   var showStoryWidgets = function() {
     var phs = getElementsByClassName('storybase-story-embed');
-    console.debug(phs);
-    var i, ph, el, url;
+    var i, ph, el, url, height, version;
     for (i = 0; i < phs.length; i++) {
       ph = phs[i];
-      url = ph.getAttribute('href') + 'widget/';
       height = ph.getAttribute('data-height')||'500px';
+      version = ph.getAttribute('data-version'); 
+      url = ph.getAttribute('href') + 'widget/';
+      url = version ? url + version + '/' : url;
       el = document.createElement('iframe');
       el.setAttribute('name', 'storybase-story-widget-frame');
       el.setAttribute('src', url);

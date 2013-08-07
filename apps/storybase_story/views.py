@@ -587,6 +587,19 @@ class StoryWidgetView(ModelIdDetailView):
     template_name = 'storybase_story/story_widget.html'
 
 
+class StoryWidgetView_0_1(ModelIdDetailView):
+    """
+    An embedable widget for a story
+
+    Version 0.1 of widget
+    
+    """
+    context_object_name = "story"
+    # You can only embed published stories
+    queryset = Story.objects.published()
+    template_name = 'storybase_story/story_widget-0.1.html'
+
+
 class StoryShareWidgetView(ModelIdDetailView):
     """
     Widget for sharing a story
