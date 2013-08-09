@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.12.1
+~~~~~~
+
+* Fix rendering of Publish/Share workflow step in IE8/IE9 (#830)
+
 0.12
 ~~~~
 
