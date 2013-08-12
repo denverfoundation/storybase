@@ -56,6 +56,26 @@ Feature: A user can associate datasets with assets
                 Given the user clicks on the "Data Sources" link
                 Then "Test CSV Data" appears in the dataset list
 
+         Scenario: Submit dataset form with URL with no title specified
+                Given an admin creates the User "test_user@fakedomain.com"
+                Given the user "test_user@fakedomain.com" is logged in
+                Given the user navigates to "/build/"
+                Given the user clicks the "Sandbox" link
+                Given the user inputs "Test story for datasets" for the "title" field 
+                Given the user inputs "Test User" for the "byline" field 
+                Given the user inputs "My summary, so exciting!" for the "summary" textarea 
+                Given the user clicks on "Untitled Section" in the section list
+                Given the user clicks the "Table" icon in the "center" container
+                Given the user inputs "https://docs.google.com/spreadsheet/pub?key=0AvaXS4x_XvJmdGthMFBSb1BJOUNPTnhaNWN4UDZnZkE&output=html" in the "Enter table URL" input
+                Given the user clicks the "Save Changes" button
+                Given the user clicks on the "Data Sources" link 
+                Given the user clicks on the "Add Dataset" button
+                Given the user inputs "https://docs.google.com/spreadsheet/ccc?key=0AvaXS4x_XvJmdGthMFBSb1BJOUNPTnhaNWN4UDZnZkE#gid=0" in the "Data URL" input
+                Given the user clicks the "Save" button
+                Then an error message is shown below the "title" input
+                Given the user clicks the "cancel" button
+                Then no datasets should be listed
+
          Scenario: Submit dataset form with no URL or image specified
                 Given an admin creates the User "test_user@fakedomain.com"
                 Given the user "test_user@fakedomain.com" is logged in
@@ -161,7 +181,6 @@ Feature: A user can associate datasets with assets
                 Given the user clicks the "Edit" button next to "FOIA No Heats 2011 to Present" the dataset list
                 Given the user inputs "Updated Dataset Title" in the "Data set name" input
                 Given the user inputs "http://fake.floodlightproject.org/dataset-path/" in "Data URL" input
-                Given the user selects the file "test_data.csv" for the "Data file" field
                 Given the user clicks the "Save Changes" button
                 Then "Updated Dataset Title" appears in the dataset list below the asset content
                 Then "Updated Dataset Title" has an "external" icon
