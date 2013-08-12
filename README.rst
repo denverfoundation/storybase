@@ -14,6 +14,7 @@ Changelog
 0.12.2
 ~~~~~~
 
+* Only show one asset content (file, URL, body) input at a time (#767)
 * Fix dataset file replacement in IE8/IE9 (#829)
 * Fix featured image pills in IE8 (#837)
 
