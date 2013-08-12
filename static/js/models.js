@@ -221,10 +221,12 @@
           },
           url: {
             type: 'Text',
-            validators: ['url']
+            validators: ['url'],
+            fieldClass: 'mutex-group'
           },
           file: {
-            type: Forms.File
+            type: Forms.File,
+            fieldClass: 'mutex-group'
           }
         };
 
@@ -276,8 +278,8 @@
       // an existing dataset. Otherwise, one and only one of the fields
       // is required
       if (found.length !== 1 && (this.isNew() || !this.get('file'))) {
-        errs.file = msg;
-        errs.url = msg;
+        errs.file = { type: 'file', message: msg };
+        errs.url = { type: 'url', message: msg };
       }
 
       if (_.size(errs) > 0) {
@@ -828,6 +830,13 @@
           'table': true
         }
       },
+      
+      mutexGroups: {
+        image: ['url', 'image'],
+        map: ['url', 'image', 'body'],
+        chart: ['url', 'image', 'body'],
+        table: ['url', 'body']
+      },
 
       formFieldVisible: function(name, type) {
         return _.has(this.showFormField[name], type);
@@ -866,7 +875,17 @@
               }
             }, this);
           }
-
+          else {
+            // markup groups
+            if (_.has(this.mutexGroups, type)) {
+              var groups = this.mutexGroups[type];
+              _.each(schema, function(def, name) {
+                if (_.indexOf(groups, name) >= 0) {
+                  def.fieldClass = (('fieldClass' in def) ? def.fieldClass + ' mutex-group' : 'mutex-group');
+                }
+              });
+            }
+          }
           return schema;
         }
       },
@@ -892,7 +911,10 @@
           }
         }, this);
         if (found.length > 1) {
-          return "You must specify only one of the following values " + found.join(', ');
+          return "You must specify only one of the following values: " + found.join(', ') + '.';
+        }
+        else if (found.length == 0 && (this.isNew() || !this.get('image'))) {
+          return 'You must specify at least one option: ' + _.intersection(_.keys(attrs), contentAttrNames).join(', ') + '.';
         }
       },
 
