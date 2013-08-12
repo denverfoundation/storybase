@@ -6163,7 +6163,7 @@
       title: gettext("Select a featured image"),
       templateSource: {
         '__main': $('#featured-asset-template').html(),
-        'nav-item': '<li{{#if class}} class="{{class}}"{{/if}}><a href="#{{viewId}}">{{title}}</li>'
+        'nav-item': '<li{{#if class}} class="{{class}}"{{/if}}><a href="#{{viewId}}">{{title}}</a></li>'
       },
       addViewClass: FeaturedAssetAddView,
       displayViewClass: FeaturedAssetDisplayView,

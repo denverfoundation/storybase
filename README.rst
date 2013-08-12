@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.12.2
+~~~~~~
+
+* Fix featured image pills in IE8 (#837)
+
 0.12.1
 ~~~~~~
 
