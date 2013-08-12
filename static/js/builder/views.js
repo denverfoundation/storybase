@@ -3800,47 +3800,58 @@
     handleValidationErrors: function(errors) {
       var view = this;
 
+      // two ways to show errors: inline with field, or
+      // on top of the form.
+      var inlineErrors = {};
+      var formErrors = [];
+
+      // Function to extract an error message from the items in
+      // errors._others.  Declare it here to avoid declaring an anonymous
+      // function within a for loop
+      var addFormError = function(error) {
+        if (_.isString(error)) {
+          formErrors.push(error);
+        }
+        else if (_.isObject(error)) {
+          // The error is an object, added to _others because the key didn't
+          // match a field name in the form. Just grab the first value as
+          // the error message;
+          for (var k in error) {
+            break;
+          }
+          formErrors.push(error[k]);
+        }
+      };
+
+      var fieldName; // Keys in errors object
+      var inline; // Can a particular error be shown inline?
+      var $field; // A form field's element
+      var $fieldError; // A form field's error message
+      var msg; // An individual error message
+
       // Remove any previous error-indicating UI state
       view.form.$('.bbf-error').hide();
       view.form.$('.bbf-combined-errors').remove();
       view.form.$('.nav.pills li').removeClass('error');
       
-      // two ways to show errors: inline with field, or
-      // on top of the form.
-      var inlineErrors = {};
-      var formErrors = [];
-      
-      for (var fieldName in errors) {
+      for (fieldName in errors) {
         // Allow errors in "_others" to be either field-keyed error objects
         // or simple strings.
         // @see https://github.com/powmedia/backbone-forms#model-validation
         if (fieldName == '_others') {
-          _.each(errors._others, function(error) {
-            if (_.isString(error)) {
-              formErrors.push(error);
-            }
-            else if (_.isObject(error)) {
-              for (var f in error) {
-                if (!(f in inlineErrors)) {
-                  inlineErrors[f] = [];
-                }
-                inlineErrors[f].push(error);
-              }
-            }
-          });
+          _.each(errors._others, addFormError); 
         }
         else {
           // if we can put in an error inline do so, otherwise throw into 
           // the combined basket up top.
-          var inline = false;
-          var $field = view.form.$('.field-' + fieldName);
+          inline = false;
+          $field = view.form.$('.field-' + fieldName);
           if ($field.length) {
-            var $fieldError = $field.find('.bbf-error');
+            $fieldError = $field.find('.bbf-error');
             if ($fieldError.length) {
-              if (!(fieldName in inlineErrors)) {
-                inlineErrors[fieldName] = [];
-              }
-              inlineErrors[fieldName].push(errors[fieldName].message);
+              inlineErrors[fieldName] = inlineErrors[fieldName] || [];
+              msg = _.isString(errors[fieldName]) ? errors[fieldName] : errors[fieldName].message;
+              inlineErrors[fieldName].push(msg);
               inline = true;
             }
           }
