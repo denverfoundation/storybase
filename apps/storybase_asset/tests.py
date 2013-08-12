@@ -18,7 +18,7 @@ from storybase_story.models import (create_section, create_story,
 from storybase_asset.models import (Asset, ExternalAsset, HtmlAsset,
     HtmlAssetTranslation, ExternalDataSet, DataSet,
     create_html_asset, create_external_asset, create_local_image_asset,
-    create_external_dataset)
+    create_external_dataset, create_local_dataset)
 from storybase_asset.oembed.providers import GoogleSpreadsheetProvider
 from storybase_asset.utils import image_type_supported
 
@@ -1188,6 +1188,102 @@ class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         self.assertEqual(dataset.title, put_data['title'])
         self.assertEqual(dataset.url, put_data['url'])
 
+    def get_put_detail_data(self, dataset, data_file):
+        """Get PUT data for a given dataset"""
+        return {
+            'attribution': '',
+            'created': dataset.created.isoformat(),
+            'dataset_id': dataset.dataset_id,
+            'description': dataset.description,
+            'download_url': dataset.download_url(), 
+            'file': data_file,
+            'language': 'en',
+            'languages': dataset.get_language_names(),
+            'last_edited': dataset.last_edited.isoformat(),
+            'links_to_file': dataset.links_to_file,
+            'resource_uri': '/api/0.1/datasets/%s/' % (dataset.dataset_id),
+            'status': 'draft',
+            'title': dataset.title,
+        }
+
+    def do_request_detail(self, method='put', qs=None):
+        """
+        Construct a dataset instance, create a payload and make a request
+        to the detail endpoint to try to replace the dataset's attributes
+
+        Returns a tuple of the created dataset, the hash of the original
+        data file and the response
+        """
+        data_filename = "test_data.csv"
+        replacement_data_filename = "test_data2.csv"
+        app_dir = os.path.dirname(os.path.abspath(__file__))
+        data_path = os.path.join(app_dir, "test_files", data_filename)
+        with open(data_path) as data_file:
+            dataset = create_local_dataset(
+                data_file=data_file,
+                data_filename=data_filename,
+                title="Test Image Asset",
+                owner=self.user
+            )
+            self.add_file_to_cleanup(dataset.file.file.path)
+
+        data_path = os.path.join(app_dir, "test_files", replacement_data_filename)
+        original_hash = hashlib.sha1(file(data_path, 'r').read()).digest()
+        detail_url = '/api/0.1/datasets/%s/' % (dataset.dataset_id)
+        if qs is not None:
+            detail_url += qs
+        with open(data_path) as data_file:
+            put_data = self.get_put_detail_data(dataset, data_file) 
+            self.api_client.client.login(username=self.username,
+                                         password=self.password)
+            func = getattr(self.api_client.client, method)
+            resp = func(detail_url, data=put_data)
+            return (dataset, original_hash, resp)
+
+    def _test_put_detail_success(self, dataset, original_hash, resp):
+        """
+        Test that a PUT request to a detail endpoint successfully
+        updates a dataset's file
+
+        This is a helper to make individual tests more DRY
+        """
+        self.assertHttpAccepted(resp)
+        self.assertEqual(DataSet.objects.count(), 1)
+        # Refresh the dataset
+        dataset = DataSet.objects.get_subclass(dataset_id=dataset.dataset_id)
+        # Set our created file to be cleaned up
+        self.add_file_to_cleanup(dataset.file.file.path)
+        # Compare the uploaded file and the original 
+        created_hash = hashlib.sha1(file(dataset.file.path, 'r').read()).digest()
+        self.assertEqual(original_hash, created_hash)
+
+    def test_put_detail_file_as_multipart(self):
+        (dataset, original_hash, resp) = self.do_request_detail()
+        self._test_put_detail_success(dataset, original_hash, resp)
+
+    def test_post_detail_file_as_multipart_non_iframe(self):
+        """
+        Test that a POST to the detail endpoint fails without the
+        ``iframe`` querystring parameter.
+        """
+        (dataset, original_hash, resp) = self.do_request_detail(method='post')
+        self.assertHttpNotImplemented(resp)
+        self.assertEqual(DataSet.objects.count(), 1)
+        # Refresh the dataset
+        dataset = DataSet.objects.get_subclass(dataset_id=dataset.dataset_id)
+        # Compare the uploaded file and the original 
+        created_hash = hashlib.sha1(file(dataset.file.path, 'r').read()).digest()
+        self.assertNotEqual(original_hash, created_hash)
+
+    def test_post_detail_file_as_multipart_iframe(self):
+        """
+        Test that a POST to the detail endpoint works the same as a
+        PUT when the ``iframe`` querystring parameter is present.
+        """
+        (dataset, original_hash, resp) = self.do_request_detail(method='post',
+                qs="?iframe=iframe")
+        self._test_put_detail_success(dataset, original_hash, resp)
+
 
 class ExternalDataSetModelTest(TestCase):
     def test_url_is_for_file(self):
@@ -1871,7 +1967,7 @@ class AssetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
 
     def do_request_detail(self, method='put', qs=None):
         """
-        Construct and asset instance, create a payload and make a request
+        Construct an asset instance, create a payload and make a request
         to the detail endpoint to try to replace the asset's attributes
 
         Returns a tuple of the created asset, the hash of the original

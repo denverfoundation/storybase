@@ -14,6 +14,7 @@ Changelog
 0.12.2
 ~~~~~~
 
+* Fix dataset file replacement in IE8/IE9 (#829)
 * Fix featured image pills in IE8 (#837)
 
 0.12.1

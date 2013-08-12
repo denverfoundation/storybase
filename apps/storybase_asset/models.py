@@ -19,7 +19,7 @@ from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 
 from filer.fields.image import FilerFileField, FilerImageField
-from filer.models import Image 
+from filer.models import File as FilerFile, Image 
 from micawber.exceptions import ProviderException, ProviderNotFoundException
 from model_utils.managers import InheritanceManager
 from uuidfield.fields import UUIDField
@@ -962,3 +962,28 @@ def create_external_dataset(title, url, description='',
     return obj
 
 
+def create_local_dataset(title, data_file, data_filename=None, description='',
+                         language=settings.LANGUAGE_CODE,
+                         *args, **kwargs):
+    """
+    Convenience function for creating a LocalDataSet
+
+    Allows for creation of a DataSet without having to explicitly deal with
+    the translations.
+
+    """
+    file_model = File(data_file, name=data_filename)
+    filer_file_model = FilerFile.objects.create(owner=kwargs.get('owner', None),
+         original_filename=data_filename, file=file_model)
+    
+    obj = LocalDataSet(
+        file=filer_file_model,
+        *args, **kwargs)
+    obj.save()
+    translation = DataSetTranslation(
+        dataset=obj, 
+        title=title, 
+        description=description,
+        language=language)
+    translation.save()
+    return obj
