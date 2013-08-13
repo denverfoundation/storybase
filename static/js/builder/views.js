@@ -2391,11 +2391,128 @@
     })
   );
 
+  /**
+   * Create a character count view attached to either an input or wysihtml5 editor.
+   * 
+   * Required parameter:
+   * 
+   * @param {Object|HTMLElement} options.target The wysihtml5 editor, or an input element.
+   * 
+   */
+  var CharacterCountView = Views.CharacterCountView = HandlebarsTemplateView.extend({
+    tagName: 'div',
+    className: 'character-count',
+
+    editor: null,
+    editorType: null,
+    timer: null,
+
+    options: {
+      templateSource: $('#character-count-template').html(),
+      warningLimit: 250,
+      warningText: 'Shorter is better!',
+      countHTML: false,
+      showOnFocus: true,
+      target: null
+    },
+
+    initialize: function(options) {
+      this.compileTemplates();
+      this.options = _.defaults(options || {}, this.options);
+      if (this.options.target instanceof wysihtml5.Editor) {
+        this.editor = this.options.target;
+        this.editorType = 'wysihtml5';
+      }
+      else {
+        // assume a DOM element or jQuery-wrapped element
+        this.editor = $(this.options.target);
+        this.editorType = 'node';
+      }
+      
+      this.editor.on('focus', _.bind(this.handleEditorFocus, this));
+      this.editor.on('blur', _.bind(this.handleEditorBlur, this));
+      this.editor.on('change', _.bind(this.handleEditorChange, this));
+      this.editor.on('load', _.bind(this.handleEditorLoad, this));
+
+      return this;
+    },
+
+    handleEditorFocus: function() {
+      this.startPolling();
+      if (this.options.showOnFocus) {
+        this.$el.slideDown();
+      }
+    },
+    
+    handleEditorBlur: function() {
+      this.stopPolling();
+      if (this.options.showOnFocus) {
+        this.$el.slideUp();
+      }
+    },
+    
+    handleEditorChange: function() {
+      this.updateCharacterCount();
+    },
+    
+    handleEditorLoad: function() {
+      this.updateCharacterCount();
+    },
+
+    getEditorValue: function() {
+      if (this.editorType == 'wysihtml5') {
+        return this.editor.getValue();
+      }
+      return this.editor.val();
+    },
+    
+    updateCharacterCount: function() {
+      var text = this.getEditorValue();
+      
+      if (!this.options.countHTML) {
+        // remove tags
+        text = text.replace(/<(.*?)>/g, '');
+        // "render" to convert entities to characters (eg, &lt;)
+        text = $('<div/>').html(text).text();
+      }
+
+      this.$el.find('.count').html(text.length);
+      var $warning = this.$el.find('.warning');
+      if ($warning.length) {
+        if (text.length > this.options.warningLimit) {
+          $warning.html(this.options.warningText).show();
+        }
+        else {
+          $warning.hide();
+        }
+      }
+    },
+
+    // Ideally we would not need to poll but listen for an 
+    // editor-supplied change event that fires on every visible 
+    // change.
+    // @see https://github.com/PitonFoundation/atlas/issues/530
+    // @see https://github.com/xing/wysihtml5/issues/174
+    // @see note in RichTextEditorMixin.createEditor below.
+    startPolling: function() {
+      this.timer = setInterval($.proxy(this.updateCharacterCount, this), 250);
+    },
+    
+    stopPolling: function() {
+      clearInterval(this.timer);
+    },
+    
+    render: function() {
+      this.$el.html(this.getTemplate());
+      if (this.options.showOnFocus) {
+        this.$el.hide();
+      }
+      return this;
+    }
+  });
+
   var RichTextEditorMixin = {
     toolbarTemplateSource: $('#editor-toolbar-template').html(),
-    characterCountTemplateSource: $('#editor-toolbar-character-counter').html(),
-    characterCountLimit: false,
-    characterCountTimer: null,
     editor: null,
 
     getEditorToolbarHtml: function() {
@@ -2405,33 +2522,24 @@
     getEditorToolbarEl: function() {
       if (_.isUndefined(this._editorToolbarEl)) {
         this._editorToolbarEl = $(this.getEditorToolbarHtml())[0];
-        if (this.characterCountLimit) {
-          $(this._editorToolbarEl).prepend(this.characterCountTemplateSource);
-        }
       }
       return this._editorToolbarEl; 
     },
 
-    /**
-     * @param characterCountLimit Optionally pass a number to specify a limit.
-     */
-    getEditor: function(el, callbacks, characterCountLimit) {
+    getEditor: function() {
+      return this.editor;
+    },
+    
+    createEditor: function(el, callbacks) {
       var view = this;
-      this.characterCountLimit = !isNaN(characterCountLimit) ? characterCountLimit : false;
       var defaultCallbacks = {
         'focus': function() {
           $(this.toolbar.container).show();
-          if (view.characterCountLimit) {
-            view.startPollingCharacterCount();
-          }
         },
 
         'blur': function() {
           if (this._okToHideToolbar) {
             $(this.toolbar.container).hide();
-          }
-          if (view.characterCountLimit) {
-            view.stopPollingCharacterCount();
           }
         },
 
@@ -2445,18 +2553,10 @@
           $(this.toolbar.container).mouseout(function() {
             that._okToHideToolbar = true;
           });
-          view.updateCharacterCount();
         }
         
-        // @todo: what we really want is a change event that fires on every 
-        // visible change in the editor. for some reason, the published 
-        // change events do not behave that way. if future versions of the 
-        // wysihtml5 editor address this, or if we change editors, something
-        // like the following should be used rather than polling.
-        //
-        // 'change': function() {
-        //   view.updateCharacterCount();
-        // }
+        // Note that the editor currently does not publish a change
+        // even that fires on every *visible* change in the editor. :(
       };
 
       var toolbarEl = this.getEditorToolbarEl();
@@ -2473,46 +2573,8 @@
       _.each(callbacks, $.proxy(function(value, key, list) {
         this.editor.on(key, value);
       }, this));
-      return this.editor;
-    },
-    
-    // @todo: switch from polling to listening for events when wysihtml5 editor
-    // hits version 0.5. @see https://github.com/PitonFoundation/atlas/issues/530
-    // and @see https://github.com/xing/wysihtml5/issues/174
-    // or, ideally, use a published change event if its behavior is fine-grained
-    // enough. see note above.
-    startPollingCharacterCount: function() {
-      this.characterCountTimer = setInterval($.proxy(this.updateCharacterCount, this), 500);
-    },
 
-    stopPollingCharacterCount: function() {
-      clearInterval(this.characterCountTimer);
-    },
-    
-    updateCharacterCount: function() {
-      if (this.editor && this.characterCountLimit) {
-        var $counter = $(this.getEditorToolbarEl()).find('.character-counter');
-        if ($counter.length) {
-          var text = this.editor.getValue();
-          
-          // remove tags
-          text = text.replace(/<(.*?)>/g, '');
-          
-          // "render" to convert entities to characters (eg, &lt;)
-          text = $('<div/>').html(text).text();
-        
-          $counter.find('.count').html(text.length);
-          var $warning = $counter.find('.warning');
-          if ($warning.length) {
-            if (text.length > this.characterCountLimit) {
-              $warning.show();
-            }
-            else {
-              $warning.hide();
-            }
-          }
-        }
-      }
+      return this.editor;
     }
   };
 
@@ -3125,6 +3187,9 @@
     className: 'edit-story-info edit-section',
 
     pseudoSectionId: 'story-info',
+    
+    titleCharCountView: null,
+    summaryCharCountView: null,
 
     events: function() {
       var events = {};
@@ -3149,14 +3214,25 @@
       };
       this.$el.html(this.template(this.model.toJSON()));
       // Initialize wysihmtl5 editor
-      this.summaryEditor = this.getEditor(
+      this.summaryEditor = this.createEditor(
         this.$(this.options.summaryEl)[0],
         {
           change: handleChange
-        },
-        250
+        }
       );
-        
+
+      this.titleCharCountView = this.titleCharCountView || new CharacterCountView({ 
+        target: this.$el.find(this.options.titleEl),
+        warningLimit: 100
+      });
+      this.$el.prepend(this.titleCharCountView.render().$el);
+      
+      this.summaryCharCountView = this.summaryCharCountView || new CharacterCountView({ 
+        target: this.summaryEditor,
+        showOnFocus: false
+      });
+      $(this.getEditorToolbarEl()).prepend(this.summaryCharCountView.render().$el);
+      
       this.delegateEvents(); 
       return this;
     }
@@ -3259,7 +3335,7 @@
       this.$el.html(this.template(this.model.toJSON()));
       // Add the toolbar element for the wysihtml5 editor
       // Initialize wysihmtl5 editor
-      this.callEditor = this.getEditor(
+      this.callEditor = this.createEditor(
         this.$(this.options.callToActionEl)[0],
         {
           change: handleChange
@@ -4665,7 +4741,7 @@
         if (state === 'edit') {
           this.form.render().$el.append('<input type="reset" value="' + gettext("Cancel") + '" />').append('<input type="submit" value="' + gettext("Save Changes") + '" />');
           if (_.has(this.form.fields, 'body') && this.model.get('type') == 'text') {
-            this.bodyEditor = this.getEditor(
+            this.bodyEditor = this.createEditor(
               this.form.fields.body.editor.el
             );
             // HACK: Get rid of the default event handlers

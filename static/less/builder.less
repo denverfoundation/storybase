@@ -113,8 +113,21 @@ button.help {
   font-size: 18px;
 }
 
-// Rich Text Editor
+.character-count {
+  float:right;
+  font-size:.9em;
+  
+  .warning {
+    color:white;
+    background:@error-color;
+    .rounded-corners(5px);
+    padding:2px 6px;
+    display:none;
+  }
+}
 
+
+// Rich Text Editor
 .wysihtml5-toolbar {
   position: relative;
   padding: 10px 0 0 0;
@@ -122,18 +135,6 @@ button.help {
 
   &:first-child {
     padding-top: 0;
-  }
-  
-  .character-counter {
-    float:right;
-    
-    .warning {
-      color:white;
-      background:@error-color;
-      .rounded-corners(5px);
-      padding:2px 6px;
-      display:none;
-    }
   }
   
 }
