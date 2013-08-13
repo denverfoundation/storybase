@@ -5,7 +5,10 @@ import logging
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 
-from social_auth.backends.exceptions import StopPipeline
+try:
+    from social_auth.exceptions import StopPipeline
+except ImportError:
+    from social_auth.backends.exceptions import StopPipeline
 
 logger = logging.getLogger('storybase')
 
