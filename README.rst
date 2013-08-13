@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.13
+~~~~
+
+* Support for django-registration 1.0 (#786)
+
 0.12.2
 ~~~~~~
 

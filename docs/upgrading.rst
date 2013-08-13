@@ -2,6 +2,14 @@
 Upgrading
 =========
 
+0.12.* to 0.13 
+==============
+
+With 0.13, django-registration 1.0 is required.  You'll need to install
+the updated version of the package::
+
+    pip install django-registration==1.0
+
 0.11.* to 0.12.0
 ================
 
