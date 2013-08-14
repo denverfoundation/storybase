@@ -604,7 +604,8 @@ body.story-builder .alert-info{background-color:#d9edf7;border-color:#bce8f1;col
 body.story-builder .introduction{margin-top:1em;}
 body.story-builder .error input{background-color:#F2DEDE;border-color:#EED3D7;}
 body.story-builder button.help{border:none;background:none;padding:0;margin:0;width:auto;text-align:center;text-shadow:none;display:block;color:#5a5a5a !important;cursor:pointer;font-size:18px;}body.story-builder button.help:hover{background:none;}
-body.story-builder .character-count{float:right;font-size:.9em;}body.story-builder .character-count .warning{color:white;background:#ee6666;border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px;padding:2px 6px;display:none;}
+body.story-builder .character-count{float:right;text-align:right;font-size:.9em;padding:2px 6px;border-radius:5px;-webkit-border-radius:5px;-moz-border-radius:5px;border:1px solid transparent;}body.story-builder .character-count.over-limit{color:#6f6f00;background:#ffff55;border-color:#e1cc60;}body.story-builder .character-count.over-limit:before{font-family:"FontAwesome";content:"\f071";display:inline;padding-right:.25em;color:#a2a200;}
+body.story-builder .character-count.summary-title{position:absolute;right:0;top:.5em;}
 body.story-builder .wysihtml5-toolbar{position:relative;padding:10px 0 0 0;color:#777777;}body.story-builder .wysihtml5-toolbar:first-child{padding-top:0;}
 body.story-builder [data-wysihtml5-command], [data-wysihtml5-action]{text-decoration:none;}
 body.story-builder [data-wysihtml5-dialog-action]{cursor:pointer;}
@@ -736,7 +737,7 @@ body.story-builder .edit-story-info .wysihtml5-sandbox{margin-top:0.5% !importan
 body.story-builder .edit-call-to-action .wysihtml5-sandbox{margin-top:0.5% !important;width:90% !important;}
 body.story-builder .call-to-action{width:100%;height:250px;}
 body.story-builder .connected-prompt{width:100%;height:300px;}
-body.story-builder .edit-section{position:relative;margin-left:auto;margin-right:auto;padding-top:2%;width:85%;height:70%;}body.story-builder .edit-section .section-title{margin-top:15px;width:75%;}
+body.story-builder .edit-section{position:relative;margin-left:auto;margin-right:auto;padding-top:2em;width:85%;height:70%;}body.story-builder .edit-section .section-title{margin-top:15px;width:75%;}
 body.story-builder .section-edit-layout{position:relative;height:90%;margin-top:0.5%;padding-bottom:2%;width:100%;}body.story-builder .section-edit-layout .wysihtml5-sandbox{border:none !important;}
 body.story-builder #builder .section-layout{overflow:visible;}
 body.story-builder #builder iframe.sandboxed-asset{border:none;}

@@ -115,15 +115,30 @@ button.help {
 
 .character-count {
   float:right;
+  text-align:right;
   font-size:.9em;
+  padding:2px 6px;
+  .rounded-corners(5px);
+  border:1px solid transparent;
   
-  .warning {
-    color:white;
-    background:@error-color;
-    .rounded-corners(5px);
-    padding:2px 6px;
-    display:none;
+  &.over-limit {
+    color:@warning-color;
+    background:@warning-background-color;
+    border-color:@warning-border-color;
+    &:before {
+      font-family:"FontAwesome";
+      content: "\f071";
+      display: inline;
+      padding-right:.25em;
+      color:lighten(@warning-color, 10%);
+    }
   }
+}
+
+.character-count.summary-title {
+  position:absolute;
+  right:0;
+  top:.5em;
 }
 
 
@@ -984,8 +999,13 @@ button.preview {
   position: relative;
   margin-left: auto;
   margin-right: auto;
+  
   // TODO: Pick a more consistent padding
-  padding-top: 2%;
+  // fsm 8/13: edited to provide a consistent space for
+  // the character counter above the summary section title
+  // padding-top: 2%;
+  padding-top:2em;
+  
   width: 85%;
   height: 70%;
 

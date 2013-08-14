@@ -2418,7 +2418,6 @@
 
     initialize: function(options) {
       this.compileTemplates();
-      this.options = _.defaults(options || {}, this.options);
       if (this.options.target instanceof wysihtml5.Editor) {
         this.editor = this.options.target;
         this.editorType = 'wysihtml5';
@@ -2433,6 +2432,12 @@
       this.editor.on('blur', _.bind(this.handleEditorBlur, this));
       this.editor.on('change', _.bind(this.handleEditorChange, this));
       this.editor.on('load', _.bind(this.handleEditorLoad, this));
+
+      // TODO: this namespace might be contingent.
+      storybase.builder.dispatcher.on(
+        'select:section', 
+        _.bind(this.handleSectionChanged, this)
+      );
 
       return this;
     },
@@ -2459,6 +2464,12 @@
       this.updateCharacterCount();
     },
 
+    handleSectionChanged: function() {
+      // Focus management seems a little sketchy around section changes.
+      // We apparently can't rely on our editors to fire a blur event.
+      this.stopPolling();
+    },
+
     getEditorValue: function() {
       if (this.editorType == 'wysihtml5') {
         return this.editor.getValue();
@@ -2468,7 +2479,7 @@
     
     updateCharacterCount: function() {
       var text = this.getEditorValue();
-      
+
       if (!this.options.countHTML) {
         // remove tags
         text = text.replace(/<(.*?)>/g, '');
@@ -2477,14 +2488,15 @@
       }
 
       this.$el.find('.count').html(text.length);
-      var $warning = this.$el.find('.warning');
-      if ($warning.length) {
-        if (text.length > this.options.warningLimit) {
-          $warning.html(this.options.warningText).show();
-        }
-        else {
-          $warning.hide();
-        }
+      if (text.length > this.options.warningLimit) {
+        this.$el
+          .addClass('over-limit')
+          .tooltipster('enable');
+      }
+      else {
+        this.$el
+          .removeClass('over-limit')
+          .tooltipster('disable');
       }
     },
 
@@ -2499,11 +2511,17 @@
     },
     
     stopPolling: function() {
-      clearInterval(this.timer);
+      if (this.timer) {
+        clearInterval(this.timer);
+        this.timer = null;
+      }
     },
     
     render: function() {
-      this.$el.html(this.getTemplate());
+      this.$el
+        .html(this.getTemplate())
+        .tooltipster({ content: this.options.warningText })
+        .tooltipster('disable');
       if (this.options.showOnFocus) {
         this.$el.hide();
       }
@@ -2573,7 +2591,7 @@
       _.each(callbacks, $.proxy(function(value, key, list) {
         this.editor.on(key, value);
       }, this));
-
+      
       return this.editor;
     }
   };
@@ -3223,7 +3241,8 @@
 
       this.titleCharCountView = this.titleCharCountView || new CharacterCountView({ 
         target: this.$el.find(this.options.titleEl),
-        warningLimit: 100
+        warningLimit: 100,
+        className: 'character-count summary-title'
       });
       this.$el.prepend(this.titleCharCountView.render().$el);
       
