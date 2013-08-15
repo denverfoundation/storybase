@@ -3788,7 +3788,136 @@
     }
   });
 
-  var DataSetFormView = HandlebarsTemplateView.extend({
+  var BBFFormMixin = {
+    /**
+     * Attempt to unify validation error handling somewhat.
+     * Knows about storybase.MutexGroupedInputForms but compatible
+     * with regular BBF Forms as well.
+     *
+     * @param {Array} errors Hash of errors provided by BBF or 
+     *        hand-made.
+     */
+    handleValidationErrors: function(errors) {
+      var view = this;
+
+      // two ways to show errors: inline with field, or
+      // on top of the form.
+      var inlineErrors = {};
+      var formErrors = [];
+
+      // Function to extract an error message from the items in
+      // errors._others.  Declare it here to avoid declaring an anonymous
+      // function within a for loop
+      var addFormError = function(error) {
+        if (_.isString(error)) {
+          formErrors.push(error);
+        }
+        else if (_.isObject(error)) {
+          // The error is an object, added to _others because the key didn't
+          // match a field name in the form. Just grab the first value as
+          // the error message;
+          for (var k in error) {
+            break;
+          }
+          formErrors.push(error[k]);
+        }
+      };
+
+      var fieldName; // Keys in errors object
+      var inline; // Can a particular error be shown inline?
+      var $field; // A form field's element
+      var $fieldError; // A form field's error message
+      var msg; // An individual error message
+
+      // Remove any previous error-indicating UI state
+      view.form.$('.bbf-error').hide();
+      view.form.$('.bbf-combined-errors').remove();
+      view.form.$('.nav.pills li').removeClass('error');
+      
+      for (fieldName in errors) {
+        // Allow errors in "_others" to be either field-keyed error objects
+        // or simple strings.
+        // @see https://github.com/powmedia/backbone-forms#model-validation
+        if (fieldName == '_others') {
+          _.each(errors._others, addFormError); 
+        }
+        else {
+          // if we can put in an error inline do so, otherwise throw into 
+          // the combined basket up top.
+          inline = false;
+          $field = view.form.$('.field-' + fieldName);
+          if ($field.length) {
+            $fieldError = $field.find('.bbf-error');
+            if ($fieldError.length) {
+              inlineErrors[fieldName] = inlineErrors[fieldName] || [];
+              msg = _.isString(errors[fieldName]) ? errors[fieldName] : errors[fieldName].message;
+              inlineErrors[fieldName].push(msg);
+              inline = true;
+            }
+          }
+
+          // this error was not inline; append it to the big bucket.
+          if (!inline) {
+            formErrors.push(errors[fieldName].message);
+          }
+        }
+      }
+      
+      // fill in/update elements
+      
+      _.each(inlineErrors, function(errors, fieldName) {
+        var $field = view.form.$('.field-' + fieldName);
+
+        // there may be multiple errors on a field, but we only show the first.
+        $field.find('.bbf-error').html(errors[0]).slideDown('fast');
+        
+        // highlight relevant option pill, if any 
+        // (for storybase.MutexGroupedInputForms)
+        var optionIndex = $field.data('option-index');
+        if (!_.isUndefined(optionIndex)) {
+          view.form.$('.nav.pills li:eq(' + optionIndex + ')').addClass('error');
+        }
+        
+      });
+
+      if (_.size(formErrors) > 0) {
+        $('<ul class="bbf-combined-errors">').prependTo(view.form.$el).slideDown('fast');
+      }
+      _.each(formErrors, function(error) {
+        view.form.$('.bbf-combined-errors').append('<li>' + error + '</li>');
+      });
+
+    },
+    
+    /**
+     * Render a thumbnail for any file inputs.
+     * TODO: revisit, see if there's a way to cleanly splice this
+     * into the "natural" Backbone.Forms templating pipeline.
+     * 
+     * Also @see storybase.forms.File.render.
+     */
+    renderFileFieldThumbnail: function() {
+      this.form.$el.find('input[type=file]').each(function() {
+        var thumbNailValue = $(this).data('file-thumbnail');
+        if (thumbNailValue) {
+          if (thumbNailValue == '__set__') {
+            $(this).before('<div class="data-thumbnail"></div>')
+          }
+          else {
+            $(this)
+              .addClass('has-thumbnail')
+              .before('<img class="file-thumbnail" src="' + $(this).data('file-thumbnail') + '">');
+          }
+        }
+        else {
+          $(this).before('<div class="not-set-thumbnail"></div>');
+        }
+      });
+    }
+    
+  };
+
+  var DataSetFormView = HandlebarsTemplateView.extend(_.extend({}, BBFFormMixin, {
     options: {
       templateSource: {
         'upload': $('#uploadprogress-template').html()
@@ -3818,19 +3947,19 @@
       schema.source.help = gettext("The organization or entity that created the dataset");
       if (schema.url) {
         schema.url.title = gettext("Data URL");
-        schema.url.help = gettext("Enter the URL of a dataset hosted on a web site or in the cloud. Alternately, you can upload a file below.");
+        schema.url.help = gettext("Enter the URL of a dataset hosted on a web site or in the cloud.");
       }
       if (schema.file) {
         schema.file.title = gettext("Data file");
         if (schema.url) {
           // Both the file and url fields should be shown, i.e. creating a new
           // model
-          schema.file.help = gettext("Upload a data file from your computer. Alternately, you can provide a link to a dataset above.");
+          schema.file.help = gettext("Upload a data file from your computer.");
         }
         else {
           // Only the file field is present, i.e. editing an existing model
           filename = _.last(model.get('file').split('/'));
-          schema.file.help = gettext("Current file is") + " <em>" + filename + ".</em> " + gettext("Change the data file by uploading a new data file from your computer.");
+          schema.file.help = gettext("Current file is") + " <strong>" + filename + "</strong>. " + gettext("Change the data file by uploading a new data file from your computer.");
         }
       }
 
@@ -3881,7 +4010,10 @@
           contentFieldset
         ]
       });
-      return new Backbone.Form(options);
+
+      options.mutexGroupName = gettext('Data Source');
+
+      return new storybase.MutexGroupedInputForm(options);
     },
 
     initialize: function(options) {
@@ -3903,14 +4035,7 @@
         this.handleSave(this.form.getValue(), evt.target);
       }
       else {
-        // Remove any previous error messages
-        this.form.$('.bbf-model-errors').remove();
-        if (!_.isUndefined(errors._others)) {
-          this.form.$el.prepend('<ul class="bbf-model-errors">');
-          _.each(errors._others, function(msg) {
-            this.form.$('.bbf-model-errors').append('<li>' + msg + '</li>');
-          }, this);
-        }
+        this.handleValidationErrors(errors);
       }
       evt.preventDefault();
       evt.stopPropagation();
@@ -3943,7 +4068,7 @@
       // child element rather than removing it?
       this.delegateEvents();
     }
-  });
+  }));
 
   /**
    * Form for adding a new dataset and associating it with an asset
@@ -4079,6 +4204,7 @@
             .append("<input type='reset' value='" + gettext("Cancel") + "' />")
             .append("<input type='submit' name='save' value='" + gettext("Save Changes") + "' />")
       );
+      this.renderFileFieldThumbnail();
       return this;
     },
 
@@ -4379,7 +4505,7 @@
   });
 
   var SectionAssetEditView = Views.SectionAssetEditView = HandlebarsTemplateView.extend(
-    _.extend({}, RichTextEditorMixin, {
+    _.extend({}, RichTextEditorMixin, BBFFormMixin, {
       tagName: 'div',
 
       className: 'edit-section-asset',
@@ -4398,8 +4524,12 @@
           'map-help': $('#map-help-template').html(),
           'quotation-help': $('#quotation-help-template').html(),
           'table-help': $('#table-help-template').html(),
+          'image-display-help': $('#image-display-help-template').html(),
+          'image-new-help': $('#image-new-help-template').html(),
+          'image-edit-help': $('#image-edit-help-template').html(),
           'text-help': $('#text-help-template').html(), 
-          'video-help': $('#video-help-template').html()
+          'video-help': $('#video-help-template').html(),
+          'select-help': $('#select-help-template').html()
         }
       },
 
@@ -4479,7 +4609,7 @@
       /**
        * Get the Backbone Forms schema for the asset form
        */
-      getFormSchema: function() {
+      getFormSchema: function(model) {
         var schema = _.result(this.model, 'schema');
         var type = this.model.get('type');
         var num_elements = _.size(_.pick(schema, 'image', 'body', 'url')); 
@@ -4489,7 +4619,18 @@
           schema.url.title = capfirst(gettext("enter") + " " + type + " " + gettext("URL"));
         }
         if (schema.image) {
-          schema.image.title = capfirst(prefix + gettext("select an image from your own computer to be included in your story."));
+          if (!model.isNew()) {
+            schema.image.title = capfirst(gettext('replace image file'));
+            var imagePath = model.get('image');
+            if (imagePath && _.isString(imagePath)) {
+              schema.image.help = capfirst(gettext('current image is <strong>' + _.last(imagePath.split('/')) + '</strong>.'));
+              schema.image.help += ' ' + capfirst(gettext("change this by uploading a new image from your computer."));
+            }
+          }
+          else {
+            schema.image.title = capfirst(gettext('upload an image'));
+            schema.image.help = capfirst(gettext('choose a file from your computer.'));
+          }
         }
         if (schema.body) {
           if (type === 'text') {
@@ -4502,10 +4643,10 @@
               );
           }
           else if (type === 'quotation') {
-            schema.body.title = capfirst(prefix + gettext("enter the quotation text"));
+            schema.body.title = capfirst(gettext("enter the quotation text"));
           }
           else {
-            schema.body.title = capfirst(prefix + gettext("paste the embed code for the") + " " + type);
+            schema.body.title = capfirst(gettext("paste embed code for the") + " " + type);
           }
         }
 
@@ -4516,9 +4657,10 @@
        * Set the view's form property based on the current state of the model.
        */
       initializeForm: function() {
-        this.form = new Backbone.Form({
-          schema: this.getFormSchema(),
-          model: this.model
+        this.form = new storybase.MutexGroupedInputForm({
+          schema: this.getFormSchema(this.model),
+          model: this.model,
+          mutexGroupName: capfirst(this.model.get('type') || '') + ' ' + capfirst(gettext('source'))
         });
         this.form.render();
       },
@@ -4631,10 +4773,18 @@
           context.help = this.options.help;
         }
         else if (state === 'display') {
-          context.model = this.model.toJSON();
           // Set context variable to toggle display of icon to edit data
           context.acceptsData = this.model.acceptsData();
         }
+        else if (state === 'edit') {
+          if (this.model.isNew()) {
+            context.action = gettext('add');
+          }
+          else {
+            context.action = gettext('edit');
+          }
+        }
+        context.model = this.model.toJSON();
         if (template) {
           this.$el.html(template(context));
         }
@@ -4677,6 +4827,9 @@
             this.bodyEditor.stopObserving('blur');
             this.bodyEditor.stopObserving('load');
           }
+
+          this.renderFileFieldThumbnail();
+          
           $wrapperEl.append(this.form.el);
         }
         if (state === 'editData') {
@@ -4833,14 +4986,7 @@
           this.saveModel(data);
         }
         else {
-          // Remove any previous error messages
-          this.form.$('.bbf-model-errors').remove();
-          if (!_.isUndefined(errors._others)) {
-            view.form.$el.prepend('<ul class="bbf-model-errors">');
-            _.each(errors._others, function(msg) {
-              view.form.$('.bbf-model-errors').append('<li>' + msg + '</li>');
-            });
-          }
+          this.handleValidationErrors(errors);
         }
       },
 
@@ -4876,6 +5022,7 @@
         // Listen to events on the new model
         this.bindModelEvents();
         this.initializeDataViews();
+        this.initializeForm();
       },
 
       /**
@@ -4895,11 +5042,26 @@
           }
         }
       },
-
-      getAssetTypeHelp: function(type) {
-        var help = this.getTemplate(type + '-help');
-        if (_.isFunction(help)) {
-          help = help();
+      
+      /**
+       * @param String type     The asset type.
+       * @param String [state]  Optional. One of new, edit, display.
+       */
+      getAssetTypeHelp: function(type, state) {
+        if (_.indexOf(['edit', 'new', 'display'], state) >= 0) {
+          state = '-' + state;
+        }
+        else {
+          state = '';
+        }
+        var template = this.getTemplate(type + state + '-help');
+        if (!template) {
+          // see if there's a template defined for any/every state
+          template = this.getTemplate(type + '-help');
+        }
+        var help;
+        if (_.isFunction(template)) {
+          help = template();
         }
         else {
           help = gettext("Select an asset type.");
@@ -4915,7 +5077,14 @@
           title: "",
           body: ""
         }, this.options.help);
-        var assetHelp = this.getAssetTypeHelp(this.model.get('type'));
+        var assetHelp = '';
+        if (this._state == 'select') {
+          assetHelp = (this.getTemplate('select-help'))();
+        }
+        else {
+          var state = this.model.isNew() ? 'new' : this._state;
+          assetHelp = this.getAssetTypeHelp(this.model.get('type'), state);
+        }
         help.body += assetHelp;
         this.dispatcher.trigger('do:show:help', help, {remember: true});
         // When the drawer is closed, revert to the previous help item
@@ -6109,11 +6278,11 @@
       }
       else {
         // Remove any previous error messages
-        this.form.$('.bbf-model-errors').remove();
+        this.form.$('.bbf-combined-errors').remove();
         if (!_.isUndefined(errors._others)) {
-          this.form.$el.prepend('<ul class="bbf-model-errors">');
+          this.form.$el.prepend('<ul class="bbf-combined-errors">');
           _.each(errors._others, function(msg) {
-            this.form.$('.bbf-model-errors').append('<li>' + msg + '</li>');
+            this.form.$('.bbf-combined-errors').append('<li>' + msg + '</li>');
           }, this);
         }
       }
@@ -6163,7 +6332,7 @@
       title: gettext("Select a featured image"),
       templateSource: {
         '__main': $('#featured-asset-template').html(),
-        'nav-item': '<li{{#if class}} class="{{class}}"{{/if}}><a href="#{{viewId}}">{{title}}</li>'
+        'nav-item': '<li{{#if class}} class="{{class}}"{{/if}}><a href="#{{viewId}}">{{title}}</a></li>'
       },
       addViewClass: FeaturedAssetAddView,
       displayViewClass: FeaturedAssetDisplayView,

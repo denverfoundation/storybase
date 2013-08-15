@@ -37,7 +37,6 @@
     </li>\
   ');
 
-
   Form.NestedField.template = _.template('\
     <li class="bbf-field bbf-nested-field field-<%= key %>">\
       <label for="<%= editorId %>"><%= title %></label>\

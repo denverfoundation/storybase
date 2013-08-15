@@ -19,7 +19,60 @@ from storybase_asset.utils import image_type_supported
 from storybase_story.models import Story
 
 
-class AssetResource(DataUriResourceMixin, TranslatedModelResource):
+class IframePostDetailResource(DataUriResourceMixin, TranslatedModelResource):
+    """
+    TranslatedModelResource that emulates ``put_detail`` behavior in
+    ``post_detail`` for POSTs in an IFRAME.
+
+    This is needed to support file uploads in API requests
+    in IE8 and IE9.
+
+    """
+    def post_detail(self, request, **kwargs):
+        """
+        Emulate put_detail in a very specific case
+
+        The Tastypie docs describe the semantics of this method as
+        "Creates a new subcollection of the resource under a resource"
+
+        This isn't what we want, but we need to implement this
+        method in order to support replacing an image asset's image
+        in older browsers such as IE9. For the older browsers, we have to
+        send the request via a form in a hidden IFRAME. We can use the
+        PUT method with forms, so we have to use POST.
+        """
+        # Only support POST to the detail endpoint if we're making the
+        # request from inside a hidden iframe 
+        if not self.iframed_request(request):
+            return http.HttpNotImplemented()
+
+        # In the case of a POST from inside a hidden iframe, delegate
+        # to put_detail
+        return self.put_detail(request, **kwargs)
+
+    def hydrate(self, bundle):
+        """Manipulated data before all methods/fields have built out the hydrated data."""
+        # If a DateTimeField field's data is passed as an empty string,
+        # convert it to None.  
+        # 
+        # This is needed when doing a PUT using multipart/form-data as
+        # the empty date/time fields are sent as empty strings instead of
+        # ``null`` values.  They're passed as ``null`` values when the
+        # PUT is sent JSON. If we don't convert the empty strings to None,
+        # we get errors trying to convert an empty string to a datetime
+        # object.
+        date_fields = getattr(self._meta, "date_fields", [])
+        for field in date_fields:
+            if (field in bundle.data and
+                isinstance(bundle.data[field], basestring) and
+                len(bundle.data[field]) == 0):
+                
+                bundle.data[field] = None
+
+        return bundle
+
+
+class AssetResource(IframePostDetailResource):
     # Explicitly declare fields that are on the translation model, or the
     # subclass
     title = fields.CharField(attribute='title', blank=True, default='')
@@ -46,6 +99,7 @@ class AssetResource(DataUriResourceMixin, TranslatedModelResource):
 
         featured_list_allowed_methods = ['get', 'put']
         featured_detail_allowed_methods = []
+        date_fields = ['asset_created', 'published']
 
     def get_object_class(self, bundle=None, **kwargs):
         if bundle and bundle.obj and bundle.obj.asset_id:
@@ -178,26 +232,6 @@ class AssetResource(DataUriResourceMixin, TranslatedModelResource):
 
         return kwargs
 
-    def hydrate(self, bundle):
-        """Manipulated data before all methods/fields have built out the hydrated data."""
-        # If a DateTimeField field's data is passed as an empty string,
-        # convert it to None.  
-        # 
-        # This is needed when doing a PUT using multipart/form-data as
-        # the empty date/time fields are sent as empty strings instead of
-        # ``null`` values.  They're passed as ``null`` values when the
-        # PUT is sent JSON. If we don't convert the empty strings to None,
-        # we get errors trying to convert an empty string to a datetime
-        # object.
-        for field in ['asset_created', 'published',]:
-            if (field in bundle.data and
-                isinstance(bundle.data[field], basestring) and
-                len(bundle.data[field]) == 0):
-                
-                bundle.data[field] = None
-
-        return bundle
-
     def hydrate_image(self, bundle):
         if bundle.obj.asset_id and hasattr(bundle.obj, 'image'):
             try:
@@ -281,7 +315,7 @@ class DataSetValidation(Validation):
 
         return errors
 
-class DataSetResource(DataUriResourceMixin, TranslatedModelResource):
+class DataSetResource(IframePostDetailResource):
     # Explicitly declare fields that are on the translation model, or the
     # subclass
     title = fields.CharField(attribute='title')
@@ -299,7 +333,7 @@ class DataSetResource(DataUriResourceMixin, TranslatedModelResource):
         queryset = DataSet.objects.select_subclasses()
         resource_name = 'datasets'
         list_allowed_methods = ['get', 'post']
-        detail_allowed_methods = ['get', 'delete', 'put']
+        detail_allowed_methods = ['get', 'post', 'delete', 'put']
         authentication = Authentication()
         authorization = PublishedOwnerAuthorization()
         validation = DataSetValidation()
@@ -308,6 +342,7 @@ class DataSetResource(DataUriResourceMixin, TranslatedModelResource):
         excludes = ['id']
 
         related_detail_allowed_methods = ['delete']
+        date_fields = ['dataset_created', 'published']
 
     def detail_uri_kwargs(self, bundle_or_obj):
         """

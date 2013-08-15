@@ -37,6 +37,14 @@ fieldset {
   color: @gray;
 }
 
+ul.bbf-combined-errors {
+  .notification-list;
+  li {
+    .notification-list-item;
+    .error-item;
+  }
+}
+
 .bbf-error, .bbf-error .bbf-help, .error label {
   color: @error-color;
 }
@@ -51,6 +59,13 @@ fieldset {
 
 .error .bbf-error {
   margin-bottom: @body-copy-margin-bottom;
+}
+
+.bbf-error {
+  .notification-list-item;
+  .error-item;
+  margin:0.5em 0em 1.5em;
+  display:none;
 }
 
 // Select2 also uses an li for some of its elements
@@ -1034,6 +1049,7 @@ button.preview {
   &.edit .wrapper {
     border-color:@highlight-blue;
     box-shadow:inset 0 0 5px @highlight-blue;
+    padding:0.5em 2em 1em;
   }
 }
 
@@ -1285,14 +1301,16 @@ table.datasets {
 
 #app .bbf-form {
   overflow:hidden;
-  padding:20px;
   
   fieldset {
     border:none;
+    min-width:100%;
   }
   
-  .bbf-field {
+  .bbf-field, .mutex-group {
     list-style-type:none;
+    clear:both;
+    min-width:100%;
     
     label {
       float: none;
@@ -1307,12 +1325,69 @@ table.datasets {
         .box-sizing(border-box);
         width:100%
       }
+      
+      input[type=file] {
+        max-width:60%;
+      }
+      
+      .file-thumbnail, .not-set-thumbnail, .data-thumbnail {
+        float:right;
+        width:25%;
+        max-height:150px;
+        margin: 0 0 1em 1em;
+        display:block;
+      }
+      
+      .not-set-thumbnail, .data-thumbnail {
+        width:50px;
+        height:60px;
+        border:none;
+        background:transparent no-repeat top left;
+      }
+      .not-set-thumbnail {
+        background-image: url(../img/unknown-file.png);
+      }
+
+      .data-thumbnail {
+        background-image: url(../img/data-file.png);
+      }
+      
     }
 
     // Default select2 styles cut off placeholder text
     .select2-container-multi .select2-choices .select2-search-field input {
       height: auto;
     }
+  }
+  
+  .mutex-group {
+    
+    fieldset {
+      legend {
+        display:none;
+      }
+    }
+    
+    &.boxed {
+      fieldset {
+        border: 1px solid @light-gray;
+        .rounded-corners(4px);
+        .box-shadow-inset(0, 0, 5px, lighten(@medium-gray, 10%));
+        padding: 1em;
+        margin-bottom:1em;
+        
+        legend {
+          background:white;
+          padding:0 .5em;
+        }
+      }
+      
+    }
+    
+    ul.nav {
+      margin-bottom:10px;
+    }
+    
   }
   
   ul, ol {
@@ -1692,16 +1767,12 @@ ol#publish-steps {
     // TODO: Decide if padding-left: 0 should be the default style for uls
     // in the builder
     padding-left: 0 !important;
-
-    > li {
-      &.active {
-        // TODO: See why the global a style clobbers the .pill style
-        a {
-          color: #fff;
-        }
-      }
-    }
   }
+}
+
+// TODO: See why the global a style clobbers the .pill style
+#app .nav > li.active a {
+  color: #fff;
 }
 
 #featured-asset-display {

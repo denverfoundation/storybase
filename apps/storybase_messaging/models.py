@@ -269,6 +269,9 @@ class StoryNotification(models.Model):
 
 def update_story_unpublished_notification(sender, instance, **kwargs):
     """Create/update story notification objects based on story state"""
+    created = kwargs.get('created', False)
+    notification = None
+
     if instance.status != 'draft':
         return
 
@@ -284,9 +287,15 @@ def update_story_unpublished_notification(sender, instance, **kwargs):
         # so return early
         return
 
-    try:
-        notification = StoryNotification.objects.get(notification_type='unpublished', story=instance)
-    except StoryNotification.DoesNotExist:
+    if not created:
+        # Only check for a notification if the Story is not newly created,
+        # saving us a database hit
+        try:
+            notification = StoryNotification.objects.get(notification_type='unpublished', story=instance)
+        except StoryNotification.DoesNotExist:
+            pass
+
+    if notification is None:
         notification = StoryNotification(notification_type='unpublished',
             story=instance)
 

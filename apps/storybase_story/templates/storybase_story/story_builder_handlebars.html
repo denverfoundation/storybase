@@ -237,6 +237,23 @@ Handlebars.js templates for story builder Backbone application
 <p>{{gettext "Paste the url or embed code for your externally hosted table (i.e. Google Drive, Free Dive, Colorado Data Engine) here."}}</p>
 </script>
 
+<script type="text/x-handlebars-template" id="select-help-template">
+<p>{{gettext "Click on an asset type to begin."}}</p>
+</script>
+
+<script type="text/x-handlebars-template" id="image-new-help-template">
+<p>{{gettext "Enter a URL or upload an image from your computer. If you’d like to add a different type of asset, click Cancel."}}</p>
+</script>
+
+<script type="text/x-handlebars-template" id="image-display-help-template">
+<p>{{gettext "You can remove this image or edit it. Removed assets are always available in the asset drawer."}}</p>
+</script>
+
+<script type="text/x-handlebars-template" id="image-edit-help-template">
+<p>{{gettext "You can replace this image with a new URL or new image from your computer, depending on how you originally defined it." }}</p>
+<p>{{gettext "If you think you'll want to use this image later, it's better to \"remove\" it and add a new one with your preferred image. Removed assets are always available in the asset drawer."}}</p>
+</script>
+
 <script type="text/x-handlebars-template" id="text-help-template">
 <p>{{gettext "Type your text and click \"Save Changes\" when you are finished."}}</p>
 </script>
@@ -254,7 +271,7 @@ Handlebars.js templates for story builder Backbone application
 <script type="text/x-handlebars-template" id="section-asset-edit-template">
 {{>help-icon}}
 <div class="wrapper">
-<h3>{{model.type}}</h3>
+<h3>{{capfirst action}} {{capfirst model.type}}</h3>
 </div>
 </script>
 
@@ -430,9 +447,8 @@ Handlebars.js templates for story builder Backbone application
             <p>{{gettext "Let your story be heard! Spread the word by sharing it with your social networks, printing a copy, or embeding it on your own website."}}</p>
 
             <a href="#" class="storybase-share-widget" data-story-id="{{storyId}}">Share This Story</a>
-            </div>
-        {{/if}}
         </div>
+        {{/if}}
     </div> <!-- /.twocol -->
 </div> <!-- /.row -->
 </script>

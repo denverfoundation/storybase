@@ -11,6 +11,23 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.13
+~~~~
+
+* Support for django-registration 1.0 (#786)
+
+0.12.2
+~~~~~~
+
+* Only show one asset content (file, URL, body) input at a time (#767)
+* Fix dataset file replacement in IE8/IE9 (#829)
+* Fix featured image pills in IE8 (#837)
+
+0.12.1
+~~~~~~
+
+* Fix rendering of Publish/Share workflow step in IE8/IE9 (#830)
+
 0.12
 ~~~~
 
