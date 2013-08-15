@@ -1,11 +1,13 @@
 {% extends "base.html" %}
-
 {% load i18n %}
 
-{% block head_title %}{% trans "There was a problem with your activation" %}{% endblock %}
+{% block head_title %}{% trans "Something unexpected happened with your account activation" %}{% endblock %}
 
-{% block base_content %}
-<h1><span>{% trans "There was a problem with your activation" %}</span></h1>
-<p>{% trans "There was a problem activating your new account.  Please check that you correctly copied and pasted the activation link from your e-mail, or if you clicked on the link, try copying and pasting it.  If you're still not able to activate your account, please contact" %} <a href="mailto:{{ storybase_contact_email }}">{{storybase_contact_email}}</a>.</p>
+{% block base_content %}{% url auth_login as auth_login_url %}
+<h1><span>{% trans "Something unexpected happened with your account activation" %}</span></h1>
 
+<p>{% trans "Either you clicked on the activation link more than once, or there's an error with the link." %}</p>
+<p>{% blocktrans %}First, try <a href="{{ auth_login_url }}">logging in here</a> with your email address and password.{% endblocktrans %}</p>
+<p>{% trans "If that doesn't work, try copying and pasting the activation link from your email into a web browser." %}</p>
+<p>{% blocktrans %}Still stuck? Email us at  <a href="mailto:{{ storybase_contact_email }}">{{storybase_contact_email}}</a> and we'll get you sorted out.{% endblocktrans %}</p>
 {% endblock %}

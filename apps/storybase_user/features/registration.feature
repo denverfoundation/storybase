@@ -79,7 +79,6 @@ Feature: User can register for an account using their email address
                 Given the user clicks the "Sign Up" button
                 Then the text "We’ve sent you a confirmation email. Click the link in that email to verify your account and log in." is present
                 Then the user should receive an activation email
-                Given the user navigates to "/accounts/activate/bad-activation-code"
                 Given the user navigates to "/accounts/activate/aaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa/"
                 Then an error message is visible
 
