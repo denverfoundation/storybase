@@ -1,4 +1,7 @@
 Feature: User can register for an account using their email address
+        # Much of the functionality for this feature is derived from the
+        # django-registration package, which has its own test suite. Here
+        # we're only concerned about testing custom functionality.
         Scenario: User doesn't provide a correctly formatted email address
                 Given the user navigates to "/"
                 Given the user clicks the "Sign In" link
@@ -27,8 +30,6 @@ Feature: User can register for an account using their email address
                 Given the user clicks the "Sign Up" button
                 Then the email address should appear in the "E-mail" input
                 Then an error message is shown above the "First name" input 
-                Then "Ada" should appear in the "First name" input
-                Then "Lovelace" should appear in the "Last name" input
                 Then the "I agree to the terms of service" input should be checked
 
         # For this to pass the django-passwords package must be installed
@@ -99,7 +100,7 @@ Feature: User can register for an account using their email address
                 Then the user should be redirected to the "My Stories" page
                 # In the upper-right-hand corner
                 Then the text "Hi, Ada" should be present
-                Given the user clicks the "My Account" link
+                Given the user hovers over the "My Account" link
                 Given the user clicks the "Sign Out" link
                 # In the upper-right-hand corner
                 Given the user clicks the "Sign In" link
@@ -128,5 +129,5 @@ Feature: User can register for an account using their email address
                 Given the scenario "User registers with an email address" has been run
                 Given the user is logged out
                 Given the user visits the link in the activation email
-                # TODO: Refine this expectation a bit
-                Then an error message is shown instructing the user that they have already activated their account 
+                Then an error message is visible
+                Then a link to the login page is present
