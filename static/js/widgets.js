@@ -77,23 +77,49 @@
     }
     return getElementsByClassName(className, tag, elm);
   };
+  
+  var getUrl = function(el, opts) {
+    var url = el.getAttribute('href');
+    var listUrl;
 
-  var showStoryWidgets = function() {
-    var phs = getElementsByClassName('storybase-story-embed');
-    var i, ph, el, url, height, version;
+    if (!url) {
+      // No URL, assume story + list style embed
+      url = getElementsByClassName('storybase-story', null, el)[0].getAttribute('href');
+      listUrl = getElementsByClassName('storybase-list', null, el)[0].getAttribute('href');
+    }
+
+    if (url) {
+      url = url + 'widget/';
+      url = opts.version ? url + opts.version + '/' : url;
+      url = listUrl ? url + '?list-url=' + listUrl : url;
+    }
+    return url;
+  }; 
+
+  var showWidgets = function() {
+    var phs = getElementsByClassName('storybase-story-embed')
+      .concat(getElementsByClassName('storybase-list-embed'))
+      .concat(getElementsByClassName('storybase-story-list-embed'));
+    var defaults = {
+      height: '500px',
+      version: null
+    };
+    var i, ph, el, url, opts, height, version;
     for (i = 0; i < phs.length; i++) {
+      opts = {};
       ph = phs[i];
-      height = ph.getAttribute('data-height')||'500px';
-      version = ph.getAttribute('data-version'); 
-      url = ph.getAttribute('href') + 'widget/';
-      url = version ? url + version + '/' : url;
-      el = document.createElement('iframe');
-      el.setAttribute('name', 'storybase-story-widget-frame');
-      el.setAttribute('src', url);
-      el.setAttribute('style', "border: none; height: "+height+";");
-      ph.parentNode.insertBefore(el, ph);
-      ph.style.display = 'none';
+      opts.height = ph.getAttribute('data-height')||defaults.height;
+      opts.version = ph.getAttribute('data-version')||defaults.version; 
+      url = getUrl(ph, opts);
+      if (url) {
+        el = document.createElement('iframe');
+        el.setAttribute('name', 'storybase-story-widget-frame');
+        el.setAttribute('src', url);
+        el.setAttribute('style', "border: none; height: "+opts.height+";");
+        ph.parentNode.insertBefore(el, ph);
+        ph.style.display = 'none';
+      }
     }
   };
-  showStoryWidgets(); 
+  showWidgets(); 
 })();
