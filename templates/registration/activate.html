@@ -1,13 +1,22 @@
 {% extends "base.html" %}
 {% load i18n %}
 
-{% block head_title %}{% trans "Something unexpected happened with your account activation" %}{% endblock %}
+{% block head_title %}{% trans "Account activation" %}{% endblock %}
 
 {% block base_content %}{% url auth_login as auth_login_url %}
-<h1><span>{% trans "Something unexpected happened with your account activation" %}</span></h1>
+<div class="content-page generic container_12">
+  <div class="grid_12 content-block">
+    <h1><span>{% trans "Account activation" %}</span></h1>
 
-<p>{% trans "Either you clicked on the activation link more than once, or there's an error with the link." %}</p>
-<p>{% blocktrans %}First, try <a href="{{ auth_login_url }}">logging in here</a> with your email address and password.{% endblocktrans %}</p>
-<p>{% trans "If that doesn't work, try copying and pasting the activation link from your email into a web browser." %}</p>
-<p>{% blocktrans %}Still stuck? Email us at  <a href="mailto:{{ storybase_contact_email }}">{{storybase_contact_email}}</a> and we'll get you sorted out.{% endblocktrans %}</p>
+    <h2>{% trans "Oops, something unexpected happened with your account activation" %}</h2>
+
+    <p>{% trans "Try these steps to get started" %}:</p>
+
+    <ul>
+        <li>{% blocktrans %}Try <a href="{{ auth_login_url }}" title="Log In">logging in</a> with your email address and password. You may have already activated your account.{% endblocktrans %}</li>
+        <li>{% trans "Carefully copy and paste the activation link from the email into your browser instead of clicking on it." %}</li>
+        <li>{% blocktrans %}Still stuck? Email us at <a href="mailto:{{ storybase_contact_email }}">{{storybase_contact_email}}</a> and we'll get you sorted out.{% endblocktrans %}</li>
+     </ul>
+  </div>
+</div>
 {% endblock %}

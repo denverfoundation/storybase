@@ -14,7 +14,11 @@ Changelog
 0.13
 ~~~~
 
+* Warning message for long titles (#562)
+* Upgrade jQuery tooltipster plugin (#562)
 * Support for django-registration 1.0 (#786)
+* Clearer account activation behavior (#836)
+* Link to builder for empty story list (#840)
 
 0.12.2
 ~~~~~~

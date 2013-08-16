@@ -40,6 +40,10 @@
 @error-background-color: #f2dede;
 @error-border-color: darken(spin(@error-background-color, -10), 3%);
 
+// note yellow is harder to see so there's a little fudging here
+@warning-color: darken(saturate(spin(@error-color, 60), 25%), 45%);
+@warning-background-color: saturate(spin(@error-color, 60), 25%);
+@warning-border-color: darken(saturate(spin(@error-border-color, 60), 25%), 25%);
 
 @success-color: #468847;
 @success-background-color: #dff0d8;

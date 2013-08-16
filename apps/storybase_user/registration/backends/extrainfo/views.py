@@ -1,8 +1,13 @@
-from django.conf import settings
+import logging
+
+from django.contrib import messages
+from django.utils.translation import ugettext as _
 
 from registration.backends.default.views import ActivationView, RegistrationView
 
 from storybase_user.registration.forms import ExtraInfoRegistrationForm
+
+logger = logging.getLogger('storybase')
 
 class ExtraInfoRegistrationView(RegistrationView):
     """Registration view that collects additional information"""
@@ -16,6 +21,19 @@ class ExtraInfoRegistrationView(RegistrationView):
         return new_user
 
 class ExtraInfoActivationView(ActivationView):
+    def handle_activation_failure(self, activation_key):
+        logger.warn("Activation with key \"%s\" failed" % activation_key)
+
+    def activate(self, request, activation_key):
+        activated_user = super(ExtraInfoActivationView, self).activate(request, activation_key)
+       
+        if activated_user:
+            messages.success(request, _("Your account activation succeeded. Please log in below."))
+        else:
+            self.handle_activation_failure(activation_key)
+
+        return activated_user
+
     def get_success_url(self, request, user):
-        return (settings.LOGIN_REDIRECT_URL, (), {})
+        return ('auth_login', (), {})
 

@@ -97,13 +97,8 @@ Feature: User can register for an account using their email address
                 Then the text "We’ve sent you a confirmation email. Click the link in that email to verify your account and log in." is present
                 Then the user should receive an activation email
                 Given the user visits the link in the activation email
-                Then the user should be redirected to the "My Stories" page
-                # In the upper-right-hand corner
-                Then the text "Hi, Ada" should be present
-                Given the user hovers over the "My Account" link
-                Given the user clicks the "Sign Out" link
-                # In the upper-right-hand corner
-                Given the user clicks the "Sign In" link
+                Then the user should be redirected to "/accounts/login/"
+                Then the text "activation succeeded" is present
                 Given the user enters their email address in the "Email" input
                 Given the user enters "test_password" in the "Password" input
                 Given the user clicks the "Sign In" button
