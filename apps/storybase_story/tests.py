@@ -37,7 +37,7 @@ from storybase_story.models import (Container, Story, StoryTranslation,
     create_story, create_section, set_asset_license)
 from storybase_story.templatetags.story import container
 from storybase_story.views import (StoryBuilderView, StoryDetailView,
-        StoryViewerView)
+        StoryViewerView, StoryWidgetView)
 from storybase_taxonomy.models import Category, create_category
 from storybase_user.models import (Organization, Project,
         OrganizationMembership, ProjectMembership,
@@ -4064,3 +4064,16 @@ class StoryRelationResourceTest(ResourceTestCase):
         self.assertEqual(len(self.deserialize(resp)['objects']), 2)
         related_story = Story.objects.get(story_id=related_story.story_id)
         self.assertEqual(len(related_story.related_to.all()), 2)
+
+
+class StoryWidgetViewTest(TestCase):
+    def setUp(self):
+        self.view = StoryWidgetView()
+
+    def test_resolve_list_uri(self):
+        field, kwargs = self.view.resolve_list_uri('http://floodlightproject.org/projects/finding-a-bite-food-access-in-the-childrens-corrid/')
+        self.assertEqual(field, 'projects')
+        self.assertEqual(kwargs['slug'], 'finding-a-bite-food-access-in-the-childrens-corrid') 
+
+    def test_get_story_list(self):
+        self.fail('Test unimplemented')

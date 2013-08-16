@@ -2,15 +2,16 @@
 
 import json
 import os.path
+import urlparse
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
-from django.core.urlresolvers import reverse
+from django.core.urlresolvers import resolve, reverse, get_script_prefix
 from django.db.models import Q
 from django.http import Http404, HttpResponseRedirect
 from django.utils.decorators import method_decorator
-from django.views.generic import View, DetailView, TemplateView 
+from django.views.generic import View, DetailView, TemplateView
 from django.views.generic.detail import SingleObjectMixin, SingleObjectTemplateResponseMixin
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
@@ -580,13 +581,7 @@ class StoryBuilderView(DetailView):
         return super(StoryBuilderView, self).dispatch(*args, **kwargs)
 
 
-class StoryWidgetView(ModelIdDetailView):
-    """An embedable widget for a story"""
-    context_object_name = "story"
-    # You can only embed published stories
-    queryset = Story.objects.published()
-    template_name = 'storybase_story/story_widget.html'
-
+class VersionTemplateMixin(object):
     def get_template_names(self):
         template_names = [self.template_name]
         version = self.kwargs.get('version', None)
@@ -598,6 +593,76 @@ class StoryWidgetView(ModelIdDetailView):
             template_names.insert(0,
                 os.path.join(head, "%s-%s.%s" % (template_name_base, version, extension)))
         return template_names
+
+
+class StoryListMixin(object):
+    def get_story_list(self, field_name, view_kwargs, queryset=None, count=3):
+        if queryset is None:
+            queryset = self.queryset
+        related_field = getattr(Story, field_name).field
+        model_name = related_field.model._meta.module_name
+        model_id = '%s_id' % model_name
+        query_args = {}
+        if 'slug' in view_kwargs:
+            query_args['%s__slug' % field_name] = view_kwargs['slug']
+        elif model_id in view_kwargs:
+            query_args['%s__%s' % (field_name, model_id)] = view_kwargs[model_id]
+        else:
+            return []
+
+        return queryset.filter(**query_args).order_by('-published')[:count]
+
+
+class StoryWidgetView(StoryListMixin, VersionTemplateMixin, ModelIdDetailView):
+    """An embedable widget for a story"""
+    context_object_name = "story"
+    # You can only embed published stories
+    queryset = Story.objects.published()
+    template_name = 'storybase_story/story_widget.html'
+
+    url_name_to_relation_field = {
+        'organization_detail': 'organizations',
+        'project_detail': 'projects',
+        # TODO: Entries for place, tag, category
+    }
+
+    def resolve_list_uri(self, uri):
+        prefix = get_script_prefix()
+        parsed = urlparse.urlparse(uri)
+        path = parsed.path
+        chomped_path = path
+
+        if prefix and chomped_path.startswith(prefix):
+            chomped_path = chomped_path[len(prefix)-1:]
+
+        match = resolve(chomped_path)
+
+        field = self.url_name_to_relation_field.get(match.url_name, None)
+        return field, match.kwargs
+
+    def get_context_data(self, **kwargs):
+        context = super(StoryWidgetView, self).get_context_data(**kwargs)
+        list_url = self.request.GET.get('list-url', None)
+        
+        if list_url is not None:
+            related_field, view_kwargs = self.resolve_list_uri(list_url)
+            context['stories'] = self.get_story_list(related_field, view_kwargs)
+
+        return context
+
+
+class StoryListWidgetView(StoryListMixin, VersionTemplateMixin, ModelIdDetailView):
+    template_name = "storybase_story/story_list_widget.html"
+    
+    def get_related_field_name(self):
+        return self.related_field_name
+
+    def get_context_data(self, **kwargs):
+        context = super(StoryListWidgetView, self).get_context_data(**kwargs)
+        context['stories'] = self.get_story_list(
+            self.get_related_field_name(),
+            self.kwargs, queryset=Story.objects.published())
+        return context
 
 
 class StoryShareWidgetView(ModelIdDetailView):

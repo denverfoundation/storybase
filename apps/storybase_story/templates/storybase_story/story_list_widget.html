@@ -1,0 +1,22 @@
+{% load storybase_tags i18n %}
+{% comment %}
+Context:
+
+object - object used to filter the list of stories 
+stories - list of stories to include in widget
+
+{% endcomment %}
+<html>
+    <head>
+    </head>
+    <body>
+        <div id="{{ story.story_id }}" class="storybase-list-embed {{ storybase_site_name|slugify }}-story-embed">
+            {% for story in stories %}
+            {% url story_viewer slug=story.slug as viewer_path %}
+            {% fullurl story.get_absolute_url as detail_url %}
+            {% fullurl viewer_path as viewer_url %}
+	    {{ story.title }}
+            {% endfor %}
+        </div>
+    </body>
+</html>

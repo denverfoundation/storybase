@@ -23,6 +23,7 @@ from django.views.generic.list import ListView
 from storybase.menu import Menu, registry as menu_registry
 from storybase.views.generic import ModelIdDetailView
 from storybase.utils import full_url
+from storybase_story.views import StoryListWidgetView
 from storybase_user.forms import (OrganizationModelForm, UserNotificationsForm,
         ProjectModelForm)
 from storybase_user.auth.forms import ChangeUsernameEmailForm
@@ -165,6 +166,8 @@ class OrganizationListView(ListView):
                            .order_by('organizationtranslation__name')
 
 
+
+
 class ProjectDetailView(RelatedStoriesDetailView):
     """Display details about a Project"""
     context_object_name = "project"
@@ -195,6 +198,16 @@ class UserProfileDetailView(RelatedStoriesDetailView):
         Return the title that will be displayed for the story list
         """
         return _("Stories")
+
+
+class OrganizationWidgetView(StoryListWidgetView):
+    queryset = Organization.objects.published()
+    related_field_name = "organizations"
+
+
+class ProjectWidgetView(StoryListWidgetView):
+    queryset = Project.objects.published()
+    related_field_name = "projects"
 
 
 class ShareWidgetView(ModelIdDetailView):
