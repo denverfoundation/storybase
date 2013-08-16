@@ -15,6 +15,7 @@ Changelog
 ~~~~
 
 * Support for django-registration 1.0 (#786)
+* Clearer account activation behavior (#836)
 
 0.12.2
 ~~~~~~
