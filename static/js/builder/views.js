@@ -2194,6 +2194,7 @@
         'saved': '<i class="icon-ok"></i> ' + gettext("Saved")
       },
       updateInterval: 5000,
+      tooltips: jQuery().tooltipster ? true : false,
       tooltipOptions: {
         position: 'right'
       }
@@ -2241,7 +2242,7 @@
 
       setInterval(_.bind(this.render, this), this.options.updateInterval);
 
-      if (jQuery().tooltipster) {
+      if (this.options.tooltips) {
         this.$buttonEl.tooltipster(this.options.tooltipOptions);
       }
     },
@@ -2278,13 +2279,22 @@
 
     handleClick: function(evt) {
       this.dispatcher.trigger('do:save:story');
+      if (this.options.tooltips) {
+        $(evt.target).tooltipster('hide');
+      }
     },
 
     render: function() {
       var date = this.prettyDate(this.lastSaved);
+      var lastSavedStr;
       if (date) {
         lastSavedStr = gettext('Last saved') + ' ' + date;
-        this.$buttonEl.attr('title', lastSavedStr);
+        if (this.options.tooltips) {
+          this.$buttonEl.tooltipster('update', lastSavedStr);
+        }
+        else {
+          this.$buttonEl.attr('title', lastSavedStr);
+        }
       }
       return this;
     }
