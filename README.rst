@@ -16,6 +16,7 @@ Changelog
 
 * Support for django-registration 1.0 (#786)
 * Clearer account activation behavior (#836)
+* Link to builder for empty story list (#840)
 
 0.12.2
 ~~~~~~
