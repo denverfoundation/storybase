@@ -1,6 +1,7 @@
 """Views for storybase_story app"""
 
 import json
+import os.path
 
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
@@ -586,18 +587,17 @@ class StoryWidgetView(ModelIdDetailView):
     queryset = Story.objects.published()
     template_name = 'storybase_story/story_widget.html'
 
-
-class StoryWidgetView_0_1(ModelIdDetailView):
-    """
-    An embedable widget for a story
-
-    Version 0.1 of widget
-    
-    """
-    context_object_name = "story"
-    # You can only embed published stories
-    queryset = Story.objects.published()
-    template_name = 'storybase_story/story_widget-0.1.html'
+    def get_template_names(self):
+        template_names = [self.template_name]
+        version = self.kwargs.get('version', None)
+        if version is not None: 
+            # If a version was included in the keyword arguments, search for a
+            # version-specific template first
+            (head, tail) = os.path.split(self.template_name)
+            (template_name_base, extension) = tail.split('.')
+            template_names.insert(0,
+                os.path.join(head, "%s-%s.%s" % (template_name_base, version, extension)))
+        return template_names
 
 
 class StoryShareWidgetView(ModelIdDetailView):
