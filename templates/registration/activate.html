@@ -13,7 +13,7 @@
     <p>{% trans "Try these steps to get started" %}:</p>
 
     <ul>
-        <li>{% trans "Try logging in with your email address and password. You may have already activated your account." %}</li>
+        <li>{% blocktrans %}Try <a href="{{ auth_login_url }}" title="Log In">logging in</a> with your email address and password. You may have already activated your account.{% endblocktrans %}</li>
         <li>{% trans "Carefully copy and paste the activation link from the email into your browser instead of clicking on it." %}</li>
         <li>{% blocktrans %}Still stuck? Email us at <a href="mailto:{{ storybase_contact_email }}">{{storybase_contact_email}}</a> and we'll get you sorted out.{% endblocktrans %}</li>
      </ul>
