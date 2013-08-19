@@ -89,6 +89,7 @@
     }
 
     if (url) {
+      url = url[url.length - 1] === '/' ? url : url + '/';
       url = url + 'widget/';
       url = opts.version ? url + opts.version + '/' : url;
       url = listUrl ? url + '?list-url=' + listUrl : url;

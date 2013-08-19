@@ -635,6 +635,9 @@ class StoryWidgetView(StoryListMixin, VersionTemplateMixin, ModelIdDetailView):
         if prefix and chomped_path.startswith(prefix):
             chomped_path = chomped_path[len(prefix)-1:]
 
+        if chomped_path[-1] != '/':
+            chomped_path += '/'
+
         match = resolve(chomped_path)
 
         field = self.url_name_to_relation_field.get(match.url_name, None)
