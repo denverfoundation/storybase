@@ -11,7 +11,8 @@ from django.core.urlresolvers import resolve, reverse, get_script_prefix
 from django.db.models import Q
 from django.http import Http404, HttpResponseRedirect
 from django.utils.decorators import method_decorator
-from django.views.generic import View, DetailView, TemplateView
+from django.views.generic import View, DetailView, RedirectView, TemplateView
+from django.views.generic.list import MultipleObjectMixin
 from django.views.generic.detail import SingleObjectMixin, SingleObjectTemplateResponseMixin
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
@@ -596,21 +597,30 @@ class VersionTemplateMixin(object):
 
 
 class StoryListMixin(object):
-    def get_story_list(self, field_name, view_kwargs, queryset=None, count=3):
+    def get_story_list(self, field_name, view_kwargs, slug_field_name='slug', queryset=None, count=None):
         if queryset is None:
             queryset = self.queryset
-        related_field = getattr(Story, field_name).field
-        model_name = related_field.model._meta.module_name
-        model_id = '%s_id' % model_name
+        model_name = None
+        try:
+            related_field = getattr(Story, field_name).field
+            model_name = related_field.model._meta.module_name
+            model_id = '%s_id' % model_name
+        except AttributeError:
+            pass
         query_args = {}
         if 'slug' in view_kwargs:
-            query_args['%s__slug' % field_name] = view_kwargs['slug']
-        elif model_id in view_kwargs:
+            query_args['%s__%s' % (field_name, slug_field_name)] = view_kwargs['slug']
+        elif model_id and model_id in view_kwargs:
             query_args['%s__%s' % (field_name, model_id)] = view_kwargs[model_id]
         else:
             return []
 
-        return queryset.filter(**query_args).order_by('-published')[:count]
+        queryset = queryset.filter(**query_args).order_by('-published')
+        
+        if count:
+            queryset = queryset[:count]
+
+        return queryset
 
 
 class StoryWidgetView(StoryListMixin, VersionTemplateMixin, ModelIdDetailView):
@@ -621,9 +631,11 @@ class StoryWidgetView(StoryListMixin, VersionTemplateMixin, ModelIdDetailView):
     template_name = 'storybase_story/story_widget.html'
 
     url_name_to_relation_field = {
-        'organization_detail': 'organizations',
-        'project_detail': 'projects',
-        # TODO: Entries for place, tag, category
+        'organization_detail': ('organizations', 'slug'),
+        'project_detail': ('projects', 'slug'),
+        'tag_stories': ('tags', 'slug'),
+        'topic_stories': ('topics', 'categorytranslation__slug'),
+        # TODO: Entry for place
     }
 
     def resolve_list_uri(self, uri):
@@ -640,32 +652,82 @@ class StoryWidgetView(StoryListMixin, VersionTemplateMixin, ModelIdDetailView):
 
         match = resolve(chomped_path)
 
-        field = self.url_name_to_relation_field.get(match.url_name, None)
-        return field, match.kwargs
+        field, slug_field_name = self.url_name_to_relation_field.get(match.url_name, (None, None))
+
+        return field, slug_field_name, match.kwargs
 
     def get_context_data(self, **kwargs):
         context = super(StoryWidgetView, self).get_context_data(**kwargs)
         list_url = self.request.GET.get('list-url', None)
         
         if list_url is not None:
-            related_field, view_kwargs = self.resolve_list_uri(list_url)
-            context['stories'] = self.get_story_list(related_field, view_kwargs)
+            related_field, slug_field_name, view_kwargs = self.resolve_list_uri(list_url)
+            context['stories'] = self.get_story_list(related_field, view_kwargs, slug_field_name=slug_field_name, count=3)
 
         return context
 
 
-class StoryListWidgetView(StoryListMixin, VersionTemplateMixin, ModelIdDetailView):
-    template_name = "storybase_story/story_list_widget.html"
+class StoryListView(StoryListMixin, MultipleObjectMixin, ModelIdDetailView):
+    template_name = "storybase_story/story_list.html"
+    paginate_by = 10 
     
     def get_related_field_name(self):
         return self.related_field_name
+
+    def get_slug_field_name(self):
+        return 'slug' 
+
+    def get_context_data(self, **kwargs):
+        context = super(ModelIdDetailView, self).get_context_data(**kwargs)
+        paginator = None
+        page = None
+        is_paginated = False
+        queryset = self.get_story_list(
+            self.get_related_field_name(),
+            self.kwargs,
+            slug_field_name=self.get_slug_field_name(), queryset=Story.objects.published())
+
+        page_size = self.get_paginate_by(queryset)
+        if page_size:
+            paginator, page, queryset, is_paginated = self.paginate_queryset(queryset, page_size)
+
+        context.update({
+            'paginator': paginator,
+            'page_obj': page,
+            'is_paginated': is_paginated,
+            'object_list': queryset,
+            'stories': queryset,
+        })
+
+        return context
+
+
+class StoryListWidgetView(VersionTemplateMixin, StoryListView):
+    template_name = "storybase_story/story_list_widget.html"
+    paginate_by = None
 
     def get_context_data(self, **kwargs):
         context = super(StoryListWidgetView, self).get_context_data(**kwargs)
         context['stories'] = self.get_story_list(
             self.get_related_field_name(),
-            self.kwargs, queryset=Story.objects.published())
+            self.kwargs,
+            slug_field_name=self.get_slug_field_name(), queryset=Story.objects.published(),
+            count=3)
         return context
+
+
+class ExplorerRedirectView(RedirectView):
+    permanent = False
+
+    def get_query_string(self, **kwargs):
+        return None
+
+    def get_redirect_url(self, **kwargs):
+        url = reverse('explore_stories')
+        args = self.get_query_string(**kwargs)
+        if args:
+            url = "%s?%s" % (url, args)
+        return url
 
 
 class StoryShareWidgetView(ModelIdDetailView):

@@ -10,6 +10,7 @@ from storybase.views import JSErrorHandlerView
 from storybase_asset.urls import urlpatterns as asset_urlpatterns
 from storybase_help.urls import urlpatterns as help_urlpatterns
 from storybase_user.urls import urlpatterns as user_urlpatterns
+from storybase_taxonomy.urls import urlpatterns as taxonomy_urlpatterns
 from storybase_story.urls import urlpatterns as story_urlpatterns
 from storybase_asset.api import AssetResource, DataSetResource
 from storybase_geo.api import (GeocoderResource, GeoLevelResource,
@@ -49,7 +50,7 @@ urlpatterns += patterns('',
 # Include storybase_user URL patterns
 # Use this pattern instead of include since we want to put the URLs
 # at the top-level
-urlpatterns += user_urlpatterns + story_urlpatterns + asset_urlpatterns + help_urlpatterns 
+urlpatterns += user_urlpatterns + story_urlpatterns + asset_urlpatterns + help_urlpatterns + taxonomy_urlpatterns 
 
 urlpatterns += patterns('',
     # Examples:

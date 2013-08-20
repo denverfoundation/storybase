@@ -1,6 +1,6 @@
 {% load i18n %}
 {% if page.has_other_pages %}
-<div class="results-paging">
+<div class="paging results-paging">
     {% if page.has_previous %}<a href="?q={{ query }}&amp;page={{ page.previous_page_number }}" title="{% trans "Previous" %}" class="prev icon-chevron-left"><span>{% trans "Previous" %}</span></a>{% endif %}
     {% trans "Page" %}
     <form class="search-pagination-form" method="get" action=".">

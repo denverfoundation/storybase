@@ -1027,18 +1027,19 @@ body.explorer .select2-container .select2-choice span{margin-right:40px;}
 body.explorer #loading{left:33%;background:rgba(255, 255, 255, 0.7);border-radius:10px;-webkit-border-radius:10px;-moz-border-radius:10px;box-shadow:inset 0 0 5px rgba(0, 0, 0, 0.3);-moz-box-shadow:inset 0 0 5px rgba(0, 0, 0, 0.3);-webkit-box-shadow:inset 0 0 5px rgba(0, 0, 0, 0.3);font-size:2em;margin:20px auto;padding:30px;text-align:center;width:33%;color:#777777;}body.explorer #loading .text,body.explorer #loading .spinner{display:inline-block;vertical-align:middle;}
 body.explorer #loading .text{position:relative;left:-20px;}
 body.explorer #loading .spinner{position:relative !important;left:20px;opacity:0.5;}
+.paging{text-align:right;}.paging input[type="text"]{text-align:right;font-style:normal !important;width:1em;}
+.paging .next:before,.paging .prev:before{font-size:16px;}
+.paging .next:hover,.paging .prev:hover{text-decoration:none;}
+.paging .next{padding-left:0.5em;}
+.paging .prev{padding-right:0.5em;}
+.paging .next span,.paging .prev span{display:none;}
 body.search h1{margin-top:0.5em;}
 #search-page-form{margin:2em 0;}
 .results-header,.results-footer{padding:0.5em 0 0;overflow:hidden;}
 .results-header h1,.results-header h2{margin:0 !important;float:left;font-size:28.8px !important;text-align:left !important;background:none !important;}
 .results-footer{min-height:25px;}
 #search-page-form{text-align:center;}#search-page-form #id_q{width:60%;}
-.results-paging{position:absolute;right:0;}.results-paging input[type="text"]{text-align:right;font-style:normal !important;width:1em;}
-.results-paging .next:before,.results-paging .prev:before{font-size:16px;}
-.results-paging .next:hover,.results-paging .prev:hover{text-decoration:none;}
-.results-paging .next{padding-left:0.5em;}
-.results-paging .prev{padding-right:0.5em;}
-.results-paging .next span,.results-paging .prev span{display:none;}
+.results-paging{position:absolute;right:0;}
 .search-pagination-form{display:inline;}
 .search-result,.no-search-results{list-style-type:none;}
 .search-result{display:block;clear:left;padding-top:20px;overflow:hidden;}.search-result.has-image h3,.search-result.has-image .type,.search-result.has-image .summary,.search-result.has-image .metadata{margin-left:230px;}
