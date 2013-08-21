@@ -583,7 +583,29 @@ class StoryBuilderView(DetailView):
 
 
 class VersionTemplateMixin(object):
+    """Class-based view mixin that searches for a versioned template name"""
+
     def get_template_names(self):
+        """
+        Returns a list of template names to search for when rendering the template.
+
+        By default, the list of template names contains the value of the
+        ``template_name`` attribute of the view class.
+
+        If ``version`` is one the keyword arguments captured from the URL
+        pattern that served the view, a versioned template name is added
+        to the front of the list.
+
+        The versioned template name is constructed by inserting the version
+        before the template filename extension.
+
+        So, if the value of the ``template_name`` attribute is
+        "template_name.html" and the ``version`` keyword argument is set to
+        "0.1", the return value would look like::
+
+            ["template_name-0.1.html", "template_name.html"]
+       
+        """
         template_names = [self.template_name]
         version = self.kwargs.get('version', None)
         if version is not None: 
@@ -597,39 +619,65 @@ class VersionTemplateMixin(object):
 
 
 class StoryListMixin(object):
-    def get_story_list(self, field_name, view_kwargs, slug_field_name='slug', queryset=None, count=None):
+    """
+    Class-based view mixin that adds a method to retrieve a list of stories
+    filtered by a organization, place, project, topic (category) or 
+    keyword (tag)
+    """
+    def get_story_list(self, field_name, view_kwargs=None, slug_field_name='slug', queryset=None):
+        """
+        Returns a queryset of stories filtered by the slug of a related model.
+
+        :param field_name: Name of the Story model field that defines the relationship that should be used for filtering
+        :param view_kwargs: View keyword arguments captured from the URL pattern. Default is the view's ``kwargs`` attribute
+        :param slug_field_name: Name of the field on the related model that contains the slug. Default is "slug"
+        :param queryset: Queryset of Story models that will be filtered. Default is the ``queryset`` attribute of the view
+
+        """
         if queryset is None:
             queryset = self.queryset
-        model_name = None
-        try:
-            related_field = getattr(Story, field_name).field
-            model_name = related_field.model._meta.module_name
-            model_id = '%s_id' % model_name
-        except AttributeError:
-            pass
+
+        if view_kwargs is None:
+            # Default to this view's keyword arguments, but allow overriding
+            # in case we want to filter on the slug of a different view
+            view_kwargs = self.kwargs
+
+
         query_args = {}
         if 'slug' in view_kwargs:
             query_args['%s__%s' % (field_name, slug_field_name)] = view_kwargs['slug']
-        elif model_id and model_id in view_kwargs:
-            query_args['%s__%s' % (field_name, model_id)] = view_kwargs[model_id]
         else:
-            return []
+            # While the likely lookup field is "slug", also support filtering by
+            # model ID (e.g. "project_id")
+            model_id = None
+            try:
+                related_field = getattr(Story, field_name).field
+                model_name = related_field.model._meta.module_name
+                model_id = '%s_id' % model_name
+            except AttributeError:
+                pass
 
-        queryset = queryset.filter(**query_args).order_by('-published')
+            if model_id and model_id in view_kwargs:
+                query_args['%s__%s' % (field_name, model_id)] = view_kwargs[model_id]
+            else:
+                return []
+
+        return queryset.filter(**query_args).order_by('-published')
         
-        if count:
-            queryset = queryset[:count]
-
-        return queryset
-
 
 class StoryWidgetView(StoryListMixin, VersionTemplateMixin, ModelIdDetailView):
-    """An embedable widget for a story"""
+    """
+    An embedable widget for a story
+
+
+    """
     context_object_name = "story"
     # You can only embed published stories
     queryset = Story.objects.published()
     template_name = 'storybase_story/story_widget.html'
 
+    # A map of URL names from a URL pattern for a taxonomy term view to
+    # the relationship field of the Story model and the name of the slug field on the related model
     url_name_to_relation_field = {
         'organization_detail': ('organizations', 'slug'),
         'project_detail': ('projects', 'slug'),
@@ -639,6 +687,17 @@ class StoryWidgetView(StoryListMixin, VersionTemplateMixin, ModelIdDetailView):
     }
 
     def resolve_list_uri(self, uri):
+        """
+        Resolve a URL path to a relationship field of the Story model and view
+        keyword arguments
+
+        This is used when the widget should include both a featured story and
+        a related list of stories
+
+        Returns a tuple of relationship field name, the slug field name on the
+        related model and keyword arguments from the URL pattern
+
+        """
         prefix = get_script_prefix()
         parsed = urlparse.urlparse(uri)
         path = parsed.path
@@ -657,35 +716,82 @@ class StoryWidgetView(StoryListMixin, VersionTemplateMixin, ModelIdDetailView):
         return field, slug_field_name, match.kwargs
 
     def get_context_data(self, **kwargs):
+        """
+        Returns context data for displaying the story and an optional list of
+        related stories
+
+        The view accepts an optional ``list-url`` query string parameter.
+        This parameter should be the full URL of a page for an organization, 
+        project, place, keyword (tag) or topic (category). If this parameter is
+        present, the widget output will also contain a list of recent stories
+        from that taxonomy item.
+
+
+        **Context**
+
+        * ``story``: The primary story for the widget
+        * ``stories``: Optional list of related stories
+
+        """
         context = super(StoryWidgetView, self).get_context_data(**kwargs)
         list_url = self.request.GET.get('list-url', None)
         
         if list_url is not None:
             related_field, slug_field_name, view_kwargs = self.resolve_list_uri(list_url)
-            context['stories'] = self.get_story_list(related_field, view_kwargs, slug_field_name=slug_field_name, count=3)
+            # Limit therelated story list to 3 items
+            context['stories'] = self.get_story_list(related_field, view_kwargs, slug_field_name=slug_field_name)[:3]
 
         return context
 
 
 class StoryListView(StoryListMixin, MultipleObjectMixin, ModelIdDetailView):
+    """
+    Base view class for a list of stories aggregated by an organization,
+    project, place, keyword (tag) or topic (category)
+    """
     template_name = "storybase_story/story_list.html"
     paginate_by = 10 
     
     def get_related_field_name(self):
+        """
+        Returns the relationship field name
+        
+        Returns the name of the field of the Story model that defines the
+        relationship with the model used to aggregate the stories. 
+
+        Defaults to ``related_field_name`` attribute of the view class
+
+        """
         return self.related_field_name
 
     def get_slug_field_name(self):
+        """
+        Returns the name of the slug field on the related model
+        """
         return 'slug' 
 
     def get_context_data(self, **kwargs):
+        """
+        Returns context data for displaying the list of stories
+
+        **Context**
+
+        * ``object``: Model instance of item used to aggregate stories
+        * ``object_list``: List of stories
+        * ``stories``: An alias for ``object_list``
+        * ``is_paginated``: A boolean representing whether the results are paginated. Specifically, this is set to False if no page size has been specified, or if the available objects do not span multiple pages.
+        * ``paginator``: An instance of django.core.paginator.Paginator. If the page is not paginated, this context variable will be None.
+        * ``page_obj``: An instance of django.core.paginator.Page. If the page is not paginated, this context variable will be None.
+
+        """
         context = super(ModelIdDetailView, self).get_context_data(**kwargs)
         paginator = None
         page = None
         is_paginated = False
         queryset = self.get_story_list(
             self.get_related_field_name(),
-            self.kwargs,
-            slug_field_name=self.get_slug_field_name(), queryset=Story.objects.published())
+            slug_field_name=self.get_slug_field_name(), 
+            queryset=Story.objects.published())
 
         page_size = self.get_paginate_by(queryset)
         if page_size:
@@ -703,26 +809,54 @@ class StoryListView(StoryListMixin, MultipleObjectMixin, ModelIdDetailView):
 
 
 class StoryListWidgetView(VersionTemplateMixin, StoryListView):
+    """An embeddable widget of a list of stories"""
     template_name = "storybase_story/story_list_widget.html"
     paginate_by = None
 
     def get_context_data(self, **kwargs):
+        """
+        Returns context data for displaying the list of stories
+
+        **Context**
+
+        * ``object``: Model instance of item used to aggregate stories
+        * ``object_list``: List of stories
+        * ``stories``: An alias for ``object_list``
+
+        """
         context = super(StoryListWidgetView, self).get_context_data(**kwargs)
         context['stories'] = self.get_story_list(
             self.get_related_field_name(),
             self.kwargs,
-            slug_field_name=self.get_slug_field_name(), queryset=Story.objects.published(),
-            count=3)
+            slug_field_name=self.get_slug_field_name(), queryset=Story.objects.published())[:3]
         return context
 
 
+# TODO: Figure out semantics and behavior for explorer that allows filtering
+# via URL path parameters, e.g. /explore/projects/<project-slug>/
+# The biggest question I have about this is whether we should allow re-filtering
+# of term filtered by the path parameter
 class ExplorerRedirectView(RedirectView):
+    """
+    Base view that redirects to the explorer view
+    """
     permanent = False
 
     def get_query_string(self, **kwargs):
+        """
+        Returns query string to filter
+
+        This should be overridden in a sub-class to translate a URL path
+        parameter (likely "slug") to a filter query argument of the explore
+        view.
+
+        """
         return None
 
     def get_redirect_url(self, **kwargs):
+        """
+        Constructs a URL to a filtered version of the explore view
+        """
         url = reverse('explore_stories')
         args = self.get_query_string(**kwargs)
         if args:
