@@ -635,7 +635,7 @@ class StoryWidgetView(StoryListMixin, VersionTemplateMixin, ModelIdDetailView):
         'project_detail': ('projects', 'slug'),
         'tag_stories': ('tags', 'slug'),
         'topic_stories': ('topics', 'categorytranslation__slug'),
-        # TODO: Entry for place
+        'place_stories': ('places', 'slug'),
     }
 
     def resolve_list_uri(self, uri):

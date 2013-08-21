@@ -8,6 +8,7 @@ from tastypie.api import Api
 from storybase.api import CreativeCommonsLicenseGetProxyView
 from storybase.views import JSErrorHandlerView
 from storybase_asset.urls import urlpatterns as asset_urlpatterns
+from storybase_geo.urls import urlpatterns as geo_urlpatterns
 from storybase_help.urls import urlpatterns as help_urlpatterns
 from storybase_user.urls import urlpatterns as user_urlpatterns
 from storybase_taxonomy.urls import urlpatterns as taxonomy_urlpatterns
@@ -50,7 +51,7 @@ urlpatterns += patterns('',
 # Include storybase_user URL patterns
 # Use this pattern instead of include since we want to put the URLs
 # at the top-level
-urlpatterns += user_urlpatterns + story_urlpatterns + asset_urlpatterns + help_urlpatterns + taxonomy_urlpatterns 
+urlpatterns += user_urlpatterns + story_urlpatterns + asset_urlpatterns + help_urlpatterns + taxonomy_urlpatterns + geo_urlpatterns 
 
 urlpatterns += patterns('',
     # Examples:
