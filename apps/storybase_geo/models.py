@@ -10,6 +10,7 @@ from uuidfield.fields import UUIDField
 
 from storybase.models import DirtyFieldsMixin, PermissionMixin
 from storybase.fields import ShortTextField
+from storybase.utils import unique_slugify
 from storybase_geo.utils import get_geocoder
 
 class GeoLevel(MPTTModel):
@@ -140,9 +141,23 @@ class Place(node_factory('PlaceRelation')):
     boundary = models.MultiPolygonField(blank=True, null=True,
                                         verbose_name=_("Boundary"))
     place_id = UUIDField(auto=True, verbose_name=_("Place ID"), db_index=True)
+    slug = models.SlugField(blank=True)
 
     def __unicode__(self):
         return self.name
+
+
+def set_place_slug(sender, instance, **kwargs):
+    """
+    When a Place is saved, set its Story's slug if it doesn't have 
+    one
+    
+    Should be connected to Place's pre_save signal.
+    """
+    if not instance.slug:
+        unique_slugify(instance, instance.name)
+
+pre_save.connect(set_place_slug, sender=Place)
 
 
 class PlaceRelation(edge_factory(Place, concrete=False)):
