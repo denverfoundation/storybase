@@ -26,7 +26,6 @@ class CategoryWidgetView(StoryListWidgetView):
         return 'categorytranslation__slug'
 
     def get_object(self):
-        """Retrieve the object by it's model specific id instead of pk"""
         queryset = self.get_queryset()
         slug = self.kwargs.get('slug', None)
 
