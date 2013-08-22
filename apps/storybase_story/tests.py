@@ -12,7 +12,7 @@ from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.http import HttpRequest, Http404
 from django.template import Context, Template
-from django.test import TestCase, TransactionTestCase
+from django.test import RequestFactory, TestCase, TransactionTestCase
 from django.utils import simplejson
 from django.utils.translation import get_language
 
@@ -22,6 +22,7 @@ from tastypie.test import ResourceTestCase
 from storybase.admin import toggle_featured
 from storybase.tests.base import (SloppyComparisonTestMixin, 
         PermissionTestCase, FixedTestApiClient)
+from storybase.tests.utils import setup_view
 from storybase.utils import slugify
 from storybase_asset.models import (Asset, create_html_asset,
         create_external_asset, create_external_dataset)
@@ -1184,14 +1185,12 @@ class StoryBuilderViewTest(TestCase):
         SectionAsset.objects.create(section=section2, asset=assets[2], container=left)
         SectionAsset.objects.create(section=section2, asset=assets[3], container=right)
         SectionAsset.objects.create(section=section3, asset=self.featured_asset, container=left)
-        self.view = StoryBuilderView()
         # Make a fake request and bind the user to it,
         # otherwise the permission checks for retrieving
         # items in the API resources don't work correctly
-        req = HttpRequest()
-        req.method = 'GET'
+        req = RequestFactory().get('/fake-path')
         req.user = self.user
-        self.view.dispatch(req, story_id=self.story.story_id)
+        self.view = setup_view(StoryBuilderView(), req, story_id=self.story.story_id)
 
     def test_get_sections_json(self):
         """Test getting serialized section data for a story"""
@@ -1256,9 +1255,8 @@ class StoryDetailViewTest(TestCase):
                 author=user, byline="Test byline", status="published")
         StoryRelation.objects.create(source=story1, target=connected_story,
                 relation_type='connected')
-        req = HttpRequest()
-        req.method = 'GET'
-        view = StoryDetailView()
+        req = RequestFactory().get('/stories/%s/' % connected_story.story_id)
+        view = setup_view(StoryDetailView(), req)
         self.assertRaises(Http404, view.dispatch, req, story_id=connected_story.story_id)
 
 
@@ -1269,6 +1267,7 @@ class StoryViewerViewTest(TestCase):
         self.user = User.objects.create_user(self.username, 'test@floodlightproject.org', self.password)
         self.story = create_story(title="Test Story", summary="Test Summary",
                 byline="Test Byline", status='published', author=self.user)
+        self.factory = RequestFactory()
     
     def test_get_context_connected_story_view(self):
         """
@@ -1299,9 +1298,8 @@ class StoryViewerViewTest(TestCase):
                                      relation_type='connected')
         StoryRelation.objects.create(source=self.story, target=story3,
                                      relation_type='connected')
-        req = HttpRequest()
-        req.method = 'GET'
-        view = StoryViewerView()
+        req = RequestFactory().get('/stories/%s/viewer/' % self.story.story_id)
+        view = setup_view(StoryViewerView(), req,  story_id=self.story.story_id)
         view.dispatch(req, story_id=self.story.story_id)
         connected = view.get_context_data()['connected_stories']
         self.assertEqual(connected.count(), 1)
@@ -1336,10 +1334,9 @@ class StoryViewerViewTest(TestCase):
                                      relation_type='connected')
         StoryRelation.objects.create(source=self.story, target=story3,
                                      relation_type='connected')
-        req = HttpRequest()
-        req.method = 'GET'
+        req = self.factory.get('/stories/%s/viewer/' % self.story.story_id)
         req.user = user2
-        view = StoryViewerView()
+        view = setup_view(StoryViewerView(), req, story_id=self.story.story_id, preview=True)
         view.dispatch(req, story_id=self.story.story_id, preview=True)
         connected = view.get_context_data()['connected_stories']
         self.assertEqual(connected.count(), 2)
@@ -1359,9 +1356,8 @@ class StoryViewerViewTest(TestCase):
                 author=self.user, byline="Test byline", status="published")
         StoryRelation.objects.create(source=story1, target=connected_story,
                 relation_type='connected')
-        req = HttpRequest()
-        req.method = 'GET'
-        view = StoryViewerView()
+        req = self.factory.get('/stories/%s/viewer/' % connected_story.story_id)
+        view = setup_view(StoryViewerView(), req, story_id=connected_story.story_id)
         self.assertRaises(Http404, view.dispatch, req, story_id=connected_story.story_id)
 
 
@@ -3561,9 +3557,7 @@ class StoryExploreResourceTest(ResourceTestCase):
         # In general, I think we can work around this by just setting
         # SOUTH_TESTS_MIGRATE = False in the settings
         #self._rebuild_index()
-        req = HttpRequest()
-        req.method = 'GET'
-        req.GET['near'] = '39.7414581054089@-104.9877892025,1'
+        req = RequestFactory().get('/explore/?near=39.7414581054089@-104.9877892025,1')
         resp = self.resource.explore_get_list(req)
         dehydrated = simplejson.loads(resp.content)
         self.assertEqual(len(dehydrated['objects']), 1)
