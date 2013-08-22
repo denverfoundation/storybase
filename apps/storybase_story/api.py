@@ -1,7 +1,7 @@
 """REST API for Stories"""
 import logging
 
-from django.conf.urls.defaults import url
+from django.conf.urls import url
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.urlresolvers import NoReverseMatch
 from django.db import transaction, IntegrityError

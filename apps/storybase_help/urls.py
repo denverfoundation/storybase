@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import patterns, url
 from storybase_help.views import HelpDetailView
    
 urlpatterns = patterns('',

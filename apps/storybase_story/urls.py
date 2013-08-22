@@ -1,7 +1,7 @@
 """URL routing for storybase_story app"""
 
 from django.conf import settings
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url
 
 from storybase_story.views import (ExploreStoriesView, 
     StoryBuilderView, StoryDetailView, StoryViewerView,

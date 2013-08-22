@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import handler500, patterns, include, url
+from django.conf.urls import handler500, patterns, include, url
 from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
 from django.conf import settings

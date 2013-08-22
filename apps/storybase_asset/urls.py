@@ -1,6 +1,6 @@
 """URL routing definitions"""
 
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url
 
 from storybase_asset.views import AssetDetailView, DataSetDetailView, AssetContentView
 

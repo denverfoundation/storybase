@@ -3,7 +3,7 @@ try:
 except ImportError:
     shortuuid = None
 
-from django.conf.urls.defaults import *
+from django.conf.urls import patterns, url
 from storybase_user.views import (OrganizationDetailView, OrganizationListView,
     OrganizationShareWidgetView, ProjectDetailView, ProjectListView,
     ProjectShareWidgetView, UserProfileDetailView, UserProfileShareWidgetView,

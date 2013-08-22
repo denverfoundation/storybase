@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import url
+from django.conf.urls import url
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.uploadedfile import UploadedFile
 

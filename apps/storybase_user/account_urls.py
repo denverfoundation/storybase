@@ -7,7 +7,7 @@ at a different root than the other URL patterns.
 """
 
 from django.conf import settings
-from django.conf.urls.defaults import patterns, url
+from django.conf.urls import patterns, url
 
 from storybase_user.auth.forms import (EmailAuthenticationForm,
                                        CustomContextPasswordResetForm,

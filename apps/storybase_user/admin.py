@@ -3,7 +3,7 @@ import datetime
 
 from django import forms
 from django.conf import settings
-from django.conf.urls.defaults import patterns
+from django.conf.urls import patterns
 from django.contrib import admin
 from django.contrib.auth.admin import UserAdmin
 from django.contrib.auth.forms import UserChangeForm

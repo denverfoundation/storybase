@@ -1,4 +1,4 @@
-from django.conf.urls.defaults import *
+from django.conf.urls import patterns, url 
 from haystack.forms import SearchForm
 from storybase.search.views import StorybaseSearchView
 
