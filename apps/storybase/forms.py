@@ -1,3 +1,4 @@
+from copy import deepcopy
 import re
 
 from django.contrib.auth.models import User
@@ -7,7 +8,6 @@ from django.forms.fields import (CharField, FileField, MultiValueField,
         URLField)
 from django.forms.widgets import FileInput, Textarea, TextInput, MultiWidget
 from django.forms.models import ModelFormMetaclass, modelform_factory
-from django.utils.copycompat import deepcopy
 from django.utils.translation import ugettext_lazy as _
 
 from storybase.utils import is_file
