@@ -1,10 +1,10 @@
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
 from django.contrib.gis.geos import Point
-from django.contrib.localflavor.us.us_states import STATE_CHOICES
 from django.db.models.signals import pre_save
 from django.utils.translation import ugettext as _
 from django_dag.models import edge_factory, node_factory
+from localflavor.us.us_states import STATE_CHOICES
 from mptt.models import MPTTModel, TreeForeignKey
 from uuidfield.fields import UUIDField
 
