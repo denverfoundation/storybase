@@ -1256,7 +1256,7 @@ class StoryDetailViewTest(TestCase):
         StoryRelation.objects.create(source=story1, target=connected_story,
                 relation_type='connected')
         req = RequestFactory().get('/stories/%s/' % connected_story.story_id)
-        view = setup_view(StoryDetailView(), req)
+        view = setup_view(StoryDetailView(), req, story_id=connected_story.story_id)
         self.assertRaises(Http404, view.dispatch, req, story_id=connected_story.story_id)
 
 
