@@ -2,6 +2,15 @@
 Upgrading
 =========
 
+develop
+=======
+
+Django 1.5.* and Django CMS 2.4.* are now the recommended versions. 
+Upgrade these packages::
+
+    pip install django>=1.5,<1.6
+    pip install django-cms>=2.4,<2.5
+
 0.12.* to 0.13 
 ==============
 

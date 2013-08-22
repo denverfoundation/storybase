@@ -1,37 +1,27 @@
-Django>=1.4,<1.5
-Pillow==1.7.8
-South==0.7.3
-argparse==1.2.1
-cmsplugin-filer==0.8.0
-distribute==0.6.14
-#django-ajax-selects==1.2.4
-django-classy-tags==0.3.4.1
-django-cms==2.3.5
-django-email-confirmation==0.2
+Django>=1.5,<1.6
+South>=0.7.3
+Pillow>=1.7.8
+cmsplugin-filer>=0.8.0
+django-cms>=2.4
 django-filer>=0.9.3
-django-haystack
+pysolr>=2.1.0
+django-haystack>=2.0
+# django-cms has a strict requirement of django-mptt 0.5.2
 django-mptt==0.5.2
-django-reversion>=1.6,<1.7
-django-sekizai==0.6.1
+# django-reversion needs to match the version of Django
+# See https://github.com/etianen/django-reversion/wiki/Compatible-Django-Versions
+django-reversion>=1.7,<1.8
 django-taggit
-django-tastypie>=0.9.15,<0.10
-django-tinymce==1.5.1b2
-django-uni-form==0.9.0
+django-tastypie>=0.9.15
+django-tinymce>=1.5.1b2
 geopy
-html5lib==0.90
-httplib2==0.7.2
-mimeparse==0.1.3
-oauth2==1.5.211
-psycopg2==2.4.1
-pycrypto==2.5
-pysolr==2.1.0-beta
-python-dateutil==1.5
-python-openid==2.2.5
-python-ptrace==0.6.3
-wsgiref==0.1.2
+mimeparse>=0.1.3
+oauth2>=1.5.211
+psycopg2>=2.4.1
 git+git://github.com/elpaso/django-dag.git#egg=django_dag
+# django-uuidfield must be fixed at 0.2 
 django-uuidfield==0.2
-# Install djang-model-utils from Bitbucket so we can used
+# Install django-model-utils from Bitbucket so we can used
 # InheritanceManager.get_subclass()
 hg+https://bitbucket.org/carljm/django-model-utils
 django-categories
@@ -39,7 +29,7 @@ django-social-auth
 django-registration>=1.0
 # django-passwords is optional
 django-passwords
-django-notification==1.0
+django-notification>=1.0
 pytz
 micawber>=0.2.5
 # Use version of django-threadedcomments from GitHub because the pypi
