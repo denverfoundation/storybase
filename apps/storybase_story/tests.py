@@ -4065,9 +4065,33 @@ class StoryWidgetViewTest(TestCase):
         self.view = StoryWidgetView()
 
     def test_resolve_list_uri(self):
-        field, kwargs = self.view.resolve_list_uri('http://floodlightproject.org/projects/finding-a-bite-food-access-in-the-childrens-corrid/')
+        field, slug_field, kwargs = self.view.resolve_list_uri('http://floodlightproject.org/projects/finding-a-bite-food-access-in-the-childrens-corrid/')
         self.assertEqual(field, 'projects')
+        self.assertEqual(slug_field, 'slug')
         self.assertEqual(kwargs['slug'], 'finding-a-bite-food-access-in-the-childrens-corrid') 
 
-    def test_get_story_list(self):
-        self.fail('Test unimplemented')
+        field, slug_field, kwargs = self.view.resolve_list_uri('http://floodlightproject.org/organizations/america-scores-denver/')
+        self.assertEqual(field, 'organizations')
+        self.assertEqual(slug_field, 'slug')
+        self.assertEqual(kwargs['slug'], 'america-scores-denver') 
+
+        field, slug_field, kwargs = self.view.resolve_list_uri('http://floodlightproject.org/topics/environment/')
+        self.assertEqual(field, 'topics')
+        self.assertEqual(slug_field, 'categorytranslation__slug')
+        self.assertEqual(kwargs['slug'], 'environment') 
+
+        field, slug_field, kwargs = self.view.resolve_list_uri('http://floodlightproject.org/tags/storytelling/')
+        self.assertEqual(field, 'tags')
+        self.assertEqual(slug_field, 'slug')
+        self.assertEqual(kwargs['slug'], 'storytelling') 
+
+        field, slug_field, kwargs = self.view.resolve_list_uri('http://floodlightproject.org/places/denver/')
+        self.assertEqual(field, 'places')
+        self.assertEqual(slug_field, 'slug')
+        self.assertEqual(kwargs['slug'], 'denver') 
+
+    def test_resolve_list_uri_bad_path(self):
+        field, slug_field, kwargs = self.view.resolve_list_uri('http://floodlightproject.org/prjects/finding-a-bite-food-access-in-the-childrens-corrid/')
+        self.assertEqual(field, None)
+        self.assertEqual(slug_field, None)
+        self.assertEqual(kwargs, None) 

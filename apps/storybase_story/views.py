@@ -713,7 +713,11 @@ class StoryWidgetView(StoryListMixin, VersionTemplateMixin, ModelIdDetailView):
 
         field, slug_field_name = self.url_name_to_relation_field.get(match.url_name, (None, None))
 
-        return field, slug_field_name, match.kwargs
+        view_kwargs = None
+        if field is not None:
+            view_kwargs = match.kwargs
+
+        return field, slug_field_name, view_kwargs
 
     def get_context_data(self, **kwargs):
         """
