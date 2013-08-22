@@ -109,20 +109,6 @@ def _slug_strip(value, separator='-'):
     return value
 
 
-def simple_language_changer(func):
-    """
-    Proxy for the menus.simple_language_changer decorator
-
-    If the menus app is not installed, the original function is returned.
-    This allows view code to be easily decoupled from Django CMS.
-    """
-    if 'menus' in settings.INSTALLED_APPS:
-        from menus.utils import simple_language_changer
-        return simple_language_changer(func)
-    else:
-        return func
-
-
 # TODO: Test this a bit, make signature match handlebars implementation
 def first_paragraph(value): 
     import re

@@ -24,7 +24,7 @@ from storybase_story.api import (ContainerTemplateResource,
 from storybase_story.models import (SectionLayout, Story, StoryRelation,
         StoryTemplate)
 from storybase_taxonomy.models import Category
-from storybase.utils import escape_json_for_html, simple_language_changer
+from storybase.utils import escape_json_for_html
 from storybase.views.generic import ModelIdDetailView
 
 
@@ -38,7 +38,6 @@ class ExploreStoriesView(TemplateView):
     """
     template_name = "storybase_story/explore_stories.html"
 
-    @method_decorator(simple_language_changer)
     def dispatch(self, *args, **kwargs):
         return super(ExploreStoriesView, self).dispatch(*args, **kwargs)
 
