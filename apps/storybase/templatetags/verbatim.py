@@ -13,10 +13,10 @@ to output the contents with no changes.
 
 from django import template
 
+register = template.Library()
+
 # For Django >= 1.5, use the default verbatim tag implementation
 if not hasattr(template.defaulttags, 'verbatim'):
-    register = template.Library()
-
     class VerbatimNode(template.Node):
 
         def __init__(self, text):
