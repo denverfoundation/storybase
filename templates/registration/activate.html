@@ -3,7 +3,7 @@
 
 {% block head_title %}{% trans "Account activation" %}{% endblock %}
 
-{% block base_content %}{% url auth_login as auth_login_url %}
+{% block base_content %}{% url "auth_login" as auth_login_url %}
 <div class="content-page generic container_12">
   <div class="grid_12 content-block">
     <h1><span>{% trans "Account activation" %}</span></h1>

@@ -11,13 +11,13 @@
 
 {% include "messages.html" %}
 
-<p><a href="{% url registration_register %}">{% trans "Don't have an account? Join now." %}</a></p>
+<p><a href="{% url "registration_register" %}">{% trans "Don't have an account? Join now." %}</a></p>
 
 {% if social_auth %}
 <h2><span>{% trans "Sign in using your favorite social media account" %}</span></h2>
 <ul>
   {% for name, value in social_auth.items %}
-  <li><a href="{% url socialauth_begin name %}" class="{{ name }}">{% trans "Sign in with" %} {{ name|capfirst }}</a></li>
+  <li><a href="{% url "socialauth_begin" name %}" class="{{ name }}">{% trans "Sign in with" %} {{ name|capfirst }}</a></li>
   {% endfor %}
 </ul>
 {% endif %}
@@ -31,7 +31,7 @@
 </form>
 
 <ul>
-    <li><a href="{%url password_reset %}">{% trans "Forgot password?" %}</a></li>
+    <li><a href="{% url "password_reset" %}">{% trans "Forgot password?" %}</a></li>
 </ul>
 
 {% endblock %}

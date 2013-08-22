@@ -11,7 +11,7 @@
         {% endif %}
     </head>
     <body>
-        {% url story_viewer slug=story.slug as viewer_path %}
+        {% url "story_viewer" slug=story.slug as viewer_path %}
         {% fullurl story.get_absolute_url as detail_url %}
         {% fullurl viewer_path as viewer_url %}
         <div id="{{ story.story_id }}" class="storybase-story-embed {{ storybase_site_name|slugify }}-story-embed">

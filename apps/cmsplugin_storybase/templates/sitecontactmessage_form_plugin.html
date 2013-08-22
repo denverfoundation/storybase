@@ -8,7 +8,7 @@
 </ul>
 {% endif %}
 
-<form action="{% url contact %}?success={{ request.path }}" method="post" {%if form.errors %}class="errors"{% endif %}>{% csrf_token %}
+<form action="{% url "contact" %}?success={{ request.path }}" method="post" {%if form.errors %}class="errors"{% endif %}>{% csrf_token %}
   <p class="instructions">{% trans "Fields marked with a * are required" %}</p>
   
   {{ form.as_p }}

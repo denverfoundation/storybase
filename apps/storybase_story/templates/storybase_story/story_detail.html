@@ -37,7 +37,7 @@
 						<section class="summary">
 							{{ story.summary|safe }}
 						</section>
-                        <a id="launch-story-viewer" class="button" href="{% url story_viewer slug=story.slug %}">{% trans "View Story" %}</a>
+                        <a id="launch-story-viewer" class="button" href="{% url "story_viewer" slug=story.slug %}">{% trans "View Story" %}</a>
                         {% if story.asset_datasets.count %}
                         <div class="btn-group datasets-button">
                             <button class="btn dropdown-toggle" data-toggle="dropdown">
@@ -124,10 +124,10 @@
 					<section class="connected-stories">
 						<h4 id="connected">{% trans "Connected Stories" %}</h4>
 	                    <p>{{ story.connected_prompt|linebreaks }}</p>
-	                    <a href="{% url connected_story_builder source_slug=story.slug %}" title="{% trans "Contribute to this story" %}" class="button right">{% trans "Contribute to this story" %}</a>
+	                    <a href="{% url "connected_story_builder" source_slug=story.slug %}" title="{% trans "Contribute to this story" %}" class="button right">{% trans "Contribute to this story" %}</a>
 	                    {% with cs_count=story.connected_stories.count %}
 	                    {% if cs_count %}
-	                    <a href="{% url story_viewer slug=story.slug %}#sections/connected-stories" title="{% blocktrans count counter=cs_count %}View {{ counter }} connected story{% plural %}View {{ counter }} connected stories{% endblocktrans %}" class="button right">{% blocktrans count counter=cs_count %}View {{ counter }} connected story{% plural %}View {{ counter }} connected stories{% endblocktrans %}</a>
+	                    <a href="{% url "story_viewer" slug=story.slug %}#sections/connected-stories" title="{% blocktrans count counter=cs_count %}View {{ counter }} connected story{% plural %}View {{ counter }} connected stories{% endblocktrans %}" class="button right">{% blocktrans count counter=cs_count %}View {{ counter }} connected story{% plural %}View {{ counter }} connected stories{% endblocktrans %}</a>
 	                    {% endif %}
 	                    {% endwith %}
 					</section>
@@ -148,10 +148,10 @@
 {% block bodyend %}
 <div id="story-viewer-modal" class="modal">
   <div id="modal-controls">
-      <a id="launch-viewer-window" href="{% url story_viewer slug=story.slug %}" title="{%trans "View in new window"%}" data-window-name="story-viewer" data-window-features=""><i class="icon-share"></i><span class="hide-text">{%trans "View in new window"%}</span></a>
+      <a id="launch-viewer-window" href="{% url "story_viewer" slug=story.slug %}" title="{%trans "View in new window"%}" data-window-name="story-viewer" data-window-features=""><i class="icon-share"></i><span class="hide-text">{%trans "View in new window"%}</span></a>
       <button class="simplemodal-close" title="{% trans "Close" %}"><i class="icon-remove-sign"></i><span class="hide-text">{% trans "Close" %}</span></button>
   </div>
-  <iframe src="{% url story_viewer slug=story.slug %}?context=iframe"></iframe>
+  <iframe src="{% url "story_viewer" slug=story.slug %}?context=iframe"></iframe>
 </div>
 {% endblock bodyend %}
 

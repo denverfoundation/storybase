@@ -5,6 +5,6 @@
 {% block head_title %}{% trans "Activation Complete" %}{% endblock %}
 
 {% block base_content %}
-<p>{% trans "Your account has been activated" %}. <a href="{% url auth_login %}">{% trans "Sign In" %}</a></p>
+<p>{% trans "Your account has been activated" %}. <a href="{% url "auth_login" %}">{% trans "Sign In" %}</a></p>
 
 {% endblock %}

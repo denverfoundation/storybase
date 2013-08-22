@@ -61,7 +61,7 @@
 			<div class="header-right">
 		                {% show_menu 0 0 0 0 "menu/menu_top.html" %}
 				<div class="cl">&nbsp;</div>
-                <form id="search" action="{% url haystack_search %}" method="get">
+                <form id="search" action="{% url "haystack_search" %}" method="get">
                     <input id="id_q" type="text" name="q" class="field" value="{{ query }}" />
                     <input type="submit" class="submit" value="" />
 					<div class="cl">&nbsp;</div>

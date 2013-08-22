@@ -54,7 +54,7 @@
     </tbody>
 </table>
 {% else %}
-{% url story_builder as builder_url %}
+{% url "story_builder" as builder_url %}
 <p>{% blocktrans %}You haven't made any stories yet. <a href="{{ builder_url }}" title="Story Builder">Create your first story now</a>.{% endblocktrans %}</p>
 {% endif %}
 {% endblock %}

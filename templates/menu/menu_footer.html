@@ -14,7 +14,7 @@ This template is designed to be included with the ``show_menu`` template tag::
   {% endwith %}
   {% endfor %}
   {% if user.is_authenticated %}
-  <li class="middle"><a href="{% url account_summary %}">{% trans "My Account" %}</a></li>
+  <li class="middle"><a href="{% url "account_summary" %}">{% trans "My Account" %}</a></li>
   {% endif %}
   {% for child in children|filtermenuitems:"contact,help,policies" %}
   {% with menu_title=child.get_menu_title menu_url=child.attr.redirect_url|default:child.get_absolute_url menu_id=child.attr.reverse_id|default:child.id %}

@@ -9,13 +9,13 @@
 {% block base_content %}
 <h1><span>{% trans "Sign Up" %}</span></h1>
 
-<p>{% trans "Already have an account?" %} <a href="{% url auth_login %}">{% trans "Sign in here" %}</a>.</p>
+<p>{% trans "Already have an account?" %} <a href="{% url "auth_login" %}">{% trans "Sign in here" %}</a>.</p>
 
 {% if social_auth %}
 <h2><span>{% blocktrans %}Join {{ storybase_site_name }} using your favorite social media account{% endblocktrans %}<span></h2>
 <ul>
   {% for name, value in social_auth.items %}
-  <li><a href="{% url socialauth_begin name %}" class="{{ name }}">{% trans "Sign up with" %} {{ name|capfirst }}</a></li>
+  <li><a href="{% url "socialauth_begin" name %}" class="{{ name }}">{% trans "Sign up with" %} {{ name|capfirst }}</a></li>
   {% endfor %}
 </ul>
 {% endif %}

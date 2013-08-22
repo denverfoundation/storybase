@@ -65,7 +65,7 @@
             {% if story.allow_connected %}
             <p>{{ story.connected_prompt|linebreaks }}</p>
             {# TODO: Style the links to the connected story builder as buttons #}
-            <p><a href="{% url connected_story_builder source_slug=story.slug %}" class="external" data-new-window-name="connectedBuilder">{% trans "Click here to contribute to this story" %}</a></p>
+            <p><a href="{% url "connected_story_builder" source_slug=story.slug %}" class="external" data-new-window-name="connectedBuilder">{% trans "Click here to contribute to this story" %}</a></p>
             {% endif %}
 	      </section>
 	      {% endif %}
@@ -106,7 +106,7 @@
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
     <script>window.jQuery || document.write('<script src="{{ STATIC_URL }}js/libs/jquery-1.7.2.min.js"><\/script>')</script>
 
-    <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
+    <script type="text/javascript" src="{% url "django.views.i18n.javascript_catalog" %}"></script>
     <script src="{{ STATIC_URL }}js/libs/underscore-min.js"></script>
     <script src="{{ STATIC_URL }}js/libs/json2.js"></script>
     <script src="{{ STATIC_URL }}js/libs/backbone-min.js"></script>

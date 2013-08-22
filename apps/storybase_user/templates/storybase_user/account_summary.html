@@ -41,7 +41,7 @@ the text to the left of it.
 <h2 id="connected-accounts"><span>{% trans "Connected accounts" %}</span></h2>
 <ul>
   {% for name, value in social_auth.items %}
-  <li>{{ name|capfirst }} {% if value %}<a href="{% url socialauth_disconnect backend=name %}">{% trans "disconnect" %}</a>{% else %}<a href="{% url socialauth_begin backend=name %}">{% trans "connect" %}</a>{% endif %}</li>
+  <li>{{ name|capfirst }} {% if value %}<a href="{% url "socialauth_disconnect" backend=name %}">{% trans "disconnect" %}</a>{% else %}<a href="{% url "socialauth_begin" backend=name %}">{% trans "connect" %}</a>{% endif %}</li>
   {% endfor %}
 </ul>
 {% endblock %}
