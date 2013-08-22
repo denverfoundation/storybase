@@ -39,7 +39,7 @@ urlpatterns += patterns('',
     # Proxy for Creative Commons endpoint
     # Cache responses for 24 hours
     url(r"^api/%s/license/get/" % v0_1_api.api_name,
-        cache_page(CreativeCommonsLicenseGetProxyView.as_view(), 60 * 60 * 24),
+        cache_page(60 * 60 * 24)(CreativeCommonsLicenseGetProxyView.as_view()),
         name="api_cc_license_get"),
 )
 
