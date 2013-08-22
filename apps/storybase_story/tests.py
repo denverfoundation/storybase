@@ -13,6 +13,7 @@ from django.db import IntegrityError
 from django.http import HttpRequest, Http404
 from django.template import Context, Template
 from django.test import RequestFactory, TestCase, TransactionTestCase
+from django.test.client import Client
 from django.utils import simplejson
 from django.utils.translation import get_language
 
@@ -4095,3 +4096,9 @@ class StoryWidgetViewTest(TestCase):
         self.assertEqual(field, None)
         self.assertEqual(slug_field, None)
         self.assertEqual(kwargs, None) 
+
+    def test_get_invalid_slug(self):
+        client = Client()
+        response = client.get('/stories/invalid-slug/widget/')
+        self.assertEqual(response.status_code, 404)
+        # TODO: Test for content of widget 404

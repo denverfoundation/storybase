@@ -1,4 +1,6 @@
 """"Common generic views"""
+import os.path
+
 try:
     import shortuuid
 except ImportError:
@@ -6,8 +8,9 @@ except ImportError:
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
-from django.http import Http404
+from django.http import Http404, HttpResponseNotFound
 from django.shortcuts import redirect
+from django.template import loader, RequestContext
 from django.views.generic import DetailView
 from django.utils.decorators import method_decorator
 from django.utils.translation import get_language, ugettext as _
@@ -88,3 +91,64 @@ class ModelIdDetailView(DetailView):
                 _(u"No %(verbose_name)s found matching the query") %
 		       {'verbose_name': queryset.model._meta.verbose_name})
         return obj
+
+
+class VersionTemplateMixin(object):
+    """Class-based view mixin that searches for a versioned template name"""
+
+    def get_template_names(self):
+        """
+        Returns a list of template names to search for when rendering the template.
+
+        By default, the list of template names contains the value of the
+        ``template_name`` attribute of the view class.
+
+        If ``version`` is one the keyword arguments captured from the URL
+        pattern that served the view, a versioned template name is added
+        to the front of the list.
+
+        The versioned template name is constructed by inserting the version
+        before the template filename extension.
+
+        So, if the value of the ``template_name`` attribute is
+        "template_name.html" and the ``version`` keyword argument is set to
+        "0.1", the return value would look like::
+
+            ["template_name-0.1.html", "template_name.html"]
+       
+        """
+        template_names = [self.template_name]
+        version = self.kwargs.get('version', None)
+        if version is not None: 
+            # If a version was included in the keyword arguments, search for a
+            # version-specific template first
+            (head, tail) = os.path.split(self.template_name)
+            (template_name_base, extension) = tail.split('.')
+            template_names.insert(0,
+                os.path.join(head, "%s-%s.%s" % (template_name_base, version, extension)))
+        return template_names
+
+
+class Custom404Mixin(object):
+    """
+    Class-based view mixin that renders a custom template in the case of
+    a 404 error
+
+    This should only be used if a custom template is required on a
+    a view-by-view basis
+
+    """
+    def get_404_template_name(self):
+        """
+        Return the name of the template to use for 404 errors
+
+        Defaults to `404.html`, Django's default
+        """
+        return '404.html'
+
+    def dispatch(self, request, *args, **kwargs):
+        try:
+            return super(Custom404Mixin, self).dispatch(request, *args, **kwargs)
+        except Http404:
+            t = loader.get_template(self.get_404_template_name())
+            return HttpResponseNotFound(t.render(RequestContext(request, {'request_path': request.path})))

@@ -1,7 +1,6 @@
 """Views for storybase_story app"""
 
 import json
-import os.path
 import urlparse
 
 from django.conf import settings
@@ -28,7 +27,7 @@ from storybase_story.models import (SectionLayout, Story, StoryRelation,
         StoryTemplate)
 from storybase_taxonomy.models import Category
 from storybase.utils import escape_json_for_html, simple_language_changer
-from storybase.views.generic import ModelIdDetailView
+from storybase.views.generic import ModelIdDetailView, Custom404Mixin, VersionTemplateMixin
 
 
 class ExploreStoriesView(TemplateView):
@@ -582,42 +581,6 @@ class StoryBuilderView(DetailView):
         return super(StoryBuilderView, self).dispatch(*args, **kwargs)
 
 
-class VersionTemplateMixin(object):
-    """Class-based view mixin that searches for a versioned template name"""
-
-    def get_template_names(self):
-        """
-        Returns a list of template names to search for when rendering the template.
-
-        By default, the list of template names contains the value of the
-        ``template_name`` attribute of the view class.
-
-        If ``version`` is one the keyword arguments captured from the URL
-        pattern that served the view, a versioned template name is added
-        to the front of the list.
-
-        The versioned template name is constructed by inserting the version
-        before the template filename extension.
-
-        So, if the value of the ``template_name`` attribute is
-        "template_name.html" and the ``version`` keyword argument is set to
-        "0.1", the return value would look like::
-
-            ["template_name-0.1.html", "template_name.html"]
-       
-        """
-        template_names = [self.template_name]
-        version = self.kwargs.get('version', None)
-        if version is not None: 
-            # If a version was included in the keyword arguments, search for a
-            # version-specific template first
-            (head, tail) = os.path.split(self.template_name)
-            (template_name_base, extension) = tail.split('.')
-            template_names.insert(0,
-                os.path.join(head, "%s-%s.%s" % (template_name_base, version, extension)))
-        return template_names
-
-
 class StoryListMixin(object):
     """
     Class-based view mixin that adds a method to retrieve a list of stories
@@ -665,7 +628,7 @@ class StoryListMixin(object):
         return queryset.filter(**query_args).order_by('-published')
         
 
-class StoryWidgetView(StoryListMixin, VersionTemplateMixin, ModelIdDetailView):
+class StoryWidgetView(Custom404Mixin, StoryListMixin, VersionTemplateMixin, ModelIdDetailView):
     """
     An embedable widget for a story
 
@@ -685,6 +648,9 @@ class StoryWidgetView(StoryListMixin, VersionTemplateMixin, ModelIdDetailView):
         'topic_stories': ('topics', 'categorytranslation__slug'),
         'place_stories': ('places', 'slug'),
     }
+
+    def get_404_template_name(self):
+        return "storybase_story/widget_404.html"
 
     def resolve_list_uri(self, uri):
         """
@@ -812,10 +778,13 @@ class StoryListView(StoryListMixin, MultipleObjectMixin, ModelIdDetailView):
         return context
 
 
-class StoryListWidgetView(VersionTemplateMixin, StoryListView):
+class StoryListWidgetView(Custom404Mixin, VersionTemplateMixin, StoryListView):
     """An embeddable widget of a list of stories"""
     template_name = "storybase_story/story_list_widget.html"
     paginate_by = None
+
+    def get_404_template_name(self):
+        return "storybase_story/widget_404.html"
 
     def get_context_data(self, **kwargs):
         """
