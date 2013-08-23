@@ -1,8 +1,7 @@
 (function() {
   var root = this;
-  var widgets;
   root.storybase = root.storybase || {};
-  widgets = root.storybase.widgets || {};
+  var widgets = root.storybase.widgets = root.storybase.widgets || {};
   if (widgets.showWidgets) {
     // The storybase.widgets object has already been defined,
     // meaning this script has already been loaded. Just process the
