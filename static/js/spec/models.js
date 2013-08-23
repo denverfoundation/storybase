@@ -265,7 +265,8 @@ describe('Story model', function() {
       var templateSectionsFixture = this.fixtures.Sections.getList[templateFixture['story_id']];
       var templateStory = new storybase.models.Story(templateFixture);
       var story = new storybase.models.Story;
-      var storyProps = ['structure_type', 'summary', 'call_to_action'];
+      var storyProps = ['structure_type'];
+      var storySuggestedProps = ['summary', 'call_to_action'];
       var sectionProps = ['layout', 'root', 'layout_template', 'help'];
       templateStory.sections.reset(templateSectionsFixture.objects);
 
@@ -274,11 +275,14 @@ describe('Story model', function() {
       _.each(storyProps, function(prop) {
         expect(story.get(prop)).toEqual(templateStory.get(prop));
       });
+      _.each(storySuggestedProps, function(prop) {
+        expect(story.get(prop + '_suggestion')).toEqual(templateStory.get(prop));
+      });
       expect(story.get('template_story')).toEqual(templateStory.get('story_id'));
       expect(story.sections.length).toBeTruthy();
       templateStory.sections.each(function(section) {
         var sectionCopy = story.sections.where({
-          title_placeholder: section.get('title')
+          title_suggestion: section.get('title')
         })[0];
         expect(sectionCopy).toBeDefined();
         expect(sectionCopy.get('title')).toEqual('');
