@@ -4165,4 +4165,3 @@ class StoryWidgetViewTest(TestCase):
 
     def test_get_broken_list_url(self):
         self._test_broken_list_url('http://totallywrongdomain/this-doesnt-go-anywhere/')
-

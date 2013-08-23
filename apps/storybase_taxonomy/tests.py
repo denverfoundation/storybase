@@ -1,10 +1,12 @@
 """Tests for taxonomy app"""
 from django.contrib.auth.models import User 
+from django.core.urlresolvers import reverse
 from django.test import TestCase
 
 from tastypie.test import ResourceTestCase, TestApiClient
 
 from storybase_story.models import create_story
+from storybase_story.tests.base import StoryListWidgetViewTestMixin
 from storybase_taxonomy.models import (Category, CategoryTranslation, Tag,
                                        create_category)
 
@@ -133,3 +135,23 @@ class TagResourceTest(ResourceTestCase):
         self.assertHttpAccepted(resp)
         self.assertEqual(Tag.objects.count(), len(self.tag_attrs))
         self.assertEqual(self.story.tags.count(), 0)
+
+
+class CategoryWidgetViewTest(StoryListWidgetViewTestMixin, TestCase):
+    def setUp(self):
+        self.obj = create_category(name='Test Category')
+        self.related_field_name = 'topics'
+        self.set_up_stories()
+
+    def get_obj_url(self):
+        return reverse('topic_stories', kwargs={'slug': self.obj.slug})
+
+
+class TagWidgetViewTest(StoryListWidgetViewTestMixin, TestCase):
+    def setUp(self):
+        self.obj = Tag.objects.create(name="testtag") 
+        self.related_field_name = 'tags'
+        self.set_up_stories()
+
+    def get_obj_url(self):
+        return reverse('tag_stories', kwargs={'slug': self.obj.slug})
