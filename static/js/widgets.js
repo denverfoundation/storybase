@@ -1,4 +1,16 @@
 (function() {
+  var root = this;
+  var widgets;
+  root.storybase = root.storybase || {};
+  widgets = root.storybase.widgets || {};
+  if (widgets.showWidgets) {
+    // The storybase.widgets object has already been defined,
+    // meaning this script has already been loaded. Just process the
+    // remaining placeholders and exit.
+    widgets.showWidgets();
+    return;
+  }
+
   /*
 	Developed by Robert Nyman, http://www.robertnyman.com
 	Code/licensing: http://code.google.com/p/getelementsbyclassname/
@@ -97,7 +109,7 @@
     return url;
   }; 
 
-  var showWidgets = function() {
+  var showWidgets = widgets.showWidgets = function() {
     var phs = getElementsByClassName('storybase-story-embed')
       .concat(getElementsByClassName('storybase-list-embed'))
       .concat(getElementsByClassName('storybase-story-list-embed'));
@@ -109,18 +121,22 @@
     for (i = 0; i < phs.length; i++) {
       opts = {};
       ph = phs[i];
-      opts.height = ph.getAttribute('data-height')||defaults.height;
-      opts.version = ph.getAttribute('data-version')||defaults.version; 
-      url = getUrl(ph, opts);
-      if (url) {
-        el = document.createElement('iframe');
-        el.setAttribute('name', 'storybase-story-widget-frame');
-        el.setAttribute('src', url);
-        el.setAttribute('style', "border: none; height: "+opts.height+";");
-        ph.parentNode.insertBefore(el, ph);
-        ph.style.display = 'none';
+      if (ph.style.display != 'none') {
+        // Only process visible elements as we assume elements with
+        // display:none have already been processed
+        opts.height = ph.getAttribute('data-height')||defaults.height;
+        opts.version = ph.getAttribute('data-version')||defaults.version; 
+        url = getUrl(ph, opts);
+        if (url) {
+          el = document.createElement('iframe');
+          el.setAttribute('name', 'storybase-story-widget-frame');
+          el.setAttribute('src', url);
+          el.setAttribute('style', "border: none; height: "+opts.height+";");
+          ph.parentNode.insertBefore(el, ph);
+          ph.style.display = 'none';
+        }
       }
     }
   };
   showWidgets(); 
-})();
+}).call(this);
