@@ -4109,6 +4109,17 @@ class StoryWidgetViewTest(TestCase):
         response = self.client.get("%swidget/" % story.get_absolute_url())
         self.assertEqual(response.context['story'], story)
         self.assertEqual(len(response.context['stories']), 0)
+        
+    def test_get_unpublished(self):
+        story = self.set_up_story()
+        story.status = 'draft'
+        story.save()
+        response = self.client.get("%swidget/" % story.get_absolute_url())
+        self.assertEqual(response.status_code, 404)
+
+    def test_get_not_found(self):
+        response = self.client.get('/stories/invalid-slug/widget/')
+        self.assertEqual(response.status_code, 404)
 
     def test_get_with_list(self):
         story = self.set_up_story()
@@ -4130,7 +4141,7 @@ class StoryWidgetViewTest(TestCase):
                                    (story.get_absolute_url(), 
                                     project.get_absolute_url()))
         self.assertEqual(response.context['story'], story)
-        # The related story list should containe 3 stories
+        # The related story list should contain 3 stories
         self.assertEqual(len(response.context['stories']), 3)
         # The featured story is not also in the story list
         self.assertNotIn(story, response.context['stories'])
@@ -4155,6 +4166,3 @@ class StoryWidgetViewTest(TestCase):
     def test_get_broken_list_url(self):
         self._test_broken_list_url('http://totallywrongdomain/this-doesnt-go-anywhere/')
 
-    def test_get_invalid_slug(self):
-        response = self.client.get('/stories/invalid-slug/widget/')
-        self.assertEqual(response.status_code, 404)
