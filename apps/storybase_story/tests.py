@@ -13,7 +13,6 @@ from django.db import IntegrityError
 from django.http import HttpRequest, Http404
 from django.template import Context, Template
 from django.test import RequestFactory, TestCase, TransactionTestCase
-from django.test.client import Client
 from django.utils import simplejson
 from django.utils.translation import get_language
 
@@ -4065,6 +4064,14 @@ class StoryWidgetViewTest(TestCase):
     def setUp(self):
         self.view = StoryWidgetView()
 
+    def set_up_story(self):
+        summary = "Test summary"
+        story = create_story(title="Test embedded story", summary=summary, byline="Ada Lovelace", status='published')
+        featured_asset = create_external_asset(type='image', title='',
+                url='http://fakedomain.com/uploads/image.jpg')
+        story.featured_assets.add(featured_asset)
+        return story
+
     def test_resolve_list_uri(self):
         field, slug_field, kwargs = self.view.resolve_list_uri('http://floodlightproject.org/projects/finding-a-bite-food-access-in-the-childrens-corrid/')
         self.assertEqual(field, 'projects')
@@ -4097,8 +4104,57 @@ class StoryWidgetViewTest(TestCase):
         self.assertEqual(slug_field, None)
         self.assertEqual(kwargs, None) 
 
+    def test_get(self):
+        story = self.set_up_story()
+        response = self.client.get("%swidget/" % story.get_absolute_url())
+        self.assertEqual(response.context['story'], story)
+        self.assertEqual(len(response.context['stories']), 0)
+
+    def test_get_with_list(self):
+        story = self.set_up_story()
+        project = create_project(name="Test widget project")
+        project_stories = []
+        for i in range(1, 5):
+            title = "Test widget story %d" % i
+            summary = "Test widget story summary %d" % i
+            byline = "Test author %d" % i
+            project_story = create_story(title=title, summary=summary, byline=byline, status='published')
+            project_story.projects.add(project)
+            project_stories.append(project_story)
+
+        non_project_story = create_story(title="Non-project story", summary="Test summary", byline="Test author", status='published')
+
+        story.projects.add(project)
+
+        response = self.client.get("%swidget/?list-url=%s" % 
+                                   (story.get_absolute_url(), 
+                                    project.get_absolute_url()))
+        self.assertEqual(response.context['story'], story)
+        # The related story list should containe 3 stories
+        self.assertEqual(len(response.context['stories']), 3)
+        # The featured story is not also in the story list
+        self.assertNotIn(story, response.context['stories'])
+        # The oldest project story is not in the list, just the
+        # most recent 3
+        self.assertNotIn(project_stories[0], response.context['stories'])
+        for i in range(1,4):
+            self.assertIn(project_stories[i], response.context['stories'])
+
+    def _test_broken_list_url(self, list_url):
+        story = self.set_up_story()
+
+        response = self.client.get(
+            "%swidget/?list-url=%s" % (story.get_absolute_url(), list_url))
+                                   
+        self.assertEqual(response.context['story'], story)
+        self.assertEqual(len(response.context['stories']), 0)
+
+    def test_get_with_not_found_list_url(self):
+        self._test_broken_list_url('http://testdomain/projects/not-found/')
+
+    def test_get_broken_list_url(self):
+        self._test_broken_list_url('http://totallywrongdomain/this-doesnt-go-anywhere/')
+
     def test_get_invalid_slug(self):
-        client = Client()
-        response = client.get('/stories/invalid-slug/widget/')
+        response = self.client.get('/stories/invalid-slug/widget/')
         self.assertEqual(response.status_code, 404)
-        # TODO: Test for content of widget 404

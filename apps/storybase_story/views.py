@@ -629,11 +629,8 @@ class StoryListMixin(object):
         
 
 class StoryWidgetView(Custom404Mixin, StoryListMixin, VersionTemplateMixin, ModelIdDetailView):
-    """
-    An embedable widget for a story
+    """An embedable widget for a story"""
 
-
-    """
     context_object_name = "story"
     # You can only embed published stories
     queryset = Story.objects.published()
@@ -704,12 +701,14 @@ class StoryWidgetView(Custom404Mixin, StoryListMixin, VersionTemplateMixin, Mode
 
         """
         context = super(StoryWidgetView, self).get_context_data(**kwargs)
+        context['stories'] = []
         list_url = self.request.GET.get('list-url', None)
         
         if list_url is not None:
             related_field, slug_field_name, view_kwargs = self.resolve_list_uri(list_url)
-            # Limit therelated story list to 3 items
-            context['stories'] = self.get_story_list(related_field, view_kwargs, slug_field_name=slug_field_name)[:3]
+            if related_field:
+                # Limit the related story list to 3 items
+                context['stories'] = self.get_story_list(related_field, view_kwargs, slug_field_name=slug_field_name)[:3]
 
         return context
 
