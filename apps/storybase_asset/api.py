@@ -173,7 +173,7 @@ class AssetResource(IframePostDetailResource):
         except Unauthorized, e:
             self.unauthorized_result(e)
 
-        deserialized = self.deserialize(request, request.raw_post_data, format=request.META.get('CONTENT_TYPE', 'application/json'))
+        deserialized = self.deserialize(request, request.body, format=request.META.get('CONTENT_TYPE', 'application/json'))
         deserialized = self.alter_deserialized_list_data(request, deserialized)
         # Clear out existing relations
         story.featured_assets.clear()

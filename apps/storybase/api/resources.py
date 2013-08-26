@@ -109,7 +109,7 @@ class MultipartFileUploadModelResource(ModelResource):
         elif django.VERSION >= (1, 4):
             body = request.body
         else:
-            body = request.raw_post_data
+            body = request.body
         deserialized = self.deserialize(request, body, format=fmt)
         deserialized = self.alter_deserialized_detail_data(request, deserialized)
         bundle = self.build_bundle(data=dict_strip_unicode_keys(deserialized), request=request)
@@ -440,7 +440,7 @@ class HookedModelResource(MultipartFileUploadModelResource):
         bundle = self.alter_detail_data_to_serialize(request, bundle)
 
         # Now update the bundle in-place.
-        deserialized = self.deserialize(request, request.raw_post_data, format=request.META.get('CONTENT_TYPE', 'application/json'))
+        deserialized = self.deserialize(request, request.body, format=request.META.get('CONTENT_TYPE', 'application/json'))
         self.update_in_place(request, bundle, deserialized)
         # TODO: Check if this try/except is neccessary
         #try:

@@ -851,7 +851,7 @@ class PutListSubResource(HookedModelResource):
         obj = Story.objects.get(story_id=story_id)
         self.authorized_update_related_obj(request=request, related_obj=obj)
 
-        related_ids = self.deserialize(request, request.raw_post_data, format=request.META.get('CONTENT_TYPE', 'application/json'))
+        related_ids = self.deserialize(request, request.body, format=request.META.get('CONTENT_TYPE', 'application/json'))
         related_ids = self.alter_deserialized_list_data(request, related_ids)
         filter_kwargs = {}
         filter_kwargs[self._meta.related_id_name + "__in"] = related_ids
@@ -969,7 +969,7 @@ class StoryRelationResource(HookedModelResource):
         Unlike the default put_list, this doesn't expect the new collections
         to be wrapped in an 'objects' property.
         """
-        deserialized = self.deserialize(request, request.raw_post_data, format=request.META.get('CONTENT_TYPE', 'application/json'))
+        deserialized = self.deserialize(request, request.body, format=request.META.get('CONTENT_TYPE', 'application/json'))
         deserialized = self.alter_deserialized_list_data(request, deserialized)
 
         basic_bundle = self.build_bundle(request=request)
