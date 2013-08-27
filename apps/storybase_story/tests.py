@@ -252,7 +252,7 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
             """
         byline = "Mile High Connects"
         story = create_story(title=title, summary=summary, byline=byline)
-        self.assertEqual(story.builder_url(), "/build/%s/" % (story.story_id))
+        self.assertEqual(story.builder_url(), "/en/build/%s/" % (story.story_id))
 
     def test_builder_url_connected(self):
         story = create_story(title="Test Story", summary="Test Summary",
@@ -264,7 +264,7 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
         StoryRelation.objects.create(source=story, target=story2,
                                      relation_type='connected')
         self.assertEqual(story2.builder_url(), 
-                         "/stories/%s/build-connected/%s/" % 
+                         "/en/stories/%s/build-connected/%s/" % 
                          (story.slug, story2.story_id))
 
     # TODO: Move this sot StorySignalsTest

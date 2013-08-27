@@ -686,7 +686,7 @@ class AccountStoriesViewTest(TestCase):
         self.password = 'test'
         self.user = User.objects.create_user(self.username, 
             'test@example.com', self.password)
-        self.path = "/accounts/stories/"
+        self.path = "/en/accounts/stories/"
         self.client = Client()
         self.client.login(username=self.username, password=self.password)
 
@@ -750,7 +750,7 @@ class CreateOrganizationViewTest(CreateViewTestMixin, TestCase):
 
     def setUp(self):
         super(CreateOrganizationViewTest, self).setUp()
-        self.path = '/create-organization/'
+        self.path = '/en/create-organization/'
 
     def get_default_data(self):
         return {
@@ -770,7 +770,7 @@ class CreateProjectViewTest(CreateViewTestMixin, TestCase):
 
     def setUp(self):
         super(CreateProjectViewTest, self).setUp()
-        self.path = '/create-project/'
+        self.path = '/en/create-project/'
 
     def get_default_data(self):
         return {
