@@ -11,9 +11,6 @@ from storybase import settings as storybase_settings
 
 register = Library()
 
-# Is Google Analytics enabled?
-GA_ENABLED = hasattr(settings, 'GA_PROPERTY_ID')
-
 @register.filter
 @stringfilter
 def firstparagraph(value):
@@ -87,7 +84,9 @@ def ga_campaign_params(source, medium, campaign, term=None, content=None,
 
     See https://support.google.com/analytics/bin/answer.py?hl=en&answer=1033863&topic=1032998&ctx=topic
     """
-    if not GA_ENABLED:
+    # Is Google Analytics enabled?
+    ga_enabled = hasattr(settings, 'GA_PROPERTY_ID')
+    if not ga_enabled:
         # Google Analytics is not enabled, just return the default URL
         return ""
 
