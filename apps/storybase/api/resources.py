@@ -38,7 +38,6 @@ import base64
 import os
 import re
 
-import django
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.files.uploadedfile import InMemoryUploadedFile
@@ -106,8 +105,6 @@ class MultipartFileUploadModelResource(ModelResource):
         fmt = request.META.get('CONTENT_TYPE', 'application/json')
         if fmt.startswith('multipart'):
             body = None
-        elif django.VERSION >= (1, 4):
-            body = request.body
         else:
             body = request.body
         deserialized = self.deserialize(request, body, format=fmt)
