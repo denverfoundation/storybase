@@ -5,10 +5,12 @@ from itertools import ifilter
 import mimetypes
 import os
 
+import django
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.template.defaultfilters import striptags, truncatewords
 from django.test import TestCase
+from django.test.client import encode_multipart, BOUNDARY, MULTIPART_CONTENT
 
 from tastypie.test import ResourceTestCase, TestApiClient
 
@@ -1206,7 +1208,7 @@ class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
             'title': dataset.title,
         }
 
-    def do_request_detail(self, method='put', qs=None):
+    def do_request_detail(self, method='put', content_type=MULTIPART_CONTENT, qs=None):
         """
         Construct a dataset instance, create a payload and make a request
         to the detail endpoint to try to replace the dataset's attributes
@@ -1237,7 +1239,9 @@ class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
             self.api_client.client.login(username=self.username,
                                          password=self.password)
             func = getattr(self.api_client.client, method)
-            resp = func(detail_url, data=put_data)
+            if method == 'put' and django.VERSION >= (1, 5):
+                put_data = encode_multipart(BOUNDARY, put_data)
+            resp = func(detail_url, data=put_data, content_type=content_type)
             return (dataset, original_hash, resp)
 
     def _test_put_detail_success(self, dataset, original_hash, resp):
@@ -1965,7 +1969,7 @@ class AssetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
             'container': '',
         }
 
-    def do_request_detail(self, method='put', qs=None):
+    def do_request_detail(self, method='put', content_type=MULTIPART_CONTENT, qs=None):
         """
         Construct an asset instance, create a payload and make a request
         to the detail endpoint to try to replace the asset's attributes
@@ -1997,7 +2001,9 @@ class AssetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
             self.api_client.client.login(username=self.username,
                                          password=self.password)
             func = getattr(self.api_client.client, method)
-            resp = func(detail_url, data=put_data)
+            if method == 'put' and django.VERSION >= (1, 5):
+                put_data = encode_multipart(BOUNDARY, put_data)
+            resp = func(detail_url, data=put_data, content_type=content_type)
             return (asset, original_hash, resp)
 
     def _test_put_detail_success(self, asset, original_hash, resp):
