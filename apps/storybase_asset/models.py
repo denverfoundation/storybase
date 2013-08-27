@@ -14,7 +14,7 @@ from django.db import models
 from django.db.models.signals import pre_save, post_delete, m2m_changed
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-from django.utils.text import truncate_words
+from django.utils.text import Truncator 
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 
@@ -449,7 +449,7 @@ class HtmlAsset(Asset):
         if self.title:
             return self.title
         elif self.body:
-            title = truncate_words(strip_tags(mark_safe(self.body)), 4)
+            title = Truncator(strip_tags(mark_safe(self.body))).words(4, truncate=" ...")
             # Workaround for cases when there's javascript in the body
             # with no spaces
             if len(title) > maxlength:
