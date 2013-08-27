@@ -113,7 +113,10 @@ TEMPLATE_LOADERS = (
 
 MIDDLEWARE_CLASSES = (
     'django.contrib.sessions.middleware.SessionMiddleware',
-    'django.middleware.locale.LocaleMiddleware',
+    # If not using Django CMS, or some other app that has
+    # a "catch-all" url regex, just use
+    # 'django.middleware.locale.LocaleMiddleware',
+    'storybase.middleware.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
