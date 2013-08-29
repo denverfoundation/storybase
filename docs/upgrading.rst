@@ -16,6 +16,15 @@ package from Django core, install the ``django-localflavor`` package::
 
     pip install django-localflavor
 
+You'll need to run the `upgrade steps for Django CMS 2.4 <http://docs.django-cms.org/en/2.4.0/upgrade/2.4.html>`_.
+Please read the upgrading instructions carefully::
+
+    manage.py migrate
+    manage.py cms list plugins
+    # If any the previous command shows any orphaned plugins run
+    # manage.py cms delete_orphaned_plugins
+    manage.py cms moderator on
+
 0.12.* to 0.13 
 ==============
 
