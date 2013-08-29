@@ -9,6 +9,8 @@
     widgets.showWidgets();
     return;
   }
+  var baseUrl = root._sbBaseUrl || 'http://floodlightproject.org';
+  var baseWidgetUrl = baseUrl + '/widget/';
 
   /*
 	Developed by Robert Nyman, http://www.robertnyman.com
@@ -88,24 +90,46 @@
     }
     return getElementsByClassName(className, tag, elm);
   };
+
+  var hasClass = function hasClass(el, cls) {
+    return (' ' + el.className + ' ').indexOf(' ' + cls + ' ') > -1;
+  };
   
   var getUrl = function(el, opts) {
     var url = el.getAttribute('href');
-    var listUrl;
+    var queryArgs = [];
+    var widgetUrl = baseWidgetUrl; 
+    var storyUrl, listUrl;
 
     if (!url) {
       // No URL, assume story + list style embed
-      url = getElementsByClassName('storybase-story', null, el)[0].getAttribute('href');
+      storyUrl = getElementsByClassName('storybase-story', null, el)[0].getAttribute('href');
       listUrl = getElementsByClassName('storybase-list', null, el)[0].getAttribute('href');
     }
 
     if (url) {
       url = url[url.length - 1] === '/' ? url : url + '/';
-      url = url + 'widget/';
-      url = opts.version ? url + opts.version + '/' : url;
-      url = listUrl ? url + '?list-url=' + listUrl : url;
+      if (hasClass(el, 'storybase-story-embed')) {
+        storyUrl = url;
+      }
+      else if (hasClass(el, 'storybase-list-embed')) {
+        listUrl = url;
+      }
     }
-    return url;
+
+    if (storyUrl) {
+      queryArgs.push('story-url=' + encodeURIComponent(storyUrl));
+    }
+
+    if (listUrl) {
+      queryArgs.push('list-url=' + encodeURIComponent(listUrl));
+    }
+
+    widgetUrl = opts.version ? widgetUrl + opts.version + '/' : widgetUrl;
+    if (queryArgs.length) {
+      widgetUrl = widgetUrl + '?' + queryArgs.join('&');
+    }
+    return widgetUrl;
   }; 
 
   var showWidgets = widgets.showWidgets = function() {
@@ -117,20 +141,21 @@
       version: null
     };
     var i, ph, el, url, opts, height, version;
+
     for (i = 0; i < phs.length; i++) {
       opts = {};
       ph = phs[i];
       if (ph.style.display != 'none') {
         // Only process visible elements as we assume elements with
         // display:none have already been processed
-        opts.height = ph.getAttribute('data-height')||defaults.height;
-        opts.version = ph.getAttribute('data-version')||defaults.version; 
+        opts.height = ph.getAttribute('data-height') || defaults.height;
+        opts.version = ph.getAttribute('data-version') || defaults.version; 
         url = getUrl(ph, opts);
         if (url) {
           el = document.createElement('iframe');
           el.setAttribute('name', 'storybase-story-widget-frame');
           el.setAttribute('src', url);
-          el.setAttribute('style', "border: none; height: "+opts.height+";");
+          el.setAttribute('style', "border: none; height: " + opts.height + ";");
           ph.parentNode.insertBefore(el, ph);
           ph.style.display = 'none';
         }

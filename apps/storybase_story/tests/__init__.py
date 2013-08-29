@@ -5,6 +5,7 @@ import datetime
 import json
 from time import sleep
 from unittest import skipIf
+from urllib import urlencode
 
 from django.conf import settings
 from django.core.cache import cache
@@ -4072,41 +4073,82 @@ class StoryWidgetViewTest(TestCase):
         story.featured_assets.add(featured_asset)
         return story
 
-    def test_resolve_list_uri(self):
-        field, slug_field, kwargs = self.view.resolve_list_uri('http://floodlightproject.org/projects/finding-a-bite-food-access-in-the-childrens-corrid/')
-        self.assertEqual(field, 'projects')
-        self.assertEqual(slug_field, 'slug')
-        self.assertEqual(kwargs['slug'], 'finding-a-bite-food-access-in-the-childrens-corrid') 
+    def set_up_related_stories(self, obj, related_field_name):
+        stories = []
+        for i in range(1, 5):
+            title = "Test widget story %d" % i
+            summary = "Test widget story summary %d" % i
+            byline = "Test author %d" % i
+            story = create_story(title=title, summary=summary, byline=byline, status='published')
+            related_field = getattr(story, related_field_name)
+            related_field.add(obj)
+            stories.append(story)
 
-        field, slug_field, kwargs = self.view.resolve_list_uri('http://floodlightproject.org/organizations/america-scores-denver/')
-        self.assertEqual(field, 'organizations')
-        self.assertEqual(slug_field, 'slug')
-        self.assertEqual(kwargs['slug'], 'america-scores-denver') 
+        return stories
 
-        field, slug_field, kwargs = self.view.resolve_list_uri('http://floodlightproject.org/topics/environment/')
-        self.assertEqual(field, 'topics')
-        self.assertEqual(slug_field, 'categorytranslation__slug')
-        self.assertEqual(kwargs['slug'], 'environment') 
+    def get_widget_url(self, story_path=None, list_path=None):
+        url = "/widget/"
+        query_args = {}
+        url_base = "http://floodlightproject.org"
+        if story_path:
+            story_url = story_path if "http" in story_path else "%s%s" % (url_base, story_path)
+            query_args['story-url'] = story_url 
+        if list_path:
+            list_url = list_path if "http" in list_path else "%s%s" % (url_base, list_path)
+            query_args['list-url'] = list_url
+        if query_args:
+            url = "%s?%s" % (url, urlencode(query_args))
 
-        field, slug_field, kwargs = self.view.resolve_list_uri('http://floodlightproject.org/tags/storytelling/')
-        self.assertEqual(field, 'tags')
-        self.assertEqual(slug_field, 'slug')
-        self.assertEqual(kwargs['slug'], 'storytelling') 
+        return url 
 
-        field, slug_field, kwargs = self.view.resolve_list_uri('http://floodlightproject.org/places/denver/')
-        self.assertEqual(field, 'places')
-        self.assertEqual(slug_field, 'slug')
-        self.assertEqual(kwargs['slug'], 'denver') 
+    def test_resolve_uri(self):
+        # Story URL
+        match = self.view.resolve_uri('http://floodlightproject.org/stories/why-libraries-are-relevant-2/')
+        self.assertEqual(match.url_name, 'story_detail')
+        self.assertEqual(match.kwargs['slug'], 'why-libraries-are-relevant-2')
 
-    def test_resolve_list_uri_bad_path(self):
-        field, slug_field, kwargs = self.view.resolve_list_uri('http://floodlightproject.org/prjects/finding-a-bite-food-access-in-the-childrens-corrid/')
-        self.assertEqual(field, None)
-        self.assertEqual(slug_field, None)
-        self.assertEqual(kwargs, None) 
+        # Project URL
+        match = self.view.resolve_uri('http://floodlightproject.org/projects/finding-a-bite-food-access-in-the-childrens-corrid/')
+        self.assertEqual(match.url_name, 'project_detail')
+        self.assertEqual(match.kwargs['slug'], 'finding-a-bite-food-access-in-the-childrens-corrid') 
 
-    def test_get(self):
+        # Project URL with a language prefix
+        match = self.view.resolve_uri('http://floodlightproject.org/en/projects/finding-a-bite-food-access-in-the-childrens-corrid/')
+        self.assertEqual(match.url_name, 'project_detail')
+        self.assertEqual(match.kwargs['slug'], 'finding-a-bite-food-access-in-the-childrens-corrid') 
+
+        # Organization URL
+        match = self.view.resolve_uri('http://floodlightproject.org/organizations/america-scores-denver/')
+        self.assertEqual(match.url_name, 'organization_detail')
+        self.assertEqual(match.kwargs['slug'], 'america-scores-denver') 
+
+        # Topic URL
+        match = self.view.resolve_uri('http://floodlightproject.org/topics/environment/')
+        self.assertEqual(match.url_name, 'topic_stories')
+        self.assertEqual(match.kwargs['slug'], 'environment') 
+
+        # Tag URL
+        match = self.view.resolve_uri('http://floodlightproject.org/tags/storytelling/')
+        self.assertEqual(match.url_name, 'tag_stories')
+        self.assertEqual(match.kwargs['slug'], 'storytelling') 
+
+        # Place URL
+        match = self.view.resolve_uri('http://floodlightproject.org/places/denver/')
+        self.assertEqual(match.url_name, 'place_stories')
+        self.assertEqual(match.kwargs['slug'], 'denver') 
+
+        # Broken path
+        match = self.view.resolve_uri('http://floodlightproject.org/stries/why-libraries-are-relevant-2/')
+        self.assertEqual(match, None)
+
+        # Non-URL
+        match = self.view.resolve_uri('not a url')
+        self.assertEqual(match, None)
+
+    def test_get_story(self):
         story = self.set_up_story()
-        response = self.client.get("%swidget/" % story.get_absolute_url())
+        url = self.get_widget_url(story_path=story.get_absolute_url())
+        response = self.client.get(url)
         self.assertEqual(response.context['story'], story)
         self.assertEqual(len(response.context['stories']), 0)
         
@@ -4114,14 +4156,11 @@ class StoryWidgetViewTest(TestCase):
         story = self.set_up_story()
         story.status = 'draft'
         story.save()
-        response = self.client.get("%swidget/" % story.get_absolute_url())
+        url = self.get_widget_url(story_path=story.get_absolute_url())
+        response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
 
-    def test_get_not_found(self):
-        response = self.client.get('/stories/invalid-slug/widget/')
-        self.assertEqual(response.status_code, 404)
-
-    def test_get_with_list(self):
+    def test_get_story_with_list(self):
         story = self.set_up_story()
         project = create_project(name="Test widget project")
         project_stories = []
@@ -4137,9 +4176,9 @@ class StoryWidgetViewTest(TestCase):
 
         story.projects.add(project)
 
-        response = self.client.get("%swidget/?list-url=%s" % 
-                                   (story.get_absolute_url(), 
-                                    project.get_absolute_url()))
+        url = self.get_widget_url(story_path=story.get_absolute_url(),
+                                  list_path=project.get_absolute_url())
+        response = self.client.get(url)
         self.assertEqual(response.context['story'], story)
         # The related story list should contain 3 stories
         self.assertEqual(len(response.context['stories']), 3)
@@ -4154,8 +4193,9 @@ class StoryWidgetViewTest(TestCase):
     def _test_broken_list_url(self, list_url):
         story = self.set_up_story()
 
-        response = self.client.get(
-            "%swidget/?list-url=%s" % (story.get_absolute_url(), list_url))
+        url = self.get_widget_url(story.get_absolute_url(), list_url)
+                                 
+        response = self.client.get(url)
                                    
         self.assertEqual(response.context['story'], story)
         self.assertEqual(len(response.context['stories']), 0)
@@ -4165,3 +4205,21 @@ class StoryWidgetViewTest(TestCase):
 
     def test_get_broken_list_url(self):
         self._test_broken_list_url('http://totallywrongdomain/this-doesnt-go-anywhere/')
+
+    # TODO: Test list only widgetds
+    def _test_get_list(self, obj, related_field_name):
+        stories = self.set_up_stories(obj, related_field_name)
+        url = self.get_widget_url(list_url=obj.get_absolute_url())
+        response = self.client.get(url)
+        self.assertEqual(response.context['object'], obj)
+        self.assertEqual(len(response.context['stories']), 3)
+        self.assertNotIn(stories[0], response.context['stories'])
+        for i in range(1, 4):
+            self.assertIn(stories[i], response.context['stories'])
+
+    def _test_get_list_not_found(self, obj):
+        path = self.get_obj_url()
+        path = path.replace(self.obj.slug, 'invalid-slug')
+        url = self.get_widget_url(list_url=path)
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)

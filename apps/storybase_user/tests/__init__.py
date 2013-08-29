@@ -13,7 +13,6 @@ from storybase.tests.base import PermissionTestCase
 from storybase.utils import slugify
 from storybase_asset.models import create_external_asset
 from storybase_story.models import create_story
-from storybase_story.tests.base import StoryListWidgetViewTestMixin as StoryListWidgetViewTestMixinBase
 from storybase_user.auth.forms import ChangeUsernameEmailForm
 from storybase_user.forms import OrganizationModelForm
 from storybase_user.models import (create_organization, create_project,
@@ -812,23 +811,3 @@ class ModelSignalsTest(TestCase):
         self.assertIn(org.name, sent_email.subject)
         self.assertIn(org.name, sent_email.body)
         self.assertIn(org.get_absolute_url(), sent_email.body)
-
-
-class StoryListWidgetViewTestMixin(StoryListWidgetViewTestMixinBase):
-    def test_get_unpublished(self):
-        self.obj.status = 'pending'
-        self.obj.save()
-        response = self.client.get('%swidget/' % self.obj.get_absolute_url())
-        self.assertEqual(response.status_code, 404)
-
-class OrganizationWidgetViewTest(StoryListWidgetViewTestMixin, TestCase):
-    def setUp(self):
-        self.obj = create_organization("Test Organization", status='published')
-        self.related_field_name= 'organizations'
-        self.set_up_stories()
-
-class ProjectWidgetViewTest(StoryListWidgetViewTestMixin, TestCase):
-    def setUp(self):
-        self.obj = create_project("Test Project", status='published')
-        self.related_field_name= 'projects'
-        self.set_up_stories()

@@ -15,6 +15,21 @@ describe('Embed widget', function() {
       storyUrl: storyUrl,
       listUrl: listUrl
     });
+    var getWidgetUrl = function(storyUrl, listUrl) {
+      var queryParams = [];
+      var url = "http://floodlightproject.org/widget/";
+      if (storyUrl) {
+        queryParams.push('story-url=' + encodeURIComponent(storyUrl));
+      }
+      if (listUrl) {
+        queryParams.push('list-url=' + encodeURIComponent(listUrl));
+      }
+      if (queryParams.length) {
+        url = url + '?' + queryParams.join('&'); 
+      }
+
+      return url;
+    };
                   
     var $sandbox;
     var $storyLink;
@@ -34,8 +49,9 @@ describe('Embed widget', function() {
 
     it("replaces links with a class of 'storybase-story-embed' with an iframe", function() {
       var $widget;
-      var widgetUrl = storyUrl + "widget/";
+      var widgetUrl = getWidgetUrl(storyUrl);
 
+      console.debug(widgetUrl);
       $widget = $sandbox.find("iframe[src='" + widgetUrl + "']");
       expect($widget.length).toEqual(1);
       expect($storyLink.is(':hidden')).toBeTruthy();
@@ -43,7 +59,7 @@ describe('Embed widget', function() {
 
     it("replaces links with a class of 'storybase-list-embed' with an iframe", function() {
       var $widget;
-      var widgetUrl = listUrl + "widget/";
+      var widgetUrl = getWidgetUrl(null, listUrl);
 
       $widget = $sandbox.find("iframe[src='" + widgetUrl + "']");
       expect($widget.length).toEqual(1);
@@ -52,7 +68,7 @@ describe('Embed widget', function() {
 
     it("replaces divs with a class of 'storybase-story-list-embed' with an iframe", function() {
       var $widget;
-      var widgetUrl = storyUrl + "widget/?list-url=" + listUrl;
+      var widgetUrl = getWidgetUrl(storyUrl, listUrl);
 
       $widget = $sandbox.find("iframe[src='" + widgetUrl + "']");
       expect($widget.length).toEqual(1);

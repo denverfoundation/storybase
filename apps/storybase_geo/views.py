@@ -1,4 +1,4 @@
-from storybase_story.views import ExplorerRedirectView, StoryListWidgetView
+from storybase_story.views import ExplorerRedirectView
 from storybase_geo.models import Place 
 
 
@@ -12,7 +12,3 @@ class PlaceExplorerRedirectView(ExplorerRedirectView):
             return "places=%s" % place.place_id
         except Place.DoesNotExist:
             return None
-
-class PlaceWidgetView(StoryListWidgetView):
-    queryset = Place.objects.all()
-    related_field_name = "places"
