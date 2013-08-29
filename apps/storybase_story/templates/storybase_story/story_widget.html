@@ -1,29 +1,71 @@
 {% load storybase_tags i18n %}
 <html>
-    <head>
-        <title>{{ storybase_site_name }} | {{ story.title }}</title>
+  <head>
+    <title>{{ storybase_site_name }} | {{ story.title }}</title>
 
-        {% if debug %}
-        <link rel="stylesheet/less" type="text/css" href="{{ STATIC_URL }}less/widget.less">
-        <script src="{{ STATIC_URL }}js/libs/less-1.3.0.min.js"></script>
-        {% else %}
-        <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/widget.css">
+    {% if debug %}
+    <link rel="stylesheet/less" type="text/css" href="{{ STATIC_URL }}less/widget.less">
+    <script src="{{ STATIC_URL }}js/libs/less-1.3.0.min.js"></script>
+    {% else %}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/widget.css">
+    {% endif %}
+  </head>
+  <body>
+    {% url story_viewer slug=story.slug as viewer_path %}
+    {% fullurl story.get_absolute_url as detail_url %}
+    {% fullurl viewer_path as viewer_url %}
+    <article>
+      <header>
+        <a href="/" class="logo">{{ storybase_site_name }}</a>
+        <h1><a href="/">{% blocktrans %} Stories from the {{ storybase_site_name }} Project {% endblocktrans %}</a></h1>
+      </header>
+      <section class="storybase-embed-content">
+        <section id="{{ story.story_id }}" class="storybase-story-featured {{ storybase_site_name|slugify }}-story-embed{% if stories %} with-list{% endif %}">
+          <a class="featured-image" href="{{ detail_url }}" onclick="window.open('{{ detail_url }}'); return false;">
+            <img src="{{ story.featured_asset_thumbnail_url }}">
+          </a>
+          <div class="info">
+            <h3>
+              <a href="{{ viewer_url }}" title="{{ story.title }}" class="story-link" onclick="window.open('{{ viewer_url }}'); return false;">{{ story.title }}</a>
+            </h3>
+            <p class="byline">{{ story.byline }}</p>
+            <div class="summary">{{ story.summary|firstparagraph|safe }}</div>
+          </div>
+        </section>
+        {% if stories %}
+        <section class="storybase-story-list">
+          <ul>
+            {% for story_item in stories %}
+          
+            {% url story_viewer slug=story_item.slug as viewer_path %}
+            {% fullurl story_item.get_absolute_url as item_detail_url %}
+            {% fullurl viewer_path as item_viewer_url %}
+          
+            <li id="{{ story_item.story_id }}" class="storybase-story-list-item {{ storybase_site_name|slugify }}-story-embed">
+              <a class="featured-image" href="{{ item_detail_url }}" onclick="window.open('{{ item_detail_url }}'); return false;">
+                <img src="{{ story_item.featured_asset_thumbnail_url }}">
+              </a>
+              <a href="{{ item_viewer_url }}" title="{{ story_item.title }}" class="story-link" onclick="window.open('{{ item_viewer_url }}'); return false;">{{ story_item.title }}</a>
+              <p class="byline">{{ story_item.byline }}</p>
+            </li>
+            {% endfor %}
+          </ul>
+        </section>
         {% endif %}
-    </head>
-    <body>
-        {% url story_viewer slug=story.slug as viewer_path %}
-        {% fullurl story.get_absolute_url as detail_url %}
-        {% fullurl viewer_path as viewer_url %}
-        <div id="{{ story.story_id }}" class="storybase-story-embed {{ storybase_site_name|slugify }}-story-embed">
-            <a href="{{ detail_url }}" onclick="window.open('{{ detail_url }}'); return false;">
-                <img src="{{ story.featured_asset_thumbnail_url }}">
-            </a>
-            <div>
-                <h3><a href="{{ viewer_url }}" title="{{ story.title }}" class="story-link" onclick="window.open('{{ viewer_url }}'); return false;">{{ story.title }}</a></h3>
-                <p class="byline">{{ story.byline }}</p>
-		<div class="summary">{{ story.summary|firstparagraph|safe }}</div>
-                <a href="{{ detail_url}}" title="{{ story.title }}" class="story-link" onclick="window.open('{{ detail_url }}'); return false;">{% trans "View this story on" %} {{ storybase_site_name }}</a>
-            </div>
-        </div>
-    </body>
+      </section>
+      <footer>
+        {% if story.projects.all %}
+          <a href="/">View all stories for
+            {% for project in story.projects.all %}{{ project.name }}, {% endfor %}
+            on {{ storybase_site_name }}</a>
+        {% elif story.organizations.all %}
+          <a href="/">View all stories for
+            {% for organization in story.organizations.all %}{{ organizations.name }}, {% endfor %}
+            on {{ storybase_site_name }}</a>
+        {% else %}
+          <a href="/">Explore more stories on {{ storybase_site_name }}</a>
+        {% endif %}
+      </footer>
+    </article>
+  </body>
 </html>

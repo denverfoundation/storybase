@@ -1,59 +1,235 @@
 @import "variables.less";
+@import "mixins.less";
+@import "font-awesome.less";
+@import "fonts.less";
 
-@font-face {
-    font-family: 'Museo300Regular';
-    src: url('../css/font-face/museo300-regular-webfont.eot');
-    src: url('../css/font-face/museo300-regular-webfont.eot?#iefix') format('embedded-opentype'),
-         url('../css/font-face/museo300-regular-webfont.woff') format('woff'),
-         url('../css/font-face/museo300-regular-webfont.ttf') format('truetype'),
-         url('../css/font-face/museo300-regular-webfont.svg#Museo300Regular') format('svg');
-    font-weight: normal;
-    font-style: normal;
+@responsive-break1: 1000px;
+@responsive-break2: 650px;
 
+@h1-font-size0: 24px;
+@h1-font-size1: 20px;
+@h1-font-size2: 16px;
+
+@h3-font-size0: 20px;
+@h3-font-size1: 16px;
+@h3-font-size2: 14px;
+
+
+@body-font-size0: (@h1-font-size0 * .8);
+@body-font-size1: (@h1-font-size1 * .8);
+@body-font-size2: (@h1-font-size2 * .8);
+
+@min-font-size0: (@h1-font-size0 * .6);
+@min-font-size1: (@h1-font-size1 * .6);
+@min-font-size2: (@h1-font-size2 * .6);
+
+* {
+  .border-box;
+  margin: 0;
+  padding: 0;
 }
 
-// Embedable widget for story.
-// This matches the styles for the tile view of the story explorer
-// It might make sense to factor those styles out so that they can be
-// shared. 
-.storybase-story-embed {
-  width: 222px;
-  padding: 7px;
+html {
+  font-size:@body-font-size0;
+  @media (max-width:@responsive-break1) {
+    font-size:@body-font-size1;
+  }
+  @media (max-width:@responsive-break2) {
+    font-size:@body-font-size2;
+  }
+  .sans-serif-text;
+}
+
+h1 {
+  font-size:@h1-font-size0;
+  @media (max-width:@responsive-break1) {
+    font-size:@h1-font-size1;
+  }
+  @media (max-width:@responsive-break2) {
+    font-size:@h1-font-size2;
+  }
+  font-weight: bold;  
+}
+
+h3 {
+  font-size:@h1-font-size0;
+  @media (max-width:@responsive-break1) {
+    font-size:@h1-font-size1;
+  }
+  @media (max-width:@responsive-break2) {
+    font-size:@h1-font-size2;
+  }
+  font-weight: bold;
+}
+
+ul { list-style: none; }
+
+article {
+  border:2px solid @gray;
+  height:100%;
+}
+
+// container for story and story+list, sandwiched between header and footer
+.storybase-embed-content {
+  width:100%;
+
+  // we have constant-height header and footer.
+  // without calc() or CSS3 flex box model, we make-do
+  height:85%;
+  @media (max-height:500px) {
+    height:80%;
+  }
+  @media (max-height:400px) {
+    height:75%;
+  }
+  @media (max-height:300px) {
+    height:70%;
+  }
+
+  padding: 1em;
   overflow: hidden;
-  background: @light-gray;
   color: @dark-gray;
-  font-family: 'Times New Roman', Georgia, Serif; 
-  font-size: 14px;
-
-  img { width: 222px; }
-
-  h3, dd, p, ul, li {
-    margin: 0;
-    padding: 0;
-  }
-
-  ul { list-style: none; }
-
-  h3 {
-    font-weight: bold; 
-    text-align: center; 
-  }
 
   .story-link { 
     display: block;
-    padding-top: 8px;
     color: @highlight-blue;
-    font-size: 16px;
-    line-height: 16px;
     font-family: 'Museo300Regular';
     text-decoration: none;
   }
 
-  .summary, .byline {
-    margin-bottom: 0.9em;
-  }
-
   .byline {
     font-style: italic;
+    margin-bottom: 0.9em;
+  }
+  
+}
+
+.storybase-story-featured {
+  position:relative;
+  .featured-image {
+    display:block;
+    float:left;
+    width:20%;
+    
+    img {
+      width:100%;
+    }
+  }
+
+  div.info {
+    // offset margin--space for featured image
+    margin-left:20%;
+    // static internal padding
+    padding-left:2em;
+  }
+
+  &.with-list {
+    width:50%;
+    height:100%;
+    float:left;
+    
+    .featured-image {
+      float:none;
+      width:100%;
+      // prevent image showing through embed-content padding in some cases
+      height:100%; 
+      overflow:hidden;
+    }
+    
+    div.info {
+      margin:0;
+      padding: 1em 0 0;
+      // picture that "CSS is Awesome" mug ...
+      position:absolute;
+      bottom:0;
+      background:white;
+      
+      @media (max-height:500px) {
+        font-size:@body-font-size1;
+      }
+      @media (max-height:400px) {
+        font-size:@body-font-size2;
+      }
+    }
   }
 }
+
+.storybase-story-list {
+  margin-left:50%;
+  padding-left:2em;
+  height:100%;
+  
+  ul {
+    height:80%;
+  }
+  
+  li {
+    position:relative;
+    overflow:hidden;
+    margin-bottom:1.5em;
+    height:33%
+  }
+  
+  .featured-image {
+    position:absolute;
+    width:40%;
+    img {
+      width:100%;
+    }
+  }
+  .story-link, .byline {
+    margin-left:40%;
+    padding-left:2em;
+  }
+}
+
+header {
+  background: @orange;
+  width:100%;
+  border-bottom:2px solid @gray;
+
+  a {
+    text-decoration:none;
+    color:white;
+  }
+    
+  h1 {
+    font-weight:bold;
+    font-family: 'Museo300Regular';
+  }
+  
+  .logo {
+    text-indent:-30000px;
+    background:url(../img/widget-logo.png) no-repeat left top;
+    width:140px;
+    height:20px;
+    float:right;
+    
+  }
+}
+
+footer {
+  background:@gray;
+  position:absolute;
+  bottom:0;
+  border-top:2px solid @gray;
+  width:100%;
+  a {
+    color:@light-gray;
+    text-decoration:none;
+    
+    &:before {
+      font-family: "FontAwesome";
+      content:"\F08E";
+      width:1em;
+      height:1em;
+      margin-right:.5em;
+
+    }
+  }
+}
+
+header, footer {
+  padding:.5em;
+}
+
