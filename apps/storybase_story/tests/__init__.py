@@ -9,6 +9,7 @@ from urllib import urlencode
 
 from django.conf import settings
 from django.core.cache import cache
+from django.core.urlresolvers import reverse
 from django.contrib.auth.models import User
 from django.db import IntegrityError
 from django.http import HttpRequest, Http404
@@ -40,7 +41,7 @@ from storybase_story.models import (Container, Story, StoryTranslation,
 from storybase_story.templatetags.story import container
 from storybase_story.views import (StoryBuilderView, StoryDetailView,
         StoryViewerView, StoryWidgetView)
-from storybase_taxonomy.models import Category, create_category
+from storybase_taxonomy.models import Category, Tag, create_category
 from storybase_user.models import (Organization, Project,
         OrganizationMembership, ProjectMembership,
         create_organization, create_project)
@@ -4149,6 +4150,8 @@ class StoryWidgetViewTest(TestCase):
         story = self.set_up_story()
         url = self.get_widget_url(story_path=story.get_absolute_url())
         response = self.client.get(url)
+        template_names = [template.name for template in response.templates]
+        self.assertEqual(template_names[0], 'storybase_story/story_widget.html')
         self.assertEqual(response.context['story'], story)
         self.assertEqual(len(response.context['stories']), 0)
         
@@ -4206,20 +4209,51 @@ class StoryWidgetViewTest(TestCase):
     def test_get_broken_list_url(self):
         self._test_broken_list_url('http://totallywrongdomain/this-doesnt-go-anywhere/')
 
-    # TODO: Test list only widgetds
-    def _test_get_list(self, obj, related_field_name):
-        stories = self.set_up_stories(obj, related_field_name)
-        url = self.get_widget_url(list_url=obj.get_absolute_url())
+    def _test_get_list(self, obj, related_field_name, obj_url=None):
+        if obj_url is None:
+            obj_url = obj.get_absolute_url()
+        stories = self.set_up_related_stories(obj, related_field_name)
+        url = self.get_widget_url(list_path=obj_url)
         response = self.client.get(url)
+        template_names = [template.name for template in response.templates]
+        self.assertEqual(template_names[0], 'storybase_story/story_list_widget.html')
         self.assertEqual(response.context['object'], obj)
         self.assertEqual(len(response.context['stories']), 3)
         self.assertNotIn(stories[0], response.context['stories'])
         for i in range(1, 4):
             self.assertIn(stories[i], response.context['stories'])
 
-    def _test_get_list_not_found(self, obj):
-        path = self.get_obj_url()
-        path = path.replace(self.obj.slug, 'invalid-slug')
-        url = self.get_widget_url(list_url=path)
+    def _test_get_list_not_found(self, obj, obj_url=None):
+        if obj_url is None:
+            obj_url = obj.get_absolute_url()
+        path = obj_url 
+        path = path.replace(obj.slug, 'invalid-slug')
+        url = self.get_widget_url(list_path=path)
         response = self.client.get(url)
         self.assertEqual(response.status_code, 404)
+
+    def test_get_list_project(self):
+        obj = create_project("Test Project", status='published')
+        unpublished_obj = create_project("Test Project 2", status='pending')
+        self._test_get_list(obj, 'projects')
+        self._test_get_list_not_found(obj)
+        self._test_get_list_not_found(unpublished_obj)
+
+    def test_get_list_organization(self):
+        obj = create_organization("Test Organization", status='published')
+        unpublished_obj = create_organization("Test Organization 2", status='pending')
+        self._test_get_list(obj, 'organizations')
+        self._test_get_list_not_found(obj)
+        self._test_get_list_not_found(unpublished_obj)
+
+    def test_get_list_tag(self):
+        obj = Tag.objects.create(name="testtag")
+        obj_url = reverse('tag_stories', kwargs={'slug': obj.slug})
+        self._test_get_list(obj, 'tags', obj_url)
+        self._test_get_list_not_found(obj, obj_url)
+
+    def test_get_list_topic(self):
+        obj = create_category(name='Test Category')
+        obj_url = reverse('topic_stories', kwargs={'slug': obj.slug})
+        self._test_get_list(obj, 'topics', obj_url)
+        self._test_get_list_not_found(obj, obj_url)
