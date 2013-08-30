@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.13.1
+~~~~~~
+
+* Fix typo in password reset form template (#849)
+
 0.13
 ~~~~
 
