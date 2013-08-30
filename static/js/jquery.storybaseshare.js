@@ -11,10 +11,17 @@
     addThisHeight: 32,
     onClick: function(event) {
       var $button = $(this);
-      $button.data('share-popup').open($button);
+      if ($button.data('share-popup').isOpen) {
+        $button.data('share-popup').close();
+      }
+      else {
+        $button.data('share-popup').open($button);
+      }
       return false;
     }
   }; 
+  
+  var instances = [];
   
   var instanceMethods = {
     open: function() {
@@ -30,10 +37,18 @@
       if (align[1] == 'right') {
         position.left = this.$button[positionMethod]().left - this.popupDimensions.outerWidth + this.$button.outerWidth();
       }
+      for (var i = 0; i < instances.length; i++) {
+        if (instances[i] != this) {
+          instances[i].close();
+        }
+      }
       this.$popup.css(position).slideDown().on('click', '.close', this.close);
+      this.$popup.find('input, textarea').get(0).select();
+      this.isOpen = true;
     },
     close: function() {
       this.$popup.slideUp().off('click', '.close');
+      this.isOpen = false;
     }
   };
   
@@ -121,6 +136,7 @@
           }
           // store options used for this instance
           instance.options = instanceOptions;
+          instance.isOpen = false;
           
           // attach instance to element
           $button.data('share-popup', instance);
@@ -128,6 +144,8 @@
           $button.on('click', instanceOptions.onClick);
           
           fetchContent(instanceOptions.storyID, instance);
+
+          instances.push(instance);
         }
         else {
           $.error('jquery.storybaseshare Could not find element with selector ' + instanceOptions.appendeeSelector);
