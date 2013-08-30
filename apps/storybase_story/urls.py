@@ -5,7 +5,7 @@ from django.conf.urls.defaults import patterns, url
 
 from storybase_story.views import (ExploreStoriesView, 
     StoryBuilderView, StoryDetailView, StoryViewerView,
-    StoryUpdateView, StoryShareWidgetView, StoryWidgetView)
+    StoryUpdateView, StoryShareWidgetView, StoryEmbedWidgetView, StoryWidgetView)
 
 urlpatterns = patterns('',
     url(r'^build/$', StoryBuilderView.as_view(), name='story_builder'),
@@ -56,6 +56,10 @@ urlpatterns = patterns('',
         StoryShareWidgetView.as_view(), name='story_widget'),
     url(r'^stories/(?P<slug>[0-9a-z-]+)/share-widget/$',
         StoryShareWidgetView.as_view(), name='story_widget'),
+    url(r'^stories/(?P<story_id>[0-9a-f]{32,32})/embed-widget/$',
+        StoryEmbedWidgetView.as_view(), name='story_embed_widget'),
+    url(r'^stories/(?P<slug>[0-9a-z-]+)/embed-widget/$',
+        StoryEmbedWidgetView.as_view(), name='story_embed_widget'),
     url(r'^stories/(?P<slug>[0-9a-z-]+)/unpublish/$',  
         StoryUpdateView.as_view(), {'status': 'draft'}, 
         name='story_unpublish'), 

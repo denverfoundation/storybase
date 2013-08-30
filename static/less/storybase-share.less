@@ -1,8 +1,23 @@
-.storybase-share-widget {
+.storybase-share-widget,
+.storybase-embed-widget {
   .button-style(gray);
+  &:before {
+    font-family: "FontAwesome";
+  }
 }
 
-.storybase-share-popup {
+.storybase-share-widget:before {
+  content:"\f045";
+  margin-right:.5em;
+}
+
+.storybase-embed-widget:before {
+  content:"\f121";
+  margin-right:.5em;
+}
+
+.storybase-share-popup,
+.storybase-embed-popup {
   display: none;
   min-width: 280px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
@@ -31,5 +46,9 @@
       .remove-icon(18px, gray);
       float:right;
     }
+  }
+  textarea[name=share-embed-code] {
+    height:100px;
+    font-size:.8em;
   }
 }

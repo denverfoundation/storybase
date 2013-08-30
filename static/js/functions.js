@@ -106,7 +106,13 @@
 			return false;
 		});
 		
+		// TODO: We're using the share widget for more than just stories now.
+		// We should factor this out more carefully.
 		$('.storybase-share-widget').storybaseShare();
+		$('.storybase-embed-widget').storybaseShare({
+			widgetUrl: '/stories/<id>/embed-widget/',
+			header: '<header>Embed This Story<span class="close"></span></header>',
+		});
 
 		// Analytics events 
 		if (window._gaq) {

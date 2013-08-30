@@ -840,6 +840,20 @@ class StoryShareWidgetView(ModelIdDetailView):
     """
     Widget for sharing a story
 
+    This view provides the HTML for a popup window of sharing tools.  
+    It is designed to be fetched via an asynchronous request from 
+    JavaScript.
+
+    """
+    context_object_name = "story"
+    queryset = Story.objects.published()
+    template_name = 'storybase_story/story_share_widget.html'
+
+
+class StoryEmbedWidgetView(ModelIdDetailView):
+    """
+    Widget for embedding a story
+
     While ``StoryWidgetView`` provides the HTML for the widget embedded
     in a partner website, this view provides the HTML for a popup window
     of sharing tools.  It is designed to be fetched via an asynchronous 
@@ -848,4 +862,4 @@ class StoryShareWidgetView(ModelIdDetailView):
     """
     context_object_name = "story"
     queryset = Story.objects.published()
-    template_name = 'storybase_story/story_share_widget.html'
+    template_name = 'storybase_story/story_embed_widget.html'
