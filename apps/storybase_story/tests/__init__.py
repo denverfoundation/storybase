@@ -4209,9 +4209,8 @@ class StoryWidgetViewTest(TestCase):
     def test_get_broken_list_url(self):
         self._test_broken_list_url('http://totallywrongdomain/this-doesnt-go-anywhere/')
 
-    def _test_get_list(self, obj, related_field_name, obj_url=None):
-        if obj_url is None:
-            obj_url = obj.get_absolute_url()
+    def _test_get_list(self, obj, related_field_name):
+        obj_url = obj.get_absolute_url()
         stories = self.set_up_related_stories(obj, related_field_name)
         url = self.get_widget_url(list_path=obj_url)
         response = self.client.get(url)
@@ -4223,9 +4222,8 @@ class StoryWidgetViewTest(TestCase):
         for i in range(1, 4):
             self.assertIn(stories[i], response.context['stories'])
 
-    def _test_get_list_not_found(self, obj, obj_url=None):
-        if obj_url is None:
-            obj_url = obj.get_absolute_url()
+    def _test_get_list_not_found(self, obj):
+        obj_url = obj.get_absolute_url()
         path = obj_url 
         path = path.replace(obj.slug, 'invalid-slug')
         url = self.get_widget_url(list_path=path)
@@ -4248,12 +4246,17 @@ class StoryWidgetViewTest(TestCase):
 
     def test_get_list_tag(self):
         obj = Tag.objects.create(name="testtag")
-        obj_url = reverse('tag_stories', kwargs={'slug': obj.slug})
-        self._test_get_list(obj, 'tags', obj_url)
-        self._test_get_list_not_found(obj, obj_url)
+        self._test_get_list(obj, 'tags')
+        self._test_get_list_not_found(obj)
 
     def test_get_list_topic(self):
         obj = create_category(name='Test Category')
-        obj_url = reverse('topic_stories', kwargs={'slug': obj.slug})
-        self._test_get_list(obj, 'topics', obj_url)
-        self._test_get_list_not_found(obj, obj_url)
+        self._test_get_list(obj, 'topics')
+        self._test_get_list_not_found(obj)
+
+    def test_get_list_place(self):
+        neighborhood = GeoLevel.objects.create(name='Neighborhood',
+            slug='neighborhood')
+        obj = Place.objects.create(name="Humboldt Park", geolevel=neighborhood)
+        self._test_get_list(obj, 'places')
+        self._test_get_list_not_found(obj)
