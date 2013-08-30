@@ -216,12 +216,25 @@ class ShareWidgetView(ModelIdDetailView):
     """
     template_name = 'storybase_user/share_widget.html'
 
+class EmbedWidgetView(ModelIdDetailView):
+    """
+    Base view for Widget for sharing a project, organization or user
+    """
+    template_name = 'storybase_user/embed_widget.html'
 
 class OrganizationShareWidgetView(ShareWidgetView):
     model = Organization 
 
 
+class OrganizationEmbedWidgetView(EmbedWidgetView):
+    model = Organization 
+
+
 class ProjectShareWidgetView(ShareWidgetView):
+    model = Project
+
+
+class ProjectEmbedWidgetView(EmbedWidgetView):
     model = Project
 
 

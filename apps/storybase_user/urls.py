@@ -5,9 +5,10 @@ except ImportError:
 
 from django.conf.urls.defaults import *
 from storybase_user.views import (OrganizationDetailView, OrganizationListView,
-    OrganizationShareWidgetView, OrganizationWidgetView, ProjectDetailView,
-    ProjectListView, ProjectShareWidgetView, ProjectWidgetView,
-    UserProfileDetailView, UserProfileShareWidgetView,
+    OrganizationShareWidgetView, OrganizationEmbedWidgetView, 
+    OrganizationWidgetView, ProjectDetailView,
+    ProjectListView, ProjectShareWidgetView, ProjectEmbedWidgetView, 
+    ProjectWidgetView, UserProfileDetailView, UserProfileShareWidgetView,
     CreateOrganizationView, CreateProjectView)
    
 urlpatterns = patterns('',
@@ -29,6 +30,12 @@ urlpatterns = patterns('',
     url(r'organizations/(?P<slug>[0-9a-z-]+)/share-widget/$',
         OrganizationShareWidgetView.as_view(),
         name='organization_share_widget'),
+    url(r'organizations/(?P<organization_id>[0-9a-f]{32,32})/embed-widget/$',
+        OrganizationEmbedWidgetView.as_view(),
+        name='organization_embed_widget'),
+    url(r'organizations/(?P<slug>[0-9a-z-]+)/embed-widget/$',
+        OrganizationEmbedWidgetView.as_view(),
+        name='organization_embed_widget'),
     url(r'create-organization/$', CreateOrganizationView.as_view(),
         name='create_organization'),
     url(r'projects/$', ProjectListView.as_view(), name='project_list'),
