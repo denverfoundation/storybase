@@ -1,0 +1,17 @@
+#!/bin/bash
+
+# Use Google's Closure Compiler to compress a JavaScript file
+# 
+# Usage:
+#
+# closure_compile INFILE > OUTFILE
+#
+
+in=$1
+ 
+curl -s \
+-d compilation_level=SIMPLE_OPTIMIZATIONS \
+-d output_format=text \
+-d output_info=compiled_code \
+--data-urlencode "js_code@${in}" \
+http://closure-compiler.appspot.com/compile 

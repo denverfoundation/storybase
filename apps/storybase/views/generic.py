@@ -95,6 +95,14 @@ class ModelIdDetailView(DetailView):
 
 class VersionTemplateMixin(object):
     """Class-based view mixin that searches for a versioned template name"""
+    def get_versioned_template_names(self, template_names, version):
+        versioned_names = []
+        for template_name in template_names: 
+            (head, tail) = os.path.split(template_name)
+            (template_name_base, extension) = tail.split('.')
+            versioned_names.append(
+                os.path.join(head, "%s-%s.%s" % (template_name_base, version, extension)))
+        return versioned_names + template_names
 
     def get_template_names(self):
         """
@@ -122,10 +130,7 @@ class VersionTemplateMixin(object):
         if version is not None: 
             # If a version was included in the keyword arguments, search for a
             # version-specific template first
-            (head, tail) = os.path.split(self.template_name)
-            (template_name_base, extension) = tail.split('.')
-            template_names.insert(0,
-                os.path.join(head, "%s-%s.%s" % (template_name_base, version, extension)))
+            template_names = self.get_versioned_template_names(template_names, version)
         return template_names
 
 

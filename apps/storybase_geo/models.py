@@ -2,6 +2,7 @@ from django.contrib.auth.models import User
 from django.contrib.gis.db import models
 from django.contrib.gis.geos import Point
 from django.contrib.localflavor.us.us_states import STATE_CHOICES
+from django.core.urlresolvers import reverse
 from django.db.models.signals import pre_save
 from django.utils.translation import ugettext as _
 from django_dag.models import edge_factory, node_factory
@@ -142,6 +143,9 @@ class Place(node_factory('PlaceRelation')):
                                         verbose_name=_("Boundary"))
     place_id = UUIDField(auto=True, verbose_name=_("Place ID"), db_index=True)
     slug = models.SlugField(blank=True)
+
+    def get_absolute_url(self):
+        return reverse('place_stories', kwargs={'slug': self.slug})
 
     def __unicode__(self):
         return self.name

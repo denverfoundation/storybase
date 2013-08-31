@@ -13,7 +13,6 @@ from storybase_geo.api import GeocoderResource
 from storybase_geo.models import Location, Place
 from storybase_geo.utils import get_geocoder
 from storybase_story.models import create_story
-from storybase_story.tests.base import StoryListWidgetViewTestMixin
 
 class MockGeocoder(Geocoder):
     """Mock geocoder class
@@ -396,13 +395,3 @@ class LocationResourceTest(ResourceTestCase):
         self.assertHttpUnauthorized(resp)
         self.assertEqual(Location.objects.count(), 1)
         self.assertEqual(self.user2.locations.count(), 1)
-
-
-class PlaceWidgetViewTest(StoryListWidgetViewTestMixin, TestCase):
-    def setUp(self):
-        self.obj = Place.objects.create(name="Denver") 
-        self.related_field_name = 'places'
-        self.set_up_stories()
-
-    def get_obj_url(self):
-        return reverse('place_stories', kwargs={'slug': self.obj.slug})

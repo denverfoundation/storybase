@@ -1,6 +1,7 @@
 """Views for storybase_story app"""
 
 import json
+import re
 import urlparse
 
 from django.conf import settings
@@ -10,12 +11,15 @@ from django.core.urlresolvers import resolve, reverse, get_script_prefix
 from django.db.models import Q
 from django.http import Http404, HttpResponseRedirect
 from django.utils.decorators import method_decorator
+from django.utils.encoding import force_text
 from django.views.generic import View, DetailView, RedirectView, TemplateView
 from django.views.generic.list import MultipleObjectMixin
 from django.views.generic.detail import SingleObjectMixin, SingleObjectTemplateResponseMixin
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
+from storybase.utils import escape_json_for_html, simple_language_changer
+from storybase.views.generic import ModelIdDetailView, Custom404Mixin, VersionTemplateMixin
 from storybase_asset.api import AssetResource
 from storybase_asset.models import ASSET_TYPES
 from storybase_geo.models import Place
@@ -25,9 +29,8 @@ from storybase_story.api import (ContainerTemplateResource,
     StoryResource, StoryTemplateResource)
 from storybase_story.models import (SectionLayout, Story, StoryRelation,
         StoryTemplate)
-from storybase_taxonomy.models import Category
-from storybase.utils import escape_json_for_html, simple_language_changer
-from storybase.views.generic import ModelIdDetailView, Custom404Mixin, VersionTemplateMixin
+from storybase_taxonomy.models import Category, Tag
+from storybase_user.views import Organization, Project
 
 
 class ExploreStoriesView(TemplateView):
@@ -581,85 +584,90 @@ class StoryBuilderView(DetailView):
         return super(StoryBuilderView, self).dispatch(*args, **kwargs)
 
 
-class StoryListMixin(object):
-    """
-    Class-based view mixin that adds a method to retrieve a list of stories
-    filtered by a organization, place, project, topic (category) or 
-    keyword (tag)
-    """
-    def get_story_list(self, field_name, view_kwargs=None, slug_field_name='slug', queryset=None):
-        """
-        Returns a queryset of stories filtered by the slug of a related model.
+LANG_PREFIX_RE = re.compile(r"^/(%s)/" % "|".join([re.escape(lang[0]) for lang in settings.LANGUAGES]))
 
-        :param field_name: Name of the Story model field that defines the relationship that should be used for filtering
-        :param view_kwargs: View keyword arguments captured from the URL pattern. Default is the view's ``kwargs`` attribute
-        :param slug_field_name: Name of the field on the related model that contains the slug. Default is "slug"
-        :param queryset: Queryset of Story models that will be filtered. Default is the ``queryset`` attribute of the view
-
-        """
-        if queryset is None:
-            queryset = self.queryset
-
-        if view_kwargs is None:
-            # Default to this view's keyword arguments, but allow overriding
-            # in case we want to filter on the slug of a different view
-            view_kwargs = self.kwargs
-
-
-        query_args = {}
-        if 'slug' in view_kwargs:
-            query_args['%s__%s' % (field_name, slug_field_name)] = view_kwargs['slug']
-        else:
-            # While the likely lookup field is "slug", also support filtering by
-            # model ID (e.g. "project_id")
-            model_id = None
-            try:
-                related_field = getattr(Story, field_name).field
-                model_name = related_field.model._meta.module_name
-                model_id = '%s_id' % model_name
-            except AttributeError:
-                pass
-
-            if model_id and model_id in view_kwargs:
-                query_args['%s__%s' % (field_name, model_id)] = view_kwargs[model_id]
-            else:
-                return []
-
-        return queryset.filter(**query_args).order_by('-published')
-        
-
-class StoryWidgetView(Custom404Mixin, StoryListMixin, VersionTemplateMixin, ModelIdDetailView):
-    """An embedable widget for a story"""
-
-    context_object_name = "story"
-    # You can only embed published stories
-    queryset = Story.objects.published()
-    template_name = 'storybase_story/story_widget.html'
+class StoryWidgetView(Custom404Mixin, VersionTemplateMixin, DetailView):
+    """An embedable widget for a story or list of stories"""
 
     # A map of URL names from a URL pattern for a taxonomy term view to
-    # the relationship field of the Story model and the name of the slug field on the related model
-    url_name_to_relation_field = {
-        'organization_detail': ('organizations', 'slug'),
-        'project_detail': ('projects', 'slug'),
-        'tag_stories': ('tags', 'slug'),
-        'topic_stories': ('topics', 'categorytranslation__slug'),
-        'place_stories': ('places', 'slug'),
+    # the queryset, lookup fields and relationship field of the Story model
+    url_name_lookup = {
+        'story_detail': {
+            'queryset': Story.objects.published(),
+            'lookup_fields': {
+                'slug': 'slug',
+                'story_id': 'story_id',
+            },
+        },
+        'organization_detail': {
+            'queryset': Organization.objects.published(),
+        },
+        'project_detail': {
+            'queryset': Project.objects.published(),
+        },
+        'tag_stories': {
+            'queryset': Tag.objects.all(),
+            'related_field': 'tags',
+        },
+        'topic_stories': {
+            'queryset': Category.objects.all(), 
+            'lookup_fields': {'slug': 'categorytranslation__slug'}, 
+            'related_field': 'topics',
+        },
+        'place_stories': {
+            'queryset': Place.objects.all(),
+        },
     }
+
+    def get(self, request, *args, **kwargs):
+        # Try to resolve the URLs past as the list-url and story-url GET
+        # parameters.  These will be used to get the context object and
+        # stories later
+        self.list_url = self.request.GET.get('list-url', None)
+        self.story_url = self.request.GET.get('story-url', None)
+        self.list_match = self.resolve_uri(self.list_url) if self.list_url else None
+        self.story_match = self.resolve_uri(self.story_url) if self.story_url else None
+        return super(StoryWidgetView, self).get(request, *args, **kwargs)
+
+    def get_template_names(self):
+        """
+        Returns a list of template names to search for when rendering the template.
+
+        Includes "storybase_story/story_widget.html" in the list if a 
+        ``story-url`` query parameter was included in the request.
+
+        Includes "storybase_story/story_list_widget.html" in the list if no
+        ``story-url`` query parameter was included in the request.
+
+        It will also include versioned template names if a ``version`` argument
+        was passed to the view.
+
+        """
+        template_names = []
+        if self.story_url:
+            template_names.append('storybase_story/story_widget.html')
+        else:
+            template_names.append('storybase_story/story_list_widget.html')
+
+        version = self.kwargs.get('version', None)
+        if version is not None: 
+            # If a version was included in the keyword arguments, search for a
+            # version-specific template first
+            template_names = self.get_versioned_template_names(template_names, version)
+
+        return template_names
 
     def get_404_template_name(self):
         return "storybase_story/widget_404.html"
 
-    def resolve_list_uri(self, uri):
+    def resolve_uri(self, uri):
         """
-        Resolve a URL path to a relationship field of the Story model and view
-        keyword arguments
+        Resolve a full URL
 
-        This is used when the widget should include both a featured story and
-        a related list of stories
+        This is a wrapper around ``django.core.urlresolvers.reverse()`` that
+        first strips the non-path URL parts. 
 
-        Returns a tuple of relationship field name, the slug field name on the
-        related model and keyword arguments from the URL pattern
-
+        Returns a ``ResolverMatch`` object or None if there is no match
         """
         prefix = get_script_prefix()
         parsed = urlparse.urlparse(uri)
@@ -672,15 +680,83 @@ class StoryWidgetView(Custom404Mixin, StoryListMixin, VersionTemplateMixin, Mode
         if chomped_path[-1] != '/':
             chomped_path += '/'
 
-        match = resolve(chomped_path)
+        # Strip language prefixes from paths, otherwise resolve() will fail
+        # (if we're not using i18n_patterns
+        chomped_path = LANG_PREFIX_RE.sub('/', chomped_path)
 
-        field, slug_field_name = self.url_name_to_relation_field.get(match.url_name, (None, None))
+        try:
+            match = resolve(chomped_path)
+        except Http404:
+            return None
 
-        view_kwargs = None
-        if field is not None:
-            view_kwargs = match.kwargs
+        if match.url_name not in self.url_name_lookup:
+            return None
 
-        return field, slug_field_name, view_kwargs
+        return match
+
+    def get_object_match(self):
+        """
+        Return the ResolverMatch object that will be used to retrieve
+        the primary object displayed by the view
+        """
+        if self.story_match:
+            return self.story_match
+        elif self.list_match:
+            return self.list_match
+        else:
+            raise Http404
+
+    def get_related_field_name(self, match):
+        """
+        Return the relationship field of the Story model for a particular view
+        """
+        query_info = self.url_name_lookup[match.url_name]
+        try:
+            return query_info['related_field']
+        except KeyError:
+            return force_text(query_info['queryset'].model._meta.verbose_name_plural)
+
+    def get_filter_kwargs(self, match, related_field_name=None):
+        """
+        Get a dictionary of arguments to filter the object or story queryset
+        """
+        try:
+            lookup_fields = self.url_name_lookup[match.url_name]['lookup_fields']
+        except KeyError:
+            lookup_fields = {'slug': 'slug'}
+
+        for kwarg, model_field_name in lookup_fields.items():
+            if kwarg in match.kwargs:
+                # If the query field is on a related model, prepend the
+                # relationship field name
+                field_name = model_field_name
+                if related_field_name:
+                    field_name = "%s__%s" % (related_field_name, field_name)
+                return {
+                    field_name: match.kwargs[kwarg]
+                }
+            
+        raise AttributeError
+
+    def get_queryset(self):
+        try:
+            return self.url_name_lookup[self.get_object_match().url_name]['queryset']
+        except KeyError:
+            raise Http404
+
+    def get_object(self, queryset=None):
+        if queryset is None:
+            queryset = self.get_queryset()
+
+        filter_kwargs = self.get_filter_kwargs(self.get_object_match())
+        queryset = queryset.filter(**filter_kwargs)
+
+        try:
+            obj = queryset.get()
+        except ObjectDoesNotExist:
+            raise Http404(_(u"No %(verbose_name)s found matching the query") %
+                          {'verbose_name': queryset.model._meta.verbose_name})
+        return obj
 
     def get_context_data(self, **kwargs):
         """
@@ -693,27 +769,27 @@ class StoryWidgetView(Custom404Mixin, StoryListMixin, VersionTemplateMixin, Mode
         present, the widget output will also contain a list of recent stories
         from that taxonomy item.
 
-
         **Context**
 
+        * ``object``: In a story list widget, this will be model for the taxonomy
+           term. In a story widget, or a story + list widget, this will be the
+           primary story for the widget.
         * ``story``: The primary story for the widget
         * ``stories``: Optional list of related stories
 
         """
+        # Calling super sets context['object'] 
         context = super(StoryWidgetView, self).get_context_data(**kwargs)
         context['stories'] = []
-        list_url = self.request.GET.get('list-url', None)
         
-        if list_url is not None:
-            related_field, slug_field_name, view_kwargs = self.resolve_list_uri(list_url)
-            if related_field:
-                # Limit the related story list to 3 items
-                context['stories'] = self.get_story_list(related_field, view_kwargs, slug_field_name=slug_field_name)[:3]
+        if self.list_match:
+            filter_kwargs = self.get_filter_kwargs(self.list_match, self.get_related_field_name(self.list_match))
+            context['stories'] = Story.objects.published().filter(**filter_kwargs).order_by('-published')[:3]
 
         return context
 
 
-class StoryListView(StoryListMixin, MultipleObjectMixin, ModelIdDetailView):
+class StoryListView(MultipleObjectMixin, ModelIdDetailView):
     """
     Base view class for a list of stories aggregated by an organization,
     project, place, keyword (tag) or topic (category)
@@ -728,7 +804,7 @@ class StoryListView(StoryListMixin, MultipleObjectMixin, ModelIdDetailView):
         Returns the name of the field of the Story model that defines the
         relationship with the model used to aggregate the stories. 
 
-        Defaults to ``related_field_name`` attribute of the view class
+        Defaults to the ``related_field_name`` attribute of the view class
 
         """
         return self.related_field_name
@@ -738,6 +814,30 @@ class StoryListView(StoryListMixin, MultipleObjectMixin, ModelIdDetailView):
         Returns the name of the slug field on the related model
         """
         return 'slug' 
+
+    def get_story_filter_kwargs(self):
+        filter_kwargs = {}
+        slug_field_name = self.get_slug_field_name()
+        related_field_name = self.get_related_field_name()
+        if 'slug' in self.kwargs:
+            filter_kwargs['%s__%s' % (related_field_name, slug_field_name)] = self.kwargs['slug']
+        else:
+            # While the likely lookup field is "slug", also support filtering by
+            # model ID (e.g. "project_id")
+            model_id = None
+            try:
+                related_field = getattr(Story, related_field_name).field
+                model_name = related_field.model._meta.module_name
+                model_id = '%s_id' % model_name
+            except AttributeError:
+                pass
+
+            if model_id and model_id in self.kwargs:
+                filter_kwargs['%s__%s' % (related_field_name, model_id)] = self.kwargs[model_id]
+            else:
+                raise AttributeError
+
+        return filter_kwargs
 
     def get_context_data(self, **kwargs):
         """
@@ -757,10 +857,8 @@ class StoryListView(StoryListMixin, MultipleObjectMixin, ModelIdDetailView):
         paginator = None
         page = None
         is_paginated = False
-        queryset = self.get_story_list(
-            self.get_related_field_name(),
-            slug_field_name=self.get_slug_field_name(), 
-            queryset=Story.objects.published())
+        filter_kwargs = self.get_story_filter_kwargs()
+        queryset = Story.objects.published().filter(**filter_kwargs).order_by('-published')
 
         page_size = self.get_paginate_by(queryset)
         if page_size:
@@ -774,33 +872,6 @@ class StoryListView(StoryListMixin, MultipleObjectMixin, ModelIdDetailView):
             'stories': queryset,
         })
 
-        return context
-
-
-class StoryListWidgetView(Custom404Mixin, VersionTemplateMixin, StoryListView):
-    """An embeddable widget of a list of stories"""
-    template_name = "storybase_story/story_list_widget.html"
-    paginate_by = None
-
-    def get_404_template_name(self):
-        return "storybase_story/widget_404.html"
-
-    def get_context_data(self, **kwargs):
-        """
-        Returns context data for displaying the list of stories
-
-        **Context**
-
-        * ``object``: Model instance of item used to aggregate stories
-        * ``object_list``: List of stories
-        * ``stories``: An alias for ``object_list``
-
-        """
-        context = super(StoryListWidgetView, self).get_context_data(**kwargs)
-        context['stories'] = self.get_story_list(
-            self.get_related_field_name(),
-            self.kwargs,
-            slug_field_name=self.get_slug_field_name(), queryset=Story.objects.published())[:3]
         return context
 
 
