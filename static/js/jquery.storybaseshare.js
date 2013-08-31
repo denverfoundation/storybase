@@ -4,7 +4,7 @@
     markup: '<h3>Loading&hellip;</h3>',
     storyID: null,
     widgetUrl: '/stories/<id>/share-widget/',
-    header: '<header>Sharing Options<span class="close"></span></header>',
+    header: 'Sharing Options',
     appendeeSelector: 'body',
     addThisScriptTag: '<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js?domready=1"></script>',
     alignment: 'bottom left',
@@ -43,7 +43,8 @@
         }
       }
       this.$popup.css(position).slideDown().on('click', '.close', this.close);
-      this.$popup.find('input, textarea').get(0).select();
+      var firstTextInput = this.$popup.find('input, textarea').get(0);
+      if (firstTextInput) firstTextInput.select();
       this.isOpen = true;
     },
     close: function() {
@@ -59,12 +60,13 @@
   var scriptAdded = false;
   
   var fetchContent = function(storyID, instance) {
+    var header = '<header>' + instance.options.header + '<span class="close"></span></header>';
     if (!(storyID in widgetContent)) {
       $.ajax({
         url: instance.options.widgetUrl.replace('<id>', storyID),
         dataType: 'html',
         success: function(data, textStatus, jqXHR) {
-          var content = instance.options.header + data;
+          var content = header + data;
           if (!scriptAdded) {
             content += instance.options.addThisScriptTag;
             scriptAdded = true;
@@ -73,10 +75,11 @@
           loadContent(storyID, instance);
         },
         error: function(jqXHR, textStatus, errorThrown) {
-          widgetContent[storyID] = instance.options.header + '\
+          widgetContent[storyID] = header + '\
             <h1>Could not load widget!</h1>\
             <p class="error">' + errorThrown + '</p>\
           ';
+          loadContent(storyID, instance);
         }
       });
     }

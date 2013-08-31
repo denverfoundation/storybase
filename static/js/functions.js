@@ -110,8 +110,7 @@
 		// We should factor this out more carefully.
 		$('.storybase-share-widget').storybaseShare();
 		$('.storybase-embed-widget').storybaseShare({
-			widgetUrl: '/stories/<id>/embed-widget/',
-			header: '<header>Embed This Story<span class="close"></span></header>',
+			widgetUrl: '/stories/<id>/embed-widget/'
 		});
 
 		// Analytics events 
