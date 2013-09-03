@@ -15,7 +15,7 @@ class StoriesFeed(Feed):
     Generates a feed of the 25 most recently published stories
 
     Allows basic filtering by topic slug by providing either a
-    ``topics=SLUG`` or ``topics-ne=SLUG`` querystring parameter to
+    ``topics=SLUG`` or ``topics-exclude=SLUG`` querystring parameter to
     the GET request.
 
     """
@@ -49,7 +49,7 @@ class StoriesFeed(Feed):
         filter_kwargs = {}
         exclude_kwargs = {}
         for param, lookup in self.QUERY_MAP.items():
-            exclude_param = '%s-ne' % param
+            exclude_param = '%s-exclude' % param
             if param in self.request.GET:
                 filter_kwargs[lookup] = self.request.GET[param]
             if exclude_param in self.request.GET:
