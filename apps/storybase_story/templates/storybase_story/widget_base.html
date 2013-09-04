@@ -1,8 +1,8 @@
-{% load storybase_tags i18n %}
+{% load storybase_tags i18n compress %}
 <html>
   <head>
     <title>{{ storybase_site_name }} | {{ story.title }}</title>
-
+    <script type="text/javascript" src="{{ STATIC_URL }}js/libs/modernizr-2.0.6.min.js"></script>
     {% if debug %}
     <link rel="stylesheet/less" type="text/css" href="{{ STATIC_URL }}less/widget.less">
     <script src="{{ STATIC_URL }}js/libs/less-1.3.0.min.js"></script>
@@ -17,33 +17,36 @@
         <h1><a href="/">{% blocktrans %} Stories from the {{ storybase_site_name }} Project {% endblocktrans %}</a></h1>
       </header>
       <section class="storybase-embed-content">
+        
+        {% block widget_content %}{% endblock %}
 
-        {% if story and stories %}
-          {% include "storybase_story/widget_story_section.html" with extra_classes="with-list" %}
-        {% elif story and not stories %}
-          {% include "storybase_story/widget_story_section.html" %}
-        {% endif %}
-        
-        {% if stories and story %}
-          {% include "storybase_story/widget_list_section.html" with story_items=stories extra_classes="with-featured" %}
-        {% elif stories and not story %}
-          {% include "storybase_story/widget_list_section.html" with story_items=stories %}
-        {% endif %}
-        
       </section>
       <footer>
         {% if story and story.projects.all %}
-          <a href="/">View all stories for
-            {% for project in story.projects.all %}{{ project.name }}, {% endfor %}
-            on {{ storybase_site_name }}</a>
+          {% trans "View stories for" %}
+          {% for project in story.projects.all %}<a href="{% fullurl project.get_absolute_url %}">{{ project.name }}</a>, {% endfor %}
+          {% trans "on" %} <a href="/">{{ storybase_site_name }}</a>
         {% elif story and story.organizations.all %}
-          <a href="/">View all stories for
-            {% for organization in story.organizations.all %}{{ organizations.name }}, {% endfor %}
-            on {{ storybase_site_name }}</a>
+          {% trans "View stories for" %}
+          {% for organization in story.organizations.all %}<a href="{% fullurl organization.get_absolute_url %}">{{ organization.name }}</a>, {% endfor %}
+          {% trans "on" %} {{ storybase_site_name }}
         {% else %}
-          <a href="/">Explore more stories on {{ storybase_site_name }}</a>
+          <a href="/">{% blocktrans %} Explore more stories on {{ storybase_site_name }}{% endblocktrans %}</a>
         {% endif %}
       </footer>
     </article>
+    <script type="text/javascript">
+    (function(w, d) {
+      var h = function(e) {
+        e = e || window.event;
+        w.open(this.getAttribute('href'), '_blank', 'modal=yes,alwaysRaised=yes');
+        e.preventDefault ? e.preventDefault() : e.returnValue = false;
+      };
+      var a = d.getElementsByTagName('a');
+      for (var i = 0; i < a.length; i++) {
+        a[i].onclick = (function(el) { return function(ev) { h.call(el, ev); } })(a[i]);
+      }
+    })(window, document);
+    </script>
   </body>
 </html>

@@ -104,6 +104,14 @@ article {
   
 }
 
+.widget-404 {
+  text-align: center;
+  position: absolute;
+  width: 100%;
+  top: 40%;
+  height: 4em;
+}
+
 .storybase-story-featured {
   position:relative;
   .featured-image {
@@ -154,7 +162,7 @@ article {
   }
 }
 
-.storybase-story-list {
+.storybase-storylist {
   height:100%;
 
   &.with-featured {
@@ -212,6 +220,7 @@ header {
 }
 
 footer {
+  color:@light-gray;
   background:@gray;
   position:absolute;
   bottom:0;
@@ -219,16 +228,15 @@ footer {
   width:100%;
   a {
     color:@light-gray;
-    text-decoration:none;
-    
-    &:before {
-      font-family: "FontAwesome";
-      content:"\F08E";
-      width:1em;
-      height:1em;
-      margin-right:.5em;
+    text-decoration:underline;
+  }
+  &:before {
+    font-family: "FontAwesome";
+    content:"\F08E";
+    width:1em;
+    height:1em;
+    margin-right:.5em;
 
-    }
   }
 }
 

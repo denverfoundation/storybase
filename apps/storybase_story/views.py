@@ -633,14 +633,28 @@ class StoryWidgetView(Custom404Mixin, VersionTemplateMixin, DetailView):
         """
         Returns a list of template names to search for when rendering the template.
 
-        Includes "storybase_story/widget_base.html" in the list by default.
-
+        Includes one of:
+        
+        - widget_story.html
+        - widget_storylist.html
+        - widget_story_storylist.html
+        
+        For each case of story, list, or story+list. Includes 404 if something
+        went wrong and we have a match for neither story nor list.
+        
         It will also include versioned template names if a ``version`` argument
         was passed to the view.
 
         """
         template_names = []
-        template_names.append('storybase_story/widget_base.html')
+        if self.story_match and self.list_match:
+            template_names.append('storybase_story/widget_story_storylist.html')
+        elif self.story_match and not self.list_match:
+            template_names.append('storybase_story/widget_story.html')
+        elif not self.story_match and self.list_match:
+            template_names.append('storybase_story/widget_storylist.html')
+        else:
+            template_names.append('storybase_story/widget_404.html')
 
         version = self.kwargs.get('version', None)
         if version is not None: 

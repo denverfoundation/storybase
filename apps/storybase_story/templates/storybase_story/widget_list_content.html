@@ -1,0 +1,17 @@
+{% load storybase_tags i18n %}
+<ul>
+  {% for story_item in stories %}
+
+  {% url story_viewer slug=story_item.slug as viewer_path %}
+  {% fullurl viewer_path as item_viewer_url %}
+
+  <li id="{{ story_item.story_id }}" class="storybase-story-list-item {{ storybase_site_name|slugify }}-story-embed">
+    <a class="featured-image" href="{{ item_viewer_url }}">
+      <img src="{{ story_item.featured_asset_thumbnail_url }}">
+    </a>
+    <a href="{{ item_viewer_url }}" title="{{ story_item.title }}" class="story-link">{{ story_item.title }}</a>
+    <p class="byline">{{ story_item.byline }}</p>
+  </li>
+  
+  {% endfor %}
+</ul>
