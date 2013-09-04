@@ -102,7 +102,8 @@ class StoriesFeed(Feed):
 
     def item_enclosure_mime_type(self, item):
         url = item.featured_asset_thumbnail_url()
-        return guess_type(url)
+        (mtype, encoding) = guess_type(url)
+        return mtype
 
 
 class TopicStoriesFeed(StoriesFeed):
