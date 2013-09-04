@@ -21,9 +21,8 @@
     // property of an '<a>' element
     var l = document.createElement("a");
     l.href = scriptUrl;
-    // TODO: use protocol relative URL, e.g. '//floodlightproject.org'
-    var detectedUrl = l.protocol + '//' + l.host;
-    return root._sbBaseUrl || detectedUrl || 'http://floodlightproject.org';
+    var detectedUrl = '//' + l.host;
+    return root._sbBaseUrl || detectedUrl || 'https://floodlightproject.org';
   };
 
   // Polyfill for String.trim
