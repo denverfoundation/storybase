@@ -14,6 +14,8 @@ Changelog
 0.13.2
 ~~~~~~
 
+* Update default summary text in the builder, encouraging summaries < 250
+  characters (#858)
 * Fix CSV export of user information (#859)
 
 0.13.1
