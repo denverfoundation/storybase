@@ -57,7 +57,8 @@ class StoriesFeed(Feed):
         return filter_kwargs, exclude_kwargs
 
     def items(self):
-        queryset = Story.objects.published()
+        # Only show non-connected, published stories in the feed
+        queryset = Story.objects.exclude(source__relation_type='connected').published()
         filter_kwargs, exclude_kwargs = self.get_filter_kwargs()
         if filter_kwargs:
             queryset = queryset.filter(**filter_kwargs)
@@ -128,4 +129,4 @@ class TopicStoriesFeed(StoriesFeed):
         return "%s?topics=%s" % (reverse('explore_stories'), obj.pk)
 
     def items(self, obj):
-        return Story.objects.published().filter(topics=obj).order_by('-published')[:25]
+        return Story.objects.exclude(source__relation_type='connected').published().filter(topics=obj).order_by('-published')[:25]
