@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.13.2
+~~~~~~
+
+* Fix CSV export of user information (#859)
+
 0.13.1
 ~~~~~~
 
