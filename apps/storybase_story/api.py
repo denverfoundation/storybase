@@ -46,6 +46,8 @@ class StoryResource(TranslatedModelResource):
     connected_prompt = fields.CharField(attribute='connected_prompt',
                                         blank=True)
     url = fields.CharField(attribute='get_absolute_url', readonly=True)
+    viewer_url = fields.CharField(attribute='viewer_url',
+                                  readonly=True)
     topics = fields.ListField(readonly=True)
     organizations = fields.ListField(readonly=True)
     projects = fields.ListField(readonly=True)
