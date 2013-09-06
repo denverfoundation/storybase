@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.14
+~~~~
+
+* RSS feed for stories (#816)
+
 0.13.3
 ~~~~~~
 
