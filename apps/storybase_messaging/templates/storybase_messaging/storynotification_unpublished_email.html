@@ -7,6 +7,7 @@ Available context variables:
 * story - Story model instance for the notification
 * unpublished_stories - List of user's unpublished stories
 * recent_stories - List of three most recently published stories, site-wide
+* builder_url - Full URL (including hostname) of the stiry builder for the story
 * viewer_url - Full URL (including hostname) of the story viewer for the story
 * explorer_url - Full URL (including hostname) of the explore page
 * detail_url - Full URL (including hostname) of the detail page for the story
@@ -47,54 +48,56 @@ h2 {
                 
                 <tr><td valign="top" align="left" style="padding:0;margin:0;">
                     <table align="left" width="100%" border="0" cellpadding="0" cellspacing="0"><tbody>
-                            <tr><td align="left" valign="top" style="margin: 0px; padding: 0px 0px 21px;">
-			        <p>Dear {{ story.author.first_name }},</p>
-				<p>We noticed you haven’t published the story you started, <a href="{{ detail_url }}{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %}" title ="{{ story.title }}" style="color: rgb(50, 197, 244);">{{ story.title }}</a>. You can open this story in the <a href="{{ builder_url }}{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %}" style="color: rgb(50, 197, 244);"> story builder</a>. 
-                                <p>Feeling stuck? It happens to everyone. Here are some tips to get unstuck:</p>
-				<h2 style="font-size: 16px;">Let it all out</h2>
-                                <p>"Anything can be rewritten--except nothing." - Joss Whedon</p>
+                        <tr><td align="left" valign="top" style="margin: 0px; padding: 0px 0px 21px;">
+                            <p>Dear {{ story.author.first_name|default:"Floodlight User" }},</p>
+                            <p>We noticed you haven't published the story you started, {% if detail_url %}<a href="{{ detail_url }}{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %}" title ="{{ story.title }}" style="color: rgb(50, 197, 244);">{% endif %}{{ story.title }}{% if detail_url %}</a>{% endif %}. You can open this story in the <a href="{{ builder_url }}{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %}" style="color: rgb(50, 197, 244);"> story builder</a>. 
 
-				<p>There’s nothing scarier than a blank slate. Free-writing is the process of getting all of your thoughts out in the open, no matter how messy they are. Set a timer for 10 minutes and don’t let your pen stop moving or fingers stop typing until the clock runs down. It’s ok if you’ve written gibberish. You can always go back and edit your ideas into a spectacular story.</p>
+                            <p>Feeling stuck? It happens to everyone. Here are some tips to get unstuck:</p>
 
-				<h2 style="font-size: 16px;">Try a different medium</h2>
+                            <h2 style="font-size: 16px;">Let it all out</h2>
+                            <p>"Anything can be rewritten--except nothing." - Joss Whedon</p>
 
-				<p>If you’re story is highly visual, try writing instead. Already have a lot written? Record yourself telling the story -- out loud, no notes. Draw a picture that illustrates your story, or create a slideshow or video of it. How would you tell your story with LEGO blocks? When you switch to a new tool, you often find a new voice.</p>
+                            <p>There's nothing scarier than a blank slate. Free-writing is the process of getting all of your thoughts out in the open, no matter how messy they are. Set a timer for 10 minutes and don't let your pen stop moving or fingers stop typing until the clock runs down. It's ok if you've written gibberish. You can always go back and edit your ideas into a spectacular story.</p>
 
-				<h2 style="font-size: 16px;">Give yourself a deadline</h2>
+                            <h2 style="font-size: 16px;">Try a different medium</h2>
 
-				<p>A clock ticking down is a storyteller’s best friend. Try breaking your story into manageable chunks and give yourself intermediate deadlines: complete at least one section by the end of the day, finish editing the photos and writing captions by the end of the week, etc. If you aren’t good at setting your own deadlines, ask a friend or colleague to hold you accountable.</p>
+                            <p>If you're story is highly visual, try writing instead. Already have a lot written? Record yourself telling the story -- out loud, no notes. Draw a picture that illustrates your story, or create a slideshow or video of it. How would you tell your story with LEGO blocks? When you switch to a new tool, you often find a new voice.</p>
 
-				<h2 style="font-size: 16px;">Share your story with someone you trust</h2>
+                            <h2 style="font-size: 16px;">Give yourself a deadline</h2>
 
-				<p>Unleashing your story for the world to see is a daunting task, so try showing it to someone you trust first. Your story is better than you think, and getting feedback before you publish it will boost your confidence.  Tip: If you preview your Floodlight story, you can use the link to share it with others -- even if it’s not published yet.</p>
+                            <p>A clock ticking down is a storyteller's best friend. Try breaking your story into manageable chunks and give yourself intermediate deadlines: complete at least one section by the end of the day, finish editing the photos and writing captions by the end of the week, etc. If you aren't good at setting your own deadlines, ask a friend or colleague to hold you accountable.</p>
 
-				<h2 style="font-size: 16px;">More tips on getting unstuck</h2>
-				<p>Try some of exercises on Floodlight, like <a href="http://floodlightproject.org/stories/design-thinking-for-storytelling-your-story-in-5-e/{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %}" title="Design Thinking for Storytelling: Your Story in 5 Easy Steps">design thinking</a> or <a href="http://floodlightproject.org/stories/stretch-your-storytelling-muscles/{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %}" title="Stretch Your Storytelling Muscles">stretching for your storytelling brain</a>. Find out about the <a href="http://floodlightproject.org/en/projects/exploring-the-creative-process/{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %}" title="Exploring the Creative Process">personal creative processes of seasoned storytellers</a>, or read <a href="http://rookiemag.com/2012/11/get-unstuck/" title="Getting Unstuck">tips from writers and comic book artists for overcoming writer’s block</a>.</p>
+                            <h2 style="font-size: 16px;">Share your story with someone you trust</h2>
 
-				<p>Bogged down by technical problems? Send an email to help@floodlightproject.org and we’ll fix them as soon as we can. Have storytelling questions? Take a look at the <a href="http://floodlightproject.org/en/help/{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %}" title="Help">Floodlight FAQ</a> to see if it has what you’re looking for. If your question isn’t there, send it our way.</p>
+                            <p>Unleashing your story for the world to see is a daunting task, so try showing it to someone you trust first. Your story is better than you think, and getting feedback before you publish it will boost your confidence.  Tip: If you preview your Floodlight story, you can use the link to share it with others -- even if it's not published yet.</p>
 
-				<p>You can manage your stories, including editing, deleting, and publishing/unpublishing, on your <a href="{% fullurl '/account/stories/' %}{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %}">account page</a>.</p> 
+                            <h2 style="font-size: 16px;">More tips on getting unstuck</h2>
+                            <p>Try some of exercises on Floodlight, like <a href="http://floodlightproject.org/stories/design-thinking-for-storytelling-your-story-in-5-e/{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %}" title="Design Thinking for Storytelling: Your Story in 5 Easy Steps">design thinking</a> or <a href="http://floodlightproject.org/stories/stretch-your-storytelling-muscles/{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %}" title="Stretch Your Storytelling Muscles">stretching for your storytelling brain</a>. Find out about the <a href="http://floodlightproject.org/en/projects/exploring-the-creative-process/{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %}" title="Exploring the Creative Process">personal creative processes of seasoned storytellers</a>, or read <a href="http://rookiemag.com/2012/11/get-unstuck/" title="Getting Unstuck">tips from writers and comic book artists for overcoming writer's block</a>.</p>
 
-				{% if unpublished_stories %}
-				<p>Here is a list of your unpublished stories:</p>
-				<ul>
-				    {% for story in unpublished_stories %}
-                                    <li><a href="{% fullurl story.builder_url %}{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %}">{{ story.title|default:"Untitled Story" }}</a></li>
-                                    {% endfor %}
-                                </ul>
-				{% endif %}
+                            <p>Bogged down by technical problems? Send an email to help@floodlightproject.org and we'll fix them as soon as we can. Have storytelling questions? Take a look at the <a href="http://floodlightproject.org/en/help/{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %}" title="Help">Floodlight FAQ</a> to see if it has what you're looking for. If your question isn't there, send it our way.</p>
 
-				<p>We can’t wait to see your story on Floodlight!</p>
+                            <p>You can manage your stories, including editing, deleting, and publishing/unpublishing, on your <a href="{% fullurl '/account/stories/' %}{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %}">account page</a>.</p> 
 
-                                <p>Best,<br />
-                                   The Floodlight Team</p>
+                            {% if unpublished_stories %}
+                            <p>Here is a list of your unpublished stories:</p>
+                            <ul>
+                                {% for unpublished_story in unpublished_stories %}
+                                <li><a href="{% fullurl unpublished_story.builder_url %}{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %}">{{ unpublished_story.title|default:"Untitled Story" }}</a></li>
+                                {% endfor %}
+                            </ul>
+                            {% endif %}
+
+                            <p>We can't wait to see your story on Floodlight!</p>
+
+                            <p>Best,<br />
+                            The Floodlight Team</p>
                         </td></tr>
                     </tbody></table>
                 </td></tr>
 
                 <tr><td valign="top" align="left" style="margin:0;padding:0;">
                     <table align="left" width="100%" border="0" cellpadding="0" cellspacing="0"><tbody>
-		        <tr><td align="left" valign="top" style="padding: 0px 0px 33px; margin: 0px;">{% include "storybase_messaging/unsubscribe_footer.html" %}</td></tr>
+                        <tr><td align="left" valign="top" style="padding: 0px 0px 33px; margin: 0px;">{% include "storybase_messaging/unsubscribe_footer.html" %}</td></tr>
                     </tbody></table>
                 </td></tr>
             </tbody></table>

@@ -227,9 +227,11 @@ class StoryNotification(models.Model):
               'recent_stories': Story.objects.public().exclude(pk=self.story.pk).order_by('-published')[:3],
               # Pre-cook a bunch of URL paths to make template
               # markup leaner
-              'viewer_url': full_url(reverse('story_viewer', kwargs={'slug':self.story.slug})),
+              'builder_url': full_url(self.story.builder_url()),
+              'viewer_url': full_url(self.story.viewer_url()),
               'explorer_url': full_url(reverse('explore_stories')),
-              'detail_url': full_url(self.story.get_absolute_url()),
+              'detail_url': (full_url(self.story.get_absolute_url())
+                             if not self.story.is_connected() else ''),
               'account_notifications_url': full_url(reverse('account_notifications')),
             })
             return self._context
