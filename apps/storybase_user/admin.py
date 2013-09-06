@@ -172,7 +172,9 @@ class StoryUserAdmin(UserAdmin):
         response['Content-Disposition'] = 'attachment; filename=%s' % (filename)
         user_field_names = ('username', 'email', 'first_name', 'last_name', 'is_staff', 'is_active', 'date_joined', 'last_login',)
         # TODO: See if I can use methods of the modeladmin as fields
-        profile_field_names = ('notify_updates', 'notify_admin', 'notify_digest', 'notify_story_featured', 'notify_story_comment')
+        profile_field_names = ('notify_admin', 'notify_digest',
+            'notify_story_unpublished', 'notify_story_published',
+            'notify_story_comment')
         writer = csv.writer(response)
         writer.writerow(header_row(user_field_names, profile_field_names))
         for obj in queryset:
