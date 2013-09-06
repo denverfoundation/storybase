@@ -4,6 +4,7 @@ from django.conf import settings
 from django.contrib.syndication.views import Feed
 from django.core.urlresolvers import reverse
 from django.shortcuts import get_object_or_404
+from django.utils.text import Truncator
 from django.utils.translation import ugettext as _
 
 from storybase_asset.models import FEATURED_ASSET_THUMBNAIL_WIDTH, FEATURED_ASSET_THUMBNAIL_HEIGHT
@@ -70,7 +71,8 @@ class StoriesFeed(Feed):
         return item.title
 
     def item_description(self, item):
-        return item.summary
+        truncator = Truncator(item.summary)
+        return truncator.words(75, html=True)
 
     def item_author_name(self, item):
         return item.contributor_name
