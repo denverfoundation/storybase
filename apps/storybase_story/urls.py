@@ -3,6 +3,7 @@
 from django.conf import settings
 from django.conf.urls.defaults import patterns, url
 
+from storybase_story.feeds import StoriesFeed, TopicStoriesFeed
 from storybase_story.views import (ExploreStoriesView, 
     StoryBuilderView, StoryDetailView, StoryViewerView,
     StoryUpdateView, StoryShareWidgetView, StoryWidgetView)
@@ -61,4 +62,8 @@ urlpatterns = patterns('',
     url(r'^stories/(?P<slug>[0-9a-z-]+)/delete/$',  
         StoryUpdateView.as_view(), {'status': 'deleted'}, 
         name='story_delete'),
+    url(r'^feeds/stories/$',
+        StoriesFeed(), name='story_feed'),
+    url(r'^feeds/topics/(?P<slug>[0-9a-z-]+)/$',
+        TopicStoriesFeed(), name='topic_story_feed'),
 )

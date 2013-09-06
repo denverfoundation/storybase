@@ -49,7 +49,7 @@ urlpatterns += patterns('',
 # Include storybase_user URL patterns
 # Use this pattern instead of include since we want to put the URLs
 # at the top-level
-urlpatterns += user_urlpatterns + story_urlpatterns + asset_urlpatterns + help_urlpatterns 
+urlpatterns += user_urlpatterns + story_urlpatterns + asset_urlpatterns + help_urlpatterns
 
 urlpatterns += patterns('',
     # Examples:
