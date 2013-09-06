@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.13.3
+~~~~~~
+
+* Support both instagram.com and instagr.am URLs for oEmbeding assets (#860)
+
 0.13.2
 ~~~~~~
 
