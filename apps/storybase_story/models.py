@@ -418,9 +418,22 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
         return self.related_to.seed()
 
     def connected_to(self):
+        """
+        Returns the Story model instance for the seed story of a connected story
+        """
         connected_to = self.connected_to_stories()
         if connected_to.count():
             return connected_to[0]
+        else:
+            return None
+
+    def connected_to_url(self):
+        """
+        Returns the URL for the seed story of a connected story
+        """
+        connected_to = self.connected_to()
+        if connected_to:
+            return connected_to.get_absolute_url()
         else:
             return None
 
@@ -449,6 +462,20 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
         else:
             return urlresolvers.reverse('story_builder', 
                 kwargs={'story_id': self.story_id})
+
+    def viewer_url(self):
+        if self.is_connected():
+            slug = self.connected_to().slug
+        else:
+            slug = self.slug
+
+        url = urlresolvers.reverse('story_viewer',
+            kwargs={'slug': slug})
+        
+        if self.is_connected():
+            url = "%s#connected-stories/%s" % (url, self.story_id)
+
+        return url
 
     def get_prompt(self):
         connected_to = self.connected_to_stories()

@@ -6652,10 +6652,7 @@
     },
 
     options: {
-      templateSource: {
-        '__main': $('#published-buttons-template').html(),
-        'view-url':  '/stories/{{slug}}/viewer/'
-      }
+      templateSource: $('#published-buttons-template').html()
     },
 
     initListeners: function() {
@@ -6666,18 +6663,17 @@
       }
       else {
         this.listenTo(this.model, "change:status", this.handleChangeStatus);
+        // When the viewer URL is set, (re)render this view
+        this.listenTo(this.model, "change:viewer_url", this.render);
       }
     },
 
     initialize: function() {
       PublishViewBase.prototype.initialize.apply(this);
-      this._rendered = false;
     },
 
     handleChangeStatus: function(story, statusVal, options) {
-      if (statusVal == 'published') {
-        this.render();
-      }
+      this.toggle();
     },
 
     handleUnpublish: function(evt) {
@@ -6703,14 +6699,16 @@
     },
 
     render: function() {
-      if (!this._rendered) {
-        // We only need to render the contents once, after that
-        // rendering just accounts to showing or hiding the element
-        this.$el.html(this.template({
-          url: this.model ? this.getTemplate('view-url')(this.model.toJSON()) : ''
-        }));
-        this._rendered = true;
-      }
+      this.$el.html(this.template({
+        url: this.model ? this.model.get('viewer_url') : ''
+      }));
+
+      this.toggle();
+
+      return this;
+    },
+
+    toggle: function() {
       if (this.storyPublished()) {
         this.$el.show();
       }

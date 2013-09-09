@@ -15,6 +15,7 @@ Changelog
 ~~~~
 
 * RSS feed for stories (#816)
+* Fix links for connected stories in builder and notification emails (#856)
 
 0.13.3
 ~~~~~~
