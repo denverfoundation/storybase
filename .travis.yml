@@ -3,7 +3,7 @@ language: python
 python: 
   - "2.7"
 jdk:
-  - openjdk6
+  - openjdk7
 install: pip install -r REQUIREMENTS --use-mirrors && pip install Fabric==1.4.0 --use-mirrors
 script: python manage.py test storybase_messaging storybase_asset storybase_geo storybase_help storybase_story storybase_user storybase_taxonomy cmsplugin_storybase --settings=settings.travis
 postgres:
@@ -16,3 +16,4 @@ branches:
   only:
     - master
     - develop
+    - updated_solr_install
