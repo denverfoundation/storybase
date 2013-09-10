@@ -6,6 +6,7 @@ fab --set run_local=True,instance=travis install_solr make_solr_conf_dir make_so
 fab --set run_local=True,instance=travis install_jetty_script install_jetty_config
 sudo cp config/travis/solr/solr.xml /usr/local/share/solr/multicore/
 python manage.py build_solr_schema --settings=settings.travis > config/travis/solr/schema.xml
+sudo cp config/travis/solr/schema.xml /usr/local/share/solr/multicore/travis/conf/
 #sudo sed -i.bak -r -e "s/#JDK_DIRS=.*/JDK_DIRS=\"\/usr\/lib\/jvm\/java-6-openjdk-amd64 \/usr\/lib\/jvm\/java-6-openjdk-i386\"/g" /etc/default/jetty
 fab --set run_local=True install_solr_config:instance=travis,solr_multicore=True,project_root=`pwd`
 sudo service jetty restart
