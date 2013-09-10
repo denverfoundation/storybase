@@ -267,7 +267,22 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
                          "/en/stories/%s/build-connected/%s/" % 
                          (story.slug, story2.story_id))
 
-    # TODO: Move this sot StorySignalsTest
+    def test_viewer_url(self):
+        story = create_story(title="Test Story", summary="Test Summary",
+                             byline="Test Byline", status='published')
+        story2 = create_story(title="Test Related Story", 
+                             summary="Test Related Story Summary",
+                             byline="Test Related Story Byline",
+                             status='published')
+        StoryRelation.objects.create(source=story, target=story2,
+                                     relation_type='connected')
+        self.assertEqual(story.viewer_url(),
+                         "/en/stories/%s/viewer/" % story.slug)
+        self.assertEqual(story2.viewer_url(),
+                         "/en/stories/%s/viewer/#connected-stories/%s" %
+                         (story.slug, story2.story_id))
+
+    # TODO: Move this to StorySignalsTest
     def test_add_assets_signal(self):
         """
         Test that an asset is also added to the assets relation
@@ -1256,7 +1271,8 @@ class StoryDetailViewTest(TestCase):
         StoryRelation.objects.create(source=story1, target=connected_story,
                 relation_type='connected')
         req = RequestFactory().get('/stories/%s/' % connected_story.story_id)
-        view = setup_view(StoryDetailView(), req, story_id=connected_story.story_id)
+        view = setup_view(StoryDetailView(), req,
+                          story_id=connected_story.story_id)
         self.assertRaises(Http404, view.dispatch, req, story_id=connected_story.story_id)
 
 
@@ -2508,6 +2524,7 @@ class StoryResourceTest(ResourceTestCase):
                                 'title',
                                 'topics',
                                 'url',
+                                'viewer_url',
                                 'weight',]
                                 
         story = create_story(title="Test Story", summary="Test Summary",

@@ -325,8 +325,8 @@ describe('SectionAssetEditView view', function() {
         expect(this.view.$el).toContain('input[name="image"][type="file"]');
       });
 
-      it('should not include a textarea', function() {
-        expect(this.view.$el).not.toContain('textarea');
+      it('should not include a body textarea', function() {
+        expect(this.view.$el).not.toContain('textarea[name="body"]');
       });
     });
   });
@@ -356,7 +356,6 @@ describe('SectionAssetEditView view', function() {
         });
 
         it("should display the model's body", function() {
-          console.debug(this.view.model);
           expect(this.view.$el.text()).toContain(this.view.model.get('body'));
         });
       });

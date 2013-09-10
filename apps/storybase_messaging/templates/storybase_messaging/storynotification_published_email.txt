@@ -1,35 +1,32 @@
-{% load storybase_tags %}
-{% autoescape off %}
-Dear {{ story.author.first_name }},
+{% load storybase_tags %}{% autoescape off %}Dear {{ story.author.first_name|default:"Floodlight User" }},
 
 Congratulations! Your story, ["{{ story.title }}"][1], is now live on
-[Floodlight][2].
+[Floodlight][2].{% if story.summary %}
 
-Here’s a preview of your story:
+Here's a preview of your story:
 
-{{ story.summary|striptags }}
+{{ story.summary|striptags }}{% endif %}{% if detail_url %}
 
 Now that your story is published, share it with the world!
 
-Here’s the link to share via your social networks and email: {% fullurl story.get_absolute_url %}
+Here's the link to share via your social networks and email: {% fullurl detail_url %}
 
-You can also embed your story on your website or blog by grabbing its embed code.
+You can also embed your story on your website or blog by grabbing its embed code.{% endif %}
 
 See what others are publishing on Floodlight...
 
-{% for recent_story in recent_stories %}
-* "{{ recent_story.title }}"
-  ({% fullurl story.get_absolute_url %}{% ga_campaign_params "floodlight" "email reminder" "published story reminder" %})
-{% endfor %}
+{% for recent_story in recent_stories %}* "{{ recent_story.title }}"
+  ({% fullurl recent_story.get_absolute_url %}{% ga_campaign_params "floodlight" "email reminder" "published story reminder" %})
 
-We can’t wait to see what you’ll publish next!
+{% endfor %}
+We can't wait to see what you'll publish next!
 
 Best,
 The Floodlight Team
 
 Links:
 
-[1]: {% fullurl story.get_absolute_url %}{% ga_campaign_params "floodlight" "email reminder" "published story reminder" %} "{{ story.title }}"
+[1]: {% if detail_url %}{{ detail_url }}{% ga_campaign_params "floodlight" "email reminder" "published story reminder" %}{% else %}{{ viewer_url }}{% endif %} "{{ story.title }}"
 
 [2]: http://floodlightproject.org/{% ga_campaign_params "floodlight" "email reminder" "published story reminder" %}
 

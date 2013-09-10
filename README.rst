@@ -11,6 +11,13 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.14
+~~~~
+
+* RSS feed for stories (#816)
+* Fix links for connected stories in builder and notification emails (#856)
+* Add slugs as id attribute for help item headers (#861) 
+
 0.13.3
 ~~~~~~
 

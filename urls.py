@@ -43,12 +43,13 @@ urlpatterns += patterns('',
         name="api_cc_license_get"),
 )
 
-# Include storybase URL patterns
 urlpatterns += i18n_patterns('',
+    # Include storybase URL patterns
     (r'^', include('storybase_user.urls')),
     (r'^', include('storybase_story.urls')),
     (r'^', include('storybase_asset.urls')),
     (r'^', include('storybase_help.urls')),
+
     # StoryBase account management
     # This needs to come before the admin URLs in order to use
     # the custom login form

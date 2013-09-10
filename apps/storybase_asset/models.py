@@ -53,6 +53,14 @@ CAPTION_TYPES = ('chart', 'image', 'map', 'table')
 """Assets that display a caption"""
 
 
+FEATURED_ASSET_THUMBNAIL_WIDTH = 240
+"""Maximum width, in pixels, of featured asset thumbnails"""
+
+
+FEATURED_ASSET_THUMBNAIL_HEIGHT = 240
+"""Maximum height, in pixels, of featured asset thumbnails"""
+
+
 class ImageRenderingMixin(object):
     """
     Mixin for rendering images in Asset-like objects
@@ -561,12 +569,16 @@ class LocalImageAsset(Asset):
             
         return mark_safe(u'\n'.join(output))
 
+    def get_thumbnail(self, thumbnail_options):
+        """Return a ``ThumbnailFile`` containing a thumbnail for this asset"""
+        thumbnailer = self.image.easy_thumbnails_thumbnailer
+        return thumbnailer.get_thumbnail(thumbnail_options)
+
     def get_thumbnail_url(self, width=0, height=0, **kwargs):
         """Return the URL of the Asset's thumbnail"""
         include_host = kwargs.get('include_host', False)
         if not self.image:
             return None
-        thumbnailer = self.image.easy_thumbnails_thumbnailer
         thumbnail_options = {
             # Disable crop for now in favor of CSS cropping, but this
             # is how you would do it. This particular argument crops
@@ -576,12 +588,11 @@ class LocalImageAsset(Asset):
             #'crop': ',0',
             'size': (width, height),
         }
-        thumbnail = thumbnailer.get_thumbnail(thumbnail_options)
+        thumbnail = self.get_thumbnail(thumbnail_options)
         if include_host:
             return full_url(thumbnail.url)
         else:
             return thumbnail.url
-
 
 def add_dataset_to_story(sender, **kwargs):
     """
@@ -689,8 +700,10 @@ class FeaturedAssetsMixin(DefaultImageMixin):
             extra = extra + "_host"
         return key_from_instance(self, extra)
 
+
     def featured_asset_thumbnail_url(self, include_host=True, 
-        width=240, height=240):
+        width=FEATURED_ASSET_THUMBNAIL_WIDTH,
+        height=FEATURED_ASSET_THUMBNAIL_HEIGHT):
         """Return the URL of the featured asset's thumbnail
 
         Returns None if the asset cannot be converted to a thumbnail image.
