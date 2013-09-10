@@ -186,65 +186,75 @@ def print_env():
     pprint(env)
 
 @task
-def install_python_tools():
+def install_python_tools(run_local=env['run_local']):
     """ Install python tools to make deployment easier """
+    sudo = _sudo if not run_local else local_sudo
     sudo('apt-get install python-setuptools')
     sudo('easy_install pip')
     sudo('pip install virtualenv')
 
 @task
-def mkvirtualenv():
+def mkvirtualenv(run_local=env['run_local']):
     """Create the virtualenv for the deployment""" 
+    run = _run if not run_local else local
     with cd(env['instance_root']):
         run('virtualenv --distribute --no-site-packages venv') 
 
 @task
-def install_apache():
+def install_apache(run_local=env['run_local']):
     """ Install the Apache 2 webserver """
+    sudo = _sudo if not run_local else local_sudo
     sudo('apt-get install apache2')
         
 @task
-def install_mod_wsgi():
+def install_mod_wsgi(run_local=env['run_local']):
     """ Install Apache mod_wsgi """
+    sudo = _sudo if not run_local else local_sudo
     sudo('apt-get install libapache2-mod-wsgi')
     sudo('a2enmod wsgi')
 
 @task
-def install_postgres():
+def install_postgres(run_local=env['run_local']):
     """ Installs Postgresql package """
+    sudo = _sudo if not run_local else local_sudo
     sudo('apt-get install postgresql postgresql-server-dev-9.1')
 
 @task
-def install_spatial():
+def install_spatial(run_local=env['run_local']):
     """ Install geodjango dependencies """
+    sudo = _sudo if not run_local else local_sudo
     sudo('apt-get install binutils gdal-bin libproj-dev postgresql-9.1-postgis')
 
 @task
-def install_pil_dependencies():
+def install_pil_dependencies(run_local=env['run_local']):
+    sudo = _sudo if not run_local else local_sudo
     """ Install the dependencies for the PIL library """
     sudo('apt-get install python-dev libfreetype6-dev zlib1g-dev libjpeg8-dev')
 
 @task
-def make_pil_dependency_symlinks():
+def make_pil_dependency_symlinks(run_local=env['run_local']):
     """ Make symlinks so PIL finds correct libraries 
     
     See http://www.jayzawrotny.com/blog/django-pil-and-libjpeg-on-ubuntu-1110
     """
+    sudo = _sudo if not run_local else local_sudo
     sudo('ln -s /usr/lib/i386-linux-gnu/libjpeg.so /usr/lib')
     sudo('ln -s /usr/lib/i386-linux-gnu/libfreetype.so /usr/lib')
     sudo('ln -s /usr/lib/i386-linux-gnu/libz.so /usr/lib')
     sudo('ln -s /lib/i386-linux-gnu/libpng12.so.0 /usr/lib')
 
 @task
-def install_python_package_depencies():
+def install_python_pkg_dependencies(run_local=env['run_local']):
     """ Install libraries needed by Python packages that will be installed later """
+    sudo = _sudo if not run_local else local_sudo
     # Splinter needs lxml, which needs libxml2-dev and libxslt-dev
     # Django's translations need gettext
     sudo('apt-get install libxml2-dev libxslt-dev gettext')
 
 @task
-def install_nginx():
+def install_nginx(run_local=env['run_local']):
     """ Install the nginx webserver, used to serve static assets. """
+    sudo = _sudo if not run_local else local_sudo
     sudo('apt-get install nginx')
     # Disable the default nginx site
     sudo('rm /etc/nginx/sites-enabled/default') 
