@@ -22,12 +22,11 @@ SOUTH_TESTS_MIGRATE = False
 
 HAYSTACK_CONNECTIONS = {
     'default': {
-        # TODO: Fix Solr/Jetty install on Travis CI so tests relying
-        # on Solr don't fail.  Until then, use the mock backend
-        # which will cause some tests to be skipped and not fail.
-        #'ENGINE': 'storybase_geo.search.backends.Solr2155Engine', 
-        'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
-        'URL': 'http://localhost:8080/solr3', 
+        'ENGINE': 'storybase_geo.search.backends.Solr2155Engine', 
+        'URL': 'http://localhost:8983/solr/travis', 
+        # If the Solr/Jetty install on Travis CI is broken, use the
+        # mock backend which will cause some tests to be skipped
+        #'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',
     },
 }
 

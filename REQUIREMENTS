@@ -3,7 +3,6 @@ Pillow==1.7.8
 South==0.7.3
 argparse==1.2.1
 cmsplugin-filer==0.8.0
-distribute==0.6.14
 #django-ajax-selects==1.2.4
 django-classy-tags==0.3.4.1
 django-cms==2.3.5
@@ -40,7 +39,7 @@ django-registration>=1.0
 # django-passwords is optional
 django-passwords
 django-notification==1.0
-pytz
+pytz>=2013b
 micawber>=0.2.5
 # Use version of django-threadedcomments from GitHub because the pypi
 # version is stale
