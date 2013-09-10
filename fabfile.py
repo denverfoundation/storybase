@@ -79,14 +79,15 @@ def _escape_slashes(value):
     import re
     return re.sub(r'/', r'\\/', value)
 
-def local_sudo(command, capture=False):
+def local_sudo(command, capture=False, user=None):
     """Naive wrapper for running local commands with sudo.
 
     This allows keeping the same command string for both local and remote
     execution.
 
     """
-    local("sudo %s" % (command), capture)
+    sudo_prefix = "-u %s " % user if user is not None else ""
+    local("sudo %s%s" % (sudo_prefix, command), capture)
 
 def local_exists(path, use_sudo=False, verbose=False):
     """Check if a local path exists"""
@@ -95,10 +96,43 @@ def local_exists(path, use_sudo=False, verbose=False):
     else:
         return False
 
+# Command running functions should default to their remote versions
 sudo = _sudo
 run = _run
 cd = _cd
 exists = _exists
+
+def get_sudo(run_local=env['run_local']):
+    """
+    Return a function that executes a command using sudo
+    
+    If ``run_local`` is True, return a function that executes
+    the command on the local host.  Otherwise return Fabric's
+    default ``sudo()`` function.
+
+    """
+    return _sudo if not run_local else local_sudo
+
+def get_run(run_local=env['run_local']):
+    """
+    Return a function that executes a command
+
+    If ``run_local`` is True, returns Fabric's ``local()``.
+    Otherwise return Fabric's default ``run()`` function.
+
+    """
+    return run if not run_local else local
+
+def get_cd(run_local=env['run_local']):
+    """
+    Return a function that changes the context to a particular
+    directory.
+
+    If ``run_local`` is True, returns Fabric's ``lcd()``,
+    otherwise returns ``cd()``
+
+    """
+    return _cd if not run_local else lcd
 
 @task
 def check_local_config(config_dir=None):
@@ -188,7 +222,7 @@ def print_env():
 @task
 def install_python_tools(run_local=env['run_local']):
     """ Install python tools to make deployment easier """
-    sudo = _sudo if not run_local else local_sudo
+    sudo = get_sudo(run_local)
     sudo('apt-get install python-setuptools')
     sudo('easy_install pip')
     sudo('pip install virtualenv')
@@ -196,38 +230,38 @@ def install_python_tools(run_local=env['run_local']):
 @task
 def mkvirtualenv(run_local=env['run_local']):
     """Create the virtualenv for the deployment""" 
-    run = _run if not run_local else local
+    run = get_run(run_local)
     with cd(env['instance_root']):
         run('virtualenv --distribute --no-site-packages venv') 
 
 @task
 def install_apache(run_local=env['run_local']):
     """ Install the Apache 2 webserver """
-    sudo = _sudo if not run_local else local_sudo
+    sudo = get_sudo(run_local)
     sudo('apt-get install apache2')
         
 @task
 def install_mod_wsgi(run_local=env['run_local']):
     """ Install Apache mod_wsgi """
-    sudo = _sudo if not run_local else local_sudo
+    sudo = get_sudo(run_local)
     sudo('apt-get install libapache2-mod-wsgi')
     sudo('a2enmod wsgi')
 
 @task
 def install_postgres(run_local=env['run_local']):
     """ Installs Postgresql package """
-    sudo = _sudo if not run_local else local_sudo
+    sudo = get_sudo(run_local)
     sudo('apt-get install postgresql postgresql-server-dev-9.1')
 
 @task
 def install_spatial(run_local=env['run_local']):
     """ Install geodjango dependencies """
-    sudo = _sudo if not run_local else local_sudo
+    sudo = get_sudo(run_local)
     sudo('apt-get install binutils gdal-bin libproj-dev postgresql-9.1-postgis')
 
 @task
 def install_pil_dependencies(run_local=env['run_local']):
-    sudo = _sudo if not run_local else local_sudo
+    sudo = get_sudo(run_local)
     """ Install the dependencies for the PIL library """
     sudo('apt-get install python-dev libfreetype6-dev zlib1g-dev libjpeg8-dev')
 
@@ -237,7 +271,7 @@ def make_pil_dependency_symlinks(run_local=env['run_local']):
     
     See http://www.jayzawrotny.com/blog/django-pil-and-libjpeg-on-ubuntu-1110
     """
-    sudo = _sudo if not run_local else local_sudo
+    sudo = get_sudo(run_local)
     sudo('ln -s /usr/lib/i386-linux-gnu/libjpeg.so /usr/lib')
     sudo('ln -s /usr/lib/i386-linux-gnu/libfreetype.so /usr/lib')
     sudo('ln -s /usr/lib/i386-linux-gnu/libz.so /usr/lib')
@@ -246,7 +280,7 @@ def make_pil_dependency_symlinks(run_local=env['run_local']):
 @task
 def install_python_pkg_dependencies(run_local=env['run_local']):
     """ Install libraries needed by Python packages that will be installed later """
-    sudo = _sudo if not run_local else local_sudo
+    sudo = get_sudo(run_local)
     # Splinter needs lxml, which needs libxml2-dev and libxslt-dev
     # Django's translations need gettext
     sudo('apt-get install libxml2-dev libxslt-dev gettext')
@@ -254,7 +288,7 @@ def install_python_pkg_dependencies(run_local=env['run_local']):
 @task
 def install_nginx(run_local=env['run_local']):
     """ Install the nginx webserver, used to serve static assets. """
-    sudo = _sudo if not run_local else local_sudo
+    sudo = get_sudo(run_local)
     sudo('apt-get install nginx')
     # Disable the default nginx site
     sudo('rm /etc/nginx/sites-enabled/default') 
@@ -262,7 +296,7 @@ def install_nginx(run_local=env['run_local']):
 @task
 def install_jetty_script(dest_file="/etc/init.d/jetty", run_local=env['run_local']):
     """Install jetty start/stop script""" 
-    sudo = _sudo if not run_local else local_sudo
+    sudo = get_sudo(run_local)
     jetty_sh = os.path.join('scripts', 'jetty.sh')
     if not os.path.exists(dest_file):
         sudo('cp %s %s' % (jetty_sh, dest_file))
@@ -274,7 +308,7 @@ def install_jetty_script(dest_file="/etc/init.d/jetty", run_local=env['run_local
 def install_jetty_config(jettyrc_dest="/etc/default/jetty",
         jetty_logging_dest=os.path.join(env['solr_root'], 'etc'),
         run_local=env['run_local']):
-    sudo = _sudo if not run_local else local_sudo
+    sudo = get_sudo(run_local)
     jettyrc = os.path.join('config', 'template', 'jettyrc')
     if not os.path.exists(jettyrc_dest):
         sudo('cp %s %s' % (jettyrc, jettyrc_dest))
@@ -291,8 +325,8 @@ def install_solr_example(solr_version='3.6.2', run_local=env['run_local']):
     Install the Solr search server using the example shipped with Solr as
     a starting point
     """
-    run = _run if not run_local else local
-    sudo = _sudo if not run_local else local_sudo
+    run = get_run(run_local)
+    sudo = get_sudo(run_local)
     sudo('apt-get install openjdk-7-jdk')
     solr_download_base = "https://archive.apache.org/dist"
     run('wget -P /tmp %s/lucene/solr/%s/apache-solr-%s.tgz' %
@@ -324,7 +358,7 @@ def install_solr(solr_version='3.6.2', run_local=env['run_local']):
 def install_solr_2155(instance=env['instance'],
         solr_lib_root=env['solr_lib_root'], run_local=env['run_local']):
     """Install the Solr-2155 Plugin to allow multivalue spatial fields"""
-    sudo = _sudo if not run_local else local_sudo
+    sudo = get_sudo(run_local)
     plugin_url = "https://github.com/downloads/dsmiley/SOLR-2155/Solr2155-1.0.5.jar"
     solr_lib_dir = os.path.join(solr_lib_root, instance, 'lib')
     sudo("wget -P %s %s" % (solr_lib_dir, plugin_url))
@@ -342,13 +376,16 @@ def create_spatial_db_template():
     run('rm /tmp/create_template_postgis-debian.sh')
 
 @task
-def createdb(name=env['instance']):
+def createdb(name=env['instance'], run_local=env['run_local']):
     """ Create the database """
+    sudo = get_sudo(run_local)
     sudo("createdb -T template_postgis %s" % (name), user='postgres')
 
 @task 
-def createuser(username=env['instance'], dbname=env['instance']):
+def createuser(username=env['instance'], dbname=env['instance'],
+               run_local=env['run_local']):
     """ Create a Postgresql user for this instance and grant them the permissions Django needs to the database """
+    sudo = get_sudo(run_local)
     sudo("createuser --encrypted --pwprompt %s" % (username), user='postgres')
     print "You need to make sure you have a line like one of the following "
     print "in your pg_hba.conf:"
@@ -408,9 +445,14 @@ def upload_config(config_dir=None):
     put(config_dir, remote_dir)
 
 @task
-def install_config(instance=env['instance'], solr_root=env['solr_root']):
+def install_config(instance=env['instance'], project_root=env['project_root'],
+        solr_conf_root=env['solr_conf_root'], solr_multicore=True,
+        run_local=env['run_local']):
     """ Install files that were uploaded via upload_local_config to their final homes """
-    with cd(env['instance_root'] + '/atlas/'):
+    cd = get_cd(run_local)
+    run = get_run(run_local)
+    sudo = get_sudo(run_local)
+    with cd(project_root):
         run("cp config/%s/settings.py settings/%s.py" % (instance, instance))
         run("cp config/%s/wsgi.py wsgi.py" % (instance))
         sudo("cp config/%s/apache/site /etc/apache2/sites-available/%s" %
@@ -418,14 +460,15 @@ def install_config(instance=env['instance'], solr_root=env['solr_root']):
         sudo("cp config/%s/nginx/site /etc/nginx/sites-available/%s" %
              (instance, instance))
 
-    install_solr_config(instance, solr_root)
+    install_solr_config(instance, project_root, solr_conf_root,
+                        solr_multicore, run_local)
 
 @task
 def install_solr_config(instance=env['instance'], project_root=env['project_root'],
                         solr_conf_root=env['solr_conf_root'], solr_multicore=True,
                         run_local=env['run_local']):
-    sudo = _sudo if not run_local else local_sudo
-    cd = _cd if not run_local else lcd
+    sudo = get_sudo(run_local)
+    cd = get_cd(run_local)
 
     solr_conf_dir = ("%s/%s/conf" % (solr_conf_root, instance)
                      if solr_multicore else "%s/conf" % (solr_conf_root))
@@ -509,7 +552,7 @@ def make_solr_data_dir(instance=env['instance'],
                        solr_data_root=env['solr_data_root'],
                        run_local=env['run_local']):
     """ Make the directory for the instance's Solr core data """
-    sudo = _sudo if not run_local else local_sudo
+    sudo = get_sudo(run_local)
     solr_data_dir = "%s/%s" % (solr_data_root, instance)
     sudo("mkdir -p %s/data" % (solr_data_dir))
 
@@ -517,7 +560,7 @@ def make_solr_data_dir(instance=env['instance'],
 def make_solr_conf_dir(instance=env['instance'],
         solr_conf_root=env['solr_conf_root'], run_local=env['run_local']):
     """ Make the directory for the instance's Solr core configuration """
-    sudo = _sudo if not run_local else local_sudo
+    sudo = get_sudo(run_local)
     solr_conf_dir = "%s/%s/conf" % (solr_conf_root, instance)
     sudo("mkdir -p %s/" % (solr_conf_dir))
 
@@ -525,14 +568,14 @@ def make_solr_conf_dir(instance=env['instance'],
 def make_solr_lib_dir(instance=env['instance'],
         solr_lib_root=env['solr_lib_root'], run_local=env['run_local']):
     """ Make the directory for the instance's Solr core configuration """
-    sudo = _sudo if not run_local else local_sudo
+    sudo = get_sudo(run_local)
     solr_lib_dir = "%s/%s/lib" % (solr_lib_root, instance)
     sudo("mkdir -p %s/" % (solr_lib_dir))
 
 @task
 def restart_jetty(run_local=env['run_local']):
     """ Restart the Jetty application server (effictively restarting Solr) """
-    sudo = _sudo if not run_local else local_sudo
+    sudo = get_sudo(run_local)
     sudo("service jetty restart")
 
 @task
