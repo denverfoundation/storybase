@@ -12,9 +12,7 @@ postgres:
   username: postgres
 before_install: ./scripts/ci_before_install.sh
 before_script: ./scripts/ci_before_script.sh
-after_failure: cat /usr/local/share/solr/logs/*.log
 branches:
   only:
     - master
     - develop
-    - updated_solr_install
