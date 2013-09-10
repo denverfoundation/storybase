@@ -305,8 +305,8 @@ def install_solr_example(solr_version='3.6.2', run_local=env['run_local']):
     run('rm -rf /tmp/apache-solr-%s' % (solr_version))
     run('rm /tmp/apache-solr-%s.tgz' % (solr_version))
 
-    install_jetty_script(run_local)
-    install_jetty_config(run_local)
+    install_jetty_script(run_local=run_local)
+    install_jetty_config(run_local=run_local)
 
     sys.stdout.write("You may need to edit the settings for starting Jetty "
            "by default these are in /etc/default/jetty. "
