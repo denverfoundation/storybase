@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.15
+~~~~
+
+* Activity content type (#853)
+
 0.14
 ~~~~
 

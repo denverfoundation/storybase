@@ -2,6 +2,14 @@
 Upgrading
 =========
 
+0.13.* to 0.15
+==============
+
+Version 0.15 adds an ``Activity`` model.  A schema migration is needed
+to add the database tables for this model::
+
+    python manage.py migrate cmsplugin_storybase
+
 0.12.* to 0.13 
 ==============
 
