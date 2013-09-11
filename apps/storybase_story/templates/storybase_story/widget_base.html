@@ -35,18 +35,32 @@
         {% endif %}
       </footer>
     </article>
+    {% compress js inline %}
     <script type="text/javascript">
-    (function(w, d) {
-      var h = function(e) {
-        e = e || window.event;
-        w.open(this.getAttribute('href'), '_blank', 'modal=yes,alwaysRaised=yes');
-        e.preventDefault ? e.preventDefault() : e.returnValue = false;
+    (function(win, doc) {
+      var handleClick = function(event) {
+        // In IE8, we must work with the global event object.
+        event = event || window.event;
+
+        // Attempt to force a new window. This is still overridable via 
+        // modifier in modern browsers.
+        win.open(this.getAttribute('href'), '_blank', 'modal=yes,alwaysRaised=yes');
+        
+        // Stop default action. In some versions of IE this is done via 
+        // returnValue prop. Compliant browsers offer preventDefault.
+        event.preventDefault ? event.preventDefault() : event.returnValue = false;
       };
-      var a = d.getElementsByTagName('a');
-      for (var i = 0; i < a.length; i++) {
-        a[i].onclick = (function(el) { return function(ev) { h.call(el, ev); } })(a[i]);
+      
+      // Set up click handlers for all anchor tags.
+      var anchors = doc.getElementsByTagName('a');
+      for (var i = 0; i < anchors.length; i++) {
+        // Bind anchor element to handler via closure.
+        anchors[i].onclick = (function(el) { 
+          return function(event) { handleClick.call(el, event); } 
+        })(anchors[i]);
       }
     })(window, document);
     </script>
+    {% endcompress %}
   </body>
 </html>
