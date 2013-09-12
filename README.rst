@@ -15,6 +15,9 @@ Changelog
 ~~~~
 
 * Activity content type (#853)
+* Updated Fabric tasks for deployment and installation
+* Updated Fabric tasks to install Solr from tarball instead of updating the
+  old Ubuntu packages
 
 0.14
 ~~~~
