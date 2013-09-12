@@ -23,6 +23,79 @@ class List(CMSPlugin):
     num_items = models.IntegerField(default=3)
 
 
+class ActivityTranslation(TranslationModel):
+    activity = models.ForeignKey('Activity')
+    title = ShortTextField()
+    description = models.TextField()
+    supplies = models.TextField(blank=True, verbose_name=_("Required supplies"))
+    time = models.CharField(max_length=200, blank=True,
+        verbose_name=_("Time it takes to do"))
+    num_participants = models.CharField(max_length=200, blank=True,
+        verbose_name=_("Number of participants"))
+    # This is a text field, rather than something more structured,
+    # because there are a variable number of handouts, and each handout
+    # can have a variable number of formats (PDF, Google Doc, Floodlight
+    # Story, etc.)
+    links = models.TextField(blank=True,
+        verbose_name=_("Links to the full activity"),
+        help_text=_("These are materials/handouts we have been using in "
+            "Story-Rasings"))
+
+
+class Activity(TranslatedModel):
+    """
+    Metadata for a storytelling activity
+    
+    This content is similar to Mozilla's Webmaker guides:
+
+    * Overview - https://webmaker.org/event-guides
+    * Example guide (Hack Jam) - https://webmaker.makes.org/thimble/host-a-hackjam
+    * Hactivities menu - http://hivenyc.org/hacktivityGrid.html
+
+    """
+    slug = models.SlugField(blank=True,
+        help_text=_("A short, unique label for this activity. It is also "
+                    "used to build URLs for the activity. This field can only "
+                    "contain letters, numbers, underscores or hyphens"))
+    # This will be used as the thumbnail when activities are aggregated
+    image = FilerImageField(blank=True, null=True,
+        help_text=_("Image used as the thumbnail when activities are listed. "
+                    "Additional images can be shown on the related CMS page"))
+    page = models.OneToOneField(Page, blank=True, null=True,
+        help_text=_("CMS page that provides additional, free-form information "
+                    "about thei activity"))
+
+    translated_fields = ['title', 'description', 'supplies', 'time',
+                         'num_participants', 'links']
+    translation_set = 'activitytranslation_set'
+    translation_class = ActivityTranslation
+
+    class Meta:
+        verbose_name_plural = _("Activities")
+
+    def __unicode__(self):
+        return self.title
+
+def set_activity_slug(sender, instance, **kwargs):
+    try:
+        if not instance.activity.slug:
+            unique_slugify(instance.activity, instance.title)
+        instance.activity.save()
+    except Activity.DoesNotExist:
+        # Instance doesn't have a related Activity.
+        # Encountered this when loading fixture
+        pass
+
+post_save.connect(set_activity_slug, sender=ActivityTranslation)
+
+
+class ActivityPlugin(CMSPlugin):
+    activity = models.ForeignKey(Activity, related_name='plugins')
+
+    def __unicode__(self):
+        return self.activity.title
+
+
 class NewsItemPermission(PermissionMixin):
     """Permissions for the NewsItem model"""
     def user_can_view(self, user):
@@ -110,7 +183,7 @@ class NewsItem(NewsItemPermission, PublishedModel, TimestampedModel,
         }
 
 
-def set_slug(sender, instance, **kwargs):
+def set_newsitem_slug(sender, instance, **kwargs):
     try:
         if not instance.news_item.slug:
             unique_slugify(instance.news_item, instance.title)
@@ -122,7 +195,7 @@ def set_slug(sender, instance, **kwargs):
 
 
 pre_save.connect(set_date_on_published, sender=NewsItem)
-post_save.connect(set_slug, sender=NewsItemTranslation)
+post_save.connect(set_newsitem_slug, sender=NewsItemTranslation)
 
 
 def create_news_item(title, body, image=None, image_filename=None,

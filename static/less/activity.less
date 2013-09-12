@@ -1,0 +1,26 @@
+// Styles for the Activity content type
+.activity-plugin {
+  float: left;
+  margin: 0 20px 20px 0;
+  width: 240px;
+
+  .title {
+    // Clobber default header margins 
+    margin-top: 0;
+    font-weight: bold;
+  }
+
+  .description {
+    //border-top: 1px solid @medium-gray; 
+    margin: 4px 0;      
+    text-align: justify;
+  }
+
+  dt, dd { float: left; }
+  dt { 
+    clear: left;
+    margin-right: 4px; 
+    font-weight: bold;
+  }
+  dt:after { content: ": " }
+}

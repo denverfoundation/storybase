@@ -6,9 +6,19 @@ from cms.plugin_pool import plugin_pool
 
 from storybase_messaging.forms import SiteContactMessageForm 
 
-from cmsplugin_storybase.models import (StoryPlugin as StoryPluginModel,
+from cmsplugin_storybase.models import (ActivityPlugin as ActivityPluginModel,
+    StoryPlugin as StoryPluginModel,
     HelpPlugin as HelpPluginModel)
 
+
+class ActivityPlugin(CMSPluginBase):
+    model = ActivityPluginModel
+    name = _("StoryBase Activity")
+    render_template = "cmsplugin_storybase/activity_plugin.html"
+
+    def render(self, context, instance, placeholder):
+        context['instance'] = instance
+        return context
 
 class ContactFormPlugin(CMSPluginBase):
     model = CMSPlugin
@@ -39,6 +49,7 @@ class HelpPlugin(CMSPluginBase):
         context['instance'] = instance
         return context
 
+plugin_pool.register_plugin(ActivityPlugin)
 plugin_pool.register_plugin(ContactFormPlugin)
 plugin_pool.register_plugin(StoryPlugin)
 plugin_pool.register_plugin(HelpPlugin)

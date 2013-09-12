@@ -1,15 +1,18 @@
 """Fabric tasks to deploy atlas
 
-Tested on Ubuntu 11.10
+Tested on Ubuntu 12.04 
 
 """
 import os
+import os.path
+from pprint import pprint
+import sys
+
 from fabric.api import env, execute, local, settings, task
 from fabric.context_managers import cd as _cd, lcd, prefix
 from fabric.contrib.files import exists as _exists
 from fabric.operations import put, run as _run, sudo as _sudo
 from fabric.utils import abort, puts
-from pprint import pprint
 
 # Set up some default environment
 
@@ -34,7 +37,7 @@ have write permissions on it. This is what I did to get started:
 """
 
 env['project_root'] = env.get('project_root',
-                          os.path.join(env['instance_root'], 'atlas'))
+                              os.path.join(env['instance_root'], 'atlas'))
 """The path to this Django project"""
 
 env['production'] = env.get('production', False)
@@ -55,8 +58,15 @@ env['db_auth_config'] = env.get('db_auth_config',
                                 '/etc/postgresql/9.1/main/pg_hba.conf')
 """Path to PostgreSQL's client authentication configuration file"""
 
-env['solr_root'] = env.get('solr_root', '/usr/local/share/solr3')
-env['solr_data_root'] = env.get('solr_data_root', '/usr/local/lib/solr3')
+env['solr_root'] = env.get('solr_root', '/usr/local/share/solr')
+env['solr_core_root'] = env.get('solr_core_root',
+    os.path.join(env['solr_root'], 'multicore'))
+env['solr_data_root'] = env.get('solr_data_root',
+                                env['solr_core_root'])
+env['solr_conf_root'] = env.get('solr_conf_root',
+                                env['solr_core_root'])
+env['solr_lib_root'] = env.get('solr_conf_root',
+                                env['solr_core_root'])
 
 env['run_local'] = env.get('run_local', False)
 
@@ -69,14 +79,15 @@ def _escape_slashes(value):
     import re
     return re.sub(r'/', r'\\/', value)
 
-def local_sudo(command, capture=False):
+def local_sudo(command, capture=False, user=None):
     """Naive wrapper for running local commands with sudo.
 
     This allows keeping the same command string for both local and remote
     execution.
 
     """
-    local("sudo %s" % (command), capture)
+    sudo_prefix = "-u %s " % user if user is not None else ""
+    local("sudo %s%s" % (sudo_prefix, command), capture)
 
 def local_exists(path, use_sudo=False, verbose=False):
     """Check if a local path exists"""
@@ -85,10 +96,43 @@ def local_exists(path, use_sudo=False, verbose=False):
     else:
         return False
 
+# Command running functions should default to their remote versions
 sudo = _sudo
 run = _run
 cd = _cd
 exists = _exists
+
+def get_sudo(run_local=env['run_local']):
+    """
+    Return a function that executes a command using sudo
+    
+    If ``run_local`` is True, return a function that executes
+    the command on the local host.  Otherwise return Fabric's
+    default ``sudo()`` function.
+
+    """
+    return _sudo if not run_local else local_sudo
+
+def get_run(run_local=env['run_local']):
+    """
+    Return a function that executes a command
+
+    If ``run_local`` is True, returns Fabric's ``local()``.
+    Otherwise return Fabric's default ``run()`` function.
+
+    """
+    return run if not run_local else local
+
+def get_cd(run_local=env['run_local']):
+    """
+    Return a function that changes the context to a particular
+    directory.
+
+    If ``run_local`` is True, returns Fabric's ``lcd()``,
+    otherwise returns ``cd()``
+
+    """
+    return _cd if not run_local else lcd
 
 @task
 def check_local_config(config_dir=None):
@@ -176,142 +220,148 @@ def print_env():
     pprint(env)
 
 @task
-def install_python_tools():
+def install_python_tools(run_local=env['run_local']):
     """ Install python tools to make deployment easier """
+    sudo = get_sudo(run_local)
     sudo('apt-get install python-setuptools')
     sudo('easy_install pip')
     sudo('pip install virtualenv')
 
 @task
-def mkvirtualenv():
+def mkvirtualenv(run_local=env['run_local']):
     """Create the virtualenv for the deployment""" 
+    run = get_run(run_local)
     with cd(env['instance_root']):
         run('virtualenv --distribute --no-site-packages venv') 
 
 @task
-def install_apache():
+def install_apache(run_local=env['run_local']):
     """ Install the Apache 2 webserver """
+    sudo = get_sudo(run_local)
     sudo('apt-get install apache2')
         
 @task
-def install_mod_wsgi():
+def install_mod_wsgi(run_local=env['run_local']):
     """ Install Apache mod_wsgi """
+    sudo = get_sudo(run_local)
     sudo('apt-get install libapache2-mod-wsgi')
     sudo('a2enmod wsgi')
 
 @task
-def install_postgres():
+def install_postgres(run_local=env['run_local']):
     """ Installs Postgresql package """
+    sudo = get_sudo(run_local)
     sudo('apt-get install postgresql postgresql-server-dev-9.1')
 
 @task
-def install_spatial():
+def install_spatial(run_local=env['run_local']):
     """ Install geodjango dependencies """
+    sudo = get_sudo(run_local)
     sudo('apt-get install binutils gdal-bin libproj-dev postgresql-9.1-postgis')
 
 @task
-def install_pil_dependencies():
+def install_pil_dependencies(run_local=env['run_local']):
+    sudo = get_sudo(run_local)
     """ Install the dependencies for the PIL library """
     sudo('apt-get install python-dev libfreetype6-dev zlib1g-dev libjpeg8-dev')
 
 @task
-def make_pil_dependency_symlinks():
+def make_pil_dependency_symlinks(run_local=env['run_local']):
     """ Make symlinks so PIL finds correct libraries 
     
     See http://www.jayzawrotny.com/blog/django-pil-and-libjpeg-on-ubuntu-1110
     """
+    sudo = get_sudo(run_local)
     sudo('ln -s /usr/lib/i386-linux-gnu/libjpeg.so /usr/lib')
     sudo('ln -s /usr/lib/i386-linux-gnu/libfreetype.so /usr/lib')
     sudo('ln -s /usr/lib/i386-linux-gnu/libz.so /usr/lib')
     sudo('ln -s /lib/i386-linux-gnu/libpng12.so.0 /usr/lib')
 
 @task
-def install_python_package_depencies():
+def install_python_pkg_dependencies(run_local=env['run_local']):
     """ Install libraries needed by Python packages that will be installed later """
+    sudo = get_sudo(run_local)
     # Splinter needs lxml, which needs libxml2-dev and libxslt-dev
     # Django's translations need gettext
     sudo('apt-get install libxml2-dev libxslt-dev gettext')
 
 @task
-def install_nginx():
+def install_nginx(run_local=env['run_local']):
     """ Install the nginx webserver, used to serve static assets. """
+    sudo = get_sudo(run_local)
     sudo('apt-get install nginx')
     # Disable the default nginx site
     sudo('rm /etc/nginx/sites-enabled/default') 
 
 @task
-def install_solr(run_local=env['run_local']):
-    """ Install the Solr search server """
-    runner = run if not run_local else local
-    sudo_runner = sudo if not run_local else local_sudo
-    # Solr doesn't work with openjdk-7-jdk, we need to install oepnjdk-6-jdk
-    # as a workaround. See https://bugs.launchpad.net/ubuntu/+source/solr/+bug/901165
-    sudo_runner('apt-get install openjdk-6-jdk')
-    sudo_runner('apt-get install solr-jetty')
-    print "You'll probably need to edit /etc/default/jetty"
+def install_jetty_script(dest_file="/etc/init.d/jetty", run_local=env['run_local']):
+    """Install jetty start/stop script""" 
+    sudo = get_sudo(run_local)
+    jetty_sh = os.path.join('scripts', 'jetty.sh')
+    if not os.path.exists(dest_file):
+        sudo('cp %s %s' % (jetty_sh, dest_file))
+        sudo('chmod 0755 %s' % dest_file)
+    else:
+        sys.stderr.write("%s already exists\n" % (dest_file))
 
 @task
-def upgrade_to_solr3(solr_version='3.6.2', run_local=env['run_local']):
-    """
-    Upgrade Solr to version 3.5+ as the version supported in the
-    Ubuntu packages don't support spatial queries
-    """
-    run = _run if not run_local else local
-    sudo = _sudo if not run_local else local_sudo
-    exists = _exists if not run_local else local_exists
+def install_jetty_config(jettyrc_dest="/etc/default/jetty",
+        jetty_logging_dest=os.path.join(env['solr_root'], 'etc'),
+        run_local=env['run_local']):
+    sudo = get_sudo(run_local)
+    jettyrc = os.path.join('config', 'template', 'jettyrc')
+    if not os.path.exists(jettyrc_dest):
+        sudo('cp %s %s' % (jettyrc, jettyrc_dest))
+    else:
+        sys.stderr.write("%s already exists\n" % (jettyrc_dest))
 
-    sudo('mkdir /usr/local/share/solr3')
-    sudo('mkdir /usr/local/etc/solr3')
-    sudo('mkdir -p /usr/local/lib/solr3/data')
-    sudo('chown -R jetty /usr/local/lib/solr3/data')
-    run('wget -P /tmp http://apache.osuosl.org/lucene/solr/%s/apache-solr-%s.tgz' % (solr_version, solr_version))
+    jetty_logging = os.path.join('config', 'template', 'jetty-logging.xml')
+    sudo('cp %s %s' % (jetty_logging, jetty_logging_dest))
+  
+
+@task
+def install_solr_example(solr_version='3.6.2', run_local=env['run_local']):
+    """
+    Install the Solr search server using the example shipped with Solr as
+    a starting point
+    """
+    run = get_run(run_local)
+    sudo = get_sudo(run_local)
+    sudo('apt-get install openjdk-7-jdk')
+    solr_download_base = "https://archive.apache.org/dist"
+    run('wget -P /tmp %s/lucene/solr/%s/apache-solr-%s.tgz' %
+        (solr_download_base, solr_version, solr_version))
     run('tar --directory=/tmp -zxf /tmp/apache-solr-%s.tgz' % (solr_version))
-    sudo('unzip -d /usr/local/share/solr3/ /tmp/apache-solr-%s/dist/apache-solr-%s.war' % (solr_version, solr_version))
-    
-    # Make symlinks to mirror Ubuntu/Debian layout
-    sudo('ln -s /usr/local/etc/solr3/conf /usr/local/share/solr3/conf')
-    sudo('ln -s /usr/local/etc/solr3/ /etc/solr3')
-    sudo('ln -s /usr/local/lib/solr3/ /var/lib/solr3')
-
-    # Copy existing configuration
-    sudo('cp -a /etc/solr/* /usr/local/etc/solr3/')
-    print ("You need to manually edit "
-           "/usr/local/etc/solr3/conf/solrconfig.xml and set the dataDir "
-           "element to /usr/local/lib/solr3/data")
-    if exists("/usr/share/solr/solr.xml"):
-        sudo('cp /usr/share/solr/solr.xml /usr/local/share/solr3/')
-    print ("You need to manually edit "
-           "/usr/local/share/solr3/solr.xml and set eacho core's dataDir "
-           "element to a subdirectory of /usr/lib/solr3")
-
-    # Copy jetty JARs to new solr directory
-    sudo("cp /usr/share/solr/WEB-INF/lib/jetty* /usr/local/share/solr3/WEB-INF/lib/")
-    # Copy jetty config 
-    sudo("cp /usr/share/solr/WEB-INF/jetty-web.xml /usr/local/share/solr3/WEB-INF/")
-    print ("You need to manually edit "
-           "/usr/local/share/solr3/WEB-INF/jetty-web.xml to reflect the new "
-           "Solr location or run the update_solr_jetty_config task to try "
-           "to do it automatically")
-
-    # Make Solr3 instance available to Jetty
-    sudo("ln -s /usr/local/share/solr3/ /usr/share/jetty/webapps")
-    # Remove symlink to old Solr
-    sudo("rm /usr/share/jetty/webapps/solr")
+    sudo('cp -r /tmp/apache-solr-%s/example/ %s' %
+         (solr_version, env['solr_root']))
 
     # Clean up downloaded files
     run('rm -rf /tmp/apache-solr-%s' % (solr_version))
     run('rm /tmp/apache-solr-%s.tgz' % (solr_version))
 
-    print ("Next, you'll need to create configuration and data directories "
+    install_jetty_script(run_local=run_local)
+    install_jetty_config(run_local=run_local)
+
+    sys.stdout.write("You may need to edit the settings for starting Jetty "
+           "by default these are in /etc/default/jetty. "
+           "Next, you'll need to create configuration and data directories "
            "for each instance's core by runing the make_solr_data_dir and "
-           "make_solr_config_dir tasks.  Finally, restart Jetty using the "
+           "make_solr_conf_dir tasks.  Finally, restart Jetty using the "
            "restart_jetty task")
 
 @task
-def install_solr_2155(solr_root=env['solr_root'], run_local=env['run_local']):
+def install_solr(solr_version='3.6.2', run_local=env['run_local']):
+    """Install the Solr search server"""
+    install_solr_example(solr_version, run_local)
+
+@task
+def install_solr_2155(instance=env['instance'],
+        solr_lib_root=env['solr_lib_root'], run_local=env['run_local']):
     """Install the Solr-2155 Plugin to allow multivalue spatial fields"""
-    sudo = _sudo if not run_local else local_sudo
-    sudo("wget -P %s/WEB-INF/lib/ https://github.com/downloads/dsmiley/SOLR-2155/Solr2155-1.0.5.jar" % (solr_root))
+    sudo = get_sudo(run_local)
+    plugin_url = "https://github.com/downloads/dsmiley/SOLR-2155/Solr2155-1.0.5.jar"
+    solr_lib_dir = os.path.join(solr_lib_root, instance, 'lib')
+    sudo("wget -P %s %s" % (solr_lib_dir, plugin_url))
 
 @task
 def create_spatial_db_template():
@@ -326,13 +376,16 @@ def create_spatial_db_template():
     run('rm /tmp/create_template_postgis-debian.sh')
 
 @task
-def createdb(name=env['instance']):
+def createdb(name=env['instance'], run_local=env['run_local']):
     """ Create the database """
+    sudo = get_sudo(run_local)
     sudo("createdb -T template_postgis %s" % (name), user='postgres')
 
 @task 
-def createuser(username=env['instance'], dbname=env['instance']):
+def createuser(username=env['instance'], dbname=env['instance'],
+               run_local=env['run_local']):
     """ Create a Postgresql user for this instance and grant them the permissions Django needs to the database """
+    sudo = get_sudo(run_local)
     sudo("createuser --encrypted --pwprompt %s" % (username), user='postgres')
     print "You need to make sure you have a line like one of the following "
     print "in your pg_hba.conf:"
@@ -392,9 +445,14 @@ def upload_config(config_dir=None):
     put(config_dir, remote_dir)
 
 @task
-def install_config(instance=env['instance'], solr_root=env['solr_root']):
+def install_config(instance=env['instance'], project_root=env['project_root'],
+        solr_conf_root=env['solr_conf_root'], solr_multicore=True,
+        run_local=env['run_local']):
     """ Install files that were uploaded via upload_local_config to their final homes """
-    with cd(env['instance_root'] + '/atlas/'):
+    cd = get_cd(run_local)
+    run = get_run(run_local)
+    sudo = get_sudo(run_local)
+    with cd(project_root):
         run("cp config/%s/settings.py settings/%s.py" % (instance, instance))
         run("cp config/%s/wsgi.py wsgi.py" % (instance))
         sudo("cp config/%s/apache/site /etc/apache2/sites-available/%s" %
@@ -402,17 +460,18 @@ def install_config(instance=env['instance'], solr_root=env['solr_root']):
         sudo("cp config/%s/nginx/site /etc/nginx/sites-available/%s" %
              (instance, instance))
 
-    install_solr_config(instance, solr_root)
+    install_solr_config(instance, project_root, solr_conf_root,
+                        solr_multicore, run_local)
 
 @task
 def install_solr_config(instance=env['instance'], project_root=env['project_root'],
-                        solr_root=env['solr_root'], solr_multicore=True,
+                        solr_conf_root=env['solr_conf_root'], solr_multicore=True,
                         run_local=env['run_local']):
-    sudo = _sudo if not run_local else local_sudo
-    cd = _cd if not run_local else lcd
+    sudo = get_sudo(run_local)
+    cd = get_cd(run_local)
 
-    solr_conf_dir = "%s/%s/conf" % (solr_root, instance) if solr_multicore else "%s/conf" % (solr_root)
-
+    solr_conf_dir = ("%s/%s/conf" % (solr_conf_root, instance)
+                     if solr_multicore else "%s/conf" % (solr_conf_root))
     with cd(project_root): 
         sudo("cp config/%s/solr/solrconfig.xml %s/" %
              (instance, solr_conf_dir))
@@ -490,43 +549,34 @@ def write_solr_xml(instance=env['instance']):
 
 @task
 def make_solr_data_dir(instance=env['instance'], 
-                       solr_data_root=env['solr_data_root']):
+                       solr_data_root=env['solr_data_root'],
+                       run_local=env['run_local']):
     """ Make the directory for the instance's Solr core data """
+    sudo = get_sudo(run_local)
     solr_data_dir = "%s/%s" % (solr_data_root, instance)
     sudo("mkdir -p %s/data" % (solr_data_dir))
-    sudo("chown -R jetty %s/" % (solr_data_dir))
 
 @task
-def make_solr_config_dir(instance=env['instance'], solr_root=env['solr_root'],
-                         run_local=env['run_local']):
+def make_solr_conf_dir(instance=env['instance'],
+        solr_conf_root=env['solr_conf_root'], run_local=env['run_local']):
     """ Make the directory for the instance's Solr core configuration """
-    sudo = _sudo if not run_local else local_sudo
-    solr_conf_dir = "%s/%s/conf" % (solr_root, instance)
+    sudo = get_sudo(run_local)
+    solr_conf_dir = "%s/%s/conf" % (solr_conf_root, instance)
     sudo("mkdir -p %s/" % (solr_conf_dir))
 
 @task
-def enable_jetty_start(run_local=env['run_local']):
-    """Edit /etc/default/jetty so it can start"""
-    sudo = _sudo if not run_local else local_sudo
-    sudo("sed -i.bak -r -e \"s/NO_START=1/NO_START=0/g\" /etc/default/jetty")
+def make_solr_lib_dir(instance=env['instance'],
+        solr_lib_root=env['solr_lib_root'], run_local=env['run_local']):
+    """ Make the directory for the instance's Solr core configuration """
+    sudo = get_sudo(run_local)
+    solr_lib_dir = "%s/%s/lib" % (solr_lib_root, instance)
+    sudo("mkdir -p %s/" % (solr_lib_dir))
 
 @task
 def restart_jetty(run_local=env['run_local']):
     """ Restart the Jetty application server (effictively restarting Solr) """
-    sudo = _sudo if not run_local else local_sudo
+    sudo = get_sudo(run_local)
     sudo("service jetty restart")
-
-@task
-def update_solr_jetty_config(solr_root=env['solr_root'],
-                             run_local=env['run_local']):
-    """Update Jetty config file to reflect Solr3 location"""
-    sudo = _sudo if not run_local else local_sudo
-
-    old_solr_root = "/usr/share/solr"
-    new_solr_root = solr_root
-    sudo("sed -i.bak -r -e \"s/%s/%s/g\" %s/WEB-INF/jetty-web.xml" %
-         (_escape_slashes(old_solr_root), _escape_slashes(new_solr_root),
-          solr_root))
 
 @task
 def manual_configuration_msg():
@@ -539,7 +589,6 @@ def manual_configuration_msg():
            "    * Configure TinyMCE to allow cross-domain use\n")
     puts(msg)
 
-
 @task
 def create_instance():
     """Run all tasks to make a new, deployed instance of the software"""
@@ -548,7 +597,8 @@ def create_instance():
     execute(check_db_auth_config)
     execute(make_log_directory)
     execute(make_solr_data_dir)
-    execute(make_solr_config_dir)
+    execute(make_solr_conf_dir)
+    execute(make_solr_lib_dir)
     execute(mkvirtualenv)
     execute(createdb)
     execute(createuser)

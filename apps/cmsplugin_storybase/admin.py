@@ -7,9 +7,23 @@ from cms.models import Page
 from cms.utils import get_language_from_request
 from storybase.admin import (StorybaseModelAdmin, StorybaseStackedInline,
         obj_title)
-from cmsplugin_storybase.forms import NewsItemTranslationAdminForm
-from cmsplugin_storybase.models import (NewsItem, NewsItemTranslation,
-    Teaser, EmptyTeaser)
+from cmsplugin_storybase.forms import (ActivityTranslationAdminForm, 
+    NewsItemTranslationAdminForm)
+from cmsplugin_storybase.models import (Activity, ActivityTranslation,
+    NewsItem, NewsItemTranslation, Teaser, EmptyTeaser)
+    
+
+class ActivityTranslationInline(StorybaseStackedInline):
+    model = ActivityTranslation
+    form = ActivityTranslationAdminForm
+    extra = 1
+
+
+class ActivityAdmin(StorybaseModelAdmin):
+    list_display = (obj_title,)
+    search_fields = ['activitytranslation__title',]
+    inlines = [ActivityTranslationInline,]
+    prefix_inline_classes = ['ActivityTranslationInline',]
 
 
 class NewsItemTranslationInline(StorybaseStackedInline):
@@ -90,6 +104,7 @@ def update_fieldsets(cls):
 update_fieldsets(StorybasePageAdmin)
 
 
+admin.site.register(Activity, ActivityAdmin)
 admin.site.register(NewsItem, NewsItemAdmin)
 # Replace the default PageAdmin class with our own
 admin.site.unregister(Page)

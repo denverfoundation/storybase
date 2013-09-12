@@ -1,0 +1,7 @@
+JAVA_OPTIONS="-Dsolr.solr.home=/usr/local/share/solr/multicore $JAVA_OPTIONS"
+JETTY_HOME=/usr/local/share/solr
+JETTY_LOGS=/usr/local/share/solr/logs
+# You may need to uncomment and set these values
+#JETTY_PORT=
+#JETTY_RUN=
+

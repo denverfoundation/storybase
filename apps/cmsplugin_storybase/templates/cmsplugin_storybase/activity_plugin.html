@@ -1,0 +1,19 @@
+{% load thumbnail i18n %}
+{% with activity=instance.activity %}
+<div class="activity-plugin">
+    <h3 class="title">{{ activity.title }}</h3>
+    {# TODO: Decide on dimensions for this image #}
+    <img src="{% thumbnail activity.image 240x0 crop %}" width="240px" />
+    <div class="description">{{ activity.description }}</div>
+    <dl>
+        <dt>{% trans "Time" %}</dt>
+        <dd>{{ activity.time }}</dd>
+        <dt>{% trans "Supplies" %}</dt>
+        <dd>{{ activity.supplies }}</dd>
+        <dt>{% trans "People" %}</dt>
+        <dd>{{ activity.num_participants }}</dd> 
+        <dt>{% trans "Get activity" %}</dt>
+        <dd>{{ activity.links|safe }}</dd>
+    </dl>
+</div>
+{% endwith %}
