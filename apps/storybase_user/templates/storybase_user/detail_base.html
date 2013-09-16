@@ -28,8 +28,8 @@
    <ul class="navroot">{% show_menu 1 %}</ul>
 </nav>
 {% endcomment %}
-<a href="#" class="storybase-share-widget button gray" data-story-id="{{ object.slug }}" data-options='{"widgetUrl": "{{ object.get_absolute_url }}share-widget/"}'>{% trans "Share This" %} {{ object|classname|camelsplit|first }}</a>
-<a href="#" class="storybase-embed-widget button gray" data-story-id="{{ object.slug }}" data-options='{"widgetUrl": "{{ object.get_absolute_url }}embed-widget/", "header": "Embed This {{ object|classname|camelsplit|first }}"}'>{% trans "Embed This" %} {{ object|classname|camelsplit|first }}</a>
+<a href="#" class="storybase-share-button button gray" data-story-id="{{ object.slug }}" data-options='{"widgetUrl": "{{ object.get_absolute_url }}share-popup/"}'>{% trans "Share This" %} {{ object|classname|camelsplit|first }}</a>
+<a href="#" class="storybase-embed-button button gray" data-story-id="{{ object.slug }}" data-options='{"widgetUrl": "{{ object.get_absolute_url }}embed-popup/", "header": "Embed This {{ object|classname|camelsplit|first }}"}'>{% trans "Embed This" %} {{ object|classname|camelsplit|first }}</a>
 {% endblock %}
 
 {% block twocol-content %}

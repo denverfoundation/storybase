@@ -6044,11 +6044,11 @@
         if (options.delay) {
           // Wait until the status change has been saved to the
           // server before initializing the widget, otherwise the GET to
-          // /stories/{{story_id}}/share-widget/ endpoint will fail
+          // /stories/{{story_id}}/share-popup/ endpoint will fail
           this.model.once("sync", this.initSharingWidget, this);
           return;
         }
-        this.$('.storybase-share-widget').storybaseShare();
+        this.$('.storybase-share-button').storybaseShare();
       },
 
       renderSharing: function() {

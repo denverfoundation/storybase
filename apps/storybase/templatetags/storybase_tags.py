@@ -8,6 +8,7 @@ from django.template.defaultfilters import stringfilter
 from django.utils.encoding import force_unicode
 
 from storybase import settings as storybase_settings
+from storybase.utils import full_url
 
 register = Library()
 
@@ -171,3 +172,33 @@ def an(text):
         return 'an'
     return 'a'
 
+
+# Height in pixels of the IFRAME element rendered by the story
+# embed widget
+DEFAULT_EMBED_WIDGET_HEIGHT=500
+
+def _object_name(obj):
+    """
+    Get the name if a model instance
+
+    Returns the ``title`` attribute if it's present, if not, 
+    returns the ``name`` attribute. If neither is present,
+    return an empty string.
+
+    """
+    try:
+        return getattr(obj, 'title')
+    except AttributeError:
+        return getattr(obj, 'name', '')
+
+@register.inclusion_tag('storybase/embed_code.html')
+def embed_code(obj):
+    return {
+        'default_embed_widget_height': DEFAULT_EMBED_WIDGET_HEIGHT,
+        'object': obj,
+        'embed_class': ('storybase-story-embed' if obj.__class__.__name__ == 'Story'
+                        else 'storybase-list-embed'),
+        'object_name': _object_name(obj), 
+        'storybase_site_name': settings.STORYBASE_SITE_NAME,
+        'widget_js_url': full_url(settings.STATIC_URL + 'js/widgets.min.js'),
+    }

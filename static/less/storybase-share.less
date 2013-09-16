@@ -1,17 +1,17 @@
-.storybase-share-widget,
-.storybase-embed-widget {
+.storybase-share-button,
+.storybase-embed-button {
   .button-style(gray);
   &:before {
     font-family: "FontAwesome";
   }
 }
 
-.storybase-share-widget:before {
+.storybase-share-button:before {
   content:"\f045";
   margin-right:.5em;
 }
 
-.storybase-embed-widget:before {
+.storybase-embed-button:before {
   content:"\f121";
   margin-right:.5em;
 }
@@ -27,7 +27,8 @@
   background: white;
   z-index:20000;
   
-  .share-widget {
+  .share-popup,
+  .embed-popup {
     padding:10px;
   }
   

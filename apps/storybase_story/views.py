@@ -27,6 +27,7 @@ from storybase_story.models import (SectionLayout, Story, StoryRelation,
         StoryTemplate)
 from storybase_taxonomy.models import Category
 from storybase.utils import escape_json_for_html, simple_language_changer
+from storybase.views import EmbedPopupView, SharePopupView
 from storybase.views.generic import ModelIdDetailView, Custom404Mixin, VersionTemplateMixin
 
 
@@ -836,30 +837,15 @@ class ExplorerRedirectView(RedirectView):
         return url
 
 
-class StoryShareWidgetView(ModelIdDetailView):
+class StorySharePopupView(SharePopupView):
     """
-    Widget for sharing a story
-
-    This view provides the HTML for a popup window of sharing tools.  
-    It is designed to be fetched via an asynchronous request from 
-    JavaScript.
-
+    Popup content for sharing a story
     """
-    context_object_name = "story"
     queryset = Story.objects.published()
-    template_name = 'storybase_story/story_share_widget.html'
 
 
-class StoryEmbedWidgetView(ModelIdDetailView):
+class StoryEmbedPopupView(EmbedPopupView):
     """
-    Widget for embedding a story
-
-    While ``StoryWidgetView`` provides the HTML for the widget embedded
-    in a partner website, this view provides the HTML for a popup window
-    of sharing tools.  It is designed to be fetched via an asynchronous 
-    request from JavaScript
-
+    Popup content for embedding a story
     """
-    context_object_name = "story"
     queryset = Story.objects.published()
-    template_name = 'storybase_story/story_embed_widget.html'
