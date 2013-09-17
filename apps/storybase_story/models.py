@@ -206,6 +206,16 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
 
         return ('story_detail', [self.story_id])
 
+    def get_share_popup_url(self):
+        return urlresolvers.reverse("story_share_popup", kwargs={
+            'slug': self.slug
+        })
+
+    def get_embed_popup_url(self):
+        return urlresolvers.reverse("story_embed_popup", kwargs={
+            'slug': self.slug
+        })
+
     @property
     def contributor_name(self):
         """

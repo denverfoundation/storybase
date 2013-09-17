@@ -183,6 +183,16 @@ class Organization(PermissionBase, MembershipUtilsMixin, FeaturedAssetsMixin,
     def get_absolute_url(self):
         return ('organization_detail', [self.slug])
 
+    def get_share_popup_url(self):
+        return urlresolvers.reverse("organization_share_popup", kwargs={
+            'slug': self.slug
+        })
+
+    def get_embed_popup_url(self):
+        return urlresolvers.reverse("organization_embed_popup", kwargs={
+            'slug': self.slug
+        })
+
     def add_story(self, story, weight=0):
         """ Associate a story with the Organization 
         
@@ -339,6 +349,16 @@ class Project(PermissionBase, MembershipUtilsMixin, FeaturedAssetsMixin,
     def get_absolute_url(self):
         return ('project_detail', [self.slug])
 
+    def get_share_popup_url(self):
+        return urlresolvers.reverse("project_share_popup", kwargs={
+            'slug': self.slug
+        })
+
+    def get_embed_popup_url(self):
+        return urlresolvers.reverse("project_embed_popup", kwargs={
+            'slug': self.slug
+        })
+
     def add_story(self, story, weight=0):
         """ Associate a story with the Project 
         
@@ -492,6 +512,15 @@ class UserProfile(RecentStoriesMixin, models.Model):
 
         return ('userprofile_detail', (), 
                 {'profile_id': self.profile_id})
+
+    def get_share_popup_url(self):
+        if shortuuid:
+            profile_uuid = uuid.UUID(self.profile_id)
+            return urlresolvers.reverse('userprofile_share_popup', 
+                    kwargs={'short_profile_id': shortuuid.encode(profile_uuid)})
+
+        return urlresolvers.reverse('userprofile_share_popup',
+                kwargs={'profile_id': self.profile_id})
 
     def name(self):
         # Import needs to go here to prevent a circular import

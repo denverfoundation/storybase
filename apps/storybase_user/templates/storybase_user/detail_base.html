@@ -28,8 +28,14 @@
    <ul class="navroot">{% show_menu 1 %}</ul>
 </nav>
 {% endcomment %}
-<a href="#" class="storybase-share-button button gray" data-story-id="{{ object.slug }}" data-options='{"widgetUrl": "{{ object.get_absolute_url }}share-popup/"}'>{% trans "Share This" %} {{ object|classname|camelsplit|first }}</a>
-<a href="#" class="storybase-embed-button button gray" data-story-id="{{ object.slug }}" data-options='{"widgetUrl": "{{ object.get_absolute_url }}embed-popup/", "header": "Embed This {{ object|classname|camelsplit|first }}"}'>{% trans "Embed This" %} {{ object|classname|camelsplit|first }}</a>
+{% with share_popup_url=object.get_share_popup_url embed_popup_url=object.get_embed_popup_url %}
+{% if share_popup_url %}
+<a href="#" class="storybase-share-button button gray" data-story-id="{{ object.slug }}" data-options='{"widgetUrl": "{{ share_popup_url }}"}'>{% trans "Share This" %} {{ object|classname|camelsplit|first }}</a>
+{% endif %}
+{% if embed_popup_url %}
+<a href="#" class="storybase-embed-button button gray" data-story-id="{{ object.slug }}" data-options='{"widgetUrl": "{{ embed_popup_url }}", "header": "Embed This {{ object|classname|camelsplit|first }}"}'>{% trans "Embed This" %} {{ object|classname|camelsplit|first }}</a>
+{% endif %}
+{% endwith %}
 {% endblock %}
 
 {% block twocol-content %}
