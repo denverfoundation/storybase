@@ -200,5 +200,6 @@ def embed_code(obj):
                         else 'storybase-list-embed'),
         'object_name': _object_name(obj), 
         'storybase_site_name': settings.STORYBASE_SITE_NAME,
-        'widget_js_url': full_url(settings.STATIC_URL + 'js/widgets.min.js'),
+        'widget_js_url': full_url(settings.STATIC_URL + 'js/widgets.min.js',
+                                  scheme=''),
     }
