@@ -6,7 +6,7 @@
     widgetUrl: '/stories/<id>/share-popup/',
     header: 'Sharing Options',
     appendeeSelector: 'body',
-    addThisScriptTag: '<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js?domready=1"></script>',
+    addThisScriptTag: '<script type="text/javascript" src="//s7.addthis.com/js/250/addthis_widget.js?domready=1"></script>',
     alignment: 'bottom left',
     addThisHeight: 32,
     onClick: function(event) {
