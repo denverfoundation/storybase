@@ -27,7 +27,7 @@ from storybase_story.models import (SectionLayout, Story, StoryRelation,
         StoryTemplate)
 from storybase_taxonomy.models import Category
 from storybase.utils import escape_json_for_html, simple_language_changer
-from storybase.views import EmbedPopupView, SharePopupView
+from storybase.views import EmbedView, EmbedPopupView, ShareView, SharePopupView
 from storybase.views.generic import ModelIdDetailView, Custom404Mixin, VersionTemplateMixin
 
 
@@ -844,8 +844,16 @@ class StorySharePopupView(SharePopupView):
     queryset = Story.objects.published()
 
 
+class StoryShareView(ShareView):
+    queryset = Story.objects.published()
+
+
 class StoryEmbedPopupView(EmbedPopupView):
     """
     Popup content for embedding a story
     """
+    queryset = Story.objects.published()
+
+
+class StoryEmbedView(EmbedView):
     queryset = Story.objects.published()

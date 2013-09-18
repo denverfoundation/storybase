@@ -183,13 +183,13 @@ class Organization(PermissionBase, MembershipUtilsMixin, FeaturedAssetsMixin,
     def get_absolute_url(self):
         return ('organization_detail', [self.slug])
 
-    def get_share_popup_url(self):
-        return urlresolvers.reverse("organization_share_popup", kwargs={
+    def get_share_url(self):
+        return urlresolvers.reverse("organization_share", kwargs={
             'slug': self.slug
         })
 
-    def get_embed_popup_url(self):
-        return urlresolvers.reverse("organization_embed_popup", kwargs={
+    def get_embed_url(self):
+        return urlresolvers.reverse("organization_embed", kwargs={
             'slug': self.slug
         })
 
@@ -349,13 +349,13 @@ class Project(PermissionBase, MembershipUtilsMixin, FeaturedAssetsMixin,
     def get_absolute_url(self):
         return ('project_detail', [self.slug])
 
-    def get_share_popup_url(self):
-        return urlresolvers.reverse("project_share_popup", kwargs={
+    def get_share_url(self):
+        return urlresolvers.reverse("project_share", kwargs={
             'slug': self.slug
         })
 
-    def get_embed_popup_url(self):
-        return urlresolvers.reverse("project_embed_popup", kwargs={
+    def get_embed_url(self):
+        return urlresolvers.reverse("project_embed", kwargs={
             'slug': self.slug
         })
 
@@ -513,13 +513,13 @@ class UserProfile(RecentStoriesMixin, models.Model):
         return ('userprofile_detail', (), 
                 {'profile_id': self.profile_id})
 
-    def get_share_popup_url(self):
+    def get_share_url(self):
         if shortuuid:
             profile_uuid = uuid.UUID(self.profile_id)
-            return urlresolvers.reverse('userprofile_share_popup', 
+            return urlresolvers.reverse('userprofile_share', 
                     kwargs={'short_profile_id': shortuuid.encode(profile_uuid)})
 
-        return urlresolvers.reverse('userprofile_share_popup',
+        return urlresolvers.reverse('userprofile_share',
                 kwargs={'profile_id': self.profile_id})
 
     def name(self):

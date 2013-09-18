@@ -6075,7 +6075,8 @@
         var context = {
           title: this.model.get('title'),
           showSharing: this.options.showSharing,
-          storyId: this.model ? this.model.id : ''
+          storyId: this.model ? this.model.id : '',
+          storyUrl: this.model ? this.model.get('url') : ''
         };
         this.$el.html(this.template(context));
         _.each(this.subviews, function(view) {

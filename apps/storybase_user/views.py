@@ -21,7 +21,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 
 from storybase.menu import Menu, registry as menu_registry
-from storybase.views import EmbedPopupView, SharePopupView
+from storybase.views import EmbedView, EmbedPopupView, ShareView, SharePopupView
 from storybase.views.generic import ModelIdDetailView
 from storybase.utils import full_url
 from storybase_story.views import StoryListWidgetView
@@ -215,7 +215,15 @@ class OrganizationSharePopupView(SharePopupView):
     queryset = Organization.objects.published()
 
 
+class OrganizationShareView(ShareView):
+    queryset = Organization.objects.published()
+
+
 class OrganizationEmbedPopupView(EmbedPopupView):
+    queryset = Organization.objects.published()
+
+
+class OrganizationEmbedView(EmbedView):
     queryset = Organization.objects.published()
 
 
@@ -223,11 +231,26 @@ class ProjectSharePopupView(SharePopupView):
     queryset = Project.objects.published()
 
 
+class ProjectShareView(ShareView):
+    queryset = Project.objects.published()
+
+
 class ProjectEmbedPopupView(EmbedPopupView):
     queryset = Project.objects.published()
 
 
+class ProjectEmbedView(EmbedView):
+    queryset = Project.objects.published()
+
+
 class UserProfileSharePopupView(SharePopupView):
+    model = UserProfile
+
+    def get_object_id_name(self):
+        return 'profile_id'
+
+
+class UserProfileShareView(ShareView):
     model = UserProfile
 
     def get_object_id_name(self):

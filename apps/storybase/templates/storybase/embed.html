@@ -1,0 +1,14 @@
+{% extends "base.html" %}
+{% load i18n %}
+
+{% block head_title %}{% trans "Embed" %}{% endblock %}
+
+{% block base_content %}
+<div class="content-page generic container_12">
+  <div class="grid_12 content-block">
+      <h1><span>{% trans "Embed" %}</span></h1>
+
+      {% include "storybase/embed_popup.html" %}
+  </div>
+</div>
+{% endblock %}
