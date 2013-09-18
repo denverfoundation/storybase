@@ -3,8 +3,12 @@
 @import "font-awesome.less";
 @import "fonts.less";
 
-@responsive-break1: 1000px;
-@responsive-break2: 650px;
+@width-break1: 1000px;
+@width-break2: 650px;
+
+@height-break1: 500px;
+@height-break2: 400px;
+@height-break3: 300px;
 
 @h1-font-size0: 24px;
 @h1-font-size1: 20px;
@@ -13,7 +17,6 @@
 @h3-font-size0: 20px;
 @h3-font-size1: 16px;
 @h3-font-size2: 14px;
-
 
 @body-font-size0: (@h1-font-size0 * .8);
 @body-font-size1: (@h1-font-size1 * .8);
@@ -27,14 +30,20 @@
   .border-box;
   margin: 0;
   padding: 0;
+  zoom:1;
+}
+
+html, body, article {
+  height:100%;
+  display:block; // for IE
 }
 
 html {
   font-size:@body-font-size0;
-  @media (max-width:@responsive-break1) {
+  @media screen and (max-width:@width-break1) {
     font-size:@body-font-size1;
   }
-  @media (max-width:@responsive-break2) {
+  @media screen and (max-width:@width-break2) {
     font-size:@body-font-size2;
   }
   .sans-serif-text;
@@ -42,22 +51,22 @@ html {
 
 h1 {
   font-size:@h1-font-size0;
-  @media (max-width:@responsive-break1) {
+  @media screen and (max-width:@width-break1) {
     font-size:@h1-font-size1;
   }
-  @media (max-width:@responsive-break2) {
+  @media screen and (max-width:@width-break2) {
     font-size:@h1-font-size2;
   }
   font-weight: bold;  
 }
 
 h3 {
-  font-size:@h1-font-size0;
-  @media (max-width:@responsive-break1) {
-    font-size:@h1-font-size1;
+  font-size:@h3-font-size0;
+  @media screen and (max-width:@width-break1) {
+    font-size:@h3-font-size1;
   }
-  @media (max-width:@responsive-break2) {
-    font-size:@h1-font-size2;
+  @media screen and (max-width:@width-break2) {
+    font-size:@h3-font-size2;
   }
   font-weight: bold;
 }
@@ -67,6 +76,7 @@ ul { list-style: none; }
 article {
   border:2px solid @gray;
   height:100%;
+  width:100%;
 }
 
 // container for story and story+list, sandwiched between header and footer
@@ -75,18 +85,12 @@ article {
 
   // we have constant-height header and footer.
   // without calc() or CSS3 flex box model, we make-do
-  height:85%;
-  @media (max-height:500px) {
-    height:80%;
-  }
-  @media (max-height:400px) {
-    height:75%;
-  }
-  @media (max-height:300px) {
-    height:70%;
-  }
+  height:100%;
 
-  padding: 1em;
+  padding: 50px 1em;
+  position:absolute;
+  top:0;
+  left:0;
   overflow: hidden;
   color: @dark-gray;
 
@@ -118,9 +122,14 @@ article {
     display:block;
     float:left;
     width:20%;
+    background:url() no-repeat center center;
+    background-size:cover;
+    height:100%;
     
     img {
       width:100%;
+      opacity:0;
+      border:none;
     }
   }
 
@@ -128,7 +137,7 @@ article {
     // offset margin--space for featured image
     margin-left:20%;
     // static internal padding
-    padding-left:2em;
+    padding-left:1em;
   }
 
   &.with-list {
@@ -152,10 +161,10 @@ article {
       bottom:0;
       background:white;
       
-      @media (max-height:500px) {
+      @media screen and (max-height:@height-break1) {
         font-size:@body-font-size1;
       }
-      @media (max-height:400px) {
+      @media screen and (max-height:@height-break2) {
         font-size:@body-font-size2;
       }
     }
@@ -164,33 +173,47 @@ article {
 
 .storybase-storylist {
   height:100%;
+  position:relative;
 
   &.with-featured {
     margin-left:50%;
-    padding-left:2em;
+    padding-left:1em;
+    width:50%;
   }
   
   ul {
-    height:80%;
+    height:100%;
   }
   
   li {
     position:relative;
     overflow:hidden;
-    margin-bottom:1.5em;
-    height:33%
+    height:33.33333%;
+    border-bottom:1em solid white;
   }
   
   .featured-image {
     position:absolute;
     width:40%;
+    overflow:hidden;
+    height:80%;
+    max-height:150px;
+    background:url() no-repeat center center;
+    background-size:cover;
+    
     img {
       width:100%;
+      opacity:0;
+      border:none;
     }
   }
   .story-link, .byline {
     margin-left:40%;
-    padding-left:2em;
+    padding-left:1em;
+    
+    @media screen and (max-height:@height-break2) {
+      font-size: @body-font-size2;
+    }
   }
 }
 
@@ -224,6 +247,7 @@ footer {
   background:@gray;
   position:absolute;
   bottom:0;
+  left:0;
   border-top:2px solid @gray;
   width:100%;
   a {
@@ -242,5 +266,58 @@ footer {
 
 header, footer {
   padding:.5em;
+  height:35px;
+  display:block; // for IE8
 }
 
+
+// Relies on modernizr.
+html.no-backgroundsize {
+  
+  // This ruleset is legitimately tied to no-backgroundsize.
+  .featured-image {
+    background-image:none !important;
+    img {
+      opacity:1;
+    }
+  }
+  
+  // @TODO: The remaining are IE fixes only tested in IE8!
+
+  body {
+    h1 {
+      font-size:@h1-font-size0 * 0.8;
+      @media screen and (max-width:@width-break1) {
+        font-size:@h1-font-size1 * 0.8;
+      }
+      @media screen and (max-width:@width-break2) {
+        font-size:@h1-font-size2 * 0.8;
+      }
+    }
+  }
+
+  
+  .storybase-story-featured.with-list {
+    width:48%;
+  }
+  
+  // the padding + margin scheme totally fails on IE8
+  .storybase-storylist.with-featured {
+    padding:0;
+    margin:0;
+    
+    .story-link {
+      font-size: @body-font-size0;
+      @media screen and (max-height:@height-break2) {
+        font-size: @body-font-size1;
+      }
+      @media screen and (max-width:@width-break2) {
+        font-size: @body-font-size1;
+      }
+    }
+    
+    li {
+      padding-left:1em;
+    }
+  }
+}

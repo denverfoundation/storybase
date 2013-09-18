@@ -1,7 +1,10 @@
 {% load storybase_tags i18n compress %}
+<!DOCTYPE html>
 <html>
   <head>
     <title>{{ storybase_site_name }} | {{ story.title }}</title>
+    {# Force IE8 into standards mode. #}
+    <meta http-equiv="x-ua-compatible" content="IE=8">
     <script type="text/javascript" src="{{ STATIC_URL }}js/libs/modernizr-2.0.6.min.js"></script>
     {% if debug %}
     <link rel="stylesheet/less" type="text/css" href="{{ STATIC_URL }}less/widget.less">
@@ -62,5 +65,8 @@
     })(window, document);
     </script>
     {% endcompress %}
+    <!--[if lte IE 8]>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/libs/css3-mediaqueries.js"></script>
+    <![endif]-->
   </body>
 </html>
