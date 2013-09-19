@@ -1,19 +1,24 @@
-{% load thumbnail i18n %}
+{% load cms_tags thumbnail i18n %}
 {% with activity=instance.activity %}
-<div class="activity-plugin">
-    <h3 class="title">{{ activity.title }}</h3>
+<div class="activity-plugin is-collapsed">
     {# TODO: Decide on dimensions for this image #}
-    <img src="{% thumbnail activity.image 240x0 crop %}" width="240px" />
-    <div class="description">{{ activity.description }}</div>
-    <dl>
-        <dt>{% trans "Time" %}</dt>
-        <dd>{{ activity.time }}</dd>
-        <dt>{% trans "Supplies" %}</dt>
-        <dd>{{ activity.supplies }}</dd>
-        <dt>{% trans "People" %}</dt>
-        <dd>{{ activity.num_participants }}</dd> 
-        <dt>{% trans "Get activity" %}</dt>
-        <dd>{{ activity.links|safe }}</dd>
-    </dl>
+    <div class="img-container">
+        <img src="{% thumbnail activity.image 222x0 crop=smart %}" />
+    </div>
+    <h3 class="title">{% if activity.page %}<a href="{% page_url activity.page %}" class="">{% endif %}{{ activity.title }}{% if activity.page %}</a>{% endif %}</h3>
+    <button title="{% trans "Read more" %}" href="#" class="toggle icon-plus"></button>
+    <div class="activity-info">
+        <div class="description">{{ activity.description }}</div>
+        <dl>
+            <dt>{% trans "Time" %}</dt>
+            <dd>{{ activity.time }}</dd>
+            <dt>{% trans "Supplies" %}</dt>
+            <dd>{{ activity.supplies }}</dd>
+            <dt>{% trans "People" %}</dt>
+            <dd>{{ activity.num_participants }}</dd> 
+            <dt>{% trans "Get activity" %}</dt>
+            <dd>{{ activity.links|safe }}</dd>
+        </dl>
+    </div>
 </div>
 {% endwith %}

@@ -1,0 +1,77 @@
+{% extends "cms_twocol.html" %}
+{% comment %}
+Version of the cms_twocol.html template with some extra javascript for
+expanding/collapsing activity content added using the
+"Storybase Activity" plugin.
+
+The activity plugins are rendered using the
+``cmsplugin_storybase/activity_plugin.html`` template.
+{% endcomment %}
+
+{% load cms_tags i18n sekizai_tags menu_tags %}
+
+{% block twocol-content %}
+<section class="content-block">
+    {% placeholder description or %}
+    {% page_attribute "teaser" as teaser %}
+    {% if teaser %}
+    <p class="description teaser">{{ teaser }}</p>
+    {% endif %}
+    {% endplaceholder %}
+    {% comment %}
+    Wrap the twocol-content in a container so we can use the Masonry plugin
+    on the activity plugin elements
+    {% endcomment %}
+    <div class="activities-container">
+        {% placeholder twocol-content %}
+    </div>
+</section>
+
+{% block bottom-left-col %}
+<div class="page-pull grid_5 alpha">
+	{% placeholder page-pull-1 %}
+</div>
+{% endblock bottom-left-col %}
+{% block bottom-right-col %}
+<div class="page-pull grid_5 omega">
+	{% placeholder page-pull-2 %}
+</div>
+{% endblock bottom-right-col %}
+
+{% block bottom-single-col %}
+<div class="page-pull grid_10 alpha omega">
+	{% placeholder page-pull-3 %}
+</div>
+{% endblock %}
+
+{% endblock twocol-content %}
+
+{% block extrajs %}
+    <script src="{{ STATIC_URL }}js/libs/jquery.masonry.min.js"></script>
+    <script>
+    (function ($) {
+      $(document).ready(function() {
+        var $container = $('.activities-container');
+        var activityClass = '.activity-plugin';
+        var $activityBlocks = $(activityClass);
+        var doMasonry = false;
+        $activityBlocks.addClass('is-collapsed');
+        $container.masonry({
+          itemSelector: activityClass 
+        });
+        $activityBlocks.find('.toggle').click(function() {
+          var $thisContainer = $(this).closest(activityClass);
+          // Close any expanded boxes other than this one
+          $activityBlocks.filter('.is-expanded').not($thisContainer).removeClass('is-expanded').addClass('is-collapsed');
+          $activityBlocks.find('.toggle.icon-minus').not(this).removeClass('icon-minus').addClass('icon-plus');
+          $(this).toggleClass('icon-plus icon-minus');
+          $thisContainer.toggleClass('is-collapsed is-expanded');
+
+          // Refresh the masonry to fill any gaps created by the expanded 
+          $container.masonry('reload');
+          return false;
+        });
+      });
+    })(jQuery);
+    </script>
+{% endblock %}

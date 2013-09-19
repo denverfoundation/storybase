@@ -1,0 +1,93 @@
+// Styles for the Storybase Activity CMS plugin
+// Markup is defined in the cmsplugin_storybase/activity_plugin.html and
+// activity_guides.html templates.
+
+.activity-plugin {
+  // A 5:3 aspect ratio, the same as on the Explore page
+  @img-width: 222px;
+  @img-height: 132px;
+  @container-padding: 7px;
+
+  float: left;
+  width: @img-width; 
+  position: relative;
+  margin: 0 20px 20px 0;
+  background: @light-gray;
+  padding: @container-padding;
+
+  &.is-collapsed {
+    height: 222px;
+  }
+
+  .img-container {
+    display: block;
+    height: @img-height; 
+    text-align: center;
+    overflow: hidden;
+    // HACK: Give this a white background to deal with "short"
+    // images.  Ideally, we would vertically center the image
+    // in the container, but this is hard to do with arbitrary-
+    // height images.  There's a technique at 
+    // http://css-tricks.com/centering-in-the-unknown/
+    // but it breaks for IE<8
+    background-color: #fff;
+    
+    img {
+      width: 100%;
+    }
+  }
+
+  .title {
+    // Clobber default header margins 
+    margin-top: 10px;
+    font-size: 16px;
+    line-height: 16px;
+    font-weight: bold;
+  }
+
+  // Additional metadata is wrapped in a container with class
+  // activity-info.  The visibility of this is toggled by
+  // jQuery by toggling the ``is-collapsed`` class on the
+  // container element
+  .activity-info {
+    // Make room for the toggle button in the lower-right hand
+    // corner
+    padding-bottom: 14px;
+    overflow: hidden;
+  }
+
+  &.is-collapsed .activity-info {
+    display: none;
+  }
+
+  .description {
+    margin: 4px 0;      
+    text-align: justify;
+  }
+
+  dt, dd { float: left; }
+
+  dt { 
+    clear: left;
+    margin-right: 4px; 
+    font-weight: bold;
+  }
+  dt:after { content: ": " }
+
+  // Button for expanding/collapsing the extra activity info
+  button.toggle {
+    .button-reset();
+    position: absolute;
+    bottom: @container-padding;
+    right: @container-padding;
+    display: block;
+    width: 100%;
+    text-align: right;
+  }
+  button.toggle:before {
+    color: @highlight-blue;
+  }
+  button.toggle::-moz-focus-inner {
+    border: none;
+  }
+}

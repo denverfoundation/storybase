@@ -509,11 +509,18 @@ body.base-template .content-page a.bab:hover{text-decoration:none !important}
 body.base-template .content-page a.bab:hover{background:#8b5910}
 body.base-template .content-page a.bab.right{float:right;margin-left:1.5em}
 body.base-template #comment-form label[for="id_comment"]{display:none}
-body.base-template .activity-plugin{float:left;margin:0 20px 20px 0;width:240px}body.base-template .activity-plugin .title{margin-top:0;font-weight:bold}
+body.base-template .activity-plugin{float:left;width:222px;position:relative;margin:0 20px 20px 0;background:#f0efef;padding:7px}body.base-template .activity-plugin.is-collapsed{height:222px}
+body.base-template .activity-plugin .img-container{display:block;height:132px;text-align:center;overflow:hidden;background-color:#fff}body.base-template .activity-plugin .img-container img{width:100%}
+body.base-template .activity-plugin .title{margin-top:10px;font-size:16px;line-height:16px;font-weight:bold}
+body.base-template .activity-plugin .activity-info{padding-bottom:14px;overflow:hidden}
+body.base-template .activity-plugin.is-collapsed .activity-info{display:none}
 body.base-template .activity-plugin .description{margin:4px 0;text-align:justify}
 body.base-template .activity-plugin dt,body.base-template .activity-plugin dd{float:left}
 body.base-template .activity-plugin dt{clear:left;margin-right:4px;font-weight:bold}
 body.base-template .activity-plugin dt:after{content:": "}
+body.base-template .activity-plugin button.toggle{border:none;background:none;padding:0;margin:0;width:auto;text-align:center;text-shadow:none;position:absolute;bottom:7px;right:7px;display:block;width:100%;text-align:right}body.base-template .activity-plugin button.toggle:hover{background:none}
+body.base-template .activity-plugin button.toggle:before{color:#2a88db}
+body.base-template .activity-plugin button.toggle::-moz-focus-inner{border:none}
 body.base-template form{overflow:hidden;position:relative}body.base-template form fieldset{border:none}body.base-template form fieldset+fieldset{margin-top:1em}
 body.base-template form fieldset legend{font-weight:bold}
 body.base-template form.lengthy-labels label{line-height:1em}
