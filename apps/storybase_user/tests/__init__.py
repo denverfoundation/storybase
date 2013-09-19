@@ -832,3 +832,40 @@ class ProjectWidgetViewTest(StoryListWidgetViewTestMixin, TestCase):
         self.obj = create_project("Test Project", status='published')
         self.related_field_name= 'projects'
         self.set_up_stories()
+
+
+class PopupViewTest(TestCase):
+    def setup_project(self):
+        self.project = create_project("Test Project", status='published')
+
+    def setup_organization(self):
+        self.organization = create_organization("Test Organization",
+                                                status='published')
+
+    def test_get_organization_share_popup(self):
+        self.setup_organization()
+        url = "%sshare/popup/" % self.organization.get_absolute_url()
+        response = self.client.get(url)
+        self.assertIn(self.organization.get_absolute_url(), response.content)
+        
+    def test_get_organization_embed_popup(self):
+        self.setup_organization()
+        response = self.client.get("%sembed/popup/" %
+                                   self.organization.get_absolute_url())
+        self.assertIn(self.organization.get_absolute_url(), response.content)
+        self.assertIn('storybase-list-embed', response.content)
+        self.assertNotIn('storybase-story-embed', response.content)
+
+    def test_get_project_share_popup(self):
+        self.setup_project()
+        url = "%sshare/popup/" % self.project.get_absolute_url()
+        response = self.client.get(url)
+        self.assertIn(self.project.get_absolute_url(), response.content)
+        
+    def test_get_project_embed_popup(self):
+        self.setup_project()
+        response = self.client.get("%sembed/popup/" %
+                                   self.project.get_absolute_url())
+        self.assertIn(self.project.get_absolute_url(), response.content)
+        self.assertIn('storybase-list-embed', response.content)
+        self.assertNotIn('storybase-story-embed', response.content)

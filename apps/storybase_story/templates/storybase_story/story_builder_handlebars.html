@@ -443,7 +443,7 @@ Handlebars.js templates for story builder Backbone application
             <h3>{{gettext "Let your story be heard!"}}</h3>
             <p>{{gettext "Let your story be heard! Spread the word by sharing it with your social networks, printing a copy, or embeding it on your own website."}}</p>
 
-            <a href="#" class="storybase-share-widget" data-story-id="{{storyId}}">Share This Story</a>
+            <a href="{{ storyUrl }}/share/" class="storybase-share-button">Share This Story</a>
         </div>
         {{/if}}
     </div> <!-- /.twocol -->

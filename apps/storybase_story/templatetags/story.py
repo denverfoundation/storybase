@@ -1,10 +1,9 @@
 import logging
 
 from django import template
-from django.conf import settings
 from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 
-from storybase.utils import full_url, latest_context
+from storybase.utils import latest_context
 from storybase_asset.models import Asset
 from storybase_story.banner import registry as banner_registry
 from storybase_story.models import Story
@@ -13,9 +12,6 @@ logger = logging.getLogger('storybase')
 
 register = template.Library()
 
-# Height in pixels of the IFRAME element rendered by the story
-# embed widget
-DEFAULT_EMBED_WIDGET_HEIGHT=500
 
 @register.simple_tag(takes_context=True)
 def container(context, value):
@@ -62,14 +58,6 @@ def latest_stories(count=3, img_width=100):
 def connected_story_section(section):
     return section.render(show_title=False)
 
-@register.inclusion_tag('storybase_story/story_embed.html')
-def story_embed(story):
-    return {
-        'default_embed_widget_height': DEFAULT_EMBED_WIDGET_HEIGHT,
-        'story': story,
-        'storybase_site_name': settings.STORYBASE_SITE_NAME,
-        'widget_js_url': full_url(settings.STATIC_URL + 'js/widgets.min.js'),
-    }
 
 @register.simple_tag
 def banner(banner_id=None, **kwargs):

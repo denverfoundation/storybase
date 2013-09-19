@@ -82,7 +82,7 @@
         this.navigationView.render();
         this.$('.summary').show();
         this.$('.section').show();
-        this.$('.storybase-share-widget').storybaseShare();
+        this.$('.storybase-share-button').storybaseShare();
         this._rendered = true;
         this.trigger("render");
         return this;
