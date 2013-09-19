@@ -28,7 +28,10 @@
     {% endcomment %}
 
     {% render_block "css" %}
-    {% compress css %}<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css">{% endcompress %}
+    {% compress css %}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}js/libs/tooltipster-2.1.4/css/tooltipster.css">
+    {% endcompress %}
     <!-- end CSS-->
 
     {% include "storybase/js_error.html" %}
@@ -40,6 +43,9 @@
   <body class="story-viewer">
     <div id="app">
         <header id="header">
+          <a href="#" title="{%trans "Share This Story"%}" class="storybase-share-widget" data-story-id="{{ story.slug }}" data-options='{"appendeeSelector": "#app", "alignment": "bottom right" }'>
+            {%trans "Share This Story"%} <i class="icon-share"></i>
+          </a>
           <h1 class="title">{{ story.title }}</h1>
           <p class="byline">{% trans "By" %} {% if story.byline %}{{ story.byline }}{% else %}{{ story.contributor_name }}{% endif %}</p>
         </header>
@@ -47,8 +53,16 @@
         <div id="body">
           {% if story.summary %}
           <section id="summary" class="section summary" style="display: none;">
-            <h2 class="title">{%trans "Summary" %}</h2>
-            {{ story.summary|safe|linebreaks }}
+            <div class="summary-overview">
+              <h2 class="title">{%trans "Summary" %}</h2>
+              {% featured_asset story %}
+              <p class="byline">{% trans "By" %} <span class="author">{{ story.byline }}</span></p>
+              {{ story.summary|safe|linebreaks }}
+            </div>
+            <div class="summary-toc">
+              <h2>Table of Contents</h2>
+              {{ story.structure.render_toc }}
+            </div>
           </section>
           {% endif %}
 
@@ -91,12 +105,12 @@
         </div>
 
         <footer id="footer">
+          <a class="logo" href="/" title="{{ storybase_site_name }}"><span>{{ storybase_site_name }}</span></a>
           <nav id="toc">
             {{ story.structure.render_toc }}
             <button id="toggle-toc">Table of Contents <i class="icon-caret-up"></i></button>
           </nav>
 
-          <a href="#" class="storybase-share-widget" data-story-id="{{ story.slug }}" data-options='{"appendeeSelector": "#footer", "alignment": "top right" }'>Share This Story</a>
         </footer>
     </div>
 
@@ -124,6 +138,8 @@
     <script src="{{ STATIC_URL }}js/viewer/application.js"></script>
     <script src="{{ STATIC_URL }}js/viewer/views.js"></script>
     <script src="{{ STATIC_URL }}js/viewer/routes.js"></script>
+    <script src="{{ STATIC_URL }}js/libs/tooltipster-2.1.4/js/jquery.tooltipster.min.js"></script>
+    
     {% endcompress %}
 
     <script type="text/javascript">
@@ -131,7 +147,7 @@
         var storyStructureType = '{{ story.structure_type }}';        
         var story = new storybase.models.Story({{ story.structure.to_json }});
         var sections = new storybase.collections.Sections;
-	var viewerContext = '{{ context }}';
+        var viewerContext = '{{ context }}';
         sections.reset({{ sections_json }});
         storybase.viewer.app = storybase.viewer.views.getViewerApp(
             storyStructureType,
@@ -151,7 +167,9 @@
             });
             Backbone.history.start();
         }
-
+        
+        $('.storybase-share-widget').tooltipster();
+        
         storybase.viewer.app.render();
     });
     </script>
