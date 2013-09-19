@@ -112,11 +112,16 @@
     
     .summary {
       padding: 1%;
-      //.callout-section;
     
       .summary-overview, .summary-toc {
         width:50%;
         float:left;
+        
+        .byline {
+          color:@gray; 
+          font-style:italic;
+        }
+        
         ul {
           padding:0;
           li {
@@ -199,9 +204,12 @@
     z-index: 9999;
     
     .logo {
+      position:absolute;
+      right:30px;
       display:block;
-      background:url(../img/header-logo.png) no-repeat right center;
-      height:100%;
+      background:url(../img/viewer-logo.png) no-repeat right center;
+      height:27px;
+      width:200px;
       
       span {
         .hide-text;

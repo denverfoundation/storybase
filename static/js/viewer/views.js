@@ -35,7 +35,8 @@
   var ViewerApp = Views.ViewerApp = Backbone.View.extend(
     _.extend({}, NavigableMixin, {
       options: {
-        tocEl: '#toc .story-toc',
+        tocEl: '.story-toc',
+        chromeTocEl: '#toc .story-toc',
         tocButtonEl: '#toggle-toc',
         tocIconEl: '[class^="icon-"]',
         tocOpenClass: 'icon-caret-down',
@@ -143,7 +144,7 @@
       },
       
       openToc: function() {
-        var $tocEl = $(this.options.tocEl);
+        var $tocEl = $(this.options.chromeTocEl);
         if (!$tocEl.data('open') || _.isUndefined($tocEl.data('open'))) {
           $tocEl.slideDown().data('open', true);
           $(this.options.tocButtonEl)
@@ -158,7 +159,7 @@
       },
 
       closeToc: function() {
-        var $tocEl = $(this.options.tocEl);
+        var $tocEl = $(this.options.chromeTocEl);
         if ($tocEl.data('open')) {
           $tocEl.slideUp().data('open', false);
           $(this.options.tocButtonEl)
@@ -171,7 +172,7 @@
       },
 
       toggleToc: function() {
-        if ($(this.options.tocEl).data('open')) {
+        if ($(this.options.chromeTocEl).data('open')) {
           this.closeToc();
         }
         else {
