@@ -287,14 +287,16 @@ article{border:2px solid #777777;height:100%;width:100%;}
 .storybase-storylist{height:100%;position:relative;}.storybase-storylist.with-featured{margin-left:50%;padding-left:1em;width:50%;}
 .storybase-storylist ul{height:100%;}
 .storybase-storylist li{position:relative;overflow:hidden;height:33.33333%;border-bottom:1em solid white;}
-.storybase-storylist .featured-image{position:absolute;width:40%;overflow:hidden;height:80%;max-height:150px;background:url() no-repeat center center;background-size:cover;}.storybase-storylist .featured-image img{width:100%;opacity:0;border:none;}
+.storybase-storylist .featured-image{position:absolute;width:40%;overflow:hidden;background:url() no-repeat center center;background-size:cover;}.storybase-storylist .featured-image img{width:100%;opacity:0;border:none;}
 .storybase-storylist .story-link,.storybase-storylist .byline{margin-left:40%;padding-left:1em;}@media screen and (max-height:400px){.storybase-storylist .story-link,.storybase-storylist .byline{font-size:12.8px;}}
 header{background:#fe9703;width:100%;border-bottom:2px solid #777777;}header a{text-decoration:none;color:white;}
 header h1{font-weight:bold;font-family:'Museo300Regular';}
-header .logo{text-indent:-30000px;background:url(../img/widget-logo.png) no-repeat left top;width:140px;height:20px;float:right;}
-footer{color:#f0efef;background:#777777;position:absolute;bottom:0;left:0;border-top:2px solid #777777;width:100%;}footer a{color:#f0efef;text-decoration:underline;}
-footer:before{font-family:"FontAwesome";content:"\F08E";width:1em;height:1em;margin-right:.5em;}
-header,footer{padding:.5em;height:35px;display:block;}
+header h1,header .logo-container{display:table;height:100%;}header h1 a,header .logo-container a{display:table-cell;vertical-align:middle;padding:0 .5em;}
+header .logo-container{float:right;padding-right:0.5em;}
+header .logo{width:140px;height:20px;text-indent:-30000px;background:url(../img/widget-logo.png) no-repeat left 50%;}
+footer{color:#f0efef;background:#777777;position:absolute;bottom:0;left:0;border-top:2px solid #777777;width:100%;font-size:.75em;}footer a{color:#f0efef;text-decoration:underline;}
+footer .related-container{display:table;height:100%;}footer .related-container p{display:table-cell;vertical-align:middle;padding:0 0.5em;}footer .related-container p:before{font-family:"FontAwesome";content:"\F08E";width:1em;height:1em;margin-right:.5em;}
+header,footer{height:35px;display:block;}
 html.no-backgroundsize .featured-image{background-image:none !important;}html.no-backgroundsize .featured-image img{opacity:1;}
 html.no-backgroundsize body h1{font-size:19.200000000000003px;}@media screen and (max-width:1000px){html.no-backgroundsize body h1{font-size:16px;}}@media screen and (max-width:650px){html.no-backgroundsize body h1{font-size:12.8px;}}
 html.no-backgroundsize .storybase-story-featured.with-list{width:48%;}

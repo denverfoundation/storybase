@@ -765,6 +765,35 @@ class StoryWidgetView(Custom404Mixin, VersionTemplateMixin, DetailView):
                           {'verbose_name': queryset.model._meta.verbose_name})
         return obj
 
+    def get_related_objects(self, object):
+        """
+        Return a list of links to objects related to the widget's main content.
+        Goal is a list of mixed results, but containing no more than 3 items
+        total.
+        """
+        items = []
+        n_items = 3
+        srcs = []
+        
+        if hasattr(object, 'projects'):
+            srcs.append(object.projects.all())
+        else:
+            srcs.append([])
+
+        if hasattr(object, 'organizations'):
+            srcs.append(object.organizations.all())
+        else:
+            srcs.append([])
+
+        # Magical Python spell found at 
+        # http://stackoverflow.com/questions/11125212/interleaving-lists-in-python
+        items = [y for x in map(None, srcs[0], srcs[1]) for y in x][:n_items]
+        
+        # filter out None ... not sure why this happens...
+        items = [x for x in items if x is not None]
+        
+        return items
+
     def get_context_data(self, **kwargs):
         """
         Returns context data for displaying the story and an optional list of
@@ -792,6 +821,8 @@ class StoryWidgetView(Custom404Mixin, VersionTemplateMixin, DetailView):
         if self.list_match:
             filter_kwargs = self.get_filter_kwargs(self.list_match, self.get_related_field_name(self.list_match))
             context['stories'] = Story.objects.published().filter(**filter_kwargs).order_by('-published')[:3]
+
+        context['related_objects'] = self.get_related_objects(context['object'])
 
         return context
 

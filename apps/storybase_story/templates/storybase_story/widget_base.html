@@ -1,4 +1,5 @@
 {% load storybase_tags i18n compress %}
+{% load url from future %}
 <!DOCTYPE html>
 <html>
   <head>
@@ -16,7 +17,9 @@
   <body>
     <article>
       <header>
-        <a href="/" class="logo">{{ storybase_site_name }}</a>
+        <div class="logo-container">
+          <a href="/" class="logo">{{ storybase_site_name }}</a>
+        </div>
         <h1><a href="/">{% blocktrans %} Stories from the {{ storybase_site_name }} Project {% endblocktrans %}</a></h1>
       </header>
       <section class="storybase-embed-content">
@@ -25,17 +28,19 @@
 
       </section>
       <footer>
-        {% if story and story.projects.all %}
+        <div class="related-container">
+          <p>
+        {% if related_objects %}
           {% trans "View stories for" %}
-          {% for project in story.projects.all %}<a href="{% fullurl project.get_absolute_url %}">{{ project.name }}</a>, {% endfor %}
+          {% for item in related_objects %}
+            <a href="{% fullurl item.get_absolute_url %}">{{ item.name }}</a>{% if not forloop.last %}, {% endif %}
+          {% endfor %}
           {% trans "on" %} <a href="/">{{ storybase_site_name }}</a>
-        {% elif story and story.organizations.all %}
-          {% trans "View stories for" %}
-          {% for organization in story.organizations.all %}<a href="{% fullurl organization.get_absolute_url %}">{{ organization.name }}</a>, {% endfor %}
-          {% trans "on" %} {{ storybase_site_name }}
         {% else %}
-          <a href="/">{% blocktrans %} Explore more stories on {{ storybase_site_name }}{% endblocktrans %}</a>
+          <a href="{% url "explore_stories" %}">{% blocktrans %} Explore more stories on {{ storybase_site_name }}{% endblocktrans %}</a>
         {% endif %}
+          </p>
+        </div>
       </footer>
     </article>
     {% compress js inline %}
