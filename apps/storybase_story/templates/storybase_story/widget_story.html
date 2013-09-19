@@ -1,0 +1,13 @@
+{% extends "storybase_story/widget_base.html" %}
+{% load storybase_tags i18n %}
+
+{% block widget_content %}
+
+{% url story_viewer slug=story.slug as viewer_path %}
+{% fullurl viewer_path as viewer_url %}
+
+<section id="{{ story.story_id }}" class="storybase-story-featured {{ storybase_site_name|slugify }}-story-embed">
+  {% include "storybase_story/widget_story_content.html" %}
+</section>
+
+{% endblock %}

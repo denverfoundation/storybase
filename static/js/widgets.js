@@ -28,7 +28,7 @@
   // Polyfill for String.trim
   var trim = function(s) {
     if (typeof(String.prototype.trim) === "undefined") {
-      return str.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
+      return s.replace(/^\s\s*/, '').replace(/\s\s*$/, '');
     }
     else {
       return s.trim();
@@ -185,6 +185,7 @@
       .concat(getElementsByClassName('storybase-story-list-embed'));
     var defaults = {
       height: '500px',
+      width: '600px',
       version: null
     };
     var i, ph, el, url, opts, height, version;
@@ -196,13 +197,14 @@
         // Only process visible elements as we assume elements with
         // display:none have already been processed
         opts.height = ph.getAttribute('data-height') || defaults.height;
+        opts.width = ph.getAttribute('data-width') || defaults.width;
         opts.version = ph.getAttribute('data-version') || defaults.version; 
         url = getUrl(ph, baseWidgetUrl, opts);
         if (url) {
           el = document.createElement('iframe');
           el.setAttribute('name', 'storybase-story-widget-frame');
           el.setAttribute('src', url);
-          el.setAttribute('style', "border: none; height: " + opts.height + ";");
+          el.setAttribute('style', "border: none; height: " + opts.height + "; width: " + opts.width + ";");
           ph.parentNode.insertBefore(el, ph);
           ph.style.display = 'none';
         }

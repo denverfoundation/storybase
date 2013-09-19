@@ -633,21 +633,28 @@ class StoryWidgetView(Custom404Mixin, VersionTemplateMixin, DetailView):
         """
         Returns a list of template names to search for when rendering the template.
 
-        Includes "storybase_story/story_widget.html" in the list if a 
-        ``story-url`` query parameter was included in the request.
-
-        Includes "storybase_story/story_list_widget.html" in the list if no
-        ``story-url`` query parameter was included in the request.
-
+        Includes one of:
+        
+        - widget_story.html
+        - widget_storylist.html
+        - widget_story_storylist.html
+        
+        For each case of story, list, or story+list. Includes 404 if something
+        went wrong and we have a match for neither story nor list.
+        
         It will also include versioned template names if a ``version`` argument
         was passed to the view.
 
         """
         template_names = []
-        if self.story_url:
-            template_names.append('storybase_story/story_widget.html')
+        if self.story_match and self.list_match:
+            template_names.append('storybase_story/widget_story_storylist.html')
+        elif self.story_match and not self.list_match:
+            template_names.append('storybase_story/widget_story.html')
+        elif not self.story_match and self.list_match:
+            template_names.append('storybase_story/widget_storylist.html')
         else:
-            template_names.append('storybase_story/story_list_widget.html')
+            template_names.append('storybase_story/widget_404.html')
 
         version = self.kwargs.get('version', None)
         if version is not None: 
@@ -758,6 +765,35 @@ class StoryWidgetView(Custom404Mixin, VersionTemplateMixin, DetailView):
                           {'verbose_name': queryset.model._meta.verbose_name})
         return obj
 
+    def get_related_objects(self, object):
+        """
+        Return a list of links to objects related to the widget's main content.
+        Goal is a list of mixed results, but containing no more than 3 items
+        total.
+        """
+        items = []
+        n_items = 3
+        srcs = []
+        
+        if hasattr(object, 'projects'):
+            srcs.append(object.projects.all())
+        else:
+            srcs.append([])
+
+        if hasattr(object, 'organizations'):
+            srcs.append(object.organizations.all())
+        else:
+            srcs.append([])
+
+        # Magical Python spell found at 
+        # http://stackoverflow.com/questions/11125212/interleaving-lists-in-python
+        items = [y for x in map(None, srcs[0], srcs[1]) for y in x][:n_items]
+        
+        # filter out None ... not sure why this happens...
+        items = [x for x in items if x is not None]
+        
+        return items
+
     def get_context_data(self, **kwargs):
         """
         Returns context data for displaying the story and an optional list of
@@ -785,6 +821,8 @@ class StoryWidgetView(Custom404Mixin, VersionTemplateMixin, DetailView):
         if self.list_match:
             filter_kwargs = self.get_filter_kwargs(self.list_match, self.get_related_field_name(self.list_match))
             context['stories'] = Story.objects.published().filter(**filter_kwargs).order_by('-published')[:3]
+
+        context['related_objects'] = self.get_related_objects(context['object'])
 
         return context
 
