@@ -16,6 +16,7 @@ Changelog
 
 * Custom template, updated styling and interactions for activity guide (#864)
 * Upgrade less.js (used in development) to version 1.4.1
+* MIT license
 
 0.15
 ~~~~
@@ -460,6 +461,17 @@ Changelog
 * #498 - s/Sponsoring Organizations/Contributing Organizations/
 * #500 - Make "Home" link in footer active
 * #546 - Fix OpenGraph tags for projects and organizations
+
+License
+~~~~~~~
+
+This software is licensed under the `MIT License <http://opensource.org/licenses/MIT>`_
+
+Authors
+~~~~~~~
+
+* Geoff Hing - https://github.com/ghing/
+* Eric Miller - https://github.com/patternleaf/
 
 On the shoulders of giants
 --------------------------
