@@ -11,6 +11,12 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.15.1
+~~~~~~
+
+* Custom template, updated styling and interactions for activity guide (#864)
+* Upgrade less.js (used in development) to version 1.4.1
+
 0.15
 ~~~~
 
