@@ -29,10 +29,10 @@ See documentation for ``storybase_story.views.StoryWidgetView`` for context.
       </header>
       <section class="storybase-embed-content">
         {% block widget_story_content %}
-        {% url story_viewer slug=story.slug as viewer_path %}
+        {% url "story_viewer" slug=story.slug as viewer_path %}
         {% fullurl viewer_path as viewer_url %}
         <section id="{{ story.story_id }}" class="storybase-story-featured {{ storybase_site_name|slugify }}-story-embed{% if story and stories %} with-list{% endif %}">
-            <a class="featured-image" href="{{ viewer_url }}/" style="background-image:url({% featured_asset_thumbnail_url story width=400 height=300 %});">
+            <a class="featured-image" href="{{ viewer_url }}" style="background-image:url({% featured_asset_thumbnail_url story width=400 height=300 %});">
               <img src="{% featured_asset_thumbnail_url story width=400 height=300 %}">
             </a>
             <div class="info">
@@ -50,7 +50,7 @@ See documentation for ``storybase_story.views.StoryWidgetView`` for context.
             <ul>
               {% for story_item in stories %}
 
-              {% url story_viewer slug=story_item.slug as viewer_path %}
+              {% url "story_viewer" slug=story_item.slug as viewer_path %}
               {% fullurl viewer_path as item_viewer_url %}
 
               <li id="{{ story_item.story_id }}" class="storybase-story-list-item {{ storybase_site_name|slugify }}-story-embed">
