@@ -28,6 +28,8 @@ See documentation for ``storybase_story.views.StoryWidgetView`` for context.
         <h1><a href="/">{% blocktrans %} Stories from the {{ storybase_site_name }} Project {% endblocktrans %}</a></h1>
       </header>
       <section class="storybase-embed-content">
+        {% block widget_content %}
+
         {% block widget_story_content %}
         {% url "story_viewer" slug=story.slug as viewer_path %}
         {% fullurl viewer_path as viewer_url %}
@@ -64,6 +66,8 @@ See documentation for ``storybase_story.views.StoryWidgetView`` for context.
               {% endfor %}
             </ul>
         </section>
+        {% endblock %}
+
         {% endblock %}
       </section>
       <footer>
