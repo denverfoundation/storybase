@@ -4150,7 +4150,7 @@ class StoryWidgetViewTest(TestCase):
         url = self.get_widget_url(story_path=story.get_absolute_url())
         response = self.client.get(url)
         template_names = [template.name for template in response.templates]
-        self.assertEqual(template_names[0], 'storybase_story/story_widget.html')
+        self.assertEqual(template_names[0], 'storybase_story/widget_story.html')
         self.assertEqual(response.context['story'], story)
         self.assertEqual(len(response.context['stories']), 0)
         
@@ -4214,7 +4214,7 @@ class StoryWidgetViewTest(TestCase):
         url = self.get_widget_url(list_path=obj_url)
         response = self.client.get(url)
         template_names = [template.name for template in response.templates]
-        self.assertEqual(template_names[0], 'storybase_story/story_list_widget.html')
+        self.assertEqual(template_names[0], 'storybase_story/widget_storylist.html')
         self.assertEqual(response.context['object'], obj)
         self.assertEqual(len(response.context['stories']), 3)
         self.assertNotIn(stories[0], response.context['stories'])
@@ -4227,6 +4227,8 @@ class StoryWidgetViewTest(TestCase):
         path = path.replace(obj.slug, 'invalid-slug')
         url = self.get_widget_url(list_path=path)
         response = self.client.get(url)
+        template_names = [template.name for template in response.templates]
+        self.assertEqual(template_names[0], 'storybase_story/widget_404.html')
         self.assertEqual(response.status_code, 404)
 
     def test_get_list_project(self):
