@@ -4260,3 +4260,21 @@ class StoryWidgetViewTest(TestCase):
         obj = Place.objects.create(name="Humboldt Park", geolevel=neighborhood)
         self._test_get_list(obj, 'places')
         self._test_get_list_not_found(obj)
+
+
+class PopupViewTest(TestCase):
+    def setUp(self):
+        self.story = create_story(title="Test Story", summary="Test Summary",
+                                  byline="Test Byline", status='published')
+
+    def test_get_story_share_popup(self):
+        response = self.client.get("%sshare/popup/" %
+                                   self.story.get_absolute_url())
+        self.assertIn(self.story.get_absolute_url(), response.content)
+        
+    def test_get_story_embed_popup(self):
+        response = self.client.get("%sembed/popup/" %
+                                   self.story.get_absolute_url())
+        self.assertIn(self.story.get_absolute_url(), response.content)
+        self.assertIn('storybase-story-embed', response.content)
+        self.assertNotIn('storybase-list-embed', response.content)

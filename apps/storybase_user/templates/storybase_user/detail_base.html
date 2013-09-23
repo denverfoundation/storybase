@@ -28,7 +28,14 @@
    <ul class="navroot">{% show_menu 1 %}</ul>
 </nav>
 {% endcomment %}
-<a href="#" class="storybase-share-widget" data-story-id="{{ object.slug }}" data-options='{"widgetUrl": "{{ object.get_absolute_url }}share-widget/"}'>{% trans "Share This" %} {{ object|classname|camelsplit|first }}</a>
+{% with share_url=object.get_share_url embed_url=object.get_embed_url %}
+{% if share_url %}
+<a href="{{ share_url }}" class="storybase-share-button button gray">{% trans "Share This" %} {{ object|classname|camelsplit|first }}</a>
+{% endif %}
+{% if embed_url %}
+<a href="{{ embed_url }}" class="storybase-embed-button button gray" data-options='{"header": "Embed This {{ object|classname|camelsplit|first }}"}'>{% trans "Embed This" %} {{ object|classname|camelsplit|first }}</a>
+{% endif %}
+{% endwith %}
 {% endblock %}
 
 {% block twocol-content %}
