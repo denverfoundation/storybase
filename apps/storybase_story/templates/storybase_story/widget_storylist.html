@@ -1,10 +1,5 @@
 {% extends "storybase_story/widget_base.html" %}
-{% load storybase_tags i18n %}
+{# Template for embed widget that shows a list of stories #}
 
-{% block widget_content %}
-
-<section class="storybase-storylist">
-  {% include "storybase_story/widget_list_content.html" %}
-</section>
-
-{% endblock %}
+{# Don't show the featured story markup #}
+{% block widget_story_content %}{% endblock %}

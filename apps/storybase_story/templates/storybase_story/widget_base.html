@@ -1,5 +1,10 @@
 {% load storybase_tags i18n compress %}
 {% load url from future %}
+{% comment %}
+Base template for embed widget
+
+See documentation for ``storybase_story.views.StoryWidgetView`` for context.
+{% endcomment %}
 <!DOCTYPE html>
 <html>
   <head>
@@ -23,9 +28,43 @@
         <h1><a href="/">{% blocktrans %} Stories from the {{ storybase_site_name }} Project {% endblocktrans %}</a></h1>
       </header>
       <section class="storybase-embed-content">
-        
-        {% block widget_content %}{% endblock %}
+        {% block widget_story_content %}
+        {% url story_viewer slug=story.slug as viewer_path %}
+        {% fullurl viewer_path as viewer_url %}
+        <section id="{{ story.story_id }}" class="storybase-story-featured {{ storybase_site_name|slugify }}-story-embed{% if story and stories %} with-list{% endif %}">
+            <a class="featured-image" href="{{ viewer_url }}/" style="background-image:url({% featured_asset_thumbnail_url story width=400 height=300 %});">
+              <img src="{% featured_asset_thumbnail_url story width=400 height=300 %}">
+            </a>
+            <div class="info">
+              <h3>
+                <a href="{{ viewer_url }}" title="{{ story.title }}" class="story-link">{{ story.title }}</a>
+              </h3>
+              <p class="byline">{{ story.byline }}</p>
+              <div class="summary">{{ story.summary|firstparagraph|safe }}</div>
+            </div>
+        </section>
+        {% endblock %}
 
+        {% block widget_list_content %}
+        <section class="storybase-storylist{% if story and stories %} with-featured{% endif %}">
+            <ul>
+              {% for story_item in stories %}
+
+              {% url story_viewer slug=story_item.slug as viewer_path %}
+              {% fullurl viewer_path as item_viewer_url %}
+
+              <li id="{{ story_item.story_id }}" class="storybase-story-list-item {{ storybase_site_name|slugify }}-story-embed">
+                <a class="featured-image" href="{{ item_viewer_url }}" style="background-image:url({% featured_asset_thumbnail_url story_item width=200 height=150 %});">
+                  <img src="{% featured_asset_thumbnail_url story_item width=200 height=150 %}">
+                </a>
+                <a href="{{ item_viewer_url }}" title="{{ story_item.title }}" class="story-link">{{ story_item.title }}</a>
+                <p class="byline">{{ story_item.byline }}</p>
+              </li>
+              
+              {% endfor %}
+            </ul>
+        </section>
+        {% endblock %}
       </section>
       <footer>
         <div class="related-container">

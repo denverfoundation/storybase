@@ -588,7 +588,47 @@ class StoryBuilderView(DetailView):
 LANG_PREFIX_RE = re.compile(r"^/(%s)/" % "|".join([re.escape(lang[0]) for lang in settings.LANGUAGES]))
 
 class StoryWidgetView(Custom404Mixin, VersionTemplateMixin, DetailView):
-    """An embedable widget for a story or list of stories"""
+    """
+    An embedable widget for a story or list of stories
+    
+    This view allows stories or lists of stories to be embedded in a page on an
+    external site.  It is designed to to be rendered inside an iframe by adding 
+    the ``widgets.min.js`` script to a page.
+
+    **Context**
+
+    * ``object``: In a story list widget, this will be model for the taxonomy
+       term. In a story widget, or a story + list widget, this will be the
+       primary story for the widget.
+    * ``related_objects``: A list of models for taxonomy items (organizations,
+       projects, etc) related to the widget content
+    * ``story``: The primary story for the widget
+    * ``stories``: Optional list of related stories
+
+    **Template**
+
+    * ``storybase_story/widget_base.html``: Base template containing all of
+      the markup for the widget.  All other widget templates inherit from this
+      template.
+    * ``storybase_story/widget_story.html``: Template for widget display that
+      only shows a single story.
+    * ``storybase_story/widget_storylist.html``: Template for widget that
+      displays a list of stories.
+    * ``storybase_story/widget_story_storylist.html``: Template for widget that
+      displays a featured story and a list of stories.
+    * ``storybase_story/widget_404.html``: Template when URL passed to the
+      view cannot be resolved.
+
+    **Stylesheet**
+
+    The styles or the widget markup are in ``static/less/widget.less``
+    which is compiled to ``static/css/widget.css`` by running::
+
+        make styles
+
+    in the root directory of this project.
+
+    """
 
     # A map of URL names from a URL pattern for a taxonomy term view to
     # the queryset, lookup fields and relationship field of the Story model
@@ -805,14 +845,6 @@ class StoryWidgetView(Custom404Mixin, VersionTemplateMixin, DetailView):
         project, place, keyword (tag) or topic (category). If this parameter is
         present, the widget output will also contain a list of recent stories
         from that taxonomy item.
-
-        **Context**
-
-        * ``object``: In a story list widget, this will be model for the taxonomy
-           term. In a story widget, or a story + list widget, this will be the
-           primary story for the widget.
-        * ``story``: The primary story for the widget
-        * ``stories``: Optional list of related stories
 
         """
         # Calling super sets context['object'] 

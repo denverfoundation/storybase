@@ -1,17 +1,8 @@
 {% extends "storybase_story/widget_base.html" %}
-{% load storybase_tags i18n %}
+{% comment %}
+Template for embed widget that shows both a featured story and list of stories
 
-{% block widget_content %}
-
-{% url story_viewer slug=story.slug as viewer_path %}
-{% fullurl viewer_path as viewer_url %}
-
-<section id="{{ story.story_id }}" class="storybase-story-featured {{ storybase_site_name|slugify }}-story-embed with-list">
-  {% include "storybase_story/widget_story_content.html" %}
-</section>
-
-<section class="storybase-storylist with-featured">
-  {% include "storybase_story/widget_list_content.html" %}
-</section>
-
-{% endblock %}
+By default, this template is empty because the required markup is included in
+``storybase_story/widget_base.html``.  This template is maintained as a hook
+if this particular widget layout needs to be customized.
+{% endcomment %}
