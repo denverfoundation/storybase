@@ -73,15 +73,15 @@ See documentation for ``storybase_story.views.StoryWidgetView`` for context.
       <footer>
         <div class="related-container">
           <p>
-        {% if related_objects %}
-          {% trans "View stories for" %}
-          {% for item in related_objects %}
+            {% if taxonomy_terms %}
+            {% trans "View stories for" %}
+            {% for item in taxonomy_terms %}
             <a href="{% fullurl item.get_absolute_url %}">{{ item.name }}</a>{% if not forloop.last %}, {% endif %}
-          {% endfor %}
-          {% trans "on" %} <a href="/">{{ storybase_site_name }}</a>
-        {% else %}
-          <a href="{% url "explore_stories" %}">{% blocktrans %} Explore more stories on {{ storybase_site_name }}{% endblocktrans %}</a>
-        {% endif %}
+            {% endfor %}
+            {% trans "on" %} <a href="/">{{ storybase_site_name }}</a>
+            {% else %}
+            <a href="{% url "explore_stories" %}">{% blocktrans %} Explore more stories on {{ storybase_site_name }}{% endblocktrans %}</a>
+            {% endif %}
           </p>
         </div>
       </footer>

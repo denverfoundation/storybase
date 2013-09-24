@@ -18,7 +18,7 @@ from django.views.generic.detail import SingleObjectMixin, SingleObjectTemplateR
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
-from storybase.utils import escape_json_for_html, simple_language_changer
+from storybase.utils import escape_json_for_html, roundrobin, simple_language_changer
 from storybase.views import EmbedView, EmbedPopupView, ShareView, SharePopupView
 from storybase.views.generic import ModelIdDetailView, Custom404Mixin, VersionTemplateMixin
 from storybase_asset.api import AssetResource
@@ -600,7 +600,7 @@ class StoryWidgetView(Custom404Mixin, VersionTemplateMixin, DetailView):
     * ``object``: In a story list widget, this will be model for the taxonomy
        term. In a story widget, or a story + list widget, this will be the
        primary story for the widget.
-    * ``related_objects``: A list of models for taxonomy items (organizations,
+    * ``taxonomy_terms``: A list of models for taxonomy items (organizations,
        projects, etc) related to the widget content
     * ``story``: The primary story for the widget
     * ``stories``: Optional list of related stories
@@ -806,34 +806,15 @@ class StoryWidgetView(Custom404Mixin, VersionTemplateMixin, DetailView):
                           {'verbose_name': queryset.model._meta.verbose_name})
         return obj
 
-    def get_related_objects(self, object):
+    def get_story_taxonomy_terms(self, story, n_items=3):
         """
-        Return a list of links to objects related to the widget's main content.
-        Goal is a list of mixed results, but containing no more than 3 items
-        total.
+        Return a list of taxonomy term models related to the widget's
+        primary story.
+
+        Interleave a list of mixed results, but containing no more than ``n_items``
+        items total.
         """
-        items = []
-        n_items = 3
-        srcs = []
-        
-        if hasattr(object, 'projects'):
-            srcs.append(object.projects.all())
-        else:
-            srcs.append([])
-
-        if hasattr(object, 'organizations'):
-            srcs.append(object.organizations.all())
-        else:
-            srcs.append([])
-
-        # Magical Python spell found at 
-        # http://stackoverflow.com/questions/11125212/interleaving-lists-in-python
-        items = [y for x in map(None, srcs[0], srcs[1]) for y in x][:n_items]
-        
-        # filter out None ... not sure why this happens...
-        items = [x for x in items if x is not None]
-        
-        return items
+        return list(roundrobin(story.organizations.all(), story.projects.all()))[:n_items]
 
     def get_context_data(self, **kwargs):
         """
@@ -854,8 +835,15 @@ class StoryWidgetView(Custom404Mixin, VersionTemplateMixin, DetailView):
         if self.list_match:
             filter_kwargs = self.get_filter_kwargs(self.list_match, self.get_related_field_name(self.list_match))
             context['stories'] = Story.objects.published().filter(**filter_kwargs).order_by('-published')[:3]
+            # This is a list widget. The taxonomy sole taxonomy term is the term
+            # we're displaying in the widget
+            context['taxonomy_terms'] = [context['object']]
 
-        context['related_objects'] = self.get_related_objects(context['object'])
+        if 'story' in context:
+            # This is a story-only view. Get the related taxonomy models for the
+            # story
+            context['taxonomy_terms'] = self.get_story_taxonomy_terms(context['story'])
+            
 
         return context
 

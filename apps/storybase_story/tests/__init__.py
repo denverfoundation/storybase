@@ -4145,6 +4145,35 @@ class StoryWidgetViewTest(TestCase):
         match = self.view.resolve_uri('not a url')
         self.assertEqual(match, None)
 
+    def test_get_story_taxonomy_terms(self):
+        story = self.set_up_story()
+        projects = []
+        organizations = []
+        for i in range(3):
+            organizations.append(create_organization("Test Organization %d" %
+                (i+1)))
+            story.organizations.add(organizations[i])
+            projects.append(create_project("Test Project %d" % (i+1)))
+            story.projects.add(projects[i])
+        # 3 projects, 3 organizations
+        taxonomy_terms = self.view.get_story_taxonomy_terms(story)
+        self.assertEqual(taxonomy_terms, [organizations[0], projects[0],
+            organizations[1]])
+        # No projects, no organizations
+        story.organizations.clear()
+        story.projects.clear()
+        taxonomy_terms = self.view.get_story_taxonomy_terms(story)
+        self.assertEqual(taxonomy_terms, [])
+        # One project, one organization
+        story.organizations.add(organizations[0])
+        story.projects.add(projects[0])
+        taxonomy_terms = self.view.get_story_taxonomy_terms(story)
+        self.assertEqual(taxonomy_terms, [organizations[0], projects[0]])
+        # One organization, no projects
+        story.projects.clear()
+        taxonomy_terms = self.view.get_story_taxonomy_terms(story)
+        self.assertEqual(taxonomy_terms, [organizations[0]])
+
     def test_get_story(self):
         story = self.set_up_story()
         url = self.get_widget_url(story_path=story.get_absolute_url())
