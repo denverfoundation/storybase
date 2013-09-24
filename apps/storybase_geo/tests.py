@@ -2,13 +2,15 @@ from geopy.geocoders.base import Geocoder
 
 from django.http import HttpRequest
 from django.contrib.auth.models import User
+from django.core.urlresolvers import reverse
+from django.test import TestCase
 
 from tastypie.test import ResourceTestCase, TestApiClient
 
 from storybase.tests.base import (SettingsChangingTestCase,
                                   SloppyComparisonTestMixin)
 from storybase_geo.api import GeocoderResource
-from storybase_geo.models import Location
+from storybase_geo.models import Location, Place
 from storybase_geo.utils import get_geocoder
 from storybase_story.models import create_story
 

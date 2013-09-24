@@ -96,7 +96,7 @@
             <button id="toggle-toc">Table of Contents <i class="icon-caret-up"></i></button>
           </nav>
 
-          <a href="#" class="storybase-share-widget" data-story-id="{{ story.slug }}" data-options='{"appendeeSelector": "#footer", "alignment": "top right" }'>Share This Story</a>
+          <a href="{{ story.get_share_url }}" class="storybase-share-button" data-options='{"appendeeSelector": "#footer", "alignment": "top right" }'>{% trans "Share This Story" %}</a>
         </footer>
     </div>
 
@@ -114,9 +114,10 @@
     <script src="{{ STATIC_URL }}js/libs/d3.v2.min.js"></script>
     <script src="{{ STATIC_URL }}js/libs/jquery.imagesloaded.min.js"></script>
     <script src="{{ STATIC_URL }}js/libs/jquery.condense.js"></script>
-    <script src="{{ STATIC_URL }}js/jquery.storybaseshare.js"></script>
 
     {% compress js %}
+    <script src="{{ STATIC_URL }}js/jquery.storybaseshare.js"></script>
+
     <script src="{{ STATIC_URL }}js/storybase.js"></script>
     <script src="{{ STATIC_URL }}js/models.js"></script>
     <script src="{{ STATIC_URL }}js/utils.js"></script>

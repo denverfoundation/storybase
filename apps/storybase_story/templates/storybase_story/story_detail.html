@@ -61,7 +61,8 @@
 				</div>
 				<div class="grid_6">
 					<section class="object-details">
-						<a href="#" class="storybase-share-widget" data-story-id="{{ story.slug }}">Share This Story</a>
+                        <a href="{{ story.get_share_url }}" class="storybase-share-button">{% trans "Share This Story" %}</a>
+                        <a href="{{ story.get_embed_url }}" class="storybase-embed-button">{% trans "Embed This Story" %}</a>
 						<dl class="object-metadata">
 							{% if story.contributor_name %}
 							<dt>{% trans "Contributed by" %}</dt>

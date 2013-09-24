@@ -36,6 +36,15 @@ Documentation for developers
     templatetags
 
 
+Documentation for users
+=======================
+
+.. toctree::
+    :maxdepth: 1
+
+    embedding
+
+
 Indices and tables
 ==================
 

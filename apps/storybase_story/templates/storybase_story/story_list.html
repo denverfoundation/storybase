@@ -1,0 +1,38 @@
+{% extends "twocol.html" %}
+
+{% load i18n storybase_tags %}
+
+{% block head_title %}{{ object.name }}{{ block.super }}{% endblock %}
+
+{% block body_class %}twocol explorer{% endblock %}
+
+{% block body_title %}{{ object.name }}{% endblock %}
+
+{% block content_page_class %}object-detail{% endblock %}
+
+{% block sidebar %}
+&nbsp;
+{% endblock %}
+
+{% block twocol-content %}
+{% include "storybase_story/paging.html" %}
+
+<section class="story-list content-block last">
+    <ul>
+        {% for story in page_obj.object_list %}
+        <li>
+            <div class="grid_2 alpha">
+                <a href="{{ story.get_absolute_url }}">{% featured_asset story 150 %}</a>
+            </div>
+            <div class="grid_8 omega">
+                <h4><a href="{{ story.get_absolute_url }}">{{ story.title }}</a></h4>
+                {{ story.summary|safe|linebreaks }}
+            </div>
+        </li>
+        {% endfor %}
+    </ul>
+</section>
+
+{% include "storybase_story/paging.html" %}
+
+{% endblock %}

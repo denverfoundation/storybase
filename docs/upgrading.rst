@@ -2,6 +2,13 @@
 Upgrading
 =========
 
+0.15.* to 0.16
+==============
+
+Slugs were added to the Place model.  You'll need to run a schema update::
+
+    python manage.py migrate storybase_geo
+
 0.13.* to 0.15
 ==============
 

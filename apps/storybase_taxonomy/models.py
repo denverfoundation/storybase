@@ -1,4 +1,5 @@
 from django.conf import settings
+from django.core.urlresolvers import reverse
 from django.db import models
 from django.utils.encoding import force_unicode
 from django.utils.translation import ugettext_lazy as _
@@ -90,6 +91,9 @@ class Category(TranslatedCategoryBase):
     translation_set = 'categorytranslation_set'
     translated_fields = ['name', 'slug']
 
+    def get_absolute_url(self):
+        return reverse('topic_stories', kwargs={'slug': self.slug})
+
     class Meta:
         verbose_name_plural = "categories"
 
@@ -110,6 +114,9 @@ class TagPermission(PermissionMixin):
 
 class Tag(TagPermission, TagBase):
     tag_id = UUIDField(auto=True)
+
+    def get_absolute_url(self):
+        return reverse('tag_stories', kwargs={'slug': self.slug})
 
     class Meta:
         verbose_name = _("Tag")

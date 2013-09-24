@@ -11,6 +11,12 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.16
+~~~~
+
+* Add slug field to Place model
+* Updated embed widget (#741)
+
 0.15.1
 ~~~~~~
 
