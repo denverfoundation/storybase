@@ -117,19 +117,14 @@
   var hasClass = function hasClass(el, cls) {
     return (' ' + el.className + ' ').indexOf(' ' + cls + ' ') > -1;
   };
- 
+
   /**
-   * Return the URL suitable for the src attribute of the widget iframe
+   * Parse the story and list URls from the placeholder element
    *
-   * @param {HtmlElement} el Element that will be replaced by the widget
-   * @param {String} baseWidgetUrl URL of page that serves the widget content
-   * @param {Object} opts Options for the widget URL
-   * @param {String} [opts.version] Widget version 
-   */ 
-  var getUrl = function(el, baseWidgetUrl, opts) {
+   * @param {el} el Element that will be replaced by the widget
+   */
+  var parseUrls = function(el) {
     var url = el.getAttribute('href');
-    var queryArgs = [];
-    var widgetUrl = baseWidgetUrl; 
     var storyUrl, listUrl;
 
     // Lazily catch exceptions and return the default widget URL
@@ -156,22 +151,38 @@
         }
       }
 
-      if (storyUrl) {
-        queryArgs.push('story-url=' + encodeURIComponent(storyUrl));
-      }
-
-      if (listUrl) {
-        queryArgs.push('list-url=' + encodeURIComponent(listUrl));
-      }
-
-      widgetUrl = opts.version ? widgetUrl + opts.version + '/' : widgetUrl;
-      if (queryArgs.length) {
-        widgetUrl = widgetUrl + '?' + queryArgs.join('&');
-      }
     }    
     catch (e) {
-      // Do nothing, just return the default value of widgetUrl
-      // below
+      // Do nothing
+    }
+
+    return [storyUrl, listUrl];
+  };
+ 
+  /**
+   * Return the URL suitable for the src attribute of the widget iframe
+   *
+   * @param {String} storyUrl URL for primary story featured in widget
+   * @param {String} listUrl URL for taxonomy term used to populate story list
+   * @param {String} baseWidgetUrl URL of page that serves the widget content
+   * @param {Object} opts Options for the widget URL
+   * @param {String} [opts.version] Widget version 
+   */ 
+  var getUrl = function(storyUrl, listUrl, baseWidgetUrl, opts) {
+    var queryArgs = [];
+    var widgetUrl = baseWidgetUrl; 
+
+    if (storyUrl) {
+      queryArgs.push('story-url=' + encodeURIComponent(storyUrl));
+    }
+
+    if (listUrl) {
+      queryArgs.push('list-url=' + encodeURIComponent(listUrl));
+    }
+
+    widgetUrl = opts.version ? widgetUrl + opts.version + '/' : widgetUrl;
+    if (queryArgs.length) {
+      widgetUrl = widgetUrl + '?' + queryArgs.join('&');
     }
 
     return widgetUrl;
@@ -185,25 +196,31 @@
       .concat(getElementsByClassName('storybase-story-list-embed'));
     var defaults = {
       height: '500px',
+      // Shorter height, ideal for single-story widget
+      shortHeight: '240px',
       width: '600px',
       version: null
     };
-    var i, ph, el, url, opts, height, version;
+    var i, ph, el, urls, widgetUrl, opts, height;
 
     for (i = 0; i < phs.length; i++) {
       opts = {};
       ph = phs[i];
+
+      // Only process visible elements as we assume elements with
+      // display:none have already been processed
       if (ph.style.display != 'none') {
-        // Only process visible elements as we assume elements with
-        // display:none have already been processed
-        opts.height = ph.getAttribute('data-height') || defaults.height;
-        opts.width = ph.getAttribute('data-width') || defaults.width;
-        opts.version = ph.getAttribute('data-version') || defaults.version; 
-        url = getUrl(ph, baseWidgetUrl, opts);
-        if (url) {
+        urls = parseUrls(ph);
+        if (urls[0] || urls[1]) {
+          opts.version = ph.getAttribute('data-version') || defaults.version; 
+          // If we're only showing a single story, use the shorter height
+          opts.height = ph.getAttribute('data-height') || (!urls[1] ? defaults.shortHeight : defaults.height);
+          opts.width = ph.getAttribute('data-width') || defaults.width;
+          widgetUrl = getUrl(urls[0], urls[1], baseWidgetUrl, opts);
+
           el = document.createElement('iframe');
           el.setAttribute('name', 'storybase-story-widget-frame');
-          el.setAttribute('src', url);
+          el.setAttribute('src', widgetUrl);
           el.setAttribute('style', "border: none; height: " + opts.height + "; width: " + opts.width + ";");
           ph.parentNode.insertBefore(el, ph);
           ph.style.display = 'none';
