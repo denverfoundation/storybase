@@ -42,9 +42,11 @@
 			}
 
 			.faq-question {
-				// Eventually these might toggle expanding/collapsing the
-				// answer, so make the cursor a pointer so it appears like a
-				// link
+                                // Override the .icon-* style that makes this inline-block
+                                display: block;
+
+				// Clicking the question toggles the answer, so make the cursor a pointer 
+                                // so it appears more "clickable"
 				cursor: pointer;
 				border-top:1px solid #ddd;
 				margin-bottom:0;

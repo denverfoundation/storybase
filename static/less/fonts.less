@@ -23,3 +23,16 @@
     font-style: normal;
 
 }
+
+
+@import "font-awesome/font-awesome.less";
+
+// Font Awesome used to apply the icon font to the ``:before`` pseduo-element
+// of elements with an ``icon-*`` class.  Now it applies it to the element
+// itself.  Restore the old behavior for the elements that use the chevron to
+// toggle an element
+.icon-chevron-right, .icon-chevron-down {
+  &:before {
+    .icon-FontAwesome();
+  }
+}

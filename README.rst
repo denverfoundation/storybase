@@ -16,6 +16,7 @@ Changelog
 
 * Add slug field to Place model
 * Updated embed widget (#741)
+* Upgrade Font Awesome to version 3.2.1 (#868)
 
 0.15.1
 ~~~~~~
