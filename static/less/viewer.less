@@ -64,6 +64,7 @@
     width: 100%;
     padding: @viewer-bar-padding;
     z-index: 9999;
+    position:relative;
 
     color: #fff;
     background-color: #000;
@@ -86,6 +87,26 @@
       margin: 0;
       padding: 0.25% 0;
     }
+    
+    .storybase-share-button {
+      position:absolute;
+      right:@viewer-bar-padding;
+      bottom:@viewer-bar-padding;
+      background:transparent;
+      padding:0 @viewer-bar-padding;
+
+      &:before {
+        content: '';
+      }
+    }
+
+    // needed to override viewer dd prop
+    .storybase-share-popup {
+      dd {
+        margin:0;
+      }
+    }
+    
   }
 
   #body {
@@ -93,11 +114,34 @@
     .body-copy-lists;
     width: 100%;
     padding-bottom: 120px;
+    
+    .summary {
+      padding: 1%;
+    
+      .summary-overview, .summary-toc {
+        width:50%;
+        float:left;
+        
+        .byline {
+          color:@gray; 
+          font-style:italic;
+        }
+        
+        ul {
+          padding:0;
+          li {
+            list-style-type:none;
+          }
+        }
+      }
+    
+      .summary-overview .featured-asset {
+        float:none;
+      }
+    
   }
 
-  .summary {
-    padding: 1%;
-    .callout-section;
+
   }
   .call-to-action {
     .callout-section;
@@ -163,17 +207,20 @@
     padding: @viewer-bar-padding;
     background-color: @footer-background-color; 
     z-index: 9999;
-
-    .storybase-share-button {
-      float:right;
-      margin-right:20px;
-    }
-    // needed to override viewer dd prop
-    .storybase-share-popup {
-      dd {
-        margin:0;
+    
+    .logo {
+      position:absolute;
+      right:30px;
+      display:block;
+      background:url(../img/viewer-logo.png) no-repeat right center;
+      height:27px;
+      width:200px;
+      
+      span {
+        .hide-text;
       }
     }
+    
   }
 
   #toggle-toc {
@@ -232,7 +279,7 @@
   #story-nav {
     color: #fff;
     text-align: center;
-    width: 170px;
+    width: 250px;
     margin-left: auto;
     margin-right: auto;
     padding: 0;
@@ -268,8 +315,9 @@
     }
     
     .location {
-      clear:both;
+      float:left;
       font-size:.8em;
+      padding:0 1em;
       color:@light-gray;
     }
   }

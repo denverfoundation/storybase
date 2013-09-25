@@ -13,6 +13,9 @@
 <meta property="og:title" content="{{ story.title }}" />
 <meta property="og:description" content="{{ story.summary }}" />
 <meta property="og:image" content="{{ story.featured_asset_thumbnail_url }}" />
+
+{% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/tooltipster-2.1.4/css/tooltipster.css">{% endaddtoblock %}
+
 {% endblock %}
 
 {% block above_content %}
@@ -149,7 +152,7 @@
 {% block bodyend %}
 <div id="story-viewer-modal" class="modal">
   <div id="modal-controls">
-      <a id="launch-viewer-window" href="{% url story_viewer slug=story.slug %}" title="{%trans "View in new window"%}" data-window-name="story-viewer" data-window-features=""><i class="icon-share"></i><span class="hide-text">{%trans "View in new window"%}</span></a>
+      <a id="launch-viewer-window" href="{% url story_viewer slug=story.slug %}" title="{%trans "View in new window"%}" data-window-name="story-viewer" data-window-features=""><i class="icon-external-link"></i><span class="hide-text">{%trans "View in new window"%}</span></a>
       <button class="simplemodal-close" title="{% trans "Close" %}"><i class="icon-remove-sign"></i><span class="hide-text">{% trans "Close" %}</span></button>
   </div>
   <iframe src="{% url story_viewer slug=story.slug %}?context=iframe"></iframe>
@@ -159,6 +162,7 @@
 {% block extrajs %}
 <script defer src="{{ STATIC_URL }}js/libs/jquery.simplemodal.1.4.2.min.js"></script>
 <script src="{{ STATIC_URL }}js/storybase.js"></script>
+<script src="{{ STATIC_URL }}js/libs/tooltipster-2.1.4/js/jquery.tooltipster.min.js"></script>
 <script src="{{ STATIC_URL }}js/libs/bootstrap-dropdown.js"></script>
 <script type="text/javascript">
 $(document).ready(function () {
@@ -174,6 +178,7 @@ $(document).ready(function () {
             overlayCss: { background: 'black' },
             onShow: function(dialog) {
               disablePageScrolling();
+              $('#modal-controls a, #modal-controls button').tooltipster();
             },
             onClose: function(dialog) {
               enablePageScrolling();
@@ -184,7 +189,7 @@ $(document).ready(function () {
         $("#story-viewer-modal iframe").css("height", height); 
         return false;
     });
-
+    
     // Launch the viewer in a new window
     $("#story-viewer-modal #modal-controls #launch-viewer-window").click(storybase.openInNewWindow)
         .click(function(evt) {

@@ -1092,9 +1092,11 @@ body.story-builder .uploadprogress .meter>span{display:block;height:100%;backgro
 .story-viewer a.button{padding:5px;background-color:#dcdcdc;border:1px solid #666;text-decoration:none}
 .story-viewer .intro{font-size:2em;font-family:georgia}
 .story-viewer .caption{font-style:italic;color:#777}
-.story-viewer #header{box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;width:100%;padding:10px;z-index:9999;color:#fff;background-color:#000}.story-viewer #header .title{text-align:left;font-family:'Museo300Regular';font-weight:normal;padding:2px 0;font-size:28.8px;line-height:1.2em}
+.story-viewer #header{box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;width:100%;padding:10px;z-index:9999;position:relative;color:#fff;background-color:#000}.story-viewer #header .title{text-align:left;font-family:'Museo300Regular';font-weight:normal;padding:2px 0;font-size:28.8px;line-height:1.2em}
 .story-viewer #header .byline{margin:0;padding:0 0 2px 0;font-style:italic}
 .story-viewer #header .section-title{font-size:1em;margin:0;padding:.25% 0}
+.story-viewer #header .storybase-share-button{position:absolute;right:10px;bottom:10px;background:transparent;padding:0 10px}.story-viewer #header .storybase-share-button:before{content:''}
+.story-viewer #header .storybase-share-popup dd{margin:0}
 .story-viewer #body{width:100%;padding-bottom:120px}.story-viewer #body h1{font-size:36px;color:#5a5a5a;text-align:left;font-family:'Museo300Regular';font-weight:normal;background:url('../img/h3-line.png') repeat-x 0 8px;margin-bottom:10px;line-height:1em}.story-viewer #body h1 span{background:#fff;padding-left:16px;padding-right:16px}
 .story-viewer #body h1.no-line{background:none;margin-bottom:inherit}
 .story-viewer #body h2{font-size:28.8px;color:#5a5a5a;text-align:left;font-family:'Museo300Regular';font-weight:normal}
@@ -1106,7 +1108,9 @@ body.story-builder .uploadprogress .meter>span{display:block;height:100%;backgro
 .story-viewer #body ul,.story-viewer #body ol{padding-left:20px;margin-bottom:1em}
 .story-viewer #body ul li{list-style-type:square}
 .story-viewer #body ol li{list-style-type:decimal}
-.story-viewer .summary{padding:1%;background:#f0efef;border-top:1px solid #d7d5d5;border-bottom:1px solid #d7d5d5}
+.story-viewer #body .summary{padding:1%}.story-viewer #body .summary .summary-overview,.story-viewer #body .summary .summary-toc{width:50%;float:left}.story-viewer #body .summary .summary-overview .byline,.story-viewer #body .summary .summary-toc .byline{color:#777;font-style:italic}
+.story-viewer #body .summary .summary-overview ul,.story-viewer #body .summary .summary-toc ul{padding:0}.story-viewer #body .summary .summary-overview ul li,.story-viewer #body .summary .summary-toc ul li{list-style-type:none}
+.story-viewer #body .summary .summary-overview .featured-asset{float:none}
 .story-viewer .call-to-action{background:#f0efef;border-top:1px solid #d7d5d5;border-bottom:1px solid #d7d5d5}
 .story-viewer .section,.story-viewer .connected-story{padding:1%}
 .story-viewer .connected-stories h2.title{margin-bottom:1.2em}
@@ -1116,18 +1120,17 @@ body.story-builder .uploadprogress .meter>span{display:block;height:100%;backgro
 .story-viewer .spider svg{float:left;position:fixed}
 .story-viewer .spider .sidebar .summary,.story-viewer .spider .sidebar .call-to-action{padding:0 6%}
 .story-viewer .section h1.title,.story-viewer .section h2.title,.story-viewer .section h3.title{font-size:24px;font-weight:normal;color:#fe9703;padding:0}
-.story-viewer #footer{position:fixed;bottom:0;width:100%;padding:10px;background-color:#000;z-index:9999}.story-viewer #footer .storybase-share-button{float:right;margin-right:20px}
-.story-viewer #footer .storybase-share-popup dd{margin:0}
+.story-viewer #footer{position:fixed;bottom:0;width:100%;padding:10px;background-color:#000;z-index:9999}.story-viewer #footer .logo{position:absolute;right:30px;display:block;background:url(../img/viewer-logo.png) no-repeat right center;height:27px;width:200px}.story-viewer #footer .logo span{position:absolute;top:-9999px;left:-9999px}
 .story-viewer #toggle-toc{border:none;background:none;padding:0;margin:0;width:auto;text-align:center;text-shadow:none;position:relative;color:#fff}.story-viewer #toggle-toc:hover{background:none}
 .story-viewer #toc{position:fixed;left:0;bottom:0;padding:10px;min-width:200px;overflow:hidden;color:#fff;background-color:#000}.story-viewer #toc .story-toc{display:none;overflow-x:hidden;overflow-y:auto;margin-bottom:10px}.story-viewer #toc .story-toc a{color:#fff;text-decoration:none;display:block;width:100%;padding:4px 2px}.story-viewer #toc .story-toc a:hover{background:#414141}
 .story-viewer #toc .story-toc a.current{color:#fe9703;background:#414141}
 .story-viewer #toc .story-toc li{padding:0}
 .story-viewer #toc .story-toc li ul{padding-top:2px}
 .story-viewer #toc .story-toc li li{padding:2px}
-.story-viewer #story-nav{color:#fff;text-align:center;width:170px;margin-left:auto;margin-right:auto;padding:0}.story-viewer #story-nav a{text-decoration:none;color:#fff;width:80px;display:block;float:left;border:1px solid #777;border-radius:4px;-webkit-border-radius:4px;-moz-border-radius:4px;background:#414141}.story-viewer #story-nav a:first-child{margin-right:5px}
+.story-viewer #story-nav{color:#fff;text-align:center;width:250px;margin-left:auto;margin-right:auto;padding:0}.story-viewer #story-nav a{text-decoration:none;color:#fff;width:80px;display:block;float:left;border:1px solid #777;border-radius:4px;-webkit-border-radius:4px;-moz-border-radius:4px;background:#414141}.story-viewer #story-nav a:first-child{margin-right:5px}
 .story-viewer #story-nav a.disabled{color:#777;border:1px solid #5a5a5a;cursor:default}.story-viewer #story-nav a.disabled:hover{color:#777;background:#414141}
 .story-viewer #story-nav a:hover{background:#5a5a5a}
-.story-viewer #story-nav .location{clear:both;font-size:.8em;color:#f0efef}
+.story-viewer #story-nav .location{float:left;font-size:.8em;padding:0 1em;color:#f0efef}
 .story-viewer path.link{fill:none;stroke-width:2;stroke:#ddd}
 .story-viewer .node.active{fill:#f00}
 .story-viewer iframe.sandboxed-asset{border:none}
