@@ -166,6 +166,15 @@ button.help {
   &:first-child {
     padding-top: 0;
   }
+
+  a {
+    // Don't underline links except when hovering
+    text-decoration: none;
+
+    &:hover {
+      text-decoration: underline;
+    }
+  }
   
 }
 
