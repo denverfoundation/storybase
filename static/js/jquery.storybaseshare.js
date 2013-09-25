@@ -116,7 +116,7 @@
         var instanceOptions = $.extend(true, {}, pluginOptions);
 
         var href = $button.attr('href');
-        href = href.slice(-1) === '/' ? href + '/' : href;
+        href = href.slice(-1) === '/' ? href : href + '/';
         
         // defaults can be overridden by data-options JSON attribute on individual elements
         if ($button.data('options')) {
