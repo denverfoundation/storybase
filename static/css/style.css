@@ -1116,7 +1116,7 @@ body.story-builder .uploadprogress .meter>span{display:block;height:100%;backgro
 .story-viewer .spider svg{float:left;position:fixed}
 .story-viewer .spider .sidebar .summary,.story-viewer .spider .sidebar .call-to-action{padding:0 6%}
 .story-viewer .section h1.title,.story-viewer .section h2.title,.story-viewer .section h3.title{font-size:24px;font-weight:normal;color:#fe9703;padding:0}
-.story-viewer #footer{position:fixed;bottom:0;width:100%;padding:10px;background-color:#000;z-index:9999}.story-viewer #footer .storybase-share-widget{float:right;margin-right:20px}
+.story-viewer #footer{position:fixed;bottom:0;width:100%;padding:10px;background-color:#000;z-index:9999}.story-viewer #footer .storybase-share-button{float:right;margin-right:20px}
 .story-viewer #footer .storybase-share-popup dd{margin:0}
 .story-viewer #toggle-toc{border:none;background:none;padding:0;margin:0;width:auto;text-align:center;text-shadow:none;position:relative;color:#fff}.story-viewer #toggle-toc:hover{background:none}
 .story-viewer #toc{position:fixed;left:0;bottom:0;padding:10px;min-width:200px;overflow:hidden;color:#fff;background-color:#000}.story-viewer #toc .story-toc{display:none;overflow-x:hidden;overflow-y:auto;margin-bottom:10px}.story-viewer #toc .story-toc a{color:#fff;text-decoration:none;display:block;width:100%;padding:4px 2px}.story-viewer #toc .story-toc a:hover{background:#414141}
