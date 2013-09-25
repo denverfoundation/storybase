@@ -43,9 +43,12 @@
   <body class="story-viewer">
     <div id="app">
         <header id="header">
-          <a href="{{ story.get_share_url }}" title="{%trans "Share This Story"%}" class="storybase-share-button" data-options='{"appendeeSelector": "#app", "alignment": "bottom right" }'>
-            {%trans "Share This Story" %} <i class="icon-share"></i>
-          </a>
+          <div id="tools">
+              <a href="{{ story.get_absolute_url }}" title="{% trans "About This Story" %}" class="external">{% trans "About This Story" %} <i class="icon-th-list"></i></a>
+              <a href="{{ story.get_share_url }}" title="{% trans "Share This Story"%}" class="storybase-share-link" data-options='{"appendeeSelector": "#app", "alignment": "bottom right" }'>
+                {% trans "Share This Story" %} <i class="icon-share"></i>
+              </a>
+          </div>
           <h1 class="title">{{ story.title }}</h1>
           <p class="byline">{% trans "By" %} {% if story.byline %}{{ story.byline }}{% else %}{{ story.contributor_name }}{% endif %}</p>
         </header>
@@ -168,7 +171,7 @@
             Backbone.history.start();
         }
         
-        $('.storybase-share-widget').tooltipster();
+        $('#tools a').tooltipster();
         
         storybase.viewer.app.render();
     });

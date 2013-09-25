@@ -88,18 +88,6 @@
       padding: 0.25% 0;
     }
     
-    .storybase-share-button {
-      position:absolute;
-      right:@viewer-bar-padding;
-      bottom:@viewer-bar-padding;
-      background:transparent;
-      padding:0 @viewer-bar-padding;
-
-      &:before {
-        content: '';
-      }
-    }
-
     // needed to override viewer dd prop
     .storybase-share-popup {
       dd {
@@ -107,6 +95,23 @@
       }
     }
     
+  }
+
+  #tools {
+    position:absolute;
+    right:@viewer-bar-padding;
+    bottom:@viewer-bar-padding;
+    padding:0 @viewer-bar-padding;
+
+    a {
+      font-family: "Museo300Regular";
+      font-size: 14px;
+      font-weight: normal;
+      color: #fff !important;
+      text-decoration: none;
+      display: inline-block;
+      margin-left: 4px;
+    }
   }
 
   #body {

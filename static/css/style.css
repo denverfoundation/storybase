@@ -1095,8 +1095,8 @@ body.story-builder .uploadprogress .meter>span{display:block;height:100%;backgro
 .story-viewer #header{box-sizing:border-box;-moz-box-sizing:border-box;-webkit-box-sizing:border-box;width:100%;padding:10px;z-index:9999;position:relative;color:#fff;background-color:#000}.story-viewer #header .title{text-align:left;font-family:'Museo300Regular';font-weight:normal;padding:2px 0;font-size:28.8px;line-height:1.2em}
 .story-viewer #header .byline{margin:0;padding:0 0 2px 0;font-style:italic}
 .story-viewer #header .section-title{font-size:1em;margin:0;padding:.25% 0}
-.story-viewer #header .storybase-share-button{position:absolute;right:10px;bottom:10px;background:transparent;padding:0 10px}.story-viewer #header .storybase-share-button:before{content:''}
 .story-viewer #header .storybase-share-popup dd{margin:0}
+.story-viewer #tools{position:absolute;right:10px;bottom:10px;padding:0 10px}.story-viewer #tools a{font-family:"Museo300Regular";font-size:14px;font-weight:normal;color:#fff !important;text-decoration:none;display:inline-block;margin-left:4px}
 .story-viewer #body{width:100%;padding-bottom:120px}.story-viewer #body h1{font-size:36px;color:#5a5a5a;text-align:left;font-family:'Museo300Regular';font-weight:normal;background:url('../img/h3-line.png') repeat-x 0 8px;margin-bottom:10px;line-height:1em}.story-viewer #body h1 span{background:#fff;padding-left:16px;padding-right:16px}
 .story-viewer #body h1.no-line{background:none;margin-bottom:inherit}
 .story-viewer #body h2{font-size:28.8px;color:#5a5a5a;text-align:left;font-family:'Museo300Regular';font-weight:normal}
