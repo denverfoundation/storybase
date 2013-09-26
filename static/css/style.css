@@ -1108,11 +1108,11 @@ body.story-builder .uploadprogress .meter>span{display:block;height:100%;backgro
 .story-viewer #body ul,.story-viewer #body ol{padding-left:20px;margin-bottom:1em}
 .story-viewer #body ul li{list-style-type:square}
 .story-viewer #body ol li{list-style-type:decimal}
-.story-viewer #body .summary{padding:1%}.story-viewer #body .summary .title{width:100%}
-.story-viewer #body .summary .summary-image,.story-viewer #body .summary .summary-text,.story-viewer #body .summary .summary-toc{width:48%;float:left}.story-viewer #body .summary .summary-image ul,.story-viewer #body .summary .summary-text ul,.story-viewer #body .summary .summary-toc ul{padding:0}.story-viewer #body .summary .summary-image ul li,.story-viewer #body .summary .summary-text ul li,.story-viewer #body .summary .summary-toc ul li{list-style-type:none}
-.story-viewer #body .summary .summary-image .featured-asset{margin-right:0;max-width:100%;float:none}
-.story-viewer #body .summary .summary-image{padding-right:4%}
-.story-viewer #body .summary .summary-image,.story-viewer #body .summary .summary-toc{padding-bottom:40px}
+.story-viewer #body #summary{padding:1%}.story-viewer #body #summary .title{width:100%}
+.story-viewer #body #summary #summary-image,.story-viewer #body #summary #summary-text,.story-viewer #body #summary #summary-toc{width:48%;float:left}.story-viewer #body #summary #summary-image ul,.story-viewer #body #summary #summary-text ul,.story-viewer #body #summary #summary-toc ul{padding:0}.story-viewer #body #summary #summary-image ul li,.story-viewer #body #summary #summary-text ul li,.story-viewer #body #summary #summary-toc ul li{list-style-type:none}
+.story-viewer #body #summary .summary-image .featured-asset{margin-right:0;max-width:100%;float:none}
+.story-viewer #body #summary .summary-image{padding-right:4%}
+.story-viewer #body #summary .summary-image,.story-viewer #body #summary .summary-toc{padding-bottom:40px}
 .story-viewer .call-to-action{background:#f0efef;border-top:1px solid #d7d5d5;border-bottom:1px solid #d7d5d5}
 .story-viewer .section,.story-viewer .connected-story{padding:1%}
 .story-viewer .connected-stories h2.title{margin-bottom:1.2em}

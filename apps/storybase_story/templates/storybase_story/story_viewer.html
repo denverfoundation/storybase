@@ -57,13 +57,13 @@
           {% if story.summary %}
           <section id="summary" class="section summary" style="display: none;">
             <h2 class="title">{%trans "Summary" %}</h2>
-            <div class="summary-image">
+            <div id="summary-image">
               {% featured_asset story %}
             </div>
-            <div class="summary-text">
+            <div id="summary-text">
               {{ story.summary|safe|linebreaks }}
             </div>
-            <div class="summary-toc">
+            <div id="summary-toc">
               <h2>Table of Contents</h2>
               {{ story.structure.render_toc }}
             </div>
