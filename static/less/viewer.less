@@ -122,15 +122,16 @@
     
     .summary {
       padding: 1%;
+
+      .title {
+        width: 100%;
+      }
     
-      .summary-overview, .summary-toc {
-        width:50%;
-        float:left;
-        
-        .byline {
-          color:@gray; 
-          font-style:italic;
-        }
+      .summary-image, .summary-text, .summary-toc {
+        width: 48%;
+        float: left;
+        // Clear the footer
+        //padding-bottom: 40px;
         
         ul {
           padding:0;
@@ -140,10 +141,20 @@
         }
       }
     
-      .summary-overview .featured-asset {
+      .summary-image .featured-asset {
+        margin-right: 0;
+        max-width: 100%;
         float:none;
       }
-    
+
+      .summary-image {
+        padding-right: 4%;
+      }
+
+      .summary-toc {
+        // Clear footer
+        padding-bottom: 40px;
+      }     
   }
 
 
@@ -340,6 +351,7 @@
   iframe.sandboxed-asset {
     border:none;
   }
+
   
   // from here down to end of .story-viewer block copied from old style.css. 
   // these are probably applicable in more places than in story-viewer.
