@@ -59,7 +59,9 @@ Including multiple widgets
 --------------------------
 
 You can include multiple widgets on a single page. If you do this, you only
-need to include the widget JavaScript file once.
+need to include the widget JavaScript file once. However, you must include the
+script *after* all of placeholder elements. If you include it at the end of
+your page's ``<body>`` element, you should be okay.
 
 Single story
 ============
@@ -102,7 +104,7 @@ This HTML will display a widget for the organization "The Piton Foundation".
 
 .. code-block:: html
 
-    <a href="http://floodlightproject.org/en/organizations/the-piton-foundation/" class=storybase-story-embed">The Piton Foundation</a>
+    <a href="http://floodlightproject.org/en/organizations/the-piton-foundation/" class="storybase-list-embed">The Piton Foundation</a>
     <script src="http://floodlightproject.org/static/js/widgets.min.js" type="text/javascript"></script>
 
 Project stories
@@ -217,6 +219,7 @@ and stories in the project "Finding a Bite: Food Access in the Children's Corrid
             <a class="storybase-story" href="http://floodlightproject.org/stories/25th-and-welton-images-of-the-mo-betta-market/">Local Grown: Images of the Mo Betta Market</a>
             <a class="storybase-list" href="http://floodlightproject.org/projects/finding-a-bite-food-access-in-the-childrens-corrid/">Finding a Bite: Food Access in the Children's Corridor</a>
         </div>
+        <script src="http://floodlightproject.org/static/js/widgets.min.js" type="text/javascript"></script>
 
 
 Widget options
