@@ -18,14 +18,16 @@ Handlebars templates for rendering Backbone views.
       {{else}}
         <a class="previous disabled" href="#"><i class="icon-chevron-left"></i> {{gettext "Previous"}}</a>
       {{/if}}
-
+      
+      <div class="location">({{currentSectionNum}} / {{totalSectionsNum}})</div>
+      
       {{#if next_section}}
           <a class="next" href="#sections/{{next_section.id}}" title="{{next_section.title}}">{{gettext "Next"}} <i class="icon-chevron-right"></i></a>
       {{else}}
         <a class="next disabled" href="#">{{gettext "Next"}} <i class="icon-chevron-right"></i></a>
       {{/if}}
 
-      <div class="location">({{currentSectionNum}} / {{totalSectionsNum}})</div>
+
     {{/if}}
 </script>
 {% endverbatim %}

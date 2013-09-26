@@ -35,7 +35,8 @@
   var ViewerApp = Views.ViewerApp = Backbone.View.extend(
     _.extend({}, NavigableMixin, {
       options: {
-        tocEl: '#toc .story-toc',
+        tocEl: '.story-toc',
+        chromeTocEl: '#toc .story-toc',
         tocButtonEl: '#toggle-toc',
         tocIconEl: '[class^="icon-"]',
         tocOpenClass: 'icon-caret-down',
@@ -77,12 +78,12 @@
 
       // Add the view's container element to the DOM and render the sub-views
       render: function() {
-        this.$el.addClass(this.elClass);
+        this.$el.addClass(this.options.elClass);
         this.$('footer').append(this.navigationView.el);
         this.navigationView.render();
         this.$('.summary').show();
         this.$('.section').show();
-        this.$('.storybase-share-button').storybaseShare();
+        this.$('.storybase-share-link').storybaseShare();
         this._rendered = true;
         this.trigger("render");
         return this;
@@ -143,7 +144,7 @@
       },
       
       openToc: function() {
-        var $tocEl = $(this.options.tocEl);
+        var $tocEl = $(this.options.chromeTocEl);
         if (!$tocEl.data('open') || _.isUndefined($tocEl.data('open'))) {
           $tocEl.slideDown().data('open', true);
           $(this.options.tocButtonEl)
@@ -158,7 +159,7 @@
       },
 
       closeToc: function() {
-        var $tocEl = $(this.options.tocEl);
+        var $tocEl = $(this.options.chromeTocEl);
         if ($tocEl.data('open')) {
           $tocEl.slideUp().data('open', false);
           $(this.options.tocButtonEl)
@@ -171,7 +172,7 @@
       },
 
       toggleToc: function() {
-        if ($(this.options.tocEl).data('open')) {
+        if ($(this.options.chromeTocEl).data('open')) {
           this.closeToc();
         }
         else {
@@ -522,7 +523,9 @@
 
   // Master view that shows a story in a linear fashion
   var LinearViewerApp = Views.LinearViewerApp = ViewerApp.extend({
-    elClass: 'linear',
+    options: {
+      elClass: 'linear'
+    },
 
     events: function() {
       var events = ViewerApp.prototype.events.apply(this, arguments);
@@ -654,7 +657,9 @@
 
   // Master view that shows the story structure visualization initially
   var SpiderViewerApp = Views.SpiderViewerApp = ViewerApp.extend({
-    elClass: 'spider',
+    options: {
+      elClass: 'spider'
+    },
 
     events: function() {
       var events = ViewerApp.prototype.events.apply(this, arguments);
@@ -684,11 +689,11 @@
     },
 
     render: function() {
-      this.$el.addClass(this.elClass);
+      this.$el.addClass(this.options.elClass);
       // Create an element for the sidebar 
       $('<div></div>').prependTo(this.$('#body')).addClass('sidebar');
       // Clone the summary and place it in the sidebar
-      this.$('#summary').clone().appendTo('.sidebar').removeAttr('id').removeClass('section').show().condense({moreText: gettext("Read more")});
+      this.$('#summary-text').clone().appendTo('.sidebar').show().condense({moreText: gettext("Read more")});
       // Copy the call to action and place it in the sidebar
       this.$('#call-to-action').clone().appendTo('.sidebar').removeAttr('id').removeClass('section').show();
       this.$('footer').append(this.navigationView.el);
