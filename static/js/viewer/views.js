@@ -693,7 +693,7 @@
       // Create an element for the sidebar 
       $('<div></div>').prependTo(this.$('#body')).addClass('sidebar');
       // Clone the summary and place it in the sidebar
-      this.$('#summary').clone().appendTo('.sidebar').removeAttr('id').removeClass('section').show().condense({moreText: gettext("Read more")});
+      this.$('#summary-text').clone().appendTo('.sidebar').show().condense({moreText: gettext("Read more")});
       // Copy the call to action and place it in the sidebar
       this.$('#call-to-action').clone().appendTo('.sidebar').removeAttr('id').removeClass('section').show();
       this.$('footer').append(this.navigationView.el);

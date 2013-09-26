@@ -56,6 +56,16 @@
         <div id="body">
           {% if story.summary %}
           <section id="summary" class="section summary" style="display: none;">
+          {% comment %}
+          HACK: Different markup for different story structures.  The
+          ``#summary-text`` element gets moved inside a dynamically created
+          sidebar by JavaScript.
+          {% endcomment %}
+          {% if story.structure_type == "spider" %}
+            <div id="summary-text">
+              {{ story.summary|safe|linebreaks }}
+            </div>
+          {% else %}
             <h2 class="title">{%trans "Summary" %}</h2>
             <div id="summary-image">
               {% featured_asset story %}
@@ -67,6 +77,7 @@
               <h2>Table of Contents</h2>
               {{ story.structure.render_toc }}
             </div>
+          {% endif %}
           </section>
           {% endif %}
 
