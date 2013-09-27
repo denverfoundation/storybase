@@ -97,7 +97,7 @@
 
       // Add the view's container element to the DOM and render the sub-views
       render: function() {
-        this.$el.addClass(this.options.elClass);
+        this.$el.addClass(this.attributes.class);
         this.$('footer').append(this.navigationView.el);
         this.navigationView.render();
         this.$('.summary').show();
@@ -542,8 +542,8 @@
 
   // Master view that shows a story in a linear fashion
   var LinearViewerApp = Views.LinearViewerApp = ViewerApp.extend({
-    options: {
-      elClass: 'linear'
+    attributes: {
+      'class': 'linear'
     },
 
     events: function() {
@@ -681,8 +681,8 @@
 
   // Master view that shows the story structure visualization initially
   var SpiderViewerApp = Views.SpiderViewerApp = ViewerApp.extend({
-    options: {
-      elClass: 'spider'
+    attributes: {
+      'class': 'spider'
     },
 
     events: function() {
@@ -714,7 +714,7 @@
     },
 
     render: function() {
-      this.$el.addClass(this.options.elClass);
+      this.$el.addClass(this.attributes.class);
       // Create an element for the sidebar 
       $('<div></div>').prependTo(this.$('#body')).addClass('sidebar');
       // Clone the summary and place it in the sidebar
