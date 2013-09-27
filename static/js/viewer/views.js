@@ -704,7 +704,6 @@
       return this;
     },
 
-
     // Show the active section
     showActiveSection: function() {
       // Hide the summary
@@ -734,8 +733,7 @@
       // I don't like global variables, but passing it as an argument
       // makes for a weird circular dependency between the master view/
       // router.
-      Router.navigate("sections/" + sectionId,
-                                       {trigger: true});
+      Router.navigate("sections/" + sectionId, {trigger: true});
     },
 
     // Event handler for clicking the "Topic Map" link
@@ -751,20 +749,19 @@
         // $.toggle() doesn't seem to work on the svg element.
         // Toggle the visibility of the element the hard way
         if (visEl.css('display') == 'none') {
-    this.initialView.visEl().show();
-    // Explicitly set the position of the svg element to accomodate the
-    // sidebar
-    this.initialView.visEl().css(
-      'left', 
-      this.$('.sidebar').outerWidth()
-    );
+          this.initialView.visEl().show();
+          // Explicitly set the position of the svg element to accomodate the
+          // sidebar
+          this.initialView.visEl().css(
+            'left', 
+            this.$('.sidebar').outerWidth()
+          );
         }
         else {
-    this.initialView.visEl().hide();
+          this.initialView.visEl().hide();
         }
       }
     }
-
   });
 
   // Get the appropriate master view based on the story structure type
