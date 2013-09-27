@@ -1118,9 +1118,8 @@ body.story-builder .uploadprogress .meter>span{display:block;height:100%;backgro
 .story-viewer .connected-stories h2.title{margin-bottom:1.2em}
 .story-viewer .connected-story-item{margin-bottom:1em;clear:both;overflow:hidden}.story-viewer .connected-story-item h3{margin-top:0 !important}
 .story-viewer .connected-story-item img{max-width:100px;margin-right:1em;float:left}
-.story-viewer .spider .sidebar{float:left;width:18%;padding:8px 0 0 1%}
+.story-viewer .spider .sidebar{float:left;width:18%;padding:8px 0 0 1%}.story-viewer .spider .sidebar #summary-text,.story-viewer .spider .sidebar .call-to-action{padding:0 6%}
 .story-viewer .spider svg{float:left;position:fixed}
-.story-viewer .spider .sidebar #summary-text,.story-viewer .spider .sidebar .call-to-action{padding:0 6%}
 .story-viewer .section h1.title,.story-viewer .section h2.title,.story-viewer .section h3.title{font-size:24px;font-weight:normal;color:#fe9703;padding:0}
 .story-viewer #footer{position:fixed;bottom:0;width:100%;padding:10px;background-color:#000;z-index:9999}.story-viewer #footer .logo{position:absolute;right:30px;display:block;background:url(../img/viewer-logo.png) no-repeat right center;height:27px;width:200px}.story-viewer #footer .logo span{position:absolute;top:-9999px;left:-9999px}
 .story-viewer #toggle-toc{border:none;background:none;padding:0;margin:0;width:auto;text-align:center;text-shadow:none;position:relative;color:#fff}.story-viewer #toggle-toc:hover{background:none}
