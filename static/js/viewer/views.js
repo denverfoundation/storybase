@@ -215,7 +215,7 @@
       },
       
       events: {
-        'click a': 'handleNavClick'
+        'click a.previous, a.next': 'handleNavClick'
       },
 
       initialize: function() {
