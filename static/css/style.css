@@ -1131,6 +1131,7 @@ body.story-builder .uploadprogress .meter>span{display:block;height:100%;backgro
 .story-viewer #story-nav{color:#fff;text-align:center;margin-left:auto;margin-right:auto;padding:0}.story-viewer #story-nav a{text-decoration:none;color:#fff;width:80px;display:inline-block;border:1px solid #777;border-radius:4px;-webkit-border-radius:4px;-moz-border-radius:4px;background:#414141}.story-viewer #story-nav a:first-child{margin-right:5px}
 .story-viewer #story-nav a.disabled{color:#777;border:1px solid #5a5a5a;cursor:default}.story-viewer #story-nav a.disabled:hover{color:#777;background:#414141}
 .story-viewer #story-nav a:hover{background:#5a5a5a}
+.story-viewer #story-nav a.connected{width:auto;padding:0 8px}
 .story-viewer #story-nav .location{display:inline-block;font-size:.8em;padding:0 1em;color:#f0efef}
 .story-viewer path.link{fill:none;stroke-width:2;stroke:#ddd}
 .story-viewer .node.active{fill:#f00}
