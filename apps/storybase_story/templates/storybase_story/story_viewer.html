@@ -164,24 +164,22 @@
         var sections = new storybase.collections.Sections;
         var viewerContext = '{{ context }}';
         sections.reset({{ sections_json }});
-        storybase.viewer.app = storybase.viewer.views.getViewerApp(
-            storyStructureType,
-            {
-                el: $('#app'),
-                story: story,
-                sections: sections
-            }
-        );
-        
         if (viewerContext == 'iframe') {
             storybase.viewer.router = null;
         }
         else {
-            storybase.viewer.router = new storybase.viewer.routers.Router({
-                view: storybase.viewer.app
-            });
+            storybase.viewer.router = new storybase.viewer.routers.Router();
             Backbone.history.start();
         }
+        storybase.viewer.app = storybase.viewer.views.getViewerApp(
+            storyStructureType,
+            {
+                el: $('#app'),
+                router: storybase.viewer.router,
+                story: story,
+                sections: sections
+            }
+        );
         
         $('#tools a').tooltipster();
         

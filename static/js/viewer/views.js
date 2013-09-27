@@ -6,7 +6,6 @@
     storybase.viewer.views = {};
   }
   var Views = storybase.viewer.views;
-  var Router = storybase.viewer.router;
 
   var HandlebarsTemplateView = storybase.views.HandlebarsTemplateView;
   var openInNewWindow = storybase.openInNewWindow;
@@ -14,7 +13,7 @@
   var NavigableMixin = {
     handleNavClick: function(event) {
       if (!$(event.target).hasClass('disabled')) {
-        if (Router) {
+        if (this.options.router) {
           // we allow our router to handle the location change.
           return true;
         }
@@ -52,22 +51,42 @@
         return events;
       },
 
+      /**
+       * Hook for initializing the navigation view.
+       */
+      initNavigationView: function() {
+        this.navigationView = new StoryNavigation({
+          sections: this.options.sections
+        }); 
+      },
+
+      /**
+       * Hook to set initial section or view
+       */
+      setInitialDisplay: function() {
+      },
+
       // Initialize the view
       initialize: function() {
         this.showingConnectedStory = false;
         this.sections = this.options.sections;
         this.story = this.options.story;
-        this.navigationView = new StoryNavigation({
-          sections: this.options.sections
-        }); 
+        this.initNavigationView();
         this.on('navigate:section', this.setSectionById, this);
         this.navigationView.on('navigate:section', this.setSectionById, this);
+
+        if (this.options.router) {
+          this.options.router.on('route:section', this.setSectionById, this);
+          this.options.router.on('route:connectedStory', this.showConnectedStory, this);
+        }
         
         $(window).on('resize.viewer', _.bind(this.handleResize, this));
         
         // Has the view been rendered yet?
         this._rendered = false;
-        this.setSection(this.sections.at(0), {showActiveSection: false});
+
+        this.setInitialDisplay();
+
         _.bindAll(this, 'handleScroll');
         $(window).scroll(this.handleScroll);
       },
@@ -534,6 +553,10 @@
       });
     },
 
+    setInitialDisplay: function() {
+      this.setSection(this.sections.at(0), {showActiveSection: false});
+    },
+
     // override to hook into our own render event.
     initialize: function() {
       this.on('render', this.handleRendered, this);
@@ -642,8 +665,9 @@
         this.navigationView.showConnectedStory();
       }
     },
+
     handleConnectedStoryClick: function(event) {
-      if (Router) {
+      if (this.options.router) {
         // allow the router to handle the location change
         return true;
       }
@@ -669,15 +693,15 @@
       });
     },
 
-    initialize: function() {
-      this.sections = this.options.sections;
-      var firstSection = this.sections.at(0).id == 'summary' ? this.sections.at(1) : this.sections.at(0);
-      this.story = this.options.story;
+    initNavigationView: function() {
       this.navigationView = new StoryNavigation({
         sections: this.options.sections,
         addlLinks: [{text: gettext("Topic Map"), id: 'topic-map'}]
       });
-      this.navigationView.setNextSection(firstSection);
+    },
+
+    setInitialDisplay: function() {
+      var firstSection = this.sections.at(0).id == 'summary' ? this.sections.at(1) : this.sections.at(0);
       this.initialView = new Spider({
         el: this.$('#body'),
         sections: this.options.sections,
@@ -686,6 +710,7 @@
         subtractWidth: ['.sidebar'],
         subtractHeight: ['header', 'footer']
       });
+      this.navigationView.setNextSection(firstSection);
     },
 
     render: function() {
@@ -729,11 +754,12 @@
       var node = d3.select(e.currentTarget);
       var sectionId = node.data()[0].id;
       this.initialView.visEl().hide();
-      // TODO: I'm not sure if this is the best way to access the router
-      // I don't like global variables, but passing it as an argument
-      // makes for a weird circular dependency between the master view/
-      // router.
-      Router.navigate("sections/" + sectionId, {trigger: true});
+      if (this.options.router) {
+        this.options.router.navigate("sections/" + sectionId, {trigger: true});
+      }
+      else {
+        this.trigger('navigate:section', sectionId);
+      }
     },
 
     // Event handler for clicking the "Topic Map" link

@@ -11,18 +11,6 @@
     routes: {
       "sections/:id": "section",
       "connected-stories/:id": "connectedStory",
-    },
-
-    initialize: function(options) {
-      this.view = options.view;
-    },
-
-    section: function(id) {
-      this.view.setSectionById(id);
-    },
-
-    connectedStory: function(id) {
-      this.view.showConnectedStory(id);
     }
   });
 })(_, Backbone, storybase);
