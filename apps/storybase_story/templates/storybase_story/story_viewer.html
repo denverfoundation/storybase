@@ -100,7 +100,7 @@
 	      {% endif %}
 
           {% if story.allow_connected and connected_stories %}
-          <section id="connected-stories" class="section connected-stories">
+          <section id="connected-stories" class="section connected-stories" style="display: none;">
             <h2 class="title">{% trans "Connected Stories" %}</h2>
             {% for cs in connected_stories %}
             <div class="connected-story-item">
