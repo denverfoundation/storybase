@@ -164,13 +164,14 @@
         var sections = new storybase.collections.Sections;
         var viewerContext = '{{ context }}';
         sections.reset({{ sections_json }});
+
         if (viewerContext == 'iframe') {
             storybase.viewer.router = null;
         }
         else {
             storybase.viewer.router = new storybase.viewer.routers.Router();
-            Backbone.history.start();
         }
+
         storybase.viewer.app = storybase.viewer.views.getViewerApp(
             storyStructureType,
             {
@@ -180,6 +181,12 @@
                 sections: sections
             }
         );
+
+        if (storybase.viewer.router) {
+            // Start history only after the main view has been initialized so
+            // the route event listeners have been wired up
+            Backbone.history.start();
+        }
         
         $('#tools a').tooltipster();
         
