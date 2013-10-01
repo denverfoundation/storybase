@@ -17,6 +17,8 @@ Changelog
 * Add slug field to Place model
 * Updated embed widget (#741)
 * Upgrade Font Awesome to version 3.2.1 (#868)
+* Make activity guides styling and interaction available on any page (#874)
+* Deprecate activity guides template (``activity_guides.html``) (#874)
 
 0.15.1
 ~~~~~~

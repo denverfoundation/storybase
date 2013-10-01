@@ -9,6 +9,10 @@ Slugs were added to the Place model.  You'll need to run a schema update::
 
     python manage.py migrate storybase_geo
 
+The ``activity_guides.html`` CMS template has been deprecated.  Since the
+JavaScript for the activity interactions has been incorporated into the
+plugin template, you can use any page template.
+
 0.13.* to 0.15
 ==============
 
