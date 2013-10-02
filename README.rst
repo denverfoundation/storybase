@@ -11,6 +11,12 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.16.2
+~~~~~~
+
+* Make activity guides styling and interaction available on any page (#874)
+* Deprecate activity guides template (``activity_guides.html``) (#874)
+
 0.16.1
 ~~~~~~
 

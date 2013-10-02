@@ -34,6 +34,7 @@ Documentation for developers
 
     api
     templatetags
+    compiling_static_assets
 
 
 Documentation for users

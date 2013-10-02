@@ -1,7 +1,6 @@
-{% load cms_tags thumbnail i18n %}
+{% load cms_tags thumbnail i18n sekizai_tags %}
 {% with activity=instance.activity %}
 <div class="activity-plugin is-collapsed">
-    {# TODO: Decide on dimensions for this image #}
     <div class="img-container">
         <img src="{% thumbnail activity.image 222x0 crop=smart %}" />
     </div>
@@ -22,3 +21,20 @@
     </div>
 </div>
 {% endwith %}
+
+{% addtoblock "js" %}
+<script>
+;(function($) {
+    Modernizr.load([
+      {
+          test: $.storybaseActivityGuide,
+          nope: ["{{ STATIC_URL }}js/libs/jquery.masonry.min.js","{{ STATIC_URL }}js/jquery.storybase.activityguide.min.js"],
+          complete: function() {
+            $(document).ready(function() {
+              $('.activity-plugin').storybaseActivityGuide();
+            });
+          }
+      }
+])})(jqLatest);
+</script>
+{% endaddtoblock %}
