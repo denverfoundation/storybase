@@ -3,7 +3,7 @@
 
 {% trans "To activate your account, please verify your email by clicking this link, or pasting the address into your internet browser:" %}
 
-http://{{ site.domain }}{% url "registration_activate activation_key" %}
+http://{{ site.domain }}{% url "registration_activate" activation_key %}
 
 {% trans "You must activate your account in" %} {{ expiration_days }} {% trans "days" %}
 
