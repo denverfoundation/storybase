@@ -11,6 +11,12 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.16.1
+~~~~~~
+
+* Remove default data-height attribute from embed code shown in embed button
+  popup.
+
 0.16
 ~~~~
 
