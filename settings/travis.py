@@ -2,6 +2,8 @@ from defaults import *
 
 DEBUG=False
 
+SECRET_KEY='+9*_1$hry$2r5#723%_a@uju&-skn)^042r+d_eupq*az8o^(w'
+
 DATABASES = {
     'default': {
         #'ENGINE': 'django.db.backends.postgresql_psycopg2',
