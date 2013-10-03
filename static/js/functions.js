@@ -106,7 +106,10 @@
 			return false;
 		});
 		
-		$('.storybase-share-widget').storybaseShare();
+		// TODO: We're using the share widget for more than just stories now.
+		// We should factor this out more carefully.
+		$('.storybase-share-button').storybaseShare();
+		$('.storybase-embed-button').storybaseShare();
 
 		// Analytics events 
 		if (window._gaq) {

@@ -5,6 +5,7 @@ import datetime
 import json
 from time import sleep
 from unittest import skipIf
+from urllib import urlencode
 
 from django.conf import settings
 from django.core.cache import cache
@@ -38,8 +39,8 @@ from storybase_story.models import (Container, Story, StoryTranslation,
     create_story, create_section, set_asset_license)
 from storybase_story.templatetags.story import container
 from storybase_story.views import (StoryBuilderView, StoryDetailView,
-        StoryViewerView)
-from storybase_taxonomy.models import Category, create_category
+        StoryViewerView, StoryWidgetView)
+from storybase_taxonomy.models import Category, Tag, create_category
 from storybase_user.models import (Organization, Project,
         OrganizationMembership, ProjectMembership,
         create_organization, create_project)
@@ -4075,3 +4076,252 @@ class StoryRelationResourceTest(ResourceTestCase):
         self.assertEqual(len(self.deserialize(resp)['objects']), 2)
         related_story = Story.objects.get(story_id=related_story.story_id)
         self.assertEqual(len(related_story.related_to.all()), 2)
+
+
+class StoryWidgetViewTest(TestCase):
+    def setUp(self):
+        self.view = StoryWidgetView()
+
+    def set_up_story(self):
+        summary = "Test summary"
+        story = create_story(title="Test embedded story", summary=summary, byline="Ada Lovelace", status='published')
+        featured_asset = create_external_asset(type='image', title='',
+                url='http://fakedomain.com/uploads/image.jpg')
+        story.featured_assets.add(featured_asset)
+        return story
+
+    def set_up_related_stories(self, obj, related_field_name):
+        stories = []
+        for i in range(1, 5):
+            title = "Test widget story %d" % i
+            summary = "Test widget story summary %d" % i
+            byline = "Test author %d" % i
+            story = create_story(title=title, summary=summary, byline=byline, status='published')
+            related_field = getattr(story, related_field_name)
+            related_field.add(obj)
+            stories.append(story)
+
+        return stories
+
+    def get_widget_url(self, story_path=None, list_path=None):
+        url = "/widget/"
+        query_args = {}
+        url_base = "http://floodlightproject.org"
+        if story_path:
+            story_url = story_path if "http" in story_path else "%s%s" % (url_base, story_path)
+            query_args['story-url'] = story_url 
+        if list_path:
+            list_url = list_path if "http" in list_path else "%s%s" % (url_base, list_path)
+            query_args['list-url'] = list_url
+        if query_args:
+            url = "%s?%s" % (url, urlencode(query_args))
+
+        return url 
+
+    def test_resolve_uri(self):
+        # Story URL
+        match = self.view.resolve_uri('http://floodlightproject.org/stories/why-libraries-are-relevant-2/')
+        self.assertEqual(match.url_name, 'story_detail')
+        self.assertEqual(match.kwargs['slug'], 'why-libraries-are-relevant-2')
+
+        # Project URL
+        match = self.view.resolve_uri('http://floodlightproject.org/projects/finding-a-bite-food-access-in-the-childrens-corrid/')
+        self.assertEqual(match.url_name, 'project_detail')
+        self.assertEqual(match.kwargs['slug'], 'finding-a-bite-food-access-in-the-childrens-corrid') 
+
+        # Project URL with a language prefix
+        match = self.view.resolve_uri('http://floodlightproject.org/en/projects/finding-a-bite-food-access-in-the-childrens-corrid/')
+        self.assertEqual(match.url_name, 'project_detail')
+        self.assertEqual(match.kwargs['slug'], 'finding-a-bite-food-access-in-the-childrens-corrid') 
+
+        # Organization URL
+        match = self.view.resolve_uri('http://floodlightproject.org/organizations/america-scores-denver/')
+        self.assertEqual(match.url_name, 'organization_detail')
+        self.assertEqual(match.kwargs['slug'], 'america-scores-denver') 
+
+        # Topic URL
+        match = self.view.resolve_uri('http://floodlightproject.org/topics/environment/')
+        self.assertEqual(match.url_name, 'topic_stories')
+        self.assertEqual(match.kwargs['slug'], 'environment') 
+
+        # Tag URL
+        match = self.view.resolve_uri('http://floodlightproject.org/tags/storytelling/')
+        self.assertEqual(match.url_name, 'tag_stories')
+        self.assertEqual(match.kwargs['slug'], 'storytelling') 
+
+        # Place URL
+        match = self.view.resolve_uri('http://floodlightproject.org/places/denver/')
+        self.assertEqual(match.url_name, 'place_stories')
+        self.assertEqual(match.kwargs['slug'], 'denver') 
+
+        # Broken path
+        match = self.view.resolve_uri('http://floodlightproject.org/stries/why-libraries-are-relevant-2/')
+        self.assertEqual(match, None)
+
+        # Non-URL
+        match = self.view.resolve_uri('not a url')
+        self.assertEqual(match, None)
+
+    def test_get_story_taxonomy_terms(self):
+        story = self.set_up_story()
+        projects = []
+        organizations = []
+        for i in range(3):
+            organizations.append(create_organization("Test Organization %d" %
+                (i+1)))
+            story.organizations.add(organizations[i])
+            projects.append(create_project("Test Project %d" % (i+1)))
+            story.projects.add(projects[i])
+        # 3 projects, 3 organizations
+        taxonomy_terms = self.view.get_story_taxonomy_terms(story)
+        self.assertEqual(taxonomy_terms, [organizations[0], projects[0],
+            organizations[1]])
+        # No projects, no organizations
+        story.organizations.clear()
+        story.projects.clear()
+        taxonomy_terms = self.view.get_story_taxonomy_terms(story)
+        self.assertEqual(taxonomy_terms, [])
+        # One project, one organization
+        story.organizations.add(organizations[0])
+        story.projects.add(projects[0])
+        taxonomy_terms = self.view.get_story_taxonomy_terms(story)
+        self.assertEqual(taxonomy_terms, [organizations[0], projects[0]])
+        # One organization, no projects
+        story.projects.clear()
+        taxonomy_terms = self.view.get_story_taxonomy_terms(story)
+        self.assertEqual(taxonomy_terms, [organizations[0]])
+
+    def test_get_story(self):
+        story = self.set_up_story()
+        url = self.get_widget_url(story_path=story.get_absolute_url())
+        response = self.client.get(url)
+        template_names = [template.name for template in response.templates]
+        self.assertEqual(template_names[0], 'storybase_story/widget_story.html')
+        self.assertEqual(response.context['story'], story)
+        self.assertEqual(len(response.context['stories']), 0)
+        
+    def test_get_unpublished(self):
+        story = self.set_up_story()
+        story.status = 'draft'
+        story.save()
+        url = self.get_widget_url(story_path=story.get_absolute_url())
+        response = self.client.get(url)
+        self.assertEqual(response.status_code, 404)
+
+    def test_get_story_with_list(self):
+        story = self.set_up_story()
+        project = create_project(name="Test widget project")
+        project_stories = []
+        for i in range(1, 5):
+            title = "Test widget story %d" % i
+            summary = "Test widget story summary %d" % i
+            byline = "Test author %d" % i
+            project_story = create_story(title=title, summary=summary, byline=byline, status='published')
+            project_story.projects.add(project)
+            project_stories.append(project_story)
+
+        non_project_story = create_story(title="Non-project story", summary="Test summary", byline="Test author", status='published')
+
+        story.projects.add(project)
+
+        url = self.get_widget_url(story_path=story.get_absolute_url(),
+                                  list_path=project.get_absolute_url())
+        response = self.client.get(url)
+        self.assertEqual(response.context['story'], story)
+        # The related story list should contain 3 stories
+        self.assertEqual(len(response.context['stories']), 3)
+        # The featured story is not also in the story list
+        self.assertNotIn(story, response.context['stories'])
+        # The oldest project story is not in the list, just the
+        # most recent 3
+        self.assertNotIn(project_stories[0], response.context['stories'])
+        for i in range(1,4):
+            self.assertIn(project_stories[i], response.context['stories'])
+
+    def _test_broken_list_url(self, list_url):
+        story = self.set_up_story()
+
+        url = self.get_widget_url(story.get_absolute_url(), list_url)
+
+        response = self.client.get(url)
+                                   
+        self.assertEqual(response.context['story'], story)
+        self.assertEqual(len(response.context['stories']), 0)
+
+    def test_get_with_not_found_list_url(self):
+        self._test_broken_list_url('http://testdomain/projects/not-found/')
+
+    def test_get_broken_list_url(self):
+        self._test_broken_list_url('http://totallywrongdomain/this-doesnt-go-anywhere/')
+
+    def _test_get_list(self, obj, related_field_name):
+        obj_url = obj.get_absolute_url()
+        stories = self.set_up_related_stories(obj, related_field_name)
+        url = self.get_widget_url(list_path=obj_url)
+        response = self.client.get(url)
+        template_names = [template.name for template in response.templates]
+        self.assertEqual(template_names[0], 'storybase_story/widget_storylist.html')
+        self.assertEqual(response.context['object'], obj)
+        self.assertEqual(len(response.context['stories']), 3)
+        self.assertNotIn(stories[0], response.context['stories'])
+        for i in range(1, 4):
+            self.assertIn(stories[i], response.context['stories'])
+
+    def _test_get_list_not_found(self, obj):
+        obj_url = obj.get_absolute_url()
+        path = obj_url 
+        path = path.replace(obj.slug, 'invalid-slug')
+        url = self.get_widget_url(list_path=path)
+        response = self.client.get(url)
+        template_names = [template.name for template in response.templates]
+        self.assertEqual(template_names[0], 'storybase_story/widget_404.html')
+        self.assertEqual(response.status_code, 404)
+
+    def test_get_list_project(self):
+        obj = create_project("Test Project", status='published')
+        unpublished_obj = create_project("Test Project 2", status='pending')
+        self._test_get_list(obj, 'projects')
+        self._test_get_list_not_found(obj)
+        self._test_get_list_not_found(unpublished_obj)
+
+    def test_get_list_organization(self):
+        obj = create_organization("Test Organization", status='published')
+        unpublished_obj = create_organization("Test Organization 2", status='pending')
+        self._test_get_list(obj, 'organizations')
+        self._test_get_list_not_found(obj)
+        self._test_get_list_not_found(unpublished_obj)
+
+    def test_get_list_tag(self):
+        obj = Tag.objects.create(name="testtag")
+        self._test_get_list(obj, 'tags')
+        self._test_get_list_not_found(obj)
+
+    def test_get_list_topic(self):
+        obj = create_category(name='Test Category')
+        self._test_get_list(obj, 'topics')
+        self._test_get_list_not_found(obj)
+
+    def test_get_list_place(self):
+        neighborhood = GeoLevel.objects.create(name='Neighborhood',
+            slug='neighborhood')
+        obj = Place.objects.create(name="Humboldt Park", geolevel=neighborhood)
+        self._test_get_list(obj, 'places')
+        self._test_get_list_not_found(obj)
+
+
+class PopupViewTest(TestCase):
+    def setUp(self):
+        self.story = create_story(title="Test Story", summary="Test Summary",
+                                  byline="Test Byline", status='published')
+
+    def test_get_story_share_popup(self):
+        response = self.client.get("%sshare/popup/" %
+                                   self.story.get_absolute_url())
+        self.assertIn(self.story.get_absolute_url(), response.content)
+        
+    def test_get_story_embed_popup(self):
+        response = self.client.get("%sembed/popup/" %
+                                   self.story.get_absolute_url())
+        self.assertIn(self.story.get_absolute_url(), response.content)
+        self.assertIn('storybase-story-embed', response.content)
+        self.assertNotIn('storybase-list-embed', response.content)

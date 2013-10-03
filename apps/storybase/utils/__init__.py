@@ -2,6 +2,7 @@
 
 from urlparse import urlsplit, urlunsplit
 import re
+from itertools import cycle, islice
 
 from django.conf import settings
 from django.contrib.sites.models import get_current_site
@@ -194,3 +195,18 @@ def escape_json_for_html(json_str):
     json_str = json_str.replace('<', '\\u003c')
     json_str = json_str.replace('>', '\\u003e')
     return json_str
+
+
+def roundrobin(*iterables):
+    "roundrobin('ABC', 'D', 'EF') --> A D E B F C"
+    # Recipe credited to George Sakkis
+    # Found at http://docs.python.org/2/library/itertools.html#recipes
+    pending = len(iterables)
+    nexts = cycle(iter(it).next for it in iterables)
+    while pending:
+        try:
+            for next in nexts:
+                yield next()
+        except StopIteration:
+            pending -= 1
+            nexts = cycle(islice(nexts, pending))

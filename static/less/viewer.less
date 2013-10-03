@@ -64,6 +64,7 @@
     width: 100%;
     padding: @viewer-bar-padding;
     z-index: 9999;
+    position:relative;
 
     color: #fff;
     background-color: #000;
@@ -86,6 +87,31 @@
       margin: 0;
       padding: 0.25% 0;
     }
+    
+    // needed to override viewer dd prop
+    .storybase-share-popup {
+      dd {
+        margin:0;
+      }
+    }
+    
+  }
+
+  #tools {
+    position:absolute;
+    right:@viewer-bar-padding;
+    bottom:@viewer-bar-padding;
+    padding:0 @viewer-bar-padding;
+
+    a {
+      font-family: "Museo300Regular";
+      font-size: 14px;
+      font-weight: normal;
+      color: #fff !important;
+      text-decoration: none;
+      display: inline-block;
+      margin-left: 4px;
+    }
   }
 
   #body {
@@ -93,12 +119,43 @@
     .body-copy-lists;
     width: 100%;
     padding-bottom: 120px;
+    
+    #summary {
+      padding: 1%;
+
+      .title {
+        width: 100%;
+      }
+    
+      #summary-image, #summary-text, #summary-toc {
+        width: 48%;
+        float: left;
+        
+        ul {
+          padding:0;
+          li {
+            list-style-type:none;
+          }
+        }
+      }
+    
+      #summary-image .featured-asset {
+        margin-right: 0;
+        max-width: 100%;
+        float:none;
+      }
+
+      #summary-image {
+        padding-right: 4%;
+      }
+
+      #summary-image, #summary-toc {
+        // Clear footer
+        padding-bottom: 40px;
+      }     
+    }
   }
 
-  .summary {
-    padding: 1%;
-    .callout-section;
-  }
   .call-to-action {
     .callout-section;
   }
@@ -130,19 +187,21 @@
     }
   }
 
-  .spider .sidebar {
-    float: left;
-    width: 18%;
-  }
+  .spider {
+    .sidebar {
+      float: left;
+      width: 18%;
+      padding: 8px 0 0 1%;
 
-  .spider svg {
-    float: left;
-    position: fixed;
-  }
+      #summary-text, .call-to-action {
+        padding: 0 6%;
+      }
+    }
 
-  .spider .sidebar .summary,
-  .spider .sidebar .call-to-action {
-    padding: 0 6%;
+    svg {
+      float: left;
+      position: fixed;
+    }
   }
 
   .section {
@@ -163,17 +222,20 @@
     padding: @viewer-bar-padding;
     background-color: @footer-background-color; 
     z-index: 9999;
-
-    .storybase-share-widget {
-      float:right;
-      margin-right:20px;
-    }
-    // needed to override viewer dd prop
-    .storybase-share-popup {
-      dd {
-        margin:0;
+    
+    .logo {
+      position:absolute;
+      right:30px;
+      display:block;
+      background:url(../img/viewer-logo.png) no-repeat right center;
+      height:27px;
+      width:200px;
+      
+      span {
+        .hide-text;
       }
     }
+    
   }
 
   #toggle-toc {
@@ -232,7 +294,6 @@
   #story-nav {
     color: #fff;
     text-align: center;
-    width: 170px;
     margin-left: auto;
     margin-right: auto;
     padding: 0;
@@ -241,8 +302,7 @@
       text-decoration: none;
       color: #fff;
       width:80px;
-      display:block;
-      float:left;
+      display: inline-block;
       border:1px solid @gray;
       .rounded-corners(4px);
       background:darken(@dark-gray, 10%);
@@ -265,11 +325,17 @@
       &:hover {
         background:@dark-gray;
       }
+
+      &.connected {
+        width: auto;
+        padding: 0 8px;
+      }
     }
     
     .location {
-      clear:both;
+      display: inline-block;
       font-size:.8em;
+      padding:0 1em;
       color:@light-gray;
     }
   }
@@ -287,6 +353,7 @@
   iframe.sandboxed-asset {
     border:none;
   }
+
   
   // from here down to end of .story-viewer block copied from old style.css. 
   // these are probably applicable in more places than in story-viewer.

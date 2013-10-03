@@ -1,0 +1,38 @@
+// fonts
+@font-face {
+    font-family: 'MuseoSlab500Regular';
+    src: url('../css/font-face/museo_slab_500-webfont.eot');
+    src: url('../css/font-face/museo_slab_500-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../css/font-face/museo_slab_500-webfont.woff') format('woff'),
+         url('../css/font-face/museo_slab_500-webfont.ttf') format('truetype'),
+         url('../css/font-face/museo_slab_500-webfont.svg#MuseoSlab500Regular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+
+@font-face {
+    font-family: 'Museo300Regular';
+    src: url('../css/font-face/museo300-regular-webfont.eot');
+    src: url('../css/font-face/museo300-regular-webfont.eot?#iefix') format('embedded-opentype'),
+         url('../css/font-face/museo300-regular-webfont.woff') format('woff'),
+         url('../css/font-face/museo300-regular-webfont.ttf') format('truetype'),
+         url('../css/font-face/museo300-regular-webfont.svg#Museo300Regular') format('svg');
+    font-weight: normal;
+    font-style: normal;
+
+}
+
+
+@import "font-awesome/font-awesome.less";
+
+// Font Awesome used to apply the icon font to the ``:before`` pseduo-element
+// of elements with an ``icon-*`` class.  Now it applies it to the element
+// itself.  Restore the old behavior for the elements that use the chevron to
+// toggle an element
+.icon-chevron-right, .icon-chevron-down {
+  &:before {
+    .icon-FontAwesome();
+  }
+}

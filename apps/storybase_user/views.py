@@ -21,6 +21,7 @@ from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 
 from storybase.menu import Menu, registry as menu_registry
+from storybase.views import EmbedView, EmbedPopupView, ShareView, SharePopupView
 from storybase.views.generic import ModelIdDetailView
 from storybase.utils import full_url
 from storybase_user.forms import (OrganizationModelForm, UserNotificationsForm,
@@ -165,6 +166,8 @@ class OrganizationListView(ListView):
                            .order_by('organizationtranslation__name')
 
 
+
+
 class ProjectDetailView(RelatedStoriesDetailView):
     """Display details about a Project"""
     context_object_name = "project"
@@ -197,22 +200,46 @@ class UserProfileDetailView(RelatedStoriesDetailView):
         return _("Stories")
 
 
-class ShareWidgetView(ModelIdDetailView):
-    """
-    Base view for Widget for sharing a project, organization or user
-    """
-    template_name = 'storybase_user/share_widget.html'
+class OrganizationSharePopupView(SharePopupView):
+    queryset = Organization.objects.published()
 
 
-class OrganizationShareWidgetView(ShareWidgetView):
-    model = Organization 
+class OrganizationShareView(ShareView):
+    queryset = Organization.objects.published()
 
 
-class ProjectShareWidgetView(ShareWidgetView):
-    model = Project
+class OrganizationEmbedPopupView(EmbedPopupView):
+    queryset = Organization.objects.published()
 
 
-class UserProfileShareWidgetView(ShareWidgetView):
+class OrganizationEmbedView(EmbedView):
+    queryset = Organization.objects.published()
+
+
+class ProjectSharePopupView(SharePopupView):
+    queryset = Project.objects.published()
+
+
+class ProjectShareView(ShareView):
+    queryset = Project.objects.published()
+
+
+class ProjectEmbedPopupView(EmbedPopupView):
+    queryset = Project.objects.published()
+
+
+class ProjectEmbedView(EmbedView):
+    queryset = Project.objects.published()
+
+
+class UserProfileSharePopupView(SharePopupView):
+    model = UserProfile
+
+    def get_object_id_name(self):
+        return 'profile_id'
+
+
+class UserProfileShareView(ShareView):
     model = UserProfile
 
     def get_object_id_name(self):

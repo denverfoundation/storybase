@@ -1,0 +1,12 @@
+{% load i18n %}
+{% if page_obj.has_other_pages %}
+<div class="paging">
+    {% if page_obj.has_previous %}<a href="?page={{ page_obj.previous_page_number }}" title="{% trans "Previous" %}" class="prev icon-chevron-left"><span>{% trans "Previous" %}</span></a>{% endif %}
+    {% trans "Page" %}
+    <form class="search-pagination-form" method="get" action=".">
+        <input type="text" name="page" value="{{ page_obj.number }}" size="1" />
+    </form>
+    {% trans "of" %} {{ paginator.num_pages }}
+    {% if page_obj.has_next %}<a href="?page={{ page_obj.next_page_number }}" class="next icon-chevron-right" title="{% trans "Next" %}"><span>{% trans "Next" %}</span></a>{% endif %}
+</div>
+{% endif %}

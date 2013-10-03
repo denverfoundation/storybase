@@ -1,6 +1,8 @@
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
 from django.contrib.gis.geos import Point
+
+from django.core.urlresolvers import reverse
 from django.db.models.signals import pre_save
 from django.utils.translation import ugettext as _
 from django_dag.models import edge_factory, node_factory
@@ -10,6 +12,7 @@ from uuidfield.fields import UUIDField
 
 from storybase.models import DirtyFieldsMixin, PermissionMixin
 from storybase.fields import ShortTextField
+from storybase.utils import unique_slugify
 from storybase_geo.utils import get_geocoder
 
 class GeoLevel(MPTTModel):
@@ -140,9 +143,26 @@ class Place(node_factory('PlaceRelation')):
     boundary = models.MultiPolygonField(blank=True, null=True,
                                         verbose_name=_("Boundary"))
     place_id = UUIDField(auto=True, verbose_name=_("Place ID"), db_index=True)
+    slug = models.SlugField(blank=True)
+
+    def get_absolute_url(self):
+        return reverse('place_stories', kwargs={'slug': self.slug})
 
     def __unicode__(self):
         return self.name
+
+
+def set_place_slug(sender, instance, **kwargs):
+    """
+    When a Place is saved, set its Story's slug if it doesn't have 
+    one
+    
+    Should be connected to Place's pre_save signal.
+    """
+    if not instance.slug:
+        unique_slugify(instance, instance.name)
+
+pre_save.connect(set_place_slug, sender=Place)
 
 
 class PlaceRelation(edge_factory(Place, concrete=False)):

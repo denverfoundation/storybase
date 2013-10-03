@@ -6,7 +6,6 @@
     storybase.viewer.views = {};
   }
   var Views = storybase.viewer.views;
-  var Router = storybase.viewer.router;
 
   var HandlebarsTemplateView = storybase.views.HandlebarsTemplateView;
   var openInNewWindow = storybase.openInNewWindow;
@@ -14,7 +13,7 @@
   var NavigableMixin = {
     handleNavClick: function(event) {
       if (!$(event.target).hasClass('disabled')) {
-        if (Router) {
+        if (this.options.router) {
           // we allow our router to handle the location change.
           return true;
         }
@@ -35,7 +34,8 @@
   var ViewerApp = Views.ViewerApp = Backbone.View.extend(
     _.extend({}, NavigableMixin, {
       options: {
-        tocEl: '#toc .story-toc',
+        tocEl: '.story-toc',
+        chromeTocEl: '#toc .story-toc',
         tocButtonEl: '#toggle-toc',
         tocIconEl: '[class^="icon-"]',
         tocOpenClass: 'icon-caret-down',
@@ -51,22 +51,42 @@
         return events;
       },
 
+      /**
+       * Hook for initializing the navigation view.
+       */
+      initNavigationView: function() {
+        this.navigationView = new StoryNavigation({
+          sections: this.options.sections
+        }); 
+      },
+
+      /**
+       * Hook to set initial section or view
+       */
+      setInitialDisplay: function() {
+      },
+
       // Initialize the view
       initialize: function() {
         this.showingConnectedStory = false;
         this.sections = this.options.sections;
         this.story = this.options.story;
-        this.navigationView = new StoryNavigation({
-          sections: this.options.sections
-        }); 
+        this.initNavigationView();
         this.on('navigate:section', this.setSectionById, this);
         this.navigationView.on('navigate:section', this.setSectionById, this);
+
+        if (this.options.router) {
+          this.options.router.on('route:section', this.setSectionById, this);
+          this.options.router.on('route:connectedStory', this.showConnectedStory, this);
+        }
         
         $(window).on('resize.viewer', _.bind(this.handleResize, this));
         
         // Has the view been rendered yet?
         this._rendered = false;
-        this.setSection(this.sections.at(0), {showActiveSection: false});
+
+        this.setInitialDisplay();
+
         _.bindAll(this, 'handleScroll');
         $(window).scroll(this.handleScroll);
       },
@@ -77,12 +97,12 @@
 
       // Add the view's container element to the DOM and render the sub-views
       render: function() {
-        this.$el.addClass(this.elClass);
+        this.$el.addClass(this.attributes.class);
         this.$('footer').append(this.navigationView.el);
         this.navigationView.render();
         this.$('.summary').show();
         this.$('.section').show();
-        this.$('.storybase-share-widget').storybaseShare();
+        this.$('.storybase-share-link').storybaseShare();
         this._rendered = true;
         this.trigger("render");
         return this;
@@ -143,7 +163,7 @@
       },
       
       openToc: function() {
-        var $tocEl = $(this.options.tocEl);
+        var $tocEl = $(this.options.chromeTocEl);
         if (!$tocEl.data('open') || _.isUndefined($tocEl.data('open'))) {
           $tocEl.slideDown().data('open', true);
           $(this.options.tocButtonEl)
@@ -158,7 +178,7 @@
       },
 
       closeToc: function() {
-        var $tocEl = $(this.options.tocEl);
+        var $tocEl = $(this.options.chromeTocEl);
         if ($tocEl.data('open')) {
           $tocEl.slideUp().data('open', false);
           $(this.options.tocButtonEl)
@@ -171,7 +191,7 @@
       },
 
       toggleToc: function() {
-        if ($(this.options.tocEl).data('open')) {
+        if ($(this.options.chromeTocEl).data('open')) {
           this.closeToc();
         }
         else {
@@ -195,7 +215,7 @@
       },
       
       events: {
-        'click a': 'handleNavClick'
+        'click a.previous, a.next': 'handleNavClick'
       },
 
       initialize: function() {
@@ -522,13 +542,19 @@
 
   // Master view that shows a story in a linear fashion
   var LinearViewerApp = Views.LinearViewerApp = ViewerApp.extend({
-    elClass: 'linear',
+    attributes: {
+      'class': 'linear'
+    },
 
     events: function() {
       var events = ViewerApp.prototype.events.apply(this, arguments);
       return _.extend(events, {
         'click .connected-story-item a': 'handleConnectedStoryClick'
       });
+    },
+
+    setInitialDisplay: function() {
+      this.setSection(this.sections.at(0), {showActiveSection: false});
     },
 
     // override to hook into our own render event.
@@ -639,8 +665,9 @@
         this.navigationView.showConnectedStory();
       }
     },
+
     handleConnectedStoryClick: function(event) {
-      if (Router) {
+      if (this.options.router) {
         // allow the router to handle the location change
         return true;
       }
@@ -654,7 +681,9 @@
 
   // Master view that shows the story structure visualization initially
   var SpiderViewerApp = Views.SpiderViewerApp = ViewerApp.extend({
-    elClass: 'spider',
+    attributes: {
+      'class': 'spider'
+    },
 
     events: function() {
       var events = ViewerApp.prototype.events.apply(this, arguments);
@@ -664,15 +693,15 @@
       });
     },
 
-    initialize: function() {
-      this.sections = this.options.sections;
-      var firstSection = this.sections.at(0).id == 'summary' ? this.sections.at(1) : this.sections.at(0);
-      this.story = this.options.story;
+    initNavigationView: function() {
       this.navigationView = new StoryNavigation({
         sections: this.options.sections,
         addlLinks: [{text: gettext("Topic Map"), id: 'topic-map'}]
       });
-      this.navigationView.setNextSection(firstSection);
+    },
+
+    setInitialDisplay: function() {
+      var firstSection = this.sections.at(0).id == 'summary' ? this.sections.at(1) : this.sections.at(0);
       this.initialView = new Spider({
         el: this.$('#body'),
         sections: this.options.sections,
@@ -681,14 +710,15 @@
         subtractWidth: ['.sidebar'],
         subtractHeight: ['header', 'footer']
       });
+      this.navigationView.setNextSection(firstSection);
     },
 
     render: function() {
-      this.$el.addClass(this.elClass);
+      this.$el.addClass(this.attributes.class);
       // Create an element for the sidebar 
       $('<div></div>').prependTo(this.$('#body')).addClass('sidebar');
       // Clone the summary and place it in the sidebar
-      this.$('#summary').clone().appendTo('.sidebar').removeAttr('id').removeClass('section').show().condense({moreText: gettext("Read more")});
+      this.$('#summary-text').clone().appendTo('.sidebar').show().condense({moreText: gettext("Read more")});
       // Copy the call to action and place it in the sidebar
       this.$('#call-to-action').clone().appendTo('.sidebar').removeAttr('id').removeClass('section').show();
       this.$('footer').append(this.navigationView.el);
@@ -698,7 +728,6 @@
       this.$('.section').hide();
       return this;
     },
-
 
     // Show the active section
     showActiveSection: function() {
@@ -725,12 +754,12 @@
       var node = d3.select(e.currentTarget);
       var sectionId = node.data()[0].id;
       this.initialView.visEl().hide();
-      // TODO: I'm not sure if this is the best way to access the router
-      // I don't like global variables, but passing it as an argument
-      // makes for a weird circular dependency between the master view/
-      // router.
-      Router.navigate("sections/" + sectionId,
-                                       {trigger: true});
+      if (this.options.router) {
+        this.options.router.navigate("sections/" + sectionId, {trigger: true});
+      }
+      else {
+        this.trigger('navigate:section', sectionId);
+      }
     },
 
     // Event handler for clicking the "Topic Map" link
@@ -746,20 +775,19 @@
         // $.toggle() doesn't seem to work on the svg element.
         // Toggle the visibility of the element the hard way
         if (visEl.css('display') == 'none') {
-    this.initialView.visEl().show();
-    // Explicitly set the position of the svg element to accomodate the
-    // sidebar
-    this.initialView.visEl().css(
-      'left', 
-      this.$('.sidebar').outerWidth()
-    );
+          this.initialView.visEl().show();
+          // Explicitly set the position of the svg element to accomodate the
+          // sidebar
+          this.initialView.visEl().css(
+            'left', 
+            this.$('.sidebar').outerWidth()
+          );
         }
         else {
-    this.initialView.visEl().hide();
+          this.initialView.visEl().hide();
         }
       }
     }
-
   });
 
   // Get the appropriate master view based on the story structure type

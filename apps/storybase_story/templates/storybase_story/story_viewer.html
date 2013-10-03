@@ -20,7 +20,7 @@
 
     {% if debug %}
     {% addtoblock "css" %}<link rel="stylesheet/less" href="{{ STATIC_URL }}less/base.less">{% endaddtoblock %}
-    {% addtoblock "css" %}<script src="{{ STATIC_URL }}js/libs/less-1.3.0.min.js"></script>{% endaddtoblock %}
+    {% addtoblock "css" %}<script src="{{ STATIC_URL }}js/libs/less-1.4.1.min.js"></script>{% endaddtoblock %}
     {% endif %}
     {% comment %}
     If we're not in debug mode, we'll be passing the styleshset through
@@ -28,7 +28,10 @@
     {% endcomment %}
 
     {% render_block "css" %}
-    {% compress css %}<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css">{% endcompress %}
+    {% compress css %}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css">
+    <link rel="stylesheet" href="{{ STATIC_URL }}js/libs/tooltipster-2.1.4/css/tooltipster.css">
+    {% endcompress %}
     <!-- end CSS-->
 
     {% include "storybase/js_error.html" %}
@@ -40,6 +43,12 @@
   <body class="story-viewer">
     <div id="app">
         <header id="header">
+          <div id="tools">
+              <a href="{{ story.get_absolute_url }}" title="{% trans "About This Story" %}" class="external">{% trans "About This Story" %} <i class="icon-th-list"></i></a>
+              <a href="{{ story.get_share_url }}" title="{% trans "Share This Story"%}" class="storybase-share-link" data-options='{"appendeeSelector": "#app", "alignment": "bottom right" }'>
+                {% trans "Share This Story" %} <i class="icon-share"></i>
+              </a>
+          </div>
           <h1 class="title">{{ story.title }}</h1>
           <p class="byline">{% trans "By" %} {% if story.byline %}{{ story.byline }}{% else %}{{ story.contributor_name }}{% endif %}</p>
         </header>
@@ -47,8 +56,28 @@
         <div id="body">
           {% if story.summary %}
           <section id="summary" class="section summary" style="display: none;">
+          {% comment %}
+          HACK: Different markup for different story structures.  The
+          ``#summary-text`` element gets moved inside a dynamically created
+          sidebar by JavaScript.
+          {% endcomment %}
+          {% if story.structure_type == "spider" %}
+            <div id="summary-text">
+              {{ story.summary|safe|linebreaks }}
+            </div>
+          {% else %}
             <h2 class="title">{%trans "Summary" %}</h2>
-            {{ story.summary|safe|linebreaks }}
+            <div id="summary-image">
+              {% featured_asset story %}
+            </div>
+            <div id="summary-text">
+              {{ story.summary|safe|linebreaks }}
+            </div>
+            <div id="summary-toc">
+              <h2>Table of Contents</h2>
+              {{ story.structure.render_toc }}
+            </div>
+          {% endif %}
           </section>
           {% endif %}
 
@@ -71,7 +100,7 @@
 	      {% endif %}
 
           {% if story.allow_connected and connected_stories %}
-          <section id="connected-stories" class="section connected-stories">
+          <section id="connected-stories" class="section connected-stories" style="display: none;">
             <h2 class="title">{% trans "Connected Stories" %}</h2>
             {% for cs in connected_stories %}
             <div class="connected-story-item">
@@ -91,12 +120,11 @@
         </div>
 
         <footer id="footer">
+          <a class="logo" href="/" title="{{ storybase_site_name }}"><span>{{ storybase_site_name }}</span></a>
           <nav id="toc">
             {{ story.structure.render_toc }}
             <button id="toggle-toc">Table of Contents <i class="icon-caret-up"></i></button>
           </nav>
-
-          <a href="#" class="storybase-share-widget" data-story-id="{{ story.slug }}" data-options='{"appendeeSelector": "#footer", "alignment": "top right" }'>Share This Story</a>
         </footer>
     </div>
 
@@ -114,9 +142,10 @@
     <script src="{{ STATIC_URL }}js/libs/d3.v2.min.js"></script>
     <script src="{{ STATIC_URL }}js/libs/jquery.imagesloaded.min.js"></script>
     <script src="{{ STATIC_URL }}js/libs/jquery.condense.js"></script>
-    <script src="{{ STATIC_URL }}js/jquery.storybaseshare.js"></script>
 
     {% compress js %}
+    <script src="{{ STATIC_URL }}js/jquery.storybaseshare.js"></script>
+
     <script src="{{ STATIC_URL }}js/storybase.js"></script>
     <script src="{{ STATIC_URL }}js/models.js"></script>
     <script src="{{ STATIC_URL }}js/utils.js"></script>
@@ -124,6 +153,8 @@
     <script src="{{ STATIC_URL }}js/viewer/application.js"></script>
     <script src="{{ STATIC_URL }}js/viewer/views.js"></script>
     <script src="{{ STATIC_URL }}js/viewer/routes.js"></script>
+    <script src="{{ STATIC_URL }}js/libs/tooltipster-2.1.4/js/jquery.tooltipster.min.js"></script>
+    
     {% endcompress %}
 
     <script type="text/javascript">
@@ -131,27 +162,34 @@
         var storyStructureType = '{{ story.structure_type }}';        
         var story = new storybase.models.Story({{ story.structure.to_json }});
         var sections = new storybase.collections.Sections;
-	var viewerContext = '{{ context }}';
+        var viewerContext = '{{ context }}';
         sections.reset({{ sections_json }});
-        storybase.viewer.app = storybase.viewer.views.getViewerApp(
-            storyStructureType,
-            {
-                el: $('#app'),
-                story: story,
-                sections: sections
-            }
-        );
-        
+
         if (viewerContext == 'iframe') {
             storybase.viewer.router = null;
         }
         else {
-            storybase.viewer.router = new storybase.viewer.routers.Router({
-                view: storybase.viewer.app
-            });
-            Backbone.history.start();
+            storybase.viewer.router = new storybase.viewer.routers.Router();
         }
 
+        storybase.viewer.app = storybase.viewer.views.getViewerApp(
+            storyStructureType,
+            {
+                el: $('#app'),
+                router: storybase.viewer.router,
+                story: story,
+                sections: sections
+            }
+        );
+
+        if (storybase.viewer.router) {
+            // Start history only after the main view has been initialized so
+            // the route event listeners have been wired up
+            Backbone.history.start();
+        }
+        
+        $('#tools a').tooltipster();
+        
         storybase.viewer.app.render();
     });
     </script>

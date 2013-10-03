@@ -34,6 +34,16 @@ Documentation for developers
 
     api
     templatetags
+    compiling_static_assets
+
+
+Documentation for users
+=======================
+
+.. toctree::
+    :maxdepth: 1
+
+    embedding
 
 
 Indices and tables

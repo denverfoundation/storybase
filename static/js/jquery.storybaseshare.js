@@ -2,19 +2,24 @@
   
   var defaultOptions = {
     markup: '<h3>Loading&hellip;</h3>',
-    storyID: null,
-    widgetUrl: '/stories/<id>/share-widget/',
-    header: '<header>Sharing Options<span class="close"></span></header>',
+    header: 'Sharing Options',
     appendeeSelector: 'body',
-    addThisScriptTag: '<script type="text/javascript" src="http://s7.addthis.com/js/250/addthis_widget.js?domready=1"></script>',
+    addThisScriptTag: '<script type="text/javascript" src="//s7.addthis.com/js/250/addthis_widget.js?domready=1"></script>',
     alignment: 'bottom left',
     addThisHeight: 32,
     onClick: function(event) {
       var $button = $(this);
-      $button.data('share-popup').open($button);
+      if ($button.data('share-popup').isOpen) {
+        $button.data('share-popup').close();
+      }
+      else {
+        $button.data('share-popup').open($button);
+      }
       return false;
     }
   }; 
+  
+  var instances = [];
   
   var instanceMethods = {
     open: function() {
@@ -30,48 +35,60 @@
       if (align[1] == 'right') {
         position.left = this.$button[positionMethod]().left - this.popupDimensions.outerWidth + this.$button.outerWidth();
       }
+      for (var i = 0; i < instances.length; i++) {
+        if (instances[i] != this) {
+          instances[i].close();
+        }
+      }
       this.$popup.css(position).slideDown().on('click', '.close', this.close);
+      var firstTextInput = this.$popup.find('input, textarea').get(0);
+      if (firstTextInput) firstTextInput.select();
+      this.isOpen = true;
     },
     close: function() {
       this.$popup.slideUp().off('click', '.close');
+      this.isOpen = false;
     }
   };
   
-  // content cached per-story
-  var widgetContent = {};
+  // content cached per-object
+  var popupContent = {};
   
   // only add addThis script tag once
   var scriptAdded = false;
   
-  var fetchContent = function(storyID, instance) {
-    if (!(storyID in widgetContent)) {
+  var fetchContent = function(instance) {
+    var header = '<header>' + instance.options.header + '<span class="close"></span></header>';
+    var url = instance.options.popupUrl;
+    if (!(url in popupContent)) {
       $.ajax({
-        url: instance.options.widgetUrl.replace('<id>', storyID),
+        url: url,
         dataType: 'html',
         success: function(data, textStatus, jqXHR) {
-          var content = instance.options.header + data;
+          var content = header + data;
           if (!scriptAdded) {
             content += instance.options.addThisScriptTag;
             scriptAdded = true;
           }
-          widgetContent[storyID] = content;
-          loadContent(storyID, instance);
+          popupContent[url] = content;
+          loadContent(instance);
         },
         error: function(jqXHR, textStatus, errorThrown) {
-          widgetContent[storyID] = instance.options.header + '\
+          popupContent[url] = header + '\
             <h1>Could not load widget!</h1>\
             <p class="error">' + errorThrown + '</p>\
           ';
+          loadContent(instance);
         }
       });
     }
     else {
-      loadContent(storyID, instance);
+      loadContent(instance);
     }
   };
   
-  var loadContent = function(id, instance) {
-    instance.$popup.html(widgetContent[id]);
+  var loadContent = function(instance) {
+    instance.$popup.html(popupContent[instance.options.popupUrl]);
     // render off-screen, capture dimensions
     instance.$popup.css({
       left: '-1000px',
@@ -97,13 +114,17 @@
         
         // clone pluginOptions for this instance
         var instanceOptions = $.extend(true, {}, pluginOptions);
+
+        var href = $button.attr('href');
+        href = href.slice(-1) === '/' ? href : href + '/';
         
         // defaults can be overridden by data-options JSON attribute on individual elements
         if ($button.data('options')) {
           $.extend(instanceOptions, $button.data('options'));
         }
-        // story id can be specified by data-story-id, or via options
-        instanceOptions.storyID = $button.data('story-id') || instanceOptions.storyID;
+        // Either append 'popup' to the link target, or use the ``popupUrl`` specified in
+        // the options
+        instanceOptions.popupUrl = instanceOptions.popupUrl || href + 'popup/';
         
         var $appendee = $(instanceOptions.appendeeSelector);
         if ($appendee.length) {
@@ -121,13 +142,16 @@
           }
           // store options used for this instance
           instance.options = instanceOptions;
+          instance.isOpen = false;
           
           // attach instance to element
           $button.data('share-popup', instance);
           
           $button.on('click', instanceOptions.onClick);
           
-          fetchContent(instanceOptions.storyID, instance);
+          fetchContent(instance);
+
+          instances.push(instance);
         }
         else {
           $.error('jquery.storybaseshare Could not find element with selector ' + instanceOptions.appendeeSelector);

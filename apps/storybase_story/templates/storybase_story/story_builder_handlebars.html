@@ -115,16 +115,16 @@ Handlebars.js templates for story builder Backbone application
 
 <script type="text/x-handlebars-template" id="editor-toolbar-template">
 <div id="wysihtml5-toolbar" class="wysihtml5-toolbar" style="display: none;">
-  <a data-wysihtml5-command="bold" title="Bold"><i class="icon-bold"></i></a>
-  <a data-wysihtml5-command="italic" title="Italic"><i class="icon-italic"></i></a>
-  <a data-wysihtml5-command="underline" title="Underline"><i class="icon-underline"></i></a>
-  <a data-wysihtml5-command="createLink" title="Insert Link"><i class="icon-link"></i></a>
-  <a data-wysihtml5-command="insertOrderedList" title="Ordered List"><i class="icon-list-ol"></i></a>
-  <a data-wysihtml5-command="insertUnorderedList" title="Unordered List"><i class="icon-list-ul"></i></a>
-  <a data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="blockquote" title="Quote"><i class="icon-comment"></i></a>
-  <a data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="p" title="Paragraph"><i class="icon-paragraph"></i></a>
-  <a data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h3" title="Heading"><i class="icon-heading-h3"></i></a>
-  <a data-wysihtml5-action="change_view" title="Toggle HTML Editing">HTML</a>
+  <a data-wysihtml5-command="bold" title="Bold"><i class="icon-bold icon-fixed-width"></i></a>
+  <a data-wysihtml5-command="italic" title="Italic"><i class="icon-italic icon-fixed-width"></i></a>
+  <a data-wysihtml5-command="underline" title="Underline"><i class="icon-underline icon-fixed-width"></i></a>
+  <a data-wysihtml5-command="createLink" title="Insert Link"><i class="icon-link icon-fixed-width"></i></a>
+  <a data-wysihtml5-command="insertOrderedList" title="Ordered List"><i class="icon-list-ol icon-fixed-width"></i></a>
+  <a data-wysihtml5-command="insertUnorderedList" title="Unordered List"><i class="icon-list-ul icon-fixed-width"></i></a>
+  <a data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="blockquote" title="Quote"><i class="icon-comment icon-fixed-width"></i></a>
+  <a data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="p" title="Paragraph"><i class="icon-paragraph icon-fixed-width"></i></a>
+  <a data-wysihtml5-command="formatBlock" data-wysihtml5-command-value="h3" title="Heading"><i class="icon-heading-h3 icon-fixed-width"></i></a>
+  <a data-wysihtml5-action="change_view" title="Toggle HTML Editing"><i class="icon-code icon-fixed-width"></i></a>
 
   <div data-wysihtml5-dialog="createLink" style="display: none;">
       <label>Link:</label>
@@ -443,7 +443,7 @@ Handlebars.js templates for story builder Backbone application
             <h3>{{gettext "Let your story be heard!"}}</h3>
             <p>{{gettext "Let your story be heard! Spread the word by sharing it with your social networks, printing a copy, or embeding it on your own website."}}</p>
 
-            <a href="#" class="storybase-share-widget" data-story-id="{{storyId}}">Share This Story</a>
+            <a href="{{ storyUrl }}/share/" class="storybase-share-button">Share This Story</a>
         </div>
         {{/if}}
     </div> <!-- /.twocol -->

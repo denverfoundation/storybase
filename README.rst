@@ -11,6 +11,32 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.16.2
+~~~~~~
+
+* Make activity guides styling and interaction available on any page (#874)
+* Deprecate activity guides template (``activity_guides.html``) (#874)
+
+0.16.1
+~~~~~~
+
+* Remove default data-height attribute from embed code shown in embed button
+  popup.
+
+0.16
+~~~~
+
+* Add slug field to Place model
+* Updated embed widget (#741)
+* Upgrade Font Awesome to version 3.2.1 (#868)
+
+0.15.1
+~~~~~~
+
+* Custom template, updated styling and interactions for activity guide (#864)
+* Upgrade less.js (used in development) to version 1.4.1
+* MIT license
+
 0.15
 ~~~~
 
@@ -454,6 +480,17 @@ Changelog
 * #498 - s/Sponsoring Organizations/Contributing Organizations/
 * #500 - Make "Home" link in footer active
 * #546 - Fix OpenGraph tags for projects and organizations
+
+License
+~~~~~~~
+
+This software is licensed under the `MIT License <http://opensource.org/licenses/MIT>`_
+
+Authors
+~~~~~~~
+
+* Geoff Hing - https://github.com/ghing/
+* Eric Miller - https://github.com/patternleaf/
 
 On the shoulders of giants
 --------------------------

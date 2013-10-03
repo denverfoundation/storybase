@@ -1,0 +1,120 @@
+{% load storybase_tags i18n compress %}
+{% load url from future %}
+{% comment %}
+Base template for embed widget
+
+See documentation for ``storybase_story.views.StoryWidgetView`` for context.
+{% endcomment %}
+<!DOCTYPE html>
+<html>
+  <head>
+    <title>{{ storybase_site_name }} | {{ story.title }}</title>
+    {# Force IE8 into standards mode. #}
+    <meta http-equiv="x-ua-compatible" content="IE=8">
+    <script type="text/javascript" src="{{ STATIC_URL }}js/libs/modernizr-2.0.6.min.js"></script>
+    {% if debug %}
+    <link rel="stylesheet/less" type="text/css" href="{{ STATIC_URL }}less/widget.less">
+    <script src="{{ STATIC_URL }}js/libs/less-1.4.1.min.js"></script>
+    {% else %}
+    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/widget.css">
+    {% endif %}
+  </head>
+  <body>
+    <article>
+      <header>
+        <div class="logo-container">
+          <a href="/" class="logo">{{ storybase_site_name }}</a>
+        </div>
+        <h1><a href="/">{% blocktrans %} Stories from the {{ storybase_site_name }} Project {% endblocktrans %}</a></h1>
+      </header>
+      <section class="storybase-embed-content">
+        {% block widget_content %}
+
+        {% block widget_story_content %}
+        {% url "story_viewer" slug=story.slug as viewer_path %}
+        {% fullurl viewer_path as viewer_url %}
+        <section id="{{ story.story_id }}" class="storybase-story-featured {{ storybase_site_name|slugify }}-story-embed{% if story and stories %} with-list{% endif %}">
+            <a class="featured-image" href="{{ viewer_url }}" style="background-image:url({% featured_asset_thumbnail_url story width=400 height=300 %});">
+              <img src="{% featured_asset_thumbnail_url story width=400 height=300 %}">
+            </a>
+            <div class="info">
+              <h3>
+                <a href="{{ viewer_url }}" title="{{ story.title }}" class="story-link">{{ story.title }}</a>
+              </h3>
+              <p class="byline">{{ story.byline }}</p>
+              <div class="summary">{{ story.summary|firstparagraph|safe }}</div>
+            </div>
+        </section>
+        {% endblock %}
+
+        {% block widget_list_content %}
+        <section class="storybase-storylist{% if story and stories %} with-featured{% endif %}">
+            <ul>
+              {% for story_item in stories %}
+
+              {% url "story_viewer" slug=story_item.slug as viewer_path %}
+              {% fullurl viewer_path as item_viewer_url %}
+
+              <li id="{{ story_item.story_id }}" class="storybase-story-list-item {{ storybase_site_name|slugify }}-story-embed">
+                <a class="featured-image" href="{{ item_viewer_url }}" style="background-image:url({% featured_asset_thumbnail_url story_item width=200 height=150 %});">
+                  <img src="{% featured_asset_thumbnail_url story_item width=200 height=150 %}">
+                </a>
+                <a href="{{ item_viewer_url }}" title="{{ story_item.title }}" class="story-link">{{ story_item.title }}</a>
+                <p class="byline">{{ story_item.byline }}</p>
+              </li>
+              
+              {% endfor %}
+            </ul>
+        </section>
+        {% endblock %}
+
+        {% endblock %}
+      </section>
+      <footer>
+        <div class="related-container">
+          <p>
+            {% if taxonomy_terms %}
+            {% trans "View stories for" %}
+            {% for item in taxonomy_terms %}
+            <a href="{% fullurl item.get_absolute_url %}">{{ item.name }}</a>{% if not forloop.last %}, {% endif %}
+            {% endfor %}
+            {% trans "on" %} <a href="/">{{ storybase_site_name }}</a>
+            {% else %}
+            <a href="{% url "explore_stories" %}">{% blocktrans %} Explore more stories on {{ storybase_site_name }}{% endblocktrans %}</a>
+            {% endif %}
+          </p>
+        </div>
+      </footer>
+    </article>
+    {% compress js inline %}
+    <script type="text/javascript">
+    (function(win, doc) {
+      var handleClick = function(event) {
+        // In IE8, we must work with the global event object.
+        event = event || window.event;
+
+        // Attempt to force a new window. This is still overridable via 
+        // modifier in modern browsers.
+        win.open(this.getAttribute('href'), '_blank', 'modal=yes,alwaysRaised=yes');
+        
+        // Stop default action. In some versions of IE this is done via 
+        // returnValue prop. Compliant browsers offer preventDefault.
+        event.preventDefault ? event.preventDefault() : event.returnValue = false;
+      };
+      
+      // Set up click handlers for all anchor tags.
+      var anchors = doc.getElementsByTagName('a');
+      for (var i = 0; i < anchors.length; i++) {
+        // Bind anchor element to handler via closure.
+        anchors[i].onclick = (function(el) { 
+          return function(event) { handleClick.call(el, event); } 
+        })(anchors[i]);
+      }
+    })(window, document);
+    </script>
+    {% endcompress %}
+    <!--[if lte IE 8]>
+    <script type="text/javascript" src="{{ STATIC_URL }}js/libs/css3-mediaqueries.js"></script>
+    <![endif]-->
+  </body>
+</html>

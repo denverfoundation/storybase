@@ -49,6 +49,8 @@ urlpatterns += i18n_patterns('',
     (r'^', include('storybase_story.urls')),
     (r'^', include('storybase_asset.urls')),
     (r'^', include('storybase_help.urls')),
+    (r'^', include('storybase_taxonomy.urls')),
+    (r'^', include('storybase_geo.urls')),
 
     # StoryBase account management
     # This needs to come before the admin URLs in order to use
@@ -72,6 +74,8 @@ urlpatterns += i18n_patterns('',
 )
 
 urlpatterns += patterns('',
+    url(r'^', include('storybase_story.widget_urls')),
+
     # Uncomment the admin/doc line below to enable admin documentation:
     # url(r'^admin/doc/', include('django.contrib.admindocs.urls')),
 

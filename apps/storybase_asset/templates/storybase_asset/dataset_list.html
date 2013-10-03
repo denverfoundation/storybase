@@ -2,7 +2,7 @@
 <ul class="{{ classname|default:"datasets icons" }}">
   {% for dataset in datasets %}
   <li>
-    <a class="title external" href="{{ dataset.download_url }}" title="{% if dataset.links_to_file %}{% trans "Download the data" %}{% else %}{% trans "View the data" %}{% endif %}"><i class="{% if dataset.links_to_file %}icon-download-alt{% else %}icon-external-link{% endif %}"></i>{{ dataset.title }}</a>
+    <a class="title external" href="{{ dataset.download_url }}" title="{% if dataset.links_to_file %}{% trans "Download the data" %}{% else %}{% trans "View the data" %}{% endif %}"><i class="{% if dataset.links_to_file %}icon-download-alt{% else %}icon-external-link{% endif %} icon-fixed-width"></i>{{ dataset.title }}</a>
     {% if dataset.source %}<span class="dataset-source">{{ dataset.source }}{% endif %}</span>
   </li>
   {% endfor %}
