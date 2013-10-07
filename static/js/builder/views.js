@@ -161,6 +161,7 @@
         dispatcher: this.options.dispatcher,
         language: this.options.language,
         startOverUrl: this.options.startOverUrl,
+        storyListUrl: this.options.storyListUrl,
         visibleSteps: this.options.visibleSteps
       };
       var buildViewOptions;
@@ -510,7 +511,7 @@
      *
      * @param {String} level Message level. Used to style the message.
      * @param {String} msg Message text.
-     * @param {Integer|null} [options.timeout=15000] Milliseconds to show the message
+     * @param {Integer|null} [options.timeout=8000] Milliseconds to show the message
      *   before it is hidden. If null, the message remains visible.
      * @param {Boolean} [options.sticky] Stick the alert to the top of the list
      *
@@ -518,7 +519,7 @@
     showAlert: function(level, msg, options) {
       var view, $sticky;
       options = options || {};
-      options.timeout = _.isUndefined(options.timeout) ? 15000 : options.timeout;
+      options.timeout = _.isUndefined(options.timeout) ? 8000 : options.timeout;
       options.level = level;
       options.message = msg;
 
@@ -1309,6 +1310,13 @@
 
     _initItems: function() {
       return [
+        {
+          id: 'my-stories',
+          title: gettext("View a list of your stories"),
+          text: gettext("My Stories"),
+          path: this.options.storyListUrl,
+          visible: true,
+        },
         {
           id: 'preview',
           title: gettext("Preview your story in a new window"),

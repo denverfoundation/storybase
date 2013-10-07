@@ -158,7 +158,8 @@
             relatedStories: new storybase.collections.StoryRelations,
             storyTemplates: new storybase.builder.collections.StoryTemplates,
             topics: {{ topics_json }},
-            startOverUrl: storybase.utils.getRoot(["build", "build-connected"], window.location.pathname)
+            startOverUrl: storybase.utils.getRoot(["build", "build-connected"], window.location.pathname),
+            storyListUrl: '{% url "account_stories" %}'
         }, {{ options_json }});
         var relatedStoriesJSON = null;
         var assetsJSON = null;

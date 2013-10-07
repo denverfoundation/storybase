@@ -11,6 +11,12 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.16.3
+~~~~~~
+
+* Add "My Stories" link to builder tools menu (#784)
+* Builder alerts fade out in 8 seconds instead of 15 (#870)
+
 0.16.2
 ~~~~~~
 
