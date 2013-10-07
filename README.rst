@@ -15,6 +15,7 @@ Changelog
 ~~~~~~
 
 * Add "My Stories" link to builder tools menu (#784)
+* Builder alerts fade out in 8 seconds instead of 15 (#870)
 
 0.16.2
 ~~~~~~
