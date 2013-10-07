@@ -7,6 +7,7 @@ from django.db.models.signals import post_save, pre_save
 from django.utils.translation import get_language, ugettext_lazy as _
 from cms.models.pluginmodel import CMSPlugin
 from cms.models import Page
+from cms.signals import post_publish
 from cms.utils import i18n
 from filer.fields.image import FilerImageField
 from filer.models import Image 
@@ -301,6 +302,28 @@ def get_teaser(self, language=None, fallback=True, version_id=None, force_reload
 # Patch the Page Model class to add our getter 
 setattr(Page, 'get_teaser', get_teaser)
 
+def _copy_teasers(self, target):
+    """Copy teasers from one Page to another"""
+    # Based on the implementation of Page._copy_titles()
+    old_teasers = dict(target.teaser_set.values_list('language', 'pk'))
+    for teaser in self.teaser_set.all():
+        # If an old teaser exists, overwrite. Otherwise create new
+        teaser.pk = old_teasers.pop(teaser.language, None)
+        teaser.page = target
+        teaser.save()
+    if old_teasers:
+        Teaser.objects.filter(id__in=old_teasers.values()).delete()
+
+# Patch the Page model class to add a _copy_teasers() method
+setattr(Page, '_copy_teasers', _copy_teasers)
+
+def copy_teasers(sender, instance, **kwargs):
+    """Copy the teasers from a draft page to its corresponding public page"""
+    public_page = instance.publisher_public
+    instance._copy_teasers(public_page)
+
+# When a page is published, copy the teaser from the draft page to 
+post_publish.connect(copy_teasers, sender=Page)
 
 class StoryPlugin(CMSPlugin):
     story = models.ForeignKey('storybase_story.Story', related_name='plugins')
