@@ -161,6 +161,7 @@
         dispatcher: this.options.dispatcher,
         language: this.options.language,
         startOverUrl: this.options.startOverUrl,
+        storyListUrl: this.options.storyListUrl,
         visibleSteps: this.options.visibleSteps
       };
       var buildViewOptions;
@@ -1309,6 +1310,13 @@
 
     _initItems: function() {
       return [
+        {
+          id: 'my-stories',
+          title: gettext("View a list of your stories"),
+          text: gettext("My Stories"),
+          path: this.options.storyListUrl,
+          visible: true,
+        },
         {
           id: 'preview',
           title: gettext("Preview your story in a new window"),

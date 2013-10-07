@@ -1,4 +1,4 @@
-{% load i18n sekizai_tags verbatim compress %}
+{% load i18n sekizai_tags verbatim compress %}{% load url from future %}
 <!doctype html>
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
 <!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
@@ -81,7 +81,7 @@
     <script>window.jQuery || document.write('<script src="{{ STATIC_URL }}js/libs/jquery-1.7.2.min.js"><\/script>')</script>
 
     <script type="text/javascript" src="{{ STATIC_URL}}js/plugins.js"></script>	    
-    <script type="text/javascript" src="{% url django.views.i18n.javascript_catalog %}"></script>
+    <script type="text/javascript" src="{% url "django.views.i18n.javascript_catalog" %}"></script>
     <script src="{{ STATIC_URL }}js/libs/underscore-min.js"></script>
     <script src="{{ STATIC_URL }}js/libs/json2.js"></script>
     <script src="{{ STATIC_URL }}js/libs/backbone-min.js"></script>
@@ -158,7 +158,8 @@
             relatedStories: new storybase.collections.StoryRelations,
             storyTemplates: new storybase.builder.collections.StoryTemplates,
             topics: {{ topics_json }},
-            startOverUrl: storybase.utils.getRoot(["build", "build-connected"], window.location.pathname)
+            startOverUrl: storybase.utils.getRoot(["build", "build-connected"], window.location.pathname),
+            storyListUrl: '{% url "account_stories" %}'
         }, {{ options_json }});
         var relatedStoriesJSON = null;
         var assetsJSON = null;

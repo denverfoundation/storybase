@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.16.3
+~~~~~~
+
+* Add "My Stories" link to builder tools menu (#784)
+
 0.16.2
 ~~~~~~
 
