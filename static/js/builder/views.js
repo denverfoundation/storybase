@@ -2566,7 +2566,7 @@
       return this.editor;
     },
     
-    createEditor: function(el, callbacks) {
+    createEditor: function(el, callbacks, options) {
       var view = this;
       var defaultCallbacks = {
         'focus': function() {
@@ -2597,12 +2597,15 @@
 
       var toolbarEl = this.getEditorToolbarEl();
       $(el).before(toolbarEl);
+
+      options = options || {};
+
       this.editor = new wysihtml5.Editor(
         el,    
-        {
+        _.extend({
           toolbar: toolbarEl, 
           parserRules: wysihtml5ParserRules
-        }
+        }, options)
       );
       callbacks = _.isUndefined(callbacks) ? {} : callbacks;
       _.defaults(callbacks, defaultCallbacks);
@@ -4939,7 +4942,33 @@
             // asset views.
             this.bodyEditor.stopObserving('blur');
             this.bodyEditor.stopObserving('load');
-          }
+            // BOOKMARK
+            // Get rid of the scroll bars
+            var grow = function(editor) {
+               var $iframe = $(editor.composer.iframe);
+               var $el = $(editor.composer.element);
+               var height = $el.height();
+               var extraHeight = 40;
+               if ($iframe.height() < height) {
+                 $iframe.height(height + extraHeight);
+               }
+               // HACK: WYSIHTML5, when initialized, copies styles from the
+               // textarea to two DOM elements. It then restores the styles
+               // from these elements on focus/blur. We need to update the
+               // height of these elements as well, otherwise the height will
+               // jump back to the original value when the editor loses/regains
+               // focus
+               $(editor.composer.blurStylesHost).height(height);
+               $(editor.composer.focusStylesHost).height(height);
+            };
+            this.bodyEditor.on('load', function() {
+              $(this.composer.element).css('overflow-y', 'hidden');
+              grow(this);
+            });
+            this.bodyEditor.on('newword:composer', function() {
+              grow(this);
+            });
+         }
 
           this.renderFileFieldThumbnail();
           
