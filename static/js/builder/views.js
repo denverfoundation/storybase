@@ -4087,7 +4087,7 @@
         var thumbNailValue = $(this).data('file-thumbnail');
         if (thumbNailValue) {
           if (thumbNailValue == '__set__') {
-            $(this).before('<div class="data-thumbnail"></div>')
+            $(this).before('<div class="data-thumbnail"></div>');
           }
           else {
             $(this)
