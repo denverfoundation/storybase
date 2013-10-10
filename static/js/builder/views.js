@@ -5002,6 +5002,9 @@
           this.form.render().$el.append('<input type="reset" value="' + gettext("Cancel") + '" />').append('<input type="submit" value="' + gettext("Save Changes") + '" />');
 
           if (_.has(this.form.fields, 'body') && this.model.get('type') == 'text') {
+            // Text asset. Create a rich-text editor and hide the label of the
+            // field.
+            this.form.fields.body.$('label').hide();
             this.bodyEditor = this.createEditor(
               this.form.fields.body.editor.el,
               undefined,
