@@ -1010,6 +1010,7 @@ body.story-builder #app .bbf-form .bbf-field .bbf-editor .not-set-thumbnail,body
 body.story-builder #app .bbf-form .bbf-field .bbf-editor .not-set-thumbnail,body.story-builder #app .bbf-form .mutex-group .bbf-editor .not-set-thumbnail{background-image:url(../img/unknown-file.png)}
 body.story-builder #app .bbf-form .bbf-field .bbf-editor .data-thumbnail,body.story-builder #app .bbf-form .mutex-group .bbf-editor .data-thumbnail{background-image:url(../img/data-file.png)}
 body.story-builder #app .bbf-form .bbf-field .select2-container-multi .select2-choices .select2-search-field input,body.story-builder #app .bbf-form .mutex-group .select2-container-multi .select2-choices .select2-search-field input{height:auto}
+body.story-builder #app .bbf-form .bbf-field.field-body .wysihtml5-sandbox,body.story-builder #app .bbf-form .mutex-group.field-body .wysihtml5-sandbox{-webkit-box-sizing:border-box;-moz-box-sizing:border-box;-ms-box-sizing:border-box}
 body.story-builder #app .bbf-form .mutex-group fieldset legend{display:none}
 body.story-builder #app .bbf-form .mutex-group.boxed fieldset{border:1px solid #f0efef;border-radius:4px;-webkit-border-radius:4px;-moz-border-radius:4px;box-shadow:inset 0 0 5px #b3b3b3;-moz-box-shadow:inset 0 0 5px #b3b3b3;-webkit-box-shadow:inset 0 0 5px #b3b3b3;padding:1em;margin-bottom:1em}body.story-builder #app .bbf-form .mutex-group.boxed fieldset legend{background:#fff;padding:0 .5em}
 body.story-builder #app .bbf-form .mutex-group ul.nav{margin-bottom:10px}
