@@ -247,13 +247,13 @@ This HTML will display a widget that has a width of 500 pixels.
 
 .. code-block:: html
 
-    <a href="http://floodlightproject.org/stories/so-much-more-than-butterflies/" class="storybase-story-embed" data-width="500px">So much more than butterflies</a>
+    <a href="http://floodlightproject.org/stories/so-much-more-than-butterflies/" class="storybase-story-embed" data-height="500px">So much more than butterflies</a>
     <script src="http://dev.floodlightproject.org/static/js/widgets.min.js" type="text/javascript"></script>
 
 width
 -----
 
-**Attribute:** ``data-height``
+**Attribute:** ``data-width``
 
 **Value:** Width in pixels, including the "px" unit, e.g. ``500px``.
 
@@ -264,5 +264,5 @@ This HTML will display a widget that has a width of 500 pixels.
 
 .. code-block:: html
 
-    <a href="http://floodlightproject.org/stories/so-much-more-than-butterflies/" class="storybase-story-embed" data-height="500px">So much more than butterflies</a>
+    <a href="http://floodlightproject.org/stories/so-much-more-than-butterflies/" class="storybase-story-embed" data-width="500px">So much more than butterflies</a>
     <script src="http://dev.floodlightproject.org/static/js/widgets.min.js" type="text/javascript"></script>

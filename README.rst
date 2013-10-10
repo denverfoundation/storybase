@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.16.4
+~~~~~~
+
+* Fix typo in embed widget documentation
+
 0.16.3
 ~~~~~~
 
