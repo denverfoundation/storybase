@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.16.5
+~~~~~~
+
+* Support oEmbed for short Soundcloud URLs (#877)
+
 0.16.4
 ~~~~~~
 
