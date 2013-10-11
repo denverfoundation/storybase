@@ -245,7 +245,12 @@ class ExternalAssetModelTest(TestCase):
         """
         Test getting an oembed response for a SoundCloud URL 
         """
+        # Long URL
         url = 'http://soundcloud.com/inews/long-term-care-for-kcfr-public-radio-day-1' 
+        response_data = ExternalAsset.get_oembed_response(url)
+        self.assertIn('html', response_data)
+        # Short URL
+        url = 'http://snd.sc/18NoosH'
         response_data = ExternalAsset.get_oembed_response(url)
         self.assertIn('html', response_data)
 

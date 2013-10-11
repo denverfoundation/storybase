@@ -43,6 +43,7 @@ def bootstrap_providers(cache=None):
     pr.register('https?://youtu.be/\S*', Provider('http://www.youtube.com/oembed'))
     # Also match non-shortened YouTube URls
     pr.register('https?://\S*.youtu(\.be|be\.com)/watch\S*', Provider('http://www.youtube.com/oembed'))
+    pr.register('https?://snd.sc/\S*', Provider('http://soundcloud.com/oembed'))
     pr.register('https?://soundcloud.com/\S*', Provider('http://soundcloud.com/oembed'))
     pr.register('https?://vimeo.com/\S*', Provider('http://vimeo.com/api/oembed.json'))
     pr.register('https?://www.slideshare.net/[^\/]+/\S*', Provider('http://www.slideshare.net/api/oembed/2'))
