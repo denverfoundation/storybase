@@ -4947,10 +4947,6 @@
 
       render: function() {
         var context = {};
-        var editableCallback = function(value, settings) {
-          that.saveAttr($(this).data("input-name"), value);
-          return value;
-        };
         var state = this.getState();
         var template = this.getTemplate(state);
         var $wrapperEl;
