@@ -25,6 +25,23 @@ Please read the upgrading instructions carefully::
     # manage.py cms delete_orphaned_plugins
     manage.py cms moderator on
 
+0.16.5 to 0.16.6
+================
+
+The builder JavaScript was updated, so you'll have to re-collect the static
+assets::
+
+    python manage.py collectstatic
+
+If you're using django-compressor with offline compression, you'll also need
+to recompress the JavaScript assets.
+
+    python manage.py compress
+
+Finally, the response of a cached endpoint has changed, so you'll need to clear
+the cache, or follow one of the recipes in http://stackoverflow.com/questions/2268417/expire-a-view-cache-in-django
+to expire just the cached view.
+
 0.15.* to 0.16
 ==============
 

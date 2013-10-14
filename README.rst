@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.16.6
+~~~~~~
+
+* Convert data fron Creative Commons license endpoint to JSON (#878)
+
 0.16.5
 ~~~~~~
 
