@@ -5778,13 +5778,7 @@
       // Now try to get the license from the (proxied) Creative Commons
       // endpoint.  If this succeeds, we'll re-render when we're finished
       $.get(this.options.licenseEndpoint, params, function(data) {
-        // The endpoint returns XML. Use jQuery to grab the 'html' element
-        // of the XML response and the convert the element contents to 
-        // a string.
-        // 
-        // If we just append the matching elements, it doesn't display
-        // correctly in the browser
-        that._licenseHtml = $('<div>').append($(data).find("html").contents()).clone().html();
+        that._licenseHtml = data.html;
         that.render();
       }).error(function() {
         that._licenseHtml = "<p>" + gettext("You selected the ") + license + " " + gettext("license.") + "</p>";
