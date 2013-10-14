@@ -16,6 +16,12 @@ package from Django core, install the ``django-localflavor`` package::
 
     pip install django-localflavor
 
+Take a look at the `release notes for Django 1.5 <https://docs.djangoproject.com/en/dev/releases/1.5/>`_
+and make note of any changes required by your particular site. A few things
+to look out for:
+
+* You must define ``ALLOWED_HOSTS`` in the settings module
+
 You'll need to run the `upgrade steps for Django CMS 2.4 <http://docs.django-cms.org/en/2.4.0/upgrade/2.4.html>`_.
 Please read the upgrading instructions carefully::
 
@@ -24,6 +30,8 @@ Please read the upgrading instructions carefully::
     # If any the previous command shows any orphaned plugins run
     # manage.py cms delete_orphaned_plugins
     manage.py cms moderator on
+
+
 
 0.16.5 to 0.16.6
 ================
