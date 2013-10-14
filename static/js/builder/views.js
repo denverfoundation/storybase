@@ -2547,6 +2547,31 @@
     }
   });
 
+  /**
+   * Helper function that expands a wysihtnk5.Editor iframe to
+   * be taller than its contents.
+   *
+   * @param {Object} editor wysihtml5.Editor instance
+   *
+   */
+  var _growEditor = function(editor) {
+    var $iframe = $(editor.composer.iframe);
+    var $el = $(editor.composer.element);
+    var height = $el.height();
+    var extraHeight = 40;
+    if ($iframe.height() < height) {
+      $iframe.height(height + extraHeight);
+    }
+    // HACK: WYSIHTML5, when initialized, copies styles from the
+    // textarea to two DOM elements. It then restores the styles
+    // from these elements on focus/blur. We need to update the
+    // height of these elements as well, otherwise the height will
+    // jump back to the original value when the editor loses/regains
+    // focus
+    $(editor.composer.blurStylesHost).height(height);
+    $(editor.composer.focusStylesHost).height(height);
+  };
+
   var RichTextEditorMixin = {
     toolbarTemplateSource: $('#editor-toolbar-template').html(),
     editor: null,
@@ -2565,9 +2590,44 @@
     getEditor: function() {
       return this.editor;
     },
+
+    /**
+     * Initialize event listeners that cause editor to automatically grow
+     * with its contents
+     *
+     * @param {Object} editor wysihtml5.Editor instance
+     */
+    _initEditorGrowth: function(editor) {
+      editor.on('load', function() {
+        $(this.composer.element).css('overflow-y', 'hidden');
+        _growEditor(this);
+      });
+      editor.on('newword:composer', function() {
+        _growEditor(this);
+      });
+    },
     
-    createEditor: function(el, callbacks) {
+    /**
+     * Create a rich text editor bound to a textarea. 
+     *
+     * Currently uses the wysihtml5 editor
+     *
+     * @param {Object} el textarea element to which the rich text editor will be bound
+     * @param {Object} [callbacks] Callback functions that will be
+     *   bound to events fired by the editor
+     * @param {Object} [options] Options for configuring the editor.
+     *   Options not listed below will be passed on to the
+     *   constructor for wysihtml5.Editor.
+     * @param {boolean} [options.grow=false} Should the editor's height
+     *   expand to fit the content?
+     */
+    createEditor: function(el, callbacks, options) {
       var view = this;
+      var opts;
+      var customOpts = {};
+      var defaults = {
+        grow: false
+      };
       var defaultCallbacks = {
         'focus': function() {
           $(this.toolbar.container).show();
@@ -2592,23 +2652,36 @@
         }
         
         // Note that the editor currently does not publish a change
-        // even that fires on every *visible* change in the editor. :(
+        // event that fires on every *visible* change in the editor. :(
       };
 
       var toolbarEl = this.getEditorToolbarEl();
       $(el).before(toolbarEl);
+
+      opts = options ? _.clone(options) : {};
+      _.each(defaults, function(val, key) {
+        if (opts[key]) {
+          customOpts[key] = opts[key];
+          delete opts[key];
+        }
+      });
+
       this.editor = new wysihtml5.Editor(
         el,    
-        {
+        _.extend({
           toolbar: toolbarEl, 
           parserRules: wysihtml5ParserRules
-        }
+        }, opts)
       );
       callbacks = _.isUndefined(callbacks) ? {} : callbacks;
       _.defaults(callbacks, defaultCallbacks);
       _.each(callbacks, $.proxy(function(value, key, list) {
         this.editor.on(key, value);
       }, this));
+
+      if (customOpts.grow) {
+        this._initEditorGrowth(this.editor);
+      }
       
       return this.editor;
     }
@@ -4014,7 +4087,7 @@
         var thumbNailValue = $(this).data('file-thumbnail');
         if (thumbNailValue) {
           if (thumbNailValue == '__set__') {
-            $(this).before('<div class="data-thumbnail"></div>')
+            $(this).before('<div class="data-thumbnail"></div>');
           }
           else {
             $(this)
@@ -4927,24 +5000,25 @@
         }
         if (state === 'edit') {
           this.form.render().$el.append('<input type="reset" value="' + gettext("Cancel") + '" />').append('<input type="submit" value="' + gettext("Save Changes") + '" />');
+
           if (_.has(this.form.fields, 'body') && this.model.get('type') == 'text') {
+            // Text asset. Create a rich-text editor and hide the label of the
+            // field.
+            this.form.fields.body.$('label').hide();
             this.bodyEditor = this.createEditor(
-              this.form.fields.body.editor.el
+              this.form.fields.body.editor.el,
+              undefined,
+              {
+                grow: true
+              }
             );
-            // HACK: Get rid of the default event handlers
-            // They seem to prevent event bubbling, e.g. the editor's blur event
-            // handler gets callled and the "Save"/"Cancel" buttons' click 
-            // events never get called.  I think this is okay for now, since the
-            // toolbar showing/hiding doesn't make as much sense when editing the
-            // asset views.
-            this.bodyEditor.stopObserving('blur');
-            this.bodyEditor.stopObserving('load');
           }
 
           this.renderFileFieldThumbnail();
           
           $wrapperEl.append(this.form.el);
         }
+
         if (state === 'editData') {
           this.$el.append(this.datasetListView.render().el);
         }
