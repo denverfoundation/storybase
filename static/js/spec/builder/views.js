@@ -164,7 +164,7 @@ describe('SectionAssetEditView view', function() {
     });
 
     it('should have a state of "select"', function() {
-      expect(this.view.getState()).toEqual('select');
+      expect(this.view.state.name).toEqual('select');
     });
   });
 

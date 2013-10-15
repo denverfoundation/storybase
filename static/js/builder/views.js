@@ -4690,6 +4690,218 @@
     }
   });
 
+  /**
+   * Creates a new state obect for SectionAssetEditView.
+   * @constructor
+   *
+   * @param {SectionAssetEditView} view
+   */ 
+  var SectionAssetEditViewState = function(view) {
+    this.view = view;
+    this.initialize();
+  };
+
+  // Set up default methods and properties for a SectionAssetEditView state
+  _.extend(SectionAssetEditViewState.prototype, HandlebarsTemplateMixin, {
+    options: {},
+
+    /**
+     * Initialize the state.
+     *
+     * Called from the constructor.
+     */
+    initialize: function() {
+      this.compileTemplates();
+    },
+
+    /**
+     * Get template context used in SectionAssetEditView.render
+     * @returns {object} - Template context
+     */
+    context: function() { 
+      return {};
+    },
+
+    /**
+     * Adds state-specific CSS classes to view element.
+     */
+    addClass: function() {
+      this.view.$el.addClass(this.name);
+    },
+
+    /**
+     * Remove state-specific CSS classes to view element.
+     */
+    removeClass: function() {
+      this.view.$el.removeClass(this.name);
+    },
+
+    /**
+     * Hook before changing away from this state.
+     */
+    exit: function() {
+      this.removeClass();
+    },
+
+    /**
+     * Hook called when view is rendered in this state.
+     */
+    render: function() {
+      this.addClass();
+    },
+
+    /**
+     * Returns asset type specific help for the state
+     *
+     * @param {string|undefined} assetType - String representing the type of
+     *   asset of the view's model, or undefined.
+     *
+     * @returns {string} Help for this particular state and asset type,
+     *   the state itself, or an empty string.
+     */
+    help: function(assetType) {
+      var templateName = assetType ? assetType + '-help' : 'help';
+      var template = this.getTemplate(templateName);
+
+      if (template) {
+        return template();
+      }
+
+      return '';
+    }
+  });
+
+  // HACK: Use Backbone's extend function for inheritance of
+  // our class. It's not exported explicitly, but assigned to
+  // Backbone.View.extend, Backbone.Model.extend, etc.
+  SectionAssetEditViewState.extend = Backbone.View.extend;
+
+  var DisplayState = SectionAssetEditViewState.extend({
+    name: 'display',
+
+    options: {
+      templateSource: {
+        __main: $('#section-asset-display-template').html(),
+        'image-help': $('#image-display-help-template').html()
+      }
+    },
+
+    context: function() {
+      // Set context variable to toggle display of icon to edit data
+      return {
+        acceptsData: this.view.model.acceptsData()
+      };
+    },
+
+    render: function() {
+      if (this.view.$el.is(':visible')) {
+        storybase.views.sizeAssetsOnLoad({
+          assetSelector: 'iframe.sandboxed-asset',
+          scope: this.view.$el
+        });
+      }
+      else {
+        storybase.views.deferSrcLoad({
+          selector: 'iframe.sandboxed-asset',
+          scope: this.view.$el
+        });
+      }
+    }
+  });
+
+  var EditState = SectionAssetEditViewState.extend({
+    name: 'edit',
+
+    options: {
+      templateSource: {
+        __main: $('#section-asset-edit-template').html(),
+        'image-help': $('#image-edit-help-template').html()
+      }
+    },
+
+    context: function() {
+      return {
+        action: this.view.model.isNew() ? gettext('add') : gettext('edit')
+      };
+    },
+
+    render: function() {
+      var view = this.view;
+      var $wrapperEl = view.$(view.options.wrapperEl);
+      view.form.render().$el.append('<input type="reset" value="' + gettext("Cancel") + '" />').append('<input type="submit" value="' + gettext("Save Changes") + '" />');
+
+      if (view.model.get('type') == 'text') {
+        // Text asset.
+
+        // Hide the label of the field since there's only one field
+        view.form.fields.body.$('label').hide();
+
+        // Create a rich-text editor for the 'body' field 
+        view.bodyEditor = view.createEditor(
+          view.form.fields.body.editor.el,
+          undefined,
+          {
+            grow: true
+          }
+        );
+      }
+
+      view.renderFileFieldThumbnail();
+          
+      $wrapperEl.append(view.form.el);
+    }
+  });
+
+  var UploadState = SectionAssetEditViewState.extend({
+    name: 'upload',
+
+    options: {
+      templateSource: $('#asset-uploadprogress-template').html()
+    }
+  });
+
+  var EditDataState = SectionAssetEditViewState.extend({
+    name: 'editData',
+
+    render: function() {
+      this.view.$el.append(this.view.datasetListView.render().el);
+    }
+  });
+
+  var SelectState = SectionAssetEditViewState.extend({
+    name: 'select',
+
+    options: {
+      templateSource: {
+        __main: $('#section-asset-select-type-template').html(),
+        help: $('#select-help-template').html()
+      }
+    },
+
+    context: function() {
+      return {
+        assetTypes: this.view.getAssetTypes(),
+        help: this.view.options.help
+      };
+    },
+
+    render: function() {
+      var $wrapperEl = this.view.$(this.view.options.wrapperEl);
+      // The accept option needs to match the class on the items in
+      // the UnusedAssetView list
+      $wrapperEl.droppable({ accept: ".unused-asset" });
+      this.addClass();
+    }
+  });
+
+  var SyncState = SectionAssetEditViewState.extend({
+    name: 'sync',
+
+    options: {
+      templateSource: $('#section-asset-sync-template').html()
+    }
+  });
+
   var SectionAssetEditView = Views.SectionAssetEditView = HandlebarsTemplateView.extend(
     _.extend({}, RichTextEditorMixin, BBFFormMixin, {
       tagName: 'div',
@@ -4699,23 +4911,15 @@
       options: {
         wrapperEl: '.wrapper',
         templateSource: {
-          'display': $('#section-asset-display-template').html(),
-          'edit': $('#section-asset-edit-template').html(),
-          'upload': $('#asset-uploadprogress-template').html(),
-          'select': $('#section-asset-select-type-template').html(),
-          'sync': $('#section-asset-sync-template').html(),
           'audio-help': $('#audio-help-template').html(),
           'chart-help': $('#chart-help-template').html(),
           'image-help': $('#image-help-template').html(),
+          'image-new-help': $('#image-new-help-template').html(),
           'map-help': $('#map-help-template').html(),
           'quotation-help': $('#quotation-help-template').html(),
           'table-help': $('#table-help-template').html(),
-          'image-display-help': $('#image-display-help-template').html(),
-          'image-new-help': $('#image-new-help-template').html(),
-          'image-edit-help': $('#image-edit-help-template').html(),
           'text-help': $('#text-help-template').html(), 
-          'video-help': $('#video-help-template').html(),
-          'select-help': $('#select-help-template').html()
+          'video-help': $('#video-help-template').html()
         }
       },
 
@@ -4730,8 +4934,6 @@
         'submit form.bbf-form': 'processForm',
         'drop': 'handleDrop'
       },
-
-      states: ['select', 'display', 'edit', 'editData', 'sync'],
 
       initialize: function() {
         this.compileTemplates();
@@ -4757,6 +4959,14 @@
           // associated data
           this.initializeDataViews(); 
         }
+        this.states = {
+          select: new SelectState(this),
+          display: new DisplayState(this),
+          edit: new EditState(this),
+          editData: new EditDataState(this),
+          sync: new SyncState(this),
+          upload: new UploadState(this)
+        };
         this.handleUploadProgress = _.bind(handleUploadProgress, this);
         this.bindModelEvents();
         this.initializeForm();
@@ -4851,18 +5061,6 @@
         this.form.render();
       },
 
-      setClass: function() {
-        var activeState = this.getState();
-        _.each(this.states, function(state) {
-          if (state === activeState) {
-            this.$el.addClass(state);
-          }
-          else {
-            this.$el.removeClass(state);
-          }
-        }, this);
-      },
-
       /**
        * Get a list of asset types, their labels, and properties. 
        * Properties on returned hash:
@@ -4946,97 +5144,38 @@
       },
 
       render: function() {
-        var context = {};
-        var state = this.getState();
-        var template = this.getTemplate(state);
+        var context = this.state.context(); 
+        var template = this.state.getTemplate();
         var $wrapperEl;
-        if (state === 'select') {
-          context.assetTypes = this.getAssetTypes();
-          context.help = this.options.help;
-        }
-        else if (state === 'display') {
-          // Set context variable to toggle display of icon to edit data
-          context.acceptsData = this.model.acceptsData();
-        }
-        else if (state === 'edit') {
-          if (this.model.isNew()) {
-            context.action = gettext('add');
-          }
-          else {
-            context.action = gettext('edit');
-          }
-        }
+
         context.model = this.model.toJSON();
+
         if (template) {
           this.$el.html(template(context));
         }
         else {
           this.$el.empty();
         }
+
         $wrapperEl = this.$(this.options.wrapperEl);
-        this.setClass();
-        if (state == 'select') {
-          // The accept option needs to match the class on the items in
-          // the UnusedAssetView list
-          $wrapperEl.droppable({ accept: ".unused-asset" });
-        }
-        if (state == 'display') {
-          if (this.$el.is(':visible')) {
-            storybase.views.sizeAssetsOnLoad({
-              assetSelector: 'iframe.sandboxed-asset',
-              scope: this.$el
-            });
-          }
-          else {
-            storybase.views.deferSrcLoad({
-              selector: 'iframe.sandboxed-asset',
-              scope: this.$el
-            });
-          }
-        }
-        if (state === 'edit') {
-          this.form.render().$el.append('<input type="reset" value="' + gettext("Cancel") + '" />').append('<input type="submit" value="' + gettext("Save Changes") + '" />');
 
-          if (_.has(this.form.fields, 'body') && this.model.get('type') == 'text') {
-            // Text asset. Create a rich-text editor and hide the label of the
-            // field.
-            this.form.fields.body.$('label').hide();
-            this.bodyEditor = this.createEditor(
-              this.form.fields.body.editor.el,
-              undefined,
-              {
-                grow: true
-              }
-            );
-          }
-
-          this.renderFileFieldThumbnail();
-          
-          $wrapperEl.append(this.form.el);
-        }
-
-        if (state === 'editData') {
-          this.$el.append(this.datasetListView.render().el);
-        }
+        this.state.render();
 
         return this;
       },
 
       setInitialState: function() {
         if (!this.model.isNew()) {
-          this._state = 'display';
+          this.state = this.states['display'];
         }
         else {
-          this._state = 'select';
+          this.state = this.states['select'];
         }
-      },
-
-      getState: function() {
-        return this._state;
       },
 
       setState: function(state) {
-        this._state = state;
+        this.state.exit();
+        this.state = this.states[state];
         return this;
       },
 
@@ -5117,7 +5256,7 @@
           error: function(model, xhr) {
             // If we've switched to the upload progress view, switch back to the
             // form
-            if (view.getState() === 'upload') {
+            if (view.state.name === 'upload') {
               view.setState('edit').render();
             }
             view.dispatcher.trigger('error', xhr.responseText || 'error saving the asset');
@@ -5227,29 +5366,33 @@
       },
       
       /**
-       * @param String type     The asset type.
-       * @param String [state]  Optional. One of new, edit, display.
+       * @param {String} type - The asset type.
        */
-      getAssetTypeHelp: function(type, state) {
-        if (_.indexOf(['edit', 'new', 'display'], state) >= 0) {
-          state = '-' + state;
-        }
-        else {
-          state = '';
-        }
-        var template = this.getTemplate(type + state + '-help');
-        if (!template) {
-          // see if there's a template defined for any/every state
-          template = this.getTemplate(type + '-help');
-        }
+      getAssetTypeHelp: function(type) {
         var help;
-        if (_.isFunction(template)) {
-          help = template();
+        var template;
+
+        // See if there's help for creating a new asset
+        if (this.model.isNew()) {
+          template = this.getTemplate(type + '-new' + '-help');
+          if (template) {
+            return template();
+          }
         }
-        else {
-          help = gettext("Select an asset type.");
+
+        // See if there's state-specific help for this type 
+        help = this.state.help(type);
+        if (help) {
+          return help;
         }
-        return help;
+
+        // See if there's a template defined for any/every state
+        template = this.getTemplate(type + '-help');
+        if (template) {
+          return template();
+        }
+
+        return gettext("Select an asset type.");
       },
 
       /**
@@ -5260,13 +5403,11 @@
           title: "",
           body: ""
         }, this.options.help);
-        var assetHelp = '';
-        if (this._state == 'select') {
-          assetHelp = (this.getTemplate('select-help'))();
-        }
-        else {
-          var state = this.model.isNew() ? 'new' : this._state;
-          assetHelp = this.getAssetTypeHelp(this.model.get('type'), state);
+        // Try to get state-specific, type agnostic help
+        var assetHelp = this.state.help();
+        // Try to get type-specific help
+        if (!assetHelp) {
+          assetHelp = this.getAssetTypeHelp(this.model.get('type'));
         }
         help.body += assetHelp;
         this.dispatcher.trigger('do:show:help', help, {remember: true});
