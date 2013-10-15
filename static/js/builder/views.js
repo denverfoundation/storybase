@@ -3808,12 +3808,13 @@
      *
      * This should be be bound to the do:removesectionasset event.
      *
-     * @param {Section} Section from which the asset is to be removed
-     * @param {Asset} Asset to be removed from the section
+     * @param {Section} section - Section from which the asset is to be removed
+     * @param {Asset} asset - Asset to be removed from the section
+     * @param {object} [options]
      */
-    handleDoRemoveSectionAsset: function(section, asset) {
+    handleDoRemoveSectionAsset: function(section, asset, options) {
       if (section == this.model) {
-        this.removeAsset(asset);
+        this.removeAsset(asset, options);
       }
     },
 
@@ -3822,11 +3823,19 @@
      *
      * @param asset Asset to be removed
      * @param {Object} [options] Options for performing this operation.
-     * @param options.removeView Should the view for editing the asset also
-     *        be removed.
+     * @param [options.removeView=undefined] Should the view for editing the
+     *   asset also be removed?
+     * @param [options.trigger=true] Should we trigger a "remove:sectionasset"
+     *   event on the event bus?
+     * @param [options.removeFromStory=false] Should the asset be removed from
+     *   the story as well?
      */
     removeAsset: function(asset, options) {
       options = options || {};
+      _.defaults(options, {
+        removeFromStory: false,
+        trigger: true
+      });
       var view = this;
       var sectionAsset = this.getSectionAsset(asset);
       sectionAsset.id = asset.id;
@@ -3836,8 +3845,13 @@
             view.removeEditViewForAsset(asset);
           }
           view.assets.remove(asset);
-          view.dispatcher.trigger("remove:sectionasset", asset);
-          view.dispatcher.trigger("alert", "info", "You removed an asset, but it's not gone forever. You can re-add it to a section from the asset list");
+          if (options.trigger) {
+            view.dispatcher.trigger("remove:sectionasset", asset);
+            view.dispatcher.trigger("alert", "info", "You removed an asset, but it's not gone forever. You can re-add it to a section from the asset list");
+          }
+          if (options.removeFromStory) {
+            view.story.assets.remove(asset);
+          }
         },
         error: function(model, response) {
           view.dispatcher.trigger("error", "Error removing asset from section");
@@ -4737,6 +4751,11 @@
     },
 
     /**
+     * Hook called when changing to this state.
+     */
+    enter: function() {},
+
+    /**
      * Hook before changing away from this state.
      */
     exit: function() {
@@ -4819,6 +4838,18 @@
       }
     },
 
+    enter: function() {
+      var view = this.view;
+      // Save the model's new state. We need to remember if the model was new
+      // before any auto-saving
+      view.modelNew = view.model.isNew();
+      if (!view.modelNew) {
+        // Save the model attributes in case the user cancels editing and we
+        // need to revert an auto-saved version
+        view.oldModelAttributes = _.clone(view.model.attributes); 
+      }
+    },
+
     context: function() {
       return {
         action: this.view.model.isNew() ? gettext('add') : gettext('edit')
@@ -4863,6 +4894,7 @@
           // TODO: Do we need to wrap this in setTimeout() to
           // allow the autosave to be cancelled by clicking the
           // save/cancel buttons
+          view.modelAutoSaved = true;
           view.saveModel(form.getValue(), false);
         });
       }
@@ -5197,6 +5229,7 @@
       setState: function(state) {
         this.state.exit();
         this.state = this.states[state];
+        this.state.enter();
         return this;
       },
 
@@ -5225,12 +5258,28 @@
        */
       cancel: function(e) {
         e.preventDefault();
-        if (this.model.isNew()) {
-          this.setState('select');
+        var nextState = this.modelNew ? 'select' : 'display';
+        if (this.modelAutoSaved){
+          if (this.modelNew) {
+            // Model was auto-saved. Remove it
+            // BOOKMARK
+            this.dispatcher.trigger('do:remove:sectionasset', this.section,
+              this.model,
+              {
+                removeFromStory: true,
+                trigger: false
+              }
+            ); 
+            this.model.destroy();
+          }
+          else {
+            // Asset was autosaved, restore the old attributes
+            this.saveModel(this.oldModelAttributes);
+          }
+          return;
         }
-        else {
-          this.setState('display');
-        }
+
+        this.setState(nextState);
         this.render();
       },
 

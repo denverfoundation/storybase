@@ -45,6 +45,17 @@ Feature: Edit text assets in the story builder
                         """
                 And the "Image" icon is present
                 And the "Text" icon is present
+                When the user refreshes the browser 
+                And the user clicks on "Untitled Section" in the section list
+                Then the following text is not present:
+                        """
+                        Test text for asset. This is cool. 
+                        """
+                When the user opens the asset drawer
+                Then the following text is not present:
+                        """
+                        Test text for asset. This is cool. 
+                        """
 
         Scenario: Cancel editing an existing text asset
                 Given the user "test_user@fakedomain.com" is logged in
