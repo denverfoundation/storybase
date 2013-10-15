@@ -4844,6 +4844,27 @@
             grow: true
           }
         );
+
+        // When the wysihtml5 editor fire the change event, fire the change
+        // event on the underlying Backbone Forms editor.
+        // 
+        // The Backbone Forms text editor listens to the keyup event, which
+        // never gets passed to the underlying textarea by wysihtml5.
+        //
+        // We do this to make event binding more agnostic to the particular
+        // rich text editor.  We may move away from wysihtml5, but we'll
+        // probably stick with Backbone Forms (or at least use something
+        // that uses Backbone's events)
+        view.bodyEditor.on('change', function() {
+          view.form.fields.body.editor.determineChange();
+        });
+        view.form.on('body:change', function(form, editor, extra) {
+          // BOOKMARK
+          // TODO: Do we need to wrap this in setTimeout() to
+          // allow the autosave to be cancelled by clicking the
+          // save/cancel buttons
+          view.saveModel(form.getValue(), false);
+        });
       }
 
       view.renderFileFieldThumbnail();
@@ -5221,8 +5242,11 @@
        *
        * @param {Object} attributes Model attributes to be passed to
        *     Asset.save()
+       * @param {boolean} [changeState=true] - Change the state of this view 
+       *     and re-render after saving. 
        */
-      saveModel: function(attributes) {
+      saveModel: function(attributes, changeState) {
+        changeState = _.isUndefined(changeState) ? true : changeState;
         var view = this;
         // Save the model's original new state to decide
         // whether to send a signal later
@@ -5240,7 +5264,9 @@
         // Initialize callbacks for saving the model
         options = {
           success: function(model) {
-            view.setState('display').render();
+            if (changeState) {
+              view.setState('display').render();
+            }
 
             if (isNew) {
               // Model was new before saving, trigger an event telling listeners
