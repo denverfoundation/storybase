@@ -4891,11 +4891,16 @@
         });
         view.form.on('body:change', function(form, editor, extra) {
           // BOOKMARK
-          // TODO: Do we need to wrap this in setTimeout() to
-          // allow the autosave to be cancelled by clicking the
-          // save/cancel buttons
-          view.modelAutoSaved = true;
-          view.saveModel(form.getValue(), false);
+          // Save the asset, but delay saving to give the user
+          // some time to do an explicit save or cancel using the
+          // form buttons.
+          view.saveModel(form.getValue(), {
+            changeState: false,
+            delay: 1000,
+            success: function() {
+              view.modelAutoSaved = true;
+            }
+           });
         });
       }
 
@@ -5258,6 +5263,7 @@
        */
       cancel: function(e) {
         e.preventDefault();
+        this.preventDelayedSave();
         var nextState = this.modelNew ? 'select' : 'display';
         if (this.modelAutoSaved){
           if (this.modelNew) {
@@ -5289,19 +5295,29 @@
        * This method mostly handles initializing the callbacks and options for 
        * Asset.save()
        *
-       * @param {Object} attributes Model attributes to be passed to
+       * @param {Object} attributes - Model attributes to be passed to
        *     Asset.save()
-       * @param {boolean} [changeState=true] - Change the state of this view 
-       *     and re-render after saving. 
+       * @param {Object} [options] - Options for altering save timing and
+       *     side effects.
+       * @param {boolean} [options.changeState=true] - Change the state of this view 
+       *     and re-render after a successful save. 
+       * @param {number} [options.delay=null] - Delay saving by this number of
+       *     milliseconds.
+       * @param {function} [success] - Callback function called after model
+       *     is successfully saved.
        */
-      saveModel: function(attributes, changeState) {
-        changeState = _.isUndefined(changeState) ? true : changeState;
+      saveModel: function(attributes, options) {
+        options = options || {};
+        _.defaults(options, {
+          changeState: true,
+          delay: null
+        });
         var view = this;
         // Save the model's original new state to decide
         // whether to send a signal later
         var isNew = this.model.isNew();
         var storyLicense = this.story.get('license');
-        var options;
+        var saveOptions;
 
         // If this is the initial save and the story has a license
         // defined and the asset has no explicit license defined, set the
@@ -5311,9 +5327,9 @@
         }
 
         // Initialize callbacks for saving the model
-        options = {
+        saveOptions = {
           success: function(model) {
-            if (changeState) {
+            if (options.changeState) {
               view.setState('display').render();
             }
 
@@ -5326,6 +5342,10 @@
             }
             else {
               view.dispatcher.trigger("save:asset", view.model);
+            }
+
+            if (options.success) {
+              options.success(model);
             }
           },
           error: function(model, xhr) {
@@ -5341,7 +5361,7 @@
         if (attributes.image && !_.isUndefined(this.form.fields.image) && !attributes.url) {
           // A new file is being uploaded, provide some
           // additional options to Story.save()
-          _.extend(options, {
+          _.extend(saveOptions, {
             upload: true,
             // The form element in case we need to
             // POST via an iframe
@@ -5365,7 +5385,24 @@
           delete attributes.image;
         }
 
-        this.model.save(attributes, options); 
+        if (options.delay) {
+          this.saveTimeoutID = setTimeout(function() {
+            view.model.save(attributes, saveOptions);
+          }, options.delay);
+        }
+        else {
+          this.model.save(attributes, saveOptions); 
+        }
+      },
+
+      preventDelayedSave: function() {
+        // Do we need to do a more specific check of
+        // this.saveTimeoutID here?  Can we assume that if it's
+        // set it will always be truthy?
+        if (this.saveTimeoutID) {
+          clearTimeout(this.saveTimeoutID);
+          this.saveTimeoutID = null;
+        }
       },
 
       /**
@@ -5373,6 +5410,7 @@
        */
       processForm: function(e) {
         e.preventDefault();
+        this.preventDelayedSave();
 
         var errors = this.form.validate();
         var data;
