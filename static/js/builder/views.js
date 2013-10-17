@@ -3821,14 +3821,16 @@
     /**
      * Remove an asset from this section
      *
-     * @param asset Asset to be removed
-     * @param {Object} [options] Options for performing this operation.
-     * @param [options.removeView=undefined] Should the view for editing the
+     * @param {Asset} asset Asset to be removed
+     * @param {Object} [options] - Options for performing this operation.
+     * @param {boolean} [options.removeView=undefined] - Should the view for editing the
      *   asset also be removed?
-     * @param [options.trigger=true] Should we trigger a "remove:sectionasset"
+     * @param {boolean} [options.trigger=true] - Should we trigger a "remove:sectionasset"
      *   event on the event bus?
-     * @param [options.removeFromStory=false] Should the asset be removed from
+     * @param {boolean} [options.removeFromStory=false] - Should the asset be removed from
      *   the story as well?
+     * @param {function} [options.success] - Callback function called on a
+     *   successful removal of an asset from this section
      */
     removeAsset: function(asset, options) {
       options = options || {};
@@ -3851,6 +3853,9 @@
           }
           if (options.removeFromStory) {
             view.story.assets.remove(asset);
+          }
+          if (options.success) {
+            options.success(model, asset);
           }
         },
         error: function(model, response) {
@@ -5274,10 +5279,15 @@
               this.model,
               {
                 removeFromStory: true,
-                trigger: false
+                trigger: false,
+                success: function(sectionAsset, asset) {
+                  // Destroy the asset only after the asset has already been 
+                  // disassociated with the section. Otherwise, there's 
+                  // a race condition on the server
+                  asset.destroy();
+                }
               }
             ); 
-            this.model.destroy();
           }
           else {
             // Asset was autosaved, restore the old attributes
