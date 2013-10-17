@@ -2056,6 +2056,20 @@ class AssetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
                 qs="?iframe=iframe")
         self._test_put_detail_success(asset, original_hash, resp)
 
+    def test_delete_detail(self):
+        asset = create_html_asset(type='text', title='Test Html Asset',
+                                   body='<p>Test body</p>',
+                                   attribution="Jane Doe", 
+                                   status="published",
+                                   owner=self.user)
+        uri = '/api/0.1/assets/%s/' % (asset.asset_id)
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        resp = self.api_client.delete(uri)
+        self.assertHttpAccepted(resp)
+        with self.assertRaises(HtmlAsset.DoesNotExist):
+            asset = HtmlAsset.objects.get(asset_id=asset.asset_id)
+
 
 class AssetResourceFeaturedTest(FileCleanupMixin, ResourceTestCase):
     """Test featured asset endpoints of AssetResource"""

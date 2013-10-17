@@ -4843,6 +4843,8 @@
       // Save the model's new state. We need to remember if the model was new
       // before any auto-saving
       view.modelNew = view.model.isNew();
+      // Set autosaved flag to false as the model has not yet been autosaved
+      view.modelAutoSaved = false;
       if (!view.modelNew) {
         // Save the model attributes in case the user cancels editing and we
         // need to revert an auto-saved version
@@ -5268,7 +5270,6 @@
         if (this.modelAutoSaved){
           if (this.modelNew) {
             // Model was auto-saved. Remove it
-            // BOOKMARK
             this.dispatcher.trigger('do:remove:sectionasset', this.section,
               this.model,
               {

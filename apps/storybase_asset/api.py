@@ -91,7 +91,8 @@ class AssetResource(IframePostDetailResource):
         always_return_data = True
         queryset = Asset.objects.select_subclasses()
         resource_name = 'assets'
-        allowed_methods = ['get', 'post', 'put']
+        list_allowed_methods = ['get', 'post', 'put']
+        detail_allowed_methods = ['get', 'post', 'put', 'delete']
         authentication = Authentication()
         authorization = PublishedOwnerAuthorization()
         # Hide the underlying id
