@@ -24,6 +24,7 @@
   var HandlebarsTemplateMixin = storybase.views.HandlebarsTemplateMixin;
   var HandlebarsTemplateView = storybase.views.HandlebarsTemplateView;
   var MutexGroupedInputForm = storybase.forms.MutexGroupedInputForm;
+  var RichTextEditor = storybase.forms.RichTextEditor;
 
 
   /**
@@ -2524,7 +2525,6 @@
     // change.
     // @see https://github.com/PitonFoundation/atlas/issues/530
     // @see https://github.com/xing/wysihtml5/issues/174
-    // @see note in RichTextEditorMixin.createEditor below.
     startPolling: function() {
       this.timer = setInterval($.proxy(this.updateCharacterCount, this), 250);
     },
@@ -2547,157 +2547,6 @@
       return this;
     }
   });
-
-  /**
-   * Helper function that expands a wysihtnk5.Editor iframe to
-   * be taller than its contents.
-   *
-   * @param {Object} editor wysihtml5.Editor instance
-   *
-   */
-  var _growEditor = function(editor) {
-    var $iframe = $(editor.composer.iframe);
-    var $el = $(editor.composer.element);
-    var height = $el.height();
-    var extraHeight = 40;
-    var newHeight = height + extraHeight;
-    if ($iframe.height() < height) {
-      $iframe.height(newHeight);
-      // HACK: WYSIHTML5, when initialized, copies styles from the
-      // textarea to two DOM elements. It then restores the styles
-      // from these elements on focus/blur. We need to update the
-      // height of these elements as well, otherwise the height will
-      // jump back to the original value when the editor loses/regains
-      // focus
-      $(editor.composer.blurStylesHost).height(newHeight);
-      $(editor.composer.focusStylesHost).height(newHeight);
-    }
-  };
-
-  var RichTextEditorMixin = {
-    toolbarTemplateSource: $('#editor-toolbar-template').html(),
-    editor: null,
-
-    getEditorToolbarHtml: function() {
-      return this.toolbarTemplateSource; 
-    },
-
-    getEditorToolbarEl: function() {
-      if (_.isUndefined(this._editorToolbarEl)) {
-        this._editorToolbarEl = $(this.getEditorToolbarHtml())[0];
-      }
-      return this._editorToolbarEl; 
-    },
-
-    getEditor: function() {
-      return this.editor;
-    },
-
-    /**
-     * Initialize event listeners that cause editor to automatically grow
-     * with its contents
-     *
-     * @param {Object} editor wysihtml5.Editor instance
-     */
-    _initEditorGrowth: function(editor) {
-      editor.on('load', function() {
-        $(this.composer.element).css('overflow-y', 'hidden');
-        _growEditor(this);
-      });
-      editor.on('newword:composer', function() {
-        _growEditor(this);
-      });
-    },
-
-    _toggleToolbarCallbacks: {
-      'focus': function() {
-        $(this.toolbar.container).show();
-      },
-
-      'blur': function() {
-        if (this._okToHideToolbar) {
-          $(this.toolbar.container).hide();
-        }
-      },
-
-      'load': function() {
-        var that = this;
-        this._okToHideToolbar = true;
-        $(this.toolbar.container).hide();
-        $(this.toolbar.container).mouseover(function() {
-          that._okToHideToolbar = false;
-        });
-        $(this.toolbar.container).mouseout(function() {
-          that._okToHideToolbar = true;
-        });
-      }
-    },
-    
-    /**
-     * Create a rich text editor bound to a textarea. 
-     *
-     * Currently uses the wysihtml5 editor
-     *
-     * @param {Object} el textarea element to which the rich text editor will be bound
-     * @param {Object} [callbacks] Callback functions that will be
-     *   bound to events fired by the editor
-     * @param {Object} [options] Options for configuring the editor.
-     *   Options not listed below will be passed on to the
-     *   constructor for wysihtml5.Editor.
-     * @param {boolean} [options.grow=false} - Automatically expand the
-     *   editor's height to fit the content.
-     * @param {boolean} [options.toggleToolbar=true} - Hide the toolbar when
-     *   leaving the editor.
-     */
-    createEditor: function(el, callbacks, options) {
-      var view = this;
-      var opts;
-      var defaults = {
-        grow: false,
-        toggleToolbar: true
-      };
-      var customOpts = _.defaults({}, defaults);
-      // Note that the editor currently does not publish a change
-      // event that fires on every *visible* change in the editor. :(
-      var defaultCallbacks = {};
-      var toolbarEl = this.getEditorToolbarEl();
-
-      opts = options ? _.clone(options) : {};
-      // Remove our options, so we can pass the remaining options to the
-      // constructor of wysihtml5.Editor
-      _.each(defaults, function(val, key) {
-        if (!_.isUndefined(opts[key])) {
-          customOpts[key] = opts[key];
-          delete opts[key];
-        }
-      });
-
-      if (customOpts.toggleToolbar) {
-        _.extend(defaultCallbacks, this._toggleToolbarCallbacks);
-      };
-
-      $(el).before(toolbarEl);
-
-      this.editor = new wysihtml5.Editor(
-        el,    
-        _.extend({
-          toolbar: toolbarEl, 
-          parserRules: wysihtml5ParserRules
-        }, opts)
-      );
-      callbacks = _.isUndefined(callbacks) ? {} : callbacks;
-      _.defaults(callbacks, defaultCallbacks);
-      _.each(callbacks, function(value, key, list) {
-        this.editor.on(key, value);
-      }, this);
-
-      if (customOpts.grow) {
-        this._initEditorGrowth(this.editor);
-      }
-      
-      return this.editor;
-    }
-  };
 
   /**
    * View mixin for updating a Story model's attribute and triggering
@@ -3257,7 +3106,7 @@
   }));
 
   var PseudoSectionEditView = Views.PseudoSectionEditView = HandlebarsTemplateView.extend(
-    _.extend({}, RichTextEditorMixin, StoryAttributeSavingMixin, {
+    _.extend({}, StoryAttributeSavingMixin, {
       tagName: 'div',
 
       initialize: function() {
@@ -3335,7 +3184,7 @@
       };
       this.$el.html(this.template(this.model.toJSON()));
       // Initialize wysihmtl5 editor
-      this.summaryEditor = this.createEditor(
+      this.summaryEditor = new RichTextEditor(
         this.$(this.options.summaryEl)[0],
         {
           change: handleChange
@@ -3353,7 +3202,7 @@
         target: this.summaryEditor,
         showOnFocus: false
       });
-      $(this.getEditorToolbarEl()).prepend(this.summaryCharCountView.render().$el);
+      this.summaryEditor.$toolbar.prepend(this.summaryCharCountView.render().$el);
       
       this.delegateEvents(); 
       return this;
@@ -3457,7 +3306,7 @@
       this.$el.html(this.template(this.model.toJSON()));
       // Add the toolbar element for the wysihtml5 editor
       // Initialize wysihmtl5 editor
-      this.callEditor = this.createEditor(
+      this.callEditor = new RichTextEditor(
         this.$(this.options.callToActionEl)[0],
         {
           change: handleChange
@@ -4887,7 +4736,7 @@
         view.form.fields.body.$('label').hide();
 
         // Create a rich-text editor for the 'body' field 
-        view.bodyEditor = view.createEditor(
+        view.bodyEditor = new RichTextEditor(
           view.form.fields.body.editor.el,
           undefined,
           {
@@ -4981,7 +4830,7 @@
   });
 
   var SectionAssetEditView = Views.SectionAssetEditView = HandlebarsTemplateView.extend(
-    _.extend({}, RichTextEditorMixin, BBFFormMixin, {
+    _.extend({}, BBFFormMixin, {
       tagName: 'div',
 
       className: 'edit-section-asset',

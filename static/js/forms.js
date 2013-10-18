@@ -230,5 +230,140 @@
     }
   });
 
+  var RichTextEditor = forms.RichTextEditor = wysihtml5.Editor.extend({
+    /*
+     * Create a rich text editor bound to a textarea. 
+     *
+     * Currently uses the wysihtml5 editor
+     *
+     * @param {Object} el textarea element to which the rich text editor will be bound
+     * @param {Object} [callbacks] Callback functions that will be
+     *   bound to events fired by the editor
+     * @param {Object} [options] Options for configuring the editor.
+     *   Options not listed below will be passed on to the
+     *   constructor for wysihtml5.Editor.
+     * @param {boolean} [options.grow=false} - Automatically expand the
+     *   editor's height to fit the content.
+     * @param {boolean} [options.toggleToolbar=true} - Hide the toolbar when
+     *   leaving the editor.
+     */
+    constructor: function(el, callbacks, options) {
+      var opts;
+      var defaults = {
+        grow: false,
+        toggleToolbar: true
+      };
+      var customOpts = _.defaults({}, defaults);
+      // Note that the editor currently does not publish a change
+      // event that fires on every *visible* change in the editor. :(
+      var defaultCallbacks = {};
+
+      opts = options ? _.clone(options) : {};
+      // Remove our options, so we can pass the remaining options to the
+      // constructor of wysihtml5.Editor
+      _.each(defaults, function(val, key) {
+        if (!_.isUndefined(opts[key])) {
+          customOpts[key] = opts[key];
+          delete opts[key];
+        }
+      });
+
+      if (_.isUndefined(opts.toolbar)) {
+        opts.toolbar = this._createEditorToolbarEl();
+        $(el).before(opts.toolbar);
+      }
+
+      if (customOpts.toggleToolbar) {
+        _.extend(defaultCallbacks, this._toggleToolbarCallbacks);
+      };
+
+      wysihtml5.Editor.call(this,
+        el,    
+        _.defaults(opts, {
+          parserRules: wysihtml5ParserRules
+        })
+      );
+      // Create a shortcut for the toolbar element
+      this.$toolbar = $(opts.toolbar);
+      callbacks = _.isUndefined(callbacks) ? {} : callbacks;
+      _.defaults(callbacks, defaultCallbacks);
+      _.each(callbacks, function(value, key, list) {
+        this.on(key, value);
+      }, this);
+
+      if (customOpts.grow) {
+        this._initEditorGrowth();
+      }
+    },
+
+    _toolbarTemplateSource: $('#editor-toolbar-template').html(),
+
+    _createEditorToolbarEl: function() {
+      return $(this._toolbarTemplateSource)[0]; 
+    }, 
+
+    _toggleToolbarCallbacks: {
+      'focus': function() {
+         this.$toolbar.show();
+      },
+
+      'blur': function() {
+        if (this._okToHideToolbar) {
+          this.$toolbar.hide();
+        }
+      },
+
+      'load': function() {
+        var editor = this;
+        this._okToHideToolbar = true;
+        this.$toolbar.hide();
+        this.$toolbar.mouseover(function() {
+          editor._okToHideToolbar = false;
+        });
+        this.$toolbar.mouseout(function() {
+          editor._okToHideToolbar = true;
+        });
+      }
+    },
+
+    /**
+     * Initialize event listeners that cause editor to automatically grow
+     * with its contents
+     *
+     */
+    _initEditorGrowth: function() {
+      this.on('load', function() {
+        $(this.composer.element).css('overflow-y', 'hidden');
+        this._growEditor();
+      });
+      this.on('newword:composer', function() {
+        this._growEditor();
+      });
+    },
+
+    /**
+     * Expand the wysihtml5.Editor iframe to
+     * be taller than its contents.
+     *
+     */
+     _growEditor: function() {
+       var $iframe = $(this.composer.iframe);
+       var $el = $(this.composer.element);
+       var height = $el.height();
+       var extraHeight = 40;
+       var newHeight = height + extraHeight;
+       if ($iframe.height() < height) {
+          $iframe.height(newHeight);
+          // HACK: WYSIHTML5, when initialized, copies styles from the
+          // textarea to two DOM elements. It then restores the styles
+          // from these elements on focus/blur. We need to update the
+          // height of these elements as well, otherwise the height will
+          // jump back to the original value when the editor loses/regains
+          // focus
+          $(this.composer.blurStylesHost).height(newHeight);
+          $(this.composer.focusStylesHost).height(newHeight);
+        }
+    }
+  });
   
 })(_, Backbone, storybase);
