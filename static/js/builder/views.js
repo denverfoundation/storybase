@@ -2559,17 +2559,18 @@
     var $el = $(editor.composer.element);
     var height = $el.height();
     var extraHeight = 40;
+    var newHeight = height + extraHeight;
     if ($iframe.height() < height) {
-      $iframe.height(height + extraHeight);
+      $iframe.height(newHeight);
+      // HACK: WYSIHTML5, when initialized, copies styles from the
+      // textarea to two DOM elements. It then restores the styles
+      // from these elements on focus/blur. We need to update the
+      // height of these elements as well, otherwise the height will
+      // jump back to the original value when the editor loses/regains
+      // focus
+      $(editor.composer.blurStylesHost).height(newHeight);
+      $(editor.composer.focusStylesHost).height(newHeight);
     }
-    // HACK: WYSIHTML5, when initialized, copies styles from the
-    // textarea to two DOM elements. It then restores the styles
-    // from these elements on focus/blur. We need to update the
-    // height of these elements as well, otherwise the height will
-    // jump back to the original value when the editor loses/regains
-    // focus
-    $(editor.composer.blurStylesHost).height(height);
-    $(editor.composer.focusStylesHost).height(height);
   };
 
   var RichTextEditorMixin = {
@@ -2606,6 +2607,30 @@
         _growEditor(this);
       });
     },
+
+    _toggleToolbarCallbacks: {
+      'focus': function() {
+        $(this.toolbar.container).show();
+      },
+
+      'blur': function() {
+        if (this._okToHideToolbar) {
+          $(this.toolbar.container).hide();
+        }
+      },
+
+      'load': function() {
+        var that = this;
+        this._okToHideToolbar = true;
+        $(this.toolbar.container).hide();
+        $(this.toolbar.container).mouseover(function() {
+          that._okToHideToolbar = false;
+        });
+        $(this.toolbar.container).mouseout(function() {
+          that._okToHideToolbar = true;
+        });
+      }
+    },
     
     /**
      * Create a rich text editor bound to a textarea. 
@@ -2618,53 +2643,39 @@
      * @param {Object} [options] Options for configuring the editor.
      *   Options not listed below will be passed on to the
      *   constructor for wysihtml5.Editor.
-     * @param {boolean} [options.grow=false} Should the editor's height
-     *   expand to fit the content?
+     * @param {boolean} [options.grow=false} - Automatically expand the
+     *   editor's height to fit the content.
+     * @param {boolean} [options.toggleToolbar=true} - Hide the toolbar when
+     *   leaving the editor.
      */
     createEditor: function(el, callbacks, options) {
       var view = this;
       var opts;
-      var customOpts = {};
       var defaults = {
-        grow: false
+        grow: false,
+        toggleToolbar: true
       };
-      var defaultCallbacks = {
-        'focus': function() {
-          $(this.toolbar.container).show();
-        },
-
-        'blur': function() {
-          if (this._okToHideToolbar) {
-            $(this.toolbar.container).hide();
-          }
-        },
-
-        'load': function() {
-          var that = this;
-          this._okToHideToolbar = true;
-          $(this.toolbar.container).hide();
-          $(this.toolbar.container).mouseover(function() {
-            that._okToHideToolbar = false;
-          });
-          $(this.toolbar.container).mouseout(function() {
-            that._okToHideToolbar = true;
-          });
-        }
-        
-        // Note that the editor currently does not publish a change
-        // event that fires on every *visible* change in the editor. :(
-      };
-
+      var customOpts = _.defaults({}, defaults);
+      // Note that the editor currently does not publish a change
+      // event that fires on every *visible* change in the editor. :(
+      var defaultCallbacks = {};
       var toolbarEl = this.getEditorToolbarEl();
-      $(el).before(toolbarEl);
 
       opts = options ? _.clone(options) : {};
+      // Remove our options, so we can pass the remaining options to the
+      // constructor of wysihtml5.Editor
       _.each(defaults, function(val, key) {
-        if (opts[key]) {
+        if (!_.isUndefined(opts[key])) {
           customOpts[key] = opts[key];
           delete opts[key];
         }
       });
+
+      if (customOpts.toggleToolbar) {
+        _.extend(defaultCallbacks, this._toggleToolbarCallbacks);
+      };
+
+      $(el).before(toolbarEl);
 
       this.editor = new wysihtml5.Editor(
         el,    
@@ -2675,9 +2686,9 @@
       );
       callbacks = _.isUndefined(callbacks) ? {} : callbacks;
       _.defaults(callbacks, defaultCallbacks);
-      _.each(callbacks, $.proxy(function(value, key, list) {
+      _.each(callbacks, function(value, key, list) {
         this.editor.on(key, value);
-      }, this));
+      }, this);
 
       if (customOpts.grow) {
         this._initEditorGrowth(this.editor);
@@ -4879,7 +4890,8 @@
           view.form.fields.body.editor.el,
           undefined,
           {
-            grow: true
+            grow: true,
+            toggleToolbar: false
           }
         );
 
