@@ -8,7 +8,7 @@
   }
   var forms = storybase.forms;
 
-  storybase.forms.File = Backbone.Form.editors.Text.extend({
+  forms.File = Backbone.Form.editors.Text.extend({
     initialize: function(options) {
       Backbone.Form.editors.Base.prototype.initialize.call(this, options);
 
@@ -89,7 +89,7 @@
    *
    * For whatever reason, 'required' didn't work
    */
-  storybase.forms.isChecked = function(value, formValues) {
+  forms.isChecked = function(value, formValues) {
     var err = {
       type: 'checked',
       message: gettext("You must check this checkbox")
@@ -103,7 +103,7 @@
    * Update a field's schema definiton with properties
    * relevant to a required field
    */
-  storybase.forms.makeRequired = function(fieldDef) {
+  forms.makeRequired = function(fieldDef) {
     var validators = fieldDef.validators || [];
     var fieldClass = fieldDef.fieldClass || '';
     var editorAttrs = fieldDef.editorAttrs || {};
@@ -126,7 +126,7 @@
    * Output text for a form field's label, taking
    * into account whehter or not the field is required.
    */
-  storybase.forms.getLabelText = function(s, required) {
+  forms.getLabelText = function(s, required) {
     var labelText = s;
     if (required) {
       labelText += " (" + gettext("required") + ")";
@@ -229,5 +229,6 @@
       return result;
     }
   });
+
   
 })(_, Backbone, storybase);
