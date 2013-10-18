@@ -23,6 +23,7 @@
   var prettyDate = storybase.utils.prettyDate;
   var HandlebarsTemplateMixin = storybase.views.HandlebarsTemplateMixin;
   var HandlebarsTemplateView = storybase.views.HandlebarsTemplateView;
+  var MutexGroupedInputForm = storybase.forms.MutexGroupedInputForm;
 
 
   /**
@@ -4007,7 +4008,7 @@
   var BBFFormMixin = {
     /**
      * Attempt to unify validation error handling somewhat.
-     * Knows about storybase.MutexGroupedInputForms but compatible
+     * Knows about MutexGroupedInputForms but compatible
      * with regular BBF Forms as well.
      *
      * @param {Array} errors Hash of errors provided by BBF or 
@@ -4088,7 +4089,7 @@
         $field.find('.bbf-error').html(errors[0]).slideDown('fast');
         
         // highlight relevant option pill, if any 
-        // (for storybase.MutexGroupedInputForms)
+        // (for MutexGroupedInputForms)
         var optionIndex = $field.data('option-index');
         if (!_.isUndefined(optionIndex)) {
           view.form.$('.nav.pills li:eq(' + optionIndex + ')').addClass('error');
@@ -4229,7 +4230,7 @@
 
       options.mutexGroupName = gettext('Data Source');
 
-      return new storybase.MutexGroupedInputForm(options);
+      return new MutexGroupedInputForm(options);
     },
 
     initialize: function(options) {
@@ -5130,7 +5131,7 @@
        * Set the view's form property based on the current state of the model.
        */
       initializeForm: function() {
-        this.form = new storybase.MutexGroupedInputForm({
+        this.form = new MutexGroupedInputForm({
           schema: this.getFormSchema(this.model),
           model: this.model,
           mutexGroupName: capfirst(this.model.get('type') || '') + ' ' + capfirst(gettext('source'))

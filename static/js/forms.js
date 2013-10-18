@@ -140,7 +140,7 @@
    * of the pill. Only supports one such group per form. Assumes 
    * fields are rendered as list items.
    */
-  storybase.MutexGroupedInputForm = Backbone.Form.extend({
+  forms.MutexGroupedInputForm = Backbone.Form.extend({
     
     events: {
       'click .nav a': 'handleNavClick'
