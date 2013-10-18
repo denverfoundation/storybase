@@ -1069,6 +1069,12 @@ button.preview {
     min-height: 400px;
     .rounded-corners(5px);
     box-shadow:inset 0 0 3px #ccc;
+
+    // Get rid of margin on labels like "Edit Text"
+    > h3:first-child {
+      margin: 0 !important;
+      font-size: @h4-size !important;
+    }
     
   }
   
