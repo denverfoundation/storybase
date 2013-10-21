@@ -200,7 +200,7 @@ class OrganizationMembershipInline(admin.TabularInline):
 
 
 class OrganizationAdmin(StorybaseModelAdmin):
-    search_fields = ['name']
+    search_fields = ['organizationtranslation__name']
     filter_horizontal = ['members', 'featured_assets']
     readonly_fields = ['created', 'last_edited', 'organization_id']
     inlines = [OrganizationTranslationInline, OrganizationMembershipInline]
@@ -225,7 +225,7 @@ class ProjectMembershipInline(admin.TabularInline):
 
 
 class ProjectAdmin(StorybaseModelAdmin):
-    search_fields = ['name']
+    search_fields = ['projecttranslation__name']
     filter_horizontal = ['members', 'organizations', 'featured_assets']
     list_filter = ('on_homepage',)
     readonly_fields = ['created', 'last_edited', 'project_id']
