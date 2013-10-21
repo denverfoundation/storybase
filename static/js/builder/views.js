@@ -4768,6 +4768,10 @@
           view.form.fields.body.editor.determineChange();
         });
         view.form.on('body:change', function(form, editor, extra) {
+          // If there's a pending save, squash it. We only want to save after
+          // things stop changing for a second or so
+          view.preventDelayedSave();
+
           // Save the asset, but delay saving to give the user
           // some time to do an explicit save or cancel using the
           // form buttons.
