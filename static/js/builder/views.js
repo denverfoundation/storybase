@@ -4735,6 +4735,15 @@
         // Hide the label of the field since there's only one field
         view.form.fields.body.$('label').hide();
 
+        // Make sure that the textarea element is visible, if it was
+        // previously hidden by the rich text editor and not revealed.  
+        // This occurs when the "Cancel" button is clicked as the 
+        // editor never re-reveals the element before being destroyed
+        // When a new editor is initialized, it copies the old 
+        // ``display: none`` style from the textarea, causing the iframe
+        // to be hidden.
+        view.form.fields.body.editor.$el.show();
+
         // Create a rich-text editor for the 'body' field 
         view.bodyEditor = new RichTextEditor(
           view.form.fields.body.editor.el,
@@ -4759,7 +4768,6 @@
           view.form.fields.body.editor.determineChange();
         });
         view.form.on('body:change', function(form, editor, extra) {
-          // BOOKMARK
           // Save the asset, but delay saving to give the user
           // some time to do an explicit save or cancel using the
           // form buttons.
