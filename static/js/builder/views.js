@@ -3325,7 +3325,6 @@
 
     className: 'edit-section',
 
-
     options: {
       containerEl: '.storybase-container-placeholder',
       titleEl: '.section-title',
@@ -3372,7 +3371,6 @@
         });
       }
 
-      _.bindAll(this, 'renderAssetViews');
       this.dispatcher.on('do:add:sectionasset', this.addAsset, this);
       this.dispatcher.on('do:remove:sectionasset',
                          this.handleDoRemoveSectionAsset, this);
@@ -3383,7 +3381,6 @@
       this.model.on("sync", this.triggerSaved, this);
       this.model.on("destroy", this.handleDestroy, this);
       this.assets.once("sync", this.setAssetsFetched, this);
-      this.assets.on("sync", this.renderAssetViews, this);
     },
 
     close: function() {
@@ -3399,7 +3396,6 @@
       this.model.off("sync", this.conditionalRender, this);
       this.model.off("sync", this.triggerSaved, this);
       this.model.off("destroy", this.handleDestroy, this);
-      this.assets.off("sync", this.renderAssetViews, this);
     },
 
     /**
@@ -3527,7 +3523,8 @@
       else {
         // Editing an existing story, but the assets have
         // not yet been retrieved.  Fetch them, which
-        // will in turn trigger ``this.renderAssetViews``
+        // will which will trigger ``this.renderAssetViews``
+        this.assets.once("sync", this.renderAssetViews, this);
         this.assets.fetch();
       }
       // Turn the basic select element into a fancy graphical selection
@@ -3760,6 +3757,7 @@
           // assets that were added in the other window/tab. The resulting
           // ``sync`` event will also force the UI to re-render.
           view._refreshModelForContainer = container;
+          view.assets.once("sync", view.renderAssetViews, view);
           view.assets.fetch();
           // TODO: Should we add the asset to the story's asset list ?
         }
