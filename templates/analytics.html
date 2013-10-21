@@ -11,14 +11,9 @@
   {# For local development, ignore the domain name and just post the data #}
   window._gaq.push(['_setDomainName', 'none']);
   {% endif %}
-  {% if not debug %}
+  {# For extra debugging info, you can load ga_debug.js #}
   Modernizr.load({
     load: ('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/ga.js'
   });
-  {% else %}
-  Modernizr.load({
-    load: ('https:' == location.protocol ? '//ssl' : '//www') + '.google-analytics.com/u/ga_debug.js'
-  });
-  {% endif %}
 </script>
 {% endif %}
