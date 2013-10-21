@@ -275,7 +275,7 @@
 
       if (customOpts.toggleToolbar) {
         _.extend(defaultCallbacks, this._toggleToolbarCallbacks);
-      };
+      }
 
       wysihtml5.Editor.call(this,
         el,    

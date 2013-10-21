@@ -5101,10 +5101,10 @@
 
       setInitialState: function() {
         if (!this.model.isNew()) {
-          this.state = this.states['display'];
+          this.state = this.states.display;
         }
         else {
-          this.state = this.states['select'];
+          this.state = this.states.select;
         }
       },
 
