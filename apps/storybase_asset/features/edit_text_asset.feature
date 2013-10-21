@@ -10,7 +10,8 @@ Feature: Edit text assets in the story builder
                 And the user inputs "Test story for autosaving a new text asset" for the "title" field 
                 And the user inputs "Test User" for the "byline" field 
                 And the user inputs "My summary, so exciting!" for the "summary" textarea 
-                And the user clicks on "Untitled Section" in the section list
+                # That is, the first "real section" not "Story Information"
+                And the user clicks on the first section in the section list
                 And the user clicks the "Text" icon in the "center" container
                 And the user inputs the following text in the rich text editor: 
                         """
@@ -19,7 +20,7 @@ Feature: Edit text assets in the story builder
                 And the user clicks "Story Information" in the section list
                 And the user inputs "Test story for autosaving a new text asset - updated" for the "title" field 
                 And the user refreshes the browser
-                And the user clicks on "Untitled Section" in the section list
+                And the user clicks on the first section in the section list
                 Then the following text is present:
                         """
                         Test text for asset. This is cool. 
@@ -32,7 +33,7 @@ Feature: Edit text assets in the story builder
                 And the user inputs "Test story for canceling editing of a new text asset" for the "title" field 
                 And the user inputs "Test User" for the "byline" field 
                 And the user inputs "My summary, so exciting!" for the "summary" textarea 
-                And the user clicks on "Untitled Section" in the section list
+                And the user clicks on the first section in the section list
                 And the user clicks the "Text" icon in the "center" container
                 And the user inputs the following text in the rich text editor: 
                         """
@@ -46,7 +47,7 @@ Feature: Edit text assets in the story builder
                 And the "Image" icon is present
                 And the "Text" icon is present
                 When the user refreshes the browser 
-                And the user clicks on "Untitled Section" in the section list
+                And the user clicks on the first section in the section list
                 Then the following text is not present:
                         """
                         Test text for asset. This is cool. 
@@ -64,7 +65,7 @@ Feature: Edit text assets in the story builder
                 And the user inputs "Test story for canceling editing of an existing text asset" for the "title" field 
                 And the user inputs "Test User" for the "byline" field 
                 And the user inputs "My summary, so exciting!" for the "summary" textarea 
-                And the user clicks on "Untitled Section" in the section list
+                And the user clicks on the first section in the section list
                 And the user clicks the "Text" icon in the "center" container
                 And the user inputs the following text in the rich text editor: 
                         """
@@ -85,6 +86,16 @@ Feature: Edit text assets in the story builder
                         """
                         New text for asset.
                         """
+                When the user refreshes the browser 
+                And the user clicks on the first section in the section list
+                Then the following text is present:
+                        """
+                        Test text for asset. This is cool. 
+                        """
+                And the following text is not present:
+                        """
+                        New text for asset.
+                        """
 
         Scenario: Manually save a new text asset
                 Given the user "test_user@fakedomain.com" is logged in
@@ -93,7 +104,7 @@ Feature: Edit text assets in the story builder
                 And the user inputs "Test story for manually saving a new text asset" for the "title" field 
                 And the user inputs "Test User" for the "byline" field 
                 And the user inputs "My summary, so exciting!" for the "summary" textarea 
-                And the user clicks on "Untitled Section" in the section list
+                And the user clicks on the first section in the section list
                 And the user clicks the "Text" icon in the "center" container
                 And the user inputs the following text in the rich text editor: 
                         """
@@ -105,6 +116,12 @@ Feature: Edit text assets in the story builder
                         Test text for asset. This is cool. 
                         """
                 And the text "Edit Text" is present
+                When the user refreshes the browser 
+                And the user clicks on the first section in the section list
+                Then the following text is present:
+                        """
+                        Test text for asset. This is cool. 
+                        """
 
         Scenario: Manually save an existing text asset
                 Given the user "test_user@fakedomain.com" is logged in
@@ -113,7 +130,7 @@ Feature: Edit text assets in the story builder
                 And the user inputs "Test story for manually saving a new text asset" for the "title" field 
                 And the user inputs "Test User" for the "byline" field 
                 And the user inputs "My summary, so exciting!" for the "summary" textarea 
-                And the user clicks on "Untitled Section" in the section list
+                And the user clicks on the first section in the section list
                 And the user clicks the "Text" icon in the "center" container
                 And the user inputs the following text in the rich text editor: 
                         """
@@ -130,4 +147,14 @@ Feature: Edit text assets in the story builder
                 And the following text is present:
                         """
                         New text for test asset! 
+                        """
+                When the user refreshes the browser 
+                And the user clicks on the first section in the section list
+                Then the following text is not present:
+                        """
+                        Test text for asset. This is cool. 
+                        """
+                And the following text is present:
+                        """
+                        New text for asset.
                         """
