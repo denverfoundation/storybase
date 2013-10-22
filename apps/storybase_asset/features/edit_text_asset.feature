@@ -26,6 +26,34 @@ Feature: Edit text assets in the story builder
                         Test text for asset. This is cool. 
                         """
 
+        Scenario: Autosave an existing text asset
+                Given the user "test_user@fakedomain.com" is logged in
+                When the user navigates to "/build/"
+                And the user clicks the "Sandbox" link
+                And the user inputs "Test story for autosaving an existing text asset" for the "title" field 
+                And the user inputs "Test User" for the "byline" field 
+                And the user inputs "My summary, so exciting!" for the "summary" textarea 
+                # That is, the first "real section" not "Story Information"
+                And the user clicks on the first section in the section list
+                And the user clicks the "Text" icon in the "center" container
+                And the user inputs the following text in the rich text editor: 
+                        """
+                        Test text for asset. This is cool. 
+                        """
+                And the user clicks the "save" button
+                And the user clicks the "Edit Text" link 
+                And the user adds the following text in the rich text editor: 
+                        """
+                        New text for test asset! 
+                        """
+                And the user clicks "Story Information" in the section list
+                And the user refreshes the browser
+                And the user clicks on the first section in the section list
+                Then the following text is present:
+                        """
+                        Test text for asset. This is cool. New text for test asset!
+                        """
+
         Scenario: Cancel editing a new text asset
                 Given the user "test_user@fakedomain.com" is logged in
                 When the user navigates to "/build/"
