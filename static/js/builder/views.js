@@ -4707,6 +4707,10 @@
       // Save the model's new state. We need to remember if the model was new
       // before any auto-saving
       view.modelNew = view.model.isNew();
+
+      // Initialize the form
+      view.initializeForm();
+
       // Set autosaved flag to false as the model has not yet been autosaved
       view.modelAutoSaved = false;
       if (!view.modelNew) {
@@ -4752,19 +4756,28 @@
           }
         );
 
-        // When the wysihtml5 editor fire the change event, fire the change
-        // event on the underlying Backbone Forms editor.
-        // 
-        // The Backbone Forms text editor listens to the keyup event, which
+        // The Backbone Forms text "editor" view listens to the keyup event, which
         // never gets passed to the underlying textarea by wysihtml5.
+        //
+        // Watch for the keyup event in the the wysihtml5 editor and trigger
+        // it on the underlying Backbone Forms editor.
         //
         // We do this to make event binding more agnostic to the particular
         // rich text editor.  We may move away from wysihtml5, but we'll
         // probably stick with Backbone Forms (or at least use something
         // that uses Backbone's events)
-        view.bodyEditor.on('change', function() {
-          view.form.fields.body.editor.determineChange();
+        view.bodyEditor.on('load', function() {
+          var editor = this;
+
+          $(editor.composer.element).on('keyup', function() {
+            // wysihtml5 doesn't sync the composer and textarea
+            // immediately. Force a sync so the form view will
+            // detect that the textarea's value has changed
+            editor.synchronizer.sync(true); 
+            view.form.fields.body.editor.$el.trigger('keyup');
+          });
         });
+
         view.form.on('body:change', function(form, editor, extra) {
           // If there's a pending save, squash it. We only want to save after
           // things stop changing for a second or so
@@ -4775,11 +4788,11 @@
           // form buttons.
           view.saveModel(form.getValue(), {
             changeState: false,
-            delay: 1000,
+            delay: 2000,
             success: function() {
               view.modelAutoSaved = true;
             }
-           });
+          });
         });
       }
 
@@ -4906,12 +4919,10 @@
         };
         this.handleUploadProgress = _.bind(handleUploadProgress, this);
         this.bindModelEvents();
-        this.initializeForm();
         this.setInitialState();
       },
 
       bindModelEvents: function() {
-        this.model.on("change", this.initializeForm, this);
         this.model.on("remove", this.handleModelRemove, this);
         if (this.model.isNew()) {
           this.model.once("sync", this.initializeDataViews, this);
@@ -4919,7 +4930,6 @@
       },
 
       unbindModelEvents: function() {
-        this.model.off("change", this.initializeForm, this);
         this.model.off("remove", this.handleModelRemove, this);
         this.model.off("sync", this.initializeDataViews, this);
       },
@@ -4995,7 +5005,6 @@
           model: this.model,
           mutexGroupName: capfirst(this.model.get('type') || '') + ' ' + capfirst(gettext('source'))
         });
-        this.form.render();
       },
 
       /**
@@ -5133,7 +5142,6 @@
 
       setType: function(type) {
         this.model.set('type', type);
-        this.initializeForm();
         this.setState('edit').render();
       },
 
@@ -5340,7 +5348,6 @@
         // Listen to events on the new model
         this.bindModelEvents();
         this.initializeDataViews();
-        this.initializeForm();
       },
 
       /**
