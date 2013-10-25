@@ -4708,8 +4708,6 @@
       // before any auto-saving
       view.modelNew = view.model.isNew();
 
-      // Initialize the form
-      view.initializeForm();
 
       // Set autosaved flag to false as the model has not yet been autosaved
       view.modelAutoSaved = false;
@@ -4729,6 +4727,10 @@
     render: function() {
       var view = this.view;
       var $wrapperEl = view.$(view.options.wrapperEl);
+
+      // Initialize the form
+      view.initializeForm();
+
       view.form.render().$el.append('<input type="reset" value="' + gettext("Cancel") + '" />').append('<input type="submit" value="' + gettext("Save Changes") + '" />');
 
       if (view.model.get('type') == 'text') {
