@@ -4778,22 +4778,7 @@
           });
         });
 
-        view.form.on('body:change', function(form, editor, extra) {
-          // If there's a pending save, squash it. We only want to save after
-          // things stop changing for a second or so
-          view.preventDelayedSave();
-
-          // Save the asset, but delay saving to give the user
-          // some time to do an explicit save or cancel using the
-          // form buttons.
-          view.saveModel(form.getValue(), {
-            changeState: false,
-            delay: 2000,
-            success: function() {
-              view.modelAutoSaved = true;
-            }
-          });
-        });
+        view.form.on('body:change', view.autosave, view); 
       }
 
       view.renderFileFieldThumbnail();
@@ -5150,7 +5135,7 @@
        */
       cancel: function(e) {
         e.preventDefault();
-        this.preventDelayedSave();
+        this.cancelAutosave();
         var nextState = this.modelNew ? 'select' : 'display';
         if (this.modelAutoSaved){
           if (this.modelNew) {
@@ -5286,7 +5271,13 @@
         }
       },
 
-      preventDelayedSave: function() {
+      /**
+       * Cancel a pending autosave of the model.
+       *
+       * This should be called before initiating an explicit save to avoid
+       * making multiple requests.
+       */
+      cancelAutosave: function() {
         // Do we need to do a more specific check of
         // this.saveTimeoutID here?  Can we assume that if it's
         // set it will always be truthy?
@@ -5297,11 +5288,40 @@
       },
 
       /**
+       * Callback for initiating a save of the model
+       *
+       * This is meant to be bound to a Backbone Forms field change event.
+       *
+       * @param {Backbone.Form} [form=this.form] - Backbone Form instance
+       *   containing fields that can be used to update this view's model.
+       *
+       */
+      autosave: function(form) {
+        var view = this;
+        form = form || this.form;
+
+        // If there's a pending save, squash it. We only want to save after
+        // things stop changing for a second or so
+        this.cancelAutosave();
+
+        // Save the asset, but delay saving to give the user
+        // some time to do an explicit save or cancel using the
+        // form buttons.
+        this.saveModel(form.getValue(), {
+          changeState: false,
+          delay: 2000,
+          success: function() {
+            view.modelAutoSaved = true;
+          }
+        });
+      },
+
+      /**
        * Event handler for submitting form
        */
       processForm: function(e) {
         e.preventDefault();
-        this.preventDelayedSave();
+        this.cancelAutosave();
 
         var errors = this.form.validate();
         var data;
