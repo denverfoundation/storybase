@@ -211,7 +211,7 @@ Feature: Edit text assets in the story builder
                 When the user opens the asset drawer
                 Then the following text is present:
                         """
-                        Test text for asset. This is cool.
+                        Test text for asset. This should be saved when switching layouts.
                         """
 
         Scenario: Autosave when creating a new section
