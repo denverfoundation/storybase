@@ -639,6 +639,11 @@
         });
         
       }
+
+      // Some sections are long, and may require scrolling to see all the content.
+      // When switching to a new section, make sure the user is taken back to the
+      // top of the window
+      window.scrollTo(0, 0);
     },
 
     getLastSection: function() {
