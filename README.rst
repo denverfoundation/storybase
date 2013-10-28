@@ -11,6 +11,13 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.17.0
+~~~~~~
+
+* Support Django 1.5/Django CMS 2.4 (#660)
+* Auto-expanding text editor (#844)
+* Autosave for text assets (#847, #848)
+
 0.16.6
 ~~~~~~
 

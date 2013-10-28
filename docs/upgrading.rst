@@ -2,11 +2,11 @@
 Upgrading
 =========
 
-develop
-=======
+0.16.* to 0.17.0
+================
 
 Django 1.5.* and Django CMS 2.4.* are now the recommended versions. 
-Upgrade these packages::
+You'll need to upgrade these packages::
 
     pip install django>=1.5,<1.6
     pip install django-cms>=2.4,<2.5
@@ -31,7 +31,15 @@ Please read the upgrading instructions carefully::
     # manage.py cms delete_orphaned_plugins
     manage.py cms moderator on
 
+The builder JavaScript was updated, so you'll have to re-collect the static
+assets::
 
+    python manage.py collectstatic
+
+If you're using django-compressor with offline compression, you'll also need
+to recompress the JavaScript assets.
+
+    python manage.py compress
 
 0.16.5 to 0.16.6
 ================
