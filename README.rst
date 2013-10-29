@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.16.7
+~~~~~~
+
+* Take care when using JavaScript reserved word "class" (#884)
+
 0.16.6
 ~~~~~~
 
