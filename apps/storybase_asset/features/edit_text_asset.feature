@@ -192,7 +192,7 @@ Feature: Edit text assets in the story builder
                 And the user clicks on the first section in the section list
                 Then the following text is not present:
                         """
-                        Test text for asset. This is cool. 
+                        Test text for asset, manually saved.
                         """
                 And the following text is present:
                         """

@@ -18,6 +18,11 @@ Changelog
 * Auto-expanding text editor (#844)
 * Autosave for text assets (#847, #848)
 
+0.16.7
+~~~~~~
+
+* Take care when using JavaScript reserved word "class" (#884)
+
 0.16.6
 ~~~~~~
 

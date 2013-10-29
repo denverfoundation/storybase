@@ -97,7 +97,7 @@
 
       // Add the view's container element to the DOM and render the sub-views
       render: function() {
-        this.$el.addClass(this.attributes.class);
+        this.$el.addClass(this.attributes['class']);
         this.$('footer').append(this.navigationView.el);
         this.navigationView.render();
         this.$('.summary').show();
@@ -719,7 +719,7 @@
     },
 
     render: function() {
-      this.$el.addClass(this.attributes.class);
+      this.$el.addClass(this.attributes['class']);
       // Create an element for the sidebar 
       $('<div></div>').prependTo(this.$('#body')).addClass('sidebar');
       // Clone the summary and place it in the sidebar
