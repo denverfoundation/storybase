@@ -12,7 +12,7 @@ describe('Embed widget', function() {
     var paddedStoryLinkHtml = _.template(storyLinkTemplate, {
       url: "     " + storyUrl2 + "     "
     });
-    var listUrl = 'http://floodlightproject.org/projects/finding-a-bite-food-access-in-the-childrens-corrid/'
+    var listUrl = 'http://floodlightproject.org/projects/finding-a-bite-food-access-in-the-childrens-corrid/';
     var listLinkHtml = _.template('<a class="storybase-list-embed" href="{{url}}">Finding a Bite: Food Access in the Childrens Corridor</a>', {
       url: listUrl
     });
@@ -90,15 +90,6 @@ describe('Embed widget', function() {
       $widget = $sandbox.find("iframe[src='" + widgetUrl + "']");
       expect($widget.length).toEqual(1);
       expect($storyWithListEl.is(':hidden')).toBeTruthy();
-    });
-
-    it("replaces empty divs with a class of 'storybase-story-list-embed' with an iframe", function() {
-      var $widget;
-      var widgetUrl = getWidgetUrl();
-
-      $widget = $sandbox.find("iframe[src='" + widgetUrl + "']");
-      expect($widget.length).toEqual(1);
-      expect($emptyStoryWithListEl.is(':hidden')).toBeTruthy();
     });
   });
 });

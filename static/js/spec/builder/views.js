@@ -47,12 +47,12 @@ describe('SectionEditView view', function() {
     beforeEach(function() {
       var Section = Backbone.Model.extend({
         url: function() {
-          return '/api/0.1/stories/357c5885c4e844cb8a4cd4eebe912a1c/sections/dc044f23e93649d6b1bd48625fc301cd/'
+          return '/api/0.1/stories/357c5885c4e844cb8a4cd4eebe912a1c/sections/dc044f23e93649d6b1bd48625fc301cd/';
         }
       });
       var SectionAssets = Backbone.Collection.extend({
         url: function() {
-          return '/api/0.1/stories/357c5885c4e844cb8a4cd4eebe912a1c/sections/dc044f23e93649d6b1bd48625fc301cd/assets/'
+          return '/api/0.1/stories/357c5885c4e844cb8a4cd4eebe912a1c/sections/dc044f23e93649d6b1bd48625fc301cd/assets/';
         },
 
         parse: function(response) {
@@ -60,7 +60,7 @@ describe('SectionEditView view', function() {
         }
       });
       var Story = Backbone.Model.extend({
-        assets: new Backbone.Collection,
+        assets: new Backbone.Collection(),
         url: function() {
           return '/api/0.1/stories/357c5885c4e844cb8a4cd4eebe912a1c/';
         }
@@ -69,7 +69,7 @@ describe('SectionEditView view', function() {
         id: "dc044f23e93649d6b1bd48625fc301cd",
         layout_template: "<div class=\"section-layout side-by-side\">\n    <div class=\"left\">\n        <div class=\"storybase-container-placeholder\" id=\"left\"></div>\n    </div>\n    <div class=\"right\">\n        <div class=\"storybase-container-placeholder\" id=\"right\"></div>\n    </div>\n</div>\n",
       }); 
-      this.section.assets = new SectionAssets;
+      this.section.assets = new SectionAssets();
       this.view = new storybase.builder.views.SectionEditView({
         dispatcher: this.dispatcher,
         model: this.section,
@@ -150,17 +150,13 @@ describe('SectionAssetEditView view', function() {
     this.view = new storybase.builder.views.SectionAssetEditView({
        assetTypes: this.assetTypes,
        dispatcher: this.dispatcher,
-       story: new Backbone.Model
+       story: new Backbone.Model()
     });
   });
 
   describe('when initializing', function() {
     it('should have a model property', function() {
       expect(this.view.model).toBeDefined();
-    });
-
-    it('should have a form property', function() {
-      expect(this.view.form).toBeDefined();
     });
 
     it('should have a state of "select"', function() {
@@ -366,7 +362,7 @@ describe('SectionAssetEditView view', function() {
 describe('DrawerButtonView', function() {
   beforeEach(function() {
     this.dispatcher = _.clone(Backbone.Events);
-    this.parentView = new Backbone.View;
+    this.parentView = new Backbone.View();
     this.view = new storybase.builder.views.DrawerButtonView({
       callback: function(evt) {
         return true;

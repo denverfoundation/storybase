@@ -226,10 +226,10 @@
         if (this.options.hasOwnProperty('addlLinks')) {
           this.addlLinks = this.options.addlLinks.map(function(link) {
             return {
-             text: link.text,
-             id: link.id,
-             href: link.hasOwnProperty('href') ? link.href: '#'
-           }
+              text: link.text,
+              id: link.id,
+              href: link.hasOwnProperty('href') ? link.href: '#'
+            };
           });
         }
         else {
@@ -278,7 +278,7 @@
           this.setNextSection(this.sections.get(
             this.activeSection.get('next_section_id')
           ));
-          this.setPreviousSection(this.sections.get( 	
+          this.setPreviousSection(this.sections.get(
             this.activeSection.get('previous_section_id')
           ));
         }
@@ -315,8 +315,7 @@
 
     // Walk the section hierarchy to build a sense of its "shape"
     walkSectionHierarchy: function(depth, section) {
-      if (this.maxDepth == null || 
-          depth > this.maxDepth) {
+      if (this.maxDepth === null ||  depth > this.maxDepth) {
         this.maxDepth = depth; 
       } 
 
@@ -374,7 +373,7 @@
 
     // Get the radius of the tree
     getTreeRadius: function(width, height) {
-      return (this.maxSectionsAtDepth == 1 ? _.max([width, height]) : _.min([width, height])) * .66;
+      return (this.maxSectionsAtDepth == 1 ? _.max([width, height]) : _.min([width, height])) * 0.66;
     },
 
     render: function() {
@@ -388,7 +387,7 @@
           .attr("id", this.visId)
           .attr("width", dimensions.width)
           .attr("height", dimensions.height)
-    .attr("style", "float:left");
+          .attr("style", "float:left");
       // Create a group inside the SVG element for our visualization
       var vis = svg.append("g");
 
@@ -437,30 +436,31 @@
       svg.on('mousemove', function() {
         svg.on('selectstart', function() { return false; });
         if (that.mouseDown) {
-    // Only move things around if the mouse button is held down
+          // Only move things around if the mouse button is held down
     
-    // Save the new mouse position
+          // Save the new mouse position
           var currentPos = d3.svg.mouse(this);
-    // Calculate how far we've moved since the last recorded mouse
-    // position
-    var dx = currentPos[0] - that.pos[0];
-    var dy = currentPos[1] - that.pos[1];
+          // Calculate how far we've moved since the last recorded mouse
+          // position
+          var dx = currentPos[0] - that.pos[0];
+          var dy = currentPos[1] - that.pos[1];
 
-    // Calculate a new translation of the visualization based on
-    // the mouse movement
-    var newTranslateX = that.translateX + dx;
-    var newTranslateY = that.translateY + dy;
+          // Calculate a new translation of the visualization based on
+          // the mouse movement
+          var newTranslateX = that.translateX + dx;
+          var newTranslateY = that.translateY + dy;
 
-    // Only pan the visualization if it remains partially visible
-    // within the SVG element
-    if (newTranslateX > 0 && newTranslateY > 0 && 
-        newTranslateX < dimensions.width && newTranslateY < dimensions.height) {
-      that.translateX = newTranslateX;
-      that.translateY = newTranslateY;
+          // Only pan the visualization if it remains partially visible
+          // within the SVG element
+          if (newTranslateX > 0 && newTranslateY > 0 && 
+              newTranslateX < dimensions.width && newTranslateY < dimensions.height) {
+            that.translateX = newTranslateX;
+            that.translateY = newTranslateY;
             vis.attr("transform", "translate(" + that.translateX + ", " + that.translateY + ")");
-    }
-    // Update the saved mouse position
-    that.pos = currentPos;
+          }
+
+          // Update the saved mouse position
+          that.pos = currentPos;
         }
       });
       
@@ -492,12 +492,12 @@
           return "node section-" + d.id;
         })
         .attr("transform", function(d) { 
-    var transform = "";
-    if (d.depth > 0) {
-      transform += "rotate(" + (d.x - 90) + ")";
-    }
+          var transform = "";
+          if (d.depth > 0) {
+            transform += "rotate(" + (d.x - 90) + ")";
+          }
           transform += "translate(" + d.y + ")";
-    return transform;
+          return transform;
         });
 
       node.append("circle")
@@ -505,25 +505,25 @@
 
       node.append("text")
         .attr("x", function(d) { 
-    if (d.depth == 0) { return 20; }
+          if (d.depth === 0) { return 20; }
           return d.x < 180 ? 20 : -20; 
         })
         .attr("y", ".31em")
         .attr("text-anchor", function(d) { 
-    if (d.depth == 0) { return "start"; }
-          return d.x < 180 ? "start" : "end"; })
+          if (d.depth === 0) { return "start"; }
+          return d.x < 180 ? "start" : "end"; 
+        })
         .attr("transform", function(d) {
-    var rotation = 0;
-    if (that.maxSectionsAtDepth == 1) {
-      rotation = 315;
-    }
-    else if (d.depth > 0) {
+          var rotation = 0;
+          if (that.maxSectionsAtDepth == 1) {
+            rotation = 315;
+          }
+          else if (d.depth > 0) {
             rotation = 90 - d.x;
-    }
-    return "rotate(" + rotation + ")"; 
+          }
+          return "rotate(" + rotation + ")"; 
         })
         .text(function(d) { return d.get('title'); });
-
 
       // Center the tree within the viewport
       var treeBBox = vis[0][0].getBBox(); 
@@ -588,7 +588,7 @@
     
     handleScroll: function() {
       var top = $(window).scrollTop();
-      if (top != 0) {
+      if (top !== 0) {
         this.setStickyHeader(true);
       }
       else {
