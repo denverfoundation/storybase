@@ -19,6 +19,27 @@
   figure {
     border: 1px solid @light-gray; 
     padding: 4px;
+
+    img {
+      width: 100%;
+    }
+
+    &:hover {
+      // When the figure is hovered, show the caption at the very top of the image
+      figcaption {
+        position: absolute;
+        top: 0;
+        left: 0;
+
+        padding: 4px;
+
+        background-color: fadeout(@dark-gray, 50%);
+      }
+
+      .caption {
+        color: #fff;
+      }
+    }
   }
   
 
@@ -37,9 +58,6 @@
     }
   }
 
-  figure img {
-    width: 100%;
-  }
 
   a.button {
     padding: 5px;
