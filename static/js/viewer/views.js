@@ -95,6 +95,20 @@
         $(window).off('resize.viewer');
       },
 
+      /**
+       * Copy the caption element into a separate element.
+       */
+      initPopupCaptions: function() {
+        var $captions = this.$('.section figure figcaption');
+
+        $captions.each(function() {
+          var $caption = $(this);
+          // Use a div, because only one <figcaption> element is allowed in
+          // a <figure> element.
+          $caption.after('<div class="popup-caption">' + $caption.html() + '</div>');
+        });
+      },
+
       // Add the view's container element to the DOM and render the sub-views
       render: function() {
         this.$el.addClass(this.attributes['class']);
@@ -104,6 +118,7 @@
         this.$('.section').show();
         this.$('.storybase-share-link').storybaseShare();
         this._rendered = true;
+        this.initPopupCaptions();
         this.trigger("render");
         return this;
       },
@@ -537,7 +552,7 @@
     // the nodes are clickable.
     hoverSectionNode: function(e) {
       e.currentTarget.style.cursor = 'pointer';
-    },
+    }
   });
 
   // Master view that shows a story in a linear fashion
@@ -599,7 +614,7 @@
     handleRendered: function() {
       this._stickyHeaderInfo = {
         headerHeight: this.$('#header').outerHeight(),
-        bodyPaddingTop: parseInt(this.$('#body').css('padding-top'), 10),
+        bodyPaddingTop: parseInt(this.$('#body').css('padding-top'), 10)
       };
 
       // defer loading of iframed assets until their section is shown.
@@ -731,6 +746,7 @@
       this.initialView.render();
       // Hide all the section content initially
       this.$('.section').hide();
+      this.initPopupCaptions();
       return this;
     },
 
