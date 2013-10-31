@@ -300,6 +300,14 @@ class ExternalAssetModelTest(TestCase):
             url='http://fakedomain.com/files/readme.txt')
         self.assertFalse(asset.url_is_image_file())
 
+    def test_css_classes(self):
+        asset = create_external_asset(type='video', title='',
+                url='http://youtu.be/KpichyyCutw')
+        css_classes = asset.css_classes()
+        self.assertIn('asset-type-video', css_classes)
+        self.assertIn('asset-provider-youtube', css_classes)
+        self.assertIn('asset-%s' % asset.asset_id, css_classes)
+
 
 class LocalImageAssetModelTest(FileCleanupMixin, TestCase):
     def test_get_thumbnail_url_indexed_png(self):
