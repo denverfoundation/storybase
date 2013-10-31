@@ -103,9 +103,14 @@
 
         $captions.each(function() {
           var $caption = $(this);
+          // Grab the text inside the .caption element because the
+          // <figcaption> element can also contain information about
+          // datasets
+          var captionText = $caption.find('.caption').html();
           // Use a div, because only one <figcaption> element is allowed in
           // a <figure> element.
-          $caption.after('<div class="popup-caption">' + $caption.html() + '</div>');
+          $caption.after('<div class="popup-caption">' + captionText +
+                         '</div>');
         });
       },
 

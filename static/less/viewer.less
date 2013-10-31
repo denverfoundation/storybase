@@ -10,6 +10,11 @@
 .story-viewer {
   @footer-background-color: #000;
 
+  .caption-mixin(@font-color: @gray) {
+    font-style:italic;
+    color: @font-color;
+  }
+
   background-color: #fff;
 
   h2 {
@@ -26,6 +31,15 @@
     }
 
     .popup-caption {
+      .caption-mixin(#fff);
+
+      padding: 4px;
+      margin: 4px;
+
+      background-color: fadeout(@dark-gray, 50%);
+
+      // Hide popup captions unless the user hovers over the parent
+      // element
       display: none;
     }
 
@@ -37,14 +51,6 @@
         top: 0;
         left: 0;
 
-        padding: 4px;
-        margin: 4px;
-
-        background-color: fadeout(@dark-gray, 50%);
-      
-        .caption {
-          color: #fff;
-        }
       }
     }
   }
@@ -79,8 +85,7 @@
   }
 
   .caption {
-    font-style:italic;
-    color:@gray;
+    .caption-mixin;
   }
 
   #header {
