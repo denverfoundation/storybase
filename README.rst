@@ -15,6 +15,7 @@ Changelog
 ~~~~~~
 
 * Support Django 1.5/Django CMS 2.4 (#660)
+* Captions pop up at top of asset on mouseover in viewer (#717)
 * Auto-expanding text editor (#844)
 * Autosave for text assets (#847, #848)
 * Scroll to top of next section when switching sections in viewer (#852)
