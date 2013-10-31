@@ -18,6 +18,8 @@
     <meta name="author" content="">
     <title>{{ story.title }}</title>
 
+    {% include "favicons.html" %}
+
     {% if debug %}
     {% addtoblock "css" %}<link rel="stylesheet/less" href="{{ STATIC_URL }}less/base.less">{% endaddtoblock %}
     {% addtoblock "css" %}<script src="{{ STATIC_URL }}js/libs/less-1.4.1.min.js"></script>{% endaddtoblock %}
