@@ -107,10 +107,15 @@
           // <figcaption> element can also contain information about
           // datasets
           var captionText = $caption.find('.caption').html();
-          // Use a div, because only one <figcaption> element is allowed in
-          // a <figure> element.
-          $caption.after('<div class="popup-caption">' + captionText +
-                         '</div>');
+
+          // Need to check that captionText is truthy as some assets have
+          // a <figcaption> element, but no caption text
+          if (captionText) {
+            // Use a div, because only one <figcaption> element is allowed in
+            // a <figure> element.
+            $caption.after('<div class="popup-caption">' + captionText +
+                           '</div>');
+          }
         });
       },
 
