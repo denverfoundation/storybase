@@ -467,6 +467,21 @@
     }
   });
 
+  /**
+   * View for displaying and editing the story title.
+   */
+  Views.TitleView = Backbone.View.extend({
+    initialize: function() {
+      this.model.on('change:title', this.render, this);
+    },
+
+    render: function() {
+      this.$('.title').html(this.model.get('title'));
+      this.$el.attr('title', gettext('Click to edit title'));
+      return this;
+    }
+  });
+
   var AlertManagerView = Views.AlertManagerView = Backbone.View.extend({
     initialize: function() {
       this.dispatcher = this.options.dispatcher;

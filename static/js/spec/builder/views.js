@@ -1193,3 +1193,57 @@ describe("FeaturedAssetView", function() {
     });  
   });  
 });
+
+describe('TitleView', function() {
+  beforeEach(function() {
+    this.title = "Near Northeast Profile: Interactive Slideshow"; 
+    // Selector, relative to the view's element for element that actually
+    // contains the title text. Make this a variable so the tests are
+    // less brittle if we change the markup.
+    this.titleSel = '.title';
+    this.$el = $('<div class="title-container"><h1 class="title">' + this.title + '</h1></div>').appendTo($('#sandbox'));
+    // Binding event handlers to the dispatcher happens in the view's
+    // initialize method, so we have to spy on the prototype so the
+    // spied method will get bound.
+    this.renderSpy = sinon.spy(storybase.builder.views.TitleView.prototype, 'render');
+    this.story = new Backbone.Model({
+      title: this.title
+    });
+    this.view = new storybase.builder.views.TitleView({
+      el: this.$el,
+      model: this.story
+    });
+  });
+
+  afterEach(function() {
+    this.renderSpy.restore();
+  });
+
+  it('renders the same element it was initialized with', function() {
+    expect(this.view.render().$el).toEqual(this.$el);
+  });
+
+  it("renders when the model's title attribute is changed", function() {
+    var newTitle = "New Title";
+    this.story.set('title', newTitle);
+    expect(this.renderSpy.called).toBeTruthy();
+    expect(this.view.$el.html()).toContain(newTitle);
+  });
+
+  it('adds a tooltip that says "Click to edit title" to its element', function() {
+    expect(this.view.render().$el.attr('title')).toEqual("Click to edit title");
+  });
+
+  it('shows a text input when clicked', function() {
+    this.view.render();
+    this.view.$(this.titleSel).trigger('click');
+    expect(this.view.$('input[type=text]').length).toEqual(1);
+    // The title text should be hidden
+    expect(this.view.$(this.titleSel).is(':visible')).toBeFalsy();
+  });
+
+  it('displays the title as "Untitled Story" when the model\'s title is empty', function() {
+    this.story.set('title', '');
+    expect(this.view.$el.html()).toContain("Untitled Story");
+  });
+});
