@@ -1,0 +1,15 @@
+// Workarounds for CSS functionality not available natively
+
+.no-rgba {
+  .story-viewer {
+    figure {
+      &:hover {
+        .popup-caption {
+          // Default style uses rgba for transparency. For browsers that
+          // don't support rgba, use a PNG.
+          background: url('../img/transparent.png') 0 0;
+        }
+      }
+    }
+  }
+}

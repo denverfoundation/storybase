@@ -1269,6 +1269,7 @@ body.search h1{margin-top:.5em}
 .search-result .type{color:#999;font-weight:bold}
 .search-result .metadata dt{display:block;float:left}.search-result .metadata dt:after{content:':'}
 .search-result .metadata dd{clear:right;padding-left:.5em;overflow:hidden}
+.no-rgba .story-viewer figure:hover .popup-caption{background:url('../img/transparent.png') 0 0}
 .ir{display:block;border:0;text-indent:-999em;overflow:hidden;background-color:transparent;background-repeat:no-repeat;text-align:left;direction:ltr}
 .ir br{display:none}
 .hidden{display:none !important;visibility:hidden}
