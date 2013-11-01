@@ -64,7 +64,7 @@ def send_message_to_admins(sender, **kwargs):
     subject = _("New message from") + " " + instance.email
     message = render_to_string('storybase_messaging/sitecontactmessage_email.txt',
                                { 'message': instance })
-    send_admin_mail(subject, message, instance.email)
+    send_admin_mail(subject, message, settings.DEFAULT_FROM_EMAIL)
 
 
 class SystemMessageTranslation(MessageTranslation):

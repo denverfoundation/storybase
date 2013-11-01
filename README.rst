@@ -19,6 +19,7 @@ Changelog
 * Auto-expanding text editor (#844)
 * Autosave for text assets (#847, #848)
 * Scroll to top of next section when switching sections in viewer (#852)
+* Don't send site contact message notification from user email address (#886)
 
 0.16.7
 ~~~~~~
