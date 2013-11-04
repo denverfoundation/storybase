@@ -471,14 +471,66 @@
    * View for displaying and editing the story title.
    */
   Views.TitleView = Backbone.View.extend({
+    options: {
+      defaultTitle: gettext("Untitled Story"),
+      placeholder: gettext("Edit your title here. Shorter is better: 100 characters or less!")
+    },
+
+    events: {
+      'click .title': 'toggleEditor',
+      'blur input[name="title"]': 'handleBlur',
+      'keyup input[name="title"]': 'handleKeyUp'
+    },
+
     initialize: function() {
-      this.model.on('change:title', this.render, this);
+      this.model.on('change:title', this.renderTitle, this);
+      this.model.on('change:title', this.toggleEditor, this);
+      this.model.on('change:title', this.model.save);
     },
 
     render: function() {
-      this.$('.title').html(this.model.get('title'));
+      var title = this.model.get('title') || this.options.defaultTitle;
+      var inputHtml = _.template('<input type="text" name="title" value="{{title}}" placeholder="{{placeholder}}" />', {
+        title: title,
+        placeholder: this.options.placeholder 
+      });
+      this.renderTitle();
       this.$el.attr('title', gettext('Click to edit title'));
+      // TODO: Initialize character counter
+      // Add the hidden form element
+      $(inputHtml).hide().appendTo(this.$el);
+
       return this;
+    },
+
+    /**
+     * Update the display of the title with a new value
+     */
+    renderTitle: function() {
+      var title = this.model.get('title') || this.options.defaultTitle;
+      this.$('.title').html(title);
+      return this;
+    },
+
+    toggleEditor: function() {
+      // TODO: Handle character counter elements
+      this.$('[name="title"]').toggle();
+      this.$('.title').toggle();
+    },
+
+    handleBlur: function(evt) {
+      var title = $(evt.target).val();
+      this.model.set('title', title);
+    },
+
+    handleKeyUp: function(evt) {
+      var title; 
+
+      // Only act when the enter key is the one that's pressed
+      if (evt.which == 13) {
+        title = $(evt.target).val();
+        this.model.set('title', title);
+      }
     }
   });
 
