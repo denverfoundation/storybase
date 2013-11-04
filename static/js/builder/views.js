@@ -483,6 +483,8 @@
     },
 
     initialize: function() {
+      this.$editor = null;
+
       this.model.on('change:title', this.renderTitle, this);
       this.model.on('change:title', this.toggleEditor, this);
       this.model.on('change:title', this.model.save);
@@ -494,11 +496,22 @@
         title: title,
         placeholder: this.options.placeholder 
       });
+
       this.renderTitle();
+
+      // Add a tooltip to let users know the title is editable
       this.$el.attr('title', gettext('Click to edit title'));
-      // TODO: Initialize character counter
+
       // Add the hidden form element
-      $(inputHtml).hide().appendTo(this.$el);
+      this.$editor = $(inputHtml).hide().appendTo(this.$el);
+
+      // Add a character counter
+      this.charCountView = new CharacterCountView({ 
+        target: this.$editor,
+        warningLimit: 100,
+        className: 'character-count summary-title'
+      });
+      this.$el.append(this.charCountView.render().$el);
 
       return this;
     },
