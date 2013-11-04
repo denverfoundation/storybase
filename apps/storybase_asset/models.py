@@ -1,6 +1,7 @@
 """Models for story content assets"""
 import mimetypes
 import os
+import re
 
 from lxml.etree import XMLSyntaxError
 import lxml.html
@@ -223,6 +224,13 @@ class Asset(ImageRenderingMixin, TranslatedModel, LicensedModel,
         # For now just call the __unicode__() method
         return unicode(self)
 
+    def css_classes(self):
+        """
+        Returns string of CSS classes for the asset's HTML container element
+        """
+        return "asset-%s asset-type-%s" % (self.asset_id, self.type)
+        
+
     def render(self, format='html', **kwargs):
         """Render a viewable representation of an asset
 
@@ -340,6 +348,14 @@ class ExternalAsset(Asset):
     def get_img_url(self):
         return self.url
 
+    def css_classes(self):
+        css_classes = super(ExternalAsset, self).css_classes()
+
+        if re.match(r'https?://\S*.?youtu(\.be|be\.com)', self.url):
+            css_classes = css_classes + " asset-provider-youtube"
+
+        return css_classes
+
     def render_link_html(self):
         """Render a link for this asset"""
         return "<a href=\"%s\">%s</a>" % (self.url, self.title)
@@ -347,7 +363,7 @@ class ExternalAsset(Asset):
     def render_html(self, **kwargs):
         """Render the asset as HTML"""
         output = []
-        output.append('<figure>')
+        output.append('<figure class="%s">' % self.css_classes())
         try:
             # First try to embed the resource via oEmbed
             # TODO: Set maxwidth and maxheight more intelligently
@@ -501,14 +517,15 @@ class HtmlAsset(Asset):
         if self.title:
             output.append('<h3>%s</h3>' % (self.title))
         if self.type in CAPTION_TYPES:
-            output.append('<figure>')
+            output.append('<figure class="%s">' % self.css_classes())
             output.append(body)
             full_caption_html = self.full_caption_html()
             if full_caption_html:
                 output.append(full_caption_html)
             output.append('</figure>')
         elif self.type == 'quotation':
-            output.append('<blockquote class="quotation">')
+            output.append('<blockquote class="%s">' %
+                          self.css_classes())
             output.append(body)
             if self.attribution:
                 attribution = self.attribution
@@ -560,7 +577,7 @@ class LocalImageAsset(Asset):
     def render_html(self, **kwargs):
         """Render the asset as HTML"""
         output = []
-        output.append('<figure>')
+        output.append('<figure class="%s">' % self.css_classes())
         output.append(self.render_img_html(**kwargs))
         full_caption_html = self.full_caption_html()
         if full_caption_html:

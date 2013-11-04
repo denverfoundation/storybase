@@ -1,7 +1,6 @@
 """Tests for the actions app"""
 
 from datetime import datetime, timedelta
-from unittest import skip
 
 from django.conf import settings
 from django.contrib.auth.models import Group, User
@@ -62,7 +61,7 @@ class SiteContactMessageModelTest(EmailSendingTestCaseMixin, TestCase):
             phone=phone, message=message_body)
             
         sent_email = self.get_sent_email(0) 
-        self.assertEqual(sent_email.from_email, email)
+        self.assertEqual(sent_email.from_email, settings.DEFAULT_FROM_EMAIL)
         self.assertEqual(sent_email.subject, 
                          "New message from %s" % email)
         self.assertIn(admin.email, sent_email.to)

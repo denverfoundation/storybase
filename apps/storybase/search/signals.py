@@ -1,13 +1,9 @@
 from django.db.models import signals
+from django.db.models.loading import get_model
 
 from haystack.exceptions import NotHandled
 from haystack.signals import RealtimeSignalProcessor as HaystackRealtimeSignalProcessor
 
-from storybase_asset.models import HtmlAssetTranslation
-from storybase_geo.models import Location
-from storybase_help.models import Help, HelpTranslation
-from storybase_story.models import (SectionAsset, SectionTranslation,
-                                    Story, StoryTranslation)
 
 class RealtimeSignalProcessor(HaystackRealtimeSignalProcessor):
     """
@@ -21,15 +17,20 @@ class RealtimeSignalProcessor(HaystackRealtimeSignalProcessor):
     and other related models.
     """
 
-    # Translate sender classes to the classes that actually have an
-    # index
+    # Translate sender model classes to the model classes that
+    # actually have an index
+    #
+    # The class names mapp to a list appropriate for the input
+    # to ``django.db.models.loading.get_model()`` to avoid
+    # importing the model directly and causing a circular
+    # import. See http://stackoverflow.com/a/17364366/386210
     _SENDER_MAP = {
-        'HtmlAssetTranslation': Story,
-        'Location': Story,
-        'HelpTranslation': Help,
-        'SectionAsset': Story,
-        'SectionTranslation': Story,
-        'StoryTranslation': Story,
+        'HtmlAssetTranslation': ['storybase_story', 'Story'],
+        'Location': ['storybase_story', 'Story'],
+        'HelpTranslation': ['storybase_help', 'Help'],
+        'SectionAsset': ['storybase_story', 'Story'],
+        'SectionTranslation': ['storybase_story', 'Story'],
+        'StoryTranslation': ['storybase_story', 'Story'],
     }
 
     def _get_index(self, using, sender):
@@ -39,7 +40,11 @@ class RealtimeSignalProcessor(HaystackRealtimeSignalProcessor):
         This is needed because we update some indexes based on
         changes on related models
         """
-        index_class = self._SENDER_MAP.get(sender.__name__, sender)
+        if sender.__name__ in self._SENDER_MAP:
+            index_class = get_model(*self._SENDER_MAP[sender.__name__])
+        else:
+            index_class = sender 
+
         return self.connections[using].get_unified_index().get_index(index_class)
 
     def handle_method(self, method_name, sender, instance, **kwargs):
@@ -92,6 +97,13 @@ class RealtimeSignalProcessor(HaystackRealtimeSignalProcessor):
         self.handle_method('location_update_object', sender, instance, **kwargs)
 
     def _setup_story(self):
+        # HACK: Import here to avoid circular import
+        # See http://stackoverflow.com/a/17364366/386210
+        from storybase_asset.models import HtmlAssetTranslation
+        from storybase_geo.models import Location
+        from storybase_story.models import (SectionAsset, SectionTranslation,
+                                    Story, StoryTranslation)
+
         # Save signals
         signals.post_save.connect(self.handle_save, sender=Story)
         signals.post_save.connect(self.handle_translation_save,
@@ -124,6 +136,10 @@ class RealtimeSignalProcessor(HaystackRealtimeSignalProcessor):
                                     sender=StoryTranslation)
 
     def _setup_help(self):
+        # HACK: Import here to avoid circular import
+        # See http://stackoverflow.com/a/17364366/386210
+        from storybase_help.models import Help, HelpTranslation
+
         signals.post_save.connect(self.handle_save, sender=Help)
         signals.post_save.connect(self.handle_translation_save,
                                   sender=HelpTranslation)
@@ -132,6 +148,13 @@ class RealtimeSignalProcessor(HaystackRealtimeSignalProcessor):
                                     sender=HelpTranslation)
 
     def _teardown_story(self):
+        # HACK: Import here to avoid circular import
+        # See http://stackoverflow.com/a/17364366/386210
+        from storybase_asset.models import HtmlAssetTranslation
+        from storybase_geo.models import Location
+        from storybase_story.models import (SectionAsset, SectionTranslation,
+                                    Story, StoryTranslation)
+
         signals.post_save.disconnect(self.handle_save, sender=Story)
         signals.post_save.disconnect(self.handle_translation_save,
                                      sender=StoryTranslation)
@@ -160,6 +183,10 @@ class RealtimeSignalProcessor(HaystackRealtimeSignalProcessor):
                                        sender=StoryTranslation)
 
     def _teardown_help(self):
+        # HACK: Import here to avoid circular import
+        # See http://stackoverflow.com/a/17364366/386210
+        from storybase_help.models import Help, HelpTranslation
+
         signals.post_save.disconnect(self.handle_save, sender=Help)
         signals.post_save.disconnect(self.handle_translation_save,
                                      sender=HelpTranslation)
