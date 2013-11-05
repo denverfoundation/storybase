@@ -32,7 +32,7 @@ var MockAsset = Backbone.Model.extend({
 describe('AppView', function() {
   beforeEach(function() {
     initializeGlobals();
-    this.dispatcher = _.clone(Backbone.Events);
+    this.dispatcher = _.extend({}, Backbone.Events);
     this.view = new storybase.builder.views.AppView({
       dispatcher: this.dispatcher
     });
@@ -1208,25 +1208,34 @@ describe('TitleView', function() {
   beforeEach(function() {
     var spec = this;
     this.title = "Near Northeast Profile: Interactive Slideshow"; 
-    // Selector, relative to the view's element for element that actually
-    // contains the title text. Make this a variable so the tests are
-    // less brittle if we change the markup.
+    // Selectors, relative to the view's element for interface elements of
+    // interest.  Make these variables so the tests are less brittle if
+    // we change the markup.
+    // 
+    // Element that contains the title text for display
     this.titleSel = '.title';
-    this.$el = $('<div class="title-container"><h1 class="title">' + this.title + '</h1></div>').appendTo($('#sandbox'));
+    // Input for editing the title
+    this.inputSel = 'input[name="title"]';
+    // Input for logo
+    this.logoSel = '.logo img';
+    this.$el = $('<div class="title-container"><a class="logo"><img src="builder-logo.png" /></a><h1 class="title">' + this.title + '</h1></div>').appendTo($('#sandbox'));
     // Binding event handlers to the dispatcher happens in the view's
     // initialize method, so we have to spy on the prototype so the
     // spied method will get bound.
     this.story = new MockSavingModel({
       title: this.title
     });
+    this.dispatcher =  _.extend({}, Backbone.Events);
     sinon.spy(this.story, 'save');
     this.view = new storybase.builder.views.TitleView({
       el: this.$el,
-      model: this.story
+      model: this.story,
+      dispatcher: this.dispatcher
     });
+    sinon.spy(this.view, 'render');
 
     this.editTitle = _.bind(function(newTitle) {
-      var $input = this.view.$('input[name="title"]');
+      var $input = this.view.$(this.inputSel);
       this.view.$(this.titleSel).trigger('click');
       $input.val(newTitle);
     }, this);
@@ -1245,7 +1254,7 @@ describe('TitleView', function() {
           return false;
         }
         // The input should be hidden
-        if (view.$('input[name="title"]').is(':visible')) {
+        if (view.$(spec.inputSel).is(':visible')) {
           return false;
         }
         // The title element should be visible
@@ -1258,16 +1267,85 @@ describe('TitleView', function() {
         }
 
         return true;
+      },
+
+      toHaveUnchangedTitle: function(expected) {
+        var view = this.actual;
+        var $title = view.$(spec.titleSel);
+        var $input = view.$(spec.inputSel);
+        var title = view.model.get('title');
+
+        // The view's model's title should have the new value
+        if (title != expected) {
+          this.message = function() {
+            return 'Expected the view to have the title "' + expected + ' instead it has "' + title + '"';
+          };
+          return false;
+        }
+
+        // The input should be hidden
+        if ($input.is(':visible')) {
+          this.message = function() {
+            return 'Expected the input to be hidden';
+          };
+          return false;
+        }
+
+        // The title element should be visible
+        if (!$title.is(':visible')) {
+          this.message = function() {
+            return 'Expected the title to be visible';
+          };
+          return false;
+        }
+
+        // The expected title text should be shown in the title element
+        if ($title.html() != expected) {
+          this.message = function() {
+            return 'Expected the displayed title to be "' + expected + '"';
+          };
+          return false;
+        }
+
+        // The expected title text should be in the input element
+        if ($input.val() != expected) {
+          this.message = function() {
+            return 'Expected the value of the input to be "' + expected + '"';
+          };
+          return false;
+        }
+
+        if (view.model.save.called) {
+          this.message = function() {
+            return 'Expected the model to be unsaved';
+          };
+          return false;
+        }
+
+        return true;
       }
     });
   });
 
   afterEach(function() {
     this.story.save.restore();
+    this.view.render.restore();
   });
 
   it('renders the same element it was initialized with', function() {
     expect(this.view.render().$el).toEqual(this.$el);
+  });
+
+  it('updates the image filename when a model is set', function() {
+    var logoFilename = this.view.options.logoFilename;
+    var noStoryLogoFilename = this.view.options.noStoryLogoFilename;
+    // The logoFilename option should be defined
+    expect(logoFilename).toBeTruthy();
+    // The nologoFilename option should be defined
+    expect(noStoryLogoFilename).toBeTruthy();
+    this.view.render();
+    expect(this.view.$(this.logoSel).attr("src")).toContain(logoFilename);
+    expect(this.view.$(this.logoSel).attr("src")).not.toContain(noStoryLogoFilename);
   });
 
   it("Updates the display when the model's title attribute is changed", function() {
@@ -1285,12 +1363,19 @@ describe('TitleView', function() {
     expect(this.view.$el.html()).toContain("Untitled Story");
   });
 
-  it('shows a text input when clicked', function() {
+  it('has an empty text input value when the model\'s title is empty', function() {
+    this.view.render();
+    this.story.set('title', '');
+    expect(this.view.$(this.inputSel).val()).toEqual('');
+  });
+
+  it('shows a text input and sets focus to the input when clicked', function() {
     this.view.render();
     this.view.$(this.titleSel).trigger('click');
-    expect(this.view.$('input[type=text]').length).toEqual(1);
+    expect(this.view.$(this.inputSel).length).toEqual(1);
     // The title text should be hidden
     expect(this.view.$(this.titleSel).is(':visible')).toBeFalsy();
+    expect(this.view.$(this.inputSel).is(':focus')).toBeTruthy();
   });
 
   it('updates the model and hides the text editor when the text input loses focus', function() {
@@ -1298,7 +1383,7 @@ describe('TitleView', function() {
     var $input;
 
     this.view.render();
-    $input = this.view.$('input[name="title"]');
+    $input = this.view.$(this.inputSel);
     this.editTitle(newTitle);
     $input.trigger('blur');
     expect(this.view).toHaveUpdatedTitle(newTitle);
@@ -1311,7 +1396,7 @@ describe('TitleView', function() {
     evt.which = 13; // Enter
 
     this.view.render();
-    $input = this.view.$('input[name="title"]');
+    $input = this.view.$(this.inputSel);
     this.editTitle(newTitle);
     $input.trigger(evt);
     expect(this.view).toHaveUpdatedTitle(newTitle);
@@ -1320,5 +1405,24 @@ describe('TitleView', function() {
   it('saves the model when the title attribute changes', function() {
     this.view.model.set('title', "New Title");
     expect(this.view.model.save.called).toBeTruthy();
+  });
+
+  it('renders the view when the model is set', function() {
+    this.view.setModel(this.story);
+    expect(this.view.render.called).toBeTruthy();
+  });
+
+  it('cancels editing and hides the input when Esc is pressed', function() {
+    var newTitle = "New Title";
+    var oldTitle = this.story.get('title');
+    var evt = $.Event('keyup');
+    evt.which = 27; // Esc
+    var $input;
+
+    this.view.render();
+    $input = this.view.$(this.inputSel);
+    this.editTitle(newTitle);
+    $input.trigger(evt);
+    expect(this.view).toHaveUnchangedTitle(oldTitle);
   });
 });

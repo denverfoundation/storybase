@@ -1,4 +1,10 @@
 ;(function($, _, Backbone, storybase) {
+  // We use Underscore's _.template() in a few places. Use Mustache-style
+  // delimeters instead of ERB-style ones.
+  _.templateSettings = {
+    interpolate: /\{\{(.+?)\}\}/g
+  };
+
   var Builder = storybase.builder;
   if (_.isUndefined(Builder.views)) {
     Builder.views = {};
@@ -144,7 +150,8 @@
       subviewContainerEl: '#app',
       toolsContainerEl: '#title-bar-contents',
       visibleSteps: VISIBLE_STEPS, 
-      workflowContainerEl: '#workflow-bar-contents'
+      workflowContainerEl: '#workflow-bar-contents',
+      titleEl: '#title-bar-contents'
     },
 
     events: {
@@ -177,6 +184,13 @@
       // The currently active step of the story building process
       // This will get set by an event callback 
       this.activeStep = null; 
+
+      this.titleView = new TitleView({
+          el: this.$(this.options.titleEl),
+          model: this.model,
+          dispatcher: this.dispatcher
+      });
+      this.titleView.render();
 
       // Initialize a view for the tools menu
       this.toolsView = new ToolsView(
@@ -470,49 +484,92 @@
   /**
    * View for displaying and editing the story title.
    */
-  Views.TitleView = Backbone.View.extend({
+  var TitleView = Views.TitleView = Backbone.View.extend({
     options: {
       defaultTitle: gettext("Untitled Story"),
-      placeholder: gettext("Edit your title here. Shorter is better: 100 characters or less!")
+      placeholder: gettext("Edit your title here. Shorter is better: 100 characters or less!"),
+      logoFilename: 'builder-logo-balloon.png',
+      noStoryLogoFilename: 'builder-logo.png'
     },
 
     events: {
-      'click .title': 'toggleEditor',
+      'click .title': 'handleClick',
       'blur input[name="title"]': 'handleBlur',
       'keyup input[name="title"]': 'handleKeyUp'
     },
 
-    initialize: function() {
-      this.$editor = null;
+    initialize: function(options) {
+      this.dispatcher = options.dispatcher;
 
+      if (this.model) {
+        this.bindModelEvents();
+      }
+      else {
+        this.dispatcher.once("ready:story", this.setModel, this);
+      }
+    },
+
+    bindModelEvents: function() {
       this.model.on('change:title', this.renderTitle, this);
       this.model.on('change:title', this.toggleEditor, this);
-      this.model.on('change:title', this.model.save);
+      this.model.on('change:title', this.saveModel, this);
+    },
+
+    $title: function() {
+      return this.$('.title');
+    },
+
+    $editor: function() {
+      return this.$('input[name="title"]');
+    },
+
+    $logo: function() {
+      return this.$('.logo img');
     },
 
     render: function() {
-      var title = this.model.get('title') || this.options.defaultTitle;
-      var inputHtml = _.template('<input type="text" name="title" value="{{title}}" placeholder="{{placeholder}}" />', {
-        title: title,
-        placeholder: this.options.placeholder 
-      });
+      var editTitle, inputHtml;
 
-      this.renderTitle();
+      if (this.model) {
+        editTitle = this.model.get('title') || ''; 
+        inputHtml = _.template('<input type="text" name="title" value="{{title}}" placeholder="{{placeholder}}" />', {
+          title: editTitle,
+          placeholder: this.options.placeholder 
+        });
 
-      // Add a tooltip to let users know the title is editable
-      this.$el.attr('title', gettext('Click to edit title'));
+        this.renderTitle();
 
-      // Add the hidden form element
-      this.$editor = $(inputHtml).hide().appendTo(this.$el);
+        // Add a tooltip to let users know the title is editable
+        this.$el.attr('title', gettext('Click to edit title'));
 
-      // Add a character counter
-      this.charCountView = new CharacterCountView({ 
-        target: this.$editor,
-        warningLimit: 100,
-        className: 'character-count summary-title'
-      });
-      this.$el.append(this.charCountView.render().$el);
+        // Add the hidden form element
+        $(inputHtml).hide().appendTo(this.$el);
 
+        // Add a character counter
+        this.charCountView = new CharacterCountView({ 
+          target: this.$editor(),
+          warningLimit: 100,
+          className: 'character-count summary-title'
+        });
+        this.$el.append(this.charCountView.render().$el);
+
+        this.swapLogo();
+      }
+
+      return this;
+    },
+
+    setModel: function(model) {
+      this.model = model;
+
+      this.bindModelEvents();
+      this.render();
+    },
+
+    swapLogo: function() {
+      var logoSrc = this.$logo().attr('src');
+      logoSrc = logoSrc.replace(this.options.noStoryLogoFilename, this.options.logoFilename);
+      this.$logo().attr('src', logoSrc);
       return this;
     },
 
@@ -520,15 +577,23 @@
      * Update the display of the title with a new value
      */
     renderTitle: function() {
-      var title = this.model.get('title') || this.options.defaultTitle;
-      this.$('.title').html(title);
+      var displayTitle = this.model.get('title') || this.options.defaultTitle;
+      var editTitle = this.model.get('title') || '';
+      this.$title().html(displayTitle);
+      this.$editor().val(editTitle);
       return this;
     },
 
     toggleEditor: function() {
       // TODO: Handle character counter elements
-      this.$('[name="title"]').toggle();
-      this.$('.title').toggle();
+      this.$editor().toggle();
+      this.$title().toggle();
+    },
+
+    handleClick: function(evt) {
+      this.toggleEditor();
+      this.$editor().focus();
+      this._oldTitle = this.model.get('title');
     },
 
     handleBlur: function(evt) {
@@ -538,12 +603,23 @@
 
     handleKeyUp: function(evt) {
       var title; 
+      var code = evt.which;
 
       // Only act when the enter key is the one that's pressed
-      if (evt.which == 13) {
+      if (code == 13) {
         title = $(evt.target).val();
         this.model.set('title', title);
       }
+      else if (code == 27) {
+        // Esc
+        this.$editor().val(this._oldTitle);
+        this.toggleEditor();
+      }
+    },
+
+    saveModel: function() {
+      this.model.save();
+      return this;
     }
   });
 

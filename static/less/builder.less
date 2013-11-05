@@ -263,12 +263,42 @@ button.help {
   overflow: hidden;
   height:63px;
 
+  .logo {
+    display: inline-block;
+    width: 333px;
+  }
+
   .title {
-    background:url(../img/builder/builder-logo.png) no-repeat;
-    text-indent:-32000px;
-    width:333px;
-    height:32px;
-    margin-top:20px;
+    .viewer-story-title();
+    display: inline-block;
+    margin-top: 15px;
+    height: 32px;
+    line-height: 32px;
+    width: 500px;
+    overflow: hidden;
+    text-overflow: ellipsis;
+    cursor: pointer;
+    white-space: nowrap;
+
+    color: #fff;
+
+    // When there's no story model, that is, when the user is creating a story
+    // for the first time and selecting a template, hide the title text and
+    // just show the logo.
+    text-indent: -32000px;
+  }
+}
+
+.has-story #title-bar {
+  // Show the smaller, speech bubble only logo to make room for showing the
+  // story title.
+  .logo {
+    width: 34px;
+  }
+
+  // Editing an existing story, so show the title text
+  .title {
+    text-indent: 0;
   }
 }
 

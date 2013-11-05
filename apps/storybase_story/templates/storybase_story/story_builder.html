@@ -31,12 +31,17 @@
     production, assume they've been pre-compiled/collected.
     {% endcomment %}
     {% if debug %}
+    {% addtoblock "css" %}
+    <script>
+    // HACK: Force development mode for LESS, even when not on localhost
+    var less = { env: 'development' };
+    </script>
+    {% endaddtoblock %}
     {% addtoblock "css" %}<link rel="stylesheet/less" href="{{ STATIC_URL }}less/base.less">{% endaddtoblock %}
     {% addtoblock "css" %}<script src="{{ STATIC_URL }}js/libs/less-1.4.1.min.js"></script>{% endaddtoblock %}
     {% endif %}
     {% comment %}
-    If not in debug mode, CSS will be passed through Django Compressor
-    below
+    If not in debug mode, CSS will be passed through Django Compressor below
     {% endcomment %}
 
     {% render_block "css" %}
@@ -57,11 +62,22 @@
   </head>
 
   <body class="story-builder">
-    <div id="builder">
+    <div id="builder" class="{% if story %}has-story{% endif %}">
         <header id="header">
             <div id="title-bar">
                 <div id="title-bar-contents">
+                    <a class="logo" href="{% url "story_builder" %}" title="{{ storybase_site_name }} {% trans "Story Builder" %}">
+                        {% if story %}
+                        <img src="{{ STATIC_URL }}/img/builder/builder-logo-balloon.png" width="34" height="34" alt="{% trans "Story Builder Logo" %}" />
+                        {% else %}
+                        <img src="{{ STATIC_URL }}/img/builder/builder-logo.png" width="333" height="34" alt="{% trans "Story Builder Logo" %}" />
+                        {% endif %}
+                    </a>
+                    {% if story %}
+                    <h1 class="title">{{ story.title }}</h1>
+                    {% else %}
                     <h1 class="title">{{ storybase_site_name }} {% trans "Story Builder" %}</h1>
+                    {% endif %}
                 </div>
             </div>
             <div id="workflow-bar">
