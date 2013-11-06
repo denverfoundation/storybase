@@ -295,6 +295,7 @@
       this.dispatcher.on("select:template", this.setTemplate, this);
       this.dispatcher.on("select:workflowstep", this.updateStep, this); 
       this.dispatcher.on("error", this.error, this);
+      this.dispatcher.on("select:template", this.setStoryClass, this);
     },
 
     close: function() {
@@ -303,6 +304,8 @@
       this.dispatcher.off("select:template", this.setTemplate, this);
       this.dispatcher.off("select:workflowstep", this.updateStep, this); 
       this.dispatcher.off("error", this.error, this);
+      this.dispatcher.off("select:template", this.setStoryClass, this);
+
       _.each(this.subviews, function(view) {
         // Call the close() method, if it exists on the workflow step subviews.
         if (view.close) {
@@ -492,6 +495,10 @@
 
       // If we haven't returned yet, we have support for everything needed
       return true; 
+    },
+
+    setStoryClass: function() {
+      this.$el.addClass('has-story');
     }
   });
 
@@ -582,8 +589,10 @@
 
     swapLogo: function() {
       var logoSrc = this.$logo().attr('src');
-      logoSrc = logoSrc.replace(this.options.noStoryLogoFilename, this.options.logoFilename);
-      this.$logo().attr('src', logoSrc);
+      if (logoSrc) {
+        logoSrc = logoSrc.replace(this.options.noStoryLogoFilename, this.options.logoFilename);
+        this.$logo().attr('src', logoSrc);
+      }
       return this;
     },
 

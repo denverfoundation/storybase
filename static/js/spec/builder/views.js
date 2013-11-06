@@ -47,12 +47,16 @@ describe('AppView', function() {
     this.view.close();
   });
 
-  describe('when receiving the "error" event', function() {
-    it('calls the error method', function() {
-      var errMsg = 'An error message';
-      EventBus.trigger('error', errMsg);
-      expect(this.view.error).toHaveBeenCalledWith(errMsg);
-    });
+  it('calls the error method when it receives the "error" event on the event bus', function() {
+    var errMsg = 'An error message';
+    EventBus.trigger('error', errMsg);
+    expect(this.view.error).toHaveBeenCalledWith(errMsg);
+  });
+
+  it('sets a "has-story" class on its element when the user selects a template', function() {
+    var story = new MockStory();
+    EventBus.trigger('select:template', story); 
+    expect(this.view.$el.hasClass('has-story')).toBeTruthy();
   });
 });
 
@@ -528,8 +532,11 @@ var MockStory = Backbone.Model.extend({
 
   // Stub the setFeaturedAsset method. This can be overridden with
   // spyOn() to change the behavior.
-  setFeaturedAsset: function(asset, options) {
-  }
+  setFeaturedAsset: function(asset, options) {},
+
+  setFeaturedAssets: function(collection) {
+    this.featuredAssets = collection;
+  },
 });
 
 

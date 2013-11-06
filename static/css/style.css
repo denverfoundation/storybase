@@ -842,7 +842,7 @@ body.story-builder #builder #alerts{width:100%}
 body.story-builder #builder .alert{padding:1%;text-align:center}body.story-builder #builder .alert button.close{border:none;background:none;padding:0;margin:0;width:auto;text-align:center;text-shadow:none;position:relative;float:right;font-size:20px;line-height:20px}body.story-builder #builder .alert button.close:hover{background:none}
 body.story-builder #title-bar{background:#f7941e;overflow:hidden;height:63px}body.story-builder #title-bar .logo{display:inline-block;width:333px}
 body.story-builder #title-bar .title{text-align:left;font-family:'Museo300Regular';font-weight:normal;padding:2px 0;font-size:28.8px;line-height:1.2em;display:inline-block;margin-top:15px;height:32px;line-height:32px;width:500px;overflow:hidden;text-overflow:ellipsis;cursor:pointer;white-space:nowrap;color:#fff;text-indent:-32000px}
-body.story-builder .has-story #title-bar .logo{width:34px}
+body.story-builder .has-story #title-bar .logo{width:34px}body.story-builder .has-story #title-bar .logo img{width:34px}
 body.story-builder .has-story #title-bar .title{text-indent:0}
 body.story-builder #title-bar-contents{margin-left:auto;margin-right:auto;width:1020px}
 body.story-builder #tools{position:absolute !important;right:0;top:28px;font-family:'Museo300Regular';font-size:16px}body.story-builder #tools li{padding:0 8px;list-style:none}body.story-builder #tools li a{text-transform:uppercase;text-decoration:none;color:#fff;text-shadow:0 -1px 1px rgba(0,0,0,0.3)}
