@@ -258,10 +258,13 @@ button.help {
 
 // Title Bar
 
+@title-bar-height: 63px;
+@logo-baloon-height: 34px;
+
 #title-bar {
   background: #f7941e;
   overflow: hidden;
-  height:63px;
+  height: @title-bar-height; 
 
   .logo {
     display: inline-block;
@@ -287,13 +290,29 @@ button.help {
     // just show the logo.
     text-indent: -32000px;
   }
+
+  input[name="title"] {
+    float: left;
+    width: 400px;
+    height: 16px;
+    margin-top: 10px;
+    margin-right: 10px;
+  }
+
+  .character-count {
+    float: left;
+    margin-top: 20px;
+  }
 }
 
 .has-story #title-bar {
   // Show the smaller, speech bubble only logo to make room for showing the
   // story title.
   .logo {
+    float: left;
+    padding-top: floor((@title-bar-height - @logo-baloon-height) / 2);
     width: 34px;
+    margin-right: 10px;
 
     img {
       width: 34px;
@@ -680,7 +699,8 @@ button.preview {
 @builder-input-border-width: 1px;
 @builder-input-padding: 12px;
 
-.builder {
+.builder,
+#title-bar-contents {
   input, textarea {
     .sans-serif-text;
     box-shadow:inset 0 0 3px #ccc;

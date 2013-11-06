@@ -579,7 +579,7 @@
         this.charCountView = new CharacterCountView({ 
           target: this.$editor(),
           warningLimit: 100,
-          className: 'character-count summary-title'
+          className: 'character-count'
         });
         this.$el.append(this.charCountView.render().$el);
       }
