@@ -1,4 +1,4 @@
-;(function($, _, Backbone, Modernizr, guiders, storybase) {
+;(function($, _, Backbone, Modernizr, wysihtml5, guiders, storybase) {
   // We use Underscore's _.template() in a few places. Use Mustache-style
   // delimeters instead of ERB-style ones.
   _.templateSettings = {
@@ -7216,4 +7216,4 @@
       return this;
     }
   });
-})($, _, Backbone, Modernizr, guiders, storybase);
+})($, _, Backbone, Modernizr, wysihtml5, guiders, storybase);
