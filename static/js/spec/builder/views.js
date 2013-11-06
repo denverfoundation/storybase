@@ -1416,3 +1416,33 @@ describe('TitleView', function() {
     expect(this.view).toHaveUnchangedTitle(oldTitle);
   });
 });
+
+describe('LogoView', function() {
+  beforeEach(function() {
+    this.$header = getHeader().appendTo($('#sandbox'));
+    // Input for logo
+    this.logoSel = '.logo img';
+    this.view = new storybase.builder.views.LogoView({
+      el: this.$header.find(this.logoSel),
+      dispatcher: EventBus
+    });
+  });
+
+  afterEach(function() {
+    this.$header.remove();
+  });
+
+  it('updates the image filename when the user selects a template', function() {
+    var logoFilename = this.view.options.logoFilename;
+    var noStoryLogoFilename = this.view.options.noStoryLogoFilename;
+    // The logoFilename option should be defined
+    expect(logoFilename).toBeTruthy();
+    // The nologoFilename option should be defined
+    expect(noStoryLogoFilename).toBeTruthy();
+
+    expect(this.view.$el.attr("src")).toContain(noStoryLogoFilename);
+    EventBus.trigger('select:template', {});
+    expect(this.view.$el.attr("src")).toContain(logoFilename);
+    expect(this.view.$el.attr("src")).not.toContain(noStoryLogoFilename);
+  });
+});

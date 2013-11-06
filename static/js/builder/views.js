@@ -157,7 +157,8 @@
       toolsContainerEl: '#title-bar-contents',
       visibleSteps: VISIBLE_STEPS, 
       workflowContainerEl: '#workflow-bar-contents',
-      titleEl: '#title-bar-contents'
+      titleEl: '#title-bar-contents',
+      logoEl: '#title-bar-contents .logo img'
     },
 
     events: {
@@ -197,6 +198,11 @@
           dispatcher: this.dispatcher
       });
       this.titleView.render();
+
+      this.logoView = new LogoView({
+        el: this.$(this.options.logoEl),
+        dispatcher: this.dispatcher
+      });
 
       // Initialize a view for the tools menu
       this.toolsView = new ToolsView(
@@ -517,9 +523,7 @@
   var TitleView = Views.TitleView = Backbone.View.extend({
     options: {
       defaultTitle: gettext("Untitled Story"),
-      placeholder: gettext("Edit your title here. Shorter is better: 100 characters or less!"),
-      logoFilename: 'builder-logo-balloon.png',
-      noStoryLogoFilename: 'builder-logo.png'
+      placeholder: gettext("Edit your title here. Shorter is better: 100 characters or less!")
     },
 
     events: {
@@ -553,10 +557,6 @@
       return this.$('input[name="title"]');
     },
 
-    $logo: function() {
-      return this.$('.logo img');
-    },
-
     render: function() {
       var editTitle, inputHtml;
 
@@ -582,8 +582,6 @@
           className: 'character-count summary-title'
         });
         this.$el.append(this.charCountView.render().$el);
-
-        this.swapLogo();
       }
 
       return this;
@@ -594,15 +592,6 @@
 
       this.bindModelEvents();
       this.render();
-    },
-
-    swapLogo: function() {
-      var logoSrc = this.$logo().attr('src');
-      if (logoSrc) {
-        logoSrc = logoSrc.replace(this.options.noStoryLogoFilename, this.options.logoFilename);
-        this.$logo().attr('src', logoSrc);
-      }
-      return this;
     },
 
     /**
@@ -651,6 +640,27 @@
 
     saveModel: function() {
       this.model.save();
+      return this;
+    }
+  });
+
+  var LogoView = Views.LogoView = Backbone.View.extend({
+    options: {
+      logoFilename: 'builder-logo-balloon.png',
+      noStoryLogoFilename: 'builder-logo.png'
+    },
+
+    initialize: function(options) {
+      this.dispatcher = options.dispatcher;
+      this.dispatcher.once("select:template", this.swapLogo, this);
+    },
+
+    swapLogo: function() {
+      var logoSrc = this.$el.attr('src');
+      if (logoSrc) {
+        logoSrc = logoSrc.replace(this.options.noStoryLogoFilename, this.options.logoFilename);
+        this.$el.attr('src', logoSrc);
+      }
       return this;
     }
   });
