@@ -29,39 +29,34 @@ var MockAsset = Backbone.Model.extend({
   acceptsData: function() { return false; }
 });
 
+var EventBus = _.extend({}, Backbone.Events);
+
 describe('AppView', function() {
   beforeEach(function() {
     initializeGlobals();
-    this.dispatcher = _.extend({}, Backbone.Events);
+    // Binding event handlers to the dispatcher happens in the view's
+    // initialize method, so we have to spy on the prototype so the
+    // spied method will get bound.
+    spyOn(storybase.builder.views.AppView.prototype, 'error');
     this.view = new storybase.builder.views.AppView({
-      dispatcher: this.dispatcher
+      dispatcher: EventBus
     });
   });
 
-  describe('when receiving the "error" event', function() {
-    beforeEach(function() {
-      // Binding event handlers to the dispatcher happens in the view's
-      // initialize method, so we have to spy on the prototype so the
-      // spied method will get bound.
-      spyOn(storybase.builder.views.AppView.prototype, 'error');
-      this.view = new storybase.builder.views.AppView({
-        dispatcher: this.dispatcher
-      });
-    });
+  afterEach(function() {
+    this.view.close();
+  });
 
+  describe('when receiving the "error" event', function() {
     it('calls the error method', function() {
       var errMsg = 'An error message';
-      this.dispatcher.trigger('error', errMsg);
+      EventBus.trigger('error', errMsg);
       expect(this.view.error).toHaveBeenCalledWith(errMsg);
     });
   });
 });
 
 describe('SectionEditView view', function() {
-  beforeEach(function() {
-    this.dispatcher = _.clone(Backbone.Events);
-  });
-
   describe('when initialized with an existing story and section', function () {
     beforeEach(function() {
       var Section = Backbone.Model.extend({
@@ -90,7 +85,7 @@ describe('SectionEditView view', function() {
       }); 
       this.section.assets = new SectionAssets();
       this.view = new storybase.builder.views.SectionEditView({
-        dispatcher: this.dispatcher,
+        dispatcher: EventBus,
         model: this.section,
         story: new Story(), 
         templateSource: $('#section-edit-template').html()
@@ -106,7 +101,7 @@ describe('SectionEditView view', function() {
            body: 'Test text asset body',
            content: 'Test text asset body'
         });
-        this.dispatcher.trigger('do:add:sectionasset', this.section, this.asset, container); 
+        EventBus.trigger('do:add:sectionasset', this.section, this.asset, container); 
       });
 
       it('should add the asset to the assets collection', function() {
@@ -119,9 +114,8 @@ describe('SectionEditView view', function() {
 
 describe('BuilderView view', function() {
   beforeEach(function() {
-    this.dispatcher = _.clone(Backbone.Events);
     this.view = new storybase.builder.views.BuilderView({
-      dispatcher: this.dispatcher
+      dispatcher: EventBus
     });
   });
 
@@ -142,12 +136,12 @@ describe('BuilderView view', function() {
       });
       spyOn(storybase.builder.views.BuilderView.prototype, 'setStoryTemplate');
       this.view = new storybase.builder.views.BuilderView({
-        dispatcher: this.dispatcher
+        dispatcher: EventBus
       });
     });
 
     it('calls the setStoryTemplate method', function() {
-      this.dispatcher.trigger("select:template", this.storyTemplate);
+      EventBus.trigger("select:template", this.storyTemplate);
       expect(this.view.setStoryTemplate).toHaveBeenCalledWith(this.storyTemplate);
     });
   });
@@ -165,10 +159,9 @@ describe('SectionAssetEditView view', function() {
         'type': 'text'
       }
     ];
-    this.dispatcher = _.clone(Backbone.Events);
     this.view = new storybase.builder.views.SectionAssetEditView({
        assetTypes: this.assetTypes,
-       dispatcher: this.dispatcher,
+       dispatcher: EventBus,
        story: new Backbone.Model()
     });
   });
@@ -292,7 +285,7 @@ describe('SectionAssetEditView view', function() {
           this.validResponse(this.fixture)
         );
         this.spy = sinon.spy();
-        this.dispatcher.on("do:add:sectionasset", this.spy);
+        EventBus.on("do:add:sectionasset", this.spy);
         this.view.render();
         this.view.$('textarea[name="body"]').val(this.assetBody);
         this.view.$('form').submit();
@@ -380,13 +373,12 @@ describe('SectionAssetEditView view', function() {
 
 describe('DrawerButtonView', function() {
   beforeEach(function() {
-    this.dispatcher = _.clone(Backbone.Events);
     this.parentView = new Backbone.View();
     this.view = new storybase.builder.views.DrawerButtonView({
       callback: function(evt) {
         return true;
       },
-      dispatcher: this.dispatcher,
+      dispatcher: EventBus,
       parent: this.parentView
     });
   });
@@ -394,7 +386,7 @@ describe('DrawerButtonView', function() {
   describe('when clicking on the button', function() {
     beforeEach(function() {
       this.spy = sinon.spy();
-      this.dispatcher.on('do:toggle:drawer', this.spy);
+      EventBus.on('do:toggle:drawer', this.spy);
       this.view.$el.trigger('click');
     });
 
@@ -410,6 +402,7 @@ describe('DrawerView', function() {
       initialize: function() {
         this.dispatcher = this.options.dispatcher;
       },
+
       drawerButton: function() {
         return new storybase.builder.views.DrawerButtonView({
           dispatcher: this.dispatcher,
@@ -427,7 +420,6 @@ describe('DrawerView', function() {
       show: function() {},
       hide: function() {}
     });
-    this.dispatcher = _.clone(Backbone.Events);
     this.inDrawer1 = new MockInDrawerView({
       testViewId: 'test',
     });
@@ -435,7 +427,7 @@ describe('DrawerView', function() {
       testViewId: 'test2',
     });
     this.view = new storybase.builder.views.DrawerView({
-      dispatcher: this.dispatcher
+      dispatcher: EventBus
     });
     this.view.registerView(this.inDrawer1);
     this.view.registerView(this.inDrawer2);
@@ -448,7 +440,7 @@ describe('DrawerView', function() {
 
     describe('and receiving a "do:toggle:drawer" event', function() {
       beforeEach(function() {
-        this.dispatcher.trigger('do:toggle:drawer', this.inDrawer1);
+        EventBus.trigger('do:toggle:drawer', this.inDrawer1);
       });
 
       it('should set the drawer state to open', function() {
@@ -476,7 +468,7 @@ describe('DrawerView', function() {
 
       describe('and receiving a "do:toggle:drawer" event with the active view', function() {
         beforeEach(function() {
-          this.dispatcher.trigger('do:toggle:drawer', this.inDrawer1);
+          EventBus.trigger('do:toggle:drawer', this.inDrawer1);
         });
 
         it('should set the drawer state to closed', function() {
@@ -495,7 +487,7 @@ describe('DrawerView', function() {
 
       describe('and receiving a "do:toggle:drawer" event with a different view', function() {
         beforeEach(function() {
-          this.dispatcher.trigger('do:toggle:drawer', this.inDrawer2);
+          EventBus.trigger('do:toggle:drawer', this.inDrawer2);
         });
 
         it('the drawer state should remain open', function() {
@@ -544,14 +536,13 @@ var MockStory = Backbone.Model.extend({
 describe('PublishButtonView', function() {
   beforeEach(function() {
     this.story = new MockStory();
-    this.dispatcher = _.clone(Backbone.Events);
   });
 
   describe('when rendered with an unpublished story', function() {
     beforeEach(function() {
       this.story.set('status', 'draft');
       this.view = new storybase.builder.views.PublishButtonView({
-        dispatcher: this.dispatcher,
+        dispatcher: EventBus,
         model: this.story
       });
       this.view.render();
@@ -566,7 +557,7 @@ describe('PublishButtonView', function() {
     beforeEach(function() {
       this.story.set('status', 'published');
       this.view = new storybase.builder.views.PublishButtonView({
-        dispatcher: this.dispatcher,
+        dispatcher: EventBus,
         model: this.story
       });
       this.view.render();
@@ -591,7 +582,7 @@ describe('PublishButtonView', function() {
     beforeEach(function() {
       this.story.set('status', 'draft');
       this.view = new storybase.builder.views.PublishButtonView({
-        dispatcher: this.dispatcher,
+        dispatcher: EventBus,
         model: this.story
       });
       spyOn(this.story, 'save').andCallThrough();
@@ -612,10 +603,9 @@ describe('PublishButtonView', function() {
 describe('PublishedButtonsView', function() {
   beforeEach(function() {
     this.story = new MockStory();
-    this.dispatcher = _.clone(Backbone.Events);
     this.view = new storybase.builder.views.PublishedButtonsView({
       model: this.story,
-      dispatcher: this.dispatcher
+      dispatcher: EventBus
     });
     $('#sandbox').append(this.view.$el);
   });
@@ -667,9 +657,8 @@ describe('LegalView', function() {
   beforeEach(function() {
     var MockStory = Backbone.Model.extend({});
     this.story = new MockStory();
-    this.dispatcher = _.clone(Backbone.Events);
     this.view = new storybase.builder.views.LegalView({
-      dispatcher: this.dispatcher,
+      dispatcher: EventBus,
       model: this.story
     });
     $('#sandbox').append(this.view.$el);
@@ -699,16 +688,19 @@ describe('LegalView', function() {
 describe('LicenseView', function() {
   beforeEach(function() {
     this.story = new MockStory();
-    this.dispatcher = _.clone(Backbone.Events);
   });
 
   describe('when initialized with a model with a CC BY license', function() {
     beforeEach(function() {
       this.story.set('license', 'CC BY');
       this.view = new storybase.builder.views.LicenseView({
-        dispatcher: this.dispatcher,
+        dispatcher: EventBus,
         model: this.story
       });
+    });
+
+    afterEach(function() {
+      this.view.close();
     });
 
     describe("and rendered", function() {
@@ -743,9 +735,13 @@ describe('LicenseView', function() {
       this.licenseVal = 'CC BY-NC-SA';
       this.story.set('license', this.licenseVal);
       this.view = new storybase.builder.views.LicenseView({
-        dispatcher: this.dispatcher,
+        dispatcher: EventBus,
         model: this.story
       });
+    });
+
+    afterEach(function() {
+      this.view.close();
     });
 
     describe("and rendered", function() {
@@ -773,10 +769,9 @@ describe('FeaturedAssetDisplayView', function() {
         content: '<img class="asset-thumbnail featured-asset" alt="" src="/media/filer_thumbnails/2013/01/02/test_image2.jpg">' 
     });
     this.story = new MockStory();
-    this.dispatcher = _.clone(Backbone.Events);
     this.defaultImageUrl = '../img/default-image-story-335-200.png';
     this.view = new storybase.builder.views.FeaturedAssetDisplayView({
-      dispatcher: this.dispatcher,
+      dispatcher: EventBus,
       model: this.story,
       defaultImageUrl: this.defaultImageUrl
     });
@@ -834,7 +829,6 @@ describe('FeaturedAssetDisplayView', function() {
 describe('FeaturedAssetSelectView', function() {
   beforeEach(function() {
     this.story = new MockStory();
-    this.dispatcher = _.clone(Backbone.Events);
     this.asset1 = new MockAsset({
       asset_id: '0e279cbb85af43d9a9244c9b252edf71',
       type: 'image',
@@ -864,7 +858,7 @@ describe('FeaturedAssetSelectView', function() {
   describe("when initialized with a story with no image assets", function() {
     beforeEach(function() {
       this.view = new storybase.builder.views.FeaturedAssetSelectView({
-        dispatcher: this.dispatcher,
+        dispatcher: EventBus,
         model: this.story
       });
     });
@@ -885,7 +879,7 @@ describe('FeaturedAssetSelectView', function() {
     beforeEach(function() {
       this.story.assets.reset([this.asset1, this.asset2]);
       this.view = new storybase.builder.views.FeaturedAssetSelectView({
-        dispatcher: this.dispatcher,
+        dispatcher: EventBus,
         model: this.story
       });
     });
@@ -910,7 +904,7 @@ describe('FeaturedAssetSelectView', function() {
       // Stub Story.getFeaturedAsset
       this.gfaStub = spyOn(this.story, "getFeaturedAsset").andReturn(this.asset1);
       this.view = new storybase.builder.views.FeaturedAssetSelectView({
-        dispatcher: this.dispatcher,
+        dispatcher: EventBus,
         model: this.story
       });
     });
@@ -966,7 +960,6 @@ describe('FeaturedAssetSelectView', function() {
 describe("FeaturedAssetAddView", function() {
    beforeEach(function() {
      this.story = new MockStory();
-     this.dispatcher = _.clone(Backbone.Events);
      // Stub the saving of the asset.  In a perfect world, we'd
      // mock the entire class, but we'd have to repeat the 
      // implementation of the schema method.
@@ -974,7 +967,7 @@ describe("FeaturedAssetAddView", function() {
        save: mockSave
      });
      this.view = new storybase.builder.views.FeaturedAssetAddView({
-       dispatcher: this.dispatcher,
+       dispatcher: EventBus,
        model: this.story,
        defaultImageUrl: this.defaultImageUrl,
        assetModelClass: MockSavingAsset
@@ -1047,13 +1040,12 @@ describe("FeaturedAssetView", function() {
      };
      this.story = new MockStory();
      this.story.featuredAssets = new Backbone.Collection();
-     this.dispatcher = _.clone(Backbone.Events);
      this.view = new storybase.builder.views.FeaturedAssetView({
        model: this.story,
        addViewClass: this.MockFeaturedAssetAddView,
        displayViewClass: this.MockFeaturedAssetDisplayView,
        selectViewClass: this.MockFeaturedAssetSelectView,
-       dispatcher: this.dispatcher
+       dispatcher: EventBus
      });
      // Append the view's element to the DOM so we can test
      // for visibility
@@ -1077,7 +1069,7 @@ describe("FeaturedAssetView", function() {
          addViewClass: this.MockFeaturedAssetAddView,
          displayViewClass: this.MockFeaturedAssetDisplayView,
          selectViewClass: this.MockFeaturedAssetSelectView,
-         dispatcher: this.dispatcher
+         dispatcher: EventBus
        });
      });
 
@@ -1225,12 +1217,11 @@ describe('TitleView', function() {
     this.story = new MockSavingModel({
       title: this.title
     });
-    this.dispatcher =  _.extend({}, Backbone.Events);
     sinon.spy(this.story, 'save');
     this.view = new storybase.builder.views.TitleView({
       el: this.$el,
       model: this.story,
-      dispatcher: this.dispatcher
+      dispatcher: EventBus
     });
     sinon.spy(this.view, 'render');
 

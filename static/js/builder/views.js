@@ -297,6 +297,20 @@
       this.dispatcher.on("error", this.error, this);
     },
 
+    close: function() {
+      this.dispatcher.off("open:drawer", this.openDrawer, this);
+      this.dispatcher.off("close:drawer", this.closeDrawer, this);
+      this.dispatcher.off("select:template", this.setTemplate, this);
+      this.dispatcher.off("select:workflowstep", this.updateStep, this); 
+      this.dispatcher.off("error", this.error, this);
+      _.each(this.subviews, function(view) {
+        // Call the close() method, if it exists on the workflow step subviews.
+        if (view.close) {
+          view.close();
+        }
+      }, this);
+    },
+
     openDrawer: function() {
       this.$el.addClass('drawer-open');
     },
@@ -6156,6 +6170,11 @@
       }
     },
 
+    close: function() {
+      this.dispatcher.off("ready:story", this.setStory, this);
+      this.dispatcher.off("select:license", this.getLicenseHtml, this);
+    },
+
     setStory: function(story) {
       this.model = story;
     },
@@ -6242,6 +6261,11 @@
       if (_.isUndefined(this.model)) {
         this.dispatcher.on("ready:story", this.setStory, this);
       }
+    },
+
+    close: function() {
+      this.dispatcher.off("ready:story", this.setStory, this);
+      this.licenseDisplayView.close();
     },
 
     completed: function() {
@@ -6418,6 +6442,12 @@
           });
         }
         this.workflowNavView = new WorkflowNavView(navViewOptions);
+      },
+
+      close: function() {
+        this.dispatcher.off("ready:story", this.setStory, this);
+        this.stopListening(this.model, "change:status", this.handleChangeStatus);
+        this.licenseView.close();
       },
 
       handleChangeStatus: function(story, statusVal, options) {
