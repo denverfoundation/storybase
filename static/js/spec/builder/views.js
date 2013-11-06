@@ -29,6 +29,10 @@ var MockAsset = Backbone.Model.extend({
   acceptsData: function() { return false; }
 });
 
+var MockStoryTemplate = Backbone.Model.extend({
+  getStory: function(options) {}
+});
+
 var EventBus = _.extend({}, Backbone.Events);
 
 describe('AppView', function() {
@@ -39,7 +43,8 @@ describe('AppView', function() {
     // spied method will get bound.
     spyOn(storybase.builder.views.AppView.prototype, 'error');
     this.view = new storybase.builder.views.AppView({
-      dispatcher: EventBus
+      dispatcher: EventBus,
+      showTour: false
     });
   });
 
@@ -54,8 +59,8 @@ describe('AppView', function() {
   });
 
   it('sets a "has-story" class on its element when the user selects a template', function() {
-    var story = new MockStory();
-    EventBus.trigger('select:template', story); 
+    var template = new MockStoryTemplate();
+    EventBus.trigger('select:template', template); 
     expect(this.view.$el.hasClass('has-story')).toBeTruthy();
   });
 });
@@ -123,14 +128,9 @@ describe('BuilderView view', function() {
     });
   });
 
-  describe('when receiving the select:storytemplate signal via the dispatcher', function() {
+  describe('when receiving the select:template signal via the dispatcher', function() {
     beforeEach(function() {
-      // Mock a story template
-      var StoryTemplate = Backbone.Model.extend({
-        getStory: function(options) {
-        }
-      });
-      this.storyTemplate = new StoryTemplate({
+      this.storyTemplate = new MockStoryTemplate({
         "description": "Explain a complex issue simply",
         "story": "/api/0.1/stories/0b2b9e3f38e3422ea3899ee66d1e334b/",
         "tag_line": "it doesn't have to be so complicated",
@@ -1203,6 +1203,11 @@ describe("FeaturedAssetView", function() {
   });  
 });
 
+function getHeader(title) {
+    title = title || "Test Title";
+    return $('<div class="title-container"><a class="logo"><img src="builder-logo.png" /></a><h1 class="title">' + title + '</h1></div>');
+}
+
 describe('TitleView', function() {
   beforeEach(function() {
     var spec = this;
@@ -1215,9 +1220,7 @@ describe('TitleView', function() {
     this.titleSel = '.title';
     // Input for editing the title
     this.inputSel = 'input[name="title"]';
-    // Input for logo
-    this.logoSel = '.logo img';
-    this.$el = $('<div class="title-container"><a class="logo"><img src="builder-logo.png" /></a><h1 class="title">' + this.title + '</h1></div>').appendTo($('#sandbox'));
+    this.$el = getHeader(this.title).appendTo($('#sandbox'));
     // Binding event handlers to the dispatcher happens in the view's
     // initialize method, so we have to spy on the prototype so the
     // spied method will get bound.
@@ -1326,24 +1329,13 @@ describe('TitleView', function() {
   });
 
   afterEach(function() {
+    this.$el.remove();
     this.story.save.restore();
     this.view.render.restore();
   });
 
   it('renders the same element it was initialized with', function() {
     expect(this.view.render().$el).toEqual(this.$el);
-  });
-
-  it('updates the image filename when a model is set', function() {
-    var logoFilename = this.view.options.logoFilename;
-    var noStoryLogoFilename = this.view.options.noStoryLogoFilename;
-    // The logoFilename option should be defined
-    expect(logoFilename).toBeTruthy();
-    // The nologoFilename option should be defined
-    expect(noStoryLogoFilename).toBeTruthy();
-    this.view.render();
-    expect(this.view.$(this.logoSel).attr("src")).toContain(logoFilename);
-    expect(this.view.$(this.logoSel).attr("src")).not.toContain(noStoryLogoFilename);
   });
 
   it("Updates the display when the model's title attribute is changed", function() {

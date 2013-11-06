@@ -1,9 +1,15 @@
-;(function($, _, Backbone, storybase) {
+;(function($, _, Backbone, Modernizr, guiders, storybase) {
   // We use Underscore's _.template() in a few places. Use Mustache-style
   // delimeters instead of ERB-style ones.
   _.templateSettings = {
     interpolate: /\{\{(.+?)\}\}/g
   };
+
+  // If the tooltipster jQuery plugin isn't installed, mock it so we can
+  // call $(...).tooltipster(...) without error
+  if (!$.fn.tooltipster) {
+    $.fn.tooltipster = function (options) {};
+  }
 
   var Builder = storybase.builder;
   if (_.isUndefined(Builder.views)) {
@@ -405,9 +411,12 @@
      */
     pushDown: function($el) {
       var $header = this.$(this.options.headerEl);
-      var orig = $el.css('margin-top');
-      var headerBottom = $header.offset().top + $header.outerHeight();
-      $el.css('margin-top', headerBottom);
+      var orig, headerBottom;
+      if ($header.length) {
+        orig = $el.css('margin-top');
+        headerBottom = $header.offset().top + $header.outerHeight();
+        $el.css('margin-top', headerBottom);
+      }
       return this;
     },
 
@@ -1070,9 +1079,7 @@
         this.render();
         this.delegateEvents();
         this.$el.show();
-        if (jQuery().tooltipster) {
-          this.$('.tooltip').tooltipster();
-        }
+        this.$('.tooltip').tooltipster();
         return this;
       },
 
@@ -1469,11 +1476,9 @@
     },
 
     extraRender: function() {
-      if (jQuery().tooltipster) {
-        this.$('.tooltip').tooltipster({
-          position: 'bottom'
-        });
-      }
+      this.$('.tooltip').tooltipster({
+        position: 'bottom'
+      });
     }
   });
 
@@ -1572,11 +1577,9 @@
     },
 
     extraRender: function() {
-      if (jQuery().tooltipster) {
-        this.$('.tooltip').tooltipster({
-          position: 'bottom'
-        });
-      }
+      this.$('.tooltip').tooltipster({
+        position: 'bottom'
+      });
     },
 
     isStorySaved: function() {
@@ -1614,9 +1617,7 @@
       this.$el.html(this.template());
       this.collection.each(this.addTemplateEntry);
       this.$el.find('.template:even').addClass('even');
-      if (jQuery().tooltipster) {
-        this.$('.tooltip').tooltipster();
-      }
+      this.$('.tooltip').tooltipster();
       return this;
     }
 
@@ -1822,6 +1823,10 @@
      *    other checks.
      */
     show: function(force) {
+      if (_.isUndefined(guiders)) {
+        return;
+      }
+
       var that = this;
 
       var bindNudge = function(myGuider) {
@@ -2383,7 +2388,6 @@
         'saved': '<i class="icon-ok"></i> ' + gettext("Saved")
       },
       updateInterval: 5000,
-      tooltips: jQuery().tooltipster ? true : false,
       tooltipOptions: {
         position: 'right'
       }
@@ -2431,9 +2435,7 @@
 
       setInterval(_.bind(this.render, this), this.options.updateInterval);
 
-      if (this.options.tooltips) {
-        this.$buttonEl.tooltipster(this.options.tooltipOptions);
-      }
+      this.$buttonEl.tooltipster(this.options.tooltipOptions);
     },
 
     setState: function(state) {
@@ -2468,9 +2470,7 @@
 
     handleClick: function(evt) {
       this.dispatcher.trigger('do:save:story');
-      if (this.options.tooltips) {
-        $(evt.target).tooltipster('hide');
-      }
+      $(evt.target).tooltipster('hide');
     },
 
     render: function() {
@@ -2478,12 +2478,7 @@
       var lastSavedStr;
       if (date) {
         lastSavedStr = gettext('Last saved') + ' ' + date;
-        if (this.options.tooltips) {
-          this.$buttonEl.tooltipster('update', lastSavedStr);
-        }
-        else {
-          this.$buttonEl.attr('title', lastSavedStr);
-        }
+        this.$buttonEl.tooltipster('update', lastSavedStr);
       }
       return this;
     }
@@ -3218,11 +3213,9 @@
         this.$el.attr('id', this.model.id);
         this.$el.html(this.template(context));
         // Add tooltip for section adding icon
-        if (jQuery().tooltipster) {
-          this.$('.tooltip').tooltipster({
-            position: 'top'
-          });
-        }
+        this.$('.tooltip').tooltipster({
+          position: 'top'
+        });
         this.delegateEvents();
         return this;
       },
@@ -3266,7 +3259,7 @@
           tooltip: this.options.tooltip
         };
         this.$el.html(this.template(context));
-        if (this.options.tooltip && jQuery().tooltipster) {
+        if (this.options.tooltip) {
           this.$('.section-thumbnail').tooltipster({
             position: 'bottom'
           });
@@ -7213,4 +7206,4 @@
       return this;
     }
   });
-})($, _, Backbone, storybase);
+})($, _, Backbone, Modernizr, guiders, storybase);
