@@ -78,6 +78,7 @@
                     {% else %}
                     <h1 class="title">{{ storybase_site_name }} {% trans "Story Builder" %}</h1>
                     {% endif %}
+                    <div class="byline-container">{% if story %}<span class="byline-prefix">{% trans "By" %}</span> <span class="byline">{{ story.byline }}</span>{% endif %}</div>
                 </div>
             </div>
             <div id="workflow-bar">

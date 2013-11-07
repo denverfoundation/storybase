@@ -1203,9 +1203,15 @@ describe("FeaturedAssetView", function() {
   });  
 });
 
-function getHeader(title) {
+function getHeader(title, byline) {
     title = title || "Test Title";
-    return $('<div class="title-container"><a class="logo"><img src="builder-logo.png" /></a><h1 class="title">' + title + '</h1></div>');
+    byline = byline || "Test Byline";
+    var html = '<div class="title-container">' +
+      '<a class="logo"><img src="builder-logo.png" /></a>' +
+      '<h1 class="title">' + title + '</h1>'+
+      '<div class="byline-container"><span class="byline">' + byline + '</span></div>' +
+      '</div>';
+    return $(html);
 }
 
 describe('TitleView', function() {
@@ -1216,14 +1222,13 @@ describe('TitleView', function() {
     // interest.  Make these variables so the tests are less brittle if
     // we change the markup.
     // 
-    // Element that contains the title text for display
-    this.titleSel = '.title';
     // Input for editing the title
-    this.inputSel = 'input[name="title"]';
     this.$el = getHeader(this.title).appendTo($('#sandbox'));
-    // Binding event handlers to the dispatcher happens in the view's
-    // initialize method, so we have to spy on the prototype so the
-    // spied method will get bound.
+    // Element that contains the title text for display
+    this.$title = this.$el.find('.title');
+    this.$editor = function() {
+      return this.$el.find('input[name="title"]');
+    };
     this.story = new MockSavingModel({
       title: this.title
     });
@@ -1236,15 +1241,14 @@ describe('TitleView', function() {
     sinon.spy(this.view, 'render');
 
     this.editTitle = _.bind(function(newTitle) {
-      var $input = this.view.$(this.inputSel);
-      this.view.$(this.titleSel).trigger('click');
-      $input.val(newTitle);
+      this.$title.trigger('click');
+      this.$editor().val(newTitle);
     }, this);
 
     this.addMatchers({
       toHaveUpdatedTitle: function(expected) {
         var view = this.actual;
-        var $title = view.$(spec.titleSel);
+        var $title = spec.$title; 
 
         this.message = function() {
           return 'Expected the view to have the title "' + expected + '"';
@@ -1255,7 +1259,7 @@ describe('TitleView', function() {
           return false;
         }
         // The input should be hidden
-        if (view.$(spec.inputSel).is(':visible')) {
+        if (spec.$editor().is(':visible')) {
           return false;
         }
         // The title element should be visible
@@ -1272,8 +1276,8 @@ describe('TitleView', function() {
 
       toHaveUnchangedTitle: function(expected) {
         var view = this.actual;
-        var $title = view.$(spec.titleSel);
-        var $input = view.$(spec.inputSel);
+        var $title = spec.$title; 
+        var $input = spec.$editor();
         var title = view.model.get('title');
 
         // The view's model's title should have the new value
@@ -1338,7 +1342,7 @@ describe('TitleView', function() {
     expect(this.view.render().$el).toEqual(this.$el);
   });
 
-  it("Updates the display when the model's title attribute is changed", function() {
+  it("Updates the display when the model's title is changed", function() {
     var newTitle = "New Title";
     this.story.set('title', newTitle);
     expect(this.view.$el.html()).toContain(newTitle);
@@ -1356,39 +1360,52 @@ describe('TitleView', function() {
   it('has an empty text input value when the model\'s title is empty', function() {
     this.view.render();
     this.story.set('title', '');
-    expect(this.view.$(this.inputSel).val()).toEqual('');
+    expect(this.$editor().val()).toEqual('');
   });
 
   it('shows a text input and sets focus to the input when clicked', function() {
     this.view.render();
-    this.view.$(this.titleSel).trigger('click');
-    expect(this.view.$(this.inputSel).length).toEqual(1);
+    this.$title.trigger('click');
+    expect(this.$editor().length).toEqual(1);
     // The title text should be hidden
-    expect(this.view.$(this.titleSel).is(':visible')).toBeFalsy();
-    expect(this.view.$(this.inputSel).is(':focus')).toBeTruthy();
+    expect(this.$title.is(':visible')).toBeFalsy();
+    expect(this.$editor().is(':focus')).toBeTruthy();
+  });
+
+  it('fires an "edit" event when the title is clicked', function() {
+    var spy = sinon.spy();
+    this.view.once('edit', spy);
+    this.$title.trigger('click');
+    expect(spy.called).toBeTruthy();
   });
 
   it('updates the model and hides the text editor when the text input loses focus', function() {
     var newTitle = "New Title";
-    var $input;
 
     this.view.render();
-    $input = this.view.$(this.inputSel);
     this.editTitle(newTitle);
-    $input.trigger('blur');
+    this.$editor().trigger('blur');
     expect(this.view).toHaveUpdatedTitle(newTitle);
+  });
+
+  it('fires a "display" event when the text input loses focus', function() {
+    var spy = sinon.spy();
+   
+    this.view.render();
+    this.editTitle("New Title");
+    this.view.once('display', spy);
+    this.$editor().trigger('blur');
+    expect(spy.called).toBeTruthy();
   });
 
   it('updates the model and hides the text editor when Enter is pressed inside the text input', function() {
     var newTitle = "New Title";
-    var $input;
     var evt = $.Event('keyup');
     evt.which = 13; // Enter
 
     this.view.render();
-    $input = this.view.$(this.inputSel);
     this.editTitle(newTitle);
-    $input.trigger(evt);
+    this.$editor().trigger(evt);
     expect(this.view).toHaveUpdatedTitle(newTitle);
   });
 
@@ -1407,13 +1424,20 @@ describe('TitleView', function() {
     var oldTitle = this.story.get('title');
     var evt = $.Event('keyup');
     evt.which = 27; // Esc
-    var $input;
 
     this.view.render();
-    $input = this.view.$(this.inputSel);
     this.editTitle(newTitle);
-    $input.trigger(evt);
+    this.$editor().trigger(evt);
     expect(this.view).toHaveUnchangedTitle(oldTitle);
+  });
+
+  it('toggles display of the title when the toggle() method is called', function() {
+    this.view.render();
+    expect(this.$title.is(':visible')).toBeTruthy();
+    this.view.toggle();
+    expect(this.$title.is(':visible')).toBeFalsy();
+    this.view.toggle();
+    expect(this.$title.is(':visible')).toBeTruthy();
   });
 });
 
@@ -1444,5 +1468,59 @@ describe('LogoView', function() {
     EventBus.trigger('select:template', {});
     expect(this.view.$el.attr("src")).toContain(logoFilename);
     expect(this.view.$el.attr("src")).not.toContain(noStoryLogoFilename);
+  });
+});
+
+describe('BylineView', function() {
+  beforeEach(function() {
+    this.byline = "Ida Tarbell";
+    this.$header = getHeader("Test Title", this.byline).appendTo($('#sandbox'));
+    this.$el = this.$header.find('.byline-container');
+    this.$byline = this.$header.find('.byline');
+    this.$editor = function() {
+      return this.$header.find('input[name="byline"]');
+    };
+    this.story = new MockSavingModel({
+      title: this.title
+    });
+    this.view = new storybase.builder.views.BylineView({
+      el: this.$el,
+      model: this.story,
+      dispatcher: EventBus
+    });
+  });
+
+  afterEach(function() {
+    this.$header.remove();
+  });
+
+  it("Updates the display when the model's byline is changed", function() {
+    var newByline = "Ida B. Tarbell";
+    this.story.set('byline', newByline);
+    expect(this.view.$el.html()).toContain(newByline);
+  });
+
+  it('adds a tooltip that says "Click to edit byline" to its element', function() {
+    expect(this.view.render().$el.attr('title')).toEqual("Click to edit byline");
+  });
+
+  it('displays the title as "Unknown Author" when the model\'s byline is empty', function() {
+    this.story.set('byline', '');
+    expect(this.view.$el.html()).toContain("Unknown Author");
+  });
+
+  it('has an empty text input value when the model\'s title is empty', function() {
+    this.view.render();
+    this.story.set('byline', '');
+    expect(this.$editor().val()).toEqual('');
+  });
+
+  it('shows a text input and sets focus to the input when clicked', function() {
+    this.view.render();
+    this.$byline.trigger('click');
+    expect(this.$editor().length).toEqual(1);
+    // The title text should be hidden
+    expect(this.$byline.is(':visible')).toBeFalsy();
+    expect(this.$editor().is(':focus')).toBeTruthy();
   });
 });

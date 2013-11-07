@@ -158,6 +158,7 @@
       visibleSteps: VISIBLE_STEPS, 
       workflowContainerEl: '#workflow-bar-contents',
       titleEl: '#title-bar-contents',
+      bylineEl: '#title-bar-contents .byline-container',
       logoEl: '#title-bar-contents .logo img'
     },
 
@@ -193,11 +194,21 @@
       this.activeStep = null; 
 
       this.titleView = new TitleView({
-          el: this.$(this.options.titleEl),
-          model: this.model,
-          dispatcher: this.dispatcher
+        el: this.$(this.options.titleEl),
+        model: this.model,
+        dispatcher: this.dispatcher
       });
       this.titleView.render();
+
+      this.bylineView = new BylineView({
+        el: this.$(this.options.bylineEl),
+        model: this.model,
+        dispatcher: this.dispatcher
+      });
+      this.bylineView.render();
+
+      this.bylineView.on('edit', this.toggleByline, this); 
+      this.titleView.on('edit', this.toggleTitle, this);
 
       this.logoView = new LogoView({
         el: this.$(this.options.logoEl),
@@ -324,6 +335,21 @@
           view.close();
         }
       }, this);
+    },
+
+    toggleViews: function(show, hide) {
+      hide.toggle();
+      show.once('display', function() {
+        hide.toggle();
+      });
+    },
+
+    toggleByline: function() {
+      this.toggleViews(this.bylineView, this.titleView);
+    },
+
+    toggleTitle: function() {
+      this.toggleViews(this.titleView, this.bylineView);
     },
 
     openDrawer: function() {
@@ -517,19 +543,21 @@
     }
   });
 
+
   /**
-   * View for displaying and editing the story title.
+   * View that offers inline editing of a single model attribute
    */
-  var TitleView = Views.TitleView = Backbone.View.extend({
+  var InlineEditorView = Backbone.View.extend({
     options: {
-      defaultTitle: gettext("Untitled Story"),
-      placeholder: gettext("Edit your title here. Shorter is better: 100 characters or less!")
+      template: _.template('<input type="text" name="{{attr}}" value="{{value}}" placeholder="{{placeholder}}" />')
     },
 
-    events: {
-      'click .title': 'handleClick',
-      'blur input[name="title"]': 'handleBlur',
-      'keyup input[name="title"]': 'handleKeyUp'
+    events: function() {
+      var events = {};
+      events['click ' + this.options.displayEl] = 'handleClick';
+      events['blur ' + this.options.editorEl] = 'handleBlur';
+      events['keyup ' + this.options.editorEl] = 'handleKeyUp';
+      return events;
     },
 
     initialize: function(options) {
@@ -544,48 +572,60 @@
     },
 
     bindModelEvents: function() {
-      this.model.on('change:title', this.renderTitle, this);
-      this.model.on('change:title', this.toggleEditor, this);
-      this.model.on('change:title', this.saveModel, this);
+      var changeEvent = 'change:' + this.options.attr;
+      this.model.on(changeEvent, this.renderDisplay, this);
+      this.model.on(changeEvent, this.display, this);
+      this.model.on(changeEvent, this.saveModel, this);
     },
 
-    $title: function() {
-      return this.$('.title');
+    $display: function() {
+      return this.$(this.options.displayEl);
     },
 
     $editor: function() {
-      return this.$('input[name="title"]');
+      return this.$(this.options.editorEl);
     },
 
     render: function() {
-      var editTitle, inputHtml;
+      var val, inputHtml;
 
       if (this.model) {
-        editTitle = this.model.get('title') || ''; 
-        inputHtml = _.template('<input type="text" name="title" value="{{title}}" placeholder="{{placeholder}}" />', {
-          title: editTitle,
+        val = this.getVal() || ''; 
+        inputHtml = this.options.template({ 
+          attr: this.options.attr,
+          value: val, 
           placeholder: this.options.placeholder 
         });
 
-        this.renderTitle();
+        this.renderDisplay();
 
-        // Add a tooltip to let users know the title is editable
-        this.$el.attr('title', gettext('Click to edit title'));
+        // Add a tooltip to let users know the element is editable
+        this.$el.attr('title', this.options.tooltip); 
 
         // Add the hidden form element
         $(inputHtml).hide().appendTo(this.$el);
 
-        // Add a character counter
-        this.charCountView = new CharacterCountView({ 
-          target: this.$editor(),
-          warningLimit: 100,
-          className: 'character-count'
-        });
-        this.$el.append(this.charCountView.render().$el);
+        this.extraRender();
       }
 
       return this;
     },
+
+    /**
+     * Update the display of the title with a new value
+     */
+    renderDisplay: function() {
+      var displayVal = this.getVal() || this.options.displayDefault;
+      var editVal = this.getVal() || '';
+      this.$display().html(displayVal);
+      this.$editor().val(editVal);
+      return this;
+    },
+
+    /**
+     * Hook for additional rendering in subclasses.
+     */
+    extraRender: function() {},
 
     setModel: function(model) {
       this.model = model;
@@ -594,53 +634,119 @@
       this.render();
     },
 
-    /**
-     * Update the display of the title with a new value
-     */
-    renderTitle: function() {
-      var displayTitle = this.model.get('title') || this.options.defaultTitle;
-      var editTitle = this.model.get('title') || '';
-      this.$title().html(displayTitle);
-      this.$editor().val(editTitle);
-      return this;
+    getVal: function() {
+      return this.model.get(this.options.attr);
     },
 
-    toggleEditor: function() {
-      // TODO: Handle character counter elements
-      this.$editor().toggle();
-      this.$title().toggle();
+    setVal: function(val) {
+      this.model.set(this.options.attr, val);
+    },
+
+    edit: function() {
+      this.$display().hide();
+      this.$editor().show();
+      this.trigger('edit');
+    },
+
+    display: function() {
+      this.$editor().hide();
+      this.$display().show();
+      this.trigger('display');
     },
 
     handleClick: function(evt) {
-      this.toggleEditor();
+      this.edit();
       this.$editor().focus();
-      this._oldTitle = this.model.get('title');
+      this._oldVal = this.getVal();
     },
 
     handleBlur: function(evt) {
-      var title = $(evt.target).val();
-      this.model.set('title', title);
+      this.setVal($(evt.target).val());
     },
 
     handleKeyUp: function(evt) {
-      var title; 
       var code = evt.which;
 
       // Only act when the enter key is the one that's pressed
       if (code == 13) {
-        title = $(evt.target).val();
-        this.model.set('title', title);
+        this.setVal($(evt.target).val());
       }
       else if (code == 27) {
         // Esc
-        this.$editor().val(this._oldTitle);
-        this.toggleEditor();
+        this.$editor().val(this._oldVal);
+        this.display();
       }
     },
 
     saveModel: function() {
       this.model.save();
       return this;
+    },
+
+    /**
+     * Hook for toggling the display of the views elements.
+     *
+     * Because this view may operate on pre-existing elements, with
+     * additional subelements, calling this.$el.toggle() might hide 
+     * elements outside of the view's concern.
+     */
+    toggle: function() {
+      this.$display().toggle();
+    }
+  });
+
+  /**
+   * View for displaying and editing the story title.
+   */
+  var TitleView = Views.TitleView = InlineEditorView.extend({
+    options: _.defaults({
+      attr: 'title',
+      displayDefault: gettext("Untitled Story"),
+      placeholder: gettext("Edit your title here. Shorter is better: 100 characters or less!"),
+      displayEl: '.title',
+      editorEl: 'input[name="title"]',
+      tooltip: gettext("Click to edit title")
+    }, InlineEditorView.prototype.options),
+
+    extraRender: function() {
+      // Add a character counter
+      this.charCountView = new CharacterCountView({ 
+        target: this.$editor(),
+        warningLimit: 100,
+        className: 'character-count'
+      });
+      this.$el.append(this.charCountView.render().$el);
+
+      return this;
+    }
+  });
+
+  var BylineView = Views.BylineView = InlineEditorView.extend({
+    options: _.defaults({
+      attr: 'byline',
+      displayDefault: gettext("Unknown Author"),
+      placeholder: gettext("Your Name and/or Organization. Examples: Jon Denzler; Laura Frank, I-News"),
+      displayEl: '.byline',
+      editorEl: 'input[name="byline"]',
+      tooltip: gettext("Click to edit byline")
+    }, InlineEditorView.prototype.options),
+
+    $prefix: function() {
+      return this.$('.byline-prefix');
+    },
+
+    edit: function() {
+      this.$prefix().hide();
+      InlineEditorView.prototype.edit.apply(this);
+    },
+
+    display: function() {
+      this.$prefix().show();
+      InlineEditorView.prototype.display.apply(this);
+    },
+
+    toggle: function() {
+      return this.$el.toggle();
     }
   });
 
