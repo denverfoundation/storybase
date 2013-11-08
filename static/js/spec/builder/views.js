@@ -1246,44 +1246,16 @@ describe('TitleView', function() {
     }, this);
 
     this.addMatchers({
-      toHaveUpdatedTitle: function(expected) {
-        var view = this.actual;
-        var $title = spec.$title; 
-
-        this.message = function() {
-          return 'Expected the view to have the title "' + expected + '"';
-        };
-
-        // The view's model's title should have the new value
-        if (view.model.get('title') != expected) {
-          return false;
-        }
-        // The input should be hidden
-        if (spec.$editor().is(':visible')) {
-          return false;
-        }
-        // The title element should be visible
-        if (!$title.is(':visible')) {
-          return false;
-        }
-        // The new title text should be shown in the title element
-        if ($title.html() != expected) {
-          return false;
-        }
-
-        return true;
-      },
-
-      toHaveUnchangedTitle: function(expected) {
+      toHaveTitle: function(expected) {
         var view = this.actual;
         var $title = spec.$title; 
         var $input = spec.$editor();
         var title = view.model.get('title');
 
-        // The view's model's title should have the new value
+        // The view's model's title should have the expected value       
         if (title != expected) {
           this.message = function() {
-            return 'Expected the view to have the title "' + expected + ' instead it has "' + title + '"';
+            return 'Expected the view\'s model to have the title "' + expected + ' instead it has "' + title + '"';
           };
           return false;
         }
@@ -1316,13 +1288,6 @@ describe('TitleView', function() {
         if ($input.val() != expected) {
           this.message = function() {
             return 'Expected the value of the input to be "' + expected + '"';
-          };
-          return false;
-        }
-
-        if (view.model.save.called) {
-          this.message = function() {
-            return 'Expected the model to be unsaved';
           };
           return false;
         }
@@ -1385,7 +1350,7 @@ describe('TitleView', function() {
     this.view.render();
     this.editTitle(newTitle);
     this.$editor().trigger('blur');
-    expect(this.view).toHaveUpdatedTitle(newTitle);
+    expect(this.view).toHaveTitle(newTitle);
   });
 
   it('fires a "display" event when the text input loses focus', function() {
@@ -1406,7 +1371,19 @@ describe('TitleView', function() {
     this.view.render();
     this.editTitle(newTitle);
     this.$editor().trigger(evt);
-    expect(this.view).toHaveUpdatedTitle(newTitle);
+    expect(this.view).toHaveTitle(newTitle);
+  });
+
+  it('hides the text editor when Enter is pressed inside the text input even if the value is unchanged', function() {
+    var sameTitle = this.story.get('title');
+    var evt = $.Event('keyup');
+    evt.which = 13; // Enter
+
+    this.view.render();
+    this.editTitle(sameTitle);
+    this.$editor().trigger(evt);
+
+    expect(this.view).toHaveTitle(sameTitle);
   });
 
   it('saves the model when the title attribute changes', function() {
@@ -1428,7 +1405,8 @@ describe('TitleView', function() {
     this.view.render();
     this.editTitle(newTitle);
     this.$editor().trigger(evt);
-    expect(this.view).toHaveUnchangedTitle(oldTitle);
+    expect(this.view).toHaveTitle(oldTitle);
+    expect(this.story.save.called).toBeFalsy();
   });
 
   it('toggles display of the title when the toggle() method is called', function() {

@@ -574,7 +574,7 @@
     bindModelEvents: function() {
       var changeEvent = 'change:' + this.options.attr;
       this.model.on(changeEvent, this.renderDisplay, this);
-      this.model.on(changeEvent, this.display, this);
+      //this.model.on(changeEvent, this.display, this);
       this.model.on(changeEvent, this.saveModel, this);
     },
 
@@ -662,6 +662,7 @@
 
     handleBlur: function(evt) {
       this.setVal($(evt.target).val());
+      this.display();
     },
 
     handleKeyUp: function(evt) {
@@ -670,6 +671,7 @@
       // Only act when the enter key is the one that's pressed
       if (code == 13) {
         this.setVal($(evt.target).val());
+        this.display();
       }
       else if (code == 27) {
         // Esc
