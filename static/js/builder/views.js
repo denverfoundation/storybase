@@ -549,7 +549,7 @@
    */
   var InlineEditorView = Backbone.View.extend({
     options: {
-      template: _.template('<input type="text" name="{{attr}}" value="{{value}}" placeholder="{{placeholder}}" />')
+      template: _.template('<input type="text" name="{{attr}}" value="{{value}}" placeholder="{{placeholder}}" title="{{editorTooltip}}" />')
     },
 
     events: function() {
@@ -594,7 +594,8 @@
         inputHtml = this.options.template({ 
           attr: this.options.attr,
           value: val, 
-          placeholder: this.options.placeholder 
+          placeholder: this.options.placeholder,
+          editorTooltip: this.options.editorTooltip
         });
 
         this.renderDisplay();
@@ -707,7 +708,8 @@
       placeholder: gettext("Edit your title here. Shorter is better: 100 characters or less!"),
       displayEl: '.title',
       editorEl: 'input[name="title"]',
-      tooltip: gettext("Click to edit title")
+      tooltip: gettext("Click to edit title"),
+      editorTooltip: gettext("Enter your title. Press Enter to save or Esc to cancel.")
     }, InlineEditorView.prototype.options),
 
     extraRender: function() {
@@ -730,7 +732,8 @@
       placeholder: gettext("Your Name and/or Organization. Examples: Jon Denzler; Laura Frank, I-News"),
       displayEl: '.byline',
       editorEl: 'input[name="byline"]',
-      tooltip: gettext("Click to edit byline")
+      tooltip: gettext("Click to edit byline"),
+      editorTooltip: gettext("Enter your byline. Press Enter to save or Esc to cancel.")
     }, InlineEditorView.prototype.options),
 
     $prefix: function() {
