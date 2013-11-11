@@ -682,7 +682,19 @@
     },
 
     saveModel: function() {
-      this.model.save();
+      if (this.model.isNew()) {
+        // TODO: See if we can just get rid of the do:save:story signal
+        // with cleaner event binding
+
+        // If the story is new, trigger a "do:save:story" event on the
+        // event bus so other views can take care of additional first-time
+        // saving steps like updating the browser location and saving
+        // sections.
+        this.dispatcher.trigger('do:save:story');
+      }
+      else {
+        this.model.save();
+      }
       return this;
     },
 

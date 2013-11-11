@@ -14,6 +14,9 @@ var mockSave = function(attributes, options) {
   _.each(attributes, function(val, key) {
     this.set(key, val);
   }, this);
+  // Assign a mock id to the model so isNew() will
+  // return false
+  this.id = '8b4ffd98c1404b75bb8d7aeaddea2a4d';
   if (options.success) {
     options.success(this);
   }
@@ -1240,6 +1243,11 @@ describe('TitleView', function() {
     });
     sinon.spy(this.view, 'render');
 
+    this.initialSaveCallback = sinon.spy(function() {
+      this.view.model.save();  
+    });
+    EventBus.on('do:save:story', this.initialSaveCallback, this);
+
     this.editTitle = _.bind(function(newTitle) {
       this.$title.trigger('click');
       this.$editor().val(newTitle);
@@ -1301,6 +1309,8 @@ describe('TitleView', function() {
     this.$el.remove();
     this.story.save.restore();
     this.view.render.restore();
+
+    EventBus.off('do:save:story');
   });
 
   it('renders the same element it was initialized with', function() {
@@ -1384,6 +1394,23 @@ describe('TitleView', function() {
     this.$editor().trigger(evt);
 
     expect(this.view).toHaveTitle(sameTitle);
+  });
+
+  it('triggers a "do:save:story" event on the event bus when the story is initially saved', function() {
+    // Mock event handler for 'do:save:story'
+    var evt = $.Event('keyup');
+    evt.which = 13; // Enter
+
+    this.view.render();
+    this.editTitle("Initial Title");
+    this.$editor().trigger(evt);
+    // 'do:save:story' should be triggered once
+    expect(this.initialSaveCallback.callCount).toEqual(1);
+
+    this.editTitle("New Title");
+    this.$editor().trigger(evt);
+    // 'do:save:story' should not be triggered again
+    expect(this.initialSaveCallback.callCount).toEqual(1);
   });
 
   it('saves the model when the title attribute changes', function() {
