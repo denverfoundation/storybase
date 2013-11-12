@@ -126,9 +126,14 @@ describe('SectionEditView view', function() {
 
 describe('BuilderView view', function() {
   beforeEach(function() {
+    spyOn(storybase.builder.views.BuilderView.prototype, 'setStoryTemplate');
     this.view = new storybase.builder.views.BuilderView({
       dispatcher: EventBus
     });
+  });
+
+  afterEach(function() {
+    this.view.close();
   });
 
   describe('when receiving the select:template signal via the dispatcher', function() {
@@ -140,10 +145,6 @@ describe('BuilderView view', function() {
         "template_id": "5586de9ad3674c7e926ca4f4f04da27b",
         "time_needed": "30 minutes", 
         "title": "Explainer"
-      });
-      spyOn(storybase.builder.views.BuilderView.prototype, 'setStoryTemplate');
-      this.view = new storybase.builder.views.BuilderView({
-        dispatcher: EventBus
       });
     });
 

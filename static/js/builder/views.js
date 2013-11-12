@@ -2243,6 +2243,19 @@
       }
     },
 
+    close: function() {
+      this.model.off("sync", this.triggerSaved, this);
+      this.model.unusedAssets.off("sync reset add", this.hasAssetList, this);
+
+      this.dispatcher.off("select:template", this.setStoryTemplate, this);
+      this.dispatcher.off("do:save:story", this.save, this);
+      this.dispatcher.off("ready:story", this.createEditViews, this);
+      this.dispatcher.off("save:story", this.setTitle, this);
+      this.dispatcher.off("ready:story", this.setTitle, this);
+      this.dispatcher.off("created:section", this.handleCreateSection, this);
+      this.dispatcher.off('do:show:tour', this.showTour, this);
+    },
+
     handleCreateSection: function(section) {
       var view = this.createSectionEditView(section);
       this.renderEditViews({showFirst: false});
