@@ -1507,7 +1507,8 @@ describe('BylineView', function() {
   });
 
   it('adds a tooltip that says "Click to edit byline" to its element', function() {
-    expect(this.view.render().$el.attr('title')).toEqual("Click to edit byline");
+    this.view.render();
+    expect(this.$byline.attr('title')).toEqual("Click to edit byline");
   });
 
   it('displays the title as "Unknown Author" when the model\'s byline is empty', function() {
