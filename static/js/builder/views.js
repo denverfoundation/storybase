@@ -47,11 +47,10 @@
    * app and for testing independent of the server-side code.
    */
   var VISIBLE_STEPS = {
-    'build': true,
-    'data': true, 
-    'tag': true,
-    'review': true,
-    'publish': true
+    build: true,
+    info: true, 
+    publish: true,
+    tag: true
   };
 
   /**
@@ -273,7 +272,7 @@
       // views use different constructor, options. If this gets to
       // unwieldy, maybe use a factory function.
       if (this.options.visibleSteps.tag) {
-        this.subviews.tag =  new TaxonomyView(
+        this.subviews.tag = new TaxonomyView(
           _.defaults({
             places: this.options.places,
             topics: this.options.topics,
@@ -282,11 +281,7 @@
           }, commonOptions)
         );
       }
-      if (this.options.visibleSteps.review) {
-        this.subviews.review = new ReviewView(
-          _.clone(commonOptions)
-        );
-      }
+
       if (this.options.visibleSteps.publish) {
         this.subviews.publish =  new PublishView(
           _.defaults({
@@ -1535,6 +1530,7 @@
      */
     _initItems: function() {
       var items = [];
+
       if (this.options.visibleSteps.build) {
         items.push({
           id: 'build',
@@ -1556,18 +1552,7 @@
           path: 'tag/'
         });
       }
-      if (this.options.visibleSteps.review) {
-        items.push({
-          id: 'review',
-          //title: gettext("Make sure your story is ready to go with spellcheck and other tools"),
-          title: gettext("Make sure your story is ready to go"),
-          text: gettext('Review'),
-          visible: true,
-          enabled: 'isStorySaved',
-          selected: false,
-          path: 'review/'
-        });
-      }
+
       if (this.options.visibleSteps.publish) {
         items.push({
           id: 'publish',
@@ -1579,6 +1564,7 @@
           path: 'publish/'
         });
       }
+
       return items;
     },
 
@@ -2194,7 +2180,10 @@
           text: gettext("Next"),
           path: 'publish/',
           enabled: isNew,
-          validate: this.options.visibleSteps.review ? true : this.simpleReview
+          // TODO: Decide if we only want to run validation for the connected story builder,
+          // or if we want to run it for everything
+          // this.options.visibleSteps.tag is a proxy for "Is this the connected story builder?"
+          validate: this.options.visibleSteps.tag ? true : this.simpleReview
         });
       }
       this.workflowNavView = new WorkflowNavView(navViewOptions);
@@ -5788,77 +5777,6 @@
     })
   );
 
-  var ReviewView = Views.ReviewView = HandlebarsTemplateView.extend(
-    _.extend({}, NavViewMixin, {
-      className: 'view-container',
-
-      options: {
-        templateSource: $('#review-template').html()
-      },
-
-      events: {
-        'click .preview': 'previewStory'
-      },
-
-      initialize: function() {
-        this.dispatcher = this.options.dispatcher;
-        this.compileTemplates();
-        this.previewed = false;
-        // Need to bind validate to this before it's passed as a callback to
-        // the WorkflowNavView instance
-        _.bindAll(this, 'hasPreviewed');
-        this.workflowNavView = new WorkflowNavView({
-          model: this.model,
-          dispatcher: this.dispatcher,
-          items: [
-            {
-              id: 'workflow-nav-tag-back',
-              className: 'prev',
-              title: gettext("Back to Tag"),
-              text: gettext("Previous"),
-              path: 'tag/'
-            },
-            {
-              id: 'workflow-nav-publish-fwd',
-              className: 'next',
-              title: gettext("Publish My Story"),
-              text: gettext("Next"),
-              path: 'publish/'
-            }
-          ]
-        });
-        if (_.isUndefined(this.model)) {
-          this.dispatcher.on("ready:story", this.setStory, this);
-        }
-      },
-
-      setStory: function(story) {
-        this.model = story;
-      },
-
-      render: function() {
-        var context = {};
-        this.$el.html(this.template(context));
-        this.workflowNavView.render();
-        this.delegateEvents();
-        return this;
-      },
-
-      previewStory: function(evt) {
-        evt.preventDefault();
-        var url = '/stories/' + this.model.id + '/viewer/';
-        this.previewed = true;
-        // Re-render the nav view to reflect the newly enabled button
-        this.workflowNavView.render();
-        window.open(url);
-      },
-
-      hasPreviewed: function() {
-        return this.previewed;
-      }
-    })
-  );
-
   var TaxonomyView = Views.TaxonomyView = HandlebarsTemplateView.extend(
     _.extend({}, NavViewMixin, {
       id: 'share-taxonomy',
@@ -5884,11 +5802,11 @@
               path: ''
             },
             {
-              id: 'workflow-nav-review-fwd',
+              id: 'workflow-nav-publish-fwd',
               className: 'next',
-              title: gettext("Review"),
+              title: gettext("Publish My Story"),
               text: gettext("Next"),
-              path: 'review/'
+              path: 'publish/'
             }
           ]
         });
@@ -6571,24 +6489,27 @@
           dispatcher: this.dispatcher,
           items: []
         };
-        if (this.options.visibleSteps.review) {
+
+
+        if (this.options.visibleSteps.tag) {
           navViewOptions.items.push({
-            id: 'workflow-nav-build-back',
+            id: 'workflow-nav-tag-back',
             className: 'prev',
-            title: gettext("Back to Review"),
-            text: gettext("Previous"), 
-            path: 'review/'
+            title: gettext("Label your story to help others discover it on Floodlight"),
+            text: gettext("Previous"),
+            path: 'tag/'
           });
         }
         else {
           navViewOptions.items.push({
-            id: 'workflow-nav-review-back',
+            id: 'workflow-nav-build-back',
             className: 'prev',
             title: gettext("Continue Writing Story"),
             text: gettext("Previous"),
             path: ''
           });
         }
+
         this.workflowNavView = new WorkflowNavView(navViewOptions);
       },
 
