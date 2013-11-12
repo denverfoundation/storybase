@@ -1324,7 +1324,8 @@ describe('TitleView', function() {
   });
 
   it('adds a tooltip that says "Click to edit title" to its element', function() {
-    expect(this.view.render().$el.attr('title')).toEqual("Click to edit title");
+    this.view.render();
+    expect(this.$title.attr('title')).toEqual("Click to edit title");
   });
 
   it('displays the title as "Untitled Story" when the model\'s title is empty', function() {

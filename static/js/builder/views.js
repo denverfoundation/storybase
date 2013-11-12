@@ -601,7 +601,7 @@
         this.renderDisplay();
 
         // Add a tooltip to let users know the element is editable
-        this.$el.attr('title', this.options.tooltip); 
+        this.$display().attr('title', this.options.tooltip); 
 
         // Add the hidden form element
         $(inputHtml).hide().appendTo(this.$el);
