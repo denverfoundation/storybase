@@ -134,6 +134,16 @@
   };
 
   /**
+   * Utility for checking if a view's model is new.
+   *
+   * The value of the function's ``this`` value should be bound
+   * to a view instance using ``_.bind()``.
+   */
+  var storySaved = function() {
+    return _.isUndefined(this.model) ? false : !this.model.isNew();
+  };
+
+  /**
    * Master view for the story builder
    *
    * Dispatches to sub-views.
@@ -280,6 +290,7 @@
             projects: this.options.projects
           }, commonOptions)
         );
+        this.workflowStepView.items.push(_.result(this.subviews.tag, 'workflowStep'));
       }
 
       if (this.options.visibleSteps.publish) {
@@ -291,6 +302,7 @@
             viewURLTemplate: this.options.viewURLTemplate
           }, commonOptions)
         );
+        this.workflowStepView.items.push(_.result(this.subviews.publish, 'workflowStep'));
       }
 
       this.subviews.alert = new AlertManagerView({
@@ -301,6 +313,7 @@
       // IMPORTANT: Create the builder view last because it triggers
       // events that the other views need to listen to
       this.subviews.build = new BuilderView(buildViewOptions);
+      this.workflowStepView.items.unshift(_.result(this.subviews.build, 'workflowStep'));
       this.lastSavedView = new LastSavedView({
         dispatcher: this.dispatcher,
         lastSaved: this.model ? this.model.get('last_edited'): null
@@ -1459,8 +1472,7 @@
      *
      * Define this functionality in view subclasses.
      */
-    extraInit: function() {
-    },
+    extraInit: function() {},
 
     setStory: function(story) {
       this.model = story;
@@ -1484,7 +1496,6 @@
       return path;
     },
 
-
     handleClick: function(evt) {
       evt.preventDefault();
       var $button = $(evt.target);
@@ -1499,15 +1510,11 @@
         this.dispatcher.trigger('navigate', route, 
           {trigger: true, replace: true});
       }
-    },
-
-    isStorySaved: function() {
-      return _.isUndefined(this.model) ? false : !this.model.isNew();
     }
   });
 
   /**
-   * Shows current step of workflow 
+   * Shows current and available steps of the builder workflow
    */
   var WorkflowStepView = Views.WorkflowStepView = WorkflowNavView.extend({
     tagName: 'ol',
@@ -1522,54 +1529,8 @@
       }
     },
 
-    /**
-     * Initialize items.
-     *
-     * Call this from initialize() once rather than repeating the logic
-     * each time items() is called.
-     */
-    _initItems: function() {
-      var items = [];
-
-      if (this.options.visibleSteps.build) {
-        items.push({
-          id: 'build',
-          title: gettext("Construct your story using text, photos, videos, data visualizations, and other materials"),
-          text: gettext("Build"),
-          visible: true,
-          selected: false,
-          path: ''
-        });
-      }
-      if (this.options.visibleSteps.tag) {
-        items.push({
-          id: 'tag',
-          title: gettext("Label your story with topics and places so that people can easily discover it on Floodlight"),
-          text: gettext('Tag'),
-          visible: true,
-          enabled: 'isStorySaved',
-          selected: false,
-          path: 'tag/'
-        });
-      }
-
-      if (this.options.visibleSteps.publish) {
-        items.push({
-          id: 'publish',
-          title: gettext("Post your story to Floodlight and your social networks"),
-          text: gettext('Publish/Share'),
-          visible: true,
-          enabled: 'isStorySaved',
-          selected: false,
-          path: 'publish/'
-        });
-      }
-
-      return items;
-    },
-
     extraInit: function() {
-      this.items = _.isUndefined(this.options.items) ? this._initItems() : this.options.items;
+      this.items = this.options.items || [];
       this.activeStep = null;
       this.dispatcher.on("select:workflowstep", this.updateStep, this);
     },
@@ -2112,6 +2073,17 @@
     options: {
       titleEl: '.story-title',
       visibleSteps: VISIBLE_STEPS
+    },
+
+    workflowStep: {
+      id: 'build',
+      title: gettext("Construct your story using text, photos, videos, data visualizations, and other materials"),
+      nextTitle: gettext("Write Your Story"),
+      prevTitle: gettext("Continue Writing Story"),
+      text: gettext("Build"),
+      visible: true,
+      selected: false,
+      path: ''
     },
 
     initialize: function() {
@@ -5787,6 +5759,18 @@
         templateSource: $('#share-taxonomy-template').html()
       },
 
+      workflowStep: function() {
+        return {
+          id: 'tag',
+          title: gettext("Label your story with topics and places so that people can easily discover it on Floodlight"),
+          text: gettext('Tag'),
+          visible: true,
+          enabled: _.bind(storySaved, this), 
+          //selected: false,
+          path: 'tag/'
+        };
+      },
+
       initialize: function() {
         this.dispatcher = this.options.dispatcher;
         this.compileTemplates();
@@ -5992,8 +5976,8 @@
       }
     },
 
-    initialize: function() {
-      this.dispatcher = this.options.dispatcher;
+    initialize: function(options) {
+      this.dispatcher = options.dispatcher;
       this.compileTemplates();
       this.initialCenter = new L.LatLng(storybase.MAP_CENTER[0],
                                         storybase.MAP_CENTER[1]);
@@ -6440,6 +6424,18 @@
         legalEl: '#share-legal'
       },
 
+      workflowStep: function() {
+        return {
+          id: 'publish',
+          title: gettext("Post your story to Floodlight and your social networks"),
+          text: gettext('Publish/Share'),
+          visible: true,
+          enabled: _.bind(storySaved, this), 
+          //selected: false,
+          path: 'publish/'
+        };
+      },
+
       initListeners: function() {
         if (_.isUndefined(this.model)) {
           this.dispatcher.once("ready:story", this.setStory, this);
@@ -6489,7 +6485,6 @@
           dispatcher: this.dispatcher,
           items: []
         };
-
 
         if (this.options.visibleSteps.tag) {
           navViewOptions.items.push({

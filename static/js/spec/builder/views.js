@@ -124,10 +124,26 @@ describe('SectionEditView view', function() {
   });
 });
 
+function implementsWorkflowStep(context) {
+  describe("implements a workflow step because it", function() {
+    var view;
+
+    beforeEach(function() {
+      view = context.view;
+    });
+
+    it('has a workflowStep property', function() {
+      expect(_.isObject(_.result(view, 'workflowStep'))).toBeTruthy();
+    });
+  });
+}
+
 describe('BuilderView view', function() {
+  var context = {}; 
+
   beforeEach(function() {
     spyOn(storybase.builder.views.BuilderView.prototype, 'setStoryTemplate');
-    this.view = new storybase.builder.views.BuilderView({
+    this.view = context.view = new storybase.builder.views.BuilderView({
       dispatcher: EventBus
     });
   });
@@ -153,6 +169,8 @@ describe('BuilderView view', function() {
       expect(this.view.setStoryTemplate).toHaveBeenCalledWith(this.storyTemplate);
     });
   });
+
+  implementsWorkflowStep(context);
 });
 
 describe('SectionAssetEditView view', function() {
@@ -1530,5 +1548,93 @@ describe('BylineView', function() {
     // The title text should be hidden
     expect(this.$byline.is(':visible')).toBeFalsy();
     expect(this.$editor().is(':focus')).toBeTruthy();
+  });
+});
+
+describe('TaxonomyView', function() {
+  var context = {};
+
+  beforeEach(function() {
+    storybase.MAP_CENTER = [39.74151, -104.98672];
+    storybase.MAP_ZOOM_LEVEL = 11;
+    storybase.MAP_POINT_ZOOM_LEVEL = 14;
+
+    this.view = context.view = new storybase.builder.views.TaxonomyView({
+      dispatcher: EventBus
+    });
+  });
+
+  implementsWorkflowStep(context);
+});
+
+describe('PublishView', function() {
+  var context = {};
+
+  beforeEach(function() {
+    this.view = context.view = new storybase.builder.views.PublishView({
+      dispatcher: EventBus
+    });
+  });
+
+  afterEach(function() {
+    this.view.close();
+  });
+
+  implementsWorkflowStep(context);
+});
+
+describe('WorkflowStepView', function() {
+  beforeEach(function() {
+    this.items = [
+      {
+        id: 'build',
+        title: "Construct your story using text, photos, videos, data visualizations, and other materials",
+        nextTitle: "Write Your Story",
+        prevTitle: "Continue Writing Story",
+        text: "Build",
+        visible: true,
+        selected: false,
+        path: ''
+      },
+      {
+        id: 'tag',
+        title: "Label your story with topics and places so that people can easily discover it on Floodlight",
+        text: "Tag",
+        visible: true,
+        enabled: true, 
+        path: 'tag/'
+      },
+      {
+        id: 'publish',
+        title: "Post your story to Floodlight and your social networks",
+        text: "Publish/Share",
+        visible: true,
+        enabled: true, 
+        path: 'publish/'
+      }
+    ];
+
+    storybase.builder.APP_ROOT = '/build/';
+
+    this.view = new storybase.builder.views.WorkflowStepView({
+      dispatcher: EventBus,
+      items: this.items
+    });
+  });
+
+  it('displays a link for each of the items when rendered', function() {
+     var item, $itemLinks, $itemLink;
+
+     this.view.render();
+     $itemLinks = this.view.$('li a');
+
+     expect($itemLinks.length).toEqual(this.items.length);
+
+     for (var i = 0; i < this.items.length; i++) {
+       item = this.items[i];
+       $itemLink = $itemLinks.eq(i);
+       expect($itemLink.html()).toEqual(item.text);
+       expect($itemLink.attr('href')).toEqual(storybase.builder.APP_ROOT + item.path);
+     }
   });
 });
