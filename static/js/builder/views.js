@@ -187,10 +187,10 @@
         dispatcher: this.options.dispatcher,
         language: this.options.language,
         startOverUrl: this.options.startOverUrl,
-        storyListUrl: this.options.storyListUrl,
-        visibleSteps: this.options.visibleSteps
+        storyListUrl: this.options.storyListUrl
       };
       var buildViewOptions;
+      var workflowSteps = [];
       var $toolsContainerEl = this.$(this.options.toolsContainerEl);
       this.$workflowContainerEl = this.$(this.options.workflowContainerEl);
 
@@ -235,6 +235,7 @@
       this.helpView = new HelpView(
         _.clone(commonOptions)
       );
+
       this.drawerView = new DrawerView({
         dispatcher: this.dispatcher
       });
@@ -244,11 +245,6 @@
         commonOptions.model = this.model;
       }
 
-      // Initialize the view for the workflow step indicator
-      this.workflowStepView = new WorkflowStepView(
-        _.clone(commonOptions)
-      );
-      this.$workflowContainerEl.append(this.workflowStepView.el);
 
       buildViewOptions = _.defaults({
         assetTypes: this.options.assetTypes,
@@ -290,7 +286,7 @@
             projects: this.options.projects
           }, commonOptions)
         );
-        this.workflowStepView.items.push(_.result(this.subviews.tag, 'workflowStep'));
+        workflowSteps.push(_.result(this.subviews.tag, 'workflowStep'));
       }
 
       if (this.options.visibleSteps.publish) {
@@ -302,7 +298,7 @@
             viewURLTemplate: this.options.viewURLTemplate
           }, commonOptions)
         );
-        this.workflowStepView.items.push(_.result(this.subviews.publish, 'workflowStep'));
+        workflowSteps.push(_.result(this.subviews.publish, 'workflowStep'));
       }
 
       this.subviews.alert = new AlertManagerView({
@@ -313,7 +309,23 @@
       // IMPORTANT: Create the builder view last because it triggers
       // events that the other views need to listen to
       this.subviews.build = new BuilderView(buildViewOptions);
-      this.workflowStepView.items.unshift(_.result(this.subviews.build, 'workflowStep'));
+      workflowSteps.unshift(_.result(this.subviews.build, 'workflowStep'));
+
+      // Initialize the views for navigating between workflow steps
+      this.workflowStepView = new WorkflowStepView(
+        _.extend(_.clone(commonOptions), {
+          items: workflowSteps
+        })
+      );
+      this.$workflowContainerEl.append(this.workflowStepView.el);
+
+      this.workflowNextPrevView = new WorkflowNextPrevView(
+        _.extend(_.clone(commonOptions), {
+          items: workflowSteps
+        })
+      );
+      this.$workflowContainerEl.append(this.workflowNextPrevView.el);
+
       this.lastSavedView = new LastSavedView({
         dispatcher: this.dispatcher,
         lastSaved: this.model ? this.model.get('last_edited'): null
@@ -412,21 +424,6 @@
       return this.subviews[this.activeStep];
     },
 
-    /**
-     * Update the next/previous workflow step buttons
-     */
-    renderWorkflowNavView: function(activeView) {
-      if (this._activeWorkflowNavView) {
-        // Remove the previous active workflow nav view
-        this._activeWorkflowNavView.$el.remove();
-      }
-      // Update the workflow nav view
-      this._activeWorkflowNavView = _.isUndefined(activeView.getWorkflowNavView) ? null: activeView.getWorkflowNavView();
-      if (this._activeWorkflowNavView) {
-        this.workflowStepView.$el.after(this._activeWorkflowNavView.el);
-      }
-    },
-
     renderSubNavView: function(activeView) {
       var $subNavContainerEl = this.$(this.options.subNavContainerEl);
       if (this._activeSubNavView) {
@@ -467,7 +464,6 @@
       // has already seen and closed the unsupported browser warning
       var cookieKey = 'storybase_hide_browser_support_warning';
 
-      this.renderWorkflowNavView(activeView);
       this.renderSubNavView(activeView);
       $container.empty();
       $container.append(activeView.render().$el);
@@ -478,9 +474,15 @@
       if (activeView.onShow) {
         activeView.onShow();
       }
+
       if (this.workflowStepView) {
         this.workflowStepView.render();
       }
+
+      if (this.workflowNextPrevView) {
+        this.workflowNextPrevView.render();
+      }
+
       this.toolsView.render();
       this.drawerView.setElement(this.options.drawerEl).render();
       this.pushDown(this.drawerView.$el);
@@ -1575,20 +1577,19 @@
       this.activeStep = step;
       this._prevStep = null;
       this._nextStep = null;
-      if (this.activeStep === 'selecttemplate') {
-        this.activeStep = 'build';
-      }
-
+      
       activeIdx = this._itemIndexes[this.activeStep];
-      prevIdx = activeIdx - 1;
-      nextIdx = activeIdx + 1;
+      if (!_.isUndefined(activeIdx)) {
+        prevIdx = activeIdx - 1;
+        nextIdx = activeIdx + 1;
 
-      if (prevIdx >= 0) {
-        this._prevStep = this.items[prevIdx].id;
-      }
+        if (prevIdx >= 0) {
+          this._prevStep = this.items[prevIdx].id;
+        }
 
-      if (nextIdx < this.items.length) {
-        this._nextStep = this.items[nextIdx].id;
+        if (nextIdx < this.items.length) {
+          this._nextStep = this.items[nextIdx].id;
+        }
       }
 
       this.render();
@@ -2139,8 +2140,7 @@
     className: 'builder',
 
     options: {
-      titleEl: '.story-title',
-      visibleSteps: VISIBLE_STEPS
+      titleEl: '.story-title'
     },
 
     workflowStep: {
@@ -2156,10 +2156,6 @@
 
     initialize: function() {
       var that = this;
-      var navViewOptions;
-      var isNew = _.bind(function() {
-        return !this.model.isNew();
-      }, this);
 
       this.containerTemplates = this.options.containerTemplates;
       this.dispatcher = this.options.dispatcher;
@@ -2191,42 +2187,6 @@
       this.templateStory = this.options.templateStory;
 
       _.bindAll(this, 'createSectionEditView', 'simpleReview', 'setTemplateStory', 'initializeStoryFromTemplate');
-
-      // Initialize navigation to the next workflow step
-      navViewOptions = {
-        model: this.model,
-        dispatcher: this.dispatcher,
-        items: []
-      };
-      // The next step will either be tag (in the normal builder) or
-      // publish (in the connected story builder). If this gets more
-      // complicated, it might make more sense to have a global set
-      // of items. 
-      if (this.options.visibleSteps.tag) {
-        navViewOptions.items.push({
-          id: 'workflow-nav-tag-fwd',
-          className: 'next',
-          title: gettext("Label your story to help others discover it on Floodlight"),
-          text: gettext("Next"),
-          path: 'tag/',
-          enabled: isNew 
-        });
-      }
-      else if (this.options.visibleSteps.publish) {
-        navViewOptions.items.push({
-          id: 'workflow-nav-publish-fwd',
-          className: 'next',
-          title: gettext("Publish My Story"),
-          text: gettext("Next"),
-          path: 'publish/',
-          enabled: isNew,
-          // TODO: Decide if we only want to run validation for the connected story builder,
-          // or if we want to run it for everything
-          // this.options.visibleSteps.tag is a proxy for "Is this the connected story builder?"
-          validate: this.options.visibleSteps.tag ? true : this.simpleReview
-        });
-      }
-      this.workflowNavView = new WorkflowNavView(navViewOptions);
 
       if (this.options.showSectionList) {
         this.sectionListView = new SectionListView({
@@ -2362,19 +2322,13 @@
     },
 
     render: function() {
-      var that = this;
       if (this.sectionListView) {
         this.sectionListView.render();
       }
-      if (this.workflowNavView) {
-        this.workflowNavView.render();
-      }
-      this.renderEditViews();
-      return this;
-    },
 
-    getWorkflowNavView: function() {
-      return this.workflowNavView;
+      this.renderEditViews();
+
+      return this;
     },
 
     getSubNavView: function() {
@@ -2409,15 +2363,6 @@
       this.dispatcher.trigger('do:clear:help');
       this.dispatcher.trigger('do:clear:helpactions');
       this.dispatcher.trigger("unregister:drawerview", this.unusedAssetView);
-    },
-
-    workflowNavView: function() {
-      if (this.sectionListView) {
-        return this.sectionListView;
-      }
-      else {
-        return this.workflowNavView;
-      }
     },
 
     triggerSaved: function() {
@@ -2929,15 +2874,6 @@
 
     isHighlighted: function() {
       return this.$el.hasClass(this.highlightClass);
-    }
-  };
-
-  /**
-   * Mixin for views that have a navigation subview
-   */
-  var NavViewMixin = {
-    getWorkflowNavView: function() {
-      return this.workflowNavView;
     }
   };
 
@@ -5818,7 +5754,7 @@
   );
 
   var TaxonomyView = Views.TaxonomyView = HandlebarsTemplateView.extend(
-    _.extend({}, NavViewMixin, {
+    _.extend({}, {
       id: 'share-taxonomy',
 
       className: 'view-container',
@@ -5842,26 +5778,6 @@
       initialize: function() {
         this.dispatcher = this.options.dispatcher;
         this.compileTemplates();
-        this.workflowNavView = new WorkflowNavView({
-          model: this.model,
-          dispatcher: this.dispatcher,
-          items: [
-            {
-              id: 'workflow-nav-build-back',
-              className: 'prev',
-              title: gettext("Continue Writing Story"),
-              text: gettext("Previous"),
-              path: ''
-            },
-            {
-              id: 'workflow-nav-publish-fwd',
-              className: 'next',
-              title: gettext("Publish My Story"),
-              text: gettext("Next"),
-              path: 'publish/'
-            }
-          ]
-        });
         this.addLocationView = new AddLocationView({
           model: this.model,
           dispatcher: this.dispatcher
@@ -6015,7 +5931,6 @@
         }
         this.$el.append(this.tagView.render().el);
         this.$el.append(this.addLocationView.render().el);
-        this.workflowNavView.render();
 
         return this;
       },
@@ -6470,7 +6385,7 @@
   });
 
   var PublishView = Views.PublishView = PublishViewBase.extend(
-    _.extend({}, NavViewMixin, {
+    _.extend({}, {
       id: 'share-publish',
 
       className: 'view-container',
@@ -6514,8 +6429,6 @@
       },
 
       initialize: function() {
-        var navViewOptions;
-   
         PublishViewBase.prototype.initialize.apply(this);
 
         this._sharingWidgetInitialized = false;
@@ -6547,33 +6460,6 @@
           viewURLTemplate: this.options.viewURLTemplate
         });
         this.subviews = [this.licenseView, this.featuredAssetView, this.buttonView];
-
-        navViewOptions = {
-          model: this.model,
-          dispatcher: this.dispatcher,
-          items: []
-        };
-
-        if (this.options.visibleSteps.tag) {
-          navViewOptions.items.push({
-            id: 'workflow-nav-tag-back',
-            className: 'prev',
-            title: gettext("Label your story to help others discover it on Floodlight"),
-            text: gettext("Previous"),
-            path: 'tag/'
-          });
-        }
-        else {
-          navViewOptions.items.push({
-            id: 'workflow-nav-build-back',
-            className: 'prev',
-            title: gettext("Continue Writing Story"),
-            text: gettext("Previous"),
-            path: ''
-          });
-        }
-
-        this.workflowNavView = new WorkflowNavView(navViewOptions);
       },
 
       close: function() {
@@ -6643,7 +6529,6 @@
         if (this.options.showSharing) {
           this.renderSharing();
         }
-        this.workflowNavView.render();
         this.delegateEvents();
         return this;
       },
