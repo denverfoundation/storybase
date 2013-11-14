@@ -1441,8 +1441,6 @@
       }
     },
 
-    items: [],
-
     events: function() {
       var events = {};
       var items = _.result(this, 'items');
@@ -1454,17 +1452,41 @@
       return events;
     },
 
-    initialize: function() {
+    initialize: function(options) {
       ClickableItemsView.prototype.initialize.apply(this, arguments);
-      this.dispatcher = this.options.dispatcher;
-      this.items = _.isUndefined(this.options.items) ? this.items : this.options.items;
+      this.dispatcher = options.dispatcher;
+      this.items = options.items || [];
       // Include story ID in paths?  This should only happen for stories
       // created in this session.
       this._includeStoryId = _.isUndefined(this.model) || this.model.isNew();
       if (_.isUndefined(this.model)) {
         this.dispatcher.on("ready:story", this.setStory, this);
       }
-      this.extraInit();
+
+      this.activeStep = null;
+      this.dispatcher.on("select:workflowstep", this.updateStep, this);
+
+      this.extraInit(options);
+    },
+
+    updateSelected: function() {
+      _.each(this.items, function(item) {
+        if (item.id === this.activeStep) {
+          item.selected = true;
+        }
+        else {
+          item.selected = false;
+        }
+      }, this);
+    },
+
+    updateStep: function(step) {
+      this.activeStep = step;
+      if (this.activeStep === 'selecttemplate') {
+        this.activeStep = 'build';
+      }
+      this.updateSelected();
+      this.render();
     },
 
     /**
@@ -1529,37 +1551,83 @@
       }
     },
 
-    extraInit: function() {
-      this.items = this.options.items || [];
-      this.activeStep = null;
-      this.dispatcher.on("select:workflowstep", this.updateStep, this);
-    },
-
-    updateSelected: function() {
-      _.each(this.items, function(item) {
-        if (item.id === this.activeStep) {
-          item.selected = true;
-        }
-        else {
-          item.selected = false;
-        }
-      }, this);
-    },
-
-    updateStep: function(step) {
-      this.activeStep = step;
-      if (this.activeStep === 'selecttemplate') {
-        this.activeStep = 'build';
-      }
-      this.updateSelected();
-      this.render();
-    },
-
     extraRender: function() {
       this.$('.tooltip').tooltipster({
         position: 'bottom'
       });
     }
+  });
+
+  /**
+   * Next/previous buttons for navigating between workflow steps
+   */
+  var WorkflowNextPrevView = Views.WorkflowNextPrevView = WorkflowNavView.extend({
+    extraInit: function(options) {
+      this._itemIndexes = {};
+      _.each(this.items, function(item, idx) {
+        this._itemIndexes[item.id] = idx;  
+      }, this);
+    },
+
+    updateStep: function(step) {
+      var activeIdx, prevIdx, nextIdx;
+
+      this.activeStep = step;
+      this._prevStep = null;
+      this._nextStep = null;
+      if (this.activeStep === 'selecttemplate') {
+        this.activeStep = 'build';
+      }
+
+      activeIdx = this._itemIndexes[this.activeStep];
+      prevIdx = activeIdx - 1;
+      nextIdx = activeIdx + 1;
+
+      if (prevIdx >= 0) {
+        this._prevStep = this.items[prevIdx].id;
+      }
+
+      if (nextIdx < this.items.length) {
+        this._nextStep = this.items[nextIdx].id;
+      }
+
+      this.render();
+    },
+
+    getItemClass: function(itemOptions) {
+      var cssClass = WorkflowNavView.prototype.getItemClass.apply(this, arguments);
+      var extra = "";
+
+      if (itemOptions.id === this._prevStep) {
+        extra = "prev";
+      }
+      else if (itemOptions.id === this._nextStep) {
+        extra = "next";
+      }
+
+      extra = cssClass.length ? " " + extra : extra;
+
+      cssClass = cssClass + extra;
+
+      return cssClass;
+    },
+
+    getVisibleItems: function() {
+      var items = [];
+      if (!this.activeStep) {
+        return items;
+      }
+
+      if (this._prevStep) {
+        items.push(this.items[this._itemIndexes[this._prevStep]]);
+      }
+
+      if (this._nextStep) {
+        items.push(this.items[this._itemIndexes[this._nextStep]]);
+      }
+
+      return items;
+    },
   });
 
   /**

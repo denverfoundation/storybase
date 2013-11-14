@@ -1583,42 +1583,42 @@ describe('PublishView', function() {
   implementsWorkflowStep(context);
 });
 
+var workflowStepItems = [
+  {
+    id: 'build',
+    title: "Construct your story using text, photos, videos, data visualizations, and other materials",
+    nextTitle: "Write Your Story",
+    prevTitle: "Continue Writing Story",
+    text: "Build",
+    visible: true,
+    selected: false,
+    path: ''
+  },
+  {
+    id: 'tag',
+    title: "Label your story with topics and places so that people can easily discover it on Floodlight",
+    text: "Tag",
+    visible: true,
+    enabled: true, 
+    path: 'tag/'
+  },
+  {
+    id: 'publish',
+    title: "Post your story to Floodlight and your social networks",
+    text: "Publish/Share",
+    visible: true,
+    enabled: true, 
+    path: 'publish/'
+  }
+];
+
 describe('WorkflowStepView', function() {
   beforeEach(function() {
-    this.items = [
-      {
-        id: 'build',
-        title: "Construct your story using text, photos, videos, data visualizations, and other materials",
-        nextTitle: "Write Your Story",
-        prevTitle: "Continue Writing Story",
-        text: "Build",
-        visible: true,
-        selected: false,
-        path: ''
-      },
-      {
-        id: 'tag',
-        title: "Label your story with topics and places so that people can easily discover it on Floodlight",
-        text: "Tag",
-        visible: true,
-        enabled: true, 
-        path: 'tag/'
-      },
-      {
-        id: 'publish',
-        title: "Post your story to Floodlight and your social networks",
-        text: "Publish/Share",
-        visible: true,
-        enabled: true, 
-        path: 'publish/'
-      }
-    ];
-
     storybase.builder.APP_ROOT = '/build/';
 
     this.view = new storybase.builder.views.WorkflowStepView({
       dispatcher: EventBus,
-      items: this.items
+      items: workflowStepItems 
     });
   });
 
@@ -1628,13 +1628,212 @@ describe('WorkflowStepView', function() {
      this.view.render();
      $itemLinks = this.view.$('li a');
 
-     expect($itemLinks.length).toEqual(this.items.length);
+     expect($itemLinks.length).toEqual(workflowStepItems.length);
 
-     for (var i = 0; i < this.items.length; i++) {
-       item = this.items[i];
+     for (var i = 0; i < workflowStepItems.length; i++) {
+       item = workflowStepItems[i];
        $itemLink = $itemLinks.eq(i);
        expect($itemLink.html()).toEqual(item.text);
        expect($itemLink.attr('href')).toEqual(storybase.builder.APP_ROOT + item.path);
      }
+  });
+});
+
+describe('WorkflowNextPrevView', function() {
+  var WorkflowNextPrevView = storybase.builder.views.WorkflowNextPrevView;
+
+  beforeEach(function() {
+    sinon.spy(WorkflowNextPrevView.prototype, 'render');
+    this.story = new MockStory();
+    this.view = new storybase.builder.views.WorkflowNextPrevView({
+      items: workflowStepItems,
+      dispatcher: EventBus
+    });
+
+    this.addMatchers({
+      toHaveVisibleItems: function(count) {
+        var notText = this.isNot ? " not" : "";
+        var $items = this.actual.$('a');
+
+        if (_.isUndefined(count) && $items.length === 0) {
+          this.message = function() {
+            return "Expected the view to" + notText + " display items";
+          };
+
+          return false;
+        }
+        else if (!_.isUndefined(count) && $items.length !== count) {
+          this.message = function() {
+            return "Expected the view to" + notText + " display " + count + " items, instead it displayed " + $items.length;
+          };
+
+          return false;
+        }
+
+        return true;
+      },
+
+      toHavePrevLink: function() {
+        var notText = this.isNot ? " not" : "";
+
+        if (this.actual.$('a.prev').length !== 1) {
+          this.message = function() {
+            return "Expected the view to" + notText + " display a link to the previous workflow step";
+          };
+
+          return false;
+        }
+
+       return true;
+      },
+
+      toHaveNextLink: function() {
+        var notText = this.isNot ? " not" : "";
+
+        if (this.actual.$('a.next').length !== 1) {
+          this.message = function() {
+            return "Expected the view to" + notText + " display a link to the next workflow step";
+          };
+
+          return false;
+        }
+
+        return true;
+      },
+
+      toHavePrevLinkTo: function(stepId) {
+        var $link = this.actual.$('a.prev');
+        var notText = this.isNot ? " not" : "";
+
+        this.message = function() {
+          return "Expected the view to" + notText + " display a link to the previous workflow step \"" + stepId + "\"";
+        };
+
+        if ($link.length !== 1) {
+          return false;
+        }
+
+        if (stepId === 'build' && !$link.attr('href').length) {
+          return false;
+        }
+        else if (stepId !== 'build' && $link.attr('href').indexOf(stepId) === -1) {
+          return false;
+        }
+
+        return true;
+      },
+
+      toHaveNextLinkTo: function(stepId) {
+        var $link = this.actual.$('a.next');
+        var notText = this.isNot ? " not" : "";
+
+        this.message = function() {
+          return "Expected the view to" + notText + " display a link to the next workflow step \"" + stepId + "\"";
+        };
+
+        if ($link.length !== 1) {
+          return false;
+        }
+
+        if (stepId === 'build' && !$link.attr('href').length) {
+          return false;
+        }
+        else if (stepId !== 'build' && $link.attr('href').indexOf(stepId) === -1) {
+          return false;
+        }
+
+        return true;
+      }
+    });
+  });
+
+  afterEach(function() {
+    WorkflowNextPrevView.prototype.render.restore();
+  });
+
+  it('has its items property set to the items passed to the constructor', function() {
+     var srcItem, dstItem;
+
+     expect(this.view.items.length).toEqual(workflowStepItems.length);
+     for (var i = 0; i < workflowStepItems.length; i++) {
+       srcItem = workflowStepItems[i];
+       dstItem = this.view.items[i];
+       expect(dstItem.id).toEqual(srcItem.id);
+     }
+  });
+
+  it("doesn't display any items when rendered without a model being set", function() {
+    this.view.render();
+    expect(this.view).not.toHaveVisibleItems();
+  });
+
+  it("renders when it is notified that the story has been initialized", function() {
+    expect(this.view.render.called).toBeFalsy();
+    EventBus.trigger('ready:story', this.story);
+    expect(this.view.render.called).toBeTruthy();
+  });
+
+  it("doesn't display any items when rendered when no workflow step is active", function() {
+    this.view.setStory(this.story);
+    expect(this.view).not.toHaveVisibleItems();
+  });
+
+  describe("when the first workflow step is active", function() {
+    beforeEach(function() {
+      this.view.setStory(this.story);
+      EventBus.trigger('select:workflowstep', workflowStepItems[0].id);
+    });
+
+    it("displays a single link", function() {
+      expect(this.view).toHaveVisibleItems(1);
+    });
+
+    it("displays no link to the previous step", function() {
+      expect(this.view).not.toHavePrevLink();
+    });
+
+    it("displays a link to the next step", function() {
+      expect(this.view).toHaveNextLinkTo(workflowStepItems[1].id); 
+    });
+  });
+
+  describe('when the second workflow step is active', function() {
+    beforeEach(function() {
+      this.view.setStory(this.story);
+      EventBus.trigger('select:workflowstep', workflowStepItems[1].id);
+    });
+
+    it("displays two links", function() {
+      expect(this.view).toHaveVisibleItems(2);
+    });
+
+    it('displays a link to the previous step', function() {
+      expect(this.view).toHavePrevLinkTo(workflowStepItems[0].id); 
+    });
+
+    it('displays a link to the next step', function() {
+      expect(this.view).toHaveNextLinkTo(workflowStepItems[2].id); 
+    });
+  });
+
+  describe('when the last workflow step is active', function() {
+    var lastIndex = workflowStepItems.length - 1;
+
+    beforeEach(function() {
+      this.view.setStory(this.story);
+      EventBus.trigger('select:workflowstep', workflowStepItems[lastIndex].id);
+    });
+
+    it("displays a single link", function() {
+      expect(this.view).toHaveVisibleItems(1);
+    });
+
+    it('displays a link to the previous step', function() {
+      expect(this.view).toHavePrevLinkTo(workflowStepItems[lastIndex - 1].id); 
+    });
+
+    it('displays no link to the next step', function() {
+      expect(this.view).not.toHaveNextLink(); 
+    });
   });
 });
