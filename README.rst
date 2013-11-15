@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.17.1
+~~~~~~
+
+* Add icon for "Successes and Obstacles" template (#895)
+
 0.17.0
 ~~~~~~
 
