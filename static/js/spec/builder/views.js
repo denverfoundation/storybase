@@ -66,6 +66,20 @@ describe('AppView', function() {
     EventBus.trigger('select:template', template); 
     expect(this.view.$el.hasClass('has-story')).toBeTruthy();
   });
+
+  it('initializes a subview for editing story information', function() {
+    expect(_.isUndefined(this.view.subviews.info)).toBeFalsy();
+  });
+
+  it('initializes subviews for navigating between workflow steps', function() {
+    expect(_.isUndefined(this.view.workflowStepView)).toBeFalsy();
+    expect(_.isUndefined(this.view.workflowNextPrevView)).toBeFalsy();
+  });
+
+  it('has story information editing as the second workflow step', function() {
+    expect(this.view.workflowStepView.items[1].id).toEqual('info');
+    expect(this.view.workflowNextPrevView.items[1].id).toEqual('info');
+  });
 });
 
 describe('SectionEditView view', function() {
@@ -534,6 +548,14 @@ describe('DrawerView', function() {
 });
 
 var MockStory = Backbone.Model.extend({
+  defaults: {
+    'title': '',
+    'byline': '',
+    'summary': '',
+    'connected': false,
+    'connected_prompt': ''
+  },
+
   initialize: function(attributes, options) {
     this.assets = new Backbone.Collection();
   },
@@ -1836,4 +1858,81 @@ describe('WorkflowNextPrevView', function() {
       expect(this.view).not.toHaveNextLink(); 
     });
   });
+});
+
+describe('StoryInfoView', function() {
+  var context = {}; 
+
+  beforeEach(function() {
+    var view;
+
+    this.story = new MockStory();
+    sinon.spy(this.story, 'save');
+    sinon.spy(storybase.builder.views.StoryInfoView.prototype, 'render');
+    this.view = view = context.view = new storybase.builder.views.StoryInfoView({
+      dispatcher: EventBus
+    });
+
+    this.editSummary = function(summary) {
+      var $el = view.$('[name="summary"]');
+      $el.val(summary);
+      $el.trigger('change');
+    };
+  });
+
+  afterEach(function() {
+    this.story.save.restore();
+    storybase.builder.views.StoryInfoView.prototype.render.restore();
+  });
+
+
+  it('provides a form for editing the story summary', function() {
+    this.view.model = this.story;
+    this.view.render();
+    expect(this.view.$('textarea[name="summary"]').length).toEqual(1);
+  });
+
+  it("sets its model and renders when notified that the story has been initialized", function() {
+    EventBus.trigger("ready:story", this.story);
+    expect(this.view.render.called).toBeTruthy();
+    expect(this.view.model).toEqual(this.story);
+  });
+
+  describe("when editing a new story", function() {
+    var spy = sinon.spy();
+
+    beforeEach(function() {
+      EventBus.trigger('ready:story', this.story);
+    });
+
+    afterEach(function() {
+      EventBus.off('do:save:story', spy);
+    });
+
+    it("triggers a 'do:save:story' event when the summary value is changed", function() {
+      var summary = "New summary value";
+
+      EventBus.on('do:save:story', spy);
+      this.editSummary(summary);
+      expect(spy.called).toBeTruthy();
+      expect(this.story.get('summary')).toEqual(summary);
+    });
+  });
+
+  describe("when editing an existing story", function() {
+    beforeEach(function() {
+      this.story.save();
+      EventBus.trigger('ready:story', this.story);
+    });
+
+    it('saves the story when the summary value is changed', function() {
+      var summary = "New summary value";
+      this.view.render();
+      this.editSummary(summary);
+      expect(this.story.save.called).toBeTruthy();
+      expect(this.story.get('summary')).toEqual(summary);
+    });
+  });
+
+  implementsWorkflowStep(context);
 });

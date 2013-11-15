@@ -275,8 +275,14 @@
 
       // Create views for additional workflow steps if they're enabled
       // in options. We don't iterate through the steps because the
-      // views use different constructor, options. If this gets to
+      // views use different constructor options. If this gets to
       // unwieldy, maybe use a factory function.
+     
+      if (this.options.visibleSteps.info) {
+        this.subviews.info = new StoryInfoView(_.clone(commonOptions));
+        workflowSteps.push(_.result(this.subviews.info, 'workflowStep'));
+      }
+      
       if (this.options.visibleSteps.tag) {
         this.subviews.tag = new TaxonomyView(
           _.defaults({
@@ -392,7 +398,7 @@
      * Set the active step of the workflow and re-render the view
      * 
      * @param {String} step ID of the workflow step to set.  Must be one 
-     *     of "build", "data", "tag", "review" or "publish"
+     *     of "build", "data", "tag", "info" or "publish"
      * @param {Function} [callback] Callback function that will be called
      *     after the active workflow step is set.
      */
@@ -2277,17 +2283,10 @@
     },
 
     createEditViews: function() {
-      var storyEditView = null;
       var callEditView = null;
-      if (this.options.showStoryInformation) {
-        storyEditView = new StoryInfoEditView({
-          dispatcher: this.dispatcher,
-          help: this.help.where({slug: 'story-information'})[0],
-          model: this.model
-        });
-        this._editViews.push(storyEditView);
-      }
+
       this.model.sections.each(this.createSectionEditView); 
+
       if (this.options.showCallToAction) {
         callEditView = new CallToActionEditView({
           dispatcher: this.dispatcher,
@@ -2296,6 +2295,7 @@
         });
         this._editViews.push(callEditView);
       }
+
       if (this.$el.is(':visible')) {
         this.renderEditViews();
       }
@@ -2315,8 +2315,6 @@
         that.$el.append(view.render().$el.hide());
       });
       if (this._editViews.length && options.showFirst) {
-        //this._editViews[0].show();
-        //this.dispatcher.trigger('select:section', 'story-info');
         this.dispatcher.trigger('select:section', this._editViews[0].getSection());
       }
     },
@@ -2846,7 +2844,19 @@
    * View mixin for updating a Story model's attribute and triggering
    * a save to the server.
    */
-  var StoryAttributeSavingMixin = {
+  var ModelAttributeSavingMixin = {
+    /**
+     * Event handler for a form element's change event
+     */
+    change: function(e) {
+      var key = $(e.target).attr("name");
+      var value = $(e.target).val();
+      if ($(e.target).prop('checked')) {
+        value = true;
+      }
+      this.saveAttr(key, value);
+    },
+
     saveAttr: function(key, value) {
       if (_.has(this.model.attributes, key)) {
         this.model.set(key, value);
@@ -2937,7 +2947,7 @@
         dispatcher: this.dispatcher,
         model: section
       });
-      index = _.isUndefined(index) ? this._sortedThumbnailViews.length - 1 : index + 1; 
+      index = _.isUndefined(index) ? this._sortedThumbnailViews.length - 1 : index; 
       this._sortedThumbnailViews.splice(index, 0, view);
       this._thumbnailViews[sectionId] = view;
       if (section.isNew()) {
@@ -2959,17 +2969,6 @@
       }
     },
 
-    addStoryInfoThumbnail: function() {
-      var view = new PseudoSectionThumbnailView({
-        dispatcher: this.dispatcher,
-        title: gettext("Story Information"),
-        tooltip: gettext("This section has basic information people will see when browsing stories on the site"),
-        pseudoSectionId: 'story-info'
-      });
-      this._sortedThumbnailViews.push(view);
-      this._thumbnailViews[view.pseudoSectionId] = view;
-    },
-
     addCallToActionThumbnail: function() {
       var view = new PseudoSectionThumbnailView({
         dispatcher: this.dispatcher,
@@ -2988,9 +2987,8 @@
      * template or when it has been fetched from the server.
      */
     addSectionThumbnails: function(options) {
-      this.addStoryInfoThumbnail();
-      this.addCallToActionThumbnail();
       this.model.sections.each(this.addSectionThumbnail);
+      this.addCallToActionThumbnail();
       this._thumbnailsAdded = true;
       if (this.$el.is(':visible')) {
         this.render();
@@ -3115,15 +3113,13 @@
       });
       var postSave = function(section) {
         var thumbnailView;
-        section.off('sync', postSave);
         this.dispatcher.trigger("created:section", section, index);
         thumbnailView = this.addSectionThumbnail(section, index);
         thumbnailView.highlightSection(section);
         this.render();
       };
-      postSave = _.bind(postSave, this);
       this.model.sections.add(section, {at: index});
-      section.on('sync', postSave);
+      section.once('sync', postSave, this);
       this.model.saveSections();
     },
 
@@ -3134,7 +3130,6 @@
       var addView = _.bind(function(id) {
         this._sortedThumbnailViews.push(this._thumbnailViews[id]);
       }, this);
-      this._sortedThumbnailViews.push(this._thumbnailViews['story-info']);
       _.each(sortedIds, addView);
       this._sortedThumbnailViews.push(this._thumbnailViews['call-to-action']);
       this.model.sections.sortByIdList(sortedIds);
@@ -3389,7 +3384,7 @@
   }));
 
   var PseudoSectionEditView = Views.PseudoSectionEditView = HandlebarsTemplateView.extend(
-    _.extend({}, StoryAttributeSavingMixin, {
+    _.extend({}, ModelAttributeSavingMixin, {
       tagName: 'div',
 
       initialize: function() {
@@ -3414,18 +3409,6 @@
         return this;
       },
 
-      /**
-       * Event handler for when form elements are changed
-       */
-      change: function(e) {
-        var key = $(e.target).attr("name");
-        var value = $(e.target).val();
-        if ($(e.target).prop('checked')) {
-          value = true;
-        }
-        this.saveAttr(key, value);
-      },
-
       getSection: function() {
         return this.pseudoSectionId;
       }
@@ -3435,62 +3418,72 @@
   /**
    * View for editing story metadata
    */
-  var StoryInfoEditView = Views.StoryInfoEditView = PseudoSectionEditView.extend({ 
+  var StoryInfoView = Views.StoryInfoView = HandlebarsTemplateView.extend(
+    _.extend({}, ModelAttributeSavingMixin, {
+      id: 'story-info',
 
-    className: 'edit-story-info edit-section',
+      className: 'view-container',
 
-    pseudoSectionId: 'story-info',
-    
-    titleCharCountView: null,
-    summaryCharCountView: null,
+      options: {
+        summaryEl: 'textarea[name="summary"]',
+        templateSource: $('#story-info-template').html()
+      },
 
-    events: function() {
-      var events = {};
-      events['change ' + this.options.summaryEl] = 'change';
-      events['change ' + this.options.titleEl] = 'change';
-      events['change ' + this.options.bylineEl] = 'change';
-      return events;
-    },
+      events: function() {
+        var events = {};
+        events['change ' + this.options.summaryEl] = 'change';
+        return events;
+      },
 
-    options: {
-      titleEl: '[name="title"]',
-      bylineEl: '[name="byline"]',
-      summaryEl: 'textarea[name="summary"]',
-      templateSource: $('#story-info-edit-template').html()
-    },
+      workflowStep: {
+        id: 'info',
+        // #579 TODO: Finalize microcopy for this
+        title: gettext("Summarize your story and select a featured image"),
+        text: gettext("Story Info"),
+        visible: true,
+        path: 'info/'
+      },
 
-    render: function() {
-      var that = this;
-      var handleChange = function () {
-        // Trigger the change event on the underlying element 
-        that.$(that.options.summaryEl).trigger('change');
-      };
-      this.$el.html(this.template(this.model.toJSON()));
-      // Initialize wysihmtl5 editor
-      this.summaryEditor = new RichTextEditor(
-        this.$(this.options.summaryEl)[0],
-        {
-          change: handleChange
-        }
-      );
+      initialize: function(options) {
+        this.dispatcher = options.dispatcher;
+        this.compileTemplates();
 
-      this.titleCharCountView = this.titleCharCountView || new CharacterCountView({ 
-        target: this.$el.find(this.options.titleEl),
-        warningLimit: 100,
-        className: 'character-count summary-title'
-      });
-      this.$el.prepend(this.titleCharCountView.render().$el);
-      
-      this.summaryCharCountView = this.summaryCharCountView || new CharacterCountView({ 
-        target: this.summaryEditor,
-        showOnFocus: false
-      });
-      this.summaryEditor.$toolbar.prepend(this.summaryCharCountView.render().$el);
-      
-      this.delegateEvents(); 
-      return this;
-    }
-  });
+        this.dispatcher.once('ready:story', this.setStory, this);
+      },
+
+      setStory: function(story) {
+        this.model = story;
+        this.render();
+      },
+
+      render: function() {
+        var view = this;
+        var handleChange = function () {
+          // Trigger the change event on the underlying element 
+          view.$(view.options.summaryEl).trigger('change');
+        };
+
+        this.$el.html(this.template(this.model.toJSON()));
+
+        // Initialize wysihmtl5 editor
+        this.summaryEditor = new RichTextEditor(
+          this.$(this.options.summaryEl).get(0),
+          {
+            change: handleChange
+          }
+        );
+
+        this.summaryCharCountView = this.summaryCharCountView || new CharacterCountView({ 
+          target: this.summaryEditor,
+          showOnFocus: false
+        });
+        this.summaryEditor.$toolbar.prepend(this.summaryCharCountView.render().$el);
+
+        this.delegateEvents(); 
+        return this;
+      }
+    })
+  );
 
   /**
    * View for editing story information in the connected story builder.
@@ -3499,7 +3492,7 @@
    *
    */
   var InlineStoryInfoEditView = Views.InlineStoryInfoEditView = HandlebarsTemplateView.extend(
-    _.extend({}, StoryAttributeSavingMixin, {
+    _.extend({}, ModelAttributeSavingMixin, {
       className: 'edit-story-info-inline',
 
       options: {
@@ -3528,18 +3521,6 @@
           
         this.delegateEvents(); 
         return this;
-      },
-
-      /**
-       * Event handler for when form elements are changed
-       */
-      change: function(e) {
-        var key = $(e.target).attr("name");
-        var value = $(e.target).val();
-        if ($(e.target).prop('checked')) {
-          value = true;
-        }
-        this.saveAttr(key, value);
       }
     })
   );
@@ -3603,666 +3584,646 @@
   /**
    * View for editing a section
    */
-  var SectionEditView = Views.SectionEditView = HandlebarsTemplateView.extend({
-    tagName: 'div',
+  var SectionEditView = Views.SectionEditView = HandlebarsTemplateView.extend(
+    _.extend({}, ModelAttributeSavingMixin, {
+      tagName: 'div',
 
-    className: 'edit-section',
+      className: 'edit-section',
 
-    options: {
-      containerEl: '.storybase-container-placeholder',
-      titleEl: '.section-title',
-      selectLayoutEl: 'select.layout',
-      templateSource: $('#section-edit-template').html()
-    },
+      options: {
+        containerEl: '.storybase-container-placeholder',
+        titleEl: '.section-title',
+        selectLayoutEl: 'select.layout',
+        templateSource: $('#section-edit-template').html()
+      },
 
-    events: function() {
-      var events = {};
-      events['change ' + this.options.selectLayoutEl] = 'change';
-      events['change ' + this.options.titleEl] = 'change';
-      return events;
-    },
+      events: function() {
+        var events = {};
+        events['change ' + this.options.selectLayoutEl] = 'change';
+        events['change ' + this.options.titleEl] = 'change';
+        return events;
+      },
 
-    initialize: function() {
-      this.containerTemplates = this.options.containerTemplates;
-      this.dispatcher = this.options.dispatcher;
-      this.story = this.options.story;
-      this.layouts = this.options.layouts;
-      this.defaultHelp = this.options.defaultHelp;
-      this.templateSource = this.options.templateSource || this.templateSource;
-      this.templateSection = this.options.templateSection;
-      this.compileTemplates();
-      this.assets = this.model.assets;
-      this._unsavedAssets = [];
-      this._doConditionalRender = false;
-      this._firstSave = this.model.isNew();
-      // Object to keep track of asset edit views.  Keys are
-      // the container ids.
-      this._assetEditViews = {};
-      // Container ID that should have it's model updated from
-      // this.assets when rendering asset views after a sync
-      this._refreshModelForContainer = null;
-      // Have the section assets been fetched at least once?
-      this._assetsFetched = false;
-      
-      // Edit the story information within the section edit view
-      // This is mostly used in the connected story builder
-      if (this.options.showStoryInfoInline) {
-        this.storyInfoEditView = new InlineStoryInfoEditView({
-          dispatcher: this.dispatcher,
-          model: this.story,
-          prompt: this.options.prompt
-        });
-      }
+      initialize: function() {
+        this.containerTemplates = this.options.containerTemplates;
+        this.dispatcher = this.options.dispatcher;
+        this.story = this.options.story;
+        this.layouts = this.options.layouts;
+        this.defaultHelp = this.options.defaultHelp;
+        this.templateSource = this.options.templateSource || this.templateSource;
+        this.templateSection = this.options.templateSection;
+        this.compileTemplates();
+        this.assets = this.model.assets;
+        this._unsavedAssets = [];
+        this._doConditionalRender = false;
+        this._firstSave = this.model.isNew();
+        // Object to keep track of asset edit views.  Keys are
+        // the container ids.
+        this._assetEditViews = {};
+        // Container ID that should have it's model updated from
+        // this.assets when rendering asset views after a sync
+        this._refreshModelForContainer = null;
+        // Have the section assets been fetched at least once?
+        this._assetsFetched = false;
 
-      this.dispatcher.on('do:add:sectionasset', this.addAsset, this);
-      this.dispatcher.on('do:remove:sectionasset',
-                         this.handleDoRemoveSectionAsset, this);
-      this.dispatcher.on('select:section', this.show, this);
-      this.model.on("change:layout", this.changeLayout, this);
-      this.model.on("sync", this.saveSectionAssets, this);
-      this.model.on("sync", this.conditionalRender, this);
-      this.model.on("sync", this.triggerSaved, this);
-      this.model.on("destroy", this.handleDestroy, this);
-      this.assets.once("sync", this.setAssetsFetched, this);
-    },
-
-    close: function() {
-      this.remove();
-      this.undelegateEvents();
-      this.unbind();
-      this.dispatcher.off('do:add:sectionasset', this.addAsset, this);
-      this.dispatcher.off('do:remove:sectionasset',
-                         this.handleDoRemoveSectionAsset, this);
-      this.dispatcher.off('select:section', this.show, this);
-      this.model.off("change:layout", this.changeLayout, this);
-      this.model.off("sync", this.saveSectionAssets, this);
-      this.model.off("sync", this.conditionalRender, this);
-      this.model.off("sync", this.triggerSaved, this);
-      this.model.off("destroy", this.handleDestroy, this);
-    },
-
-    /**
-     * Get a list of available section layouts in a format that can be
-     * rendered in a template.
-     */
-    getLayoutContext: function() {
-      var that = this;
-      return _.map(this.layouts, function(layout) {
-        return {
-          name: layout.name,
-          layout_id: layout.layout_id,
-          selected: that.model.get('layout') == layout.layout_id,
-          slug: layout.slug
-        };
-      });
-    },
-
-    /**
-     * Create a new SectionAssetEditView for a given
-     * container.
-     *
-     * @param {String} container Container ID
-     * @param {Object} el DOM element from the layout template
-     *   that will be the view's element.
-     */
-    createAssetEditView: function(container, el) {
-      var containerTemplate;
-      var options = {
-        el: el,
-        container: container, 
-        dispatcher: this.dispatcher,
-        language: this.options.language,
-        section: this.model, 
-        story: this.story,
-        assetTypes: this.options.assetTypes
-      };
-      if (this.assets.length) {
-        // If there are assets, bind them to the view with the appropriate
-        // container
-        options.model = this.assets.where({container: container})[0];
-      }
-      if (this.templateSection && this.containerTemplates.length) {
-        containerTemplate = this.containerTemplates.where({
-          section: this.templateSection.id,
-          container: container 
-        })[0];
-        if (containerTemplate) {
-          options.suggestedType = containerTemplate.get('asset_type');
-          options.canChangeAssetType = containerTemplate.get('can_change_asset_type');
-          options.help = containerTemplate.get('help');
-        }
-      }
-      this._assetEditViews[container] = new SectionAssetEditView(options);
-      return this._assetEditViews[container]; 
-    },
-
-    /**
-     * Get the asset editing view for a given container
-     */
-    getAssetEditView: function(container) {
-      return this._assetEditViews[container];
-    },
-
-    /**
-     * Indicate that the assets have been fetched. 
-     *
-     * This should be connected to the ``sync`` event
-     * of ``this.assets``.
-     */
-    setAssetsFetched: function() {
-      this._assetsFetched = true;
-    },
-
-    renderAssetViews: function() {
-      var view = this;
-      var containerAssets;
-      this.$(this.options.containerEl).each(function(index, el) {
-        var container = $(el).attr('id');
-        var assetEditView = view.getAssetEditView(container);
-        if (!assetEditView) {
-          // If there isn't a view for this container, create it
-          assetEditView = view.createAssetEditView(container, el);
-        }
-        else if (assetEditView.el != el) {
-          // If the view's element isn't the one detected in the DOM,  update 
-          // the view's element. This occurs when switching back to the build 
-          // step view from another workflow step
-          assetEditView.setElement(el);
-        }
-
-        if (view._refreshModelForContainer === container) {
-          // Update the model for the edit view for a particular
-          // container. This is neccesary when the assets have been
-          // re-fetched after the user has tried to create an asset
-          // when one has already been assigned to the section/container
-          view._refreshModelForContainer = null;
-          containerAssets = view.assets.where({container: container});
-          if (containerAssets.length && assetEditView.model != containerAssets[0]) {
-            assetEditView.setModel(containerAssets[0]); 
-            assetEditView.setState('display');
-          }
-        }
-
-        assetEditView.render();
-      });
-    },
-
-    render: function() {
-      var that = this;
-      var context = this.model.toJSON();
-      context.layouts = this.getLayoutContext();
-      context.showSectionTitles = this.options.showSectionTitles;
-      context.showLayoutSelection = this.options.showLayoutSelection;
-      this.$el.html(this.template(context));
-      if (this.storyInfoEditView) {
-        this.$el.prepend(this.storyInfoEditView.render().el);
-      }
-      if (this.model.isNew() || this._assetsFetched) {
-        // The model is new (so there are no assets) or
-        // they've already been fetched.  Just (re)render
-        // the views for each asset in the section
-        this.renderAssetViews();
-      }
-      else {
-        // Editing an existing story, but the assets have
-        // not yet been retrieved.  Fetch them, which
-        // will which will trigger ``this.renderAssetViews``
-        this.assets.once("sync", this.renderAssetViews, this);
-        this.assets.fetch();
-      }
-      // Turn the basic select element into a fancy graphical selection
-      // widget
-      this.$el.find(this.options.selectLayoutEl).graphicSelect();
-      // Delegate events so our event bindings work after we've removed
-      // this element from the DOM
-      this.delegateEvents();
-      this.applyPolyfills();
-      return this;
-    },
-
-    show: function(section) {
-      section = _.isUndefined(section) ? this.model : section;
-      var help = this.model.get('help') || this.defaultHelp.toJSON();
-      if (section == this.model) {
-        this.$el.show();
-        // For now, don't show help automatically
-        //this.dispatcher.trigger('do:show:help', help); 
-        this.dispatcher.trigger('do:set:help', help);
-      }
-      else {
-        this.$el.hide();
-      }
-      storybase.views.loadDeferredAssetsAndSize({ 
-        assetSelector: 'iframe.sandboxed-asset',
-        scope: this.$el 
-      });
-      return this;
-    },
-
-    setConditionalRender: function() {
-      this._doConditionalRender = true;
-    },
-
-    conditionalRender: function() {
-      if (this._doConditionalRender === true) {
-        this.render();
-      }
-      this._doConditionalRender = false;
-    },
-
-    saveAttr: function(key, value) {
-      if (_.has(this.model.attributes, key)) {
-        this.model.set(key, value);
-        if (this.model.isNew()) {
-          this.dispatcher.trigger("do:save:story");
-        }
-        else {
-          this.model.save();
-        }
-      }
-    },
-
-    /**
-     * Event handler for when form elements are changed
-     */
-    change: function(e) {
-      var key = $(e.target).attr("name");
-      var value = $(e.target).val();
-      this.saveAttr(key, value);
-    },
-
-    /**
-     * Event handler for the 'change:layout' event.
-     */
-    changeLayout: function(evt) {
-      this.setConditionalRender();
-      if (this.assets.length) {
-        this.removeAssets();
-      }
-      else {
-        this.removeAssetEditViews();
-      }
-    },
-
-    /**
-     * Disassociate all assets with this section. 
-     */
-    removeAssets: function() {
-      this.assets.each(function(asset) {
-        this.removeAsset(asset, {
-          removeView: true
-        });
-      }, this);
-    },
-
-    /**
-     * Event handler for when assets are added to the section
-     */
-    addAsset: function(section, asset, container) {
-      if (section == this.model) {
-        // Artifically set the container attribute of the asset.
-        // For assets retrieved from the server, this is handled by
-        // SectionAssets.parse()
-        asset.set('container', container);
-        this.assets.add(asset);
-        this.story.assets.add(asset);
-        if (this.story.isNew()) {
-          // We haven't saved the story or the section yet.
-          // Defer the saving of the asset relation 
-          this._unsavedAssets.push({
-            asset: asset,
-            container: container
+        // Edit the story information within the section edit view
+        // This is mostly used in the connected story builder
+        if (this.options.showStoryInfoInline) {
+          this.storyInfoEditView = new InlineStoryInfoEditView({
+            dispatcher: this.dispatcher,
+            model: this.story,
+            prompt: this.options.prompt
           });
-          // Trigger an event that will cause the story and section to be saved
-          this.dispatcher.trigger("do:save:story");
         }
-        else {
-          this.saveSectionAsset(asset, container);
+
+        this.dispatcher.on('do:add:sectionasset', this.addAsset, this);
+        this.dispatcher.on('do:remove:sectionasset',
+        this.handleDoRemoveSectionAsset, this);
+        this.dispatcher.on('select:section', this.show, this);
+        this.model.on("change:layout", this.changeLayout, this);
+        this.model.on("sync", this.saveSectionAssets, this);
+        this.model.on("sync", this.conditionalRender, this);
+        this.model.on("sync", this.triggerSaved, this);
+        this.model.on("destroy", this.handleDestroy, this);
+        this.assets.once("sync", this.setAssetsFetched, this);
+      },
+
+      close: function() {
+        this.remove();
+        this.undelegateEvents();
+        this.unbind();
+        this.dispatcher.off('do:add:sectionasset', this.addAsset, this);
+        this.dispatcher.off('do:remove:sectionasset',
+        this.handleDoRemoveSectionAsset, this);
+        this.dispatcher.off('select:section', this.show, this);
+        this.model.off("change:layout", this.changeLayout, this);
+        this.model.off("sync", this.saveSectionAssets, this);
+        this.model.off("sync", this.conditionalRender, this);
+        this.model.off("sync", this.triggerSaved, this);
+        this.model.off("destroy", this.handleDestroy, this);
+      },
+
+      /**
+      * Get a list of available section layouts in a format that can be
+      * rendered in a template.
+      */
+      getLayoutContext: function() {
+        var that = this;
+        return _.map(this.layouts, function(layout) {
+          return {
+            name: layout.name,
+            layout_id: layout.layout_id,
+            selected: that.model.get('layout') == layout.layout_id,
+            slug: layout.slug
+          };
+        });
+      },
+
+      /**
+      * Create a new SectionAssetEditView for a given
+      * container.
+      *
+      * @param {String} container Container ID
+      * @param {Object} el DOM element from the layout template
+      *   that will be the view's element.
+      */
+      createAssetEditView: function(container, el) {
+        var containerTemplate;
+        var options = {
+          el: el,
+          container: container, 
+          dispatcher: this.dispatcher,
+          language: this.options.language,
+          section: this.model, 
+          story: this.story,
+          assetTypes: this.options.assetTypes
+        };
+        if (this.assets.length) {
+          // If there are assets, bind them to the view with the appropriate
+          // container
+          options.model = this.assets.where({container: container})[0];
         }
-      }
-    },
-
-    /**
-     * Remove all asset editing views
-     */
-    removeAssetEditViews: function() {
-      _.each(this._assetEditViews, function(view, container) {
-        view.close();
-        delete this._assetEditViews[container];
-      }, this);
-    },
-
-    /**
-     * Remove the asset editing view for a particular asset
-     */
-    removeEditViewForAsset: function(asset) {
-      var container = asset.get('container');
-      var view = this._assetEditViews[container];
-      if (view && view.model == asset) {
-        view.close();
-        delete this._assetEditViews[container];
-      }
-    },
-
-    /**
-     * Callback for when an asset is removed from the section
-     *
-     * This should be be bound to the do:removesectionasset event.
-     *
-     * @param {Section} section - Section from which the asset is to be removed
-     * @param {Asset} asset - Asset to be removed from the section
-     * @param {object} [options]
-     */
-    handleDoRemoveSectionAsset: function(section, asset, options) {
-      if (section == this.model) {
-        this.removeAsset(asset, options);
-      }
-    },
-
-    /**
-     * Remove an asset from this section
-     *
-     * @param {Asset} asset Asset to be removed
-     * @param {Object} [options] - Options for performing this operation.
-     * @param {boolean} [options.removeView=undefined] - Should the view for editing the
-     *   asset also be removed?
-     * @param {boolean} [options.trigger=true] - Should we trigger a "remove:sectionasset"
-     *   event on the event bus?
-     * @param {boolean} [options.removeFromStory=false] - Should the asset be removed from
-     *   the story as well?
-     * @param {function} [options.success] - Callback function called on a
-     *   successful removal of an asset from this section
-     */
-    removeAsset: function(asset, options) {
-      options = options || {};
-      _.defaults(options, {
-        removeFromStory: false,
-        trigger: true
-      });
-      var view = this;
-      var sectionAsset = this.getSectionAsset(asset);
-      sectionAsset.id = asset.id;
-      sectionAsset.destroy({
-        success: function(model, response) {
-          if (options.removeView) {
-            view.removeEditViewForAsset(asset);
+        if (this.templateSection && this.containerTemplates.length) {
+          containerTemplate = this.containerTemplates.where({
+            section: this.templateSection.id,
+            container: container 
+          })[0];
+          if (containerTemplate) {
+            options.suggestedType = containerTemplate.get('asset_type');
+            options.canChangeAssetType = containerTemplate.get('can_change_asset_type');
+            options.help = containerTemplate.get('help');
           }
-          view.assets.remove(asset);
-          if (options.trigger) {
-            view.dispatcher.trigger("remove:sectionasset", asset);
-            view.dispatcher.trigger("alert", "info", "You removed an asset, but it's not gone forever. You can re-add it to a section from the asset list");
+        }
+        this._assetEditViews[container] = new SectionAssetEditView(options);
+        return this._assetEditViews[container]; 
+      },
+
+      /**
+      * Get the asset editing view for a given container
+      */
+      getAssetEditView: function(container) {
+        return this._assetEditViews[container];
+      },
+
+      /**
+      * Indicate that the assets have been fetched. 
+      *
+      * This should be connected to the ``sync`` event
+      * of ``this.assets``.
+      */
+      setAssetsFetched: function() {
+        this._assetsFetched = true;
+      },
+
+      renderAssetViews: function() {
+        var view = this;
+        var containerAssets;
+        this.$(this.options.containerEl).each(function(index, el) {
+          var container = $(el).attr('id');
+          var assetEditView = view.getAssetEditView(container);
+          if (!assetEditView) {
+            // If there isn't a view for this container, create it
+            assetEditView = view.createAssetEditView(container, el);
           }
-          if (options.removeFromStory) {
-            view.story.assets.remove(asset);
+          else if (assetEditView.el != el) {
+            // If the view's element isn't the one detected in the DOM,  update 
+            // the view's element. This occurs when switching back to the build 
+            // step view from another workflow step
+            assetEditView.setElement(el);
           }
-          if (options.success) {
-            options.success(model, asset);
-          }
-        },
-        error: function(model, response) {
-          view.dispatcher.trigger("error", "Error removing asset from section");
-        }
-      });
-    },
 
-    getSectionAsset: function(asset, container) {
-      var SectionAsset = Backbone.Model.extend({
-        urlRoot: this.model.url() + 'assets',
-        url: function() {
-          return Backbone.Model.prototype.url.call(this) + '/';
-        }
-      });
-      var sectionAsset = new SectionAsset({
-        asset: asset.url(),
-        container: container
-      });
-      sectionAsset.on("sync", this.sectionAssetAdded, this);
-      return sectionAsset;
-    },
-
-    /**
-     * Assign an asset to a particular container in this section.
-     */
-    saveSectionAsset: function(asset, container) {
-      var view = this;
-      this.getSectionAsset(asset, container).save(null, {
-        error: function(sectionAsset, xhr, options) {
-          // Could not assign an asset to the container.  In most cases
-          // this is because the user already assigned an asset to the
-          // container in another tab/window
-          var msg = xhr.responseText;
-          if (xhr.status === 400) {
-            msg = gettext("Oops, couldn't add your asset here. This is probably because you already did so in another tab or window. Hold tight while we refresh this section's assets.");
-          }
-          view.dispatcher.trigger('error', msg);
-          view.assets.remove(asset);
-          // Re-fetch this section's assets from the server to get the
-          // assets that were added in the other window/tab. The resulting
-          // ``sync`` event will also force the UI to re-render.
-          view._refreshModelForContainer = container;
-          view.assets.once("sync", view.renderAssetViews, view);
-          view.assets.fetch();
-          // TODO: Should we add the asset to the story's asset list ?
-        }
-      });
-    },
-
-    saveSectionAssets: function() {
-      var that = this;
-      _.each(this._unsavedAssets, function(sectionAsset) {
-        that.saveSectionAsset(sectionAsset.asset, sectionAsset.container); 
-      });
-      this._unsavedAssets = [];
-    },
-
-    sectionAssetAdded: function() {
-      this.dispatcher.trigger("add:sectionasset");
-    },
-
-    triggerSaved: function() {
-      this.dispatcher.trigger('save:section', this.model, !this._firstSave);
-      this._firstSave = false;
-    },
-
-    /**
-     * Callback for the 'destroy' event on the view's model.
-     */
-    handleDestroy: function() {
-      var triggerUnused = function(asset) {
-        this.dispatcher.trigger("remove:sectionasset", asset);
-      };
-      triggerUnused = _.bind(triggerUnused, this);
-      if (this.assets.length) {
-        this.assets.each(triggerUnused);
-        this.dispatcher.trigger('alert', 'info', gettext("The assets in the section you removed aren't gone forever.  You can re-add them from the asset list"));
-      }
-      if (this.$el.is(':visible')) {
-        // Destroying the currently active view
-        var index = this.model.collection.indexOf(this.model);
-        if (index) {
-          // If this isn't the first section, make the previous section
-          // the active one
-          this.dispatcher.trigger('select:section', this.model.collection.at(index - 1));
-        }
-        else {
-          // Otherwise, show the story info section
-          this.dispatcher.trigger('select:section', 'story-info');
-        }
-      }
-      // Remove the section from the collection of all sections
-      this.collection.splice(_.indexOf(this.collection, this), 1);
-      // Inform the user that the section has been deleted
-      this.dispatcher.trigger('alert', 'success', gettext('The section  "' + this.model.get('title') + '" has been deleted'));
-      this.close();
-    },
-
-    getContainerIds: function() {
-      var ids = [];
-      this.$(this.options.containerEl).each(function(index, el) {
-        ids.push($(el).attr('id'));
-      });
-      return ids;
-    },
-
-    allAssetsDefined: function() {
-      var containerIds = this.getContainerIds();
-      return _.reduce(this.getContainerIds(), function(memo, id) {
-        var matching;
-        if (memo === false) {
-          return false;
-        }
-        else { 
-          matching = this.assets.where({container: id});
-          return matching.length > 0;
-        }
-      }, true, this);
-    },
-
-    getSection: function() {
-      return this.model;
-    },
-    
-    /**
-     * Apply any available polyfills.
-     *
-     */
-    applyPolyfills: function() {
-      if (!Modernizr.input.placeholder) {
-        if (window.polyfills) {
-          window.polyfills.placeholders();
-        }
-      }
-    }
-  });
-
-  var BBFFormMixin = {
-    /**
-     * Attempt to unify validation error handling somewhat.
-     * Knows about MutexGroupedInputForms but compatible
-     * with regular BBF Forms as well.
-     *
-     * @param {Array} errors Hash of errors provided by BBF or 
-     *        hand-made.
-     */
-    handleValidationErrors: function(errors) {
-      var view = this;
-
-      // two ways to show errors: inline with field, or
-      // on top of the form.
-      var inlineErrors = {};
-      var formErrors = [];
-
-      // Function to extract an error message from the items in
-      // errors._others.  Declare it here to avoid declaring an anonymous
-      // function within a for loop
-      var addFormError = function(error) {
-        if (_.isString(error)) {
-          formErrors.push(error);
-        }
-        else if (_.isObject(error)) {
-          // The error is an object, added to _others because the key didn't
-          // match a field name in the form. Just grab the first value as
-          // the error message;
-          for (var k in error) {
-            break;
-          }
-          formErrors.push(error[k]);
-        }
-      };
-
-      var fieldName; // Keys in errors object
-      var inline; // Can a particular error be shown inline?
-      var $field; // A form field's element
-      var $fieldError; // A form field's error message
-      var msg; // An individual error message
-
-      // Remove any previous error-indicating UI state
-      view.form.$('.bbf-error').hide();
-      view.form.$('.bbf-combined-errors').remove();
-      view.form.$('.nav.pills li').removeClass('error');
-      
-      for (fieldName in errors) {
-        // Allow errors in "_others" to be either field-keyed error objects
-        // or simple strings.
-        // @see https://github.com/powmedia/backbone-forms#model-validation
-        if (fieldName == '_others') {
-          _.each(errors._others, addFormError); 
-        }
-        else {
-          // if we can put in an error inline do so, otherwise throw into 
-          // the combined basket up top.
-          inline = false;
-          $field = view.form.$('.field-' + fieldName);
-          if ($field.length) {
-            $fieldError = $field.find('.bbf-error');
-            if ($fieldError.length) {
-              inlineErrors[fieldName] = inlineErrors[fieldName] || [];
-              msg = _.isString(errors[fieldName]) ? errors[fieldName] : errors[fieldName].message;
-              inlineErrors[fieldName].push(msg);
-              inline = true;
+          if (view._refreshModelForContainer === container) {
+            // Update the model for the edit view for a particular
+            // container. This is neccesary when the assets have been
+            // re-fetched after the user has tried to create an asset
+            // when one has already been assigned to the section/container
+            view._refreshModelForContainer = null;
+            containerAssets = view.assets.where({container: container});
+            if (containerAssets.length && assetEditView.model != containerAssets[0]) {
+              assetEditView.setModel(containerAssets[0]); 
+              assetEditView.setState('display');
             }
           }
 
-          // this error was not inline; append it to the big bucket.
-          if (!inline) {
-            formErrors.push(errors[fieldName].message);
-          }
+          assetEditView.render();
+        });
+      },
+
+      render: function() {
+        var that = this;
+        var context = this.model.toJSON();
+        context.layouts = this.getLayoutContext();
+        context.showSectionTitles = this.options.showSectionTitles;
+        context.showLayoutSelection = this.options.showLayoutSelection;
+        this.$el.html(this.template(context));
+        if (this.storyInfoEditView) {
+          this.$el.prepend(this.storyInfoEditView.render().el);
         }
-      }
-      
-      // fill in/update elements
-      
-      _.each(inlineErrors, function(errors, fieldName) {
-        var $field = view.form.$('.field-' + fieldName);
-
-        // there may be multiple errors on a field, but we only show the first.
-        $field.find('.bbf-error').html(errors[0]).slideDown('fast');
-        
-        // highlight relevant option pill, if any 
-        // (for MutexGroupedInputForms)
-        var optionIndex = $field.data('option-index');
-        if (!_.isUndefined(optionIndex)) {
-          view.form.$('.nav.pills li:eq(' + optionIndex + ')').addClass('error');
-        }
-        
-      });
-
-      if (_.size(formErrors) > 0) {
-        $('<ul class="bbf-combined-errors">').prependTo(view.form.$el).slideDown('fast');
-      }
-      _.each(formErrors, function(error) {
-        view.form.$('.bbf-combined-errors').append('<li>' + error + '</li>');
-      });
-
-    },
-    
-    /**
-     * Render a thumbnail for any file inputs.
-     * TODO: revisit, see if there's a way to cleanly splice this
-     * into the "natural" Backbone.Forms templating pipeline.
-     * 
-     * Also @see storybase.forms.File.render.
-     */
-    renderFileFieldThumbnail: function() {
-      this.form.$el.find('input[type=file]').each(function() {
-        var thumbNailValue = $(this).data('file-thumbnail');
-        if (thumbNailValue) {
-          if (thumbNailValue == '__set__') {
-            $(this).before('<div class="data-thumbnail"></div>');
-          }
-          else {
-            $(this)
-              .addClass('has-thumbnail')
-              .before('<img class="file-thumbnail" src="' + $(this).data('file-thumbnail') + '">');
-          }
+        if (this.model.isNew() || this._assetsFetched) {
+          // The model is new (so there are no assets) or
+          // they've already been fetched.  Just (re)render
+          // the views for each asset in the section
+          this.renderAssetViews();
         }
         else {
-          $(this).before('<div class="not-set-thumbnail"></div>');
+          // Editing an existing story, but the assets have
+          // not yet been retrieved.  Fetch them, which
+          // will which will trigger ``this.renderAssetViews``
+          this.assets.once("sync", this.renderAssetViews, this);
+          this.assets.fetch();
         }
-      });
-    }
-    
-  };
+        // Turn the basic select element into a fancy graphical selection
+        // widget
+        this.$el.find(this.options.selectLayoutEl).graphicSelect();
+        // Delegate events so our event bindings work after we've removed
+        // this element from the DOM
+        this.delegateEvents();
+        this.applyPolyfills();
+        return this;
+      },
+
+      show: function(section) {
+        section = _.isUndefined(section) ? this.model : section;
+        var help = this.model.get('help') || this.defaultHelp.toJSON();
+        if (section == this.model) {
+          this.$el.show();
+          // For now, don't show help automatically
+          //this.dispatcher.trigger('do:show:help', help); 
+          this.dispatcher.trigger('do:set:help', help);
+        }
+        else {
+          this.$el.hide();
+        }
+        storybase.views.loadDeferredAssetsAndSize({ 
+          assetSelector: 'iframe.sandboxed-asset',
+          scope: this.$el 
+        });
+        return this;
+      },
+
+      setConditionalRender: function() {
+        this._doConditionalRender = true;
+      },
+
+      conditionalRender: function() {
+        if (this._doConditionalRender === true) {
+          this.render();
+        }
+        this._doConditionalRender = false;
+      },
+
+      /**
+      * Event handler for the 'change:layout' event.
+      */
+      changeLayout: function(evt) {
+        this.setConditionalRender();
+        if (this.assets.length) {
+          this.removeAssets();
+        }
+        else {
+          this.removeAssetEditViews();
+        }
+      },
+
+      /**
+      * Disassociate all assets with this section. 
+      */
+      removeAssets: function() {
+        this.assets.each(function(asset) {
+          this.removeAsset(asset, {
+            removeView: true
+          });
+        }, this);
+      },
+
+      /**
+      * Event handler for when assets are added to the section
+      */
+      addAsset: function(section, asset, container) {
+        if (section == this.model) {
+          // Artifically set the container attribute of the asset.
+          // For assets retrieved from the server, this is handled by
+          // SectionAssets.parse()
+          asset.set('container', container);
+          this.assets.add(asset);
+          this.story.assets.add(asset);
+          if (this.story.isNew()) {
+            // We haven't saved the story or the section yet.
+            // Defer the saving of the asset relation 
+            this._unsavedAssets.push({
+              asset: asset,
+              container: container
+            });
+            // Trigger an event that will cause the story and section to be saved
+            this.dispatcher.trigger("do:save:story");
+          }
+          else {
+            this.saveSectionAsset(asset, container);
+          }
+        }
+      },
+
+      /**
+      * Remove all asset editing views
+      */
+      removeAssetEditViews: function() {
+        _.each(this._assetEditViews, function(view, container) {
+          view.close();
+          delete this._assetEditViews[container];
+        }, this);
+        },
+
+        /**
+        * Remove the asset editing view for a particular asset
+        */
+        removeEditViewForAsset: function(asset) {
+          var container = asset.get('container');
+          var view = this._assetEditViews[container];
+          if (view && view.model == asset) {
+            view.close();
+            delete this._assetEditViews[container];
+          }
+        },
+
+        /**
+        * Callback for when an asset is removed from the section
+        *
+        * This should be be bound to the do:removesectionasset event.
+        *
+        * @param {Section} section - Section from which the asset is to be removed
+        * @param {Asset} asset - Asset to be removed from the section
+        * @param {object} [options]
+        */
+        handleDoRemoveSectionAsset: function(section, asset, options) {
+          if (section == this.model) {
+            this.removeAsset(asset, options);
+          }
+        },
+
+        /**
+        * Remove an asset from this section
+        *
+        * @param {Asset} asset Asset to be removed
+        * @param {Object} [options] - Options for performing this operation.
+        * @param {boolean} [options.removeView=undefined] - Should the view for editing the
+        *   asset also be removed?
+        * @param {boolean} [options.trigger=true] - Should we trigger a "remove:sectionasset"
+        *   event on the event bus?
+        * @param {boolean} [options.removeFromStory=false] - Should the asset be removed from
+        *   the story as well?
+        * @param {function} [options.success] - Callback function called on a
+        *   successful removal of an asset from this section
+        */
+        removeAsset: function(asset, options) {
+          options = options || {};
+          _.defaults(options, {
+            removeFromStory: false,
+            trigger: true
+          });
+          var view = this;
+          var sectionAsset = this.getSectionAsset(asset);
+          sectionAsset.id = asset.id;
+          sectionAsset.destroy({
+            success: function(model, response) {
+              if (options.removeView) {
+                view.removeEditViewForAsset(asset);
+              }
+              view.assets.remove(asset);
+              if (options.trigger) {
+                view.dispatcher.trigger("remove:sectionasset", asset);
+                view.dispatcher.trigger("alert", "info", "You removed an asset, but it's not gone forever. You can re-add it to a section from the asset list");
+              }
+              if (options.removeFromStory) {
+                view.story.assets.remove(asset);
+              }
+              if (options.success) {
+                options.success(model, asset);
+              }
+            },
+            error: function(model, response) {
+              view.dispatcher.trigger("error", "Error removing asset from section");
+            }
+          });
+        },
+
+        getSectionAsset: function(asset, container) {
+          var SectionAsset = Backbone.Model.extend({
+            urlRoot: this.model.url() + 'assets',
+            url: function() {
+              return Backbone.Model.prototype.url.call(this) + '/';
+            }
+          });
+          var sectionAsset = new SectionAsset({
+            asset: asset.url(),
+            container: container
+          });
+          sectionAsset.on("sync", this.sectionAssetAdded, this);
+          return sectionAsset;
+        },
+
+        /**
+        * Assign an asset to a particular container in this section.
+        */
+        saveSectionAsset: function(asset, container) {
+          var view = this;
+          this.getSectionAsset(asset, container).save(null, {
+            error: function(sectionAsset, xhr, options) {
+              // Could not assign an asset to the container.  In most cases
+              // this is because the user already assigned an asset to the
+              // container in another tab/window
+              var msg = xhr.responseText;
+              if (xhr.status === 400) {
+                msg = gettext("Oops, couldn't add your asset here. This is probably because you already did so in another tab or window. Hold tight while we refresh this section's assets.");
+              }
+              view.dispatcher.trigger('error', msg);
+              view.assets.remove(asset);
+              // Re-fetch this section's assets from the server to get the
+              // assets that were added in the other window/tab. The resulting
+              // ``sync`` event will also force the UI to re-render.
+              view._refreshModelForContainer = container;
+              view.assets.once("sync", view.renderAssetViews, view);
+              view.assets.fetch();
+              // TODO: Should we add the asset to the story's asset list ?
+            }
+          });
+        },
+
+        saveSectionAssets: function() {
+          var that = this;
+          _.each(this._unsavedAssets, function(sectionAsset) {
+            that.saveSectionAsset(sectionAsset.asset, sectionAsset.container); 
+          });
+          this._unsavedAssets = [];
+        },
+
+        sectionAssetAdded: function() {
+          this.dispatcher.trigger("add:sectionasset");
+        },
+
+        triggerSaved: function() {
+          this.dispatcher.trigger('save:section', this.model, !this._firstSave);
+          this._firstSave = false;
+        },
+
+        /**
+        * Callback for the 'destroy' event on the view's model.
+        */
+        handleDestroy: function() {
+          var triggerUnused = function(asset) {
+            this.dispatcher.trigger("remove:sectionasset", asset);
+          };
+          triggerUnused = _.bind(triggerUnused, this);
+          if (this.assets.length) {
+            this.assets.each(triggerUnused);
+            this.dispatcher.trigger('alert', 'info', gettext("The assets in the section you removed aren't gone forever.  You can re-add them from the asset list"));
+          }
+          if (this.$el.is(':visible')) {
+            // Destroying the currently active view
+            var index = this.model.collection.indexOf(this.model);
+            if (index) {
+              // If this isn't the first section, make the previous section
+              // the active one
+              this.dispatcher.trigger('select:section', this.model.collection.at(index - 1));
+            }
+            else {
+              // Otherwise, show the first section 
+              this.dispatcher.trigger('select:section', this.model.collection.at(0));
+            }
+          }
+          // Remove the section from the collection of all sections
+          this.collection.splice(_.indexOf(this.collection, this), 1);
+          // Inform the user that the section has been deleted
+          this.dispatcher.trigger('alert', 'success', gettext('The section  "' + this.model.get('title') + '" has been deleted'));
+          this.close();
+        },
+
+        getContainerIds: function() {
+          var ids = [];
+          this.$(this.options.containerEl).each(function(index, el) {
+            ids.push($(el).attr('id'));
+          });
+          return ids;
+        },
+
+        allAssetsDefined: function() {
+          var containerIds = this.getContainerIds();
+          return _.reduce(this.getContainerIds(), function(memo, id) {
+            var matching;
+            if (memo === false) {
+              return false;
+            }
+            else { 
+              matching = this.assets.where({container: id});
+              return matching.length > 0;
+            }
+          }, true, this);
+        },
+
+        getSection: function() {
+          return this.model;
+        },
+
+        /**
+        * Apply any available polyfills.
+        *
+        */
+        applyPolyfills: function() {
+          if (!Modernizr.input.placeholder) {
+            if (window.polyfills) {
+              window.polyfills.placeholders();
+            }
+          }
+        }
+      })
+    );
+
+    var BBFFormMixin = {
+      /**
+      * Attempt to unify validation error handling somewhat.
+      * Knows about MutexGroupedInputForms but compatible
+      * with regular BBF Forms as well.
+      *
+      * @param {Array} errors Hash of errors provided by BBF or 
+      *        hand-made.
+      */
+      handleValidationErrors: function(errors) {
+        var view = this;
+
+        // two ways to show errors: inline with field, or
+        // on top of the form.
+        var inlineErrors = {};
+        var formErrors = [];
+
+        // Function to extract an error message from the items in
+        // errors._others.  Declare it here to avoid declaring an anonymous
+        // function within a for loop
+        var addFormError = function(error) {
+          if (_.isString(error)) {
+            formErrors.push(error);
+          }
+          else if (_.isObject(error)) {
+            // The error is an object, added to _others because the key didn't
+            // match a field name in the form. Just grab the first value as
+            // the error message;
+            for (var k in error) {
+              break;
+            }
+            formErrors.push(error[k]);
+          }
+        };
+
+        var fieldName; // Keys in errors object
+        var inline; // Can a particular error be shown inline?
+        var $field; // A form field's element
+        var $fieldError; // A form field's error message
+        var msg; // An individual error message
+
+        // Remove any previous error-indicating UI state
+        view.form.$('.bbf-error').hide();
+        view.form.$('.bbf-combined-errors').remove();
+        view.form.$('.nav.pills li').removeClass('error');
+
+        for (fieldName in errors) {
+          // Allow errors in "_others" to be either field-keyed error objects
+          // or simple strings.
+          // @see https://github.com/powmedia/backbone-forms#model-validation
+          if (fieldName == '_others') {
+            _.each(errors._others, addFormError); 
+          }
+          else {
+            // if we can put in an error inline do so, otherwise throw into 
+            // the combined basket up top.
+            inline = false;
+            $field = view.form.$('.field-' + fieldName);
+            if ($field.length) {
+              $fieldError = $field.find('.bbf-error');
+              if ($fieldError.length) {
+                inlineErrors[fieldName] = inlineErrors[fieldName] || [];
+                msg = _.isString(errors[fieldName]) ? errors[fieldName] : errors[fieldName].message;
+                inlineErrors[fieldName].push(msg);
+                inline = true;
+              }
+            }
+
+            // this error was not inline; append it to the big bucket.
+            if (!inline) {
+              formErrors.push(errors[fieldName].message);
+            }
+          }
+        }
+
+        // fill in/update elements
+
+        _.each(inlineErrors, function(errors, fieldName) {
+          var $field = view.form.$('.field-' + fieldName);
+
+          // there may be multiple errors on a field, but we only show the first.
+          $field.find('.bbf-error').html(errors[0]).slideDown('fast');
+
+          // highlight relevant option pill, if any 
+          // (for MutexGroupedInputForms)
+          var optionIndex = $field.data('option-index');
+          if (!_.isUndefined(optionIndex)) {
+            view.form.$('.nav.pills li:eq(' + optionIndex + ')').addClass('error');
+          }
+
+        });
+
+        if (_.size(formErrors) > 0) {
+          $('<ul class="bbf-combined-errors">').prependTo(view.form.$el).slideDown('fast');
+        }
+        _.each(formErrors, function(error) {
+          view.form.$('.bbf-combined-errors').append('<li>' + error + '</li>');
+        });
+
+      },
+
+      /**
+      * Render a thumbnail for any file inputs.
+      * TODO: revisit, see if there's a way to cleanly splice this
+      * into the "natural" Backbone.Forms templating pipeline.
+      * 
+      * Also @see storybase.forms.File.render.
+      */
+      renderFileFieldThumbnail: function() {
+        this.form.$el.find('input[type=file]').each(function() {
+          var thumbNailValue = $(this).data('file-thumbnail');
+          if (thumbNailValue) {
+            if (thumbNailValue == '__set__') {
+              $(this).before('<div class="data-thumbnail"></div>');
+            }
+            else {
+              $(this)
+              .addClass('has-thumbnail')
+              .before('<img class="file-thumbnail" src="' + $(this).data('file-thumbnail') + '">');
+            }
+          }
+          else {
+            $(this).before('<div class="not-set-thumbnail"></div>');
+          }
+        });
+      }
+    };
 
   var DataSetFormView = HandlebarsTemplateView.extend(_.extend({}, BBFFormMixin, {
     options: {

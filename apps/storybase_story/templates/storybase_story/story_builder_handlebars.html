@@ -134,6 +134,12 @@ Handlebars.js templates for story builder Backbone application
 </div>
 </script>
 
+<script type="text/x-handlebars-template" id="story-info-template">
+<h2 class="title">{{gettext "Story Information"}}</h2>
+<textarea name="summary" id="summary-textarea" class="summary" placeholder='{{{default summary_suggestion "Your summary goes here. Tell readers, in 250 characters or fewer, why your story matters. Write as if you were speaking with a friend. Sprinkle in a teaser or cliffhanger to entice your audience to read the full story."}}}'>{{summary}}</textarea>
+</script>
+
+<!-- #579 TODO: Remove this -->
 <script type="text/x-handlebars-template" id="story-info-edit-template">
 <input class="story-title" name="title" value="{{title}}" placeholder="{{gettext "Edit your title here. Shorter is better: 100 characters or less!"}}" />
 <input class="byline" name="byline" value="{{byline}}" placeholder="{{gettext "Your Name and/or Organization. Examples: Jon Denzler; Laura Frank, I-News"}}" />

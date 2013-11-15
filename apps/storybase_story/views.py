@@ -468,8 +468,8 @@ class StoryBuilderView(DetailView):
             # Show only the builder workflow steps
             'visibleSteps': {
                 'build': True,
+                'info': True,
                 'tag': True,
-                'review': True,
                 'publish': True
             },
             # Show the view that allows the user to edit
