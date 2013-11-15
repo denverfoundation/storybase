@@ -16,7 +16,7 @@ webapps/solr.war: webapps solr-content
 	cp solr-content/dist/solr-*.war $@
 
 solr-instance: solr-content webapps/solr.war
-	cp solr-content/example/{contexts,etc,lib,start.jar} -r .
+	cp solr-content/example/{contexts,etc,resources,lib,start.jar} -r .
 	mkdir -p contrib dist
 	# copying files for ExtractingRequestHandler
 	cp solr-content/contrib/extraction -r contrib/
