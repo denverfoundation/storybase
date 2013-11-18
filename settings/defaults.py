@@ -405,3 +405,26 @@ STORYBASE_DEFAULT_USER_IMAGES = {
 # Browser support message that will be shown if a user's browser lacks
 # support for certain features required by the site.
 STORYBASE_BROWSER_SUPPORT_MSG = "This site works best in a recent version of <a href='http://www.mozilla.org/firefox/' title='Mozilla Firefox'>Firefox</a> or <a href='http://www.google.com/chrome/' title='Google Chrome'>Chrome</a>. If you are using an older browser, we recommend updating to the latest version."
+
+# Allowed HTML tags in user-submitted content. Note that restrictions for
+# asset content is a little looser.  These apply to things like story
+# summaries and call to actions
+STORYBASE_ALLOWED_TAGS = [
+  'a',
+  'abbr',
+  'b',
+  'blockquote',
+  'cite',
+  'code',
+  'div',
+  'em',
+  'h3',
+  'i',
+  'li',
+  'ol',
+  'p',
+  'span',
+  'strong',
+  'u',
+  'ul',
+]

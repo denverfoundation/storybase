@@ -2,6 +2,15 @@
 Upgrading
 =========
 
+0.17.1 to 0.17.2
+================
+
+The `bleach <https://github.com/jsocol/bleach>`_ package is now used to
+sanitize HTML in a Story's summary, call to action and connected story prompt
+fields.  You'll need to install this package before upgrading::
+
+    pip install bleach
+
 0.16.* to 0.17.0
 ================
 
