@@ -786,7 +786,7 @@ def update_weight_for_connected(sender, instance, **kwargs):
 def clean_storytranslation_html(sender, instance, **kwargs):
     instance.summary = bleach.clean(instance.summary,
             settings.STORYBASE_ALLOWED_TAGS)
-    instance.call_to_action = bleach.clean(instance.summary,
+    instance.call_to_action = bleach.clean(instance.call_to_action,
             settings.STORYBASE_ALLOWED_TAGS)
     instance.connected_prompt = bleach.clean(instance.connected_prompt,
             settings.STORYBASE_ALLOWED_TAGS)

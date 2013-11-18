@@ -1887,7 +1887,7 @@ class StructureTest(TestCase):
                            weight=section_dict['weight'],
                            root=True)
         rendered_toc = story.structure.render_toc(format='html')
-        fragment = lxml.html.fromstring(rendered_toc)
+        fragment = lxml.html.fragment_fromstring(rendered_toc)
         elements = fragment.cssselect('li')
         self.assertEqual(len(elements), len(section_data) + 1)
 	self.assertEqual(elements[0].text_content().strip(), "Summary")
