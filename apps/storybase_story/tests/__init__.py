@@ -805,6 +805,26 @@ class StorySignalsTest(TestCase):
         self.assertEqual(story.slug, "updated-story-title")
 
 
+class StoryTranslationSignalsTest(TestCase):
+    def test_clean_storytranslation_html(self):
+        """
+        Test that a story translation's summary and call to action
+        have their HTML cleaned when saved.
+        """
+        unclean_summary = ("<p>This is the first paragraph</p>"
+                           "<script src=\"/static/js/fake.js\"></script>")
+        unclean_call = ("<blockquote>Quote in call</blockquote>"
+            "<iframe src=\"/fake/\"></iframe>")
+        story = create_story(title="Test Story", summary=unclean_summary,
+            call_to_action=unclean_call, status='draft')
+        story.save()
+        story = Story.objects.get(story_id=story.story_id)
+        # Test that the invalid tags aren't in the saved field values.
+        # Right now, we don't care whether the tags were escaped or removed
+        self.assertNotIn("<script", story.summary)
+        self.assertNotIn("<iframe", story.call_to_action)
+
+
 class StoryAdminTest(TestCase):
     fixtures = ['section_layouts.json']
 

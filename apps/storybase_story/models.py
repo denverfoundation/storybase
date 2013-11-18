@@ -2,6 +2,8 @@
 import time
 from datetime import datetime
 
+import bleach
+
 from django.conf import settings
 from django.contrib.auth.models import User
 from django.core import urlresolvers
@@ -781,12 +783,22 @@ def update_weight_for_connected(sender, instance, **kwargs):
                 connected_to.save()
 
 
+def clean_storytranslation_html(sender, instance, **kwargs):
+    instance.summary = bleach.clean(instance.summary,
+            settings.STORYBASE_ALLOWED_TAGS)
+    instance.call_to_action = bleach.clean(instance.summary,
+            settings.STORYBASE_ALLOWED_TAGS)
+    instance.connected_prompt = bleach.clean(instance.connected_prompt,
+            settings.STORYBASE_ALLOWED_TAGS)
+
+
 # Hook up some signal handlers
 pre_save.connect(set_story_slug_on_publish, sender=Story)
 pre_save.connect(set_date_and_weight_on_published, sender=Story)
 pre_save.connect(set_default_featured_asset, sender=Story)
 pre_save.connect(set_asset_license, sender=Story)
 pre_save.connect(update_weight_for_connected, sender=Story)
+pre_save.connect(clean_storytranslation_html, sender=StoryTranslation)
 post_save.connect(set_story_slug, sender=StoryTranslation)
 m2m_changed.connect(update_last_edited, sender=Story.organizations.through)
 m2m_changed.connect(update_last_edited, sender=Story.projects.through)
