@@ -1934,5 +1934,9 @@ describe('StoryInfoView', function() {
     });
   });
 
+  it("initializes a subview for setting the story's featured image", function() {
+    expect(this.view.featuredAssetView).toBeTruthy();
+  });
+
   implementsWorkflowStep(context);
 });

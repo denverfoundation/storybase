@@ -1051,21 +1051,6 @@ button.preview {
   width: 98% !important;
 }
 
-.summary {
-  .full-width;
-  min-height: 400px;
-}
-
-.edit-story-info {
-  .wysihtml5-sandbox {
-    .vertical-space-important;
-    // Override the element width that gets set by the Javascript plugin
-    // so the element adapts as the container width changes (e.g. to 
-    // accomodate the drawer)
-    .full-width-important;
-  }
-}
-
 // Call to action editor
 
 .edit-call-to-action {
@@ -1730,6 +1715,81 @@ table.datasets {
 // Story information view
 #story-info {
   width: 85% !important;
+
+  .summary {
+    .full-width; 
+    min-height: 400px;
+  }
+
+  .wysihtml5-sandbox {
+    .vertical-space-important;
+    // Override the element width that gets set by the Javascript plugin
+    // so the element adapts as the container width changes (e.g. to 
+    // accomodate the drawer)
+    .full-width-important;
+  }
+
+}
+
+#summary-container,
+#featured-asset {
+  width: 48%;
+  float: left;
+  padding-right: 1%;
+}
+
+// Featured Asset View
+
+#featured-asset { 
+  position: relative; 
+
+  .nav { 
+    // TODO: Decide if padding-left: 0 should be the default style for uls
+    // in the builder
+    padding-left: 0 !important;
+  }
+}
+
+#featured-asset-display {
+  img {
+    max-width: 100%;
+  }
+}
+
+#featured-asset-select {
+  padding: 0 !important; 
+  // Clear the floated child elements
+  overflow: hidden;
+
+  li {
+    padding: 8px; 
+    overflow: hidden;
+    position: relative;
+    float: left;
+    width: 222px;
+    text-align: center;
+    // TODO: change the ol li selector upstream to ol > li so these
+    // don't get numbered bullets, for now, just override it
+    list-style-type: none !important; 
+
+    &.selected {
+      background-color: @orange;
+
+      &:hover {
+        // Don't highlight the already selected asset
+        background-color: @orange;
+      }
+    }
+
+    &:hover {
+      background-color: @highlight-blue;
+    }
+
+    img {
+      display: block;
+      max-width: 100%;
+    }
+  }
 }
 
 // Legal agreement view
@@ -1876,62 +1936,9 @@ ol#publish-steps {
   margin: 10px 0;
 }
 
-// Featured Asset View
-#featured-asset { 
-  position: relative; 
-
-  .nav { 
-    // TODO: Decide if padding-left: 0 should be the default style for uls
-    // in the builder
-    padding-left: 0 !important;
-  }
-}
-
 // TODO: See why the global a style clobbers the .pill style
 #app .nav > li.active a {
   color: #fff;
-}
-
-#featured-asset-display {
-  img {
-    max-width: 50%;
-  }
-}
-
-#featured-asset-select {
-  padding: 0 !important; 
-  // Clear the floated child elements
-  overflow: hidden;
-
-  li {
-    padding: 8px; 
-    overflow: hidden;
-    position: relative;
-    float: left;
-    width: 222px;
-    text-align: center;
-    // TODO: change the ol li selector upstream to ol > li so these
-    // don't get numbered bullets, for now, just override it
-    list-style-type: none !important; 
-
-    &.selected {
-      background-color: @orange;
-
-      &:hover {
-        // Don't highlight the already selected asset
-        background-color: @orange;
-      }
-    }
-
-    &:hover {
-      background-color: @highlight-blue;
-    }
-
-    img {
-      display: block;
-      max-width: 100%;
-    }
-  }
 }
 
 // Builder Tour

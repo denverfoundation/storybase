@@ -279,7 +279,11 @@
       // unwieldy, maybe use a factory function.
      
       if (this.options.visibleSteps.info) {
-        this.subviews.info = new StoryInfoView(_.clone(commonOptions));
+        this.subviews.info = new StoryInfoView(
+          _.defaults({
+            defaultImageUrl: this.options.defaultImageUrl
+          }, commonOptions)
+        );
         workflowSteps.push(_.result(this.subviews.info, 'workflowStep'));
       }
       
@@ -298,7 +302,6 @@
       if (this.options.visibleSteps.publish) {
         this.subviews.publish =  new PublishView(
           _.defaults({
-            defaultImageUrl: this.options.defaultImageUrl,
             showSharing: this.options.showSharing,
             licenseEndpoint: this.options.licenseEndpoint,
             viewURLTemplate: this.options.viewURLTemplate
@@ -3448,6 +3451,13 @@
         this.dispatcher = options.dispatcher;
         this.compileTemplates();
 
+        this.featuredAssetView = new FeaturedAssetView({
+          model: this.model,
+          defaultImageUrl: this.options.defaultImageUrl,
+          dispatcher: this.dispatcher,
+          language: this.options.language
+        });
+
         this.dispatcher.once('ready:story', this.setStory, this);
       },
 
@@ -3479,8 +3489,14 @@
         });
         this.summaryEditor.$toolbar.prepend(this.summaryCharCountView.render().$el);
 
+        this.$el.append(this.featuredAssetView.render().$el);
+
         this.delegateEvents(); 
         return this;
+      },
+
+      onShow: function() {
+        this.featuredAssetView.onShow();
       }
     })
   );
@@ -6399,13 +6415,6 @@
           licenseEndpoint: this.options.licenseEndpoint,
           tagName: 'li'
         });
-        this.featuredAssetView = new FeaturedAssetView({
-          model: this.model,
-          defaultImageUrl: this.options.defaultImageUrl,
-          dispatcher: this.dispatcher,
-          language: this.options.language,
-          tagName: 'li'
-        });
         this.legalView = new LegalView({
           dispatcher: this.dispatcher,
           model: this.model
@@ -6420,7 +6429,7 @@
           model: this.model,
           viewURLTemplate: this.options.viewURLTemplate
         });
-        this.subviews = [this.licenseView, this.featuredAssetView, this.buttonView];
+        this.subviews = [this.licenseView, this.buttonView];
       },
 
       close: function() {
@@ -6492,10 +6501,6 @@
         }
         this.delegateEvents();
         return this;
-      },
-
-      onShow: function() {
-        this.featuredAssetView.onShow();
       }
     })
   );
