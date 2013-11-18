@@ -3,6 +3,8 @@ django-localflavor
 South>=0.7.3
 Pillow>=1.7.8
 cmsplugin-filer>=0.8.0
+# Install bleach before django-cms to use bleach's html5lib version dependency
+bleach
 django-cms>=2.4
 django-filer>=0.9.3
 pysolr>=2.1.0
@@ -41,4 +43,3 @@ lxml
 shortuuid
 django-compressor
 BeautifulSoup<4.0
-bleach
