@@ -127,7 +127,7 @@
 					{% if story.allow_connected %}
 					<section class="connected-stories">
 						<h4 id="connected">{% trans "Connected Stories" %}</h4>
-	                    <p>{{ story.connected_prompt|linebreaks }}</p>
+	                    <p>{{ story.connected_prompt|safe|linebreaks }}</p>
 	                    <a href="{% url "connected_story_builder" source_slug=story.slug %}" title="{% trans "Contribute to this story" %}" class="button right">{% trans "Contribute to this story" %}</a>
 	                    {% with cs_count=story.connected_stories.count %}
 	                    {% if cs_count %}

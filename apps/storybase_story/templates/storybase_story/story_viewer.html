@@ -94,7 +94,7 @@
 	        <h2 class="title">{% trans "How Can You Help?" %}</h2>
 	        {{ story.call_to_action|safe }}
             {% if story.allow_connected %}
-            <p>{{ story.connected_prompt|linebreaks }}</p>
+            <p>{{ story.connected_prompt|safe|linebreaks }}</p>
             {# TODO: Style the links to the connected story builder as buttons #}
             <p><a href="{% url "connected_story_builder" source_slug=story.slug %}" class="external" data-new-window-name="connectedBuilder">{% trans "Click here to contribute to this story" %}</a></p>
             {% endif %}
