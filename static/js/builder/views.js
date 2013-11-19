@@ -287,6 +287,17 @@
         workflowSteps.push(_.result(this.subviews.info, 'workflowStep'));
       }
       
+      if (this.options.visibleSteps.publish) {
+        this.subviews.publish =  new PublishView(
+          _.defaults({
+            showSharing: this.options.showSharing,
+            licenseEndpoint: this.options.licenseEndpoint,
+            viewURLTemplate: this.options.viewURLTemplate
+          }, commonOptions)
+        );
+        workflowSteps.push(_.result(this.subviews.publish, 'workflowStep'));
+      }
+
       if (this.options.visibleSteps.tag) {
         this.subviews.tag = new TaxonomyView(
           _.defaults({
@@ -297,17 +308,6 @@
           }, commonOptions)
         );
         workflowSteps.push(_.result(this.subviews.tag, 'workflowStep'));
-      }
-
-      if (this.options.visibleSteps.publish) {
-        this.subviews.publish =  new PublishView(
-          _.defaults({
-            showSharing: this.options.showSharing,
-            licenseEndpoint: this.options.licenseEndpoint,
-            viewURLTemplate: this.options.viewURLTemplate
-          }, commonOptions)
-        );
-        workflowSteps.push(_.result(this.subviews.publish, 'workflowStep'));
       }
 
       this.subviews.alert = new AlertManagerView({
