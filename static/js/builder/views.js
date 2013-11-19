@@ -3489,7 +3489,7 @@
         });
         this.summaryEditor.$toolbar.prepend(this.summaryCharCountView.render().$el);
 
-        this.$el.append(this.featuredAssetView.render().$el);
+        this.$('#summary-container').before(this.featuredAssetView.render().$el);
 
         this.delegateEvents(); 
         return this;
