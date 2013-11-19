@@ -3458,7 +3458,9 @@
           language: this.options.language
         });
 
-        this.dispatcher.once('ready:story', this.setStory, this);
+        if (_.isUndefined(this.model)) {
+          this.dispatcher.once("ready:story", this.setStory, this);
+        }  
       },
 
       setStory: function(story) {
@@ -3489,7 +3491,7 @@
         });
         this.summaryEditor.$toolbar.prepend(this.summaryCharCountView.render().$el);
 
-        this.$el.append(this.featuredAssetView.render().$el);
+        this.$el.append(this.featuredAssetView.render().el);
 
         this.delegateEvents(); 
         return this;
@@ -7020,6 +7022,7 @@
         return this.renderInitial();
       }
       _.each(this._subviews, this.updateSubView, this); 
+
       return this;
     },
 

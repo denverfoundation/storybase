@@ -1047,6 +1047,14 @@ describe("FeaturedAssetAddView", function() {
      });
    });
 
+   it("should trigger an event when the form is cancelled", function() {
+     var spy = jasmine.createSpy('cancelSpy');
+     this.view.render();
+     this.view.on('cancel', spy);
+     this.view.$('[type="reset"]').click();
+     expect(spy).toHaveBeenCalled();
+   });
+
    describe("when the user specifies a URL", function() {
      beforeEach(function() {
        this.url = 'http://www.flickr.com/photos/79208145@N08/7803936842/';
