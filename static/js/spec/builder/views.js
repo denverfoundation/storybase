@@ -1653,19 +1653,40 @@ describe('WorkflowStepView', function() {
   });
 
   it('displays a link for each of the items when rendered', function() {
-     var item, $itemLinks, $itemLink;
+    var item, $itemLinks, $itemLink;
 
-     this.view.render();
-     $itemLinks = this.view.$('li a');
+    this.view.render();
+    $itemLinks = this.view.$('li a');
 
-     expect($itemLinks.length).toEqual(workflowStepItems.length);
+    expect($itemLinks.length).toEqual(workflowStepItems.length);
 
-     for (var i = 0; i < workflowStepItems.length; i++) {
-       item = workflowStepItems[i];
-       $itemLink = $itemLinks.eq(i);
-       expect($itemLink.html()).toEqual(item.text);
-       expect($itemLink.attr('href')).toEqual(storybase.builder.APP_ROOT + item.path);
-     }
+    for (var i = 0; i < workflowStepItems.length; i++) {
+      item = workflowStepItems[i];
+      $itemLink = $itemLinks.eq(i);
+      expect($itemLink.html()).toEqual(item.text);
+      expect($itemLink.attr('href')).toEqual(storybase.builder.APP_ROOT + item.path);
+    }
+  });
+
+  describe('when rendered with a new (unsaved) model', function() {
+    beforeEach(function() {
+      this.view.model = new MockStory();
+      this.view.render();
+    });
+
+    it("creates item links without a story ID", function() {
+      var item, $itemLinks, $itemLink;
+
+      $itemLinks = this.view.$('li a');
+
+      expect($itemLinks.length).toEqual(workflowStepItems.length);
+
+      for (var i = 0; i < workflowStepItems.length; i++) {
+        item = workflowStepItems[i];
+        $itemLink = $itemLinks.eq(i);
+        expect($itemLink.attr('href')).toEqual(storybase.builder.APP_ROOT + item.path);
+      }
+    });
   });
 });
 

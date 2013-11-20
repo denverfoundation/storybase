@@ -1469,7 +1469,7 @@
       this.items = options.items || [];
       // Include story ID in paths?  This should only happen for stories
       // created in this session.
-      this._includeStoryId = _.isUndefined(this.model) || this.model.isNew();
+      this._includeStoryId = _.isUndefined(this.model) ? false : this.model.isNew();
       if (_.isUndefined(this.model)) {
         this.dispatcher.on("ready:story", this.setStory, this);
       }
@@ -1509,19 +1509,20 @@
 
     setStory: function(story) {
       this.model = story;
-      this.dispatcher.on("save:story", this.handleInitialSave, this);
+      this._includeStoryId = !this.model.isNew();
+      this.dispatcher.once("save:story", this.handleInitialSave, this);
       this.render();
     },
 
     handleInitialSave: function(story) {
-      this.dispatcher.off("save:story", this.handleInitialSave, this);
+      this._includeStoryId = true;
       this.render();
     },
 
     getItemHref: function(itemOptions) {
       path = itemOptions.path;
       if (itemOptions.route !== false) {
-        if (!_.isUndefined(this.model) && this._includeStoryId) {
+        if (this._includeStoryId) {
           path = this.model.id + '/' + path;
         }
         path = Builder.APP_ROOT + path;
@@ -2159,7 +2160,6 @@
       prevTitle: gettext("Continue Writing Story"),
       text: gettext("Build"),
       visible: true,
-      selected: false,
       path: ''
     },
 
@@ -3438,13 +3438,20 @@
         return events;
       },
 
-      workflowStep: {
-        id: 'info',
-        // #579 TODO: Finalize microcopy for this
-        title: gettext("Summarize your story and select a featured image"),
-        text: gettext("Story Info"),
-        visible: true,
-        path: 'info/'
+      workflowStep: function() {
+        var view = this;
+
+        return {
+          id: 'info',
+          // #579 TODO: Finalize microcopy for this
+          title: gettext("Summarize your story and select a featured image"),
+          text: gettext("Story Info"),
+          visible: true,
+          enabled: function() {
+            return !_.isUndefined(view.model);
+          },
+          path: 'info/'
+        };
       },
 
       initialize: function(options) {
@@ -5749,7 +5756,6 @@
           text: gettext('Tag'),
           visible: true,
           enabled: _.bind(storySaved, this), 
-          //selected: false,
           path: 'tag/'
         };
       },
@@ -6393,7 +6399,6 @@
           text: gettext('Publish/Share'),
           visible: true,
           enabled: _.bind(storySaved, this), 
-          //selected: false,
           path: 'publish/'
         };
       },
