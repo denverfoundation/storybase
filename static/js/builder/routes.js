@@ -12,9 +12,12 @@
       this.hasStory = options.hasStory;
       this.hasTemplate = options.hasTemplate;
       // Define the routes dynamically instead of a declaring
-      // a rotues property because the routing changes
+      // a routes property because the routing changes
       // depending on whether we're creating a new story
-      // or editing an existing story
+      // or editing an existing story.
+      //
+      // Remember that routes added later take precedence over
+      // routes added earlier.
       if (this.hasStory) {
         // Editing an existing story
         this.route("", "build");
@@ -23,15 +26,26 @@
       }
       else {
         // Creating a new story
-        if (this.hasTemplate) {
-          this.route("", "build");
-        }
-        else {
-          this.route("", "selectTemplate");
-        }
+
+        // Create routes for the workflow steps once the story is
+        // saved and an Id is assigned
         this.route(":id/", "build");
         this.route(":id/:step/", "selectIdStep");
         this.route(":id/:step/:substep/", "selectIdStep");
+
+        if (this.hasTemplate) {
+          // Template is already selected.  Default route points to
+          // build workflow step
+          this.route("", "build");
+        }
+        else {
+          // A template hasn't been selected.  Default route points
+          // to template selection workflow step
+          this.route("", "selectTemplate");
+          // The info workflow step should be accessible before the
+          // story is saved
+          this.route("info/", "info");
+        }
       }
       this.dispatcher.on("navigate", this.navigate, this);
       this.dispatcher.on("save:story", this.setHasStory, this);
@@ -72,7 +86,7 @@
     },
 
     selectStep: function(step, subStep) {
-      if (!this.hasStory && step != 'build' && step != 'selecttemplate') {
+      if (!this.hasStory && step != 'build' && step != 'selecttemplate' && step != 'info') {
         this.handleHashedId(!this.hasStory);
       }
       this.dispatcher.trigger('select:workflowstep', step, subStep);
@@ -85,6 +99,10 @@
       }
 
       this.selectStep('build');
+    },
+
+    info: function() {
+      this.selectStep('info');
     },
 
     selectTemplate: function() {
