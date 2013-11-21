@@ -348,6 +348,10 @@
       this.dispatcher.on("select:workflowstep", this.updateStep, this); 
       this.dispatcher.on("error", this.error, this);
       this.dispatcher.on("select:template", this.setStoryClass, this);
+
+      if (_.isUndefined(this.model) || this.model.isNew()) {
+        this.dispatcher.once("save:story", this.updatePath, this);
+      }
     },
 
     close: function() {
@@ -357,6 +361,7 @@
       this.dispatcher.off("select:workflowstep", this.updateStep, this); 
       this.dispatcher.off("error", this.error, this);
       this.dispatcher.off("select:template", this.setStoryClass, this);
+      this.dispatcher.off("save:story", this.updatePath, this);
 
       _.each(this.subviews, function(view) {
         // Call the close() method, if it exists on the workflow step subviews.
@@ -364,6 +369,18 @@
           view.close();
         }
       }, this);
+    },
+
+    /**
+     * Trigger an event to update the browser path to reflect
+     * the story ID.
+     */
+    updatePath: function(story) {
+      var path = story.id + '/';
+      path += this.activeStep === 'build' ? '' : this.activeStep + '/'; 
+      this.dispatcher.trigger('navigate', path, {
+        trigger: true 
+      });
     },
 
     toggleViews: function(show, hide) {
@@ -2420,26 +2437,20 @@
     },
 
     save: function() {
-      var that = this;
+      var view = this;
       var isNew = this.model.isNew();
       this.model.save(null, {
         success: function(model, response) {
-          that.dispatcher.trigger('save:story', model);
+          view.dispatcher.trigger('save:story', model);
           model.saveSections();
-          that.saveRelatedStories();
-          if (isNew) {
-            that.dispatcher.trigger('navigate', model.id + '/', {
-              trigger: true 
-            });
+          view.saveRelatedStories();
+          if (isNew && view.navView) {
             // Re-render the navigation view to enable the button
-            if (that.navView) {
-              that.navView.render();
-            }
+            view.navView.render();
           }
         }
       });
     },
-
 
     hasAssetList: function() {
       var hasAssets = false;
@@ -3501,6 +3512,7 @@
         this.$el.append(this.featuredAssetView.render().el);
 
         this.delegateEvents(); 
+
         return this;
       },
 
@@ -6781,6 +6793,10 @@
       return this;
     },
 
+    onShow: function() {
+      this.delegateEvents();
+    },
+
     cancel: function() {
       this.trigger('cancel');
     },
@@ -6808,6 +6824,15 @@
       }
     },
 
+    /**
+     * Set the featured asset on the story and add the
+     * asset to its collection of assets.
+     */
+    setFeaturedAsset: function(model) {
+      this.model.setFeaturedAsset(model);
+      this.model.assets.add(model);
+    },
+
     saveModel: function(model) {
       var view = this;
       var image = model.get('image');
@@ -6816,8 +6841,19 @@
           view.dispatcher.trigger('error', gettext('Error saving the featured image'));
         },
         success: function(model, response) {
-          view.model.setFeaturedAsset(model);
-          view.model.assets.add(model);
+          if (view.model.isNew()) {
+            // Story is unsaved.  Save it before
+            // setting the featured asset.
+            view.model.once('sync', function() {
+              view.setFeaturedAsset(model);
+            });
+            view.dispatcher.trigger('do:save:story');
+          }
+          else {
+            // Story has been previously saved.  Just set the
+            // asset.
+            view.setFeaturedAsset(model);
+          }
           view.initializeForm().render();
         }
       };
@@ -6989,6 +7025,9 @@
       this.updateNavItem(view);
       if (this.isActive(view)) {
         view.$el.show();
+        if (view.onShow) {
+          view.onShow();
+        }
       }
       else {
         view.$el.hide();

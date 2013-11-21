@@ -565,6 +565,10 @@ var MockStory = Backbone.Model.extend({
     _.each(attributes, function(val, key) {
       this.set(key, val);
     }, this);
+
+    // Fake a sync event
+    this.trigger("sync", {}, options);
+
     return true;
   },
 
@@ -739,6 +743,15 @@ describe('LegalView', function() {
 describe('LicenseView', function() {
   beforeEach(function() {
     this.story = new MockStory();
+    this.server = sinon.fakeServer.create();
+    this.server.respondWith("GET", "/api/0.1/license/get/",
+      [200, { "Content-Type": "application/json" },
+       '{"html": "Mock License HTML"}']);
+    this.server.autoRespond = true;
+  });
+
+  afterEach(function() {
+    this.server.restore();
   });
 
   describe('when initialized with a model with a CC BY license', function() {
@@ -1009,6 +1022,15 @@ describe('FeaturedAssetSelectView', function() {
 // I couldn't think of a clean way to trigger/mock the image
 // upload in JavaScript.
 describe("FeaturedAssetAddView", function() {
+   function submitForm(view, url) {
+     view.$('[name=url]').val(url);
+     view.$('form').submit();
+   }
+
+   function cancelForm(view) {
+     view.$('[type="reset"]').click();
+   }
+
    beforeEach(function() {
      this.story = new MockStory();
      // Stub the saving of the asset.  In a perfect world, we'd
@@ -1051,7 +1073,7 @@ describe("FeaturedAssetAddView", function() {
      var spy = jasmine.createSpy('cancelSpy');
      this.view.render();
      this.view.on('cancel', spy);
-     this.view.$('[type="reset"]').click();
+     cancelForm(this.view);
      expect(spy).toHaveBeenCalled();
    });
 
@@ -1060,11 +1082,39 @@ describe("FeaturedAssetAddView", function() {
        this.url = 'http://www.flickr.com/photos/79208145@N08/7803936842/';
        this.sfaStub = spyOn(this.story, "setFeaturedAsset");
        this.view.render();
+       this.mockSaveHandler = function() {
+         this.view.model.save();
+       };
+       EventBus.on("do:save:story", this.mockSaveHandler, this);
+     });
+
+     afterEach(function() {
+       EventBus.off("do:save:story", this.mockSaveHandler);
+     });
+
+     describe("and the model is unsaved", function() {
+       var doSaveSpy;
+
+       beforeEach(function() {
+         this.mockSaveHandler = function() {
+           this.view.model.save();
+         };
+         doSaveSpy = jasmine.createSpy('doSaveSpy'); 
+         EventBus.on("do:save:story", doSaveSpy); 
+       });
+
+       afterEach(function() {
+         EventBus.off("do:save:story", doSaveSpy); 
+       });
+
+       it("should trigger an event to save the story and related models when the form is submitted", function() {
+         submitForm(this.view, this.url);
+         expect(doSaveSpy).toHaveBeenCalled();
+       });
      });
 
      it("should set the featured asset on the story when the form is submitted", function() {
-       this.view.$('[name=url]').val(this.url);
-       this.view.$('form').submit();
+       submitForm(this.view, this.url);
        expect(this.sfaStub).toHaveBeenCalled();
      });
    });
