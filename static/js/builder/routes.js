@@ -48,7 +48,8 @@
         }
       }
       this.dispatcher.on("navigate", this.navigate, this);
-      this.dispatcher.on("save:story", this.setHasStory, this);
+      this.dispatcher.once("save:story", this.setHasStory, this);
+      this.dispatcher.once("select:template", this.setHasTemplate, this);
     },
 
     /**
@@ -120,6 +121,13 @@
      */
     setHasStory: function(story) {
       this.hasStory = true;
+    },
+
+    setHasTemplate: function() {
+      this.hasTemplate = true;
+      // Default route should be to build step, not template selection
+      this.route("", "build");
     }
+
   });
 })(Backbone, storybase);
