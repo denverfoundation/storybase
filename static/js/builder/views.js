@@ -6727,6 +6727,10 @@
       };
       this.$el.html(this.template(context));
       return this;
+    },
+
+    onShow: function() {
+      this.delegateEvents();
     }
   });
 
@@ -6750,6 +6754,7 @@
       this.initializeForm();
       this.initListeners();
       this._appendForm = true; // Append the form element on render
+      this.handleUploadProgress = _.bind(handleUploadProgress, this);
     },
 
     enabled: true,
@@ -6808,6 +6813,9 @@
 
       if (options.uploading) {
         return this.renderUploading();
+      }
+      else {
+        this.$el.empty();
       }
 
       if (this._appendForm) {

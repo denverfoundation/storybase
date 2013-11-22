@@ -1057,6 +1057,7 @@ body.story-builder #featured-asset-display img{max-width:100%}
 body.story-builder #featured-asset-select{padding:0 !important;overflow:hidden}body.story-builder #featured-asset-select li{padding:8px;overflow:hidden;position:relative;float:left;width:222px;text-align:center;list-style-type:none !important}body.story-builder #featured-asset-select li.selected{background-color:#fe9703}body.story-builder #featured-asset-select li.selected:hover{background-color:#fe9703}
 body.story-builder #featured-asset-select li:hover{background-color:#2a88db}
 body.story-builder #featured-asset-select li img{display:block;max-width:100%}
+body.story-builder #featured-asset-add .wrapper{min-height:200px}
 body.story-builder #share-legal #permission ul{margin:1em 0;padding:0 0 0 40px}
 body.story-builder #share-taxonomy select{width:300px}
 body.story-builder #taxonomy{width:50%;float:left}body.story-builder #taxonomy .select2-input{min-width:200px}
