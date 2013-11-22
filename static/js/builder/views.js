@@ -763,6 +763,7 @@
     extraRender: function() {
       // Add a character counter
       this.charCountView = new CharacterCountView({ 
+        dispatcher: this.dispatcher,
         target: this.$editor(),
         warningLimit: 100,
         className: 'character-count'
@@ -2743,29 +2744,49 @@
     },
 
     initialize: function(options) {
+      this.dispatcher = options.dispatcher;
+
       this.compileTemplates();
-      if (this.options.target instanceof wysihtml5.Editor) {
-        this.editor = this.options.target;
+
+      this.setEditor(options.target);
+
+      this.dispatcher.on('select:section', 
+        this.handleSectionChanged, this
+      );
+
+      return this;
+    },
+
+    /**
+     * Set the editor and bind DOM event handlers
+     *
+     * editor argument can either be a DOM element or a wysihmtl5.Editor
+     * instance.
+     */
+    setEditor: function(editor) {
+      if (editor instanceof wysihtml5.Editor) {
+        this.editor = editor; 
         this.editorType = 'wysihtml5';
       }
       else {
         // assume a DOM element or jQuery-wrapped element
-        this.editor = $(this.options.target);
+        this.editor = $(editor);
         this.editorType = 'node';
       }
-      
+
+      this.bindEditorEvents();
+
+      return this;
+    },
+
+    /**
+     * Bind DOM event handlers to the editor instance/element.
+     */
+    bindEditorEvents: function() {
       this.editor.on('focus', _.bind(this.handleEditorFocus, this));
       this.editor.on('blur', _.bind(this.handleEditorBlur, this));
       this.editor.on('change', _.bind(this.handleEditorChange, this));
       this.editor.on('load', _.bind(this.handleEditorLoad, this));
-
-      // TODO: this namespace might be contingent.
-      storybase.builder.dispatcher.on(
-        'select:section', 
-        _.bind(this.handleSectionChanged, this)
-      );
-
-      return this;
     },
 
     handleEditorFocus: function() {
@@ -3495,7 +3516,9 @@
 
         this.$el.html(this.template(this.model.toJSON()));
 
-        // Initialize wysihmtl5 editor
+        // Initialize wysihmtl5 editor.
+        // We do this each time the view is rendered because wysihtml5 doesn't
+        // handle being removed and re-added to the DOM very gracefully
         this.summaryEditor = new RichTextEditor(
           this.$(this.options.summaryEl).get(0),
           {
@@ -3503,7 +3526,10 @@
           }
         );
 
-        this.summaryCharCountView = this.summaryCharCountView || new CharacterCountView({ 
+        // Similarly, initialize the character count view because it's a
+        // pain to unbind/rebind the event bindings to the editor. :-(
+        this.summaryCharCountView = new CharacterCountView({ 
+          dispatcher: this.dispatcher,
           target: this.summaryEditor,
           showOnFocus: false
         });
