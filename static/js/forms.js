@@ -1,7 +1,7 @@
 /**
  * Custom editors for backbone-forms
  */
-;(function(_, Backbone, storybase) {
+;(function($, _, Backbone, wysihtml5, storybase) {
 
   if (_.isUndefined(storybase.forms)) {
     storybase.forms = {};
@@ -366,4 +366,4 @@
     }
   });
   
-})(_, Backbone, storybase);
+})($, _, Backbone, wysihtml5, storybase);
