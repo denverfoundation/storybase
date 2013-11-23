@@ -1,22 +1,37 @@
-This deploy a solr in your project.
+This helps you deploy a solr in your project.
 
-In order to useit:
- - put django haystack in your `INSTALLED_APPS'
- - merge from this repo
- - put `include Makefile.solr' at the end of your Makefile
+Installation :
+
+ 1. $ pip install django-haystack pysolr
+ 2. Add 'haystack' to your `INSTALLED_APPS'
+ 3. Merge this repository into your project.
+
+    $ git remote add solr https://github.com/fusionbox/solr-virtualenv.git
+    $ git fetch solr
+    $ git merge solr/master
+
+ 4. Put `include Makefile.solr' at the end of your Makefile.
+
+
+Customization :
+
+You can override the following variables :
+
+    PORT         the port on which solr will listen to
+    IP           the IP on which solr will listen to
+    SOLR_TGZ_URL the URL from which to download the solr tar
+
 
 Commands :
+ * make run-solr
+    Run solr.  This is the main entry point, all other necessary commands are
+    called by this one.
+
  * make solr-instance
     Create the solr instance
-    You can specify variables :
-        PORT    the port on which solr will listen to
-        IP      the IP on which solr will listen to
 
  * make schema-xml
     Update the maincore's schema.xml (using django-haystack)
-
- * make run-solr
-    Run solr
 
  * make clean
     Clean useless files
