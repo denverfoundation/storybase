@@ -6,9 +6,10 @@ Installation :
  2. Add 'haystack' to your `INSTALLED_APPS'
  3. Merge this repository into your project.
 
-    $ git remote add solr https://github.com/fusionbox/solr-virtualenv.git
-    $ git fetch solr
-    $ git merge solr/master
+    $ git fetch https://github.com/fusionbox/solr-virtualenv.git
+    From https://github.com/fusionbox/solr-virtualenv
+     * branch            HEAD       -> FETCH_HEAD
+    $ git merge FETCH_HEAD
 
  4. Put `include Makefile.solr' at the end of your Makefile.
 
