@@ -4092,6 +4092,7 @@
         * Callback for the 'destroy' event on the view's model.
         */
         handleDestroy: function() {
+          var index, newIndex;
           var triggerUnused = function(asset) {
             this.dispatcher.trigger("remove:sectionasset", asset);
           };
@@ -4102,16 +4103,19 @@
           }
           if (this.$el.is(':visible')) {
             // Destroying the currently active view
-            var index = this.model.collection.indexOf(this.model);
-            if (index) {
-              // If this isn't the first section, make the previous section
-              // the active one
-              this.dispatcher.trigger('select:section', this.model.collection.at(index - 1));
+            index = this.model.collection.indexOf(this.model);
+            if (index === 0) {
+              // The how the first section. Its index is 1 because the first
+              // section, with index 0, hasn't been removed yet.
+              newIndex = 1;
             }
             else {
-              // Otherwise, show the first section 
-              this.dispatcher.trigger('select:section', this.model.collection.at(0));
+              // If this isn't the first section, make the previous section
+              // the active one
+              newIndex = index - 1;
             }
+            // Tell other views to display the section
+            this.dispatcher.trigger('select:section', this.model.collection.at(newIndex));
           }
           // Remove the section from the collection of all sections
           this.collection.splice(_.indexOf(this.collection, this), 1);
