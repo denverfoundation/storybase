@@ -281,7 +281,8 @@
       if (this.options.visibleSteps.info) {
         this.subviews.info = new StoryInfoView(
           _.defaults({
-            defaultImageUrl: this.options.defaultImageUrl
+            defaultImageUrl: this.options.defaultImageUrl,
+            help: this.options.help
           }, commonOptions)
         );
         workflowSteps.push(_.result(this.subviews.info, 'workflowStep'));
@@ -3487,6 +3488,10 @@
       },
 
       initialize: function(options) {
+        var thisHelp = options.help ? options.help.where({slug: 'story-information'}) : null;
+        if (thisHelp && thisHelp.length) {
+          this.help = thisHelp[0];
+        }
         this.dispatcher = options.dispatcher;
         this.compileTemplates();
 
@@ -3543,7 +3548,14 @@
       },
 
       onShow: function() {
+        if (this.help) {
+          this.dispatcher.trigger('do:set:help', this.help.toJSON());
+        }
         this.featuredAssetView.onShow();
+      },
+
+      onHide: function() {
+        this.dispatcher.trigger('do:clear:help');
       }
     })
   );
