@@ -181,7 +181,7 @@
       });
     },
     
-    initialize: function() {
+    initialize: function(options) {
       // Common options passed to sub-views
       var commonOptions = {
         dispatcher: this.options.dispatcher,
@@ -202,27 +202,29 @@
       // This will get set by an event callback 
       this.activeStep = null; 
 
-      this.titleView = new TitleView({
-        el: this.$(this.options.titleEl),
-        model: this.model,
-        dispatcher: this.dispatcher
-      });
-      this.titleView.render();
+      if (!options.showStoryInfoInline) {
+        this.titleView = new TitleView({
+          el: this.$(this.options.titleEl),
+          model: this.model,
+          dispatcher: this.dispatcher
+        });
+        this.titleView.render();
 
-      this.bylineView = new BylineView({
-        el: this.$(this.options.bylineEl),
-        model: this.model,
-        dispatcher: this.dispatcher
-      });
-      this.bylineView.render();
+        this.bylineView = new BylineView({
+          el: this.$(this.options.bylineEl),
+          model: this.model,
+          dispatcher: this.dispatcher
+        });
+        this.bylineView.render();
 
-      this.bylineView.on('edit', this.toggleByline, this); 
-      this.titleView.on('edit', this.toggleTitle, this);
+        this.bylineView.on('edit', this.toggleByline, this); 
+        this.titleView.on('edit', this.toggleTitle, this);
 
-      this.logoView = new LogoView({
-        el: this.$(this.options.logoEl),
-        dispatcher: this.dispatcher
-      });
+        this.logoView = new LogoView({
+          el: this.$(this.options.logoEl),
+          dispatcher: this.dispatcher
+        });
+      }
 
       // Initialize a view for the tools menu
       this.toolsView = new ToolsView(
