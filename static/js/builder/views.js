@@ -148,7 +148,89 @@
    *
    * Dispatches to sub-views.
    *
-   * TODO: Document the options for this view
+   * @property {object} options - Options for this view. These options are in
+   * addition to the ones supported by Backbone.View.
+   *   In many cases, these are used to tell the Backbone views about page
+   *   elements that have already been rendered server-side, avoid hard-coding
+   *   URL paths and provide collections for defining relationships with other
+   *   models.
+   * @property {object} options.assetTypes - Array of supported asset types.
+   *   The asset types are objects with ``name`` and ``type`` properties.
+   * @property {ContainerTemplates} options.containerTemplates - Collection
+   *   of models describing help, default asset types and other properties of
+   *   a template story's section asset container. 
+   * @property {Backbone.Events} options.dispatcher - Global event bus.
+   *   This will be passed to subviews.
+   * @property {Backbone.Collection} options.help - Collection of help items.
+   *   These can be edited with the Django admin.  The ids of this collection
+   *   correspond to the slugs of the DJango models.
+   * @property {object} options.layouts - List of available section layouts.
+   *   Layout objects have ``name``, ``layout_id`` and ``slug`` properties.
+   * @property {object} options.organizations - List of available
+   *   organizations that can be used to categorize the story. Organization
+   *   items have ``organization_id`` and ``name`` properties.
+   * @property {object} options.projects - List of available projects that can
+   *   be used to categorize the story.
+   *   Project items have ``project_id`` and ``name`` properties.
+   * @property {string} options.alertsEl - Selector for DOM element where
+   *   application alerts will be displayed.
+   * @property {object} options.places - List of available places that can be
+   *   used to categorize the story.
+   *   Place items have ``id`` and ``name`` properties.
+   * @property {StoryRelations} options.relatedStories - Collection of stories
+   *   related to the current story or story that will be created. This is
+   *   used to specify the seed story in connected story relationships.
+   * @property {StoryTemplates} options.storyTemplates - Collection of
+   *   available story templates. 
+   * @property {object} options.startOverUrl - Path to launch a new instance
+   *   of the builder.
+   * @property {object} options.storyListUrl - Path to view that lists the
+   *   current users stories.
+   * @property {string} options.browserSupportMessage - Message displayed when
+   *   the application is launched with an unsupported browser.
+   * @property {string} options.language - Language code for translating
+   *   application strings.
+   * @property {object} options.partials - Map of Handlebars partials.
+   * @property {object} options.visibleSteps - Visible workflow steps. Values
+   *   should be truthy for a step, identified by the keys of this object, to
+   *   be shown.
+   * @property {string} options.prompt - Prompt for the story.
+   * @property {Story} options.templateStory - Story that provides the
+   *   structure for this story.
+   * @property {boolean} options.showCallToAction - If truthy, allow the user
+   *   to set a call to action for their stories.
+   * @property {boolean} options.showSectionList - If truthy, show a list of
+   *   sections that allows the user to navigate between story sections.
+   *   and add or remove sections.
+   * @property {boolean} options.showLayoutSelection - If truthy, show a widget that allows the user to change the layout of a story section.
+   * @property {boolean} options.showSectionTitles - If truthy, allow the user
+   *   to edit the section titles.
+   * @property {boolean} options.showStoryInfoInline - If truthy, show the
+   *   inputs for editing the story title and byline along with the content of
+   *   the first section.
+   * @property {boolean} options.showTour - If truthy, show a tour of the
+   *   story builder.
+   * @property {boolean} options.forceTour - If truthy, force showing a tour
+   *   of the story builder, even if options.showTour is falsey.
+   * @property {string} options.siteName 
+   * @property {string} options.drawerEl - Selector for DOM element of the
+   *   drawer.
+   * @property {string} options.headerEl - Selector for DOM element of the
+   *   header.
+   * @property {string} options.subNavContainerEl - Selector for DOM element
+   *   that will contain subnavigation controls for a particular workflow
+   *   step, for example the story section navigation control.
+   * @property {string} options.subviewContainerEl - Selector for DOM element
+   *   of the main application views, in most cases the workflow steps.
+   * @property {string} options.toolsContainerEl - Selector for DOM element of
+   *   the tools menu ("Start Over", "Exit", etc.).
+   * @property {string} options.workflowContainerEl - Selector for DOM element
+   *   of the workflow step selection menu.
+   * @property {string} options.titleEl - Selector for DOM element of the
+   *   story's title.
+   * @property {string} options.titleEl - Selector for DOM element of the
+   *   story's author information.
+   * @property {string} optons.logoEl - Selector for DOM element of the logo.
    *
    */
   Views.AppView = Backbone.View.extend({
@@ -180,7 +262,7 @@
         Handlebars.registerPartial(name, tmplSrc);
       });
     },
-    
+
     initialize: function(options) {
       // Common options passed to sub-views
       var commonOptions = {
@@ -257,7 +339,6 @@
         prompt: this.options.prompt,
         relatedStories: this.options.relatedStories,
         templateStory: this.options.templateStory,
-        showStoryInformation: this.options.showStoryInformation,
         showCallToAction: this.options.showCallToAction,
         showSectionList: this.options.showSectionList,
         showLayoutSelection: this.options.showLayoutSelection,
