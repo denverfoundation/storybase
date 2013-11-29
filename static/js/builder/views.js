@@ -399,8 +399,6 @@
         dispatcher: this.dispatcher
       });
 
-      // IMPORTANT: Create the builder view last because it triggers
-      // events that the other views need to listen to
       this.subviews.build = new BuilderView(buildViewOptions);
       workflowSteps.unshift(_.result(this.subviews.build, 'workflowStep'));
 
@@ -424,6 +422,10 @@
         lastSaved: this.model ? this.model.get('last_edited'): null
       });
       this.$workflowContainerEl.append(this.lastSavedView.render().el);
+
+      // IMPORTANT: Only call this after other subviews have been initialized
+      // because it triggers events that other views need to listen to
+      this.subviews.build.initStory();
 
       // Bind callbacks for custom events
       this.dispatcher.on("open:drawer", this.openDrawer, this);
@@ -2322,7 +2324,17 @@
       this.dispatcher.on("ready:story", this.setTitle, this);
       this.dispatcher.on("created:section", this.handleCreateSection, this);
       this.dispatcher.on('do:show:tour', this.showTour, this);
+    },
 
+    /**
+     * Fetch the story's sections from the server or copy them from a template
+     * story.
+     *
+     * IMPORTANT! This should only be called after other views have been
+     * initialized because it causes signals to be triggered on the
+     * event bus that may need to be listened to by other views.
+     */
+    initStory: function() {
       if (!this.model.isNew()) {
         if (this.templateStory) {
           // If we know about a template story, get suggestions for
