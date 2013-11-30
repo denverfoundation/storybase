@@ -291,6 +291,13 @@
           dispatcher: this.dispatcher
         });
         this.titleView.render();
+        if (_.isUndefined(this.model)) {
+          // If this is a new story, show the title input initially
+          this.titleView.once('set:model', function() {
+            this.titleView.edit();
+            this.titleView.$editor().tooltipster('show');
+          }, this);
+        }
 
         this.bylineView = new BylineView({
           el: this.$(this.options.bylineEl),
@@ -723,10 +730,12 @@
         this.renderDisplay();
 
         // Add a tooltip to let users know the element is editable
-        this.$display().attr('title', this.options.tooltip); 
+        this.$display().attr('title', this.options.tooltip)
+            .tooltipster(); 
 
         // Add the hidden form element
-        $(inputHtml).hide().appendTo(this.$el);
+        $(inputHtml).hide().appendTo(this.$el)
+                    .tooltipster();
 
         this.extraRender();
       }
@@ -755,6 +764,7 @@
 
       this.bindModelEvents();
       this.render();
+      this.trigger('set:model');
     },
 
     getVal: function() {
