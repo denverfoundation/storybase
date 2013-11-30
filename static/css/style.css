@@ -849,6 +849,8 @@ body.story-builder #title-bar .byline-container{display:none;float:left;width:50
 body.story-builder .has-story #title-bar .logo{width:34px;margin-right:10px}body.story-builder .has-story #title-bar .logo img{width:34px}
 body.story-builder .has-story #title-bar .title{width:600px;text-indent:0}
 body.story-builder .has-story #title-bar .byline-container{display:block}
+body.story-builder .has-story.story-info-inline #title-bar .logo{display:block;float:left;width:333px;padding-top:14px}body.story-builder .has-story.story-info-inline #title-bar .logo img{width:333px}
+body.story-builder .has-story.story-info-inline #title-bar .title{width:0;text-indent:-32000px}
 body.story-builder #title-bar-contents{margin-left:auto;margin-right:auto;width:1020px}
 body.story-builder #tools{position:absolute !important;right:0;top:28px;font-family:'Museo300Regular';font-size:16px}body.story-builder #tools li{padding:0 8px;list-style:none}body.story-builder #tools li a{text-transform:uppercase;text-decoration:none;color:#fff;text-shadow:0 -1px 1px rgba(0,0,0,0.3)}
 body.story-builder #workflow-bar{height:56px;border-bottom:1px solid #fff}

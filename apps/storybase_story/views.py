@@ -562,6 +562,9 @@ class StoryBuilderView(DetailView):
             context['container_templates_json'] = mark_safe(
                 self.get_container_templates_json(self.template_object.story))
 
+        if (self.template_object and self.template_object.slug == settings.STORYBASE_CONNECTED_STORY_TEMPLATE):
+            context['show_story_info_inline'] = True
+
         related_stories_json = self.get_related_stories_json()
         if related_stories_json: 
             context['related_stories_json'] = mark_safe(
