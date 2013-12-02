@@ -1625,8 +1625,23 @@ table.datasets {
   &.selected em {
     display:block;
   }
+
   &.pseudo em {
     left:50px;
+  }
+
+  // Styles for section element  while it is being dragged to reorder
+  // sections
+  //
+  // It appears that jQuery UI's sortable effect adds the
+  // ``ui-sortable-helper`` class to an element being dragged as part of the
+  // sorting interaction.
+  &.ui-sortable-helper {
+    // Hide the spacer (and the add section icons within them) when the
+    // section is being dragged
+    .spacer {
+      display: none;
+    }
   }
 }
 

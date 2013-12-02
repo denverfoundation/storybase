@@ -1036,6 +1036,7 @@ body.story-builder .section-thumbnail-container{font-family:Arial,sans-serif;pos
 body.story-builder .section-thumbnail-container .spacer+em{left:70px}
 body.story-builder .section-thumbnail-container.selected em{display:block}
 body.story-builder .section-thumbnail-container.pseudo em{left:50px}
+body.story-builder .section-thumbnail-container.ui-sortable-helper .spacer{display:none}
 body.story-builder .section-thumbnail,body.story-builder .spacer{position:relative;float:left;height:75px;margin:10px 0;text-align:center}
 body.story-builder .section-thumbnail,body.story-builder .spacer:hover,body.story-builder .spacer.hover{border-radius:4px;-webkit-border-radius:4px;-moz-border-radius:4px;box-shadow:0 0 5px #b3b3b3;-moz-box-shadow:0 0 5px #b3b3b3;-webkit-box-shadow:0 0 5px #b3b3b3;cursor:pointer}
 body.story-builder .section-thumbnail{width:120px;border:1px solid #b3b3b3;background-color:#f0efef;color:#999}body.story-builder .section-thumbnail .title{position:relative;font-size:12px;top:31.5px}

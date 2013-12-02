@@ -3152,14 +3152,16 @@
 
     render: function() {
       var i = 0;
-      var numThumbnails;
+      var numThumbnails = this._sortedThumbnailViews.length;
       var thumbnailView;
-      numThumbnails = this._sortedThumbnailViews.length;
+
       if (numThumbnails) {
         for (i = 0; i < numThumbnails; i++) {
           thumbnailView = this._sortedThumbnailViews[i];
           this.$('.sections').append(thumbnailView.render().el);
         }
+
+        // Enable the jQuery UI Sortable Widget on this element 
         this.$('.sections').sortable({
           items: 'li:not(.pseudo)'
         });
