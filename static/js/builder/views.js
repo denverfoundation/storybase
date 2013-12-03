@@ -7384,10 +7384,14 @@
 
     render: function() {
       var published = this.storyPublished();
+
       this.$el.html(this.template({
         title: this.options.title,
         published: published
       }));
+
+      this.delegateEvents();
+
       return this;
     }
   });
