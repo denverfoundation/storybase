@@ -181,6 +181,7 @@ Handlebars.js templates for story builder Backbone application
     {{/if}}
 </div>
 {{#if showSectionTitles}}
+<label for="title">{{gettext "Section title"}}</label>
 <input class="section-title" name="title" value="{{title}}" placeholder="{{{default title_suggestion "Section Title"}}}"/>
 {{/if}}
 <div class="section-edit-layout">{{{layout_template}}}</div>

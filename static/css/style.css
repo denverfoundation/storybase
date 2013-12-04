@@ -966,7 +966,8 @@ body.story-builder .byline input{width:98% !important}
 body.story-builder .edit-call-to-action .wysihtml5-sandbox{margin-top:.5% !important;width:90% !important}
 body.story-builder .call-to-action{width:100%;height:250px}
 body.story-builder .connected-prompt{width:100%;height:300px}
-body.story-builder .edit-section{position:relative;margin-left:auto;margin-right:auto;padding-top:2em;width:85%;height:70%}body.story-builder .edit-section .section-title{margin-top:15px;width:75%}
+body.story-builder .edit-section{position:relative;margin-left:auto;margin-right:auto;padding-top:2em;width:85%;height:70%}body.story-builder .edit-section .section-title{width:75%}
+body.story-builder .edit-section>label{display:block}
 body.story-builder .section-edit-layout{position:relative;height:90%;margin-top:.5%;padding-bottom:2%;width:100%}body.story-builder .section-edit-layout .wysihtml5-sandbox{border:none !important}
 body.story-builder #builder .section-layout{overflow:visible}
 body.story-builder #builder iframe.sandboxed-asset{border:none}
