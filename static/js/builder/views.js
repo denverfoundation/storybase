@@ -849,7 +849,7 @@
     options: _.defaults({
       attr: 'title',
       displayDefault: gettext("Untitled Story"),
-      placeholder: gettext("Edit your title here. Shorter is better: 100 characters or less!"),
+      placeholder: gettext("Edit your title here. Shorter is better."),
       displayEl: '.title',
       editorEl: 'input[name="title"]',
       tooltip: gettext("Click to edit title"),
