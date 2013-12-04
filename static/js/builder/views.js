@@ -7359,18 +7359,35 @@
     },
 
     handlePublish: function(evt) {
-      var that = this;
-      var triggerPublished = function(model, response) {
-        that.dispatcher.trigger('alert', 'success', 'Story published');
-      };
-      var triggerError = function(model, response) {
-        that.dispatcher.trigger('error', "Error publishing story");
-      };
-      this.model.save({'status': 'published'}, {
-        success: triggerPublished, 
-        error: triggerError 
-      });
-      this.render();
+      var validation = this.model.validateStory();
+
+      if (_.isUndefined(validation) || _.isUndefined(validation.errors)) {
+        // Validation succeeded
+        var view = this;
+        var triggerPublished = function(model, response) {
+          view.dispatcher.trigger('alert', 'success', 'Story published');
+        };
+        var triggerError = function(model, response) {
+          view.dispatcher.trigger('error', "Error publishing story");
+        };
+        this.model.save({'status': 'published'}, {
+          success: triggerPublished, 
+          error: triggerError 
+        });
+        this.render();
+      }
+      else {
+        // Validation failed
+        // TODO: Better warning and error messages
+        if (validation.errors) {
+          this.dispatcher.trigger('error', "Your story is missing a required component");
+        }
+      }
+
+      if (!_.isUndefined(validation) && validation.warnings) {
+        this.dispatcher.trigger('alert', 'info', "Your story is missing some suggested components");
+      }
+
       evt.preventDefault();
     },
 
