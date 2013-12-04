@@ -1,3 +1,5 @@
+
+
 describe('TastypieMixin collection mixin', function() {
   beforeEach(function() {
     this.collectionClass = Backbone.Collection.extend(
@@ -292,6 +294,52 @@ describe('Story model', function() {
         expect(sectionCopy.get('template_section')).toEqual(section.get('section_id'));
         expect(sectionCopy.get('weight')).toEqual(section.get('weight') - 1);
       });
+    });
+  });
+
+  describe('validateStory method', function() {
+    var MockFeaturedAssets = Backbone.Collection.extend({
+      save: function(options) {},
+
+      setStory: function(story) {}
+    });
+
+    beforeEach(function() {
+      this.story = new storybase.models.Story();
+    });
+
+    it('returns an error when the story has no title', function() {
+      var validation = this.story.validateStory();
+      expect(validation).toBeDefined();
+      expect(validation.errors.title).toBeDefined();
+    });
+
+    it('returns a warning when the story has no byline', function() {
+      var validation = this.story.validateStory();
+      expect(validation).toBeDefined();
+      expect(validation.warnings.byline).toBeDefined();
+    });
+
+    it('returns a warning when the story has no summary', function() {
+      var validation = this.story.validateStory();
+      expect(validation).toBeDefined();
+      expect(validation.warnings.summary).toBeDefined();
+    });
+
+    it('returns a warning when the story has no featured image', function() {
+      var validation = this.story.validateStory();
+      expect(validation).toBeDefined();
+      expect(validation.warnings.featuredAsset).toBeDefined();
+    });
+
+    it('returns nothing when all required fields are set', function() {
+      this.story.set('title', "Test Title");
+      this.story.set('byline', "Test Author");
+      this.story.set('summary', "Test summary");
+      this.story.setFeaturedAssets(new MockFeaturedAssets());
+      this.story.setFeaturedAsset(new Backbone.Model());
+      var validation = this.story.validateStory();
+      expect(validation).toBeUndefined();
     });
   });
 });

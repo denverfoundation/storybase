@@ -583,6 +583,62 @@
             section.set("title_suggestion", templateSection.get("title"));
           }
         }, this);
+      },
+
+      /**
+       * Confirm that the story has its essential components.
+       *
+       * Returns nothing if the story has all its components. If it is
+       * missing a required component, returns an object with an
+       * ``errors`` property, with keys for each missing required
+       * component.  If it is missing a reccomended component, the
+       * return object will have a ``warnings`` property, with keys
+       * for each missing reccomended component.
+       */
+      validateStory: function() {
+        var requiredFields = ['title'];
+        var reccomendedFields = ['byline', 'summary'];
+        var hasErrors = false;
+        var hasWarnings = false;
+        var errors = {};
+        var warnings = {};
+        var response = {};
+
+        _.each(requiredFields, function(fieldName) {
+          var value = this.get(fieldName);
+
+          if (_.isUndefined(value) || value === '') {
+            // TODO: Decide if a warning should be set instead of a boolean
+            errors[fieldName] = true; 
+            hasErrors = true;
+          }
+        }, this);
+
+        _.each(reccomendedFields, function(fieldName) {
+          var value = this.get(fieldName);
+
+          if (_.isUndefined(value) || value === '') {
+            warnings[fieldName] = true;
+            hasWarnings = true;
+          }
+        }, this);
+
+        if (_.isUndefined(this.getFeaturedAsset())) {
+          warnings.featuredAsset = true;
+          hasWarnings = true;
+        }
+
+        if (hasErrors) {
+          response.errors = errors;
+        }
+
+        if (hasWarnings) {
+          response.warnings = warnings;
+        }
+
+        if (hasErrors || hasWarnings) {
+          return response;
+        }
       }
     })
   );
