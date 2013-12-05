@@ -666,10 +666,10 @@ describe('PublishButtonView', function() {
     });
 
     describe('with a missing title', function() {
-      var errorSpy = jasmine.createSpy('errorSpy');
+      var alertSpy = jasmine.createSpy('alertSpy');
 
       beforeEach(function() {
-        EventBus.on('error', errorSpy);
+        EventBus.on('alert', alertSpy);
         sinon.stub(this.story, 'validateStory', function() {
           return {
             errors: {
@@ -681,7 +681,7 @@ describe('PublishButtonView', function() {
       });
 
       afterEach(function() {
-        EventBus.off('error', errorSpy);
+        EventBus.off('alert', alertSpy);
         this.story.validateStory.restore();
       });
     
@@ -693,8 +693,10 @@ describe('PublishButtonView', function() {
         expect(this.view.$('button').length).toEqual(1);
       });
 
-      it('should display an error about the  missing title', function() {
-        expect(errorSpy).toHaveBeenCalled();
+      it('should display an error about the missing title', function() {
+        expect(alertSpy).toHaveBeenCalled();
+        expect(alertSpy.mostRecentCall.args[0]).toEqual('error');
+        expect(alertSpy.mostRecentCall.args[1]).toContain('title');
       });
     });
 
@@ -730,6 +732,10 @@ describe('PublishButtonView', function() {
 
       it('should display a warning about missing components', function() {
         expect(alertSpy).toHaveBeenCalled();
+        expect(alertSpy.mostRecentCall.args[0]).toEqual('info');
+        expect(alertSpy.mostRecentCall.args[1]).toContain('author information');
+        expect(alertSpy.mostRecentCall.args[1]).toContain('summary');
+        expect(alertSpy.mostRecentCall.args[1]).toContain('featured image');
       });
     });
   });
