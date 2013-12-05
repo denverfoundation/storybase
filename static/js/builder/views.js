@@ -7358,19 +7358,86 @@
       }
     },
 
+    /**
+     * Returns an error messasge describing missing required story components.
+     *
+     * @param {object} validation Validation error object returned by
+     *   Story.validateStory().
+     */
+    _requiredComponentMissingMsg: function(validation) {
+      if (validation.errors && validation.errors.title) {
+        return gettext("You haven't given your story a <strong>title</strong>. You'll need to do this before you can publish."); 
+      }
+
+      // Should never get here, but just add a default case
+      // in case we're lazy
+      return gettext("Your story is missing a required component");
+    },
+
+    // Map of suggested fields to human readable strings
+    _suggestedFieldMessages: {
+      byline: gettext('author information'),
+      featuredAsset: gettext('featured image'),
+    },
+
+    /**
+     * Returns a warning messasge describing missing required story components.
+     *
+     * @param {object} validation Validation error object returned by
+     *   Story.validateStory().
+     */
+    _suggestedComponentMissingMsg: function(validation) {
+      if (validation.warnings) {
+        var msg = gettext("Your story is missing these suggested components") + ": ";
+        msg += _.map(_.keys(validation.warnings), function(field) {
+          var fieldString = this._suggestedFieldMessages[field] ? this._suggestedFieldMessages[field] : field;
+          return "<strong>" + fieldString + "</strong>";
+        }, this)
+        .join(", ");
+
+        msg += ". " + gettext("Your story can still be published, but you should add them.");
+
+        return msg;
+      }
+
+      return gettext("Your story is missing some suggested components");
+    },
+
     handlePublish: function(evt) {
-      var that = this;
-      var triggerPublished = function(model, response) {
-        that.dispatcher.trigger('alert', 'success', 'Story published');
-      };
-      var triggerError = function(model, response) {
-        that.dispatcher.trigger('error', "Error publishing story");
-      };
-      this.model.save({'status': 'published'}, {
-        success: triggerPublished, 
-        error: triggerError 
-      });
-      this.render();
+      var validation = this.model.validateStory();
+
+      if (_.isUndefined(validation) || _.isUndefined(validation.errors)) {
+        // Validation succeeded
+        var view = this;
+        var triggerPublished = function(model, response) {
+          view.dispatcher.trigger('alert', 'success', 'Story published');
+        };
+        var triggerError = function(model, response) {
+          view.dispatcher.trigger('error', "Error publishing story");
+        };
+        this.model.save({'status': 'published'}, {
+          success: triggerPublished, 
+          error: triggerError 
+        });
+        this.render();
+      }
+      else {
+        // Validation failed
+        if (validation.errors) {
+          this.dispatcher.trigger('alert', 'error',
+            this._requiredComponentMissingMsg(validation),
+            {timeout: null, sticky: true}
+          );
+        }
+      }
+
+      if (!_.isUndefined(validation) && validation.warnings) {
+        this.dispatcher.trigger('alert', 'info',
+          this._suggestedComponentMissingMsg(validation),
+          {timeout: null, sticky: true}
+        );
+      }
+
       evt.preventDefault();
     },
 

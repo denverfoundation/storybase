@@ -585,6 +585,8 @@ var MockStory = Backbone.Model.extend({
   setFeaturedAssets: function(collection) {
     this.featuredAssets = collection;
   },
+
+  validateStory: function() {}
 });
 
 
@@ -642,15 +644,99 @@ describe('PublishButtonView', function() {
       });
       spyOn(this.story, 'save').andCallThrough();
       this.view.render();
-      this.view.$('button').trigger('click');
     });
 
-    it('should save the story', function() {
-      expect(this.story.save).toHaveBeenCalled();
+    describe('with all the required story fields', function() {
+      beforeEach(function() {
+        sinon.stub(this.story, 'validateStory');
+        this.view.$('button').trigger('click');
+      });
+
+      afterEach(function() {
+        this.story.validateStory.restore();
+      });
+    
+      it('should save the story', function() {
+        expect(this.story.save).toHaveBeenCalled();
+      });
+
+      it('should hide the button', function() {
+        expect(this.view.$('button').length).toEqual(0);
+      });
     });
 
-    it('should hide the button', function() {
-      expect(this.view.$('button').length).toEqual(0);
+    describe('with a missing title', function() {
+      var alertSpy = jasmine.createSpy('alertSpy');
+
+      beforeEach(function() {
+        EventBus.on('alert', alertSpy);
+        sinon.stub(this.story, 'validateStory', function() {
+          return {
+            errors: {
+              title: true
+            }
+          };
+        });
+        this.view.$('button').trigger('click');
+      });
+
+      afterEach(function() {
+        EventBus.off('alert', alertSpy);
+        this.story.validateStory.restore();
+      });
+    
+      it('should not save the story', function() {
+        expect(this.story.save).not.toHaveBeenCalled();
+      });
+
+      it('should not hide the button', function() {
+        expect(this.view.$('button').length).toEqual(1);
+      });
+
+      it('should display an error about the missing title', function() {
+        expect(alertSpy).toHaveBeenCalled();
+        expect(alertSpy.mostRecentCall.args[0]).toEqual('error');
+        expect(alertSpy.mostRecentCall.args[1]).toContain('title');
+      });
+    });
+
+    describe('with missing byline, summary and featured image', function() {
+      var alertSpy = jasmine.createSpy('alertSpy');
+
+      beforeEach(function() {
+        EventBus.on('alert', alertSpy);
+        sinon.stub(this.story, 'validateStory', function() {
+          return {
+            warnings: {
+              byline: true,
+              summary: true,
+              featuredAsset: true
+            }
+          };
+        });
+        this.view.$('button').trigger('click');
+      });
+
+      afterEach(function() {
+        EventBus.off('alert', alertSpy);
+        this.story.validateStory.restore();
+      });
+    
+      it('should save the story', function() {
+        expect(this.story.save).toHaveBeenCalled();
+      });
+
+      it('should hide the button', function() {
+        expect(this.view.$('button').length).toEqual(0);
+      });
+
+      it('should display a warning about missing components', function() {
+        expect(alertSpy).toHaveBeenCalled();
+        expect(alertSpy.mostRecentCall.args[0]).toEqual('info');
+        expect(alertSpy.mostRecentCall.args[1]).toContain('author information');
+        expect(alertSpy.mostRecentCall.args[1]).toContain('summary');
+        expect(alertSpy.mostRecentCall.args[1]).toContain('featured image');
+      });
     });
   });
 });

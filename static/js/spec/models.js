@@ -1,3 +1,5 @@
+
+
 describe('TastypieMixin collection mixin', function() {
   beforeEach(function() {
     this.collectionClass = Backbone.Collection.extend(
@@ -126,7 +128,7 @@ describe('DataSets collection', function() {
 describe("Section model", function() {
   describe("when new", function() {
     it("should have an assets collection", function() {
-      this.section = new storybase.models.Section;
+      this.section = new storybase.models.Section();
       expect(this.section.assets).toBeDefined();
       expect(this.section.assets.length).toEqual(0);
     });
@@ -150,7 +152,7 @@ describe("Sections collection", function() {
     beforeEach(function() {
       this.server = sinon.fakeServer.create();
       this.sectionsFixture = this.fixtures.Sections.getList["6c8bfeaa6bb145e791b410e3ca5e9053"];
-      this.collection = new storybase.collections.Sections;
+      this.collection = new storybase.collections.Sections();
       this.collection.url = "/api/0.1/stories/6c8bfeaa6bb145e791b410e3ca5e9053/sections/";
       this.collection.reset(this.sectionsFixture.objects);
     });
@@ -167,7 +169,7 @@ describe("Sections collection", function() {
           this.validResponse(this.sectionsFixture)
         );
         _.each(this.sectionsFixture.objects, function(section) {
-          var sectionId = section["section_id"]; 
+          var sectionId = section.section_id; 
           var url = this.collection.url + sectionId + "/assets/";
           this.server.respondWith(
             "GET",
@@ -184,7 +186,7 @@ describe("Sections collection", function() {
             var fixture = spec.fixtures.SectionAssets.getList[section.id];
             expect(section.assets.length).toEqual(fixture.objects.length);
             _.each(fixture.objects, function(assetJSON) {
-              var asset = section.assets.get(assetJSON["asset"]["asset_id"]);
+              var asset = section.assets.get(assetJSON.asset.asset_id);
               expect(asset).toBeDefined();
             });
           });
@@ -246,7 +248,7 @@ describe('Story model', function() {
 
   describe('when new', function() {
     beforeEach(function() {
-      this.story = new storybase.models.Story;
+      this.story = new storybase.models.Story();
     });
 
     it("doesn't have an id in the url", function() {
@@ -262,9 +264,9 @@ describe('Story model', function() {
   describe('fromTemplate method', function() {
     it("copies selected attributes from another story", function() {
       var templateFixture = this.fixtures.Stories.getDetail["0b2b9e3f38e3422ea3899ee66d1e334b"];
-      var templateSectionsFixture = this.fixtures.Sections.getList[templateFixture['story_id']];
+      var templateSectionsFixture = this.fixtures.Sections.getList[templateFixture.story_id];
       var templateStory = new storybase.models.Story(templateFixture);
-      var story = new storybase.models.Story;
+      var story = new storybase.models.Story();
       var storyProps = ['structure_type'];
       var storySuggestedProps = ['summary', 'call_to_action'];
       var sectionProps = ['layout', 'root', 'layout_template', 'help'];
@@ -292,6 +294,52 @@ describe('Story model', function() {
         expect(sectionCopy.get('template_section')).toEqual(section.get('section_id'));
         expect(sectionCopy.get('weight')).toEqual(section.get('weight') - 1);
       });
+    });
+  });
+
+  describe('validateStory method', function() {
+    var MockFeaturedAssets = Backbone.Collection.extend({
+      save: function(options) {},
+
+      setStory: function(story) {}
+    });
+
+    beforeEach(function() {
+      this.story = new storybase.models.Story();
+    });
+
+    it('returns an error when the story has no title', function() {
+      var validation = this.story.validateStory();
+      expect(validation).toBeDefined();
+      expect(validation.errors.title).toBeDefined();
+    });
+
+    it('returns a warning when the story has no byline', function() {
+      var validation = this.story.validateStory();
+      expect(validation).toBeDefined();
+      expect(validation.warnings.byline).toBeDefined();
+    });
+
+    it('returns a warning when the story has no summary', function() {
+      var validation = this.story.validateStory();
+      expect(validation).toBeDefined();
+      expect(validation.warnings.summary).toBeDefined();
+    });
+
+    it('returns a warning when the story has no featured image', function() {
+      var validation = this.story.validateStory();
+      expect(validation).toBeDefined();
+      expect(validation.warnings.featuredAsset).toBeDefined();
+    });
+
+    it('returns nothing when all required fields are set', function() {
+      this.story.set('title', "Test Title");
+      this.story.set('byline', "Test Author");
+      this.story.set('summary', "Test summary");
+      this.story.setFeaturedAssets(new MockFeaturedAssets());
+      this.story.setFeaturedAsset(new Backbone.Model());
+      var validation = this.story.validateStory();
+      expect(validation).toBeUndefined();
     });
   });
 });
@@ -371,7 +419,7 @@ describe('Asset model', function() {
 describe('Tag model', function() {
   describe('isNew method', function() {
     it('should return true for a model constructed with no attributes', function() {
-      this.model = new storybase.models.Tag;
+      this.model = new storybase.models.Tag();
       expect(this.model.isNew()).toBe(true);
     });
 
