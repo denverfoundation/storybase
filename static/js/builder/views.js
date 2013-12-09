@@ -7240,15 +7240,29 @@
       this.delegateEvents();
     },
 
+    /**
+     * Set the story's initial featured asset when an image asset is added.
+     *
+     * This is meant to be added as an event listener for the ``add`` event
+     * on the view's ``model.assets`` collection.
+     */
     handleAddAsset: function(asset) {
       if (asset.get('type') === 'image') {
-        // Wait until the file upload has completed and the asset model has synced
-        // before setting it as the featured asset. This works around a race
-        // condition where FeaturedAssetDisplayView would render before the
-        // asset attributes were updated.
-        asset.once('change:content', function(asset) {
-          this.model.setFeaturedAsset(asset);    
-        }, this);
+        if (asset.get('content')) {
+          // The content attribute will only be set when an asset has
+          // synced with the server.  So, we can go ahead and set this
+          // asset as the story's featured asset.
+          this.model.setFeaturedAsset(asset);
+        }
+        else {
+          // Wait until the file upload has completed and the asset model has
+          // synced before setting it as the featured asset. This works around
+          // a race condition where FeaturedAssetDisplayView would render
+          // before the asset attributes were updated.
+          asset.once('change:content', function(asset) {
+            this.model.setFeaturedAsset(asset);    
+          }, this);
+        }
       }
     },
 
