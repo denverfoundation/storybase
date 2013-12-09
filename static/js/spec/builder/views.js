@@ -82,6 +82,37 @@ describe('AppView', function() {
   });
 });
 
+describe('AlertManagerView', function() {
+  describe('showAlert method', function() {
+    var showAlertSpy = jasmine.createSpy('showAlertSpy');
+
+    beforeEach(function() {
+      this.view = new storybase.builder.views.AlertManagerView({
+        dispatcher: EventBus
+      });
+      this.level = 'info';
+      this.msg = "Test alert message";
+      this.alertId = 'test-alert';
+      EventBus.on('show:alert', showAlertSpy); 
+      this.view.showAlert(this.level, this.msg, {
+        alertId: this.alertId
+      });
+    });
+
+    afterEach(function() {
+      EventBus.off('show:alert', showAlertSpy);
+    });
+
+    it('should trigger a "show:alert" event on the event bus', function() {
+      expect(showAlertSpy).toHaveBeenCalled();
+      expect(showAlertSpy.mostRecentCall.args[0]).toEqual(this.level);
+      expect(showAlertSpy.mostRecentCall.args[1]).toEqual(this.msg);
+      expect(showAlertSpy.mostRecentCall.args[2] instanceof Backbone.View).toBeTruthy();
+      expect(showAlertSpy.mostRecentCall.args[2].alertId).toEqual(this.alertId);
+    });
+  });
+});
+
 describe('SectionEditView view', function() {
   describe('when initialized with an existing story and section', function () {
     beforeEach(function() {

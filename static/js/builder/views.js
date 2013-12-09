@@ -922,8 +922,8 @@
   });
 
   var AlertManagerView = Views.AlertManagerView = Backbone.View.extend({
-    initialize: function() {
-      this.dispatcher = this.options.dispatcher;
+    initialize: function(options) {
+      this.dispatcher = options.dispatcher;
       // Track messages that are currently visible 
       this._visible = {};
 
@@ -970,6 +970,8 @@
      * @param {Integer|null} [options.timeout=8000] Milliseconds to show the message
      *   before it is hidden. If null, the message remains visible.
      * @param {Boolean} [options.sticky] Stick the alert to the top of the list
+     * @param {String} [options.alertId] Id that can be used by other views to
+     *   manage alerts they emit.
      *
      */
     showAlert: function(level, msg, options) {
@@ -994,6 +996,7 @@
           this.$el.prepend(view.render().el);
         }
         this.setVisible(level, msg);
+        this.dispatcher.trigger('show:alert', level, msg, view);
         view.once('close', this.removeAlert, this);
         if (options.timeout) {
           view.fadeOut();
@@ -1019,6 +1022,12 @@
         events['click ' + this.options.closeButtonSelector] = "close";
       }
       return events;
+    },
+
+    initialize: function(options) {
+      if (options) {
+        this.alertId = options.alertId;
+      }
     },
 
     render: function() {
@@ -6523,9 +6532,9 @@
       }
     },
 
-    initialize: function() {
+    initialize: function(options) {
       this.compileTemplates();
-      this.dispatcher = this.options.dispatcher;
+      this.dispatcher = options.dispatcher;
       this.initListeners();
     }
   });
@@ -6573,8 +6582,8 @@
         }
       },
 
-      initialize: function() {
-        PublishViewBase.prototype.initialize.apply(this);
+      initialize: function(options) {
+        PublishViewBase.prototype.initialize.apply(this, arguments);
 
         this._sharingWidgetInitialized = false;
         this.licenseView = new LicenseView({
@@ -6689,8 +6698,8 @@
       }
     },
 
-    initialize: function() {
-      PublishViewBase.prototype.initialize.apply(this);
+    initialize: function(options) {
+      PublishViewBase.prototype.initialize.apply(this, arguments);
       this._rendered = false;
       this.$el.hide();
     },
@@ -7280,8 +7289,8 @@
       }
     },
 
-    initialize: function() {
-      PublishViewBase.prototype.initialize.apply(this);
+    initialize: function(options) {
+      PublishViewBase.prototype.initialize.apply(this, arguments);
     },
 
     handleChangeStatus: function(story, statusVal, options) {
@@ -7343,19 +7352,59 @@
       title: gettext("Publish your story")
     },
 
+    initialize: function(options) {
+      PublishViewBase.prototype.initialize.apply(this, arguments);
+      // Object to manage alerts emitted by this view, so we can close them.
+      // Keys are alert IDs, as passed as the ``alertId`` property of the
+      // options when triggering the ``alert`` event.  Values are a boolean
+      // or an ``AlertView`` instance.
+      this._alerts = {};
+    },
+
     initListeners: function() {
       if (_.isUndefined(this.model)) {
-        this.dispatcher.once("ready:story", this.setStory, this);
+        this.dispatcher.once('ready:story', this.setStory, this);
       }
       else {
         this.listenTo(this.model, 'change:status', this.handleChangeStatus);
       }
+
+      this.dispatcher.on('show:alert', this.handleAlert, this);
     },
 
     handleChangeStatus: function(story, statusVal, options) {
       if (statusVal !== 'published') {
         this.render();
       }
+    },
+
+    /**
+     * Event handler for a ``show:alert`` event.
+     */
+    handleAlert: function(level, msg, view) {
+      if (view.alertId && this._alerts[view.alertId]) {
+        this._alerts[view.alertId] = view;
+      }
+    },
+
+    /**
+     * Clear all alerts created by this view.
+     */
+    clearAlerts: function() {
+      var cleared = [];
+
+      // Close all alert views
+      _.each(this._alerts, function(view, alertId) {
+        if (view.close) {
+          view.close();
+          cleared.push(alertId);
+        }
+      }, this);
+
+      // Remove the closed alert views from our map of known alerts
+      _.each(cleared, function(alertId) {
+        delete this._alerts[alertId];
+      }, this);
     },
 
     /**
@@ -7377,7 +7426,7 @@
     // Map of suggested fields to human readable strings
     _suggestedFieldMessages: {
       byline: gettext('author information'),
-      featuredAsset: gettext('featured image'),
+      featuredAsset: gettext('featured image')
     },
 
     /**
@@ -7405,6 +7454,8 @@
 
     handlePublish: function(evt) {
       var validation = this.model.validateStory();
+      
+      this.clearAlerts();
 
       if (_.isUndefined(validation) || _.isUndefined(validation.errors)) {
         // Validation succeeded
@@ -7424,17 +7475,19 @@
       else {
         // Validation failed
         if (validation.errors) {
+          this._alerts['publish-validation-errors'] = true;
           this.dispatcher.trigger('alert', 'error',
             this._requiredComponentMissingMsg(validation),
-            {timeout: null, sticky: true}
+            {timeout: null, sticky: true, alertId: 'publish-validation-errors'}
           );
         }
       }
 
       if (!_.isUndefined(validation) && validation.warnings) {
+        this._alerts['publish-validation-warnings'] = true;
         this.dispatcher.trigger('alert', 'info',
           this._suggestedComponentMissingMsg(validation),
-          {timeout: null, sticky: true}
+          {timeout: null, sticky: true, alertId: 'publish-validation-warnings'}
         );
       }
 
