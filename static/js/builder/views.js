@@ -7444,7 +7444,7 @@
         }, this)
         .join(", ");
 
-        msg += ". " + gettext("Your story can still be published, but you should add them.");
+        msg += ". " + gettext("Your story was still published, but you should add them.");
 
         return msg;
       }
@@ -7471,9 +7471,18 @@
           error: triggerError 
         });
         this.render();
+
+        // If there were validation warnings, show an alert
+        if (!_.isUndefined(validation) && validation.warnings) {
+          this._alerts['publish-validation-warnings'] = true;
+          this.dispatcher.trigger('alert', 'info',
+            this._suggestedComponentMissingMsg(validation),
+            {timeout: null, sticky: true, alertId: 'publish-validation-warnings'}
+          );
+        }
       }
       else {
-        // Validation failed
+        // Validation failed, show an alert
         if (validation.errors) {
           this._alerts['publish-validation-errors'] = true;
           this.dispatcher.trigger('alert', 'error',
@@ -7481,14 +7490,6 @@
             {timeout: null, sticky: true, alertId: 'publish-validation-errors'}
           );
         }
-      }
-
-      if (!_.isUndefined(validation) && validation.warnings) {
-        this._alerts['publish-validation-warnings'] = true;
-        this.dispatcher.trigger('alert', 'info',
-          this._suggestedComponentMissingMsg(validation),
-          {timeout: null, sticky: true, alertId: 'publish-validation-warnings'}
-        );
       }
 
       evt.preventDefault();
