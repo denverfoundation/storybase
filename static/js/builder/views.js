@@ -2154,8 +2154,22 @@
             }
           ],
           position: 6,
-          title: gettext("Building a story takes five simple steps."),
+          title: gettext("Building a story takes four simple steps."),
           description: this.getTemplate('workflow-step-guider')(),
+          next: 'title-byline-guider'
+        }, defaultOpts));
+        guiders.createGuider(_.defaults({
+          id: 'title-byline-guider',
+          attachTo: '#title-bar',
+          position: 6,
+          // By default, the guider is positioned at the middle of the
+          // title-bar element.  Position it more to the left.
+          offset: {
+            left: -200,
+            top: -50 
+          },
+          title: gettext("Edit your title and author information here."),
+          description: gettext("Clicking on the title or author information here lets you set your story's title or your name and affiliation. Press Enter to save your changes.  You can edit the title or byline at any point during the story building process."), 
           next: 'section-list-guider'
         }, defaultOpts));
         guiders.createGuider(_.defaults({
