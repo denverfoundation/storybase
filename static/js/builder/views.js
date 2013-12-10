@@ -1,4 +1,4 @@
-;(function($, _, Backbone, Modernizr, wysihtml5, guiders, storybase) {
+;(function(window, $, _, Backbone, Modernizr, wysihtml5, guiders, storybase) {
   // We use Underscore's _.template() in a few places. Use Mustache-style
   // delimeters instead of ERB-style ones.
   _.templateSettings = {
@@ -336,7 +336,6 @@
         commonOptions.model = this.model;
       }
 
-
       buildViewOptions = _.defaults({
         assetTypes: this.options.assetTypes,
         containerTemplates: this.options.containerTemplates,
@@ -438,9 +437,10 @@
       this.dispatcher.on("open:drawer", this.openDrawer, this);
       this.dispatcher.on("close:drawer", this.closeDrawer, this);
       this.dispatcher.on("select:template", this.setTemplate, this);
-      this.dispatcher.on("select:workflowstep", this.updateStep, this); 
+      this.dispatcher.on("select:workflowstep", this.updateStep, this);
       this.dispatcher.on("error", this.error, this);
       this.dispatcher.on("select:template", this.setStoryClass, this);
+      this.dispatcher.on("select:section", this.handleSelectSection, this);
 
       if (_.isUndefined(this.model) || this.model.isNew()) {
         this.dispatcher.once("save:story", this.updatePath, this);
@@ -454,6 +454,7 @@
       this.dispatcher.off("select:workflowstep", this.updateStep, this); 
       this.dispatcher.off("error", this.error, this);
       this.dispatcher.off("select:template", this.setStoryClass, this);
+      this.dispatcher.off("select:section", this.handleSelectSection, this);
       this.dispatcher.off("save:story", this.updatePath, this);
 
       _.each(this.subviews, function(view) {
@@ -530,10 +531,21 @@
         }
         this.activeStep = step;
         this.render();
+        // Scroll to top of window
+        window.scrollTo(0, 0);
       }
       if (callback) {
         callback();
       }
+    },
+
+    /**
+     * Handler for the select:section event.
+     *
+     * Scroll to the top of the window.
+     */
+    handleSelectSection: function() {
+      window.scrollTo(0, 0);
     },
 
     /**
@@ -1783,7 +1795,7 @@
           title: gettext("View a list of your stories"),
           text: gettext("My Stories"),
           path: this.options.storyListUrl,
-          visible: true,
+          visible: true
         },
         {
           id: 'preview',
@@ -7544,4 +7556,4 @@
       return this;
     }
   });
-})($, _, Backbone, Modernizr, wysihtml5, guiders, storybase);
+})(window, $, _, Backbone, Modernizr, wysihtml5, guiders, storybase);
