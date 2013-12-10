@@ -579,12 +579,16 @@
      */
     pushDown: function($el) {
       var $header = this.$(this.options.headerEl);
-      var orig, headerBottom;
+      var orig, headerBottom, offsetTop;
+
       if ($header.length) {
+        // Calculate the offset, factoring in scroll position
+        offsetTop = $header.offset().top - $(window).scrollTop(); 
         orig = $el.css('margin-top');
-        headerBottom = $header.offset().top + $header.outerHeight();
+        headerBottom = offsetTop + $header.outerHeight();
         $el.css('margin-top', headerBottom);
       }
+
       return this;
     },
 
