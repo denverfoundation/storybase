@@ -245,7 +245,7 @@
       },
       subNavContainerEl: '#subnav-bar-contents',
       subviewContainerEl: '#app',
-      toolsContainerEl: '#title-bar-contents',
+      toolsContainerEl: '#workflow-bar-contents',
       visibleSteps: VISIBLE_STEPS, 
       workflowContainerEl: '#workflow-bar-contents',
       titleEl: '#title-bar-contents',
@@ -308,12 +308,12 @@
 
         this.bylineView.on('edit', this.toggleByline, this); 
         this.titleView.on('edit', this.toggleTitle, this);
-
-        this.logoView = new LogoView({
-          el: this.$(this.options.logoEl),
-          dispatcher: this.dispatcher
-        });
       }
+
+      this.toolsToggleView = new ToolsToggleView({
+        dispatcher: this.dispatcher
+      });
+      $toolsContainerEl.append(this.toolsToggleView.render().el);
 
       // Initialize a view for the tools menu
       this.toolsView = new ToolsView(
@@ -913,27 +913,6 @@
 
     toggle: function() {
       return this.$el.toggle();
-    }
-  });
-
-  var LogoView = Views.LogoView = Backbone.View.extend({
-    options: {
-      logoFilename: 'builder-logo-balloon.png',
-      noStoryLogoFilename: 'builder-logo.png'
-    },
-
-    initialize: function(options) {
-      this.dispatcher = options.dispatcher;
-      this.dispatcher.once("select:template", this.swapLogo, this);
-    },
-
-    swapLogo: function() {
-      var logoSrc = this.$el.attr('src');
-      if (logoSrc) {
-        logoSrc = logoSrc.replace(this.options.noStoryLogoFilename, this.options.logoFilename);
-        this.$el.attr('src', logoSrc);
-      }
-      return this;
     }
   });
 
@@ -1777,7 +1756,32 @@
       }
 
       return items;
+    }
+  });
+
+  /**
+   */
+  var ToolsToggleView = Views.ToolsToggleView = Backbone.View.extend({
+    tagName: 'button',
+
+    id: 'tools-toggle',
+
+    events: {
+      'click': 'triggerToggle'
     },
+
+    initialize: function(options) {
+      this.dispatcher = options.dispatcher;
+    },
+
+    render: function() {
+      this.$el.html('<span class="bar"></span><span class="bar"></span><span class="bar"></span>');
+      return this;
+    },
+
+    triggerToggle: function() {
+      this.dispatcher.trigger('toggle:tools');
+    }
   });
 
   /**
@@ -1790,7 +1794,7 @@
 
     id: 'tools',
 
-    className: 'nav',
+    className: 'nav toggling',
 
     _initItems: function() {
       return [
@@ -1836,7 +1840,8 @@
 
       this.dispatcher.on('ready:story', this.handleStorySave, this);
       this.dispatcher.on('save:story', this.handleStorySave, this);
-      this.dispatcher.on("select:workflowstep", this.updateStep, this);
+      this.dispatcher.on('select:workflowstep', this.updateStep, this);
+      this.dispatcher.on('toggle:tools', this.toggle, this);
     },
 
     previewStory: function(evt) {
@@ -1845,6 +1850,10 @@
         window.open(url);
       }
       evt.preventDefault();
+    },
+
+    toggle: function() {
+      this.$el.toggle();
     },
 
     toggleHelp: function(evt) {

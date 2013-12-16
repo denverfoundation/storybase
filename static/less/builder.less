@@ -1,12 +1,12 @@
 // Common Styles
 header {
-  background:url(../img/builder/header-bg.png) repeat-x top left;
-
-  > div {
-    width:100%;
-    position:relative;
-    .container_12;
-  }
+  // TODO: Only apply this to the subnav view
+  //
+  //> div {
+  //  width:100%;
+  //  position:relative;
+  //  .container_12;
+  //}
 }
 
 // QUESTION: Should this be the default style?
@@ -259,22 +259,18 @@ button.help {
 // Title Bar
 
 @title-bar-height: 63px;
-@logo-height: 34px;
 
 #title-bar {
-  background: #f7941e;
+  // Hide this element unless a story is present
+  display: none;
+
+  background-color: #f7941e; 
   overflow: hidden;
   height: @title-bar-height; 
 
-  .logo {
-    display: block;
-    float: left;
-    width: 333px;
-    padding-top: floor((@title-bar-height - @logo-height) / 2);
-  }
-
   .title {
     .viewer-story-title();
+    width: 100%;
     float: left;
     margin-top: 2px;
     height: 32px;
@@ -284,12 +280,6 @@ button.help {
     white-space: nowrap;
 
     color: #fff;
-
-    // When there's no story model, that is, when the user is creating a story
-    // for the first time and selecting a template, hide the title text and
-    // just show the logo.
-    width: 0;
-    text-indent: -32000px;
   }
 
   .title, .byline {
@@ -311,90 +301,53 @@ button.help {
   }
 
   .byline-container {
-    display: none;
     float: left;
     width: 500px;
   }
 }
 
 .has-story #title-bar {
-  // Show the smaller, speech bubble only logo to make room for showing the
-  // story title.
-  .logo {
-    width: 34px;
-    margin-right: 10px;
-
-    img {
-      width: 34px;
-    }
-  }
-
-  // Editing an existing story, so show the title text
-  .title {
-    width: 600px;
-    text-indent: 0;
-  }
-
-  .byline-container {
-    display: block;
-  }
+  display: block;
 }
 
 .has-story.story-info-inline #title-bar {
-  .logo {
-    display: block;
-    float: left;
-    width: 333px;
-    padding-top: floor((@title-bar-height - @logo-height) / 2);
-
-    img {
-      width: 333px;
-    }
-  }
-
-  .title {
-    width: 0;
-    text-indent: -32000px;
-  }
+  // When showing the story title and byline inline with the section content,
+  // as is the case with the connected story builder, hide the title bar
+  display: none;
 }
 
 #title-bar-contents {
   .container_12;
 }
 
-#tools {
-  position: absolute !important;
-  right: 0px;
-  top: 28px;
-  font-family:'Museo300Regular';
-  font-size:16px;
-  li {
-    padding:0 8px;
-    list-style:none;
-    a {
-      text-transform:uppercase;
-      text-decoration:none;
-      color:white;
-      text-shadow:0 -1px 1px rgba(0, 0, 0, .3);
-    }
-  }
-}
+// Workflow bar
 
 // Common variables for items in the workflow bar
+@workflow-bar-height: 56px;
 @workflow-item-height: 34px;
 @workflow-item-margin-top: 10px;
 @workflow-item-font-size: 16px;
+@logo-height: 34px;
+
+#workflow-bar,
+#workflow-bar-contents {
+  height: @workflow-bar-height;
+}
 
 #workflow-bar {
-  height:56px;
-  border-bottom:1px solid white;
+  background-color: black; 
+  // BOOKMARK
+  // TODO: Remove this
+  //border-bottom:1px solid white;
 }
 
-#workflow-bar-contents {
-  .container_12;
-  height:56px;
+#workflow-bar .logo {
+  display: block;
+  float: left;
+  width: 34px; 
+  padding: 0 8px;
+  padding-top: floor((@workflow-bar-height - @logo-height) / 2);
 }
-
 
 #workflow-step {
   // note: This is an arguably more appropriate way to
@@ -405,7 +358,9 @@ button.help {
   // Using the margin property-top on individual li
   // items fixes this.
   //margin: @workflow-item-margin-top auto;
-  clear:both;
+  // BOOKMARK
+  // TODO: Remove the clear: both after testing
+  //clear:both;
 
   li {
     color:@orange;
@@ -563,6 +518,60 @@ button.help {
 
 button.preview {
   font-size:1.5em;
+}
+
+#tools-toggle {
+  background: transparent;
+  border-radius: 0;
+  height: @workflow-item-height;
+  margin: @workflow-item-margin-top 20px;
+  position: relative;
+  float: right;
+
+  .bar {
+    display: block;
+    width: 22px;
+    height: 2px;
+    border-radius: 1px;
+    margin-top: 4px;
+    background-color: #fff;
+  }
+}
+
+#tools {
+  position: absolute !important;
+  right: 0px;
+  //top: 28px;
+  font-family:'Museo300Regular';
+  font-size:16px;
+  li {
+    height: @workflow-item-height;
+    line-height: @workflow-item-height;
+    margin-top: @workflow-item-margin-top;
+    padding:0 8px;
+    list-style:none;
+    a {
+      text-transform:uppercase;
+      text-decoration:none;
+      color:white;
+      text-shadow:0 -1px 1px rgba(0, 0, 0, .3);
+    }
+  }
+}
+
+#tools.toggling {
+  display: none;
+
+  top: @workflow-bar-height;
+  background-color: black; 
+  padding-right: 20px;
+  z-index: 1000;
+  padding-bottom: 10px;
+
+  li {
+    display: block;
+    float: none;
+  }
 }
 
 

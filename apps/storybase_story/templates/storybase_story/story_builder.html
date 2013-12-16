@@ -64,15 +64,15 @@
   <body class="story-builder">
     <div id="builder" class="{% if story %}has-story{% if show_story_info_inline %} story-info-inline{% endif %}{% endif %}">
         <header id="header">
+            <div id="workflow-bar">
+                <div id="workflow-bar-contents">
+                    <a class="logo" href="{% url "story_builder" %}" title="{{ storybase_site_name }} {% trans "Story Builder" %}">
+                        <img src="{{ STATIC_URL }}/img/builder/builder-logo-balloon.png" width="34" height="34" alt="{% trans "Story Builder Logo" %}" />
+                    </a>
+                </div>
+            </div>
             <div id="title-bar">
                 <div id="title-bar-contents">
-                    <a class="logo" href="{% url "story_builder" %}" title="{{ storybase_site_name }} {% trans "Story Builder" %}">
-                        {% if story and not show_story_info_inline %}
-                        <img src="{{ STATIC_URL }}/img/builder/builder-logo-balloon.png" width="34" height="34" alt="{% trans "Story Builder Logo" %}" />
-                        {% else %}
-                        <img src="{{ STATIC_URL }}/img/builder/builder-logo.png" width="333" height="34" alt="{% trans "Story Builder Logo" %}" />
-                        {% endif %}
-                    </a>
                     {% if story and not show_story_info_inline %}
                     <h1 class="title">{{ story.title }}</h1>
                     {% else %}
@@ -82,9 +82,6 @@
                     <div class="byline-container"><span class="byline-prefix">{% trans "By" %}</span> <span class="byline">{{ story.byline }}</span></div>
                     {% endif %}
                 </div>
-            </div>
-            <div id="workflow-bar">
-                <div id="workflow-bar-contents"></div>
             </div>
             <div id="subnav-bar">
                 <div id="subnav-bar-contents"></div>
