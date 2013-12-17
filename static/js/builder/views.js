@@ -1861,11 +1861,13 @@
         var url = this.previewURLTemplate({story_id: this.storyId});
         window.open(url);
       }
+      // Close the menu
+      this.toggle();
       evt.preventDefault();
     },
 
     toggle: function() {
-      this.$el.toggle();
+      this.$el.slideToggle();
     },
 
     toggleHelp: function(evt) {
@@ -1897,7 +1899,7 @@
 
     extraRender: function() {
       this.$('.tooltip').tooltipster({
-        position: 'bottom'
+        position: 'left'
       });
     },
 
@@ -2234,12 +2236,17 @@
           title: gettext("You can also add, move or delete sections."),
           description: this.getTemplate('section-manipulation-guider')(),
           prev: 'section-thumbnail-guider',
-          next: 'preview-guider'
+          next: 'preview-guider',
+          // Open the tools menu so the next guider can be properly
+          // positioned
+          onHide: function() {
+            that.dispatcher.trigger('toggle:tools');
+          }
         }, defaultOpts));
         guiders.createGuider(_.defaults({
           id: 'preview-guider',
           attachTo: '#tools .preview',
-          position: 6,
+          position: 9,
           title: gettext("Preview your story at any time."),
           description: gettext("Clicking here lets you preview your story in a new window"),
           prev: 'section-manipulation-guider',
@@ -2248,11 +2255,16 @@
         guiders.createGuider(_.defaults({
           id: 'exit-guider',
           attachTo: '#tools .exit',
-          position: 6,
+          position: 9,
           title: gettext("You can leave your story at any time and come back later."),
           description: this.getTemplate('exit-guider')(),
           prev: 'preview-guider',
-          next: 'help-guider'
+          next: 'help-guider',
+          // Close the tools menu so the next guider can be properly
+          // positioned
+          onHide: function() {
+            that.dispatcher.trigger('toggle:tools');
+          }
         }, defaultOpts));
         guiders.createGuider(_.defaults({
           attachTo: '#drawer-controls [title="Help"]',
