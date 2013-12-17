@@ -366,10 +366,10 @@ button.help {
     @icon-highlight-d:23px;
     @icon-next-d:(@icon-highlight-d * 2);
     // where n is the index of the appropriate icon in the sprite
-    .workflow-icon (@n) {
+    .workflow-icon-gray (@n) {
       background: url(../img/builder/workflow-step-icons.png) no-repeat (@icon-width / 2) (-@n * @icon-next-d);
     }
-    .workflow-icon-selected (@n) {
+    .workflow-icon-white (@n) {
       background: url(../img/builder/workflow-step-icons.png) no-repeat (@icon-width / 2) ((-@n * @icon-next-d) - @icon-highlight-d);
     }
     
@@ -385,18 +385,18 @@ button.help {
     }
     
     a {
-      .workflow-icon(0);
-      &#build { .workflow-icon(0); }
-      &#info { .workflow-icon(5); }
-      &#tag { .workflow-icon(2); }
-      &#publish { .workflow-icon(4); }
+      .workflow-icon-white(0);
+      &#build { .workflow-icon-white(0); }
+      &#info { .workflow-icon-white(5); }
+      &#tag { .workflow-icon-white(2); }
+      &#publish { .workflow-icon-white(4); }
 
       padding: 3px 0 1px (@icon-width * 2);
-      height:@icon-height;
-      font-family:'Museo300Regular';
+      height: @icon-height;
+      color: white;
+      font-family: 'Museo300Regular';
       font-size: @workflow-item-font-size;
       text-transform:uppercase;
-      color:@dark-gray;
       text-decoration:none;
     }
     
@@ -404,12 +404,24 @@ button.help {
       em {
         display:block;
       }
+
       a {
-        color:#fff;
-        &#build { .workflow-icon-selected(0); }
-        &#info { .workflow-icon-selected(5); }
-        &#tag { .workflow-icon-selected(2); }
-        &#publish { .workflow-icon-selected(4); }
+        color: @orange;
+        // TODO: Update the icon file to add orange icons.
+        &#build { .workflow-icon-white(0); }
+        &#info { .workflow-icon-white(5); }
+        &#tag { .workflow-icon-white(2); }
+        &#publish { .workflow-icon-white(4); }
+      }
+    }
+
+    &.disabled {
+      a {
+        color: @dark-gray;
+        &#build { .workflow-icon-gray(0); }
+        &#info { .workflow-icon-gray(5); }
+        &#tag { .workflow-icon-gray(2); }
+        &#publish { .workflow-icon-gray(4); }
       }
     }
   }
