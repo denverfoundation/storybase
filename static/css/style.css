@@ -805,7 +805,6 @@ table tbody td{padding:1em}
 .storybase-share-popup header,.storybase-embed-popup header{background:#f0efef;padding:4px;text-align:center;font-family:'Museo300Regular';font-weight:normal}.storybase-share-popup header .close,.storybase-embed-popup header .close{cursor:pointer;color:#808080;float:right}.storybase-share-popup header .close:hover,.storybase-embed-popup header .close:hover{color:#4d4d4d}
 .storybase-share-popup header .close:after,.storybase-embed-popup header .close:after{font-family:"FontAwesome";content:"\f057";font-size:18px;width:18px;height:18px}
 .storybase-share-popup textarea[name=share-embed-code],.storybase-embed-popup textarea[name=share-embed-code]{height:100px;font-size:.8em}
-body.story-builder header{background:url(../img/builder/header-bg.png) repeat-x top left}body.story-builder header>div{width:100%;position:relative;margin-left:auto;margin-right:auto;width:1020px}
 body.story-builder fieldset{border:none}
 body.story-builder .bbf-form>fieldset>ul{margin:0 !important;padding:0 !important}
 body.story-builder .field-body .bbf-editor{margin-left:0;width:100%}
@@ -840,22 +839,18 @@ body.story-builder #header .nav{position:relative;float:left}
 body.story-builder #header .nav>li{display:inline-block;float:left}
 body.story-builder #builder #alerts{width:100%}
 body.story-builder #builder .alert{padding:1%;text-align:center}body.story-builder #builder .alert button.close{border:none;background:none;padding:0;margin:0;width:auto;text-align:center;text-shadow:none;position:relative;float:right;font-size:20px;line-height:20px}body.story-builder #builder .alert button.close:hover{background:none}
-body.story-builder #title-bar{background:#f7941e;overflow:hidden;height:63px}body.story-builder #title-bar .logo{display:block;float:left;width:333px;padding-top:14px}
-body.story-builder #title-bar .title{text-align:left;font-family:'Museo300Regular';font-weight:normal;padding:2px 0;font-size:28.8px;line-height:1.2em;float:left;margin-top:2px;height:32px;line-height:32px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff;width:0;text-indent:-32000px}
+body.story-builder #title-bar{display:none;background-color:#f7941e;overflow:hidden;height:63px}body.story-builder #title-bar .title{text-align:left;font-family:'Museo300Regular';font-weight:normal;padding:2px 0;font-size:28.8px;line-height:1.2em;width:100%;float:left;margin-top:2px;height:32px;line-height:32px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff}
 body.story-builder #title-bar .title,body.story-builder #title-bar .byline{cursor:pointer}
 body.story-builder #title-bar input[name="title"],body.story-builder #title-bar input[name="byline"]{float:left;width:400px;height:16px;margin-top:10px;margin-right:10px}
 body.story-builder #title-bar .character-count{float:left;margin-top:20px}
-body.story-builder #title-bar .byline-container{display:none;float:left;width:500px}
-body.story-builder .has-story #title-bar .logo{width:34px;margin-right:10px}body.story-builder .has-story #title-bar .logo img{width:34px}
-body.story-builder .has-story #title-bar .title{width:600px;text-indent:0}
-body.story-builder .has-story #title-bar .byline-container{display:block}
-body.story-builder .has-story.story-info-inline #title-bar .logo{display:block;float:left;width:333px;padding-top:14px}body.story-builder .has-story.story-info-inline #title-bar .logo img{width:333px}
-body.story-builder .has-story.story-info-inline #title-bar .title{width:0;text-indent:-32000px}
+body.story-builder #title-bar .byline-container{float:left;width:500px}
+body.story-builder .has-story #title-bar{display:block}
+body.story-builder .has-story.story-info-inline #title-bar{display:none}
 body.story-builder #title-bar-contents{margin-left:auto;margin-right:auto;width:1020px}
-body.story-builder #tools{position:absolute !important;right:0;top:28px;font-family:'Museo300Regular';font-size:16px}body.story-builder #tools li{padding:0 8px;list-style:none}body.story-builder #tools li a{text-transform:uppercase;text-decoration:none;color:#fff;text-shadow:0 -1px 1px rgba(0,0,0,0.3)}
-body.story-builder #workflow-bar{height:56px;border-bottom:1px solid #fff}
-body.story-builder #workflow-bar-contents{margin-left:auto;margin-right:auto;width:1020px;height:56px}
-body.story-builder #workflow-step{clear:both;}body.story-builder #workflow-step li{color:#fe9703;list-style:decimal inside none;margin-top:10px;padding:0 19px 0;height:34px;border-right:1px solid #3b3b3b;font-family:'Museo300Regular';line-height:34px;position:relative}body.story-builder #workflow-step li:first-child{border-left:1px solid #3b3b3b}
+body.story-builder #workflow-bar,body.story-builder #workflow-bar-contents{height:56px}
+body.story-builder #workflow-bar{background-color:#000}
+body.story-builder #workflow-bar .logo{display:block;float:left;width:34px;padding:0 8px;padding-top:11px}
+body.story-builder #workflow-step{}body.story-builder #workflow-step li{color:#fe9703;list-style:decimal inside none;margin-top:10px;padding:0 19px 0;height:34px;border-right:1px solid #3b3b3b;font-family:'Museo300Regular';line-height:34px;position:relative}body.story-builder #workflow-step li:first-child{border-left:1px solid #3b3b3b}
 body.story-builder #workflow-step li em{display:none;background:url(../img/builder/step-selected.png) no-repeat left top;width:12px;height:6px;position:absolute;top:46px;left:48%;z-index:10}
 body.story-builder #workflow-step li a{background:url(../img/builder/workflow-step-icons.png) no-repeat 10px 0;padding:3px 0 1px 40px;height:23px;font-family:'Museo300Regular';font-size:16px;text-transform:uppercase;color:#5a5a5a;text-decoration:none}body.story-builder #workflow-step li a#build{background:url(../img/builder/workflow-step-icons.png) no-repeat 10px 0}
 body.story-builder #workflow-step li a#info{background:url(../img/builder/workflow-step-icons.png) no-repeat 10px -230px}
@@ -875,6 +870,9 @@ body.story-builder #save-button{padding:8px;background:#878787;font-family:"Muse
 body.story-builder #save-button:hover{text-decoration:none !important}
 body.story-builder #save-button:hover{background:#414141}
 body.story-builder button.preview{font-size:1.5em}
+body.story-builder #tools-toggle{background:transparent;border-radius:0;height:34px;margin:10px 20px;position:relative;float:right}body.story-builder #tools-toggle .bar{display:block;width:22px;height:2px;border-radius:1px;margin-top:4px;background-color:#fff}
+body.story-builder #tools{position:absolute !important;right:0;font-family:'Museo300Regular';font-size:16px}body.story-builder #tools li{height:34px;line-height:34px;margin-top:10px;padding:0 8px;list-style:none}body.story-builder #tools li a{text-transform:uppercase;text-decoration:none;color:#fff;text-shadow:0 -1px 1px rgba(0,0,0,0.3)}
+body.story-builder #tools.toggling{display:none;top:56px;background-color:#000;padding-right:20px;z-index:1000;padding-bottom:10px}body.story-builder #tools.toggling li{display:block;float:none}
 body.story-builder #subnav-bar{background-color:#f0efef;width:100%}
 body.story-builder #subnav-bar-contents{margin-left:auto;margin-right:auto;width:1020px}
 body.story-builder #builder{height:100%}
