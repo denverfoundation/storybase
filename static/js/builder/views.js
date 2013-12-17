@@ -4112,343 +4112,343 @@
           view.close();
           delete this._assetEditViews[container];
         }, this);
-        },
-
-        /**
-        * Remove the asset editing view for a particular asset
-        */
-        removeEditViewForAsset: function(asset) {
-          var container = asset.get('container');
-          var view = this._assetEditViews[container];
-          if (view && view.model == asset) {
-            view.close();
-            delete this._assetEditViews[container];
-          }
-        },
-
-        /**
-        * Callback for when an asset is removed from the section
-        *
-        * This should be be bound to the do:removesectionasset event.
-        *
-        * @param {Section} section - Section from which the asset is to be removed
-        * @param {Asset} asset - Asset to be removed from the section
-        * @param {object} [options]
-        */
-        handleDoRemoveSectionAsset: function(section, asset, options) {
-          if (section == this.model) {
-            this.removeAsset(asset, options);
-          }
-        },
-
-        /**
-        * Remove an asset from this section
-        *
-        * @param {Asset} asset Asset to be removed
-        * @param {Object} [options] - Options for performing this operation.
-        * @param {boolean} [options.removeView=undefined] - Should the view for editing the
-        *   asset also be removed?
-        * @param {boolean} [options.trigger=true] - Should we trigger a "remove:sectionasset"
-        *   event on the event bus?
-        * @param {boolean} [options.removeFromStory=false] - Should the asset be removed from
-        *   the story as well?
-        * @param {function} [options.success] - Callback function called on a
-        *   successful removal of an asset from this section
-        */
-        removeAsset: function(asset, options) {
-          options = options || {};
-          _.defaults(options, {
-            removeFromStory: false,
-            trigger: true
-          });
-          var view = this;
-          var sectionAsset = this.getSectionAsset(asset);
-          sectionAsset.id = asset.id;
-          sectionAsset.destroy({
-            success: function(model, response) {
-              if (options.removeView) {
-                view.removeEditViewForAsset(asset);
-              }
-              view.assets.remove(asset);
-              if (options.trigger) {
-                view.dispatcher.trigger("remove:sectionasset", asset);
-                view.dispatcher.trigger("alert", "info", "You removed an asset, but it's not gone forever. You can re-add it to a section from the asset list");
-              }
-              if (options.removeFromStory) {
-                view.story.assets.remove(asset);
-              }
-              if (options.success) {
-                options.success(model, asset);
-              }
-            },
-            error: function(model, response) {
-              view.dispatcher.trigger("error", "Error removing asset from section");
-            }
-          });
-        },
-
-        getSectionAsset: function(asset, container) {
-          var SectionAsset = Backbone.Model.extend({
-            urlRoot: this.model.url() + 'assets',
-            url: function() {
-              return Backbone.Model.prototype.url.call(this) + '/';
-            }
-          });
-          var sectionAsset = new SectionAsset({
-            asset: asset.url(),
-            container: container
-          });
-          sectionAsset.on("sync", this.sectionAssetAdded, this);
-          return sectionAsset;
-        },
-
-        /**
-        * Assign an asset to a particular container in this section.
-        */
-        saveSectionAsset: function(asset, container) {
-          var view = this;
-          this.getSectionAsset(asset, container).save(null, {
-            error: function(sectionAsset, xhr, options) {
-              // Could not assign an asset to the container.  In most cases
-              // this is because the user already assigned an asset to the
-              // container in another tab/window
-              var msg = xhr.responseText;
-              if (xhr.status === 400) {
-                msg = gettext("Oops, couldn't add your asset here. This is probably because you already did so in another tab or window. Hold tight while we refresh this section's assets.");
-              }
-              view.dispatcher.trigger('error', msg);
-              view.assets.remove(asset);
-              // Re-fetch this section's assets from the server to get the
-              // assets that were added in the other window/tab. The resulting
-              // ``sync`` event will also force the UI to re-render.
-              view._refreshModelForContainer = container;
-              view.assets.once("sync", view.renderAssetViews, view);
-              view.assets.fetch();
-              // TODO: Should we add the asset to the story's asset list ?
-            }
-          });
-        },
-
-        saveSectionAssets: function() {
-          var that = this;
-          _.each(this._unsavedAssets, function(sectionAsset) {
-            that.saveSectionAsset(sectionAsset.asset, sectionAsset.container); 
-          });
-          this._unsavedAssets = [];
-        },
-
-        sectionAssetAdded: function() {
-          this.dispatcher.trigger("add:sectionasset");
-        },
-
-        triggerSaved: function() {
-          this.dispatcher.trigger('save:section', this.model, !this._firstSave);
-          this._firstSave = false;
-        },
-
-        /**
-        * Callback for the 'destroy' event on the view's model.
-        */
-        handleDestroy: function() {
-          var index, newIndex;
-          var triggerUnused = function(asset) {
-            this.dispatcher.trigger("remove:sectionasset", asset);
-          };
-          triggerUnused = _.bind(triggerUnused, this);
-          if (this.assets.length) {
-            this.assets.each(triggerUnused);
-            this.dispatcher.trigger('alert', 'info', gettext("The assets in the section you removed aren't gone forever.  You can re-add them from the asset list"));
-          }
-          if (this.$el.is(':visible')) {
-            // Destroying the currently active view
-            index = this.model.collection.indexOf(this.model);
-            if (index === 0) {
-              // The how the first section. Its index is 1 because the first
-              // section, with index 0, hasn't been removed yet.
-              newIndex = 1;
-            }
-            else {
-              // If this isn't the first section, make the previous section
-              // the active one
-              newIndex = index - 1;
-            }
-            // Tell other views to display the section
-            this.dispatcher.trigger('select:section', this.model.collection.at(newIndex));
-          }
-          // Remove the section from the collection of all sections
-          this.collection.splice(_.indexOf(this.collection, this), 1);
-          // Inform the user that the section has been deleted
-          this.dispatcher.trigger('alert', 'success', gettext('The section  "' + this.model.get('title') + '" has been deleted'));
-          this.close();
-        },
-
-        getContainerIds: function() {
-          var ids = [];
-          this.$(this.options.containerEl).each(function(index, el) {
-            ids.push($(el).attr('id'));
-          });
-          return ids;
-        },
-
-        allAssetsDefined: function() {
-          var containerIds = this.getContainerIds();
-          return _.reduce(this.getContainerIds(), function(memo, id) {
-            var matching;
-            if (memo === false) {
-              return false;
-            }
-            else { 
-              matching = this.assets.where({container: id});
-              return matching.length > 0;
-            }
-          }, true, this);
-        },
-
-        getSection: function() {
-          return this.model;
-        },
-
-        /**
-        * Apply any available polyfills.
-        *
-        */
-        applyPolyfills: function() {
-          if (!Modernizr.input.placeholder) {
-            if (window.polyfills) {
-              window.polyfills.placeholders();
-            }
-          }
-        }
-      })
-    );
-
-    var BBFFormMixin = {
-      /**
-      * Attempt to unify validation error handling somewhat.
-      * Knows about MutexGroupedInputForms but compatible
-      * with regular BBF Forms as well.
-      *
-      * @param {Array} errors Hash of errors provided by BBF or 
-      *        hand-made.
-      */
-      handleValidationErrors: function(errors) {
-        var view = this;
-
-        // two ways to show errors: inline with field, or
-        // on top of the form.
-        var inlineErrors = {};
-        var formErrors = [];
-
-        // Function to extract an error message from the items in
-        // errors._others.  Declare it here to avoid declaring an anonymous
-        // function within a for loop
-        var addFormError = function(error) {
-          if (_.isString(error)) {
-            formErrors.push(error);
-          }
-          else if (_.isObject(error)) {
-            // The error is an object, added to _others because the key didn't
-            // match a field name in the form. Just grab the first value as
-            // the error message;
-            for (var k in error) {
-              break;
-            }
-            formErrors.push(error[k]);
-          }
-        };
-
-        var fieldName; // Keys in errors object
-        var inline; // Can a particular error be shown inline?
-        var $field; // A form field's element
-        var $fieldError; // A form field's error message
-        var msg; // An individual error message
-
-        // Remove any previous error-indicating UI state
-        view.form.$('.bbf-error').hide();
-        view.form.$('.bbf-combined-errors').remove();
-        view.form.$('.nav.pills li').removeClass('error');
-
-        for (fieldName in errors) {
-          // Allow errors in "_others" to be either field-keyed error objects
-          // or simple strings.
-          // @see https://github.com/powmedia/backbone-forms#model-validation
-          if (fieldName == '_others') {
-            _.each(errors._others, addFormError); 
-          }
-          else {
-            // if we can put in an error inline do so, otherwise throw into 
-            // the combined basket up top.
-            inline = false;
-            $field = view.form.$('.field-' + fieldName);
-            if ($field.length) {
-              $fieldError = $field.find('.bbf-error');
-              if ($fieldError.length) {
-                inlineErrors[fieldName] = inlineErrors[fieldName] || [];
-                msg = _.isString(errors[fieldName]) ? errors[fieldName] : errors[fieldName].message;
-                inlineErrors[fieldName].push(msg);
-                inline = true;
-              }
-            }
-
-            // this error was not inline; append it to the big bucket.
-            if (!inline) {
-              formErrors.push(errors[fieldName].message);
-            }
-          }
-        }
-
-        // fill in/update elements
-
-        _.each(inlineErrors, function(errors, fieldName) {
-          var $field = view.form.$('.field-' + fieldName);
-
-          // there may be multiple errors on a field, but we only show the first.
-          $field.find('.bbf-error').html(errors[0]).slideDown('fast');
-
-          // highlight relevant option pill, if any 
-          // (for MutexGroupedInputForms)
-          var optionIndex = $field.data('option-index');
-          if (!_.isUndefined(optionIndex)) {
-            view.form.$('.nav.pills li:eq(' + optionIndex + ')').addClass('error');
-          }
-
-        });
-
-        if (_.size(formErrors) > 0) {
-          $('<ul class="bbf-combined-errors">').prependTo(view.form.$el).slideDown('fast');
-        }
-        _.each(formErrors, function(error) {
-          view.form.$('.bbf-combined-errors').append('<li>' + error + '</li>');
-        });
-
       },
 
       /**
-      * Render a thumbnail for any file inputs.
-      * TODO: revisit, see if there's a way to cleanly splice this
-      * into the "natural" Backbone.Forms templating pipeline.
-      * 
-      * Also @see storybase.forms.File.render.
+       * Remove the asset editing view for a particular asset
+       */
+      removeEditViewForAsset: function(asset) {
+        var container = asset.get('container');
+        var view = this._assetEditViews[container];
+        if (view && view.model == asset) {
+          view.close();
+          delete this._assetEditViews[container];
+        }
+      },
+
+      /**
+       * Callback for when an asset is removed from the section
+       *
+       * This should be be bound to the do:removesectionasset event.
+       *
+       * @param {Section} section - Section from which the asset is to be removed
+       * @param {Asset} asset - Asset to be removed from the section
+       * @param {object} [options]
+       */
+      handleDoRemoveSectionAsset: function(section, asset, options) {
+        if (section == this.model) {
+          this.removeAsset(asset, options);
+        }
+      },
+
+      /**
+      * Remove an asset from this section
+      *
+      * @param {Asset} asset Asset to be removed
+      * @param {Object} [options] - Options for performing this operation.
+      * @param {boolean} [options.removeView=undefined] - Should the view for editing the
+      *   asset also be removed?
+      * @param {boolean} [options.trigger=true] - Should we trigger a "remove:sectionasset"
+      *   event on the event bus?
+      * @param {boolean} [options.removeFromStory=false] - Should the asset be removed from
+      *   the story as well?
+      * @param {function} [options.success] - Callback function called on a
+      *   successful removal of an asset from this section
       */
-      renderFileFieldThumbnail: function() {
-        this.form.$el.find('input[type=file]').each(function() {
-          var thumbNailValue = $(this).data('file-thumbnail');
-          if (thumbNailValue) {
-            if (thumbNailValue == '__set__') {
-              $(this).before('<div class="data-thumbnail"></div>');
+      removeAsset: function(asset, options) {
+        options = options || {};
+        _.defaults(options, {
+          removeFromStory: false,
+          trigger: true
+        });
+        var view = this;
+        var sectionAsset = this.getSectionAsset(asset);
+        sectionAsset.id = asset.id;
+        sectionAsset.destroy({
+          success: function(model, response) {
+            if (options.removeView) {
+              view.removeEditViewForAsset(asset);
             }
-            else {
-              $(this)
-              .addClass('has-thumbnail')
-              .before('<img class="file-thumbnail" src="' + $(this).data('file-thumbnail') + '">');
+            view.assets.remove(asset);
+            if (options.trigger) {
+              view.dispatcher.trigger("remove:sectionasset", asset);
+              view.dispatcher.trigger("alert", "info", "You removed an asset, but it's not gone forever. You can re-add it to a section from the asset list");
             }
-          }
-          else {
-            $(this).before('<div class="not-set-thumbnail"></div>');
+            if (options.removeFromStory) {
+              view.story.assets.remove(asset);
+            }
+            if (options.success) {
+              options.success(model, asset);
+            }
+          },
+          error: function(model, response) {
+            view.dispatcher.trigger("error", "Error removing asset from section");
           }
         });
+      },
+
+      getSectionAsset: function(asset, container) {
+        var SectionAsset = Backbone.Model.extend({
+          urlRoot: this.model.url() + 'assets',
+          url: function() {
+            return Backbone.Model.prototype.url.call(this) + '/';
+          }
+        });
+        var sectionAsset = new SectionAsset({
+          asset: asset.url(),
+          container: container
+        });
+        sectionAsset.on("sync", this.sectionAssetAdded, this);
+        return sectionAsset;
+      },
+
+      /**
+      * Assign an asset to a particular container in this section.
+      */
+      saveSectionAsset: function(asset, container) {
+        var view = this;
+        this.getSectionAsset(asset, container).save(null, {
+          error: function(sectionAsset, xhr, options) {
+            // Could not assign an asset to the container.  In most cases
+            // this is because the user already assigned an asset to the
+            // container in another tab/window
+            var msg = xhr.responseText;
+            if (xhr.status === 400) {
+              msg = gettext("Oops, couldn't add your asset here. This is probably because you already did so in another tab or window. Hold tight while we refresh this section's assets.");
+            }
+            view.dispatcher.trigger('error', msg);
+            view.assets.remove(asset);
+            // Re-fetch this section's assets from the server to get the
+            // assets that were added in the other window/tab. The resulting
+            // ``sync`` event will also force the UI to re-render.
+            view._refreshModelForContainer = container;
+            view.assets.once("sync", view.renderAssetViews, view);
+            view.assets.fetch();
+            // TODO: Should we add the asset to the story's asset list ?
+          }
+        });
+      },
+
+      saveSectionAssets: function() {
+        var that = this;
+        _.each(this._unsavedAssets, function(sectionAsset) {
+          that.saveSectionAsset(sectionAsset.asset, sectionAsset.container); 
+        });
+        this._unsavedAssets = [];
+      },
+
+      sectionAssetAdded: function() {
+        this.dispatcher.trigger("add:sectionasset");
+      },
+
+      triggerSaved: function() {
+        this.dispatcher.trigger('save:section', this.model, !this._firstSave);
+        this._firstSave = false;
+      },
+
+      /**
+      * Callback for the 'destroy' event on the view's model.
+      */
+      handleDestroy: function() {
+        var index, newIndex;
+        var triggerUnused = function(asset) {
+          this.dispatcher.trigger("remove:sectionasset", asset);
+        };
+        triggerUnused = _.bind(triggerUnused, this);
+        if (this.assets.length) {
+          this.assets.each(triggerUnused);
+          this.dispatcher.trigger('alert', 'info', gettext("The assets in the section you removed aren't gone forever.  You can re-add them from the asset list"));
+        }
+        if (this.$el.is(':visible')) {
+          // Destroying the currently active view
+          index = this.model.collection.indexOf(this.model);
+          if (index === 0) {
+            // The how the first section. Its index is 1 because the first
+            // section, with index 0, hasn't been removed yet.
+            newIndex = 1;
+          }
+          else {
+            // If this isn't the first section, make the previous section
+            // the active one
+            newIndex = index - 1;
+          }
+          // Tell other views to display the section
+          this.dispatcher.trigger('select:section', this.model.collection.at(newIndex));
+        }
+        // Remove the section from the collection of all sections
+        this.collection.splice(_.indexOf(this.collection, this), 1);
+        // Inform the user that the section has been deleted
+        this.dispatcher.trigger('alert', 'success', gettext('The section  "' + this.model.get('title') + '" has been deleted'));
+        this.close();
+      },
+
+      getContainerIds: function() {
+        var ids = [];
+        this.$(this.options.containerEl).each(function(index, el) {
+          ids.push($(el).attr('id'));
+        });
+        return ids;
+      },
+
+      allAssetsDefined: function() {
+        var containerIds = this.getContainerIds();
+        return _.reduce(this.getContainerIds(), function(memo, id) {
+          var matching;
+          if (memo === false) {
+            return false;
+          }
+          else { 
+            matching = this.assets.where({container: id});
+            return matching.length > 0;
+          }
+        }, true, this);
+      },
+
+      getSection: function() {
+        return this.model;
+      },
+
+      /**
+      * Apply any available polyfills.
+      *
+      */
+      applyPolyfills: function() {
+        if (!Modernizr.input.placeholder) {
+          if (window.polyfills) {
+            window.polyfills.placeholders();
+          }
+        }
       }
-    };
+    })
+  );
+
+  var BBFFormMixin = {
+    /**
+    * Attempt to unify validation error handling somewhat.
+    * Knows about MutexGroupedInputForms but compatible
+    * with regular BBF Forms as well.
+    *
+    * @param {Array} errors Hash of errors provided by BBF or 
+    *        hand-made.
+    */
+    handleValidationErrors: function(errors) {
+      var view = this;
+
+      // two ways to show errors: inline with field, or
+      // on top of the form.
+      var inlineErrors = {};
+      var formErrors = [];
+
+      // Function to extract an error message from the items in
+      // errors._others.  Declare it here to avoid declaring an anonymous
+      // function within a for loop
+      var addFormError = function(error) {
+        if (_.isString(error)) {
+          formErrors.push(error);
+        }
+        else if (_.isObject(error)) {
+          // The error is an object, added to _others because the key didn't
+          // match a field name in the form. Just grab the first value as
+          // the error message;
+          for (var k in error) {
+            break;
+          }
+          formErrors.push(error[k]);
+        }
+      };
+
+      var fieldName; // Keys in errors object
+      var inline; // Can a particular error be shown inline?
+      var $field; // A form field's element
+      var $fieldError; // A form field's error message
+      var msg; // An individual error message
+
+      // Remove any previous error-indicating UI state
+      view.form.$('.bbf-error').hide();
+      view.form.$('.bbf-combined-errors').remove();
+      view.form.$('.nav.pills li').removeClass('error');
+
+      for (fieldName in errors) {
+        // Allow errors in "_others" to be either field-keyed error objects
+        // or simple strings.
+        // @see https://github.com/powmedia/backbone-forms#model-validation
+        if (fieldName == '_others') {
+          _.each(errors._others, addFormError); 
+        }
+        else {
+          // if we can put in an error inline do so, otherwise throw into 
+          // the combined basket up top.
+          inline = false;
+          $field = view.form.$('.field-' + fieldName);
+          if ($field.length) {
+            $fieldError = $field.find('.bbf-error');
+            if ($fieldError.length) {
+              inlineErrors[fieldName] = inlineErrors[fieldName] || [];
+              msg = _.isString(errors[fieldName]) ? errors[fieldName] : errors[fieldName].message;
+              inlineErrors[fieldName].push(msg);
+              inline = true;
+            }
+          }
+
+          // this error was not inline; append it to the big bucket.
+          if (!inline) {
+            formErrors.push(errors[fieldName].message);
+          }
+        }
+      }
+
+      // fill in/update elements
+
+      _.each(inlineErrors, function(errors, fieldName) {
+        var $field = view.form.$('.field-' + fieldName);
+
+        // there may be multiple errors on a field, but we only show the first.
+        $field.find('.bbf-error').html(errors[0]).slideDown('fast');
+
+        // highlight relevant option pill, if any 
+        // (for MutexGroupedInputForms)
+        var optionIndex = $field.data('option-index');
+        if (!_.isUndefined(optionIndex)) {
+          view.form.$('.nav.pills li:eq(' + optionIndex + ')').addClass('error');
+        }
+
+      });
+
+      if (_.size(formErrors) > 0) {
+        $('<ul class="bbf-combined-errors">').prependTo(view.form.$el).slideDown('fast');
+      }
+      _.each(formErrors, function(error) {
+        view.form.$('.bbf-combined-errors').append('<li>' + error + '</li>');
+      });
+
+    },
+
+    /**
+    * Render a thumbnail for any file inputs.
+    * TODO: revisit, see if there's a way to cleanly splice this
+    * into the "natural" Backbone.Forms templating pipeline.
+    * 
+    * Also @see storybase.forms.File.render.
+    */
+    renderFileFieldThumbnail: function() {
+      this.form.$el.find('input[type=file]').each(function() {
+        var thumbNailValue = $(this).data('file-thumbnail');
+        if (thumbNailValue) {
+          if (thumbNailValue == '__set__') {
+            $(this).before('<div class="data-thumbnail"></div>');
+          }
+          else {
+            $(this)
+            .addClass('has-thumbnail')
+            .before('<img class="file-thumbnail" src="' + $(this).data('file-thumbnail') + '">');
+          }
+        }
+        else {
+          $(this).before('<div class="not-set-thumbnail"></div>');
+        }
+      });
+    }
+  };
 
   var DataSetFormView = HandlebarsTemplateView.extend(_.extend({}, BBFFormMixin, {
     options: {
