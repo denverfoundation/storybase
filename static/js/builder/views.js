@@ -684,7 +684,17 @@
     },
 
     setStoryClass: function() {
+      // Give the top-level container element a class to indicate that the
+      // app has initialized a Story model and bound it the various subviews.
+      //
+      // In particular, this causes the story title bar to be revealed.
       this.$el.addClass('has-story');
+     
+      // Setting the ``has-story`` class causes the title bar to be revealed
+      // so we need to readjust the top padding on the subview container
+      // and the drawer in order to accomodate the larger header.
+      this.pushDown(this.$(this.options.subviewContainerEl));
+      this.pushDown(this.drawerView.$el);
     }
   });
 
