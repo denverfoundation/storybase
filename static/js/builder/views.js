@@ -757,7 +757,9 @@
 
         // Add a tooltip to let users know the element is editable
         this.$display().attr('title', this.options.tooltip)
-            .tooltipster(); 
+            .tooltipster({
+              position: 'top-left'
+            }); 
 
         // Add the hidden form element
         $(inputHtml).hide().appendTo(this.$el)
