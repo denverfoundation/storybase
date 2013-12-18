@@ -11,10 +11,15 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
-0.17.3
+0.17.4
 ~~~~~~
 
 * Allow "<br>" tags in story summary and call to action prompt fields (#912)
+
+0.17.3
+~~~~~~
+
+* Fix typo introduced in fix for #894
 
 0.17.2
 ~~~~~~
