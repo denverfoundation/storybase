@@ -11,6 +11,16 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.17.3
+~~~~~~
+
+* Allow "<br>" tags in story summary and call to action prompt fields (#912)
+
+0.17.2
+~~~~~~
+
+* Sanitize HTML in story summary and call to action (#894)
+
 0.17.1
 ~~~~~~
 

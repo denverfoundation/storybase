@@ -414,6 +414,7 @@ STORYBASE_ALLOWED_TAGS = [
   'abbr',
   'b',
   'blockquote',
+  'br',
   'cite',
   'code',
   'div',
