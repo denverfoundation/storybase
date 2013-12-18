@@ -824,6 +824,27 @@ class StoryTranslationSignalsTest(TestCase):
         self.assertNotIn("<script", story.summary)
         self.assertNotIn("<iframe", story.call_to_action)
 
+    def test_allowed_tags_unescaped(self):
+        """
+        Test that a story translation's summary do not have allowed HTML tags
+        escaped.
+        """
+        summary = ('<p>This is the <a href="#">first paragraph</a><br><br/></p>'
+            '<ul><li>List item</ul>'
+            '<ol><li>List item</li></ol>'
+        )
+        story = create_story(title="Test Story", summary=summary,
+            call_to_action="", status='draft')
+        story.save()
+        story = Story.objects.get(story_id=story.story_id)
+        self.assertIn("<p>", story.summary)
+        self.assertIn("<a", story.summary)
+        self.assertIn("<br>", story.summary)
+        self.assertIn("<ul>", story.summary)
+        self.assertIn("<ol>", story.summary)
+        self.assertIn("<li>", story.summary)
+        self.assertIn("<p>", story.summary)
+
 
 class StoryAdminTest(TestCase):
     fixtures = ['section_layouts.json']
