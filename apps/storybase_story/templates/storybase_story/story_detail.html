@@ -34,7 +34,7 @@
 				</div>
 				<div class="grid_6">
 					<header>
-						<p class="byline">{% trans "By" %} <span class="author">{{ story.byline }}</span></p>
+						<p class="byline">{% trans "By" %} <span class="author">{% if story.byline %}{{ story.byline }}{% else %}{{ story.contributor_name }}{% endif %}</span></p>
 					</header>
 					<section class="object-summary">
 						<section class="summary">
