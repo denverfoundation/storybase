@@ -366,16 +366,19 @@ button.help {
       border-left:1px solid @almost-black;
     }
 
-    @icon-height:23px;
-    @icon-width:20px;
-    @icon-highlight-d:23px;
-    @icon-next-d:(@icon-highlight-d * 2);
+    @icon-height: 23px;
+    @icon-width: 20px;
+    @icon-highlight-d: 23px;
+    @icon-next-d: (@icon-highlight-d * 3);
     // where n is the index of the appropriate icon in the sprite
     .workflow-icon-gray (@n) {
       background: url(../img/builder/workflow-step-icons.png) no-repeat (@icon-width / 2) (-@n * @icon-next-d);
     }
     .workflow-icon-white (@n) {
       background: url(../img/builder/workflow-step-icons.png) no-repeat (@icon-width / 2) ((-@n * @icon-next-d) - @icon-highlight-d);
+    }
+    .workflow-icon-orange (@n) {
+      background: url(../img/builder/workflow-step-icons.png) no-repeat (@icon-width / 2) ((-@n * @icon-next-d) - (2 * @icon-highlight-d));
     }
     
     em {
@@ -412,11 +415,10 @@ button.help {
 
       a {
         color: @orange;
-        // TODO: Update the icon file to add orange icons.
-        &#build { .workflow-icon-white(0); }
-        &#info { .workflow-icon-white(5); }
-        &#tag { .workflow-icon-white(2); }
-        &#publish { .workflow-icon-white(4); }
+        &#build { .workflow-icon-orange(0); }
+        &#info { .workflow-icon-orange(5); }
+        &#tag { .workflow-icon-orange(2); }
+        &#publish { .workflow-icon-orange(4); }
       }
     }
 
@@ -430,19 +432,6 @@ button.help {
       }
     }
   }
-/*
-  .selected {
-    background-color: #fff;
-    color: #000 !important;
-    font-style: italic;
-  }
-
-  .disabled,
-  .tools .disabled {
-    font-weight: normal !important;
-    cursor: default;
-  }
-*/
 }
 
 // Next/previous buttons for navigating between workflow steps
