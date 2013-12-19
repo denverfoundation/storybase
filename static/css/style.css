@@ -850,7 +850,7 @@ body.story-builder .has-story.story-info-inline #title-bar{display:none}
 body.story-builder #title-bar-contents{margin-left:auto;margin-right:auto;width:1020px}
 body.story-builder #workflow-bar,body.story-builder #workflow-bar-contents{height:56px}
 body.story-builder #workflow-bar{background-color:#000}
-body.story-builder #workflow-bar .logo{display:block;float:left;width:34px;padding:0 8px;padding-top:11px}
+body.story-builder #workflow-bar .logo{display:block;float:left;width:34px;padding:0 8px;padding-top:11px}body.story-builder #workflow-bar .logo img{border-style:none}
 body.story-builder #workflow-step li{color:#fe9703;list-style:decimal inside none;margin-top:10px;padding:0 19px 0;height:34px;border-right:1px solid #3b3b3b;font-family:'Museo300Regular';line-height:34px;position:relative}body.story-builder #workflow-step li:first-child{border-left:1px solid #3b3b3b}
 body.story-builder #workflow-step li em{display:none;background:url(../img/builder/step-selected.png) no-repeat left top;width:12px;height:6px;position:absolute;top:46px;left:48%;z-index:10}
 body.story-builder #workflow-step li a{background:url(../img/builder/workflow-step-icons-8d75a92a0d87c2e329539c09cb89f310ee59f28a.png) no-repeat 10px -23px;padding:3px 0 1px 40px;height:23px;color:#fff;font-family:'Museo300Regular';font-size:16px;text-transform:uppercase;text-decoration:none}body.story-builder #workflow-step li a#build{background:url(../img/builder/workflow-step-icons-8d75a92a0d87c2e329539c09cb89f310ee59f28a.png) no-repeat 10px -23px}
