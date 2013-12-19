@@ -839,6 +839,7 @@ body.story-builder #header .nav{position:relative;float:left}
 body.story-builder #header .nav>li{display:inline-block;float:left}
 body.story-builder #builder #alerts{width:100%}
 body.story-builder #builder .alert{padding:1%;text-align:center}body.story-builder #builder .alert button.close{border:none;background:none;padding:0;margin:0;width:auto;text-align:center;text-shadow:none;position:relative;float:right;font-size:20px;line-height:20px}body.story-builder #builder .alert button.close:hover{background:none}
+body.story-builder #title-bar,body.story-builder #workflow-bar{clear:both;min-width:1024px}
 body.story-builder #title-bar{display:none;background-color:#f7941e;overflow:hidden;height:63px}body.story-builder #title-bar .title{text-align:left;font-family:'Museo300Regular';font-weight:normal;padding:2px 0;font-size:28.8px;line-height:1.2em;width:100%;margin-top:2px;height:32px;line-height:32px;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:#fff}
 body.story-builder #title-bar .title,body.story-builder #title-bar .byline{cursor:pointer}
 body.story-builder #title-bar input[name="title"],body.story-builder #title-bar input[name="byline"]{float:left;width:600px;height:16px;margin-top:10px;margin-right:10px}
