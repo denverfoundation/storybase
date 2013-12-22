@@ -1780,7 +1780,8 @@
     id: 'tools-toggle',
 
     attributes: {
-      type: 'button'
+      type: 'button',
+      title: gettext("Preview your story, view a list of stories, start over or exit")
     },
 
     events: {
@@ -1793,6 +1794,9 @@
 
     render: function() {
       this.$el.html('<span class="bar"></span><span class="bar"></span><span class="bar"></span>');
+      this.$el.tooltipster({
+        position: 'left'
+      });
       return this;
     },
 
