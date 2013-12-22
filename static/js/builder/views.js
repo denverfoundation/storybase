@@ -1772,11 +1772,16 @@
   });
 
   /**
+   * Button that opens and closes the tools menu.
    */
   var ToolsToggleView = Views.ToolsToggleView = Backbone.View.extend({
     tagName: 'button',
 
     id: 'tools-toggle',
+
+    attributes: {
+      type: 'button'
+    },
 
     events: {
       'click': 'triggerToggle'
