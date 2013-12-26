@@ -62,6 +62,13 @@
   var MSIE = ($.browser !== undefined) && ($.browser.msie === true);
 
   /**
+   * The most recent version of the tour. Update this to match the version of
+   * the software every time the tour is updated so that users are forced to
+   * see the new version of the tour.
+   */
+  var TOUR_VERSION = '0.18.0';
+
+  /**
    * A section has been successfully saved
    *
    * @event save:section
@@ -2139,7 +2146,7 @@
         return true;
       }
     
-      if ($.cookie('storybase_show_builder_tour') === 'false') {
+      if ($.cookie('storybase_builder_tour_seen') === TOUR_VERSION) {
         return false;
       }
 
@@ -2167,7 +2174,7 @@
 
       // Set a cookie so the builder tour is not shown again
       var setCookie = function() {
-        $.cookie("storybase_show_builder_tour", false, {
+        $.cookie("storybase_builder_tour_seen", TOUR_VERSION, {
           path: '/',
           // Don't show the tour for a very long time
           expires: 365
