@@ -123,11 +123,19 @@
    * @event do:clear:helpactions
    */
    
-   /**
-    * Hide any detail panes associated with StoryTemplateViews.
-    *
-    * @event do:hide:template:detail
-    */
+  /**
+   * Hide any detail panes associated with StoryTemplateViews.
+   *
+   * @event do:hide:template:detail
+   */
+
+  /**
+   * Story validation has failed.
+   *
+   * @event storyvalidation:failed
+   * @param {object} validation Object representing validation results
+   *   returned by Story.validateStory().
+   */
 
   /**
    * Event callback for updating the progress of an upload.
@@ -300,10 +308,7 @@
         this.titleView.render();
         if (_.isUndefined(this.model)) {
           // If this is a new story, show the title input initially
-          this.titleView.once('set:model', function() {
-            this.titleView.edit();
-            this.titleView.$editor().tooltipster('show');
-          }, this);
+          this.titleView.once('set:model', this.showTitleEditor, this); 
         }
 
         this.bylineView = new BylineView({
@@ -441,13 +446,14 @@
       this.subviews.build.initStory();
 
       // Bind callbacks for custom events
-      this.dispatcher.on("open:drawer", this.openDrawer, this);
-      this.dispatcher.on("close:drawer", this.closeDrawer, this);
-      this.dispatcher.on("select:template", this.setTemplate, this);
-      this.dispatcher.on("select:workflowstep", this.updateStep, this);
-      this.dispatcher.on("error", this.error, this);
-      this.dispatcher.on("select:template", this.setStoryClass, this);
-      this.dispatcher.on("select:section", this.handleSelectSection, this);
+      this.dispatcher.on('open:drawer', this.openDrawer, this);
+      this.dispatcher.on('close:drawer', this.closeDrawer, this);
+      this.dispatcher.on('select:template', this.setTemplate, this);
+      this.dispatcher.on('select:workflowstep', this.updateStep, this);
+      this.dispatcher.on('error', this.error, this);
+      this.dispatcher.on('select:template', this.setStoryClass, this);
+      this.dispatcher.on('select:section', this.handleSelectSection, this);
+      this.dispatcher.on('storyvalidation:failed', this.handleValidationFailure, this);
 
       if (_.isUndefined(this.model) || this.model.isNew()) {
         this.dispatcher.once("save:story", this.updatePath, this);
@@ -455,14 +461,15 @@
     },
 
     close: function() {
-      this.dispatcher.off("open:drawer", this.openDrawer, this);
-      this.dispatcher.off("close:drawer", this.closeDrawer, this);
-      this.dispatcher.off("select:template", this.setTemplate, this);
-      this.dispatcher.off("select:workflowstep", this.updateStep, this); 
-      this.dispatcher.off("error", this.error, this);
-      this.dispatcher.off("select:template", this.setStoryClass, this);
-      this.dispatcher.off("select:section", this.handleSelectSection, this);
-      this.dispatcher.off("save:story", this.updatePath, this);
+      this.dispatcher.off('open:drawer', this.openDrawer, this);
+      this.dispatcher.off('close:drawer', this.closeDrawer, this);
+      this.dispatcher.off('select:template', this.setTemplate, this);
+      this.dispatcher.off('select:workflowstep', this.updateStep, this); 
+      this.dispatcher.off('error', this.error, this);
+      this.dispatcher.off('select:template', this.setStoryClass, this);
+      this.dispatcher.off('select:section', this.handleSelectSection, this);
+      this.dispatcher.off('save:story', this.updatePath, this);
+      this.dispatcher.off('storyvalidation:failed', this.handleValidationFailure, this);
 
       _.each(this.subviews, function(view) {
         // Call the close() method, if it exists on the workflow step subviews.
@@ -702,6 +709,25 @@
       // and the drawer in order to accomodate the larger header.
       this.pushDown(this.$(this.options.subviewContainerEl));
       this.pushDown(this.drawerView.$el);
+    },
+
+    /**
+     * Force the title view to go into edit mode.
+     */
+    showTitleEditor: function() {
+      this.titleView.edit();
+      this.titleView.$editor().tooltipster('show');
+    },
+
+    /**
+     * Event handler for a ``storyvalidation:failed`` event.
+     *
+     * @param {object} validation Object as returned by Story.validateStory.
+     */
+    handleValidationFailure: function(validation) {
+      if (this.titleView && validation.errors && validation.errors.title) {
+        this.showTitleEditor();
+      }
     }
   });
 
@@ -7530,19 +7556,19 @@
      */
     _suggestedComponentMissingMsg: function(validation) {
       if (validation.warnings) {
-        var msg = gettext("Your story is missing these suggested components") + ": ";
+        var msg = gettext("Your story was published, but is missing these suggested components") + ": ";
         msg += _.map(_.keys(validation.warnings), function(field) {
           var fieldString = this._suggestedFieldMessages[field] ? this._suggestedFieldMessages[field] : field;
           return "<strong>" + fieldString + "</strong>";
         }, this)
         .join(", ");
 
-        msg += ". " + gettext("Your story was still published, but you should add them.");
+        msg += ". " + gettext("You should add them.");
 
         return msg;
       }
 
-      return gettext("Your story is missing some suggested components");
+      return gettext("Your story is missing some suggested components.");
     },
 
     handlePublish: function(evt) {
@@ -7577,6 +7603,7 @@
       else {
         // Validation failed, show an alert
         if (validation.errors) {
+          this.dispatcher.trigger('storyvalidation:failed', validation);
           this._alerts['publish-validation-errors'] = true;
           this.dispatcher.trigger('alert', 'error',
             this._requiredComponentMissingMsg(validation),
