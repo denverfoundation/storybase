@@ -1254,18 +1254,8 @@ button.preview {
           }
           
           &.unavailable {
-            color:transparent !important;
-            &:after {
-              background:@asset-type-inactive-color;
-            }
-            
-            &:hover {
-              cursor:default;
-              &:after {
-                cursor:default;
-                background:@asset-type-inactive-color;
-              }
-            }
+            // Hide icons for unavailable asset types
+            display: none;
           }
         }
       }
