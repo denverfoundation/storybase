@@ -632,7 +632,7 @@ class SectionAssetResource(HookedModelResource):
     class Meta:
         queryset = SectionAsset.objects.all()
         resource_name = 'sectionassets'
-        detail_allowed_methods = ['get', 'post', 'delete']
+        detail_allowed_methods = ['get', 'post', 'put', 'delete']
         list_allowed_methods = ['get', 'post']
         authentication = Authentication()
         authorization = LoggedInAuthorization()

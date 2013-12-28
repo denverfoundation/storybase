@@ -658,6 +658,7 @@
 
       initialize: function() {
         this.assets = new SectionAssets();
+        this.assets.setSection(this);
         this.setCollectionUrls();
         this.on("change", this.setCollectionUrls, this);
       },
@@ -833,8 +834,66 @@
     })
   );
 
-  var Asset = Models.Asset = FileUploadModel.extend(
+  /**
+   * Utility model for managing relations between sections and assets.
+   *
+   * This should not be instantiated by calling code.  Instead an instance
+   * can be retrieved for a section-bound asset by calling
+   * Asset.getSectionAsset().
+   */
+  var SectionAsset = Backbone.Model.extend(
     _.extend({}, TastypieModelMixin, {
+      constructor: function(attributes, options) {
+        var attrs = attributes || {};
+        // Preprocess some of the attributes
+        if (attrs.asset) {
+          // This item's ID will be the same as the asset's ID
+          attrs.id = attrs.asset.id;
+          // As will the container
+          attrs.container = attrs.asset.get('container');
+          // Relations in Tastypie use URLs.
+          attrs.asset = attrs.asset.url();
+        }
+        if (attrs.section) {
+          // If a section attribute is passed, assign it and
+          // remove it from the attributes hash
+          this.section = attrs.section;
+          delete attrs.section;
+        }
+        Backbone.Model.call(this, attributes, options);
+      },
+
+      urlRoot: function() {
+        return this.section.url() + 'assets';
+      }
+    })
+  );
+
+  var SectionRelationMixin = {
+    /**
+     * Set the section associated with this model.
+     */
+    setSection: function(section) {
+      this._section = section;
+    },
+
+    /**
+     * Get the Section associated with this model.
+     */
+    getSection: function(section) {
+      return this._section;
+    },
+
+    /**
+     * Disassociate this asset with this model.
+     */
+    unsetSection: function() {
+      delete this._section;
+    }
+  };
+
+  var Asset = Models.Asset = FileUploadModel.extend(
+    _.extend({}, TastypieModelMixin, SectionRelationMixin, {
       fileAttributes: ['image'],
 
       showFormField: {
@@ -969,7 +1028,7 @@
         if (found.length > 1) {
           return "You must specify only one of the following values: " + found.join(', ') + '.';
         }
-        else if (found.length == 0 && (this.isNew() || !this.get('image'))) {
+        else if (found.length === 0 && (this.isNew() || !this.get('image'))) {
           return 'You must specify at least one option: ' + _.intersection(_.keys(attrs), contentAttrNames).join(', ') + '.';
         }
       },
@@ -994,6 +1053,15 @@
         this.datasets = collection;
         this.datasets.setAsset(this);
         this.trigger('set:datasets', this.datasets);
+      },
+
+      getSectionAsset: function() {
+        if (this._section) {
+          return new SectionAsset({
+            section: this._section,
+            asset: this
+          });
+        }
       }
     })
   );
@@ -1004,17 +1072,37 @@
     })
   );
 
-  var SectionAssets = Collections.SectionAssets = Assets.extend({
-    parse: function(response) {
-      var models = [];
-      _.each(response.objects, function(sectionAsset) {
-        var asset = sectionAsset.asset;
-        asset.container = sectionAsset.container;
-        models.push(asset);
-      });
-      return models;
-    }
-  });
+  var SectionAssets = Collections.SectionAssets = Assets.extend(
+    _.extend({}, SectionRelationMixin, {
+      initialize: function() {
+        this.on('add', this.setAssetSection, this);
+        this.on('remove', this.unsetAssetSection, this);
+        this.on('reset', this.setAssetsSection, this); 
+      },
+
+      parse: function(response) {
+        var models = [];
+        _.each(response.objects, function(sectionAsset) {
+          var asset = sectionAsset.asset;
+          asset.container = sectionAsset.container;
+          models.push(asset);
+        });
+        return models;
+      },
+
+      setAssetSection: function(asset) {
+        asset.setSection(this._section);
+      },
+
+      setAssetsSection: function() {
+        this.each(this.setAssetSection, this);
+      },
+
+      unsetAssetSection: function(asset) {
+        asset.unsetSection();
+      }
+    })
+  );
 
   Collections.FeaturedAssets = SaveableCollection.extend(
     _.extend({}, TastypieCollectionMixin, {

@@ -3877,6 +3877,7 @@
     }
   });
 
+
   /**
    * View for editing a section
    */
@@ -3890,7 +3891,47 @@
         containerEl: '.storybase-container-placeholder',
         titleEl: '.section-title',
         selectLayoutEl: 'select.layout',
-        templateSource: $('#section-edit-template').html()
+        templateSource: $('#section-edit-template').html(),
+        /**
+         * Map of containers to numeric weights.
+         *
+         * Keys are layout slugs.  Values are maps with keys of either container
+         * names or weights (as integers) and values of either container names
+         * or weights.
+         *
+         * This allows the reassignment of assets to new containers when the
+         * layout changes.  For example, in the 'side-by-side' layout, the 'left'
+         * container has a weight of 0.  In the 'one-up' layout, the 'top' container
+         * has a weight of 0.  So, when switching from the 'side-by-side' to
+         * 'top' layout, the asset in the 'left' container will be moved to the
+         * 'top' container.
+         */
+        containerWeights: {
+          'side-by-side': {
+            left: 0,
+            right: 1,
+            0: 'left',
+            1: 'right'
+          },
+          'one-up': {
+            center: 0,
+            0: 'center' 
+          },
+          'above-below': {
+            'top': 0,
+            bottom: 1,
+            0: 'top',
+            1: 'bottom'
+          },
+          'three-stacked': {
+            'top': 0,
+            middle: 1,
+            bottom: 2,
+            0: 'top',
+            1: 'middle',
+            2: 'bottom'
+          }
+        }
       },
 
       events: function() {
@@ -4129,12 +4170,20 @@
       },
 
       /**
-      * Event handler for the 'change:layout' event.
-      */
-      changeLayout: function(evt) {
+       * Event handler for a Section model's 'change:layout' event.
+       */
+      changeLayout: function(section, layoutId) {
+        var layout = _.find(this.layouts, function(layout) {
+          return layout.layout_id == layoutId;
+        });
+        var prevLayoutId = section.previous('layout');
+        var prevLayout = _.find(this.layouts, function(layout) { 
+          return layout.layout_id == prevLayoutId;
+        });
+
         this.setConditionalRender();
         if (this.assets.length) {
-          this.removeAssets();
+          this.reassignAssets(prevLayout, layout);
         }
         else {
           this.removeAssetEditViews();
@@ -4142,13 +4191,32 @@
       },
 
       /**
-      * Disassociate all assets with this section. 
-      */
-      removeAssets: function() {
+       * Associate assets with new containers.
+       *
+       * @param {Layout} prevLayout Previous layout.
+       * @param {Layout} layout New layout.
+       */
+      reassignAssets: function(prevLayout, layout) {
+        var prevSlug = prevLayout.slug;
+        var slug = layout.slug;
+
         this.assets.each(function(asset) {
-          this.removeAsset(asset, {
-            removeView: true
-          });
+          var weight = this.options.containerWeights[prevSlug][asset.get('container')];
+          var container = this.options.containerWeights[slug][weight]; 
+
+          if (container) {
+            // There's a corresponding container in the new layout.
+            // Update the asset's container and save it to the server
+            asset.set('container', container);
+            asset.getSectionAsset().save();
+          }
+          else {
+            // There's no corresponding container in the new layout,
+            // remove the asset from the section
+            this.removeAsset(asset, {
+              removeView: true
+            });
+          }
         }, this);
       },
 
@@ -4166,15 +4234,12 @@
           if (this.story.isNew()) {
             // We haven't saved the story or the section yet.
             // Defer the saving of the asset relation 
-            this._unsavedAssets.push({
-              asset: asset,
-              container: container
-            });
+            this._unsavedAssets.push(asset);
             // Trigger an event that will cause the story and section to be saved
             this.dispatcher.trigger("do:save:story");
           }
           else {
-            this.saveSectionAsset(asset, container);
+            this.saveSectionAsset(asset);
           }
         }
       },
@@ -4237,9 +4302,7 @@
           trigger: true
         });
         var view = this;
-        var sectionAsset = this.getSectionAsset(asset);
-        sectionAsset.id = asset.id;
-        sectionAsset.destroy({
+        asset.getSectionAsset().destroy({
           success: function(model, response) {
             if (options.removeView) {
               view.removeEditViewForAsset(asset);
@@ -4262,27 +4325,12 @@
         });
       },
 
-      getSectionAsset: function(asset, container) {
-        var SectionAsset = Backbone.Model.extend({
-          urlRoot: this.model.url() + 'assets',
-          url: function() {
-            return Backbone.Model.prototype.url.call(this) + '/';
-          }
-        });
-        var sectionAsset = new SectionAsset({
-          asset: asset.url(),
-          container: container
-        });
-        sectionAsset.on("sync", this.sectionAssetAdded, this);
-        return sectionAsset;
-      },
-
       /**
       * Assign an asset to a particular container in this section.
       */
-      saveSectionAsset: function(asset, container) {
+      saveSectionAsset: function(asset) {
         var view = this;
-        this.getSectionAsset(asset, container).save(null, {
+        asset.getSectionAsset().save(null, {
           error: function(sectionAsset, xhr, options) {
             // Could not assign an asset to the container.  In most cases
             // this is because the user already assigned an asset to the
@@ -4296,7 +4344,7 @@
             // Re-fetch this section's assets from the server to get the
             // assets that were added in the other window/tab. The resulting
             // ``sync`` event will also force the UI to re-render.
-            view._refreshModelForContainer = container;
+            view._refreshModelForContainer = asset.get('container');
             view.assets.once("sync", view.renderAssetViews, view);
             view.assets.fetch();
             // TODO: Should we add the asset to the story's asset list ?
@@ -4306,8 +4354,8 @@
 
       saveSectionAssets: function() {
         var that = this;
-        _.each(this._unsavedAssets, function(sectionAsset) {
-          that.saveSectionAsset(sectionAsset.asset, sectionAsset.container); 
+        _.each(this._unsavedAssets, function(asset) {
+          that.saveSectionAsset(asset); 
         });
         this._unsavedAssets = [];
       },
