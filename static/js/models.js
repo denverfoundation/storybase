@@ -837,12 +837,25 @@
   /**
    * Utility model for managing relations between sections and assets.
    *
-   * This should not be instantiated by calling code.  Instead an instance
-   * can be retrieved for a section-bound asset by calling
-   * Asset.getSectionAsset().
+   * This should not be instantiated by calling code.  Generally, this type
+   * of model is just used internally by the SectionAssets collection.  If
+   * you need an instance, you can retrieve one by calling
+   * SectionAssets.getSectionAsset(asset).
    */
   var SectionAsset = Backbone.Model.extend(
     _.extend({}, TastypieModelMixin, {
+      /**
+       * Constructor.
+       *
+       * @param attributes {object} attributes Hash of model attributes, as
+       *   would be passed to the constructor of Backbone.Model.  However,
+       *   certain attributes are preprocessed rather than being set as a
+       *   model attribute.  The ``asset`` attribute's url property is set on
+       *   the constructed model.  The ``id`` of the model is taken from the 
+       *   ``asset`` attributes id property.  The ``attribute`` is
+       *   assigned to ``model.section`` instead of being set as a model
+       *   attribute.
+       */
       constructor: function(attributes, options) {
         var attrs = attributes || {};
         // Preprocess some of the attributes
@@ -1041,10 +1054,15 @@
     })
   );
 
+  /**
+   * Collection for handling Asset models associated with a Section.
+   */
   var SectionAssets = Collections.SectionAssets = Assets.extend(
     _.extend({}, {
       initialize: function() {
-        this.on('reset', this.setAssetsSection, this); 
+        // When a model is added or removed from this collection, associate
+        // it with a section, optionally persisting this relationship to
+        // the server.
         this.on('add', this.setAssetSection, this);
         this.on('remove', this.unsetAssetSection, this);
       },
@@ -1074,14 +1092,42 @@
       },
 
       /**
-       * Disassociate this asset with this model.
+       * Disassociate this collection with a Section.
        */
       unsetSection: function() {
         delete this._section;
       },
 
+      /**
+       * Associate an asset in the collection with this collection's Section.
+       *
+       * This is used as a handler for the ``add`` event triggered
+       * on this collection. 
+       *
+       * @param {Asset} asset Asset model.
+       * @param {SectionAssets} collection This argument is needed to match
+       *   the signature of the ``add`` event. Defaults to the collection
+       *   itself.
+       * @param {object} [options]
+       * @param {string} [options.container] If present, this is set as the
+       *   ``container`` attribute on ``asset``.
+       * @param {boolean} [options.sync] If truthy, persist the relationship
+       *   to the server.
+       *
+       * Triggers a ``save:sectionasset`` event if the relationship is 
+       * successfully persisted to the server, and an ``error:sectionasset``
+       * event if there's a problem. Listeners to tese events as well as the 
+       * ``success`` and ``error`` callbacks take (asset, response, options)
+       * as the arguments.
+       *
+       * This function delegates to ``updateSectionAsset()`` for most of its
+       * heavy lifting. See the documentation for that function for other
+       * options and events fired.
+       *
+       */
       setAssetSection: function(asset, collection, options) {
         collection = collection || this;
+        options = options || {};
 
         if (options.container) {
           asset.set('container', options.container);
@@ -1092,12 +1138,26 @@
         }
       },
 
-      setAssetsSection: function() {
-        this.each(this.setAssetSection, this);
-      },
-
+      /**
+       * Disassociate an asset in the collection with the collection's Section.
+       *
+       * This is used as a handler for the ``remove`` event triggered on this
+       * collection.
+       *
+       * @param {Asset} asset Asset model.
+       * @param {boolean} [options.sync] If truthy, remove the relationship
+       *   to the server.
+       * @param {function} [options.success] Callback for a successful request
+       *   to the server.
+       * @param {function} [options.error] Callback for a successful request
+       *   to the server.
+       *
+       * The success and error callbacks are passed (asset, response, options)
+       * as arguments.
+       */
       unsetAssetSection: function(asset, collection, options) {
         collection = collection || this;
+        options = options || {};
 
         asset.unset('container');
         
@@ -1124,6 +1184,9 @@
         }
       },
 
+      /**
+       * Returns a SectionAsset instance for the given asset and container.
+       */
       getSectionAsset: function(asset, container) {
         return new SectionAsset({
           section: this.getSection(),
@@ -1132,13 +1195,42 @@
         });
       },
 
+      /**
+       * Create or update the relationship between an asset in the collection,
+       * with this collection's Section.
+       *
+       * @param {Asset} asset Asset model.
+       * @param {object} [options]
+       * @param {function} [options.success] Callback for a successful request
+       *   to the server.
+       * @param {function} [options.error] Callback for a successful request
+       *   to the server.
+       *
+       * Triggers a ``save:sectionasset`` event if the relationship is 
+       * successfully persisted to the server, and an ``error:sectionasset``
+       * event if there's a problem. Listeners to tese events as well as the 
+       * ``success`` and ``error`` callbacks take (asset, response, options)
+       * as the arguments.
+       *
+       */
       updateSectionAsset: function(asset, options) {
         var collection = this;
+        options = options || {};
+        var success = options.success;
+        var error = options.error;
 
         this.getSectionAsset(asset).save(null, {
+          success: function(sectionAsset, xhr, options) {
+            if (success) {
+              success(asset, xhr, options);
+            }
+
+            collection.trigger('save:sectionasset', asset, xhr, options);
+          },
+
           error: function(sectionAsset, xhr, options) {
-            if (options.error) {
-              options.error(asset, xhr, options);
+            if (error) {
+              error(asset, xhr, options);
             }
 
             collection.trigger('error:sectionasset', asset, xhr, options); 

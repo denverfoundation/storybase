@@ -3900,11 +3900,14 @@
          * or weights.
          *
          * This allows the reassignment of assets to new containers when the
-         * layout changes.  For example, in the 'side-by-side' layout, the 'left'
-         * container has a weight of 0.  In the 'one-up' layout, the 'top' container
-         * has a weight of 0.  So, when switching from the 'side-by-side' to
-         * 'top' layout, the asset in the 'left' container will be moved to the
-         * 'top' container.
+         * layout changes.  For example, in the 'side-by-side' layout, the
+         * 'left' container has a weight of 0.  In the 'one-up' layout, the 
+         * 'top' container has a weight of 0.  So, when switching from the 
+         * 'side-by-side' to 'top' layout, the asset in the 'left' container
+         * will be moved to the  'top' container.
+         *
+         * TODO: If these become more complex, or more configurability is
+         * required, these should be implemented server-side.
          */
         containerWeights: {
           'side-by-side': {
@@ -3975,14 +3978,14 @@
 
         this.dispatcher.on('do:add:sectionasset', this.addAsset, this);
         this.dispatcher.on('do:remove:sectionasset',
-        this.handleDoRemoveSectionAsset, this);
+                           this.handleDoRemoveSectionAsset, this);
         this.dispatcher.on('select:section', this.show, this);
-        this.model.on("change:layout", this.changeLayout, this);
-        this.model.on("sync", this.saveSectionAssets, this);
-        this.model.on("sync", this.conditionalRender, this);
-        this.model.on("sync", this.triggerSaved, this);
-        this.model.on("destroy", this.handleDestroy, this);
-        this.assets.once("sync", this.setAssetsFetched, this);
+        this.model.on('change:layout', this.changeLayout, this);
+        this.model.on('sync', this.saveUnsavedSectionAssets, this);
+        this.model.on('sync', this.conditionalRender, this);
+        this.model.on('sync', this.triggerSaved, this);
+        this.model.on('destroy', this.handleDestroy, this);
+        this.assets.once('sync', this.setAssetsFetched, this);
         this.assets.on('error:sectionasset', this.handleSectionAssetError, this);
       },
 
@@ -3992,13 +3995,14 @@
         this.unbind();
         this.dispatcher.off('do:add:sectionasset', this.addAsset, this);
         this.dispatcher.off('do:remove:sectionasset',
-        this.handleDoRemoveSectionAsset, this);
+                            this.handleDoRemoveSectionAsset, this);
         this.dispatcher.off('select:section', this.show, this);
         this.model.off("change:layout", this.changeLayout, this);
-        this.model.off("sync", this.saveSectionAssets, this);
+        this.model.off("sync", this.saveUnsavedSectionAssets, this);
         this.model.off("sync", this.conditionalRender, this);
         this.model.off("sync", this.triggerSaved, this);
         this.model.off("destroy", this.handleDestroy, this);
+        this.assets.off('error:sectionasset', this.handleSectionAssetError, this);
       },
 
       /**
@@ -4159,10 +4163,19 @@
         return this;
       },
 
+      /**
+       * Render this view the next time conditionalRender() is called.
+       */
       setConditionalRender: function() {
         this._doConditionalRender = true;
       },
 
+      /**
+       * Wrapper around render() to handle cases when we may or may not
+       * need to render.
+       *
+       * This is probably a bit of a hack.
+       */
       conditionalRender: function() {
         if (this._doConditionalRender === true) {
           this.render();
@@ -4222,21 +4235,23 @@
       },
 
       /**
-      * Event handler for when assets are added to the section
-      */
+       * Event handler for when assets are added to the section
+       */
       addAsset: function(section, asset, container) {
-        var options; 
+        var addOptions; 
+
         if (section == this.model) {
-          options = {
+          addOptions = {
+            // If the story has been previously saved, save the asset
+            // to section view to the server.  Otherwise, this will get
+            // handled by saveUnsavedSectionAssets().
             sync: !this.story.isNew(),
             container: container
           };
-          // Artifically set the container attribute of the asset.
-          // For assets retrieved from the server, this is handled by
-          // SectionAssets.parse()
-          asset.set('container', container);
-          this.assets.add(asset, options);
+
+          this.assets.add(asset, addOptions);
           this.story.assets.add(asset);
+
           if (this.story.isNew()) {
             // We haven't saved the story or the section yet.
             // Defer the saving of the asset relation 
@@ -4248,8 +4263,8 @@
       },
 
       /**
-      * Remove all asset editing views
-      */
+       * Remove all asset editing views
+       */
       removeAssetEditViews: function() {
         _.each(this._assetEditViews, function(view, container) {
           view.close();
@@ -4272,7 +4287,7 @@
       /**
        * Callback for when an asset is removed from the section
        *
-       * This should be be bound to the do:removesectionasset event.
+       * This should be be bound to the do:remove:sectionasset event.
        *
        * @param {Section} section - Section from which the asset is to be removed
        * @param {Asset} asset - Asset to be removed from the section
@@ -4285,19 +4300,19 @@
       },
 
       /**
-      * Remove an asset from this section
-      *
-      * @param {Asset} asset Asset to be removed
-      * @param {Object} [options] - Options for performing this operation.
-      * @param {boolean} [options.removeView=undefined] - Should the view for editing the
-      *   asset also be removed?
-      * @param {boolean} [options.trigger=true] - Should we trigger a "remove:sectionasset"
-      *   event on the event bus?
-      * @param {boolean} [options.removeFromStory=false] - Should the asset be removed from
-      *   the story as well?
-      * @param {function} [options.success] - Callback function called on a
-      *   successful removal of an asset from this section
-      */
+       * Remove an asset from this section
+       *
+       * @param {Asset} asset Asset to be removed
+       * @param {Object} [options] - Options for performing this operation.
+       * @param {boolean} [options.removeView=undefined] - Should the view for editing the
+       *   asset also be removed?
+       * @param {boolean} [options.trigger=true] - Should we trigger a "remove:sectionasset"
+       *   event on the event bus?
+       * @param {boolean} [options.removeFromStory=false] - Should the asset be removed from
+       *   the story as well?
+       * @param {function} [options.success] - Callback function called on a
+       *   successful removal of an asset from this section
+       */
       removeAsset: function(asset, options) {
         options = options || {};
         _.defaults(options, {
@@ -4328,6 +4343,10 @@
         });
       },
 
+      /**
+       * Event handler for an ``error:sectionasset`` event, when there's a
+       * an error associating an asset with the section on the server.
+       */
       handleSectionAssetError: function(asset, xhr, options) {
         // Could not assign an asset to the container.  In most cases
         // this is because the user already assigned an asset to the
@@ -4347,7 +4366,14 @@
         // TODO: Should we add the asset to the story's asset list ?
       },
 
-      saveSectionAssets: function() {
+      /**
+       * Associate unsaved assets with this section.
+       *
+       * This is needed to handle the case where assets are created before the
+       * story (and the section) are saved.  We defer saving initially, and
+       * then call this method once we've saved the story and section.
+       */
+      saveUnsavedSectionAssets: function() {
         _.each(this._unsavedAssets, function(asset) {
           this.assets.updateSectionAsset(asset);
         }, this);
