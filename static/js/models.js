@@ -850,7 +850,7 @@
           // This item's ID will be the same as the asset's ID
           attrs.id = attrs.asset.id;
           // As will the container
-          attrs.container = attrs.asset.get('container');
+          attrs.container = attrs.container || attrs.asset.get('container');
           // Relations in Tastypie use URLs.
           attrs.asset = attrs.asset.url();
         }
@@ -869,31 +869,9 @@
     })
   );
 
-  var SectionRelationMixin = {
-    /**
-     * Set the section associated with this model.
-     */
-    setSection: function(section) {
-      this._section = section;
-    },
-
-    /**
-     * Get the Section associated with this model.
-     */
-    getSection: function(section) {
-      return this._section;
-    },
-
-    /**
-     * Disassociate this asset with this model.
-     */
-    unsetSection: function() {
-      delete this._section;
-    }
-  };
 
   var Asset = Models.Asset = FileUploadModel.extend(
-    _.extend({}, TastypieModelMixin, SectionRelationMixin, {
+    _.extend({}, TastypieModelMixin, {
       fileAttributes: ['image'],
 
       showFormField: {
@@ -1053,15 +1031,6 @@
         this.datasets = collection;
         this.datasets.setAsset(this);
         this.trigger('set:datasets', this.datasets);
-      },
-
-      getSectionAsset: function() {
-        if (this._section) {
-          return new SectionAsset({
-            section: this._section,
-            asset: this
-          });
-        }
       }
     })
   );
@@ -1073,11 +1042,11 @@
   );
 
   var SectionAssets = Collections.SectionAssets = Assets.extend(
-    _.extend({}, SectionRelationMixin, {
+    _.extend({}, {
       initialize: function() {
+        this.on('reset', this.setAssetsSection, this); 
         this.on('add', this.setAssetSection, this);
         this.on('remove', this.unsetAssetSection, this);
-        this.on('reset', this.setAssetsSection, this); 
       },
 
       parse: function(response) {
@@ -1090,16 +1059,91 @@
         return models;
       },
 
-      setAssetSection: function(asset) {
-        asset.setSection(this._section);
+      /**
+       * Set the section associated with this model.
+       */
+      setSection: function(section) {
+        this._section = section;
+      },
+
+      /**
+       * Get the Section associated with this model.
+       */
+      getSection: function(section) {
+        return this._section;
+      },
+
+      /**
+       * Disassociate this asset with this model.
+       */
+      unsetSection: function() {
+        delete this._section;
+      },
+
+      setAssetSection: function(asset, collection, options) {
+        collection = collection || this;
+
+        if (options.container) {
+          asset.set('container', options.container);
+        }
+
+        if (options.sync) {
+          this.updateSectionAsset(asset, options);
+        }
       },
 
       setAssetsSection: function() {
         this.each(this.setAssetSection, this);
       },
 
-      unsetAssetSection: function(asset) {
-        asset.unsetSection();
+      unsetAssetSection: function(asset, collection, options) {
+        collection = collection || this;
+
+        asset.unset('container');
+        
+        if (options.sync) {
+          var success = options.success;
+          var error = options.error;
+
+          this.getSectionAsset(asset).destroy({
+            success: function(model, xhr, options) {
+              if (success) {
+                success(asset, xhr, options);
+              }
+
+              collection.trigger('remove:sectionasset', asset, xhr, options);
+            },
+            error: function(model, xhr, options) {
+              if (error) {
+                error(asset, xhr, options);
+              }
+
+              collection.trigger('error:sectionasset', asset, xhr, options); 
+            }
+          });
+        }
+      },
+
+      getSectionAsset: function(asset, container) {
+        return new SectionAsset({
+          section: this.getSection(),
+          asset: asset,
+          container: container
+        });
+      },
+
+      updateSectionAsset: function(asset, options) {
+        var collection = this;
+
+        this.getSectionAsset(asset).save(null, {
+          error: function(sectionAsset, xhr, options) {
+            if (options.error) {
+              options.error(asset, xhr, options);
+            }
+
+            collection.trigger('error:sectionasset', asset, xhr, options); 
+          }
+        });
       }
     })
   );

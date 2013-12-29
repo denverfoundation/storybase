@@ -3983,6 +3983,7 @@
         this.model.on("sync", this.triggerSaved, this);
         this.model.on("destroy", this.handleDestroy, this);
         this.assets.once("sync", this.setAssetsFetched, this);
+        this.assets.on('error:sectionasset', this.handleSectionAssetError, this);
       },
 
       close: function() {
@@ -4208,7 +4209,7 @@
             // There's a corresponding container in the new layout.
             // Update the asset's container and save it to the server
             asset.set('container', container);
-            asset.getSectionAsset().save();
+            this.assets.updateSectionAsset(asset);
           }
           else {
             // There's no corresponding container in the new layout,
@@ -4224,12 +4225,17 @@
       * Event handler for when assets are added to the section
       */
       addAsset: function(section, asset, container) {
+        var options; 
         if (section == this.model) {
+          options = {
+            sync: !this.story.isNew(),
+            container: container
+          };
           // Artifically set the container attribute of the asset.
           // For assets retrieved from the server, this is handled by
           // SectionAssets.parse()
           asset.set('container', container);
-          this.assets.add(asset);
+          this.assets.add(asset, options);
           this.story.assets.add(asset);
           if (this.story.isNew()) {
             // We haven't saved the story or the section yet.
@@ -4237,9 +4243,6 @@
             this._unsavedAssets.push(asset);
             // Trigger an event that will cause the story and section to be saved
             this.dispatcher.trigger("do:save:story");
-          }
-          else {
-            this.saveSectionAsset(asset);
           }
         }
       },
@@ -4302,12 +4305,12 @@
           trigger: true
         });
         var view = this;
-        asset.getSectionAsset().destroy({
+        this.assets.remove(asset, {
+          sync: true,
           success: function(model, response) {
             if (options.removeView) {
               view.removeEditViewForAsset(asset);
             }
-            view.assets.remove(asset);
             if (options.trigger) {
               view.dispatcher.trigger("remove:sectionasset", asset);
               view.dispatcher.trigger("alert", "info", "You removed an asset, but it's not gone forever. You can re-add it to a section from the asset list");
@@ -4325,38 +4328,29 @@
         });
       },
 
-      /**
-      * Assign an asset to a particular container in this section.
-      */
-      saveSectionAsset: function(asset) {
-        var view = this;
-        asset.getSectionAsset().save(null, {
-          error: function(sectionAsset, xhr, options) {
-            // Could not assign an asset to the container.  In most cases
-            // this is because the user already assigned an asset to the
-            // container in another tab/window
-            var msg = xhr.responseText;
-            if (xhr.status === 400) {
-              msg = gettext("Oops, couldn't add your asset here. This is probably because you already did so in another tab or window. Hold tight while we refresh this section's assets.");
-            }
-            view.dispatcher.trigger('error', msg);
-            view.assets.remove(asset);
-            // Re-fetch this section's assets from the server to get the
-            // assets that were added in the other window/tab. The resulting
-            // ``sync`` event will also force the UI to re-render.
-            view._refreshModelForContainer = asset.get('container');
-            view.assets.once("sync", view.renderAssetViews, view);
-            view.assets.fetch();
-            // TODO: Should we add the asset to the story's asset list ?
-          }
-        });
+      handleSectionAssetError: function(asset, xhr, options) {
+        // Could not assign an asset to the container.  In most cases
+        // this is because the user already assigned an asset to the
+        // container in another tab/window
+        var msg = xhr.responseText;
+        if (xhr.status === 400) {
+          msg = gettext("Oops, couldn't add your asset here. This is probably because you already did so in another tab or window. Hold tight while we refresh this section's assets.");
+        }
+        this.dispatcher.trigger('error', msg);
+        this.assets.remove(asset);
+        // Re-fetch this section's assets from the server to get the
+        // assets that were added in the other window/tab. The resulting
+        // ``sync`` event will also force the UI to re-render.
+        this._refreshModelForContainer = asset.get('container');
+        this.assets.once("sync", this.renderAssetViews, this);
+        this.assets.fetch();
+        // TODO: Should we add the asset to the story's asset list ?
       },
 
       saveSectionAssets: function() {
-        var that = this;
         _.each(this._unsavedAssets, function(asset) {
-          that.saveSectionAsset(asset); 
-        });
+          this.assets.updateSectionAsset(asset);
+        }, this);
         this._unsavedAssets = [];
       },
 
