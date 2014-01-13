@@ -101,7 +101,7 @@ Handlebars.js templates for story builder Backbone application
 {{/if}}
 <div class="section-thumbnail{{#if isNew}} new{{/if}}"{{#if tooltip}} title="{{tooltip}}"{{/if}}>
 {{#if id}}<a class="remove" href="#" title='{{gettext "Remove section"}}'>x</a>{{/if}}
-<div class="title">{{#if title }}{{ title }}{{else}}{{{default title_suggestion "Untitled Section"}}}{{/if}}</div>
+<div class="center-container"><div class="title center-block">{{#if title }}{{ title }}{{else}}{{{default title_suggestion "Untitled Section"}}}{{/if}}</div></div>
 </div>
 {{#if nextIndex}}
 <div class="spacer tooltip" title='{{gettext "Add a section"}}'><div><a class="add-section" data-index="{{nextIndex}}" href="#">+</a></div></div>
