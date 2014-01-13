@@ -3277,6 +3277,7 @@
 
         // Enable the jQuery UI Sortable Widget on this element 
         this.$('.sections').sortable({
+          axis: 'x',
           items: 'li:not(.pseudo)'
         });
       }
