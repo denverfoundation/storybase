@@ -67,11 +67,16 @@ Feature: A user can create, edit and publish a story
                 Then the "top" container should be visible
                 Then the "bottom" container should be visible
                 Then the "center" container should not be visible
-                Then the text "You removed an asset, but it's not gone forever" is present
+                Then the image "https://raw.github.com/PitonFoundation/atlas/develop/apps/storybase_asset/test_files/test_image.jpg" is visible in the "top" container
+
+                # Remove the asset
+                Given the user clicks "Remove" in the "top" container
+                Then the text "You removed an asset, but it's not gone forever. You can re-add it to a section from the asset list" is visible
+                Then the image "https://raw.github.com/PitonFoundation/atlas/develop/apps/storybase_asset/test_files/test_image.jpg" is not visible in the "top" container
                 Given the user opens the asset drawer
                 Then the image "https://raw.github.com/PitonFoundation/atlas/develop/apps/storybase_asset/test_files/test_image.jpg" is visible in the asset drawer
 
-                # Add an asset from the drawer
+                # Add the asset back from the drawer
                 Given the user drags the image "https://raw.github.com/PitonFoundation/atlas/develop/apps/storybase_asset/test_files/test_image.jpg" from the asset drawer to the "top" container
                 Then the image "https://raw.github.com/PitonFoundation/atlas/develop/apps/storybase_asset/test_files/test_image.jpg" is visible in the "top" container
                 Then the image "https://raw.github.com/PitonFoundation/atlas/develop/apps/storybase_asset/test_files/test_image.jpg" is not visible in the asset drawer
@@ -131,7 +136,7 @@ Feature: A user can create, edit and publish a story
 
                 # Add a data source
                 Given the user clicks "Yet another section" in the section list
-                Given the user clicks the "Data Sources" link 
+                Given the user clicks "Data Sources" in the "right" container
                 Given the user clicks the "Add Dataset" button
                 Given the user inputs "FOIA No Heats 2011 to Present" in the "Data set name" input
                 Given the user inputs "City of Chicago" in the "Data source" input
@@ -149,6 +154,7 @@ Feature: A user can create, edit and publish a story
                 Then the image "test_image_2.png" is selected as the featured image
 
                 # Preview the story and verify that the build process works
+                Given the user clicks the menu icon
                 Given the user clicks the "Preview" link 
                 Then the Story "Test story" opens in the viewer in a new tab 
                 Then the text "Test story" is present
