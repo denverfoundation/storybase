@@ -1,34 +1,102 @@
-/*
-	Variable Grid System.
-	Learn more ~ http://www.spry-soft.com/grids/
-	Based on 960 Grid System - http://960.gs/
+//
+//  Variable Grid System.
+//  Learn more ~ http://www.spry-soft.com/grids/
+//  Based on 960 Grid System - http://960.gs/
+//
+//  Licensed under GPL and MIT.
 
-	Licensed under GPL and MIT.
-*/
+// Mixins
 
-/*
-  Forces backgrounds to span full width,
-  even if there is horizontal scrolling.
-  Increase this if your layout is wider.
+.mk-fluid-grid-container(@container-width) {
+  width: @container-width;
+}
 
-  Note: IE6 works fine without this fix.
-*/
+.mk-fluid-grid-container-sm() {
+  @media (min-width: @screen-sm-min) {
+    .mk-fluid-grid-container(@container-sm);
+  }
+}
+
+.mk-fluid-grid-container-md() {
+  @media (min-width: @screen-md-min) {
+    .mk-fluid-grid-container(@container-md);
+  }
+}
+
+.mk-fluid-grid-gutters(@gutter: @gutter-width, @container-width) {
+  margin-left: percentage(((@gutter-width / 2) / @container-width));
+  margin-right: percentage(((@gutter-width / 2) / @container-width));
+}
+
+.mk-fluid-grid-gutters-sm(@gutter: @gutter-width) {
+  @media (min-width: @screen-sm-min) {
+    .mk-fluid-grid-gutters(@gutter, @container-sm);
+  }
+}
+
+.mk-fluid-grid-gutters-md(@gutter: @gutter-width) {
+  @media (min-width: @screen-md-min) {
+    .mk-fluid-grid-gutters(@gutter, @container-md);
+  }
+}
+
+.mk-fluid-grid-col(@cols, @gutter: @gutter-width, @container-width) {
+  width: percentage(((@cols / @num-columns) - (@gutter-width / @container-width)));
+}
+
+.mk-fluid-grid-col-sm(@cols, @gutter: @gutter-width) {
+  @media (min-width: @screen-sm-min) {
+    .mk-fluid-grid-col(@cols, @gutter, @container-sm);
+  }
+}
+
+.mk-fluid-grid-col-md(@cols, @gutter: @gutter-width) {
+  @media (min-width: @screen-md-min) {
+    .mk-fluid-grid-col(@cols, @gutter, @container-md);
+  }
+}
+
+.mk-fluid-grid-prefix(@cols) {
+  padding-left: percentage((@cols / @num-columns));
+}
+
+.mk-fluid-grid-suffix(@cols) {
+  padding-right: percentage((@cols / @num-columns));
+}
+
+.mk-fluid-grid-push(@cols) {
+  left: percentage((@cols / @num-columns));
+}
+
+.mk-fluid-grid-pull(@cols) {
+  left: percentage(-(@cols / @num-columns));
+}
+
+//  Forces backgrounds to span full width,
+//  even if there is horizontal scrolling.
+//  Increase this if your layout is wider.
+//
+//  Note: IE6 works fine without this fix.
 
 body {
-  min-width: 1020px;
+  //min-width: @container-width; 
+  //width: 100%;
 }
 
-/* Containers
-----------------------------------------------------------------------------------------------------*/
+// Containers
+
 .container_12 {
-	margin-left: auto;
-	margin-right: auto;
-	width: 1020px;
+  margin-left: auto;
+  margin-right: auto;
+  // TODO: Sensible default value
+  // BOOKMARK
+  //width: @container-md; 
+
+  .mk-fluid-grid-container-sm();
+  .mk-fluid-grid-container-md();
 }
 
-/* Grid >> Global
-----------------------------------------------------------------------------------------------------*/
-
+// Grid >> Global
 
 .grid_1,
 .grid_2,
@@ -42,14 +110,16 @@ body {
 .grid_10,
 .grid_11,
 .grid_12 {
-	display:inline;
-	float: left;
-	position: relative;
-	margin-left: 10px;
-	margin-right: 10px;
+  position: relative;
+
+  @media (min-width: @screen-sm-min) {
+    display:inline;
+    float: left;
+  }
+
+  .mk-fluid-grid-gutters-sm();
+  .mk-fluid-grid-gutters-md();
 }
-
-
 
 .push_1, .pull_1,
 .push_2, .pull_2,
@@ -63,281 +133,341 @@ body {
 .push_10, .pull_10,
 .push_11, .pull_11,
 .push_12, .pull_12 {
-	position:relative;
+  position:relative;
 }
 
 
-/* Grid >> Children (Alpha ~ First, Omega ~ Last)
-----------------------------------------------------------------------------------------------------*/
+// Grid >> Children (Alpha ~ First, Omega ~ Last)
 
 .alpha {
-	margin-left: 0;
+  margin-left: 0;
 }
 
 .omega {
-	margin-right: 0;
+  margin-right: 0;
 }
 
-/* Grid >> 12 Columns
-----------------------------------------------------------------------------------------------------*/
-
+// Grid >> 12 Columns
 
 .container_12 .grid_1 {
-	width:65px;
+  .mk-fluid-grid-col-sm(1);
+  //width:65px;
+  .mk-fluid-grid-col-md(1);
 }
 
 .container_12 .grid_2 {
-	width:150px;
+  .mk-fluid-grid-col-sm(2);
+  //width:150px;
+  .mk-fluid-grid-col-md(2);
 }
 
 .container_12 .grid_3 {
-	width:235px;
+  .mk-fluid-grid-col-sm(3);
+  //width:235px;
+  .mk-fluid-grid-col-md(3);
 }
 
 .container_12 .grid_4 {
-	width:320px;
+  .mk-fluid-grid-col-sm(4);
+  //width:320px;
+  .mk-fluid-grid-col-md(4);
 }
 
 .container_12 .grid_5 {
-	width:405px;
+  .mk-fluid-grid-col-sm(5);
+  //width:405px;
+  .mk-fluid-grid-col-md(5);
 }
 
 .container_12 .grid_6 {
-	width:490px;
+  .mk-fluid-grid-col-sm(6);
+  //width:490px;
+  .mk-fluid-grid-col-md(6);
 }
 
 .container_12 .grid_7 {
-	width:575px;
+  .mk-fluid-grid-col-sm(7);
+  //width:575px;
+  .mk-fluid-grid-col-md(7);
 }
 
 .container_12 .grid_8 {
-	width:660px;
+  .mk-fluid-grid-col-sm(8);
+  //width:660px;
+  .mk-fluid-grid-col-md(8);
 }
 
 .container_12 .grid_9 {
-	width:745px;
+  .mk-fluid-grid-col-sm(9);
+  //width:745px;
+  .mk-fluid-grid-col-md(9);
 }
 
 .container_12 .grid_10 {
-	width:830px;
+  .mk-fluid-grid-col-sm(10);
+  //width:830px;
+  .mk-fluid-grid-col-md(10);
 }
 
 .container_12 .grid_11 {
-	width:915px;
+  .mk-fluid-grid-col-sm(11);
+  //width:915px;
+  .mk-fluid-grid-col-md(11);
 }
 
 .container_12 .grid_12 {
-	width:1000px;
+  .mk-fluid-grid-col-sm(12);
+  //width:1000px;
+  .mk-fluid-grid-col-md(12);
 }
 
 
 
 
-/* Prefix Extra Space >> 12 Columns
-----------------------------------------------------------------------------------------------------*/
+// Prefix Extra Space >> 12 Columns
 
 
 .container_12 .prefix_1 {
-	padding-left:85px;
+  //padding-left:85px;
+  .mk-fluid-grid-prefix(1);
 }
 
 .container_12 .prefix_2 {
-	padding-left:170px;
+  //padding-left:170px;
+  .mk-fluid-grid-prefix(2);
 }
 
 .container_12 .prefix_3 {
-	padding-left:255px;
+  //padding-left:255px;
+  .mk-fluid-grid-prefix(3);
 }
 
 .container_12 .prefix_4 {
-	padding-left:340px;
+  //padding-left:340px;
+  .mk-fluid-grid-prefix(4);
 }
 
 .container_12 .prefix_5 {
-	padding-left:425px;
+  //padding-left:425px;
+  .mk-fluid-grid-prefix(5);
 }
 
 .container_12 .prefix_6 {
-	padding-left:510px;
+  //padding-left:510px;
+  .mk-fluid-grid-prefix(6);
 }
 
 .container_12 .prefix_7 {
-	padding-left:595px;
+  //padding-left:595px;
+  .mk-fluid-grid-prefix(7);
 }
 
 .container_12 .prefix_8 {
-	padding-left:680px;
+  //padding-left:680px;
+  .mk-fluid-grid-prefix(8);
 }
 
 .container_12 .prefix_9 {
-	padding-left:765px;
+  //padding-left:765px;
+  .mk-fluid-grid-prefix(9);
 }
 
 .container_12 .prefix_10 {
-	padding-left:850px;
+  //padding-left:850px;
+  .mk-fluid-grid-prefix(10);
 }
 
 .container_12 .prefix_11 {
-	padding-left:935px;
+  //padding-left:935px;
+  .mk-fluid-grid-prefix(11);
 }
 
 
 
-/* Suffix Extra Space >> 12 Columns
-----------------------------------------------------------------------------------------------------*/
+// Suffix Extra Space >> 12 Columns
 
 
 .container_12 .suffix_1 {
-	padding-right:85px;
+  //padding-right:85px;
+  .mk-fluid-grid-suffix(1);
 }
 
 .container_12 .suffix_2 {
-	padding-right:170px;
+  //padding-right:170px;
+  .mk-fluid-grid-suffix(2);
 }
 
 .container_12 .suffix_3 {
-	padding-right:255px;
+  //padding-right:255px;
+  .mk-fluid-grid-suffix(3);
 }
 
 .container_12 .suffix_4 {
-	padding-right:340px;
+  //padding-right:340px;
+  .mk-fluid-grid-suffix(4);
 }
 
 .container_12 .suffix_5 {
-	padding-right:425px;
+  //padding-right:425px;
+  .mk-fluid-grid-suffix(5);
 }
 
 .container_12 .suffix_6 {
-	padding-right:510px;
+  //padding-right:510px;
+  .mk-fluid-grid-suffix(6);
 }
 
 .container_12 .suffix_7 {
-	padding-right:595px;
+  //padding-right:595px;
+  .mk-fluid-grid-suffix(7);
 }
 
 .container_12 .suffix_8 {
-	padding-right:680px;
+  //padding-right:680px;
+  .mk-fluid-grid-suffix(8);
 }
 
 .container_12 .suffix_9 {
-	padding-right:765px;
+  //padding-right:765px;
+  .mk-fluid-grid-suffix(9);
 }
 
 .container_12 .suffix_10 {
-	padding-right:850px;
+  //padding-right:850px;
+  .mk-fluid-grid-suffix(10);
 }
 
 .container_12 .suffix_11 {
-	padding-right:935px;
+  //padding-right:935px;
+  .mk-fluid-grid-suffix(11);
 }
 
 
 
-/* Push Space >> 12 Columns
-----------------------------------------------------------------------------------------------------*/
+// Push Space >> 12 Columns
 
 
 .container_12 .push_1 {
-	left:85px;
+  //left:85px;
+  .mk-fluid-grid-push(1);
 }
 
 .container_12 .push_2 {
-	left:170px;
+  //left:170px;
+  .mk-fluid-grid-push(2);
 }
 
 .container_12 .push_3 {
-	left:255px;
+  //left:255px;
+  .mk-fluid-grid-push(3);
 }
 
 .container_12 .push_4 {
-	left:340px;
+  //left:340px;
+  .mk-fluid-grid-push(4);
 }
 
 .container_12 .push_5 {
-	left:425px;
+  //left:425px;
+  .mk-fluid-grid-push(5);
 }
 
 .container_12 .push_6 {
-	left:510px;
+  //left:510px;
+  .mk-fluid-grid-push(6);
 }
 
 .container_12 .push_7 {
-	left:595px;
+  //left:595px;
+  .mk-fluid-grid-push(7);
 }
 
 .container_12 .push_8 {
-	left:680px;
+  //left:680px;
+  .mk-fluid-grid-push(8);
 }
 
 .container_12 .push_9 {
-	left:765px;
+  //left:765px;
+  .mk-fluid-grid-push(9);
 }
 
 .container_12 .push_10 {
-	left:850px;
+  //left:850px;
+  .mk-fluid-grid-push(10);
 }
 
 .container_12 .push_11 {
-	left:935px;
+  //left:935px;
+  .mk-fluid-grid-push(11);
 }
 
 
 
-/* Pull Space >> 12 Columns
-----------------------------------------------------------------------------------------------------*/
+// Pull Space >> 12 Columns
 
 
 .container_12 .pull_1 {
-	left:-85px;
+  //left:-85px;
+  .mk-fluid-grid-pull(1);
 }
 
 .container_12 .pull_2 {
-	left:-170px;
+  //left:-170px;
+  .mk-fluid-grid-pull(2);
 }
 
 .container_12 .pull_3 {
-	left:-255px;
+  //left:-255px;
+  .mk-fluid-grid-pull(3);
 }
 
 .container_12 .pull_4 {
-	left:-340px;
+  //left:-340px;
+  .mk-fluid-grid-pull(4);
 }
 
 .container_12 .pull_5 {
-	left:-425px;
+  //left:-425px;
+  .mk-fluid-grid-pull(5);
 }
 
 .container_12 .pull_6 {
-	left:-510px;
+  //left:-510px;
+  .mk-fluid-grid-pull(6);
 }
 
 .container_12 .pull_7 {
-	left:-595px;
+  //left:-595px;
+  .mk-fluid-grid-pull(7);
 }
 
 .container_12 .pull_8 {
-	left:-680px;
+  //left:-680px;
+  .mk-fluid-grid-pull(8);
 }
 
 .container_12 .pull_9 {
-	left:-765px;
+  //left:-765px;
+  .mk-fluid-grid-pull(9);
 }
 
 .container_12 .pull_10 {
-	left:-850px;
+  //left:-850px;
+  .mk-fluid-grid-pull(10);
 }
 
 .container_12 .pull_11 {
-	left:-935px;
+  //left:-935px;
+  .mk-fluid-grid-pull(11);
 }
 
 
 
 
-/* `Clear Floated Elements
-----------------------------------------------------------------------------------------------------*/
+// `Clear Floated Elements
 
-/* http://sonspring.com/journal/clearing-floats */
+// http://sonspring.com/journal/clearing-floats
 
 .clear {
   clear: both;
@@ -348,7 +478,7 @@ body {
   height: 0;
 }
 
-/* http://www.yuiblog.com/blog/2010/09/27/clearfix-reloaded-overflowhidden-demystified */
+// http://www.yuiblog.com/blog/2010/09/27/clearfix-reloaded-overflowhidden-demystified
 
 .clearfix:before,
 .clearfix:after {
@@ -364,10 +494,8 @@ body {
   clear: both;
 }
 
-/*
-  The following zoom:1 rule is specifically for IE6 + IE7.
-  Move to separate stylesheet if invalid CSS is a problem.
-*/
+//  The following zoom:1 rule is specifically for IE6 + IE7.
+//  Move to separate stylesheet if invalid CSS is a problem.
 
 .clearfix {
   zoom: 1;
