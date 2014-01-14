@@ -574,7 +574,6 @@ This project includes a number of excellent open-source libraries:
 * `Modernizr <http://modernizr.com/>`_
 * `Normalize.css <http://github.com/necolas/normalize.css>`_ by Nicolas Gallagher and Jonathan Neal
 * `Select2 <http://ivaynberg.github.com/select2/>`_ by Igor Vaynberg
-* `SimpleModal <http://simplemodal.com>`_ by Eric Martin
 * `Tooltipster <http://calebjacob.com/tooltipster/>`_ by Caleb Jacob
 * `TinyMCE <http://tinymce.com/>`_ by Moxiecode Systems AB
 * `Underscore <http://documentcloud.github.com/underscore/>`_ by Jeremy Ashkenas, DocumentCloud
