@@ -26,6 +26,12 @@
   {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/flexslider.css">{% endaddtoblock %}
   <!-- These styles make use of the awesome Font Awesome - http://fortawesome.github.com/Font-Awesome/ -->
   {% if debug %}
+  {% addtoblock "css" %}
+  <script>
+  // HACK: Force development mode for LESS, even when not on localhost
+  var less = { env: 'development' };
+  </script>
+  {% endaddtoblock %}
   {% addtoblock "css" %}<link rel="stylesheet/less" type="text/css" href="{{ STATIC_URL }}less/base.less">{% endaddtoblock %}
   {% endif %}
   {% comment %}
@@ -55,7 +61,7 @@
 				<div class="cl">&nbsp;</div>
                 <form id="search" action="{% url "haystack_search" %}" method="get">
                     <input id="id_q" type="text" name="q" class="field" value="{{ query }}" />
-                    <input type="submit" class="submit" value="" />
+                    <button type="submit" class="submit"></button>
 					<div class="cl">&nbsp;</div>
 				</form>
 			</div>
