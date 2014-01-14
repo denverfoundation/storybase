@@ -131,6 +131,17 @@
     
   }
 
+  #tools .text,
+  #story-nav .text,
+  #toc .text {
+    // Hide meta-navigation link text, only showing icons on narrow displays
+    display: none;
+
+    @media (min-width: @viewer-nav-breakpoint) {
+      display: inline;
+    }
+  }
+
   #tools {
     position:absolute;
     right:@viewer-bar-padding;
@@ -145,6 +156,12 @@
       text-decoration: none;
       display: inline-block;
       margin-left: 4px;
+    }
+
+    .text {
+      @media (min-width: @viewer-nav-breakpoint) {
+        padding-right: 2px; 
+      }
     }
   }
 
@@ -162,15 +179,17 @@
       }
     
       #summary-image, #summary-text, #summary-toc {
-        width: 48%;
-        float: left;
-        
         ul {
           padding:0;
           li {
             list-style-type:none;
           }
         }
+
+        @media (min-width: @viewer-nav-breakpoint) {
+          width: 48%;
+          float: left;
+        } 
       }
     
       #summary-image .featured-asset {
@@ -180,7 +199,9 @@
       }
 
       #summary-image {
-        padding-right: 4%;
+        @media (min-width: @viewer-nav-breakpoint) {
+          padding-right: 4%;
+        }
       }
 
       #summary-image, #summary-toc {
@@ -249,6 +270,28 @@
     }
   }
 
+  .section-layout.side-by-side .left,
+  .section-layout.side-by-side .right {
+    // Stack side-by-side elements on smaller displays
+    width: 100%;
+    float: none;
+    margin-left: 0;
+    margin-right: 0;
+
+    @media (min-width: @viewer-nav-breakpoint) {
+      width: 49%;
+      float: left;
+    }
+  }
+  
+  .section-layout.side-by-side .left {
+    margin-bottom: 10px;
+
+    @media (min-width: @viewer-nav-breakpoint) {
+      margin-bottom: 0px;
+    }
+  }
+
   #footer {
     position: fixed;
     bottom: 0;
@@ -261,12 +304,21 @@
       position:absolute;
       right:30px;
       display:block;
-      background:url(../img/viewer-logo.png) no-repeat right center;
-      height:27px;
-      width:200px;
+
+      background-image: url(../img/viewer-logo.png);
+      background-position: -42px 0px;
+      background-repeat: no-repeat;
+
+      height: 27px;
+      width: 26px;
       
       span {
         .hide-text;
+      }
+
+      @media (min-width: @viewer-nav-breakpoint) {
+        background-position: 0px 0px;
+        width:200px;
       }
     }
     
@@ -276,6 +328,19 @@
     .button-reset;
     position: relative; 
     color: #fff;
+
+    .bars {
+      float: left;
+      padding-right: 4px;
+      
+      @media (min-width: @viewer-nav-breakpoint) {
+        display: none;
+      }
+    }
+
+    .bar {
+      .menu-bar();
+    }
   }
 
   #toc {
@@ -283,7 +348,6 @@
     left: 0;
     bottom: 0;
     padding: @viewer-bar-padding;
-    min-width: 200px;
     overflow: hidden; 
 
     color: #fff;
@@ -294,6 +358,10 @@
       overflow-x: hidden;
       overflow-y: auto;
       margin-bottom: @viewer-bar-padding;
+
+      @media (min-width: @viewer-nav-breakpoint) {
+        min-width: 200px;
+      }
 
       a {
         color: #fff;
@@ -335,11 +403,18 @@
     a {
       text-decoration: none;
       color: #fff;
-      width:80px;
-      display: inline-block;
-      border:1px solid @gray;
-      .rounded-corners(4px);
-      background:darken(@dark-gray, 10%);
+
+      @media (min-width: @viewer-nav-breakpoint) {
+        width:80px;
+        display: inline-block;
+        border:1px solid @gray;
+        .rounded-corners(4px);
+        background:darken(@dark-gray, 10%);
+        
+        &:hover {
+          background:@dark-gray;
+        }
+      }
 
       &:first-child {
         margin-right:5px;
@@ -347,18 +422,22 @@
 
       &.disabled {
         color:@gray;
-        border:1px solid @dark-gray;
         cursor:default;
+
         
         &:hover {
           color:@gray;
-          background:darken(@dark-gray, 10%);
+        }
+
+        @media (min-width: @viewer-nav-breakpoint) {
+          border:1px solid @dark-gray;
+
+          &:hover {
+            background:darken(@dark-gray, 10%);
+          }
         }
       }
 
-      &:hover {
-        background:@dark-gray;
-      }
 
       &.connected {
         width: auto;

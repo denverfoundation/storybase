@@ -14,17 +14,17 @@ Handlebars templates for rendering Backbone views.
       {{/addl_links}}
 
       {{#if previous_section}}
-        <a class="previous" href="#sections/{{previous_section.id}}" title="{{previous_section.title}}"><i class="icon-chevron-left"></i> {{gettext "Previous"}}</a>
+      <a class="previous" href="#sections/{{previous_section.id}}" title="{{previous_section.title}}"><i class="icon-chevron-left"></i> <span class="text">{{gettext "Previous"}}</span></a>
       {{else}}
-        <a class="previous disabled" href="#"><i class="icon-chevron-left"></i> {{gettext "Previous"}}</a>
+      <a class="previous disabled" href="#"><i class="icon-chevron-left"></i> <span class="text">{{gettext "Previous"}}</span></a>
       {{/if}}
       
       <div class="location">({{currentSectionNum}} / {{totalSectionsNum}})</div>
       
       {{#if next_section}}
-          <a class="next" href="#sections/{{next_section.id}}" title="{{next_section.title}}">{{gettext "Next"}} <i class="icon-chevron-right"></i></a>
+      <a class="next" href="#sections/{{next_section.id}}" title="{{next_section.title}}"><span class="text">{{gettext "Next"}}</span> <i class="icon-chevron-right"></i></a>
       {{else}}
-        <a class="next disabled" href="#">{{gettext "Next"}} <i class="icon-chevron-right"></i></a>
+      <a class="next disabled" href="#"><span class="text">{{gettext "Next"}}</span> <i class="icon-chevron-right"></i></a>
       {{/if}}
 
 
