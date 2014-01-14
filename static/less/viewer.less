@@ -405,14 +405,13 @@
       color: #fff;
 
       @media (min-width: @viewer-nav-breakpoint) {
-        width:80px;
+        width: 80px;
         display: inline-block;
-        border:1px solid @gray;
+        border: 1px solid #fff; 
         .rounded-corners(4px);
-        background:darken(@dark-gray, 10%);
         
-        &:hover {
-          background:@dark-gray;
+        &:hover, &:focus {
+          background: @dark-gray;
         }
       }
 
