@@ -1,8 +1,37 @@
 #header {
+  // I deliberated over the best approach for a responsive header logo.  
+  // I wanted to consider the logo to be content, for many of the arguments 
+  // described at 
+  // http://csswizardry.com/2010/10/your-logo-is-an-image-not-a-h1/
+  // and because I wanted to separate style and content, which is discussed
+  // here: http://mobile.smashingmagazine.com/2013/07/22/simple-responsive-images-with-css-backgrounds/
+  //
+  // However, I didn't want to force mobile browsers to download the larger
+  // image, so I decided on a compromise.  The small logo is loaded in an
+  // img tag.  On wider displays, it gets hidden and the bigger logo gets
+  // shown by making it the background image of the container.
+  //
+  // Full-width users will have to download two images, but that seems pretty
+  // fair.
+  .logo {
+    @media (min-width: @header-breakpoint) {
+      display: block;
+      width: 328px;
+      height: 55px;
+      background-image: url('../img/header-logo.png');
+      position: absolute;
+      top: 18px;
+      left: -10px;
+    }
+  }
+
   img.header-logo {
     position:absolute;
-    top:18px;
-    left:-10px;
+    top: 18px;
+
+    @media (min-width: @header-breakpoint) {
+      display: none;
+    }
   }
   
   .logo-text {
@@ -10,7 +39,7 @@
   }
   
   ul, ol {
-    margin-bottom:0;
+    margin-bottom: 0;
   }
 }
 
@@ -62,10 +91,10 @@
     
   }
 
-        #search-placeholder {
-                padding-top: 12px;
-                height: 37px;
-        }        
+  #search-placeholder {
+    padding-top: 12px;
+    height: 37px;
+  }        
 
   form#search {
     padding-top:12px;
