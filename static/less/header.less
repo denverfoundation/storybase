@@ -132,3 +132,11 @@
   }
 }
 
+.top-nav {
+  // Hide this on very small displays
+  display: none;
+
+  @media (min-width: @header-breakpoint) {
+    display: block;
+  }
+}
