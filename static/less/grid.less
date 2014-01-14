@@ -7,6 +7,11 @@
 
 // Mixins
 
+.mk-fluid-grid-container-margin() {
+  margin-left: auto;
+  margin-right: auto;
+}
+
 .mk-fluid-grid-container(@container-width) {
   width: @container-width;
 }
@@ -86,12 +91,9 @@ body {
 // Containers
 
 .container_12 {
-  margin-left: auto;
-  margin-right: auto;
-  // TODO: Sensible default value
-  // BOOKMARK
-  //width: @container-md; 
+   width: 92%;
 
+  .mk-fluid-grid-container-margin();
   .mk-fluid-grid-container-sm();
   .mk-fluid-grid-container-md();
 }

@@ -1,99 +1,105 @@
+#header {
+  img.header-logo {
+    position:absolute;
+    top:18px;
+    left:-10px;
+  }
+  
+  .logo-text {
+    display:none;
+  }
+  
+  ul, ol {
+    margin-bottom:0;
+  }
+}
+
+#logo-search {
+  position: relative;
+}
+
 .header-item {
-	font-size:12px; 
-	color:#909090; 
-	font-family: 'MuseoSlab500Regular';
+  font-size:12px; 
+  color:#909090; 
+  font-family: 'MuseoSlab500Regular';
 }
 
 .header-right {
-	width:284px; 
-	float:right; 
-	display:inline; 
-	padding-top:18px;
-	
-	ul { 
-		list-style:none;
-		
-		li { 
-			float:left; 
-			display:inline; 
-			background:url('../img/sep2.png') no-repeat 0 2px; 
-			padding-left:11px; 
-			margin-left:5px;
-			
-			.header-item;
-			
-			&:first-child { 
-				margin-left:0; 
-				background:none; 
-				padding-left:0;
-			}
-			
-			// avoid wrapping in text in last child (currently where usernames are, 
-			// which can be of arbitrary length).
-			&:last-child {
-				white-space:nowrap;
-				width:0;
-				overflow:visible;
-			}
-			a {
-				.header-item
-			}
-		}
-		
-	}
+  width:284px; 
+  float:right; 
+  display:inline; 
+  padding-top:14px;
+  
+  ul { 
+    list-style:none;
+    
+    li { 
+      float:left; 
+      display:inline; 
+      background:url('../img/sep2.png') no-repeat 0 2px; 
+      padding-left:11px; 
+      margin-left:5px;
+      
+      .header-item;
+      
+      &:first-child { 
+        margin-left:0; 
+        background:none; 
+        padding-left:0;
+      }
+      
+      // avoid wrapping in text in last child (currently where usernames are, 
+      // which can be of arbitrary length).
+      &:last-child {
+        white-space:nowrap;
+        width:0;
+        overflow:visible;
+      }
+      a {
+        .header-item
+      }
+    }
+    
+  }
 
         #search-placeholder {
                 padding-top: 12px;
                 height: 37px;
         }        
 
-	form#search {
-		padding-top:12px;
-		
-		input {
-			float:left; display:inline; border:0;
-			
-			&.field { 
-				width:233px;
-				background:url('../img/search.png') no-repeat 0 0;
-				font-size:18px;
-				color:#535353;
-				font-family: 'Museo300Regular';
-				padding:8px 0 8px 5px;
+  form#search {
+    padding-top:12px;
+    
+    input {
+      float:left; display:inline; border:0;
+      
+      &.field { 
+        width:233px;
+        background:url('../img/search.png') no-repeat 0 0;
+        font-size:18px;
+        color:#535353;
+        font-family: 'Museo300Regular';
+        padding:8px 0 8px 5px;
 
-				// override site-wide default form styling
-				border: none;
-				border-radius: 0;
-				box-shadow: none;
-				font-style:normal;
-				
-			}
-			
-			&.submit { 
-				width:38px;
-				height:36px;
-				background:url('../img/search.png') no-repeat right 0;
-				border:0;
-				cursor:pointer;
+        // override site-wide default form styling
+        border: none;
+        border-radius: 0;
+        box-shadow: none;
+        font-style:normal;
+        
+      }
+      
+      &.submit { 
+        width:38px;
+        height:36px;
+        background:url('../img/search.png') no-repeat right 0;
+        border:0;
+        cursor:pointer;
 
-				// override site-wide default form styling
-				border-radius: 0;
-			}
-		}
-	}
+        // override site-wide default form styling
+        border-radius: 0;
+      }
+    }
+  }
 }
-#header {
-	img.header-logo {
-		position:absolute;
-		top:18px;
-		left:-10px;
-	}
-	
-	.logo-text {
-		display:none;
-	}
-	
-	ul, ol {
-	  margin-bottom:0;
-	}
-}
+

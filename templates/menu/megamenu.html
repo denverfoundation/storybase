@@ -20,7 +20,7 @@ ID or the custom menu item ID.
 {% storybase_menu "my_account" "menu/megamenu_account.html" request.path %}
 {% endif %}
 
-<div class="megamenu shell navigation" id="navigation">
+<div class="megamenu container_12 navigation" id="navigation">
   <ul>
     {% for child in children|megamenuitems %}
     {% with menu_title=child.get_menu_title menu_url=child.attr.redirect_url|default:child.get_absolute_url menu_id=child.attr.reverse_id|default:child.id %}
