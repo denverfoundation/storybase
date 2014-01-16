@@ -25,7 +25,7 @@
 
   {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/flexslider.css">{% endaddtoblock %}
   <!-- These styles make use of the awesome Font Awesome - http://fortawesome.github.com/Font-Awesome/ -->
-  {% if debug %}
+  {% if storybase_use_less_in_browser %}
   {% addtoblock "css" %}
   <script>
   // HACK: Force development mode for LESS, even when not on localhost
@@ -35,12 +35,15 @@
   {% addtoblock "css" %}<link rel="stylesheet/less" type="text/css" href="{{ STATIC_URL }}less/base.less">{% endaddtoblock %}
   {% endif %}
   {% comment %}
-  If we're not in debug mode, we'll be passing the styleshset through
-  django-compressor below. 
+  If we're not compiling less with less.js, we'll be passing the styleshset 
+  through django-compressor below. 
   {% endcomment %}
 
   {% render_block "css" %}
+
+  {% if not storybase_use_less_in_browser %}
   {% compress css %}<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css">{% endcompress %}
+  {% endif %}
   <!-- end CSS-->
 
   <script src="{{ STATIC_URL }}js/libs/modernizr.custom.63515.js"></script>

@@ -30,7 +30,7 @@
     In development, use Javascript to compile the LESS to CSS. In
     production, assume they've been pre-compiled/collected.
     {% endcomment %}
-    {% if debug %}
+    {% if storybase_use_less_in_browser %}
     {% addtoblock "css" %}
     <script>
     // HACK: Force development mode for LESS, even when not on localhost
@@ -41,11 +41,12 @@
     {% addtoblock "css" %}<script src="{{ STATIC_URL }}js/libs/less-1.4.1.min.js"></script>{% endaddtoblock %}
     {% endif %}
     {% comment %}
-    If not in debug mode, CSS will be passed through Django Compressor below
+    If not compiling LESS with less.js, CSS will be passed through Django 
+    Compressor below.
     {% endcomment %}
 
     {% render_block "css" %}
-    {% if not debug %}
+    {% if not storybase_use_less_in_browser %}
     {% compress css %}<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css">{% endcompress %}
     {% endif %}
     <!-- end CSS-->

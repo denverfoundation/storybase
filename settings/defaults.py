@@ -429,3 +429,9 @@ STORYBASE_ALLOWED_TAGS = [
   'u',
   'ul',
 ]
+
+# Should we use LESS stylesheets in the browser and compile them using less.js 
+# It would be easy to just toggle this using the DEBUG setting, but IE8
+# isn't supported by less.js and we need to be able to quickly test out
+# stylesheet fixes with the development server.
+STORYBASE_USE_LESS_IN_BROWSER = False

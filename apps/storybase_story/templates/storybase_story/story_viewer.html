@@ -20,18 +20,20 @@
 
     {% include "favicons.html" %}
 
-    {% if debug %}
+    {% if storybase_use_less_in_browser %}
     {% addtoblock "css" %}<link rel="stylesheet/less" href="{{ STATIC_URL }}less/base.less">{% endaddtoblock %}
     {% addtoblock "css" %}<script src="{{ STATIC_URL }}js/libs/less-1.4.1.min.js"></script>{% endaddtoblock %}
     {% endif %}
     {% comment %}
-    If we're not in debug mode, we'll be passing the styleshset through
-    django-compressor below. 
+    If we're not compiling the LESS stylesheet with less.js, we'll be passing 
+    the styleshset through django-compressor below. 
     {% endcomment %}
 
     {% render_block "css" %}
     {% compress css %}
+    {% if not storybase_use_less_in_browser %}
     <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css">
+    {% endif %}
     <link rel="stylesheet" href="{{ STATIC_URL }}js/libs/tooltipster-2.1.4/css/tooltipster.css">
     {% endcompress %}
     <!-- end CSS-->
