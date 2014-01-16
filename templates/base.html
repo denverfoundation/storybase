@@ -59,8 +59,8 @@
 				<span class="logo-text">{% block logo_text %}{% endblock %}</span>
 				<img class="header-logo" src="{{ STATIC_URL }}img/balloon-logo.png" alt="{% trans "Floodlight: Tell a Story. Transform Your Community" %}" />
 			</a>
-			<div class="header-right">
-		                {% show_menu 0 0 0 0 "menu/menu_top.html" %}
+			<div id="header-right">
+                {% show_menu 0 0 0 0 "menu/menu_top.html" %}
 				<div class="cl">&nbsp;</div>
                 <form id="search" action="{% url "haystack_search" %}" method="get">
                     <input id="id_q" type="text" name="q" class="field" value="{{ query }}" />

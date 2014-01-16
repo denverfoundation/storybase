@@ -98,7 +98,14 @@
   }
 
   #banner {
-    clear:both; // clear possible floated elements in megamenu
+    clear: both; // clear possible floated elements in megamenu
+
+    // Hide this on very narrow displays
+    display: none;
+
+    @media (min-width: @header-breakpoint) {
+      display: block;
+    }
   }
   
   .images { 

@@ -7,7 +7,7 @@ This template is designed to be included with the ``show_menu`` template tag::
 
 {% endcomment %}
 {% load menu_tags storybase_cms_tags i18n %}
-<ul class="top-nav">
+<ul id="top-nav">
     <li>{% language_chooser %}</li>
     {% for child in children|filtermenuitems:"contact,help" %}
     {% with menu_title=child.get_menu_title menu_url=child.attr.redirect_url|default:child.get_absolute_url menu_id=child.attr.reverse_id|default:child.id %}

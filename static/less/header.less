@@ -1,4 +1,11 @@
 #header {
+  background: #000;
+
+  @media (min-width: @header-breakpoint) {
+    // At wider widths, the body background image will be used
+    background: none;
+  }
+
   // I deliberated over the best approach for a responsive header logo.  
   // I wanted to consider the logo to be content, for many of the arguments 
   // described at 
@@ -48,6 +55,13 @@
 
 #logo-search {
   position: relative;
+  float: left;
+  width: auto;
+
+  @media (min-width: @header-breakpoint) {
+    width: 92%;
+    float: none;        
+  }
 }
 
 .header-item {
@@ -56,7 +70,7 @@
   font-family: 'MuseoSlab500Regular';
 }
 
-.header-right {
+#header-right {
   padding-top:14px;
   display: inline-block;
 
@@ -165,7 +179,7 @@
   }
 }
 
-.top-nav {
+#top-nav {
   // Hide this on very small displays
   display: none;
 

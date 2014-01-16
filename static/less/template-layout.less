@@ -14,9 +14,12 @@
 }
 
 #header { 
-  height:165px; 
-  position:relative; 
+  position: relative; 
   z-index: 2501;
+
+  @media (min-width: @header-breakpoint) {
+    height: 165px; 
+  }
 }
 
 #container { width:100%;  }
