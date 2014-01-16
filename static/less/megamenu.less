@@ -10,14 +10,14 @@
 .megamenu { 
   padding-top:39px;  
   
-  &>ul { 
+  > ul { 
     list-style:none;position:relative;
     
     li { 
       float:left;
       display:inline;
       padding-left:30px;
-      
+
       a.top-nav { 
         font-size:16px;
         color:#ffffff;
@@ -68,6 +68,8 @@
         //}
 
         &.onecol {
+          width: auto;
+
           .dd-col.col1 { width:auto; }
         }
 
@@ -193,31 +195,23 @@
       }
     }
     
-    &>li:first-child { padding-left:0;  }
-    &>li.nodd a { background:none; padding-left:0; }
+    > li:first-child { padding-left:0;  }
+    > li.nodd a { background:none; padding-left:0; }
     
   }
-}
-.megamenu.my-account {
-  float:right;
-  margin-right:1em;
-  
-  ul li {
-    .dd {
-      width:auto;
-      left:-60px;
-      right:0;
-    }
-    ul li {
-      display:block;
-      float:none;
-    }
+
+  // Highlighting for main navigation links
+  // Highlight when the the megamenu link class is "selected" or "ancestor"
+  a.top-nav.selected,
+  a.top-nav.ancestor {
+    .active-top-nav-link;
   }
 }
 
-// Highlighting for main navigation links
-// Highlight when the the megamenu link class is "selected" or "ancestor"
-.megamenu a.top-nav.selected,
-.megamenu a.top-nav.ancestor {
-  .active-top-nav-link;
+#my-account {
+  .dd {
+    left: auto;
+
+    min-width: 120px;
+  }
 }
