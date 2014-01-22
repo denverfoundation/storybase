@@ -24,7 +24,7 @@
 {% block base_content %}
 <div class="content-page container_12">
   <section class="content-block homepage-header">
-    <div class="grid_6">
+    <div class="grid_6 homepage-header-left">
       <h1 class="no-line">
         {% placeholder header-content or %}
           {% trans "Everyone's got a story to tell. Floodlight makes yours shine." %}
@@ -67,7 +67,7 @@
         </li>
       </ul>
     </div>
-    <div class="grid_6">
+    <div class="grid_6 homepage-header-right">
       <div class="flexslider featured-on-floodlight">
         {% featured_items %}
       </div>
