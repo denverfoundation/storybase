@@ -11,6 +11,22 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.18.0
+~~~~~~
+
+* Fix Leaflet popup styles on explore page (#367)
+* Remove "Story Information" workflow step and move editing of story title and
+  byline into the header (#578)
+* Simplified story building workflow steps (#579)
+* Refinement of section reordering behaviors (#903, #905)
+* Fix issue with automatic setting of featured image (#908)
+* Simple validation of story elements on publish (#909)
+* Reassign assets to new containers on layout changes (#914)
+* Refactor explorer stylesheets
+* Make builter tools menu a drop-down
+* More compact header
+* Refactor Backbone code for handling section to asset relationships
+
 0.17.4
 ~~~~~~
 
