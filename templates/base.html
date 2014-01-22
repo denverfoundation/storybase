@@ -133,7 +133,7 @@
   {% addtoblock "js" %}<script defer src="{{ STATIC_URL }}js/plugins.js"></script>{% endaddtoblock %}
   {% addtoblock "js" %}<script src="{{ STATIC_URL }}js/functions.js"></script>{% endaddtoblock %}
   {% addtoblock "js" %}
-  <script type="text/javascript" charset="utf-8">
+  <script>
   Modernizr.load({
     test: Modernizr.input.placeholder,
     nope: '{{ STATIC_URL }}js/libs/polyfill.placeholder.js'
