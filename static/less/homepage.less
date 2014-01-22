@@ -29,7 +29,6 @@
   .homepage-header {
     padding-top: 1em;
 
-
     h1 {
       text-align:left;
       margin: .25em 0 .75em 0;
@@ -69,7 +68,7 @@
       }
     }
   }
-  
+ 
   .supporting-foundations {
     .flexslider {
       .flex-control-nav, .flex-direction-nav {
@@ -77,36 +76,83 @@
       }
     }
     
-    ul.foundations li a {
-      font-size:14px;
-      color:@highlight-blue;
-      font-family: 'MuseoSlab500Regular';
-      padding-left:5px;
-      padding-right:5px;
-      line-height:21px;
-      display:inline-block;
-      
-      &.active {
-        background:@highlight-blue;
-        color:#fff;
-        border-radius:4px;
+    ul.foundations {
+      text-align: center;
+
+      @media (min-width: @screen-sm-min) {
+        text-align: left;
+      }
+
+      li a {
+        font-size: 14px;
+        color: @highlight-blue;
+        font-family: 'MuseoSlab500Regular';
+        padding-left: 5px;
+        padding-right: 5px;
+        line-height: 21px;
+        display: inline-block;
+
+        &.active {
+          background: @highlight-blue;
+          color: #fff;
+          border-radius: 4px;
+        }
+      }
+    }
+
+    .text,
+    .image {
+      width: 100%;
+      margin-top: 12px;
+
+      @media (min-width: @screen-sm-min) {
+        display: inline;
+        margin-top: 0;
+        width: 45%;
       }
     }
     
     .text {
-      width:370px;
-      padding-left:21px;
-      border-left:1px dotted #666666;
-      float:right;
-      display:inline;
-      padding-right:0;
-      padding-left:21px;
+      @media (min-width: @screen-sm-min) {
+        border-left: 1px dotted #666666;
+        padding-left: 21px;
+        float: right;
+        padding-right: 0;
+        padding-left: 21px;
+      }
+
+      @media (min-width: @screen-md-min) {
+        width: 370px;
+      }
     }
     
     .image {
-      width:300px;
-      float:left;
-      display:inline;
+      text-align: center;
+
+      @media (min-width: @screen-sm-min) {
+        float: left;
+        text-align: left;
+      }
+
+      @media (min-width: @screen-md-min) {
+        width: 300px;
+      }
+
+      a {
+        display: block;
+
+        @media (min-width: @screen-sm-min) {
+          display: inline;
+        }
+      }
+
+      img {
+        margin: 0 auto;
+
+        @media (min-width: @screen-sm-min) {
+          margin: 0;
+        }
+      }
     }
   }
 
