@@ -1,7 +1,7 @@
 (function($) {
   var defaults = {};
 
-  var pluginMethods = {
+  var methods = {
     init: function(options) {
       var settings = this.settings = $.extend(true, {}, defaults, options);
 
@@ -35,11 +35,11 @@
   };
 
   $.fn.storybaseMegamenu = function(method) {
-    if (pluginMethods[method]) {
-      return pluginMethods[method].apply(this, Array.prototype.slice.call(arguments, 1));
+    if (methods[method]) {
+      return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
     } 
     else if ($.isPlainObject(method) || !method) {
-      return pluginMethods.init.apply(this, arguments);
+      return methods.init.apply(this, arguments);
     }
     else {
       $.error('Method ' +  method + ' does not exist on jQuery.storybaseMegamenu');
