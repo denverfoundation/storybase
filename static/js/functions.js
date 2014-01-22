@@ -49,19 +49,8 @@
       });
     }
 
-    //Drop down
-    $('.dd').hide();
-    $('.megamenu ul li').hover(function(){ 
-      $(this).find('.dd:eq(0)').show();
-      $(this).find('a:eq(0)').addClass('hover');
-      $(this).find('a em').show();
-    },
-    function(){  
-      $(this).find('.dd').hide();
-      $(this).find('a:eq(0)').removeClass('hover');
-      $(this).find('a em').hide();
-    });
-
+    // Init Megamenu interactions
+    $('.megamenu').storybaseMegamenu();
 
     $('.filters li a').click(function() {
       $(this).next().slideToggle();

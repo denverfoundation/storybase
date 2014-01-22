@@ -70,6 +70,13 @@
 			</div>
 			<div class="cl">&nbsp;</div>
 		</div>
+
+        <button type="button" id="menu-toggle">
+          <span class="bar"></span>
+          <span class="bar"></span>
+          <span class="bar"></span>
+        </button>
+
 		{% show_menu 0 0 0 0 "menu/megamenu.html" %}
 		<div class="cl">&nbsp;</div>
 	</div>
@@ -145,6 +152,7 @@
   {% endif %}
   {% block extrajs %}{% endblock %}
   {% compress js %}
+  <script src="{{ STATIC_URL }}js/jquery.storybasemegamenu.js"></script>
   <script src="{{ STATIC_URL }}js/jquery.storybaseshare.js"></script>
   {% endcompress %}
   {% render_block "js" %}
