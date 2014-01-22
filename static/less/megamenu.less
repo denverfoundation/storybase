@@ -11,6 +11,7 @@
   background: transparent;
   border-radius: 0;
   float: right;
+  padding-top: 18px;
 
   @media (min-width: @header-breakpoint) {
     display: none;
@@ -22,11 +23,15 @@
 }
 
 .megamenu { 
-  padding-top:39px;  
+  width: 100%;
+  padding-top: 39px;  
+  padding-bottom: 12px;
   display: none;
 
   @media (min-width: @header-breakpoint) {
     display: block;
+    width: 92%;
+    padding-bottom: 0;
   }
 
   &.visible {
@@ -39,12 +44,23 @@
     clear: both;
     
     > li { 
-      display: block; 
+      display: block;
+      padding-top: 4px;
 
       @media (min-width: @header-breakpoint) {
         float: left;
         display: inline;
         padding-left: 30px;
+        padding-top: 0;
+      }
+
+      &:first-child {
+        padding-left: 0;  
+        padding-top: 0;
+      }
+
+      &.nodd a {
+        background:none; padding-left:0;
       }
 
       &.right {
@@ -238,10 +254,6 @@
         }
       }
     }
-    
-    > li:first-child { padding-left:0;  }
-    > li.nodd a { background:none; padding-left:0; }
-    
   }
 
   // Highlighting for main navigation links
