@@ -1,20 +1,33 @@
 (function($) {
+  var defaults = {};
+
   var pluginMethods = {
     init: function(options) {
+      var settings = this.settings = $.extend(true, {}, defaults, options);
+
       this.each(function() {
         var $el = $(this);
-        //Drop down
         $el.find('.dd').hide();
-        $el.find('ul > li').hover(function(){ 
-          $(this).find('.dd:eq(0)').show();
-          $(this).find('a:eq(0)').addClass('hover');
-          $(this).find('a em').show();
+        $el.find('ul > li').hover(function() { 
+          if (!$el.hasClass('visible')) {
+            $(this).find('.dd:eq(0)').show();
+            $(this).find('a:eq(0)').addClass('hover');
+            $(this).find('a em').show();
+          }
         },
-        function(){  
-          $(this).find('.dd').hide();
-          $(this).find('a:eq(0)').removeClass('hover');
-          $(this).find('a em').hide();
+        function() {  
+          if (!$el.hasClass('visible')) {
+            $(this).find('.dd').hide();
+            $(this).find('a:eq(0)').removeClass('hover');
+            $(this).find('a em').hide();
+          }
         });
+
+        if (settings.toggleButton) {
+          settings.toggleButton.click(function(evt) {
+            $el.toggleClass('visible');
+          });
+        }
       });
 
       return this;

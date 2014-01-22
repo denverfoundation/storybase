@@ -16,7 +16,7 @@ ID or the custom menu item ID.
 {% load i18n cms_tags menu_tags storybase_menu storybase_cms_tags %}
 
 <div class="megamenu container_12 navigation" id="navigation">
-  <ul>
+  <ul class="nav">
     {% for child in children|megamenuitems %}
     {% with menu_title=child.get_menu_title menu_url=child.attr.redirect_url|default:child.get_absolute_url menu_id=child.attr.reverse_id|default:child.id %}
     {% with extra_template_name="menu/megamenu_extra_"|add:menu_id|add:".html" %}

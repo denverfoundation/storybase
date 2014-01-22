@@ -50,7 +50,9 @@
     }
 
     // Init Megamenu interactions
-    $('.megamenu').storybaseMegamenu();
+    $('.megamenu').storybaseMegamenu({
+      toggleButton: $('#menu-toggle')
+    });
 
     $('.filters li a').click(function() {
       $(this).next().slideToggle();

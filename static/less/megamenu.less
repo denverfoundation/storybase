@@ -7,26 +7,69 @@
   text-decoration:underline;
 }
 
+#menu-toggle {
+  background: transparent;
+  border-radius: 0;
+  float: right;
+
+  @media (min-width: @header-breakpoint) {
+    display: none;
+  }
+
+  .bar {
+    .menu-bar();
+  }
+}
+
 .megamenu { 
   padding-top:39px;  
-  
-  > ul { 
-    list-style:none;position:relative;
-    
-    li { 
-      float:left;
-      display:inline;
-      padding-left:30px;
+  display: none;
 
-      a.top-nav { 
-        font-size:16px;
-        color:#ffffff;
+  @media (min-width: @header-breakpoint) {
+    display: block;
+  }
+
+  &.visible {
+    display: block;
+  }
+
+  .nav { 
+    position: relative;
+    list-style: none;
+    clear: both;
+    
+    > li { 
+      display: block; 
+
+      @media (min-width: @header-breakpoint) {
+        float: left;
+        display: inline;
+        padding-left: 30px;
+      }
+
+      &.right {
+        // On narrow displays, don't float this element to the right
+        float: none;
+
+        @media (min-width: @header-breakpoint) {
+          float: right;
+        }
+      }
+
+      > a { 
+        font-size: 16px;
+        color: #ffffff;
         font-family: 'MuseoSlab500Regular';
-        background:url('../img/nav-arrow.png') no-repeat 0 3px;
-        padding-left:12px;
-        position:relative;
-        padding-bottom:23px;
-        
+        position: relative;
+        padding-bottom: 23px;
+
+        @media (min-width: @header-breakpoint) {
+          padding-left: 12px;
+          background: url('../img/nav-arrow.png') no-repeat 0 3px;
+        }
+
+
+        // This element is used for the dropdown pointer arrow        
         em { 
           height:8px; 
           background:url('../img/dd-arrow.png') no-repeat center 0; 
@@ -37,6 +80,7 @@
           display:none; 
           z-index: 5000;
         }
+
         &.active,
         &.hover,
         &:hover {
