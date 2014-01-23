@@ -41,7 +41,7 @@
 (function ($) {
   $(document).ready(function() {
     var browserSupportMessage = "{{ storybase_browser_support_msg|safe }}";
-    var $contentEl = $("#main .shell");
+    var $contentEl = $("#main .container_12");
     if (!(Modernizr.filereader && Modernizr.history)) {
       $("<div>" + browserSupportMessage + "</div>").appendTo($contentEl);
     }
