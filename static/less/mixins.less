@@ -355,7 +355,16 @@
 }
 
 .standard-headers(@align: center) {
-  h1 { font-size:@h1-size; color:@dark-gray; .styled-header(@align); .line-through-header; }
+  h1 { 
+    font-size: ceil((@h1-size * 0.66));
+    color: @dark-gray; 
+    .styled-header(@align); 
+    .line-through-header; 
+
+    @media (min-width: @screen-xs-min) {
+      font-size: @h1-size;
+    }
+  }
   h1.no-line { background:none; margin-bottom:inherit; }
   h2 { font-size:@h2-size; color:@dark-gray; .styled-header(@align); }
   h3 { font-size:@h3-size; color:@medium-gray; .styled-header(@align); }
