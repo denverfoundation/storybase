@@ -1,6 +1,5 @@
 #header {
   background: #000;
-  padding: 0 12px;
   position: relative;
   min-width: 260px;
 
@@ -28,14 +27,16 @@
   .logo {
     display: block;
     width: 32px;
+    padding-left: 12px;
 
     @media (min-width: @header-breakpoint) {
-      width: 328px;
-      height: 55px;
-      background-image: url('../img/header-logo.png');
       position: absolute;
       top: 18px;
       left: -10px;
+      width: 328px;
+      height: 55px;
+      padding-left: 0;
+      background-image: url('../img/header-logo.png');
     }
   }
 
