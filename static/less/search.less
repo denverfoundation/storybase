@@ -11,16 +11,19 @@ body.search {
 
 .results-header, .results-footer {
   padding: 0.5em 0 0;
-  overflow: hidden;
+  position: relative;
 }
 
 .results-header {
   h1, h2 {
     margin: 0 !important;
-    float: left;
     font-size: 28.8px !important;
     text-align: left !important;
     background: none !important;
+
+    @media (min-width: @screen-xs-min) {
+      float: left;
+    }
   }
 }
 
@@ -38,8 +41,13 @@ body.search {
 }
 
 .results-paging {
-  position: absolute;
-  right: 0;
+  text-align: left;
+
+  @media (min-width: @screen-xs-min) {
+    position: absolute;
+    right: 0;
+    text-align: right;
+  }
 }
 
 .search-pagination-form {
@@ -58,10 +66,12 @@ body.search {
 
   &.has-image {
     h3, .type, .summary, .metadata {
-      // Not all images are the same widget (e.g. oEmbedded ones that have
-      // a more narrow thumbnail.  Make sure the text elements are all
-      // aligned, regardless of image width. 
-      margin-left: 230px;
+      @media (min-width: @screen-xs-min) {
+        // Not all images are the same widget (e.g. oEmbedded ones that have
+        // a more narrow thumbnail.  Make sure the text elements are all
+        // aligned, regardless of image width. 
+        margin-left: 230px;
+      }
     }
   }
 
@@ -71,10 +81,14 @@ body.search {
   }
 
   img {
-    float: left;
-    // Downsize externally hosted images in the browser.  Locally hosted
-    // images will be correctly resized server-side 
-    max-width: 222px;
+    max-width: 100%;
+
+    @media (min-width: @screen-xs-min) {
+      float: left;
+      // Downsize externally hosted images in the browser.  Locally hosted
+      // images will be correctly resized server-side 
+      max-width: 222px;
+    }
   }
 
   .type {
