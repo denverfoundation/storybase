@@ -63,7 +63,7 @@
                 {% show_menu 0 0 0 0 "menu/menu_top.html" %}
 				<div class="cl">&nbsp;</div>
                 <form id="search" action="{% url "haystack_search" %}" method="get">
-                    <input id="id_q" type="text" name="q" class="field" value="{{ query }}" />
+                    <input id="id_q" type="text" name="q" class="field" value="{{ query }}" placeholder="{% trans "Search" %} {{ storybase_site_name }}" />
                     <button type="submit" class="submit"></button>
 					<div class="cl">&nbsp;</div>
 				</form>
