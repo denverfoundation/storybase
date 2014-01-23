@@ -1,267 +1,267 @@
 
 @default-margin-bottom: 1em;
 .default-margin-bottom {
-	margin-bottom:@default-margin-bottom;
+  margin-bottom:@default-margin-bottom;
 }
 .content-page {
-	h3 span { position:relative; }
+  h3 span { position:relative; }
 
-	/* generic content page: probably cms-driven */
-	&.generic {
-		padding-bottom:34px; 
-		margin-bottom:39px;
-		
-		/* generic text content */
-		.content-block {
-			.body-copy;
-			.body-copy-lists;
-			
-			h2, h3, h4, h5 {
-				text-align:left;
-				background:none;
-				margin-bottom:0.2em;
-			}
-			h3, h4, h5 {
-			  color:@almost-black;
-			}
-			h4.first { 
-				font-size:(@top-header-size * .8);
-				line-height:27px;
-				color:@dark-gray;
-				.default-margin-bottom;
-			}
+  /* generic content page: probably cms-driven */
+  &.generic {
+    padding-bottom:34px; 
+    margin-bottom:39px;
+    
+    /* generic text content */
+    .content-block {
+      .body-copy;
+      .body-copy-lists;
+      
+      h2, h3, h4, h5 {
+        text-align:left;
+        background:none;
+        margin-bottom:0.2em;
+      }
+      h3, h4, h5 {
+        color:@almost-black;
+      }
+      h4.first { 
+        font-size:(@top-header-size * .8);
+        line-height:27px;
+        color:@dark-gray;
+        .default-margin-bottom;
+      }
 
-			// Help Page
-			.faq-section, .faq-question {
-				padding:1em 0;
-			}
+      // Help Page
+      .faq-section, .faq-question {
+        padding:1em 0;
+      }
 
-			.faq-section {
-				.styled-header(left);
-				color:@gray;
-			}
+      .faq-section {
+        .styled-header(left);
+        color:@gray;
+      }
 
-			.faq-question {
-                                // Override the .icon-* style that makes this inline-block
-                                display: block;
+      .faq-question {
+        // Override the .icon-* style that makes this inline-block
+        display: block;
 
-				// Clicking the question toggles the answer, so make the cursor a pointer 
-                                // so it appears more "clickable"
-				cursor: pointer;
-				border-top:1px solid #ddd;
-				margin-bottom:0;
-				color: @orange;
+        // Clicking the question toggles the answer, so make the cursor a pointer 
+        // so it appears more "clickable"
+        cursor: pointer;
+        border-top:1px solid #ddd;
+        margin-bottom:0;
+        color: @orange;
 
-				&:before {
-					padding-right: 0.66em;
-				}
-			}
-		}
+        &:before {
+          padding-right: 0.66em;
+        }
+      }
+    }
 
-		.page-pull { 
-			margin-bottom:31px !important;
-			h1, h2, h3, h4, h5 {
-				text-align:left;
-			}
-			h4 { 
-				background:none !important; 
-				margin-bottom:10px !important;
-				font-family: 'MuseoSlab500Regular';
-				a { 
-					color:@orange;
-				}
-			}
-			p { 
-				color:#5a5a5a; 
-				padding-bottom:12px;
-				a {
-					color:@highlight-blue;
-				}
-				a.read-more {
-					font-size:14px; 
-					color:@orange;
-					font-family: 'MuseoSlab500Regular';
-				}
-				strong { 
-					font-size:14px; 
-					color:#666;
-				}
-			}
-			
-		}
-	}
-	
-	/* object detail pages: story, project, etc */
-	&.object-detail {
-		a { color:@highlight-blue; }
-		.col {
-			float:left;
-			&.left {
-				width:380px;
-				margin-right:45px;
-			}
-			&.right {
-				width:300px;
-			}
-		}
-		hr {
-			border:0;
-			height:1px;
-			padding:7px 0;
-			background:url('../img/h3-line.png') repeat-x;
-			margin-bottom:20px;
-		}
+    .page-pull { 
+      margin-bottom:31px !important;
+      h1, h2, h3, h4, h5 {
+        text-align:left;
+      }
+      h4 { 
+        background:none !important; 
+        margin-bottom:10px !important;
+        font-family: 'MuseoSlab500Regular';
+        a { 
+          color:@orange;
+        }
+      }
+      p { 
+        color:#5a5a5a; 
+        padding-bottom:12px;
+        a {
+          color:@highlight-blue;
+        }
+        a.read-more {
+          font-size:14px; 
+          color:@orange;
+          font-family: 'MuseoSlab500Regular';
+        }
+        strong { 
+          font-size:14px; 
+          color:#666;
+        }
+      }
+      
+    }
+  }
+  
+  /* object detail pages: story, project, etc */
+  &.object-detail {
+    a { color:@highlight-blue; }
+    .col {
+      float:left;
+      &.left {
+        width:380px;
+        margin-right:45px;
+      }
+      &.right {
+        width:300px;
+      }
+    }
+    hr {
+      border:0;
+      height:1px;
+      padding:7px 0;
+      background:url('../img/h3-line.png') repeat-x;
+      margin-bottom:20px;
+    }
 
-		h3, h4 {
-			background:none;
-			text-align:left;
-			font-family: 'Museo300Regular';
-			font-weight:normal;
-			margin-bottom:12px;
-		}
-		h4 {
-			font-size:18px;
-			color:#333;
-			margin-bottom:0;
-		}
+    h3, h4 {
+      background:none;
+      text-align:left;
+      font-family: 'Museo300Regular';
+      font-weight:normal;
+      margin-bottom:12px;
+    }
+    h4 {
+      font-size:18px;
+      color:#333;
+      margin-bottom:0;
+    }
 
-		.object-featured-asset {
-		}
-		.object img { width:100%; }
-		.object #launch-story-viewer {
-                        .button-style(hot);
-			margin: 5px 0;
-                        // Match the size of the "Get the Data" button
-                        min-width: 104px;
-                        text-align: center;
-                        min-height: 22px;
-                        line-height: 22px;
-		}
+    .object-featured-asset {
+    }
+    .object img { width:100%; }
+    .object #launch-story-viewer {
+      .button-style(hot);
+      margin: 5px 0;
+      // Match the size of the "Get the Data" button
+      min-width: 104px;
+      text-align: center;
+      min-height: 22px;
+      line-height: 22px;
+    }
 
-                .datasets-button button {
-                  .button-style(gray);
-                }
+    .datasets-button button {
+      .button-style(gray);
+    }
 
-                .object #launch-story-viewer,
-                .datasets-button button {
-			font-size: 16px;
-                        text-shadow: none;
-                }
+    .object #launch-story-viewer,
+    .datasets-button button {
+      font-size: 16px;
+      text-shadow: none;
+    }
 
-		.object + hr,
-		.story-outreach { 
-			clear:left;
-		}
-		.connected-stories dl {
-			margin: 10px;
-		}
-		.call-to-action {
-			word-wrap:break-word;
-			overflow-wrap:break-word;
-		}
-		.call-to-action ul {
-			list-style:disc !important;
-		}
-		.object-metadata {
-			color:#444;
-			margin: 20px 0;
-			
-			dt, dd { float:left; }
-			dt { clear:left; margin-right:4px }
-			dt:after { content:": " }
+    .object + hr,
+    .story-outreach { 
+      clear:left;
+    }
+    .connected-stories dl {
+      margin: 10px;
+    }
+    .call-to-action {
+      word-wrap:break-word;
+      overflow-wrap:break-word;
+    }
+    .call-to-action ul {
+      list-style:disc !important;
+    }
+    .object-metadata {
+      color:#444;
+      margin: 20px 0;
+      
+      dt, dd { float:left; }
+      dt { clear:left; margin-right:4px }
+      dt:after { content:": " }
 
-                        .website-url {
-                          // Force long URLs to wrap
-                          display: block;
-                          word-wrap: break-word;      
-                          word-break: break-all; 
-                        }
-		}
-		.featured-story img { width: 100%; }
-		.story-list ul { margin-bottom: 30px; }
-		.story-list li { 
-			margin-bottom: 10px; 
-			overflow:hidden;
-                        div {
-                                // HACK: Force div to have layout, even when
-                                // image is broken, so titles are aligned.
-                                // This might be an edge case in my 
-                                // development instance because stories
-                                // should at least get the default featured
-                                // image
-                                min-height: 1px; 
-                        }
-			img {
-				margin-top:8px; width: 100%;
-			}
-		}
+      .website-url {
+        // Force long URLs to wrap
+        display: block;
+        word-wrap: break-word;      
+        word-break: break-all; 
+      }
+    }
+    .featured-story img { width: 100%; }
+    .story-list ul { margin-bottom: 30px; }
+    .story-list li { 
+      margin-bottom: 10px; 
+      overflow:hidden;
+      div {
+        // HACK: Force div to have layout, even when
+        // image is broken, so titles are aligned.
+        // This might be an edge case in my 
+        // development instance because stories
+        // should at least get the default featured
+        // image
+        min-height: 1px; 
+      }
+      img {
+        margin-top:8px; width: 100%;
+      }
+    }
                 
-                .sidebar {
-                        a.button {
-                                display: block !important;
-                                margin-top: 10px;
-                        }
-                }
-	}
+    .sidebar {
+      a.button {
+        display: block !important;
+        margin-top: 10px;
+      }
+    }
+  }
 
-	&.object-list {
-          .object-list {
-            li {
-              overflow: hidden;
-              margin-bottom: 1em;
+  &.object-list {
+    .object-list {
+      li {
+        overflow: hidden;
+        margin-bottom: 1em;
 
-              h2, h3, h4 {
-                text-align:left;
-              }
-
-              h2 {
-                // TODO: Use variables or otherwise make these consistent
-                // site-wide
-                line-height: 1.2em;
-                margin-bottom: 0.5em;
-              }
-
-              img.featured-asset { max-width: 100%; }
-            }
-           
-            // Override the reset that gets rid of paragraph margins    
-            .description, .body {
-              p { margin-bottom: 1em; }
-            }
-          }
+        h2, h3, h4 {
+          text-align:left;
         }
-	
-	// content block: mostly has a bottom border
-	section.content-block { 
-		padding-bottom: 40px; 
-		border-bottom:1px solid #ccc; 
-		margin-bottom:20px;
-		overflow:hidden;
-		
-		&.last, &.no-hr {
-			border-bottom: none;
-		}
-	}
 
-        // Teaser at the top of pages should be larger text
-        p.description.teaser {
-          font-size: 1.4em;
+        h2 {
+          // TODO: Use variables or otherwise make these consistent
+          // site-wide
           line-height: 1.2em;
+          margin-bottom: 0.5em;
         }
-	
-	a.bab {
-		.button-style(hot);
-		font-size:2em;
-		padding:1.5em;
-		margin:1.5em 0;
-		display:block;
-		
-		&.right {
-			float: right;
-			margin-left:1.5em;
-		}
 
-	}
+        img.featured-asset { max-width: 100%; }
+      }
+
+      // Override the reset that gets rid of paragraph margins    
+      .description, .body {
+        p { margin-bottom: 1em; }
+      }
+    }
+  }
+  
+  // content block: mostly has a bottom border
+  section.content-block { 
+    padding-bottom: 40px; 
+    border-bottom:1px solid #ccc; 
+    margin-bottom:20px;
+    overflow:hidden;
+    
+    &.last, &.no-hr {
+      border-bottom: none;
+    }
+  }
+
+  // Teaser at the top of pages should be larger text
+  p.description.teaser {
+    font-size: 1.4em;
+    line-height: 1.2em;
+  }
+  
+  a.bab {
+    .button-style(hot);
+    font-size:2em;
+    padding:1.5em;
+    margin:1.5em 0;
+    display:block;
+    
+    &.right {
+      float: right;
+      margin-left:1.5em;
+    }
+
+  }
 }
 
 // HACK: Hide the comment form label for the comment textarea
