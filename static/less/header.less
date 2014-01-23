@@ -1,6 +1,8 @@
 #header {
   background: #000;
   padding: 0 12px;
+  position: relative;
+  min-width: 260px;
 
   @media (min-width: @header-breakpoint) {
     padding: 0;
@@ -24,11 +26,10 @@
   // Full-width users will have to download two images, but that seems pretty
   // fair.
   .logo {
-    display: inline-block;
+    display: block;
     width: 32px;
 
     @media (min-width: @header-breakpoint) {
-      display: block;
       width: 328px;
       height: 55px;
       background-image: url('../img/header-logo.png');
@@ -59,7 +60,7 @@
 #logo-search {
   position: relative;
   float: left;
-  width: auto;
+  width: 100%;
 
   .mk-fluid-grid-container-sm();
   .mk-fluid-grid-container-md();
@@ -76,8 +77,9 @@
 }
 
 #header-right {
-  padding-top:14px;
+  padding-top: 14px;
   display: inline-block;
+  width: inherit;
 
   @media (min-width: @header-breakpoint) {
     float: right; 
@@ -123,62 +125,55 @@
   }        
 
   form#search {
+    margin: 0 auto;
+    width: 200px;
+
+    
+    @media (min-width: 420px) {
+      width: 300px;
+    }
+
     @media (min-width: @header-breakpoint) {
-      padding-top:12px;
+      padding-top: 12px;
+      margin: 0;
+      width: auto;
     }
     
-    input {
-      float: left; 
-      display: inline; 
-      border: 0;
-      
-      &.field { 
-        // Hide on very small displays
-        display: none;
+    .field { 
+      display: inline;
+      float: left;
+      width: 150px;
 
-        @media (min-width: @header-breakpoint) {
-          display: inline;
 
-          width: 233px;
-          background: url('../img/search.png') no-repeat 0 0;
-          font-size: 18px;
-          color: #535353;
-          font-family: 'Museo300Regular';
-          padding: 8px 0 8px 5px;
+      background: url('../img/search.png') no-repeat 0 0;
+      font-size: 18px;
+      color: #535353;
+      font-family: 'Museo300Regular';
+      padding: 8px 0 8px 5px;
 
-          // override site-wide default form styling
-          border: none;
-          border-radius: 0;
-          box-shadow: none;
-          font-style:normal;
-        }
+      // override site-wide default form styling
+      border: none;
+      border-radius: 0;
+      box-shadow: none;
+      font-style:normal;
+
+      @media (min-width: 420px) {
+        width: 233px;
       }
-      
     }
 
     button.submit { 
+      width: 38px;
+      height: 36px;
+      background: url('../img/search.png') no-repeat right 0;
+      border: 0;
+      cursor: pointer;
+
+      // override site-wide default form styling
+      border-radius: 0;
+
       &:before {
-        .icon-FontAwesome();
-        content: @search;
-        font-size: 36px;
-      }
-
-      border: none;
-      background: none;
-
-      @media (min-width: @header-breakpoint) {
-        width: 38px;
-        height: 36px;
-        background: url('../img/search.png') no-repeat right 0;
-        border: 0;
-        cursor: pointer;
-
-        // override site-wide default form styling
-        border-radius: 0;
-
-        &:before {
-          content: none;
-        }
+        content: none;
       }
     }
   }

@@ -3,15 +3,17 @@
 
 // mixin for "active" state on top-level links
 .active-top-nav-link {
-  color:@orange; 
+  color: @orange; 
   text-decoration:underline;
 }
 
 #menu-toggle {
+  position: absolute;
+  padding-top: 18px;
+  right: 12px;
+
   background: transparent;
   border-radius: 0;
-  float: right;
-  padding-top: 18px;
 
   @media (min-width: @header-breakpoint) {
     display: none;
