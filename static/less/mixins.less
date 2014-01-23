@@ -339,16 +339,18 @@
 }
 
 .line-through-header {
-  background:url('../img/h3-line.png') repeat-x 0 8px; 
-  margin-bottom:10px;
+  margin-bottom: 10px;
   
   // line-through effect looks best with 1em line height
-  line-height:1em;
-  
-  span {
-    background:#fff; 
-    padding-left:16px; 
-    padding-right:16px;
+  line-height: 1em !important;
+ 
+  @media (min-width: @screen-sm-min) { 
+    background: url('../img/h3-line.png') repeat-x 0 8px; 
+    span {
+      background: #fff; 
+      padding-left: 16px; 
+      padding-right: 16px;
+    }
   }
 }
 
