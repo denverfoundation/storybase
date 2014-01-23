@@ -1,4 +1,4 @@
-<div class="breadcrumbs"><div class="shell"><ul>
+<div class="breadcrumbs"><div class="container_12"><ul>
 {% for ance in ancestors %}
 {% if forloop.counter0 != 0 or forloop.revcounter0 != 0 %} {# awkward way to try to prevent printing if the list has only one item ... surely a better way? #}
 <li>{% if not forloop.last %}<a href="{{ ance.get_absolute_url }}">{{ ance.get_menu_title }}</a> {% else %}{{ ance.get_menu_title }}{% endif %}</li>
