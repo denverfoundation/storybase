@@ -39,7 +39,8 @@
         tocButtonEl: '#toggle-toc',
         tocIconEl: '[class^="icon-"]',
         tocOpenClass: 'icon-caret-down',
-        tocClosedClass: 'icon-caret-up'
+        tocClosedClass: 'icon-caret-up',
+        stickyHeaderBreakpoint: 480
       },
 
       events: function() {
@@ -612,6 +613,11 @@
     },
     
     handleScroll: function() {
+      if ($(window).width() < this.options.stickyHeaderBreakpoint) {
+        // Don't make the header sticky for narrow viewports
+        return;
+      }
+
       var top = $(window).scrollTop();
       if (top !== 0) {
         this.setStickyHeader(true);
