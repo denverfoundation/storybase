@@ -27,19 +27,11 @@
 			<h1><span>{{ story.title }}</span></h1>
 
 			<section class="object content-block">
-				<div class="grid_6">
-					<section class="object-featured-asset">
-                        {% featured_asset story 490 %}
-					</section>
-				</div>
-				<div class="grid_6">
+				<div class="grid_6 summary-container">
 					<header>
 						<p class="byline">{% trans "By" %} <span class="author">{% if story.byline %}{{ story.byline }}{% else %}{{ story.contributor_name }}{% endif %}</span></p>
 					</header>
 					<section class="object-summary">
-						<section class="summary">
-							{{ story.summary|safe }}
-						</section>
                         <a id="launch-story-viewer" class="button" href="{% url "story_viewer" slug=story.slug %}">{% trans "View Story" %}</a>
                         {% if story.asset_datasets.count %}
                         <div class="btn-group datasets-button">
@@ -50,6 +42,14 @@
                             {% dataset_list story.asset_datasets "dropdown-menu datasets icons" %}
                         </div>
                         {% endif %}
+						<section class="summary">
+							{{ story.summary|safe }}
+						</section>
+					</section>
+				</div>
+				<div class="grid_6 featured-asset-container">
+					<section class="object-featured-asset">
+                        {% featured_asset story 490 %}
 					</section>
 				</div>
 			</section>

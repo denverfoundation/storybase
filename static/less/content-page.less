@@ -93,6 +93,12 @@
   
   /* object detail pages: story, project, etc */
   &.object-detail {
+    .summary-container {
+      @media (min-width: @screen-sm-min) {
+        float: right;
+      }
+    }
+
     a { color:@highlight-blue; }
     .col {
       float:left;
@@ -202,6 +208,7 @@
         margin-top: 10px;
       }
     }
+
   }
 
   &.object-list {
