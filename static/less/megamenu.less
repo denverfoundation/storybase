@@ -96,7 +96,6 @@
           background: url('../img/nav-arrow.png') no-repeat 0 3px;
         }
 
-
         // This element is used for the dropdown pointer arrow        
         em { 
           height:8px; 
@@ -117,13 +116,16 @@
       }
 
       .dd { 
-        position:absolute; 
-        top:41px;
-        left:0;
-        background:#fff;
-        width:1000px;
-        min-height:200px;
         display:none;
+        position: absolute; 
+        top: 41px;
+        left: 0;
+
+        box-sizing: border-box;
+        width: 100%;
+        min-height:200px;
+
+        background: #fff;
         box-shadow: 0 0 5px #9a9a9a;
         padding:20px 25px 20px;
 
@@ -241,11 +243,15 @@
             .box-shadow(0 3px 4px #888);
             line-height: @base-line-height;
             vertical-align:middle;
-            font-size:2em;
+            font-size: 1.4em;
             margin:60px auto;
             display:block;
             width:75%;
             text-align:center;
+
+            @media (min-width: @screen-md-min) {
+              font-size: 2em;
+            }
           }
         }
         
