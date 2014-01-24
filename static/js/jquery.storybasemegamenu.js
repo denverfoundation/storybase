@@ -1,6 +1,19 @@
 (function($) {
   var defaults = {};
 
+  function setWrappedClasses($el) {
+    var firstTop = $el.find('ul > li').first().offset().top;
+    var wrapped = false;
+
+    $el.find('ul > li').slice(1).each(function() {
+      wrapped = ($(this).offset().top !== firstTop); 
+      $(this).toggleClass('wrapped', wrapped);
+    });
+
+    $el.toggleClass('wrapped', wrapped);
+
+  }
+
   var methods = {
     init: function(options) {
       var settings = this.settings = $.extend(true, {}, defaults, options);
@@ -21,6 +34,11 @@
             $(this).find('a:eq(0)').removeClass('hover');
             $(this).find('a em').hide();
           }
+        });
+
+        setWrappedClasses($el);
+        $(window).resize(function() {
+          setWrappedClasses($el);
         });
 
         if (settings.toggleButton) {

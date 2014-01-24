@@ -1,8 +1,6 @@
 
 @dd-col-std-padding:10px;
-
-// The point at which the menu items wrap to two lines
-@megamenu-twoline-breakpoint: 1090px;
+@megamenu-padding-top: 39px;
 
 // mixin for "active" state on top-level links
 .active-top-nav-link {
@@ -27,6 +25,7 @@
   }
 }
 
+
 .megamenu { 
   width: 100%;
   padding-top: 19px;  
@@ -37,10 +36,6 @@
     display: block;
     width: 92%;
     padding-bottom: 0;
-  }
-
-  @media (min-width: @megamenu-twoline-breakpoint) {
-    padding-top: 39px;
   }
 
   &.visible {
@@ -86,6 +81,8 @@
       }
 
       &.right {
+        float: none;
+
         // On narrow displays, don't float this element to the right
         @media (min-width: @header-breakpoint) {
           float: left;
@@ -103,15 +100,11 @@
         position: relative;
         // This padding helps position the em element (see below) that is
         // used as the dropdown pointer
-        padding-bottom: 13px;
+        padding-bottom: 23px;
 
         @media (min-width: @header-breakpoint) {
           padding-left: 12px;
           background: url('../img/nav-arrow.png') no-repeat 0 3px;
-        }
-
-        @media (min-width: @megamenu-twoline-breakpoint) {
-          padding-bottom: 23px;
         }
 
         // This element is used for the dropdown pointer arrow        
@@ -133,30 +126,10 @@
         }
       }
 
-      // HACK: Push the megamenu popup down further when menu items wrap onto
-      // a second line
-      a.about + .dd {
-        @media (min-width: @header-breakpoint) and (max-width: 759px) { 
-          top: 50px;
-        }
-      }
-
-      a.news + .dd {
-        @media (min-width: @header-breakpoint) and (max-width: 947px) {
-          top: 50px;
-        }
-      }
-
-      &#my-account > a + .dd {
-        @media (min-width: @header-breakpoint) and (max-width: @megamenu-twoline-breakpoint) {
-          top: 50px;
-        }
-      }
-
       .dd { 
         display:none;
         position: absolute; 
-        top: 31px;
+        top: 41px;
         left: 0;
 
         box-sizing: border-box;
@@ -166,10 +139,6 @@
         background: #fff;
         box-shadow: 0 0 5px #9a9a9a;
         padding:20px 25px 20px;
-
-        @media (min-width: @megamenu-twoline-breakpoint) {
-          top: 41px;
-        }
 
         // Uncomment these lines to show a drop-shadow dividing the megamenu
         // columns
@@ -321,6 +290,34 @@
   a.top-nav.selected,
   a.top-nav.ancestor {
     .active-top-nav-link;
+  }
+
+  // Menu items wrap across two or more lines.  This is class is added/removed
+  // by JavaScript
+  &.wrapped {
+    @media (min-width: @header-breakpoint) {
+      padding-top: @megamenu-padding-top - 10;  
+
+      .nav > li {
+        .dd {
+          top: 50px;
+        }
+
+        > a {
+          padding-bottom: 33px;
+        }
+
+        &.wrapped {
+          > a {
+            padding-bottom: 13px;
+          } 
+
+          .dd {
+            top: 50px;
+          }
+        }
+      }
+    }
   }
 }
 
