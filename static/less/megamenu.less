@@ -1,6 +1,9 @@
 
 @dd-col-std-padding:10px;
 
+// The point at which the menu items wrap to two lines
+@megamenu-twoline-breakpoint: 1090px;
+
 // mixin for "active" state on top-level links
 .active-top-nav-link {
   color: @orange; 
@@ -26,7 +29,7 @@
 
 .megamenu { 
   width: 100%;
-  padding-top: 39px;  
+  padding-top: 19px;  
   padding-bottom: 12px;
   display: none;
 
@@ -34,6 +37,10 @@
     display: block;
     width: 92%;
     padding-bottom: 0;
+  }
+
+  @media (min-width: @megamenu-twoline-breakpoint) {
+    padding-top: 39px;
   }
 
   &.visible {
@@ -61,14 +68,17 @@
 
       @media (min-width: @header-breakpoint) {
         float: left;
-        display: inline;
-        padding-left: 30px;
+        display: inline-block;
+        padding-right: 30px;
         padding-top: 0;
       }
 
       &:first-child {
-        padding-left: 0;  
         padding-top: 0;
+      }
+
+      &:last-child {
+        padding-right: 0;
       }
 
       &.nodd a {
@@ -77,9 +87,11 @@
 
       &.right {
         // On narrow displays, don't float this element to the right
-        float: none;
-
         @media (min-width: @header-breakpoint) {
+          float: left;
+        }
+
+        @media (min-width: @screen-lg-min) {
           float: right;
         }
       }
@@ -89,11 +101,17 @@
         color: #ffffff;
         font-family: 'MuseoSlab500Regular';
         position: relative;
-        padding-bottom: 23px;
+        // This padding helps position the em element (see below) that is
+        // used as the dropdown pointer
+        padding-bottom: 13px;
 
         @media (min-width: @header-breakpoint) {
           padding-left: 12px;
           background: url('../img/nav-arrow.png') no-repeat 0 3px;
+        }
+
+        @media (min-width: @megamenu-twoline-breakpoint) {
+          padding-bottom: 23px;
         }
 
         // This element is used for the dropdown pointer arrow        
@@ -115,10 +133,30 @@
         }
       }
 
+      // HACK: Push the megamenu popup down further when menu items wrap onto
+      // a second line
+      a.about + .dd {
+        @media (min-width: @header-breakpoint) and (max-width: 759px) { 
+          top: 50px;
+        }
+      }
+
+      a.news + .dd {
+        @media (min-width: @header-breakpoint) and (max-width: 947px) {
+          top: 50px;
+        }
+      }
+
+      &#my-account > a + .dd {
+        @media (min-width: @header-breakpoint) and (max-width: @megamenu-twoline-breakpoint) {
+          top: 50px;
+        }
+      }
+
       .dd { 
         display:none;
         position: absolute; 
-        top: 41px;
+        top: 31px;
         left: 0;
 
         box-sizing: border-box;
@@ -128,6 +166,10 @@
         background: #fff;
         box-shadow: 0 0 5px #9a9a9a;
         padding:20px 25px 20px;
+
+        @media (min-width: @megamenu-twoline-breakpoint) {
+          top: 41px;
+        }
 
         // Uncomment these lines to show a drop-shadow dividing the megamenu
         // columns
