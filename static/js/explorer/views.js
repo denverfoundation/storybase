@@ -130,7 +130,7 @@
       "click .select-map-view": "selectMap",
       "click #show-more": "clickShowMore",
       "change #filters select": "handleChangeFilters",
-      "click #filters .clear-filters": "clearAllFilters",
+      "click #filters .clear-filters": "clearAllFilters"
     },
 
     initialize: function() {
@@ -151,7 +151,7 @@
       this.activeView = null;
       // Total number of matching stories
       this.totalMatchingStories = 0;
-      this.stories = new Stories;
+      this.stories = new Stories();
       this.reset(this.options.storyData);
       this.messages = {
         placeNotVisible: {
@@ -396,7 +396,7 @@
         if (!!value && value.length > 0) {
           var values = [];
           _.each(value, function(element, index, list) {
-            if (element != "") {
+            if (element !== "") {
               values.push(element);
             }
           });
@@ -439,9 +439,9 @@
 
     setNear: function(point) {
       if (point === null) {
-        console.debug("clearing proximity search");
+        // Clearing proximity search
       }
-      this.near = point
+      this.near = point;
       return this;
     },
 
@@ -596,15 +596,16 @@
         organizations: this.options.organizations,
         places: this.options.places,
         projects: this.options.projects,
-        languages: this.options.languages,
+        languages: this.options.languages
       };
-      if (!(typeof this.options.selected === "undefined")) {
+      if (typeof this.options.selected !== "undefined") {
         _.each(this.options.selected, function(selected, filter, list) {
           _.each(selected, function(element, index, list) {
             var option = _.find(context[filter], function(obj) {
               return obj.id == element;
             });
-            if(!(typeof option === "undefined")) {
+
+            if (typeof option !== "undefined") {
               option.selected = true;
             }
           });
@@ -807,7 +808,7 @@
       var width = this.$el.width();
       this.$el.addClass('tile');
       this.$el.removeClass('list');
-      this.$el.find('li').removeClass('container_12')
+      this.$el.find('li').removeClass('container_12');
       this.$el.masonry({
         itemSelector: '.story',
         columnWidth: function(containerWidth) {
@@ -829,7 +830,7 @@
     list: function() {
       this.$el.removeClass('tile');
       this.$el.addClass('list');
-      this.$el.find('li').addClass('container_12')
+      this.$el.find('li').addClass('container_12');
       this.$el.masonry('destroy');
     }
 
@@ -1077,7 +1078,7 @@
         dataType: 'jsonp',
         data: {
           format: 'json',
-          q: address,
+          q: address
         },
         jsonp: 'json_callback',
         success: function(data, textStatus, jqXHR) {
@@ -1104,7 +1105,7 @@
       $.ajax('/api/0.1/geocode', {
         dataType: 'json',
         data: {
-          q: address,
+          q: address
         },
         success: function(data, textStatus, jqXHR) {
           if (data.meta.total_count > 0) {
@@ -1127,7 +1128,6 @@
     redrawMap: function(point) {
       this.parentView.setMessageSeen('placeNotVisible');
       // Recenter the map based on the geocoded point 
-      console.debug("Found point (" + point.lat + "," + point.lng + ")")
       var center = new L.LatLng(point.lat, point.lng);
       this.map.setView(center, Explorer.MAP_POINT_ZOOM_LEVEL);
       this.parentView.setNear(point);
@@ -1136,7 +1136,6 @@
 
     geocodeFail: function(address) {
       // TODO: Do something more exciting when geocoding fails
-      console.debug("Geocoding of address " + address + " failed");
       var popupContent = "<p>Geocoding of address " + address + " failed.  Try including a city and state in your address.</p>"; 
       var popup = new L.Popup();
       popup.setLatLng(this.map.getCenter());
