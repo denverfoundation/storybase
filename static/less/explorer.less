@@ -2,6 +2,7 @@
 
 @explorer-img-width: 222px;
 @explorer-img-height: 132px;
+@sticky-filters-breakpoint: @screen-xs-min;
 
 #explorer {
   position: relative;
@@ -40,11 +41,13 @@
   z-index: 1000;
 
   &.sticky {
-    position: fixed;
-    top: 0;
-    background-color: #fff;
-    box-shadow:0 3px 6px #bbb;
-    color: #fff;
+    @media (min-width: @sticky-filters-breakpoint) {
+      position: fixed;
+      top: 0;
+      background-color: #fff;
+      box-shadow:0 3px 6px #bbb;
+      color: #fff;
+    }
   }
 
   .field {
@@ -147,8 +150,11 @@
 
 #filter-proxy {  
   display:none;
+
   &.shown {
-    display:block;
+    @media (min-width: @sticky-filters-breakpoint) {
+      display: block;
+    }
   }
 }
 
