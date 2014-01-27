@@ -3,6 +3,9 @@
 @explorer-img-width: 222px;
 @explorer-img-height: 132px;
 @explorer-chrome-margin-bottom: 15px;
+// After this width, show the story metadata to the right of the featured
+// image.
+@explorer-list-breakpoint: 680px;
 
 .container_12 {
   // HACK: Make the small container slightly wider so it can fit 3 columns
@@ -330,13 +333,28 @@
     overflow:hidden;
 
     h3 {
-      padding-top:0;
-      font-size:20px;
+      padding-top: 0;
+      font-size: 20px;
+      padding-top: 8px;
+
+      @media (min-width: @screen-md-min) {
+        padding-top: 0;
+      }
     }
     
-    a img {
-      float:left;
-      margin-right:16px;
+    .image-container{
+      @media (min-width: @explorer-list-breakpoint) {
+        float: left;
+      }
+    }
+
+    .story-metadata {
+      padding-top: 12px;
+
+      @media (min-width: @explorer-list-breakpoint) {
+        padding-top: 0;
+        margin-left: 240px;
+      }
     }
   }
 }

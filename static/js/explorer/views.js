@@ -294,6 +294,9 @@
         this.fetchStories();
       }
       this.mapView.$el.hide();
+      // The Masonry plugin sets an explicit width on the container element.
+      // Remove this width so the stylesheet styles take effect.
+      this.storyListView.$el.css('width', '');
       this.storyListView.$el.show();
       this.storyListView.list();
       $('#view-selector li')

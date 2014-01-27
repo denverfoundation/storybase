@@ -98,11 +98,11 @@ Handlebars templates for rendering Backbone views.
 </script>
 
 <script type="text/x-handlebars-template" id="story-partial-template">
-<a href="{{url}}" class="grid_3 alpha">
+<a href="{{url}}" class="image-container">
   <img src="{{featured_asset_url}}">
   <em class="hover"></em>
 </a>
-<div class="grid_9 omega">
+<div class="story-metadata">
   <h3>{{>story_link}}</h3>
   <p class="byline">{{byline}}</p>
   {{firstparagraph summary}}
