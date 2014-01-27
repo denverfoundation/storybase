@@ -3,7 +3,6 @@
 @explorer-img-width: 222px;
 @explorer-img-height: 132px;
 @explorer-chrome-margin-bottom: 15px;
-@sticky-filters-breakpoint: @screen-xs-min;
 
 .container_12 {
   // HACK: Make the small container slightly wider so it can fit 3 columns
@@ -49,13 +48,11 @@
   z-index: 1000;
 
   &.sticky {
-    @media (min-width: @sticky-filters-breakpoint) {
-      position: fixed;
-      top: 0;
-      background-color: #fff;
-      box-shadow:0 3px 6px #bbb;
-      color: #fff;
-    }
+    position: fixed;
+    top: 0;
+    background-color: #fff;
+    box-shadow:0 3px 6px #bbb;
+    color: #fff;
   }
 
   .field {
@@ -160,9 +157,7 @@
   display:none;
 
   &.shown {
-    @media (min-width: @sticky-filters-breakpoint) {
-      display: block;
-    }
+    display: block;
   }
 }
 

@@ -115,13 +115,14 @@
     el: $('#explorer'),
 
     options: {
-      templateSource: $('#explorer-template').html()
-    },
-
-    defaults: {
       selectedFilters: {},
       bufferPx: 40,
-      pixelsFromListToBottom: undefined
+      pixelsFromListToBottom: undefined,
+      templateSource: $('#explorer-template').html(),
+      // If the filter height is less than this percentage (represented as
+      // a decimal), make the filters stick to the top of the window as
+      // the window is scrolled.
+      stickyFilterPercentage: 0.3
     },
 
     events: {
@@ -133,9 +134,8 @@
       "click #filters .clear-filters": "clearAllFilters"
     },
 
-    initialize: function() {
+    initialize: function(options) {
       var that = this;
-      _.defaults(this.options, this.defaults);
       this.selectedFilters = this.options.selectedFilters;
       // Point around which to filter stories 
       this.near = null;
@@ -170,7 +170,8 @@
         places: this.options.storyData.places,
         projects: this.options.storyData.projects,
         languages: this.options.storyData.languages,
-        selected: this.selectedFilters
+        selected: this.selectedFilters,
+        stickyFilterPercentage: this.options.stickyFilterPercentage
       });
       this.storyListView = new StoryList({
         stories: this.stories
@@ -699,8 +700,10 @@
      * to the top of the screen so they're always visible
      */
     scrollWindow: function(ev) {
+      var filterPercentage = this.$el.outerHeight() / $(window).height();
       var scrollTop = $(window).scrollTop();
-      if (scrollTop > this.initialOffset.top) {
+      if (scrollTop > this.initialOffset.top && 
+          filterPercentage < this.options.stickyFilterPercentage) {
         $('#filter-proxy').addClass('shown').height(this.$el.outerHeight() + 'px');
         this.$el.addClass('sticky');
         this.$el.width(this.initialWidth);
