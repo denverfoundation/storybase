@@ -16,15 +16,15 @@
   width: @container-width;
 }
 
-.mk-fluid-grid-container-sm() {
+.mk-fluid-grid-container-sm(@container-width: @container-sm) {
   @media (min-width: @screen-sm-min) {
-    .mk-fluid-grid-container(@container-sm);
+    .mk-fluid-grid-container(@container-width);
   }
 }
 
-.mk-fluid-grid-container-md() {
+.mk-fluid-grid-container-md(@container-width: @container-md) {
   @media (min-width: @screen-md-min) {
-    .mk-fluid-grid-container(@container-md);
+    .mk-fluid-grid-container(@container-width);
   }
 }
 

@@ -811,16 +811,14 @@
       this.$el.find('li').removeClass('container_12');
       this.$el.masonry({
         itemSelector: '.story',
-        columnWidth: function(containerWidth) {
-          var columnWidth = containerWidth;
-          if (containerWidth >= 700) {
-            columnWidth = containerWidth / 4;
-          } 
-          else if (containerWidth >= 400) {
-            columnWidth = containerWidth / 2;
-          }
-          return columnWidth;
-        }
+        // Base the column width on the elements.  It looks like newer
+        // versions of the Guiders library support this by specifying
+        // a selector for the columnWidth option.
+        // See http://masonry.desandro.com/options.html#columnwidth
+        columnWidth: this.$('.story').outerWidth(),
+        // Assign an explicit width to the container so it can be horizontally
+        // centered with CSS
+        isFitWidth: true
       });
     },
 

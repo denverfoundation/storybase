@@ -2,7 +2,15 @@
 
 @explorer-img-width: 222px;
 @explorer-img-height: 132px;
+@explorer-chrome-margin-bottom: 15px;
 @sticky-filters-breakpoint: @screen-xs-min;
+
+.container_12 {
+  // HACK: Make the small container slightly wider so it can fit 3 columns
+  // of tiles 
+  .mk-fluid-grid-container-sm(750px);
+  .mk-fluid-grid-container-md();
+}
 
 #explorer {
   position: relative;
@@ -159,8 +167,14 @@
 }
 
 #story-count {
-  margin: 0 0 20px 0;
+  width: 100%;
+  margin: 0;
   float: left;
+
+  @media (min-width: @screen-xs-min) {
+    width: auto;
+    margin-bottom: (@explorer-chrome-margin-bottom * 2);
+  }
 
   .story-count {
     color: @gray;
@@ -195,6 +209,7 @@
   list-style:none;
   list-style-type: none;
 
+  margin-bottom: @explorer-chrome-margin-bottom;
 
   li {
     float:left;
@@ -290,14 +305,20 @@
     }
   }
 
-  &.tile li.story {
-    width:@explorer-img-width; 
-    float:left;
-    padding:7px;
-    background:@light-gray;
-    margin-bottom:11px;
-    margin-right:14px;
-    overflow:hidden;
+  &.tile {
+    margin-left: auto;
+    margin-right: auto;
+    
+    li.story {
+      float: left;
+      width: @explorer-img-width; 
+      padding: 7px;
+      margin-bottom: 11px;
+      margin-right: 14px;
+      overflow: hidden;
+
+      background: @light-gray;
+    }
   }
   
   &.list li.story {
@@ -432,10 +453,6 @@
 
 #show-more {
   display:block;
-}
-
-#story-count {
-  margin: 0 0 30px 0;
 }
 
 .load-more a { width:110px; height:34px; background:url('../img/load-more.png') no-repeat 0 0; display:block; margin:20px auto 170px;  }
