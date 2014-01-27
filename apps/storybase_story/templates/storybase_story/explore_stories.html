@@ -38,58 +38,59 @@ Handlebars templates for rendering Backbone views.
 </script>
 
 <script type="text/x-handlebars-template" id="filters-template">
-<div class="field">
-<label for="topics">{{gettext "Topic"}}</label>
-<select name="topics" data-placeholder="{{gettext "Topic"}}" title="{{gettext "Filter stories by selecting one or more topics"}}">
-  <option></option>
-  {{#topics}}
-  <option value="{{id}}"{{#if selected}}selected{{/if}}>{{name}}</option>
-  {{/topics}}
-</select>
+<div class="fields-container">
+    <div class="field">
+        <label for="topics">{{gettext "Topic"}}</label>
+        <select name="topics" data-placeholder="{{gettext "Topic"}}" title="{{gettext "Filter stories by selecting one or more topics"}}">
+            <option></option>
+            {{#topics}}
+            <option value="{{id}}"{{#if selected}}selected{{/if}}>{{name}}</option>
+            {{/topics}}
+        </select>
+    </div>
+
+    <div class="field">
+        <label for="places">{{gettext "Place"}}</label>
+        <select name="places" data-placeholder="{{gettext "Place"}}" title="{{gettext "Filter stories by selecting one or more places"}}">
+            <option></option>
+            {{#places}}
+            <option value="{{id}}"{{#if selected}}selected{{/if}}>{{name}}</option>
+            {{/places}}
+        </select>
+    </div>
+
+    <div class="field">
+        <label for="organizations">{{gettext "Organization"}}</label>
+        <select name="organizations" data-placeholder="{{gettext "Organization"}}" title="{{gettext "Filter stories by selecting an organization"}}">
+            <option></option>
+            {{#organizations}}
+            <option value="{{id}}"{{#if selected}}selected{{/if}}>{{name}}</option>
+            {{/organizations}}
+        </select>
+    </div>
+
+    <div class="field">
+        <label for="projects">{{gettext "Project"}}</label>
+        <select name="projects" data-placeholder="{{gettext "Project"}}" title="{{gettext "Filter stories by selecting a project"}}">
+            <option></option>
+            {{#projects}}
+            <option value="{{id}}"{{#if selected}}selected{{/if}}>{{name}}</option>
+            {{/projects}}
+        </select>
+    </div>
+
+    <div class="field last">
+        <label for="languages">{{gettext "Language"}}</label>
+        <select name="languages" data-placeholder="{{gettext "Language"}}" title="{{gettext "Filter stories by language"}}">
+            <option></option>
+            {{#languages}}
+            <option value="{{id}}"{{#if selected}}selected{{/if}}>{{name}}</option>
+            {{/languages}}
+        </select>
+    </div>
+
+    <a class="clear-filters" href="#">Reset Filters</a>
 </div>
-
-<div class="field">
-<label for="places">{{gettext "Place"}}</label>
-<select name="places" data-placeholder="{{gettext "Place"}}" title="{{gettext "Filter stories by selecting one or more places"}}">
-  <option></option>
-  {{#places}}
-  <option value="{{id}}"{{#if selected}}selected{{/if}}>{{name}}</option>
-  {{/places}}
-</select>
-</div>
-
-<div class="field">
-<label for="organizations">{{gettext "Organization"}}</label>
-<select name="organizations" data-placeholder="{{gettext "Organization"}}" title="{{gettext "Filter stories by selecting an organization"}}">
-  <option></option>
-  {{#organizations}}
-  <option value="{{id}}"{{#if selected}}selected{{/if}}>{{name}}</option>
-  {{/organizations}}
-</select>
-</div>
-
-<div class="field">
-<label for="projects">{{gettext "Project"}}</label>
-<select name="projects" data-placeholder="{{gettext "Project"}}" title="{{gettext "Filter stories by selecting a project"}}">
-  <option></option>
-  {{#projects}}
-  <option value="{{id}}"{{#if selected}}selected{{/if}}>{{name}}</option>
-  {{/projects}}
-</select>
-</div>
-
-<div class="field last">
-<label for="languages">{{gettext "Language"}}</label>
-<select name="languages" data-placeholder="{{gettext "Language"}}" title="{{gettext "Filter stories by language"}}">
-  <option></option>
-  {{#languages}}
-  <option value="{{id}}"{{#if selected}}selected{{/if}}>{{name}}</option>
-  {{/languages}}
-</select>
-</div>
-
-<a class="clear-filters" href="#">Reset Filters</a>
-
 </script>
 
 <script type="text/x-handlebars-template" id="story-link-partial-template">
