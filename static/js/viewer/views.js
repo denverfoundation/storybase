@@ -40,7 +40,7 @@
         tocIconEl: '[class^="icon-"]',
         tocOpenClass: 'icon-caret-down',
         tocClosedClass: 'icon-caret-up',
-        stickyHeaderBreakpoint: 480
+        stickyHeaderPercentage: 0.3 
       },
 
       events: function() {
@@ -613,8 +613,9 @@
     },
     
     handleScroll: function() {
-      if ($(window).width() < this.options.stickyHeaderBreakpoint) {
-        // Don't make the header sticky for narrow viewports
+      var headerPercentage = this.$('#header').outerHeight() / $(window).height();
+      if (headerPercentage >= this.options.stickyHeaderPercentage) {
+        // Don't make the header sticky for short viewports
         return;
       }
 
