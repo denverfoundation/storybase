@@ -261,6 +261,13 @@
     }
 
     &.map-view {
+      // HACK: Hide map view on narrower displays
+      display: none;
+
+      @media (min-width: @screen-sm-min) {
+        display: block;
+      }
+
       a {
         background-position: -86px 0; 
       }
