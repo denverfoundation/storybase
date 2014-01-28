@@ -589,6 +589,7 @@ This project includes a number of excellent open-source libraries:
 * `LeafClusterer <https://github.com/ideak/leafclusterer/>`_ by Imre Deak
 * `Modernizr <http://modernizr.com/>`_
 * `Normalize.css <http://github.com/necolas/normalize.css>`_ by Nicolas Gallagher and Jonathan Neal
+* `Respond.js <https://github.com/scottjehl/Respond>`_ by Scott Jehl
 * `Select2 <http://ivaynberg.github.com/select2/>`_ by Igor Vaynberg
 * `Tooltipster <http://calebjacob.com/tooltipster/>`_ by Caleb Jacob
 * `TinyMCE <http://tinymce.com/>`_ by Moxiecode Systems AB
