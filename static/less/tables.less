@@ -1,31 +1,36 @@
+@row-padding: 1em;
 
-@row-padding:1em;
 table {
-  border-spacing:0;
-  border-collapse:collapse;
+  border-spacing: 0;
+  border-collapse: collapse;
+
   .body-copy;
+
   thead {
-    background:black;
-    color:white;
-    font-size:1em;
+    background: black;
+    color: white;
+    font-size: 1em;
     .styled-header(left);
     
     th {
-      padding:@row-padding;
-      margin:0;
-      border:0;
+      padding: @row-padding;
+      margin: 0;
+      border: 0;
     }
   }
+
   tbody {
     tr {
-      border-bottom:1px solid white;
-      background:@light-gray;
+      border-bottom: 1px solid white;
+      background: @light-gray;
     }
+
     tr:nth-child(odd), tr.odd {
-      background:@almost-white;
+      background: @almost-white;
     }
+
     td {
-      padding:@row-padding;
+      padding: @row-padding;
     }
   }
 }
