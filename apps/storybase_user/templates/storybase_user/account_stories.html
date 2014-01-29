@@ -6,8 +6,11 @@
 
 {% block body_title %}{%trans "My Stories" %}{% endblock %}
 
+{% block body_class %}account-stories{% endblock %}
+
 {% block twocol-content %}
 {% if stories_list.count %}
+<div class="table-wrapper responsive">
 <table class="account-stories">
     <thead>
         <tr>
@@ -53,6 +56,7 @@
         {% endfor %}
     </tbody>
 </table>
+</div>
 {% else %}
 {% url "story_builder" as builder_url %}
 <p>{% blocktrans %}You haven't made any stories yet. <a href="{{ builder_url }}" title="Story Builder">Create your first story now</a>.{% endblocktrans %}</p>

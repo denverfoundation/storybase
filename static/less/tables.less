@@ -1,4 +1,5 @@
 @row-padding: 1em;
+@responsive-table-max: @screen-xs-max;
 
 table {
   border-spacing: 0;
@@ -32,5 +33,18 @@ table {
     td {
       padding: @row-padding;
     }
+  }
+}
+
+.responsive-table-wrapper(@max-width: @responsive-table-max) {
+  @media (max-width: @max-width) {
+    width: 100%;
+    overflow-x: auto;
+  }
+}
+
+.table-wrapper {
+  &.responsive {
+    .responsive-table-wrapper();
   }
 }
