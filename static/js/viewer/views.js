@@ -40,7 +40,14 @@
         tocIconEl: '[class^="icon-"]',
         tocOpenClass: 'icon-caret-down',
         tocClosedClass: 'icon-caret-up',
-        stickyHeaderPercentage: 0.3 
+        // Header height must be less than this percentage (as a decimal) to
+        // be stuck to the top of the window when scrolling.
+        //
+        // The default value is set so the header *IS NOT* sticky when a
+        // 360x640 device is held in landscape mode.  In that case the
+        // window height will be 360px, the header will be at least 80px,
+        // making a ratio of 80/360 or 0.22.
+        stickyHeaderPercentage: 0.2 
       },
 
       events: function() {
