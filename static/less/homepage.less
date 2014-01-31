@@ -16,14 +16,51 @@
     }
   }
   
-  // this is overriding a z-index of 5000 in the flexslider plugin's css. the 
-  // megamenu on the homepage is blocked by the flexslider's left and right 
-  // nav buttons. modifying the megamenu's z-index would be preferable to 
-  // doing this, but i was unable to arrive at the correct incantation to 
-  // achieve this. this seems to have no negative effects and its scope is 
-  // limited to the homepage.
-  .flex-direction-nav li a {
-    z-index: inherit;
+  .flex-direction-nav {
+    li {
+      // This is overriding a z-index of 5000 in the flexslider plugin's css.
+      // the megamenu on the homepage is blocked by the flexslider's left and
+      // to doing this, but I was unable to arrive at the correct incantation
+      // to achieve this. This seems to have no negative effects and its scope
+      // is limited to the homepage.
+      a {
+        z-index: inherit;
+      }
+
+
+      .next { 
+        height: 100%;
+        background: #fff url('../img/right-arrow2.jpg') no-repeat right 50%;
+        font-size: 0; 
+        line-height: 0; 
+        text-indent: -4000px;
+
+        @media (min-width: @screen-sm-min) {
+          background-position: right 0;
+        }
+      }
+
+      .prev {
+        height: 100%; 
+        background: #fff url('../img/left-arrow2.jpg') no-repeat 0 50%;
+        font-size: 0;
+        line-height: 0;
+        text-indent: -4000px;  
+
+        @media (min-width: @screen-sm-min) {
+          background-position: 0 0;
+        }
+      }
+
+      .next, .prev {
+        width: 25px;
+        background-size: 100%;
+
+        @media (min-width: @screen-sm-min) {
+          width: 75px; 
+        }
+      }
+    }
   }
   
   .homepage-header {
@@ -229,20 +266,28 @@
     }
     .slides li {
       .title, .image, .text {
-        padding:0 76px;
+        padding: 0 24px;
+
+        @media (min-width: @screen-sm-min) {
+          padding: 0 76px;
+        }
       }
+
       .text {
         margin-top:.5em;
       }
+
       .title {
         // counter the margin in the containing li :(
         margin-top:-.5em;
       }
+
       .image {
         position: relative;
         height: 200px;
         overflow: hidden;
       }
+
       padding-top:1em;
     }
   }
