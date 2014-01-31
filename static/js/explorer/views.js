@@ -577,21 +577,21 @@
     events: {
       // Hide fancy tooltips when filter dropdown is opened, otherwise
       // the tooltips will obscure the dropdown items
-      "open select": "removeTooltips"
+      'open select': 'removeTooltips'
     },
 
     initialize: function() {
-      var that = this;
+      var view = this;
       this.initialOffset = null;
       this.compileTemplates();
 
       // Manually bind window events 
       $(window).bind('scroll', function(ev) {
-        that.scrollWindow(ev);
+        view.scrollWindow(ev);
       });
 
       $(window).bind('resize', function(ev) {
-        that.resizeWindow(ev);
+        view.resizeWindow(ev);
       });
     },
 
@@ -667,13 +667,24 @@
       }
     },
 
+    updatePercentageHeight: function() {
+      this._percentageHeight = this.$el.outerHeight() / $(window).height(); 
+    },
+
+    getPercentageHeight: function() {
+      if (!this._percentageHeight) {
+        this.updatePercentageHeight();
+      }
+
+      return this._percentageHeight;
+    },
+
     render: function() {
       var context = this.buildContext();
       this.$el.html(this.template(context));
       var selects = this.$('select').select2({
         allowClear: true
       });
-      this.addTooltips();
       return this;
     },
 
@@ -684,6 +695,15 @@
     setInitialProperties: function() {
       this.initialOffset = this.$el.offset(); 
       this.initialWidth = this.$el.width();
+
+      // Enable tooltips if the filters aren't stacked on a small screen.
+      // We need to do this here rather than in render() because when render()
+      // is called, the view's element hasn't yet been added to the DOM, so
+      // we can't check its height.
+      this.updatePercentageHeight();
+      if (this.getPercentageHeight() < this.options.stickyFilterPercentage) {
+        this.addTooltips();
+      }
     },
 
     /**
@@ -696,6 +716,9 @@
     resizeWindow: function(ev) {
       var parentWidth = this.$el.parents().width();
       var newWidth = parentWidth - (this.$el.outerWidth() - this.$el.width()); 
+
+      this.updatePercentageHeight();
+
       this.initialWidth = newWidth; 
       this.$el.width(newWidth);
     },
@@ -707,10 +730,10 @@
      * to the top of the screen so they're always visible
      */
     scrollWindow: function(ev) {
-      var filterPercentage = this.$el.outerHeight() / $(window).height();
       var scrollTop = $(window).scrollTop();
+
       if (scrollTop > this.initialOffset.top && 
-          filterPercentage < this.options.stickyFilterPercentage) {
+          this.getPercentageHeight() < this.options.stickyFilterPercentage) {
         $('#filter-proxy').addClass('shown').height(this.$el.outerHeight() + 'px');
         this.$el.addClass('sticky');
         this.$el.width(this.initialWidth);
