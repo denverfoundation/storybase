@@ -12,6 +12,14 @@
   var Story = storybase.models.Story;
   var Stories = storybase.collections.Stories;
 
+  // If the tooltipster jQuery plugin isn't installed, mock it so we can
+  // call $(...).tooltipster(...) without error
+  // TODO: This is replicated in the builder views.  We might want to do this
+  // in a more global place.
+  if (!$.fn.tooltipster) {
+    $.fn.tooltipster = function (options) {};
+  }
+
   Handlebars.registerPartial("story", $("#story-partial-template").html());
   Handlebars.registerPartial("story_link", $("#story-link-partial-template").html());
 
@@ -231,11 +239,9 @@
       // Computed as: height of the document - top offset of story list container
       // - outer height of story list container
       this.options.pixelsFromListToBottom = $(document).height() - this.storyListView.$el.offset().top - this.storyListView.$el.outerHeight(); 
-      if (jQuery().tooltipster) {
-        this.$('.select-map-view,.select-tile-view,.select-list-view').tooltipster({
-          position: 'bottom'
-        });
-      }
+      this.$('.select-map-view,.select-tile-view,.select-list-view').tooltipster({
+        position: 'bottom'
+      });
       return this;
     },
 
@@ -632,13 +638,11 @@
         var tooltipOptions; 
         if (title) {
           select2.container.attr('title', title);
-          if (jQuery().tooltipster) {
-            tooltipOptions = _.extend({
-              overrideText: title,
-              position: 'bottom'
-            }, options);
-            select2.container.tooltipster(tooltipOptions);
-          }
+          tooltipOptions = _.extend({
+            overrideText: title,
+            position: 'bottom'
+          }, options);
+          select2.container.tooltipster(tooltipOptions);
         }
       });
     },
