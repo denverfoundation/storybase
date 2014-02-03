@@ -165,13 +165,24 @@
     .connected-stories dl {
       margin: 10px;
     }
+
     .call-to-action {
-      word-wrap:break-word;
-      overflow-wrap:break-word;
+      margin-bottom: 14px;
+      word-wrap: break-word;
+      overflow-wrap: break-word;
+
+      ul {
+        list-style:disc !important;
+      }
     }
-    .call-to-action ul {
-      list-style:disc !important;
+
+    .storybase-share-button,
+    .storybase-embed-button {
+      // Give some vertical space when the buttons become stacked on small
+      // screens.
+      margin-bottom: 4px;
     }
+
     .object-metadata {
       color:#444;
       margin: 20px 0;
