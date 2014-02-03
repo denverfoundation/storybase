@@ -227,7 +227,7 @@
 
       background:url('../img/cols-icons.png') no-repeat 0 0; 
       font-size:14px; 
-      color: @orange;
+      color: @gray;
       font-style:normal;  
       font-family: 'MuseoSlab500Regular'; 
       
@@ -238,26 +238,26 @@
     }
 
     &.active a { 
-      color:@gray !important; 
+      color: @orange !important;
     }
 
     &.tile-view {
       a { 
-        background-position: 0 0; 
+        background-position: 0 -29px; 
       }
 
       &.active a {
-        background-position: 0 -29px; 
+        background-position: 0 0; 
       }
     }
 
     &.list-view {
       a { 
-        background-position: -43px 0; 
+        background-position: -43px -29px; 
       }
 
       &.active a {
-        background-position: -43px -29px; 
+        background-position: -43px 0; 
       }
     }
 
@@ -270,11 +270,11 @@
       }
 
       a {
-        background-position: -86px 0; 
+        background-position: -86px -29px; 
       }
 
       &.active a { 
-        background-position: -86px -29px; 
+        background-position: -86px 0; 
       }
     }
   }
