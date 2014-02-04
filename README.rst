@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.19.0
+~~~~~~
+
+* Responsive design in templates and styles (#774)
+
 0.18.0
 ~~~~~~
 
