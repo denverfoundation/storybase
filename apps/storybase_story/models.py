@@ -618,6 +618,13 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
 
         return self._asset_datasets
 
+    def has_all_assets(self):
+        for section in self.sections.all():
+            if section.has_all_assets() is False:
+                return False
+
+        return True
+
 
 def set_story_slug(sender, instance, **kwargs):
     """
@@ -1021,6 +1028,22 @@ class Section(node_factory('SectionRelation'), TranslatedModel,
     def natural_key(self):
         return (self.section_id,)
     natural_key.dependencies = ['storybase_help.help', 'storybase_story.story']
+
+    def has_all_assets(self):
+        """Returns true if every container in this section has an asset"""
+
+        if self.layout is None:
+            # There's no layout, so no sensible requirement for a certain
+            # number of assets
+            return True
+
+        for container in self.layout.containers.all():
+            try:
+                SectionAsset.objects.get(section=self, container=container)
+            except SectionAsset.DoesNotExist:
+                return False
+
+        return True
 
 
 class SectionRelation(edge_factory(Section, concrete=False)):

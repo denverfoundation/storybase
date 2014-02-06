@@ -583,6 +583,51 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
         self.assertIn(dataset2, asset_datasets)
         self.assertNotIn(dataset3, asset_datasets)
 
+    def test_has_all_assets(self):
+        title = ('Transportation Challenges Limit Education Choices for '
+                 'Denver Parents')
+        summary = """
+            Many families in the Denver metro area use public
+            transportation instead of a school bus because for them, a
+            quality education is worth hours of daily commuting. Colorado's
+            school choice program is meant to foster educational equity,
+            but the families who benefit most are those who have time and
+            money to travel. Low-income families are often left in a lurch.
+            """
+        byline = "Mile High Connects"
+        story = create_story(title=title, summary=summary, byline=byline)
+        side_by_side = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        oneup = SectionLayout.objects.get(sectionlayouttranslation__name="1 Up")
+               
+        left = Container.objects.get(name='left')
+        right = Container.objects.get(name='right')
+        center = Container.objects.get(name='center')
+
+        section1 = create_section(title="Test Section 1", story=story,
+                layout=side_by_side)
+
+        section2 = create_section(title="Test Section 2", story=story,
+                layout=oneup)
+
+        asset1 = create_html_asset(type='text', title='Test Asset', 
+            body='Test content')
+        asset2 = create_html_asset(type='text', title='Test Asset 2',
+            body='Test content 2')
+        asset3 = create_html_asset(type='text', title='Test Asset 3',
+            body='Test content 3')
+
+        SectionAsset.objects.create(section=section1, asset=asset1,
+            container=left)
+        SectionAsset.objects.create(section=section1, asset=asset2,
+            container=right)
+
+        self.assertFalse(story.has_all_assets())
+
+        SectionAsset.objects.create(section=section2, asset=asset3,
+            container=center)
+
+        self.assertTrue(story.has_all_assets())
+
 
 class StoryPermissionTest(PermissionTestCase):
     """Test case for story permissions"""
@@ -1445,6 +1490,38 @@ class SectionModelTest(TestCase, SloppyComparisonTestMixin):
         sleep(2)
         section.save()
         self.assertNowish(story.last_edited)
+
+    def test_has_all_assets(self):
+        title = ('Transportation Challenges Limit Education Choices for '
+                 'Denver Parents')
+        summary = """
+            Many families in the Denver metro area use public
+            transportation instead of a school bus because for them, a
+            quality education is worth hours of daily commuting. Colorado's
+            school choice program is meant to foster educational equity,
+            but the families who benefit most are those who have time and
+            money to travel. Low-income families are often left in a lurch.
+            """
+        byline = "Mile High Connects"
+        story = create_story(title=title, summary=summary, byline=byline)
+        layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
+        left = Container.objects.get(name='left')
+        right = Container.objects.get(name='right')
+        section = create_section(title="Test Section 1", story=story, layout=layout)
+        self.assertFalse(section.has_all_assets())
+
+        asset1 = create_html_asset(type='text', title='Test Asset', 
+            body='Test content')
+        asset2 = create_html_asset(type='text', title='Test Asset 2',
+            body='Test content 2')
+
+        SectionAsset.objects.create(section=section, asset=asset1,
+            container=left)
+        self.assertFalse(section.has_all_assets())
+
+        SectionAsset.objects.create(section=section, asset=asset2,
+            container=right)
+        self.assertTrue(section.has_all_assets())
 
 
 class TemplateTagTest(TestCase):
