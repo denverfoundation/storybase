@@ -692,6 +692,26 @@ class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         self.assertEqual(created_dataset.owner, self.user)
         # Test that the created dataset is associated with a story 
 
+    def test_post_list_long_url(self):
+        """
+        Test that URLs longer than 200 characters return an error.
+        """
+        post_data = {
+            'title': "Chicago Street Names",
+            'description': "List of all Chicago streets with suffixes and minimum and maximum address numbers.",
+            'url':
+            'https://data.cityofchicago.org/Transportation/Chicago-Street-Names/i6bp-fvbxaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaaa',
+            'links_to_file': False,
+            'language': "en",
+        }
+        self.assertEqual(DataSet.objects.count(), 0)
+        self.api_client.client.login(username=self.username,
+                                     password=self.password)
+        uri = '/api/0.1/datasets/'
+        resp = self.api_client.post(uri, format='json', data=post_data)
+        self.assertHttpBadRequest(resp)
+        self.assertEqual(DataSet.objects.count(), 0)
+
     def test_post_list_with_story_file_as_data_url(self):
         """
         Test that a user can create a resource including uploading a file

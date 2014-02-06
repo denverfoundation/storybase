@@ -267,6 +267,10 @@
         errs.title = gettext("You must specify a title");
       }
 
+      if (attrs.url && attrs.url.length > 200) {
+        errs.url = { type: 'url', message: gettext("URL must be 200 characters or less.  You could try using a URL shortener.") };
+      }
+
       _.each(contentAttrNames, function(attrName) {
         if (_.has(attrs, attrName) && attrs[attrName]) {
           found.push(attrName);

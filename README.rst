@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.19.1
+~~~~~~
+
+* Validation and error response for too-long dataset URLS (#940)
+
 0.19.0
 ~~~~~~
 

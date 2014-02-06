@@ -311,8 +311,13 @@ class AssetResource(IframePostDetailResource):
 class DataSetValidation(Validation):
     def is_valid(self, bundle, request=None, **kwargs):
         errors = {} 
+        
         if bundle.data.get('url') and bundle.data.get('file'):
             errors['__all__'] = "You may specify either a URL or a file for the dataset, but not both"
+
+        if len(bundle.data.get('url', '')) > 200:
+            errors['url'] = ("The dataset URL you provided is longer than 200"
+                " characters. Please use a URL shortener.")
 
         return errors
 
