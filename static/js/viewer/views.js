@@ -593,6 +593,8 @@
     // override to hook into our own render event.
     initialize: function() {
       this.on('render', this.handleRendered, this);
+      this._displayProperties = {};
+      $(window).on('resize.viewer', _.bind(this.updateStickyHeader, this));
       ViewerApp.prototype.initialize.apply(this, arguments);
     },
 
@@ -601,45 +603,37 @@
     },
     
     setStickyHeader: function(isSticky) {
-      if ('_stickyHeaderInfo' in this) {
-        if (isSticky) {
-          this.$('#header').css('position', 'fixed');
-          this.$('#body').css(
-            'padding-top',
-            this._stickyHeaderInfo.bodyPaddingTop + this._stickyHeaderInfo.headerHeight
-          );
-        }
-        else {
-          this.$('#header').css('position', 'relative');
-          this.$('#body').css(
-            'padding-top', 
-            this._stickyHeaderInfo.bodyPaddingTop
-          );
-        }
-      }
-    },
-    
-    handleScroll: function() {
-      var headerPercentage = this.$('#header').outerHeight() / $(window).height();
-      if (headerPercentage >= this.options.stickyHeaderPercentage) {
-        // Don't make the header sticky for short viewports
-        return;
-      }
-
-      var top = $(window).scrollTop();
-      if (top !== 0) {
-        this.setStickyHeader(true);
+      if (isSticky) {
+        this.$('#header').css('position', 'fixed');
+        this.$('#body').css(
+          'padding-top',
+          this._displayProperties.bodyPaddingTop + this.$('#header').outerHeight()
+        );
       }
       else {
-        this.setStickyHeader(false);
+        this.$('#header').css('position', 'relative');
+        this.$('#body').css(
+          'padding-top', 
+          this._displayProperties.bodyPaddingTop
+        );
       }
+    },
+
+    updateStickyHeader: function() {
+      this.setStickyHeader((this.headerPercentage() < this.options.stickyHeaderPercentage));
+    },
+  
+    headerPercentage: function() {
+      return this.$('#header').outerHeight() / $(window).height();
+    },
+
+    updateDisplayProperties: function() {
+      this._displayProperties.bodyPaddingTop = parseInt(this.$('#body').css('padding-top'), 10);
     },
     
     handleRendered: function() {
-      this._stickyHeaderInfo = {
-        headerHeight: this.$('#header').outerHeight(),
-        bodyPaddingTop: parseInt(this.$('#body').css('padding-top'), 10)
-      };
+      this.updateDisplayProperties();
+      this.updateStickyHeader();
 
       // defer loading of iframed assets until their section is shown.
       storybase.views.deferSrcLoad({ 
