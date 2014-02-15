@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.19.2
+~~~~~~
+
+* Fix viewer sticky header on Android (#942)
+
 0.19.1
 ~~~~~~
 
