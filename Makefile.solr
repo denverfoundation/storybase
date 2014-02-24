@@ -1,4 +1,4 @@
-SOLR_TGZ_URL ?= http://mirrors.sonic.net/apache/lucene/solr/4.5.1/solr-4.5.1.tgz
+SOLR_TGZ_URL ?= http://mirrors.sonic.net/apache/lucene/solr/4.6.1/solr-4.6.1.tgz
 PORT         ?= 8983
 IP           ?= 127.0.0.1
 
