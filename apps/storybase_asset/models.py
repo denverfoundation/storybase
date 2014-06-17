@@ -2,6 +2,7 @@
 import mimetypes
 import os
 import re
+from ssl import SSLError
 
 from lxml.etree import XMLSyntaxError
 import lxml.html
@@ -308,7 +309,7 @@ class ExternalAsset(Asset):
     translated_fields = Asset.translated_fields + ['url']
     translation_class = ExternalAssetTranslation
 
-    oembed_providers = bootstrap_providers() 
+    oembed_providers = bootstrap_providers(cache)
 
     IMAGE_MIMETYPES = (
         "image/jpeg", 
@@ -392,7 +393,7 @@ class ExternalAsset(Asset):
             # Some other error occurred with the oEmbed
             # TODO: Show a default image
             output.append(self.render_link_html())
-        except ValueError:
+        except (ValueError, SSLError):
             # ValueError is raised when JSON of response couldn't
             # be decoded, e.g. when offline
             # Some other error occurred with the oEmbed
@@ -428,10 +429,11 @@ class ExternalAsset(Asset):
                     self._thumbnail_url = resource_data.get('url')
                 else:
                     self._thumbnail_url = resource_data.get('thumbnail_url')
-            except ProviderNotFoundException:
+            except (ProviderNotFoundException, SSLError):
+                # There isn't an oEmbed provider for the URL, or we couldn't
+                # get a response from the oEmbed emdpoint.
+                # Just use the raw image URL.
                 if self.type == 'image' or self.url_is_image_file():
-                    # There isn't an oEmbed provider for the URL. Just use the
-                    # raw image URL.
                     self._thumbnail_url = self.url
                 else:
                     self._thumbnail_url = None

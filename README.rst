@@ -11,6 +11,11 @@ For more information, see http://www.floodlightproject.org/
 Changelog
 ---------
 
+0.19.3
+~~~~~~
+
+* Handle SSLErrors from oEmbed request gracefully.  Cache oEmbed responses (#946)
+
 0.19.2
 ~~~~~~
 

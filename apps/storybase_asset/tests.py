@@ -4,6 +4,11 @@ import hashlib
 from itertools import ifilter
 import mimetypes
 import os
+from ssl import SSLError
+try:
+    from unittest.mock import patch
+except ImportError:
+    from mock import patch
 
 import django
 from django.conf import settings
@@ -307,6 +312,32 @@ class ExternalAssetModelTest(TestCase):
         self.assertIn('asset-type-video', css_classes)
         self.assertIn('asset-provider-youtube', css_classes)
         self.assertIn('asset-%s' % asset.asset_id, css_classes)
+
+    @patch('storybase_asset.models.ExternalAsset.get_oembed_response',
+           side_effect=SSLError)
+    def test_get_thumbnail_url_ssl_error(self, mock_method):
+        """Test that get_thumbnail_url() fails gracefully when an SSLError is raised"""
+        url = "http://www.flickr.com/photos/79208145@N08/7845282692/"
+        asset = create_external_asset(type='image', title='',
+                url=url)
+        try:
+            thumbnail_url = asset.get_thumbnail_url()
+            self.assertEqual(thumbnail_url, url)
+        except SSLError:
+            self.fail("ExternalAsset.get_thumbnail_url() should not raise SSLError")
+
+    @patch('storybase_asset.models.ExternalAsset.get_oembed_response',
+           side_effect=SSLError)
+    def test_render_html_ssl_error(self, mock_method):
+        """Test that render_html() fails gracefully when an SSLError is raised"""
+        url = "http://www.flickr.com/photos/79208145@N08/7845282692/"
+        asset = create_external_asset(type='image', title='',
+                url=url)
+        try:
+            html = asset.render_html()
+            self.assertIn(url, html)
+        except SSLError:
+            self.fail("ExternalAsset.render_html() should not raise SSLError")
 
 
 class LocalImageAssetModelTest(FileCleanupMixin, TestCase):
