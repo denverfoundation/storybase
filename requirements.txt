@@ -5,7 +5,7 @@ Pillow>=1.7.8
 cmsplugin-filer>=0.8.0
 # Install bleach before django-cms to use bleach's html5lib version dependency
 bleach
-django-cms>=2.4
+django-cms>=2.4,<3.0
 django-filer>=0.9.3
 pysolr>=2.1.0
 django-haystack>=2.0
@@ -24,9 +24,7 @@ psycopg2>=2.4.1
 git+git://github.com/elpaso/django-dag.git#egg=django_dag
 # django-uuidfield must be fixed at 0.2 
 django-uuidfield==0.2
-# Install django-model-utils from Bitbucket so we can used
-# InheritanceManager.get_subclass()
-hg+https://bitbucket.org/carljm/django-model-utils
+django-model-utils
 django-categories
 django-social-auth
 django-registration>=1.0

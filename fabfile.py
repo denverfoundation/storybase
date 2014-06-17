@@ -421,7 +421,7 @@ def install_requirements():
     """ Install application's Python requirements into the virtualenv """
     with cd(env['instance_root']):
         with prefix('source venv/bin/activate'):
-            run('pip install --requirement ./atlas/REQUIREMENTS')
+            run('pip install --requirement ./atlas/requirements.txt')
 
 @task
 def make_log_directory(instance=env['instance']):
