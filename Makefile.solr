@@ -1,4 +1,4 @@
-SOLR_TGZ_URL ?= http://apache.claz.org/lucene/solr/4.7.0/solr-4.7.0.tgz
+SOLR_TGZ_URL ?= http://apache.claz.org/lucene/solr/4.9.0/solr-4.9.0.tgz
 PORT         ?= 8983
 IP           ?= 127.0.0.1
 
