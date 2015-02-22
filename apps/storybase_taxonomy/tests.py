@@ -1,5 +1,5 @@
 """Tests for taxonomy app"""
-from django.contrib.auth.models import User 
+from django.contrib.auth.models import User
 from django.core.urlresolvers import reverse
 from django.test import TestCase
 
@@ -30,18 +30,21 @@ class CategoryApiTest(TestCase):
         self.assertEqual(category.name, name)
         self.assertEqual(category.slug, slug)
 
+    def test_create_categories(self):
+        self.fail('Implement me')
+
 
 class TagResourceTest(ResourceTestCase):
     def setUp(self):
         super(TagResourceTest, self).setUp()
         self.username = 'test'
         self.password = 'test'
-        self.user = User.objects.create_user(self.username, 
+        self.user = User.objects.create_user(self.username,
             'test@example.com', self.password)
         self.user2 = User.objects.create_user("test2", "test2@example.com",
                                               "test2")
         self.story = create_story(title="Test Story", summary="Test Summary",
-            byline="Test Byline", status="published", language="en", 
+            byline="Test Byline", status="published", language="en",
             author=self.user)
         self.tag_attrs = [
             { 'name': 'Schools' },
