@@ -35,18 +35,18 @@ class CategoryTranslationBase(TranslationModel):
         super(CategoryTranslationBase, self).save(*args, **kwargs)
 
 
-class TranslatedCategoryBase(MPTTModel, TranslatedModel): 
+class TranslatedCategoryBase(MPTTModel, TranslatedModel):
     """
     A version of CategoryBase from the categories app that supports a
     translated name and slug field.
     """
-    parent = TreeForeignKey('self', 
-        blank=True, 
-        null=True, 
-        related_name="children", 
+    parent = TreeForeignKey('self',
+        blank=True,
+        null=True,
+        related_name="children",
         verbose_name='Parent')
     active = models.BooleanField(default=True)
-    
+
     objects = CategoryManager()
     tree = TreeManager()
 
@@ -54,25 +54,25 @@ class TranslatedCategoryBase(MPTTModel, TranslatedModel):
     def save(self, *args, **kwargs):
         """
         While you can activate an item without activating its descendants,
-        It doesn't make sense that you can deactivate an item and have its 
+        It doesn't make sense that you can deactivate an item and have its
         decendants remain active.
         """
         super(TranslatedCategoryBase, self).save(*args, **kwargs)
-        
+
         if not self.active:
             for item in self.get_descendants():
                 if item.active != self.active:
                     item.active = self.active
                     item.save()
-    
+
     def __unicode__(self):
         ancestors = self.get_ancestors()
         return ' > '.join([force_unicode(i.name) for i in ancestors]+[self.name,])
-    
+
     class Meta:
         abstract = True
         ordering = ('tree_id', 'lft')
-   
+
     # TODO: Figure out if we need to order categories by some field.
     # We could add a weight field to the model, or save a copy of the first
     # translation's name field.
@@ -127,9 +127,9 @@ class TaggedItem(GenericTaggedItemBase):
     tag = models.ForeignKey(Tag, related_name='items')
 
 
-def create_category(name, slug='', language=settings.LANGUAGE_CODE, 
+def create_category(name, slug='', language=settings.LANGUAGE_CODE,
                  *args, **kwargs):
-    """Convenience function for creating a Category 
+    """Convenience function for creating a Category
 
     Allows for the creation of categories without having to explicitly
     deal with the translations.
@@ -141,3 +141,28 @@ def create_category(name, slug='', language=settings.LANGUAGE_CODE,
                                       language=language)
     translation.save()
     return obj
+
+
+def create_categories(names):
+    """Convenience function for creating a categories
+
+    Allows for the creation of categories without having to deal
+    with slugs, or translations. The categories will only be created
+    if they do not exist.
+
+    Returns a list of newly created categories.
+
+    """
+
+    categories = []
+
+    for name in names:
+        if not CategoryTranslation.objects.filter(name=name).exists():
+            c = create_category(
+                name=name,
+                slug=slugify(name)
+            )
+
+            categories.append(c)
+
+    return categories

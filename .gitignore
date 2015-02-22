@@ -9,3 +9,5 @@ media/*
 settings/dev.py
 wsgi.py
 config/fabricrc
+.idea/
+*.mo

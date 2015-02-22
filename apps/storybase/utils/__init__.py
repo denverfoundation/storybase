@@ -111,7 +111,7 @@ def _slug_strip(value, separator='-'):
 
 
 # TODO: Test this a bit, make signature match handlebars implementation
-def first_paragraph(value): 
+def first_paragraph(value):
     import re
     from lxml.html import fragments_fromstring, tostring
     fragments = fragments_fromstring(value)
@@ -131,16 +131,16 @@ def import_class(import_path):
     class_name = path_parts[-1]
     module_name = '.'.join(path_parts[:-1])
     module = __import__(module_name, globals(), locals(), [class_name], -1)
-                        
+
     return getattr(module, class_name)
 
 
 def get_site_name(request=None):
     """
     Get the site name
-    
+
     Try the setting first, if not try the sites framework.
-    
+
     """
     site_name = getattr(settings, 'STORYBASE_SITE_NAME', None)
     if not site_name:
@@ -152,7 +152,7 @@ def get_site_name(request=None):
 def full_url(urlstring, scheme='http'):
     parsed = urlsplit(urlstring)
     if parsed.netloc:
-        # URL string is already full, e.g. 
+        # URL string is already full, e.g.
         # http://localhost:8000/stories/foo/, just return it
         return urlstring
     else:
@@ -186,10 +186,10 @@ def latest_context(qs, count=3, img_width=100, order_by='-published'):
 def escape_json_for_html(json_str):
     """
     Escape a JSON string so that it can be enclosed inside a <script> tag
-    
+
     This is needed to bootstrap our Backbone views from inside our
     templates.  Alterately, we could use this by making a custom serializer
-    for the Tastypie resources that uses simplejson.JSONEncoderForHTML 
+    for the Tastypie resources that uses simplejson.JSONEncoderForHTML
     """
     json_str = json_str.replace('&', '\\u0026')
     json_str = json_str.replace('<', '\\u003c')
@@ -210,3 +210,13 @@ def roundrobin(*iterables):
         except StopIteration:
             pending -= 1
             nexts = cycle(islice(nexts, pending))
+
+
+def clean_column(c):
+    """
+    Strips a column from extra whitespace, also returns None
+    if the column is empty.
+
+    """
+    c = c.strip()
+    return None if c == '' else c
