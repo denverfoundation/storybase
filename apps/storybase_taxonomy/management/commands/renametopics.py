@@ -74,5 +74,9 @@ class Command(BaseCommand):
                 story.topics.add(new_topic)
                 story.save()
 
+        # delete all the old topics who are not included in the new topics
+        for old_topic_name in old_topics:
+            if old_topic_name not in new_topics:
+                storybase_taxonomy.models.CategoryTranslation.objects.filter(name=old_topic_name).delete()
 
         print("Done, renamed {} topics".format(renames))
