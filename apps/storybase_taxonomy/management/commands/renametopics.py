@@ -44,11 +44,12 @@ class Command(BaseCommand):
 
             data.add((old_topic, new_topic))
 
-        # here we create the new categories if they don't exist
-        storybase_taxonomy.models. \
-        create_categories([new_topic_name for (_, new_topic_name) in data])
+        old_topics = [r[0] for r in data]
+        new_topics = [r[1] for r in data]
 
-        stories = storybase_story.models.Story.objects.all()
+        # here we create the new categories if they don't exist
+        storybase_taxonomy.models.create_categories(new_topics)
+
         renames = 0
 
         for (old, new) in data:
@@ -59,19 +60,19 @@ class Command(BaseCommand):
             old_topic = storybase_taxonomy.models.CategoryTranslation.\
                 objects.filter(name=old)[0].category
 
+            stories = storybase_story.models.Story.objects.filter(topics__categorytranslation__name=old_topic.name)
+            print('Found {} stories with {}.'.format(len(stories), old_topic))
+
             for story in stories:
-                for topic in story.topics.all():
+                renames += 1
 
-                    if topic == old_topic:
-                        renames += 1
+                print("Replacing {}'s \"{}\" topic with \"{}\"".format(
+                    story, old_topic, new_topic
+                ))
 
-                        print("Replacing {}'s \"{}\" topic with \"{}\"".format(
-                            story, topic, new_topic
-                        ))
-
-                        story.topics.remove(topic)
-                        story.topics.add(new_topic)
-
+                story.topics.remove(old_topic)
+                story.topics.add(new_topic)
                 story.save()
-        
+
+
         print("Done, renamed {} topics".format(renames))

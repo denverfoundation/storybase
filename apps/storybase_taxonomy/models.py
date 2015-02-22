@@ -142,6 +142,7 @@ def create_category(name, slug='', language=settings.LANGUAGE_CODE,
     translation.save()
     return obj
 
+
 def create_categories(names):
     """Convenience function for creating a categories
 
