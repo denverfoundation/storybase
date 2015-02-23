@@ -35,6 +35,7 @@ from storybase_story import structure
 from storybase_story.managers import (ContainerManager, SectionLayoutManager,
     SectionManager, StoryManager, StoryTemplateManager)
 from storybase_taxonomy.models import TaggedItem
+from storybase_badge.models import Badge
 
 
 class StoryPermission(PermissionMixin):
@@ -163,6 +164,8 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
                                              blank=True,
                                              through='StoryRelation',
                                              symmetrical=False)
+
+    badges = models.ManyToManyField(Badge, related_name='stories')
 
     objects = StoryManager()
 

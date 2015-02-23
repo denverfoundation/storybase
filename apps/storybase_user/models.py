@@ -28,9 +28,11 @@ from storybase.models import (DirtyFieldsMixin, PermissionMixin,
 from storybase.utils import full_url, unique_slugify
 from storybase_asset.models import (DefaultImageMixin, FeaturedAssetsMixin,
     ImageRenderingMixin)
+from storybase_badge.models import Badge
 
 ADMIN_GROUP_NAME = getattr(settings, 'ADMIN_GROUP_NAME', 'CA Admin')
 """Default name of the administrator group"""
+
 
 class CuratedStory(models.Model):
     """ Abstract base class for "through" model for associating Stories with Projects and Organizations """
@@ -499,6 +501,8 @@ class UserProfile(RecentStoriesMixin, models.Model):
     notify_story_comment = models.BooleanField("Comment Notification",
         default=True,
         help_text="Alert me when someone comments on one of my stories")
+
+    badges = models.ManyToManyField(Badge, related_name='users')
 
     def __unicode__(self):
         return unicode(self.user)

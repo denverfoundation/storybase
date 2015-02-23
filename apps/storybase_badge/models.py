@@ -1,9 +1,6 @@
 
 from django.db import models
 
-from apps.storybase_user.models import UserProfile
-from apps.storybase_story.models import Story
-
 
 class Badge(models.Model):
     """
@@ -15,9 +12,6 @@ class Badge(models.Model):
     name = models.CharField(max_length=100, null=False, blank=False)
     description = models.TextField(null=False, blank=False)
     icon_uri = models.URLField()
-
-    stories = models.ManyToManyField(Story, related_name='badges')
-    users = models.ManyToManyField(UserProfile, related_name='badges')
 
     def __unicode__(self):
         return self.name
