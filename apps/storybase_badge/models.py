@@ -18,3 +18,6 @@ class Badge(models.Model):
 
     stories = models.ManyToManyField(Story, related_name='badges')
     users = models.ManyToManyField(UserProfile, related_name='badges')
+
+    def __unicode__(self):
+        return self.name
