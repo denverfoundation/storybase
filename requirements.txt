@@ -2,7 +2,7 @@ Django>=1.5,<1.6
 django-localflavor
 South>=0.7.3
 Pillow>=1.7.8
-cmsplugin-filer>=0.8.0
+cmsplugin-filer<0.10
 # Install bleach before django-cms to use bleach's html5lib version dependency
 bleach
 django-cms>=2.4,<3.0
