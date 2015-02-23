@@ -1,5 +1,4 @@
 from django.db import models
-from filer.fields.image import FilerImageField
 
 
 class Badge(models.Model):

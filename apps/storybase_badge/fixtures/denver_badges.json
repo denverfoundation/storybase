@@ -1,0 +1,20 @@
+[
+  {
+    "fields": {
+      "name": "Denver Foundation",
+      "description": "Stories promoted by the Denver Foundation Staff.",
+      "icon_uri": "/static/img/badges/denver-foundation.png"
+    },
+    "model": "storybase_badge.Badge",
+    "pk": 1
+  },
+  {
+    "fields": {
+      "name": "Thought Leader",
+      "description": "Stories promoted by people who are active leaders within the Denver foundation.",
+      "icon_uri": "/static/img/badges/thought.png"
+    },
+    "model": "storybase_badge.Badge",
+    "pk": 2
+  }
+]
