@@ -1,5 +1,4 @@
 
-from django.contrib.auth.models import User
 from django.db import models
 
 from apps.storybase_user.models import UserProfile

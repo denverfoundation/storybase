@@ -203,6 +203,7 @@ INSTALLED_APPS = (
     'storybase_taxonomy',
     'storybase_geo',
     'storybase_messaging',
+    'storybase_badge',
     'cmsplugin_storybase',
 )
 
