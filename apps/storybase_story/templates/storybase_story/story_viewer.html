@@ -28,8 +28,8 @@
     {% addtoblock "css" %}<script src="{{ STATIC_URL }}js/libs/less-1.4.1.min.js"></script>{% endaddtoblock %}
     {% endif %}
     {% comment %}
-    If we're not compiling the LESS stylesheet with less.js, we'll be passing 
-    the styleshset through django-compressor below. 
+    If we're not compiling the LESS stylesheet with less.js, we'll be passing
+    the styleshset through django-compressor below.
     {% endcomment %}
 
     {% render_block "css" %}
@@ -96,7 +96,7 @@
           </section>
           {% endfor %}
 
-          {% if story.call_to_action or story.allow_connected %} 
+          {% if story.call_to_action or story.allow_connected %}
           <section id="call-to-action" class="section call-to-action" style="display:none;">
 	        <h2 class="title">{% trans "How Can You Help?" %}</h2>
 	        {{ story.call_to_action|safe }}
@@ -134,9 +134,9 @@
             {{ story.structure.render_toc }}
             <button id="toggle-toc">
               <span class="bars">
-                <span class="bar"></span>                
-                <span class="bar"></span>                
-                <span class="bar"></span>                
+                <span class="bar"></span>
+                <span class="bar"></span>
+                <span class="bar"></span>
               </span>
               <span class="text">Table of Contents</span>
               <i class="icon-caret-up"></i></button>
@@ -170,13 +170,18 @@
     <script src="{{ STATIC_URL }}js/viewer/views.js"></script>
     <script src="{{ STATIC_URL }}js/viewer/routes.js"></script>
     <script src="{{ STATIC_URL }}js/libs/tooltipster-2.1.4/js/jquery.tooltipster.min.js"></script>
-    
+
+    <script src="{{ STATIC_URL }}js/badges/application.js"></script>
+    <script src="{{ STATIC_URL }}js/badges/models.js"></script>
+    <script src="{{ STATIC_URL }}js/badges/views.js"></script>
+
+
     {% endcompress %}
 
     <script type="text/javascript">
     $(document).ready(function() {
-        var storyStructureType = '{{ story.structure_type }}';        
-        var story = new storybase.models.Story({{ story.structure.to_json }});
+        var storyStructureType = '{{ story.structure_type }}';
+        story = new storybase.models.Story({{ story.structure.to_json }});
         var sections = new storybase.collections.Sections;
         var viewerContext = '{{ context }}';
         sections.reset({{ sections_json }});
@@ -203,9 +208,9 @@
             // the route event listeners have been wired up
             Backbone.history.start();
         }
-        
+
         $('#tools a').tooltipster();
-        
+
         storybase.viewer.app.render();
     });
     </script>

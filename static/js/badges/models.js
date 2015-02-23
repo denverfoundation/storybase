@@ -9,7 +9,7 @@
   }
 
   var Badge = Backbone.Model.extend({
-
+    
   });
 
   storybase.badges.models.Badge = Badge;
