@@ -12,9 +12,36 @@
     "fields": {
       "name": "Thought Leader",
       "description": "Stories promoted by people who are active leaders within the Denver foundation.",
-      "icon_uri": "/static/img/badges/thought.png"
+      "icon_uri": "/static/img/badges/thought-leader.png"
     },
     "model": "storybase_badge.Badge",
     "pk": 2
+  },
+  {
+    "fields": {
+      "name": "AAG",
+      "description": "",
+      "icon_uri": "/static/img/badges/aag.png"
+    },
+    "model": "storybase_badge.Badge",
+    "pk": 3
+  },
+  {
+    "fields": {
+      "name": "Strengthening Neighborhoods",
+      "description": "",
+      "icon_uri": "/static/img/badges/sn.png"
+    },
+    "model": "storybase_badge.Badge",
+    "pk": 4
+  },
+  {
+    "fields": {
+      "name": "SVP",
+      "description": "",
+      "icon_uri": "/static/img/badges/svp.png"
+    },
+    "model": "storybase_badge.Badge",
+    "pk": 5
   }
 ]
