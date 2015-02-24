@@ -52,14 +52,25 @@
   <body class="story-viewer">
     <div id="app">
         <header id="header">
+
+          <div id="badges" class="pull-right">
+            {% for badge in story.badges.all %}
+            <img class="badge" src="{{ badge.icon_uri }}" />
+            {% endfor %}
+          </div>
+
+
           <div id="tools">
               <a href="{{ story.get_absolute_url }}" title="{% trans "About This Story" %}" class="external"><span class="text">{% trans "About This Story" %}</span> <i class="icon-th-list"></i></a>
               <a href="{{ story.get_share_url }}" title="{% trans "Share This Story"%}" class="storybase-share-link" data-options='{"appendeeSelector": "#app", "alignment": "bottom right" }'>
                 <span class="text">{% trans "Share This Story" %}</span> <i class="icon-share"></i>
               </a>
+
           </div>
           <h1 class="title">{{ story.title }}</h1>
           <p class="byline">{% trans "By" %} {% if story.byline %}{{ story.byline }}{% else %}{{ story.contributor_name }}{% endif %}</p>
+
+
         </header>
 
         <div id="body">
@@ -85,7 +96,9 @@
             <div id="summary-toc">
               <h2>Table of Contents</h2>
               {{ story.structure.render_toc }}
+
             </div>
+
           {% endif %}
           </section>
           {% endif %}
