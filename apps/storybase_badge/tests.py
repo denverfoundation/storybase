@@ -1,4 +1,4 @@
-
+from django.contrib.auth.models import User
 from tastypie.test import ResourceTestCase
 from storybase_story.models import create_story
 from storybase_badge.models import Badge
@@ -12,9 +12,14 @@ class BadgeResourceTest(ResourceTestCase):
 
         super(BadgeResourceTest, self).setUp()
 
-        self.story = create_story(
-            'Nature Remix'
-        )
+        self.story = create_story('Nature Remix')
+        self.story_uri = '/api/0.1/stories/{}/'.format(self.story.story_id)
+
+        self.story2 = create_story('Learning How to Stand up')
+        self.story_uri2 = '/api/0.1/stories/{}/'.format(self.story2.story_id)
+
+        self.badge = Badge.objects.all()[0]
+        self.badge_uri = '/api/0.1/badges/{}/'.format(self.badge.id)
 
     def test_get_list_of_badges(self):
 
@@ -34,26 +39,23 @@ class BadgeResourceTest(ResourceTestCase):
 
     def test_add_badge_to_story(self):
 
-        badge = Badge.objects.all()[0]
+        self.assertNotIn(self.badge, self.story.badges.all())
 
-        self.assertNotIn(badge, self.story.badges.all())
-
-        self.api_client.patch('/api/0.1/badges/{}/'.format(badge.id), data={
-            'stories': ['/api/0.1/stories/{}/'.format(self.story.story_id)]
+        self.api_client.patch(self.badge_uri, data={
+            'stories': [self.story_uri]
         })
 
-        self.assertIn(badge, self.story.badges.all())
+        self.assertIn(self.badge, self.story.badges.all())
 
     def test_remove_badge_from_story(self):
 
-        badge = Badge.objects.all()[0]
+        self.assertNotIn(self.story, self.badge.stories.all())
+        self.badge.stories.add(self.story)
+        self.assertIn(self.story, self.badge.stories.all())
 
-        self.assertNotIn(self.story, badge.stories.all())
-        badge.stories.add(self.story)
-        self.assertIn(self.story, badge.stories.all())
-
-        self.api_client.patch('/api/0.1/badges/{}/'.format(badge.id), data={
+        self.api_client.patch(self.badge_uri, data={
             'stories': []
         })
 
-        self.assertNotIn(self.story, badge.stories.all())
+        self.assertNotIn(self.story, self.badge.stories.all())
+
