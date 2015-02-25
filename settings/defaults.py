@@ -197,13 +197,13 @@ INSTALLED_APPS = (
     # StoryBase
     'storybase',
     'storybase_help',
+    'storybase_badge',
     'storybase_user',
     'storybase_asset',
     'storybase_story',
     'storybase_taxonomy',
     'storybase_geo',
     'storybase_messaging',
-    'storybase_badge',
     'cmsplugin_storybase',
 )
 
