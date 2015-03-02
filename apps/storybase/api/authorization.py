@@ -3,8 +3,8 @@ from django.db.models import Q
 from tastypie.authorization import Authorization
 from tastypie.exceptions import Unauthorized
 
-class LoggedInAuthorization(Authorization):
-    """Custom authorization that checks Django authentication"""
+
+class UserAuthorization(object):
 
     def user_valid(self, bundle):
         """
@@ -13,11 +13,15 @@ class LoggedInAuthorization(Authorization):
         A valid user must exist, be authenticated and be active.
         """
         if (not hasattr(bundle.request, 'user') or
-            not bundle.request.user.is_authenticated or 
+            not bundle.request.user.is_authenticated or
             not bundle.request.user.is_active):
             raise Unauthorized("You are not allowed to access that resource.")
         else:
             return True
+
+
+class LoggedInAuthorization(Authorization, UserAuthorization):
+    """Custom authorization that checks Django authentication"""
 
     def filter_by_perms(self, object_list, bundle, perms):
         """
