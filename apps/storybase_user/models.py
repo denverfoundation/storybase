@@ -28,7 +28,7 @@ from storybase.models import (DirtyFieldsMixin, PermissionMixin,
 from storybase.utils import full_url, unique_slugify
 from storybase_asset.models import (DefaultImageMixin, FeaturedAssetsMixin,
     ImageRenderingMixin)
-from storybase_badge.models import Badge
+from storybase_badge.models import Badge, BadgeEditor
 
 ADMIN_GROUP_NAME = getattr(settings, 'ADMIN_GROUP_NAME', 'CA Admin')
 """Default name of the administrator group"""
@@ -478,7 +478,7 @@ class ProfileImage(ImageRenderingMixin, DefaultImageMixin, object):
         return gravatar_url(self.user.email, default_url, width)
 
 
-class UserProfile(RecentStoriesMixin, models.Model):
+class UserProfile(RecentStoriesMixin, models.Model, BadgeEditor):
     user = models.OneToOneField(User)
 
     profile_id = UUIDField(auto=True, db_index=True)
