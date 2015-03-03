@@ -21,19 +21,38 @@
     })
   );
 
-  var StoryBadges = Badges.extend({
-    initialize: function(options) {
-      this.story = options.story;
-      this.storyUri = storybase.API_ROOT + 'stories/' + this.story.id + '/';
-    },
+  // TODO: make this into a mixin
+  var FilteredBadges = Badges.extend({
     parse: function(response) {
       var objects = response.objects;
 
       var storyBadges = _.filter(objects, function(b) {
-        return _.contains(b.stories, this.storyUri);
+        return this.predicate(b);
       }, this);
 
       return storyBadges;
+
+
+    }
+
+  });
+
+  var UserBadges = FilteredBadges.extend({
+    initialize: function(options) {
+      this.allowed = options.allowed;
+    },
+    predicate: function(badge) {
+      return _.contains(this.allowed, badge.id);
+    }
+  });
+
+  var StoryBadges = FilteredBadges.extend({
+    initialize: function(options) {
+      this.story = options.story;
+      this.storyUri = storybase.API_ROOT + 'stories/' + this.story.id + '/';
+    },
+    predicate: function(badge) {
+      return _.contains(badge.stories, this.storyUri);
     },
     addBadge: function(b) {
       var stories = b.get('stories');
@@ -60,6 +79,7 @@
 
   storybase.badges.models.Badge = Badge;
   storybase.badges.collections.Badges = Badges;
-  storybase.badges.models.StoryBadges = StoryBadges;
+  storybase.badges.collections.UserBadges = UserBadges;
+  storybase.badges.collections.StoryBadges = StoryBadges;
 
 })(_, Backbone, storybase);
