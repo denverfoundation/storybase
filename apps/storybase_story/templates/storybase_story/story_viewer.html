@@ -193,8 +193,18 @@
 
     <script type="text/javascript">
     $(document).ready(function() {
+        storybase.API_ROOT = '/api/0.1/';
+
         var storyStructureType = '{{ story.structure_type }}';
-        story = new storybase.models.Story({{ story.structure.to_json }});
+
+        var story = new storybase.models.Story({{ story.structure.to_json }});
+        story.id = '{{ story.story_id }}';
+
+        var app_badges = new storybase.badges.collections.Badges();
+        app_badges.fetch();
+
+        var storyBadges = new storybase.badges.models.StoryBadges(story);
+
         var sections = new storybase.collections.Sections;
         var viewerContext = '{{ context }}';
         sections.reset({{ sections_json }});
