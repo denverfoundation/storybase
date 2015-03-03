@@ -21,33 +21,42 @@
     })
   );
 
-  var StoryBadges = function(story) {
-    this.story = story;
-    this.storyId = this.story.id;
-    this.storyUri = storybase.API_ROOT + 'stories/' + this.storyId + '/';
-  }
+  var StoryBadges = Badges.extend({
+    initialize: function(options) {
+      this.story = options.story;
+      this.storyUri = storybase.API_ROOT + 'stories/' + this.story.id + '/';
+    },
+    parse: function(response) {
+      var objects = response.objects;
 
-  StoryBadges.prototype.add = function(badge) {
-    var stories = badge.get('stories');
-    stories.push(this.storyUri);
+      var storyBadges = _.filter(objects, function(b) {
+        return _.contains(b.stories, this.storyUri);
+      }, this);
 
-    badge.save({stories: stories}, {patch: true});
+      return storyBadges;
+    },
+    addBadge: function(b) {
+      var stories = b.get('stories');
+      stories.push(this.storyUri);
+      this._saveBadge(b, stories);
 
-    return this;
-  }
+      return this;
 
-  StoryBadges.prototype.remove = function(badge) {
+    },
+    removeBadge: function(b) {
+      var stories = _.filter(b.get('stories'), function(s) {
+        return s != this.storyUri;
+      }, this);
 
-    var stories = _.filter(badge.get('stories'), function(s) {
-      return s != this.storyUri;
-    }, this);
+      this._saveBadge(b, stories);
 
-    badge.save({stories: stories}, {patch: true});
+      return this;
 
-    return this;
-  }
-
-  var Story = storybase.models.Story;
+    },
+    _saveBadge: function(b, stories) {
+      b.save({stories: stories}, {patch: true});
+    }
+  });
 
   storybase.badges.models.Badge = Badge;
   storybase.badges.collections.Badges = Badges;
