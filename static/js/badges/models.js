@@ -23,13 +23,24 @@
 
   var StoryBadges = function(story) {
     this.story = story;
-    this.story_id = this.story.id;
-    this.storyUri = storybase.API_ROOT + 'stories/' + this.story_id + '/';
+    this.storyId = this.story.id;
+    this.storyUri = storybase.API_ROOT + 'stories/' + this.storyId + '/';
   }
 
-  StoryBadges.prototype.addBadge = function(badge) {
+  StoryBadges.prototype.add = function(badge) {
     var stories = badge.get('stories');
     stories.push(this.storyUri);
+
+    badge.save({stories: stories}, {patch: true});
+
+    return this;
+  }
+
+  StoryBadges.prototype.remove = function(badge) {
+
+    var stories = _.filter(badge.get('stories'), function(s) {
+      return s != this.storyUri;
+    }, this);
 
     badge.save({stories: stories}, {patch: true});
 
