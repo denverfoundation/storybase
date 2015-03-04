@@ -15,6 +15,7 @@ from django.utils.translation import ugettext_lazy as _
 from storybase.admin import (StorybaseModelAdmin, StorybaseStackedInline,
                              toggle_featured)
 from storybase_story.models import Story
+from storybase_badge.models import Badge
 from storybase_user.auth.utils import send_account_deactivate_email
 from storybase_user.models import (Organization, OrganizationTranslation, 
         OrganizationMembership, Project, ProjectStory, ProjectTranslation,
@@ -24,6 +25,7 @@ if 'social_auth' in settings.INSTALLED_APPS:
     import social_auth
 else:
     social_auth = None
+
 
 class StoryUserAdminForm(UserChangeForm):
     """ 
@@ -42,7 +44,9 @@ class StoryUserAdminForm(UserChangeForm):
     stories = forms.ModelMultipleChoiceField(
         queryset=Story.objects.all(),
         required=False)
-
+    badges = forms.ModelMultipleChoiceField(
+        queryset=Badge.objects.all(),
+        required=False)
 
 
 class UserProfileInline(admin.StackedInline):
@@ -80,6 +84,7 @@ class StoryUserAdmin(UserAdmin):
         (_('Organizations'), {'fields': ('organizations',)}),
         (_('Projects'), {'fields': ('projects',)}),
         (_('Stories'), {'fields': ('stories',)}),
+        ('Badges', {'fields': ('badges',)}),
     )
 
     inlines = [UserProfileInline]
@@ -96,6 +101,7 @@ class StoryUserAdmin(UserAdmin):
             obj.organizations.clear()
             obj.projects.clear()
             obj.stories.clear()
+            obj.get_profile().badges.clear()
             for organization in form.cleaned_data['organizations']:
                 OrganizationMembership.objects.create(user=obj,
                         organization=organization)
@@ -104,12 +110,15 @@ class StoryUserAdmin(UserAdmin):
                         project=project)
             for story in form.cleaned_data['stories']:
                 obj.stories.add(story)
+            for badge in form.cleaned_data['badges']:
+                obj.get_profile().badges.add(badge)
 
         obj.save()
 
     def get_form(self, request, obj=None, **kwargs):
         if obj:
             self.form.base_fields['organizations'].initial = obj.organizations.all()
+            self.form.base_fields['badges'].initial = obj.get_profile().badges.all()
             self.form.base_fields['projects'].initial = obj.projects.all()
             self.form.base_fields['stories'].queryset = obj.stories.all()
             self.form.base_fields['stories'].initial = obj.stories.all()
