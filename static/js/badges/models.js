@@ -21,7 +21,6 @@
     })
   );
 
-  // TODO: make this into a mixin
   var FilteredBadges = Badges.extend({
     parse: function(response) {
       var objects = response.objects;
@@ -31,8 +30,6 @@
       }, this);
 
       return storyBadges;
-
-
     }
 
   });
@@ -58,6 +55,7 @@
       var stories = b.get('stories');
       stories.push(this.storyUri);
       this._saveBadge(b, stories);
+      this.add(b);
 
       return this;
 
@@ -68,6 +66,7 @@
       }, this);
 
       this._saveBadge(b, stories);
+      this.remove(b);
 
       return this;
 
