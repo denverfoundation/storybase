@@ -32,7 +32,6 @@ from storybase_story.models import (Container, ContainerTemplate,
                                     Story, StoryRelation, StoryTemplate)
 from storybase_taxonomy.models import Category
 from storybase_user.models import Organization, Project
-from storybase_badge.api import BadgeResource
 
 logger = logging.getLogger("storybase")
 
@@ -61,8 +60,6 @@ class StoryResource(TranslatedModelResource):
     points = fields.ListField(readonly=True)
     template_story = fields.CharField(attribute='template_story',
         null=True)
-
-    badges = fields.ToManyField(BadgeResource, 'badges', full=True)
 
     class Meta:
         always_return_data = True
