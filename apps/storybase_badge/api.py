@@ -26,6 +26,7 @@ class BadgeResource(ModelResource):
         list_allowed_methods = ['get']
         detail_allowed_methods = ['get', 'patch']
         authentication = Authentication()
+        authorization = BadgeAuthorization()
         queryset = Badge.objects.all()
         resource_name = 'badges'
 
