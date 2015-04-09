@@ -1,0 +1,18 @@
+{% block "extra" %}
+<div class="row stories-featured">
+    {% for object in objects %}
+    <div class="col-md-4 story story-preview">
+        <div class="story-wrapper">
+
+            {{ object.image_html }}
+
+            <div class="excerpt">
+                {{ object.excerpt|safe }}
+
+                <p class="pull-right"><a href="{{ object.viewer_url }}">View Story</a></p>
+            </div>
+        </div>
+    </div>
+    {% endfor %}
+</div>
+{% endblock %}

@@ -34,7 +34,7 @@ def container(context, value):
                 extra={'asset_ids': [a.asset_id for a in assets],
                     'container': value,
                     'section_id': section.section_id})
-           
+
             # Just pick one of the assets to show
             asset = assets[0]
 
@@ -51,8 +51,14 @@ def connected_story(story):
 @register.inclusion_tag("storybase_story/latest_stories.html")
 def latest_stories(count=3, img_width=100):
     return latest_context(
-            Story.objects.exclude(source__relation_type='connected'), 
+            Story.objects.exclude(source__relation_type='connected'),
             count, img_width, '-weight')
+
+@register.inclusion_tag("storybase_story/featured_stories.html")
+def featured_stories(count=3):
+    return {
+        'objects': [obj.normalize_for_view(300) for obj in Story.objects.filter(on_homepage=True).order_by('-published')[:count]]
+    }
 
 @register.simple_tag
 def connected_story_section(section):
