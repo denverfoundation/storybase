@@ -55,14 +55,14 @@ body {
 }
 
 .spotlight {
-    margin-bottom: 300px;
+
 
 }
 
 .story-wrapper {
     background-color: #EAEAEA;
     padding: 30px;
-    height: 600px;
+    min-height: 300px;
 }
 
 .story-preview {
@@ -70,9 +70,14 @@ body {
     overflow: hidden;
 }
 
+.story-preview h4 {
+    text-align: center;
+    padding: 10px;
+}
+
 .story-preview img {
-    margin: 0 auto;
-    display: block;
+    margin-right: 40px;
+    float: left;
 }
 
 .excerpt {
