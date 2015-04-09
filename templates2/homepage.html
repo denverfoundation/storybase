@@ -10,7 +10,7 @@
 
     <div class="intro">
 
-        <div class="about focus-text">
+        <div class="about focus-text shadow-1">
             <p>
                 Floodlight is an easy tool to create, post and share
                 stories about community issues that inspire people to act.
@@ -20,7 +20,7 @@
             </p>
 
             <a href="/en/build/">
-                <button class="btn btn-lg sb-btn-action">Create your Story</button>
+                <button class="btn btn-lg sb-btn-action shadow-2">Create your Story</button>
             </a>
         </div>
 
@@ -44,7 +44,7 @@
 
                 <form action="{% url "haystack_search" %}" method="get">
                     <div class="input-group">
-                        <input name="q" type="text" class="form-control"/>
+                        <input name="q" type="text" class="form-control" autocomplete="off" />
                         <div class="input-group-btn">
                             <button class="btn btn-success btn-lg">
                                 <span class="glyphicon glyphicon-search"></span>
