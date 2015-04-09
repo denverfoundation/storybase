@@ -1,0 +1,60 @@
+{% extends "base2.html" %}
+
+{% block title %}Home{% endblock title %}
+
+{% load cms_tags i18n story organization project storybase_featured sekizai_tags menu_tags verbatim storybase_tags compress %}
+
+{% block content %}
+
+<div>
+
+    <div class="intro">
+
+        <div class="about focus-text">
+            <p>
+                    Floodlight is an easy tool to create, post and share
+                stories about community issues that inspire people to act.
+                Our Story Builder helps you tell digital stories that
+                include photo, video, data, and narrative, and stories that
+                call your readers to action.
+            </p>
+
+            <a href="/en/build/"><button class="btn btn-lg sb-btn-action">Create your Story</button></a>
+        </div>
+
+    </div>
+
+    <div class="container-fluid">
+        <div class="spotlight">
+            <h1 class="title">Spotlight</h1>
+
+            {% featured_stories %}
+
+        </div>
+    </div>
+
+    <div class="container-fluid">
+
+        <div id="explorer"></div>
+
+        <form action="">
+            <div class="row explore">
+                <h1 class="title">Explore Floodlight</h1>
+
+                <div id="explorer"></div>
+
+            </div>
+
+        </form>
+
+    </div>
+</div>
+
+
+{% endblock content %}
+
+
+
+{% block scripts %}
+
+{% endblock %}

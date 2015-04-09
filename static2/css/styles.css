@@ -1,0 +1,93 @@
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+
+}
+
+.focus-text {
+    font-size: 18px;
+}
+
+/* button that can be used for a call to action */
+.sb-btn-action {
+    background-color: #f99033;
+    color: #ffffff;
+}
+
+.sb-btn-action:hover {
+    color: #ffffff;
+    background-color: #f99033;
+}
+
+.intro {
+    background: url(/static/img/skyline.jpg) no-repeat center center;
+    background-size: cover;
+    height: 700px;
+}
+
+.about {
+    background-color: #f3f3f3;
+    border-radius: 20px;
+    opacity: 0.97;
+    padding: 30px;
+    max-width: 500px;
+    position: relative;
+    left: 30px;
+    top: 30px;
+}
+
+.about .sb-btn-action {
+    opacity: 1.0;
+    margin-left: 60%;
+
+}
+
+.stories-featured {
+    height: 400px;
+}
+
+.title {
+    text-align: center;
+    font-size: 90px;
+}
+
+.spotlight {
+    margin-bottom: 300px;
+
+}
+
+.story-wrapper {
+    background-color: #EAEAEA;
+    padding: 30px;
+    height: 600px;
+}
+
+.story-preview {
+    padding: 15px;
+    overflow: hidden;
+}
+
+.story-preview img {
+    margin: 0 auto;
+    display: block;
+}
+
+.excerpt {
+    margin-top: 20px;
+}
+
+
+.explore {
+    background-color: #ffa000;
+    background-image: linear-gradient(
+            to right,
+            #ffa000 0%, #ffa000 33%, #ff8f00 33%, #ff8f00 66%, #ff6f00 66%
+        );
+}
+
+.explore .title {
+    color: white;
+}
