@@ -95,3 +95,19 @@ body {
 .explore .title {
     color: white;
 }
+
+.super-search {
+    margin: 100px;
+}
+
+.super-search input, .super-search  button {
+    height: 90px;
+    font-size: 30px;
+    text-align: center;
+
+}
+
+.super-search button {
+    padding-left: 50px;
+    padding-right: 50px;
+}

@@ -37,15 +37,27 @@
 
     <div class="container-fluid">
 
-        <form action="">
-            <div class="row explore">
-                <h1 class="title">Explore Floodlight</h1>
+        <div class="row explore">
+            <h1 class="title">Explore Floodlight</h1>
 
-                <div id="explorer"></div>
+            <div class="super-search">
+
+                <form action="{% url "haystack_search" %}" method="get">
+                    <div class="input-group">
+                        <input name="q" type="text" class="form-control"/>
+                        <div class="input-group-btn">
+                            <button class="btn btn-success btn-lg">
+                                <span class="glyphicon glyphicon-search"></span>
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
 
             </div>
 
-        </form>
+        </div>
+
 
     </div>
 </div>
@@ -57,6 +69,7 @@
     <div>
         <div class="foundation">
             <img src="{{ STATIC_URL }}img/denver-foundation-logo.gif" alt=""/>
+
             <div>
                 <p>Founded in 1925, The Denver Foundation is a community foundation serving Metro Denver, with the
                     mission of inspiring people and mobilizing resources to strengthen the community. The Denver
@@ -71,6 +84,7 @@
 
         <div class="foundation">
             <img src="{{ STATIC_URL }}img/knight-foundation-logo.jpg" alt=""/>
+
             <div>
                 <p>Knight Foundation supports transformational ideas that promote quality journalism, advance media
                     innovation, engage communities and foster the arts. The foundation believes that democracy
@@ -83,6 +97,7 @@
 
         <div class="foundation">
             <img src="{{ STATIC_URL }}img/piton-foundation-logo.jpg" alt=""/>
+
             <div>
                 <p>The Piton Foundation is a private, operating foundation established in 1976 by Denver oil man Sam
                     Gary. The foundation provides opportunities for families and children in Denver to move from
