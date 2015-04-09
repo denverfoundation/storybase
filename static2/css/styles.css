@@ -22,6 +22,15 @@ body {
     background-color: #f99033;
 }
 
+.orange-columns {
+    background-color: #ffa000;
+    background-image: linear-gradient(
+            to right,
+            #ffa000 0%, #ffa000 33%, #ff8f00 33%, #ff8f00 66%, #ff6f00 66%
+        );
+
+}
+
 .intro {
     background: url(/static/img/skyline.jpg) no-repeat center center;
     background-size: cover;
@@ -85,11 +94,7 @@ body {
 
 
 .explore {
-    background-color: #ffa000;
-    background-image: linear-gradient(
-            to right,
-            #ffa000 0%, #ffa000 33%, #ff8f00 33%, #ff8f00 66%, #ff6f00 66%
-        );
+
 }
 
 .explore .title {
