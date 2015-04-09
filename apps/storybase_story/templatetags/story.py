@@ -55,9 +55,9 @@ def latest_stories(count=3, img_width=100):
             count, img_width, '-weight')
 
 @register.inclusion_tag("storybase_story/featured_stories.html")
-def featured_stories(count=3):
+def featured_stories():
     return {
-        'objects': [obj.normalize_for_view(300) for obj in Story.objects.filter(on_homepage=True).order_by('-published')[:count]]
+        'objects': [obj.normalize_for_view(300) for obj in Story.objects.filter(on_homepage=True).order_by('-published')]
     }
 
 @register.simple_tag
