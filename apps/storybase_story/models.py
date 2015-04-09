@@ -1,7 +1,6 @@
 """Models for stories and story sections"""
 import time
 from datetime import datetime
-
 import bleach
 
 from django.conf import settings
@@ -593,6 +592,7 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
             "url": self.get_absolute_url(),
             "more_link_text": _("View All Stories"),
             "more_link_url": urlresolvers.reverse("explore_stories"),
+            "viewer_url": self.viewer_url()
         }
 
         if not self.allow_connected:
