@@ -1,0 +1,142 @@
+
+* {
+    box-sizing: border-box;
+}
+
+body {
+
+}
+
+/* shadows with differing levels, the higher the level the higher the z-index should be */
+
+.shadow-1 {
+    box-shadow: 0 1px 3px rgba(0,0,0,0.12), 0 1px 2px rgba(0,0,0,0.24);
+}
+
+.shadow-2 {
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+
+.shadow-3 {
+    box-shadow: 0 10px 20px rgba(0,0,0,0.19), 0 6px 6px rgba(0,0,0,0.23);
+}
+
+.shadow-4 {
+    box-shadow: 0 14px 28px rgba(0,0,0,0.25), 0 10px 10px rgba(0,0,0,0.22);
+}
+
+.shadow-5 {
+    box-shadow: 0 19px 38px rgba(0,0,0,0.30), 0 15px 12px rgba(0,0,0,0.22);
+}
+
+.focus-text {
+    font-size: 18px;
+}
+
+/* button that can be used for a call to action */
+.sb-btn-action {
+    background-color: #f99033;
+    color: #ffffff;
+}
+
+.sb-btn-action:hover {
+    color: #ffffff;
+    background-color: #f99033;
+}
+
+.orange-columns {
+    background-color: #ffa000;
+    background-image: linear-gradient(
+            to right,
+            #ffa000 0%, #ffa000 33%, #ff8f00 33%, #ff8f00 66%, #ff6f00 66%
+        );
+
+}
+
+.intro {
+    background: url(/static/img/skyline.jpg) no-repeat center center;
+    background-size: cover;
+    height: 700px;
+}
+
+.about {
+    background-color: #f3f3f3;
+    border-radius: 20px;
+    opacity: 0.97;
+    padding: 30px;
+    max-width: 500px;
+    position: relative;
+    left: 30px;
+    top: 30px;
+}
+
+.about .sb-btn-action {
+    opacity: 1.0;
+    margin-left: 60%;
+
+}
+
+.stories-featured {
+    height: 400px;
+}
+
+.title {
+    text-align: center;
+    font-size: 90px;
+    text-shadow: 1px 1px 1px #ccc;
+}
+
+.spotlight {
+    margin-bottom: 40px;
+}
+
+.story-wrapper {
+    background-color: #EAEAEA;
+    padding: 30px;
+    min-height: 300px;
+
+}
+
+.story-preview {
+    padding: 15px;
+    overflow: hidden;
+}
+
+.story-preview h4 {
+    padding: 10px;
+}
+
+.story-preview img {
+    margin-right: 40px;
+    float: left;
+    box-shadow: 0 3px 6px rgba(0,0,0,0.16), 0 3px 6px rgba(0,0,0,0.23);
+}
+
+.excerpt {
+    margin-top: 20px;
+}
+
+
+.explore {
+
+}
+
+.explore .title {
+    color: white;
+}
+
+.super-search {
+    margin: 100px;
+}
+
+.super-search input, .super-search  button {
+    height: 90px;
+    font-size: 30px;
+    text-align: center;
+
+}
+
+.super-search button {
+    padding-left: 50px;
+    padding-right: 50px;
+}

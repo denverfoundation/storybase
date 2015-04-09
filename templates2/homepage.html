@@ -1,0 +1,121 @@
+{% extends "base2.html" %}
+
+{% block title %}Home{% endblock title %}
+
+{% load cms_tags i18n story organization project storybase_featured sekizai_tags menu_tags verbatim storybase_tags compress %}
+
+{% block content %}
+
+<div>
+
+    <div class="intro">
+
+        <div class="about focus-text shadow-1">
+            <p>
+                Floodlight is an easy tool to create, post and share
+                stories about community issues that inspire people to act.
+                Our Story Builder helps you tell digital stories that
+                include photo, video, data, and narrative, and stories that
+                call your readers to action.
+            </p>
+
+            <a href="/en/build/">
+                <button class="btn btn-lg sb-btn-action shadow-2">Create your Story</button>
+            </a>
+        </div>
+
+    </div>
+
+    <div class="container-fluid">
+        <div class="spotlight">
+            <h1 class="title">Spotlight</h1>
+
+            {% featured_stories %}
+
+        </div>
+    </div>
+
+    <div class="container-fluid orange-columns">
+
+        <div class="row explore">
+            <h1 class="title">Explore Floodlight</h1>
+
+            <div class="super-search">
+
+                <form action="{% url "haystack_search" %}" method="get">
+                    <div class="input-group">
+                        <input name="q" type="text" class="form-control" autocomplete="off" />
+                        <div class="input-group-btn">
+                            <button class="btn btn-success btn-lg">
+                                <span class="glyphicon glyphicon-search"></span>
+                            </button>
+                        </div>
+                    </div>
+
+                </form>
+
+            </div>
+
+        </div>
+
+
+    </div>
+</div>
+
+<section style="display:none;" class="supporting-foundations">
+    <h5 class="title">{% trans "Supporting Foundations" %}</h5>
+    {% placeholder supporting-foundations or %}
+
+    <div>
+        <div class="foundation">
+            <img src="{{ STATIC_URL }}img/denver-foundation-logo.gif" alt=""/>
+
+            <div>
+                <p>Founded in 1925, The Denver Foundation is a community foundation serving Metro Denver, with the
+                    mission of inspiring people and mobilizing resources to strengthen the community. The Denver
+                    Foundation three primary functions: stewarding an endowment to invest in meeting current and
+                    future needs for the community; managing more than 900 charitable funds for individuals,
+                    families and businesses; and working with the community and philanthropic leaders to address the
+                    core challenges that face Metro Denver. For more, visit <a href="http://denverfoundation.org">DenverFoundation.org</a>.
+                </p>
+
+            </div>
+        </div>
+
+        <div class="foundation">
+            <img src="{{ STATIC_URL }}img/knight-foundation-logo.jpg" alt=""/>
+
+            <div>
+                <p>Knight Foundation supports transformational ideas that promote quality journalism, advance media
+                    innovation, engage communities and foster the arts. The foundation believes that democracy
+                    thrives when people and communities are informed and engaged. For more, visit
+                    <a href="http://knightfoundation.org">KnightFoundation.org</a>.
+                </p>
+
+            </div>
+        </div>
+
+        <div class="foundation">
+            <img src="{{ STATIC_URL }}img/piton-foundation-logo.jpg" alt=""/>
+
+            <div>
+                <p>The Piton Foundation is a private, operating foundation established in 1976 by Denver oil man Sam
+                    Gary. The foundation provides opportunities for families and children in Denver to move from
+                    poverty and dependence to self-reliance. For more, visit <a
+                            href="http://piton.org">Piton.org</a>.
+                </p>
+
+
+            </div>
+        </div>
+
+    </div>
+    {% endplaceholder %}
+</section>
+
+{% endblock content %}
+
+
+{% block scripts %}
+
+{% endblock %}
