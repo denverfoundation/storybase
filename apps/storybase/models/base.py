@@ -125,4 +125,4 @@ class WeightedModel(models.Model):
         This should be implemented in subclasses that inherit
         from weighted model.
         """
-        raise NotImplemented
+        raise NotImplementedError
