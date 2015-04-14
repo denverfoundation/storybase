@@ -55,8 +55,10 @@ body {
 
 .intro {
     background: url(/static/img/skyline.jpg) no-repeat center center;
+    background-position: top;
     background-size: cover;
-    height: 700px;
+    height: 475px;
+
 }
 
 .about {
