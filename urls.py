@@ -3,6 +3,7 @@ from django.conf.urls.i18n import i18n_patterns
 from django.contrib import admin
 from django.conf import settings
 from django.views.decorators.cache import cache_page
+from django.views.generic.base import RedirectView
 
 from tastypie.api import Api
 
@@ -72,9 +73,13 @@ urlpatterns += i18n_patterns('',
     (r'^accounts/', include('social_auth.urls')),
     (r'^notices/', include('notification.urls')),
 
+    url(r'^$', RedirectView.as_view(url='/home/')),
+
     # django CMS URLs
     url(r'^', include('cms.urls')),
+
 )
+
 
 urlpatterns += patterns('',
     url(r'^', include('storybase_story.widget_urls')),

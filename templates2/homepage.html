@@ -41,6 +41,19 @@
                 <form action="{% url 'haystack_search' %}" method="get">
                     <div class="input-group">
                         <input name="q" type="text" class="form-control" autocomplete="off" />
+
+                        <select name="topic_id">
+                            {% for topic in topics %}
+                            <option value="{{ topic.id }}">{{ topic.name }}</option>
+                            {% endfor %}
+                        </select>
+
+                        <select name="place_id">
+                            {% for place in places %}
+                            <option value="{{ place.id }}">{{ place.name }}</option>
+                            {% endfor %}
+                        </select>
+
                         <div class="input-group-btn">
                             <button class="btn btn-success btn-lg">
                                 <span class="glyphicon glyphicon-search"></span>
