@@ -55,8 +55,10 @@ body {
 
 .intro {
     background: url(/static/img/skyline.jpg) no-repeat center center;
+    background-position: top;
     background-size: cover;
-    height: 700px;
+    height: 475px;
+
 }
 
 .about {
@@ -64,7 +66,7 @@ body {
     border-radius: 20px;
     opacity: 0.97;
     padding: 30px;
-    max-width: 500px;
+    max-width: 600px;
     position: relative;
     left: 30px;
     top: 30px;
@@ -72,7 +74,10 @@ body {
 
 .about .sb-btn-action {
     opacity: 1.0;
-    margin-left: 60%;
+    width: 60%;
+    height: 60px;
+    margin-left: 40%;
+    font-size: 30px;
 
 }
 
