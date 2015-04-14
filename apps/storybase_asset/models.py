@@ -68,7 +68,7 @@ class ImageRenderingMixin(object):
     Mixin for rendering images in Asset-like objects
     """
     def get_img_url(self):
-        raise NotImplemented
+        raise NotImplementedError
 
     def render_img_html(self, url=None, attrs={}):
         """Render an image tag for this asset""" 
@@ -647,7 +647,7 @@ class DefaultImageMixin(object):
     @classmethod
     def get_default_img_url_choices(cls):
         # This should be implemented in the subclass
-        raise NotImplemented
+        raise NotImplementedError
 
     @classmethod
     def get_default_img_url(cls, width, height, include_host=False):
@@ -846,7 +846,7 @@ class DataSet(TranslatedModel, PublishedModel, TimestampedModel,
     @property
     def download_url(self):
         """Returns the URL to the downloadable version of the data set"""
-        raise NotImplemented
+        raise NotImplementedError
 
 
 class ExternalDataSet(DataSet):

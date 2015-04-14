@@ -27,7 +27,7 @@ class CreateViewTestMixin(FileCleanupMixin):
         self.assertEqual(hash1, hash2)
 
     def create_model(self, name):
-        raise NotImplemented
+        raise NotImplementedError
 
     def setUp(self):
         super(CreateViewTestMixin, self).setUp()
@@ -57,7 +57,7 @@ class CreateViewTestMixin(FileCleanupMixin):
         self.assertEqual(resp.status_code, 200)
 
     def get_default_data(self):
-        raise NotImplemented
+        raise NotImplementedError
 
     def do_test_post(self, extra_data={}, extra_test=None, data=None,
             expect_create=True):
