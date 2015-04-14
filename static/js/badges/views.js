@@ -32,7 +32,7 @@
 
   var ClickableBadgeView = BadgeView.extend({
     events: {
-      'dblclick .badge': 'clicked'
+      'click .badge': 'clicked'
     },
     clicked: function(event) {
       this.parent.clickedSubView(event, this);
