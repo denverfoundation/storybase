@@ -43,5 +43,15 @@
     },
     "model": "storybase_badge.Badge",
     "pk": 5
+  },
+  {
+    "fields": {
+      "name": "Environment Affinity Group",
+      "description": "The Denver Foundation’s Environmental Affinity Group is connected with this story. We strive to create a network of informed, engaged, and effective environmental philanthropists to identify, promote and support outstanding environmental action on a wide range of issues in Colorado.",
+      "icon_uri": "/static/img/badges/eag.png"
+    },
+    "model": "storybase_badge.Badge",
+    "pk": 6
   }
+
 ]
