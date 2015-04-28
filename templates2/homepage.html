@@ -12,7 +12,10 @@
 
         <div class="about focus-text shadow-1">
             <p>
-                Floodlight is a place where people can tell and share inspiring stories from the Metro Denver community. This easy tool allows users to create, post and share digital stories that include photo, video, data, and narrative, calling readers to action. It’s also a place to uncover connections between stories, and reach even higher levels of community impact.
+                Floodlight is a place where people can tell and share inspiring stories from the Metro Denver community.
+                This easy tool allows users to create, post and share digital stories that include photo, video, data,
+                and narrative, calling readers to action. It’s also a place to uncover connections between stories, and
+                reach even higher levels of community impact.
             </p>
 
             <a href="/en/build/">
@@ -20,6 +23,47 @@
             </a>
         </div>
 
+    </div>
+
+    <div class="container-fluid orange-columns">
+
+        <div class="row explore">
+            <h1 class="title">Explore Floodlight</h1>
+
+            <form action="{% url 'haystack_search' %}" method="get">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <select class="search-select" name="topic_id">
+                            <option value="">Topic</option>
+                            {% for topic in topics %}
+                            <option value="{{ topic.id }}">{{ topic.name }}</option>
+                            {% endfor %}
+                            <option value="">None</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-4">
+                        <select class="search-select" name="place_id">
+                            <option value="">Place</option>
+                            {% for place in places %}
+                            <option value="{{ place.id }}">{{ place.name }}</option>
+                            {% endfor %}
+                            <option value="">None</option>
+                        </select>
+
+                    </div>
+                    <div class="col-sm-4">
+                        <input required
+                               name="q"
+                               type="text"
+                               class="form-control"
+                               placeholder="Search by keyword"
+                               autocomplete="off"/>
+                    </div>
+
+                </div>
+
+            </form>
+        </div>
     </div>
 
     <div class="container-fluid">
@@ -31,31 +75,6 @@
         </div>
     </div>
 
-    <div class="container-fluid orange-columns">
-
-        <div class="row explore">
-            <h1 class="title">Explore Floodlight</h1>
-
-            <div class="super-search">
-
-                <form action="{% url 'haystack_search' %}" method="get">
-                    <div class="input-group">
-                        <input name="q" type="text" class="form-control" autocomplete="off" />
-                        <div class="input-group-btn">
-                            <button class="btn btn-success btn-lg">
-                                <span class="glyphicon glyphicon-search"></span>
-                            </button>
-                        </div>
-                    </div>
-
-                </form>
-
-            </div>
-
-        </div>
-
-
-    </div>
 </div>
 
 <section style="display:none;" class="supporting-foundations">
@@ -111,7 +130,14 @@
 
 {% endblock content %}
 
-
 {% block scripts %}
+{{ block.super }}
+
+
+{% endblock %}
+
+{% block css %}
+{{ block.super }}
+
 
 {% endblock %}

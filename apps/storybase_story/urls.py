@@ -7,9 +7,10 @@ from storybase_story.feeds import StoriesFeed, TopicStoriesFeed
 from storybase_story.views import (ExploreStoriesView, 
     StoryBuilderView, StoryDetailView, StoryViewerView,
     StoryUpdateView, StoryShareView, StorySharePopupView,
-    StoryEmbedView, StoryEmbedPopupView)
+    StoryEmbedView, StoryEmbedPopupView, HomeView)
 
 urlpatterns = patterns('',
+    url(r'^home/$', HomeView.as_view(), name='home'),
     url(r'^build/$', StoryBuilderView.as_view(), name='story_builder'),
     url(r'^build/(?P<story_id>[0-9a-f]{32,32})/$',
         StoryBuilderView.as_view(), name='story_builder'),
