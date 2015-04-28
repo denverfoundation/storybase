@@ -34,6 +34,16 @@ from storybase_taxonomy.models import Category, Tag
 from storybase_user.views import Organization, Project
 
 
+class HomeView(TemplateView):
+    template_name = 'homepage.html'
+
+    def get_context_data(self, **kwargs):
+        context = super(HomeView, self).get_context_data(**kwargs)
+        context['topics'] = Category.objects.all()
+        context['places'] = Place.objects.all()
+
+        return context
+
 class ExploreStoriesView(TemplateView):
     """
     A view that lets users filter a list of stories

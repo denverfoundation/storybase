@@ -121,27 +121,26 @@ body {
     margin-top: 20px;
 }
 
-
 .explore {
-
+    min-height: 300px;
 }
 
 .explore .title {
     color: white;
 }
 
-.super-search {
-    margin: 100px;
-}
-
-.super-search input, .super-search  button {
-    height: 90px;
-    font-size: 30px;
+.explore .col-sm-4 {
     text-align: center;
-
 }
 
-.super-search button {
-    padding-left: 50px;
-    padding-right: 50px;
+.explore .row {
+    margin-top: 34px;
+}
+
+.explore .search-select, .explore .form-control {
+    width: 70%;
+    background-color: #ffffff;
+    height: 40px;
+    border-color: transparent;
+    border-radius: 5px;
 }

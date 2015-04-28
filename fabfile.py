@@ -514,6 +514,7 @@ def apache2_reload():
 def nginx_reload():
     """ Reload the Nginx configuration """
     sudo('service nginx reload')
+v
 
 @task 
 def collectstatic():
@@ -545,7 +546,7 @@ def write_solr_xml(instance=env['instance']):
     # TODO: Make a core entry in /usr/share/solr/solr.xml
     # It should look something like this:
     #<core name="atlas_dev" instanceDir="atlas_dev" dataDir="/var/lib/solr/atlas_dev/data" /> 
-    raise NotImplemented
+    raise NotImplementedError
 
 @task
 def make_solr_data_dir(instance=env['instance'], 

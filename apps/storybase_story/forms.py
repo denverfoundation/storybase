@@ -3,6 +3,8 @@
 from django import forms
 from django.utils import translation
 
+from haystack.forms import SearchForm
+
 from tinymce.widgets import TinyMCE
 
 from storybase.widgets import AdminLongTextInputWidget
@@ -99,3 +101,28 @@ class StoryTranslationAdminForm(forms.ModelForm):
                 mce_attrs={'theme': 'advanced', 'force_p_newlines': False, 'forced_root_block': '', 'theme_advanced_toolbar_location': 'top', 'plugins': 'table', 'theme_advanced_buttons3_add': 'tablecontrols'},
             )
         }
+
+
+class StorySearchForm(SearchForm):
+    """
+    A custom search that allows user to optionally search based on a
+    single topic and/or place ID.
+
+    """
+    topic_id = forms.IntegerField(required=False)
+    place_id = forms.IntegerField(required=False)
+
+    def search(self):
+        sqs = super(StorySearchForm, self).search()
+
+        topic_id = self.cleaned_data.get('topic_id', None)
+
+        if topic_id is not None:
+            sqs = sqs.filter(topic_ids__in=[topic_id])
+
+        place_id = self.cleaned_data.get('place_id', None)
+
+        if place_id is not None:
+            sqs = sqs.filter(place_ids__in=[place_id])
+
+        return sqs
