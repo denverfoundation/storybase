@@ -2,7 +2,7 @@
   {
     "fields": {
       "name": "Denver Foundation",
-      "description": "Stories promoted by the Denver Foundation Staff.",
+      "description": "The Denver Foundation funded this through our Community Endowment. The Denver Foundation inspires people and mobilizes resources to strengthen our community. Since 1925, the Foundation has helped generous people like you to be catalysts for good by building charitable legacies.",
       "icon_uri": "/static/img/badges/denver-foundation.png"
     },
     "model": "storybase_badge.Badge",
@@ -11,7 +11,7 @@
   {
     "fields": {
       "name": "Thought Leader",
-      "description": "Stories promoted by people who are active leaders within the Denver foundation.",
+      "description": "We are fundholders and leaders within the Foundation engaged with philanthropic outreach, community building, and collaborative problem solving.",
       "icon_uri": "/static/img/badges/thought-leader.png"
     },
     "model": "storybase_badge.Badge",
@@ -20,7 +20,7 @@
   {
     "fields": {
       "name": "AAG",
-      "description": "",
+      "description": "The Denver Foundation’s Arts Affinity Group is connected with this story. We are a group of passionate and knowledgeable arts funders brought together to form a collective giving platform to better leverage funds, learn from one another, and promote the arts in our community.",
       "icon_uri": "/static/img/badges/aag.png"
     },
     "model": "storybase_badge.Badge",
@@ -29,7 +29,7 @@
   {
     "fields": {
       "name": "Strengthening Neighborhoods",
-      "description": "",
+      "description": "The Denver Foundation’s Strengthening Neighborhoods program is connected to this story. We are the Denver Foundation's grassroots neighborhood development program that provides grants directly to neighborhood residents of specific neighborhoods for projects developed and led by the residents themselves.",
       "icon_uri": "/static/img/badges/sn.png"
     },
     "model": "storybase_badge.Badge",
@@ -38,7 +38,7 @@
   {
     "fields": {
       "name": "SVP",
-      "description": "",
+      "description": "Social Venture Partners is connected to this story. We build relationships between donors, volunteers and organizations that are out to change our world. We help individuals make a greater impact when giving back, fund and strengthen nonprofits, and equip our community to tackle social challenges, together.",
       "icon_uri": "/static/img/badges/svp.png"
     },
     "model": "storybase_badge.Badge",
