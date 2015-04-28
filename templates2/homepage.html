@@ -22,6 +22,47 @@
 
     </div>
 
+    <div class="container-fluid orange-columns">
+
+        <div class="row explore">
+            <h1 class="title">Explore Floodlight</h1>
+
+            <form action="{% url 'haystack_search' %}" method="get">
+                <div class="row">
+                    <div class="col-sm-4">
+                        <select class="search-select" name="topic_id">
+                            <option value="">Topic</option>
+                            {% for topic in topics %}
+                            <option value="{{ topic.id }}">{{ topic.name }}</option>
+                            {% endfor %}
+                            <option value="">None</option>
+                        </select>
+                    </div>
+                    <div class="col-sm-4">
+                        <select class="search-select" name="place_id">
+                            <option value="">Place</option>
+                            {% for place in places %}
+                            <option value="{{ place.id }}">{{ place.name }}</option>
+                            {% endfor %}
+                            <option value="">None</option>
+                        </select>
+
+                    </div>
+                    <div class="col-sm-4">
+                        <input required
+                               name="q"
+                               type="text"
+                               class="form-control"
+                               placeholder="Search by keyword"
+                               autocomplete="off" />
+                    </div>
+
+                </div>
+                
+            </form>
+        </div>
+    </div>
+
     <div class="container-fluid">
         <div class="spotlight">
             <h1 class="title">Spotlight</h1>
@@ -31,44 +72,6 @@
         </div>
     </div>
 
-    <div class="container-fluid orange-columns">
-
-        <div class="row explore">
-            <h1 class="title">Explore Floodlight</h1>
-
-            <div class="super-search">
-
-                <form action="{% url 'haystack_search' %}" method="get">
-                    <div class="input-group">
-                        <input name="q" type="text" class="form-control" autocomplete="off" />
-
-                        <select name="topic_id">
-                            {% for topic in topics %}
-                            <option value="{{ topic.id }}">{{ topic.name }}</option>
-                            {% endfor %}
-                        </select>
-
-                        <select name="place_id">
-                            {% for place in places %}
-                            <option value="{{ place.id }}">{{ place.name }}</option>
-                            {% endfor %}
-                        </select>
-
-                        <div class="input-group-btn">
-                            <button class="btn btn-success btn-lg">
-                                <span class="glyphicon glyphicon-search"></span>
-                            </button>
-                        </div>
-                    </div>
-
-                </form>
-
-            </div>
-
-        </div>
-
-
-    </div>
 </div>
 
 <section style="display:none;" class="supporting-foundations">
@@ -124,7 +127,20 @@
 
 {% endblock content %}
 
-
 {% block scripts %}
+{{ block.super }}
+
+<script src="{{ STATIC_URL }}js/libs/select2/select2.js"></script>
+
+<script type="text/javascript">
+
+
+</script>
+
+{% endblock %}
+
+{% block css %}
+{{ block.super }}
+<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/select2/select2.css">
 
 {% endblock %}
