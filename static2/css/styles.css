@@ -31,28 +31,24 @@ body {
 
 /* navigation */
 
-.logo, .nav-wrapper, .megamenu, nav .megamenu ul {
+.logo, .nav-wrapper, .menu, nav .menu ul {
     display: inline
 }
 
-nav .megamenu {
-
-}
-
-nav .megamenu ul {
+nav .menu ul {
     list-style: none;
 }
 
-nav .megamenu li {
+nav .menu li {
     display: inline;
     margin: 10px;
 }
 
-nav .megamenu a {
+nav .menu a {
     color: #ffa000;
 }
 
-nav .megamenu .dd {
+nav .menu .dd {
     display: none;
 }
 
