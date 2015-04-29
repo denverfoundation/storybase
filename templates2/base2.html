@@ -22,16 +22,15 @@
 
     {% block nav %}
 
-    <nav class="" role="nav">
-        <div class="nav-wrapper">
-
+    <nav role="nav">
+        <div class="logo">
             <img src="{{ STATIC_URL }}/img/logo.png" alt="" />
         </div>
-
-        <div style="display: none;">
-        {% show_menu 0 0 0 0 "menu/menu_top.html" %}
+        <div class="nav-wrapper">
+        {# {% show_menu 0 0 0 0 "menu/menu_top.html" %} #}
     	{% show_menu 0 0 0 0 "menu/megamenu.html" %}
         </div>
+
     </nav>
 
     {% endblock %}

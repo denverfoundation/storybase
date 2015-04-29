@@ -1,0 +1,22 @@
+
+{% load i18n cms_tags menu_tags storybase_menu storybase_cms_tags %}
+
+<div class="megamenu">
+  <ul>
+    {% for child in children|megamenuitems %}
+    {% with menu_title=child.get_menu_title menu_url=child.attr.redirect_url|default:child.get_absolute_url menu_id=child.attr.reverse_id|default:child.id %}
+    {% with extra_template_name="menu/megamenu_extra_"|add:menu_id|add:".html" %}
+    <li>
+        <a class="top-nav {{ menu_id }}{% if child.selected %} selected{% endif %}{%if child.ancestor %} ancestor{% endif %}" href="{{ menu_url }}">{{ menu_title|upper }}{% if menu_id != "home" %}<em></em>{% endif %}</a>
+          {% if menu_id != "home" %}{% include extra_template_name %}{% endif %}
+    </li>
+    {% endwith %}
+    {% endwith %}
+    {% endfor %}
+
+    {# Show the "My Account" menu for authenticated users #}
+    {% if user.is_authenticated %}
+    {% storybase_menu "my_account" "menu/megamenu_account.html" request.path %}
+    {% endif %}
+  </ul>
+</div>
