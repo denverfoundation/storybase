@@ -146,7 +146,7 @@ nav .menu .dd {
 }
 
 .explore {
-    min-height: 300px;
+    min-height: 400px;
 }
 
 .explore .title {
@@ -155,6 +155,7 @@ nav .menu .dd {
 
 .explore .col-sm-4 {
     text-align: center;
+    margin-top: 30px;
 }
 
 .explore .row {
