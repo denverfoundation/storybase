@@ -64,8 +64,19 @@ nav .menu .dd {
 }
 
 .sb-btn-action:hover {
-    color: #ffffff;
     background-color: #f99033;
+    color: #ffffff;
+}
+
+.sb-btn-action-light {
+    background-color: #ffffff;
+    color: #f99033;
+
+}
+
+.sb-btn-action-light:hover {
+    background-color: #ffffff;
+    color: #f99033;
 }
 
 .orange-columns {
