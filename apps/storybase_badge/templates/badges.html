@@ -1,0 +1,47 @@
+{% extends "base2.html" %}
+
+{% block title %}Badges{% endblock title %}
+
+{% block content %}
+<div class="container">
+    <div class="container-fluid">
+        <div class="spotlight badges">
+            <h3 class="title">Badges</h3>
+
+            <div class="row super-readers">
+                <div class="col-sm-12">
+                    <div class="focus-text shadow-1">
+                        <p>Floodlight Super Users are Denver Foundation donors, who have the ability to boost stories through assigning special badges that call out great ideas, inspiring people, and projects that they have funded. The following offers a brief description of the badges that can be found across Floodlight.</p>
+                        <div class="down-icon">
+                            <span class="glyphicon glyphicon-chevron-down" aria-hidden="true"></span>
+                        </div>
+
+                    </div>
+
+                </div>
+
+
+            </div>
+
+            <div>
+            {% for badge in badges %}
+
+                <div class="story story-preview">
+                    <div class="story-wrapper shadow-1">
+                        <img style="box-shadow:none;" src="{{ badge.icon_uri }}" alt=""/>
+
+                        <div class="excerpt">
+                            <h2>{{ badge.name }}</h2>
+                            {{ badge.description }}
+                        </div>
+
+                    </div>
+                </div>
+
+            {% endfor %}
+            </div>
+
+        </div>
+    </div>
+</div>
+{% endblock %}

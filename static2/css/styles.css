@@ -105,6 +105,36 @@ nav .menu .dd {
 
 }
 
+.super-readers .focus-text {
+    border-radius: 20px;
+    background-color: #f3f3f3;
+    padding: 40px;
+    margin: 40px;
+}
+
+.super-readers .sb-btn-action {
+    margin: 40px 5px;
+    padding: 20px;
+    font-size: 20px;
+
+}
+
+.spotlight.badges .excerpt {
+    font-size: 20px;
+}
+
+.spotlight.badges h2 {
+    margin-bottom: 20px;
+}
+
+
+
+.down-icon {
+    font-size: 60px;
+    text-align: center;
+    margin-top: 50px;
+}
+
 .stories-featured {
     height: 400px;
 }

@@ -55,6 +55,7 @@ urlpatterns += i18n_patterns('',
     (r'^', include('storybase_help.urls')),
     (r'^', include('storybase_taxonomy.urls')),
     (r'^', include('storybase_geo.urls')),
+    (r'^', include('storybase_badge.urls')),
 
     # StoryBase account management
     # This needs to come before the admin URLs in order to use
