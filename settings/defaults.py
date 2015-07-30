@@ -10,6 +10,8 @@ PROJECT_PATH = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 # reusabel
 sys.path.insert(0, os.path.join(PROJECT_PATH, "apps"))
 
+SECRET_KEY = 'SECRET_KEY'
+
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
@@ -25,11 +27,11 @@ INTERNAL_IPS = (
 
 DATABASES = {
     'default': {
-        'ENGINE': 'django.db.backends.', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
-        'NAME': '',                      # Or path to database file if using sqlite3.
-        'USER': '',                      # Not used with sqlite3.
-        'PASSWORD': '',                  # Not used with sqlite3.
-        'HOST': '',                      # Set to empty string for localhost. Not used with sqlite3.
+        'ENGINE': 'django.contrib.gis.db.backends.postgis', # Add 'postgresql_psycopg2', 'postgresql', 'mysql', 'sqlite3' or 'oracle'.
+        'NAME': 'floodlight',                      # Or path to database file if using sqlite3.
+        'USER': 'floodlight',                      # Not used with sqlite3.
+        'PASSWORD': 'floodlight',                  # Not used with sqlite3.
+        'HOST': 'localhost',                      # Set to empty string for localhost. Not used with sqlite3.
         'PORT': '',                      # Set to empty string for default. Not used with sqlite3.
     }
 }
@@ -75,7 +77,7 @@ MEDIA_URL = '/media/'
 # Don't put anything in this directory yourself; store your static files
 # in apps' "static/" subdirectories and in STATICFILES_DIRS.
 # Example: "/home/media/media.lawrence.com/static/"
-STATIC_ROOT = os.path.join(PROJECT_PATH, "sitestatic") 
+STATIC_ROOT = os.path.join(PROJECT_PATH, "sitestatic")
 
 # URL prefix for static files.
 # Example: "http://media.lawrence.com/static/"
@@ -340,6 +342,16 @@ THUMBNAIL_PROCESSORS = (
 # Always create thumbnails as the same type as the original
 THUMBNAIL_PRESERVE_EXTENSIONS = True
 
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'storybase_geo.search.backends.Solr2155Engine',
+        'URL': 'http://localhost:8983/solr/floodlight_dev',
+        'INCLUDE_SPELLING': True,
+    },
+}
+
+HAYSTACK_SEARCH_RESULTS_PER_PAGE = 10
+
 HAYSTACK_SIGNAL_PROCESSOR = 'storybase.search.signals.RealtimeSignalProcessor'
 
 # storybase settings
@@ -356,10 +368,10 @@ STORYBASE_SITE_TAGLINE = ugettext("Your site tagline")
 # The title of the organization list view
 STORYBASE_ORGANIZATION_LIST_TITLE = ugettext("Organizations")
 # The title of the project list view
-STORYBASE_PROJECT_LIST_TITLE = ugettext("Projects") 
+STORYBASE_PROJECT_LIST_TITLE = ugettext("Projects")
 # The title of the story exploration view
 STORYBASE_EXPLORE_TITLE = ugettext("Explore")
-# A tuple representing the latitude and longitude of where the story 
+# A tuple representing the latitude and longitude of where the story
 # exploration map should be centered
 STORYBASE_MAP_CENTER = (39.74151, -104.98672)
 # Initial map zoom level
@@ -377,7 +389,7 @@ STORYBASE_LAYOUT_TEMPLATES = (
     '3_stacked.html',
 )
 # Connected story template slug
-STORYBASE_CONNECTED_STORY_TEMPLATE = "connected" 
+STORYBASE_CONNECTED_STORY_TEMPLATE = "connected"
 
 # Default images
 STORYBASE_DEFAULT_ORGANIZATION_IMAGES = {
@@ -433,7 +445,7 @@ STORYBASE_ALLOWED_TAGS = [
   'ul',
 ]
 
-# Should we use LESS stylesheets in the browser and compile them using less.js 
+# Should we use LESS stylesheets in the browser and compile them using less.js
 # It would be easy to just toggle this using the DEBUG setting, but IE8
 # isn't supported by less.js and we need to be able to quickly test out
 # stylesheet fixes with the development server.
