@@ -9,6 +9,113 @@ This is the code base behind Floodlight, a powerful story-building website that 
 For more information, see http://www.floodlightproject.org/
 
 
+Development Setup
+-----------------
+
+Setting up the website can be broken into five parts:
+
+* Install Server Dependencies
+* Codebase - Django developement server
+* Database - PostgreSQL with PostGIS
+* Search Platform - Solr with GIS modification
+* Put it all together - migrate and run
+
+
+Dependencies
+~~~~~~~~~~~~
+
+GDAL and GEOS are required for GeoDjango.
+
+::
+    $ sudo apt-get install gdal-bin geos
+
+PostGIS is required for the spatial database requirements.
+
+::
+    $ sudo apt-get install postgis
+
+
+Codebase
+~~~~~~~~
+
+Start by cloning the project:
+
+::
+    $ git clone https://github.com/denverfoundation/storybase.git
+    $ cd storybase
+
+Copy settings from ``settings/default.py`` to ``settings/dev.py``.
+
+::
+    $ cp settings/default.py settings/dev.py
+
+In a .. _virtual environment: https://virtualenv.pypa.io/en/latest/, install the dependencies with pip:
+
+::
+    $ pip install -r requirements.txt
+
+
+Database
+~~~~~~~~
+
+The database name, user, and password are set in ``settings/dev.py``.
+They are set to a default ``floodlight``.
+
+After creating a database, you will need to add the postgis extension:
+
+::
+    CREATE EXTENSION postgis;
+
+OR
+
+::
+    # psql mydatabasename -c "CREATE EXTENSION postgis";
+
+
+Search Platform
+~~~~~~~~~~~~~~~
+
+Clone the modified Solr:
+
+::
+    $ git clone https://github.com/zmetcalf/storybase_solr.git
+
+
+Putting it all together
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Start by spinning up the Solr system:
+
+::
+    $ cd storybase_solr
+    $ java -Dsolr.solr.home=multicore -jar start.jar
+
+Sync and Migrate the database from the codebase directory:
+
+::
+    $ python manage.py syncdb
+    $ python manage.py migrate
+
+Finally, run the app!
+
+::
+    $ python manage.py runserver
+
+
+Rebuild/Refresh Solr Indexes
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+To rebuild the indexes (destructive), run:
+
+::
+    $ python manage.py rebuild_index
+
+To refresh the indexes, run:
+
+::
+    $ python manage.py refresh_index
+
+
 License
 ~~~~~~~
 
