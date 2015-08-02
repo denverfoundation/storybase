@@ -26,7 +26,7 @@ Dependencies
 
 GDAL and GEOS are required for GeoDjango::
 
-    $ sudo apt-get install gdal-bin geos
+    $ sudo apt-get install gdal-bin libgeos-dev
 
 PostGIS is required for the spatial database requirements::
 
@@ -62,7 +62,7 @@ After creating a database, you will need to add the postgis extension::
 
 OR::
 
-    # psql mydatabasename -c "CREATE EXTENSION postgis";
+    # psql floodlight -c "CREATE EXTENSION postgis";
 
 
 Search Platform
