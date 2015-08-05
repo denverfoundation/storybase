@@ -36,7 +36,7 @@
                         <select class="search-select" name="topic_id">
                             <option value="">Topic</option>
                             {% for topic in topics %}
-                            <option value="{{ topic.id }}">{{ topic.categorytranslation__name }}</option>
+                            <option value="{{ topic.id }}">{{ topic.name }}</option>
                             {% endfor %}
                             <option value="">None</option>
                         </select>
