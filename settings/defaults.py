@@ -352,7 +352,9 @@ HAYSTACK_CONNECTIONS = {
 
 HAYSTACK_SEARCH_RESULTS_PER_PAGE = 10
 
-HAYSTACK_SIGNAL_PROCESSOR = 'storybase.search.signals.RealtimeSignalProcessor'
+# This often breaks the system because of a circular import - this may be required
+#
+# HAYSTACK_SIGNAL_PROCESSOR = 'storybase.search.signals.RealtimeSignalProcessor'
 
 # storybase settings
 # The name of the group used for site administrators
