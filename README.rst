@@ -70,7 +70,7 @@ Search Platform
 
 Clone the modified Solr::
 
-    $ git clone https://github.com/zmetcalf/storybase_solr.git
+    $ git clone https://github.com/denverfoundation/storybase_solr.git
 
 
 Putting it all together
