@@ -100,7 +100,7 @@ To rebuild the indexes (destructive), run::
 
 To refresh the indexes, run::
 
-    $ python manage.py refresh_index
+    $ python manage.py update_index
 
 
 License
