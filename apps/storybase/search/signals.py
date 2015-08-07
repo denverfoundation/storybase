@@ -8,7 +8,7 @@ from haystack.signals import RealtimeSignalProcessor as HaystackRealtimeSignalPr
 class RealtimeSignalProcessor(HaystackRealtimeSignalProcessor):
     """
     Custom Haystack signal processor
-    
+
     This signal processor only connects to signals for the Story
     and Help (and related) models instead of connecting to the
     ``post_save`` and ``post_delete`` signals of all models
@@ -43,7 +43,7 @@ class RealtimeSignalProcessor(HaystackRealtimeSignalProcessor):
         if sender.__name__ in self._SENDER_MAP:
             index_class = get_model(*self._SENDER_MAP[sender.__name__])
         else:
-            index_class = sender 
+            index_class = sender
 
         return self.connections[using].get_unified_index().get_index(index_class)
 
@@ -99,100 +99,117 @@ class RealtimeSignalProcessor(HaystackRealtimeSignalProcessor):
     def _setup_story(self):
         # HACK: Import here to avoid circular import
         # See http://stackoverflow.com/a/17364366/386210
-        from storybase_asset.models import HtmlAssetTranslation
-        from storybase_geo.models import Location
-        from storybase_story.models import (SectionAsset, SectionTranslation,
-                                    Story, StoryTranslation)
+
+        # XXX: ZM Additional Hack http://stackoverflow.com/questions/17520812/how-to-resolve-circular-import-involving-haystack
+
+        MyHtmlAssetTranslation = get_model('storybase_story', 'HtmlAssetTranslation')
+        MyLocation = get_model('storybase_story', 'Location')
+        MySectionAsset = get_model('storybase_story', 'SectionAsset')
+        MySectionTranslation = get_model('storybase_story', 'SectionTranslation')
+        MyStory = get_model('storybase_story', 'Story')
+        MyStoryTranslation = get_model('storybase_story', 'StoryTranslation')
 
         # Save signals
-        signals.post_save.connect(self.handle_save, sender=Story)
+        signals.post_save.connect(self.handle_save, sender=MyStory)
         signals.post_save.connect(self.handle_translation_save,
-                                  sender=StoryTranslation)
+                                  sender=MyStoryTranslation)
 
         # Update object when many-to-many fields change
-        signals.m2m_changed.connect(self.handle_save, sender=Story.organizations.through)
-        signals.m2m_changed.connect(self.handle_save, sender=Story.projects.through)
-        signals.m2m_changed.connect(self.handle_save, sender=Story.tags.through)
-        signals.m2m_changed.connect(self.handle_save, sender=Story.topics.through)
-        signals.m2m_changed.connect(self.handle_save, sender=Story.locations.through)
-        signals.m2m_changed.connect(self.handle_save, sender=Story.places.through)
+        signals.m2m_changed.connect(self.handle_save, sender=MyStory.organizations.through)
+        signals.m2m_changed.connect(self.handle_save, sender=MyStory.projects.through)
+        signals.m2m_changed.connect(self.handle_save, sender=MyStory.tags.through)
+        signals.m2m_changed.connect(self.handle_save, sender=MyStory.topics.through)
+        signals.m2m_changed.connect(self.handle_save, sender=MyStory.locations.through)
+        signals.m2m_changed.connect(self.handle_save, sender=MyStory.places.through)
 
         signals.post_save.connect(self.handle_asset_translation_save,
-                                  sender=HtmlAssetTranslation)
+                                  sender=MyHtmlAssetTranslation)
         signals.post_save.connect(self.handle_asset_relation_save,
-                                  sender=SectionAsset)
+                                  sender=MySectionAsset)
         signals.post_delete.connect(self.handle_asset_relation_save,
-                                    sender=SectionAsset)
+                                    sender=MySectionAsset)
         signals.pre_delete.connect(self.handle_cache_story_for_delete,
-                                   sender=SectionAsset)
+                                   sender=MySectionAsset)
         signals.post_save.connect(self.handle_section_translation_save,
-                                  sender=SectionTranslation)
+                                  sender=MySectionTranslation)
         signals.post_save.connect(self.handle_location_save,
-                                  sender=Location)
+                                  sender=MyLocation)
 
         # Delete signals
-        signals.post_delete.connect(self.handle_delete, sender=Story)
+        signals.post_delete.connect(self.handle_delete, sender=MyStory)
         signals.post_delete.connect(self.handle_translation_save,
-                                    sender=StoryTranslation)
+                                    sender=MyStoryTranslation)
 
     def _setup_help(self):
         # HACK: Import here to avoid circular import
         # See http://stackoverflow.com/a/17364366/386210
-        from storybase_help.models import Help, HelpTranslation
 
-        signals.post_save.connect(self.handle_save, sender=Help)
+        # XXX: ZM Additional Hack http://stackoverflow.com/questions/17520812/how-to-resolve-circular-import-involving-haystack
+
+        MyHelp = get_model('storybase_help', 'Help')
+        MyHelpTranslation = get_model('storybase_help', 'HelpTranslation')
+
+        signals.post_save.connect(self.handle_save, sender=MyHelp)
         signals.post_save.connect(self.handle_translation_save,
-                                  sender=HelpTranslation)
-        signals.post_delete.connect(self.handle_delete, sender=Help)
+                                  sender=MyHelpTranslation)
+        signals.post_delete.connect(self.handle_delete, sender=MyHelp)
         signals.post_delete.connect(self.handle_translation_save,
-                                    sender=HelpTranslation)
+                                    sender=MyHelpTranslation)
 
     def _teardown_story(self):
         # HACK: Import here to avoid circular import
         # See http://stackoverflow.com/a/17364366/386210
-        from storybase_asset.models import HtmlAssetTranslation
-        from storybase_geo.models import Location
-        from storybase_story.models import (SectionAsset, SectionTranslation,
-                                    Story, StoryTranslation)
 
-        signals.post_save.disconnect(self.handle_save, sender=Story)
+        # XXX: ZM Additional Hack http://stackoverflow.com/questions/17520812/how-to-resolve-circular-import-involving-haystack
+
+        MyHtmlAssetTranslation = get_model('storybase_story', 'HtmlAssetTranslation')
+        MyLocation = get_model('storybase_story', 'Location')
+        MySectionAsset = get_model('storybase_story', 'SectionAsset')
+        MySectionTranslation = get_model('storybase_story', 'SectionTranslation')
+        MyStory = get_model('storybase_story', 'Story')
+        MyStoryTranslation = get_model('storybase_story', 'StoryTranslation')
+
+        signals.post_save.disconnect(self.handle_save, sender=MyStory)
         signals.post_save.disconnect(self.handle_translation_save,
-                                     sender=StoryTranslation)
+                                     sender=MyStoryTranslation)
 
-        signals.m2m_changed.disconnect(self.handle_save, sender=Story.organizations.through)
-        signals.m2m_changed.disconnect(self.handle_save, sender=Story.projects.through)
-        signals.m2m_changed.disconnect(self.handle_save, sender=Story.tags.through)
-        signals.m2m_changed.disconnect(self.handle_save, sender=Story.topics.through)
-        signals.m2m_changed.disconnect(self.handle_save, sender=Story.locations.through)
-        signals.m2m_changed.disconnect(self.handle_save, sender=Story.places.through)
+        signals.m2m_changed.disconnect(self.handle_save, sender=MyStory.organizations.through)
+        signals.m2m_changed.disconnect(self.handle_save, sender=MyStory.projects.through)
+        signals.m2m_changed.disconnect(self.handle_save, sender=MyStory.tags.through)
+        signals.m2m_changed.disconnect(self.handle_save, sender=MyStory.topics.through)
+        signals.m2m_changed.disconnect(self.handle_save, sender=MyStory.locations.through)
+        signals.m2m_changed.disconnect(self.handle_save, sender=MyStory.places.through)
 
 
         signals.post_save.disconnect(self.handle_asset_translation_save,
-                                  sender=HtmlAssetTranslation)
+                                  sender=MyHtmlAssetTranslation)
         signals.post_save.disconnect(self.handle_asset_relation_save,
-                                     sender=SectionAsset)
+                                     sender=MySectionAsset)
         signals.post_delete.disconnect(self.handle_asset_relation_save,
-                                       sender=SectionAsset)
+                                       sender=MySectionAsset)
         signals.post_save.disconnect(self.handle_section_translation_save,
-                                     sender=SectionTranslation)
+                                     sender=MySectionTranslation)
         signals.post_save.disconnect(self.handle_location_save,
-                                     sender=Location)
+                                     sender=MyLocation)
 
-        signals.post_delete.disconnect(self.handle_delete, sender=Story)
+        signals.post_delete.disconnect(self.handle_delete, sender=MyStory)
         signals.post_delete.disconnect(self.handle_translation_save,
-                                       sender=StoryTranslation)
+                                       sender=MyStoryTranslation)
 
     def _teardown_help(self):
         # HACK: Import here to avoid circular import
-        # See http://stackoverflow.com/a/17364366/386210
-        from storybase_help.models import Help, HelpTranslation
 
-        signals.post_save.disconnect(self.handle_save, sender=Help)
+        # XXX: ZM Additional Hack http://stackoverflow.com/questions/17520812/how-to-resolve-circular-import-involving-haystack
+
+        MyHelp = get_model('storybase_help', 'Help')
+        MyHelpTranslation = get_model('storybase_help', 'HelpTranslation')
+
+        signals.post_save.disconnect(self.handle_save, sender=MyHelp)
         signals.post_save.disconnect(self.handle_translation_save,
-                                     sender=HelpTranslation)
-        signals.post_delete.disconnect(self.handle_delete, sender=Help)
+                                     sender=MyHelpTranslation)
+        signals.post_delete.disconnect(self.handle_delete, sender=MyHelp)
         signals.post_delete.disconnect(self.handle_translation_save,
-                                       sender=HelpTranslation)
+                                       sender=MyHelpTranslation)
 
     def setup(self):
         self._setup_story()

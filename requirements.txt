@@ -21,8 +21,8 @@ geopy
 mimeparse>=0.1.3
 oauth2>=1.5.211
 psycopg2>=2.4.1
-git+git://github.com/elpaso/django-dag.git#egg=django_dag
-# django-uuidfield must be fixed at 0.2 
+django-dag==1.2
+# django-uuidfield must be fixed at 0.2
 django-uuidfield==0.2
 django-model-utils
 django-categories

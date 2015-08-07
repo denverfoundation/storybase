@@ -40,7 +40,7 @@ class HomeView(TemplateView):
     def get_context_data(self, **kwargs):
         context = super(HomeView, self).get_context_data(**kwargs)
         context['topics'] = Category.objects.all()
-        context['places'] = Place.objects.all()
+        context['places'] = Place.objects.all().values('name', 'id')
 
         return context
 
@@ -48,7 +48,7 @@ class ExploreStoriesView(TemplateView):
     """
     A view that lets users filter a list of stories
 
-    The heavy lifting is done by ```StoryResource``` and client-side 
+    The heavy lifting is done by ```StoryResource``` and client-side
     JavaScript.
 
     """
@@ -120,13 +120,13 @@ class StoryViewerView(ModelIdDetailView):
         context['sections_json'] = self.object.structure.sections_json(
                 connected_stories=context['connected_stories'])
 
-        # Currently supporting two "contexts" in which the viewer lives: 
+        # Currently supporting two "contexts" in which the viewer lives:
         # iframe and normal
         supported_contexts = ['normal', 'iframe']
         try:
             viewer_context = self.request.REQUEST.get('context', 'normal')
-            context['context'] = (viewer_context 
-                                  if viewer_context in supported_contexts 
+            context['context'] = (viewer_context
+                                  if viewer_context in supported_contexts
                                   else 'normal')
         except AttributeError:
             # No self.request defined, default to normal context
@@ -143,7 +143,7 @@ class StoryUpdateView(SingleObjectMixin, SingleObjectTemplateResponseMixin, View
   queryset = Story.objects.all()
   template_name = 'storybase_story/story_update.html'
   slug_url_kwarg = 'slug'
-  
+
   def update_story(self, obj_id, status):
     obj = self.get_object()
     if obj is not None:
@@ -151,13 +151,13 @@ class StoryUpdateView(SingleObjectMixin, SingleObjectTemplateResponseMixin, View
           raise PermissionDenied(_(u"You are not authorized to edit this story"))
       obj.status = status
       obj.save()
-  
+
   def get(self, request, *args, **kwargs):
     self.object = self.get_object()
 
     # previous and next urls default to account story list
     result_url = previous_url = reverse('account_stories')
-    
+
     if 'HTTP_REFERER' in request.META:
       previous_url = request.META['HTTP_REFERER']
 
@@ -166,10 +166,10 @@ class StoryUpdateView(SingleObjectMixin, SingleObjectTemplateResponseMixin, View
       result_url = kwargs['result_url']
     if 'result_url' in request.GET:
       result_url = request.GET['result_url']
-    
+
     context = self.get_context_data(object=self.object, result_url=result_url, previous_url=previous_url, **kwargs)
     return self.render_to_response(context)
-  
+
   def post(self, request, *args, **kwargs):
     if self.request.user.is_authenticated():
       self.update_story(request.POST['story_id'], kwargs['status'])
@@ -180,7 +180,7 @@ class StoryUpdateView(SingleObjectMixin, SingleObjectTemplateResponseMixin, View
       result_url = request.POST['result_url']
     # TODO: success notification?
     return HttpResponseRedirect(result_url)
-    
+
 
 class StoryBuilderView(DetailView):
     """
@@ -242,7 +242,7 @@ class StoryBuilderView(DetailView):
 
         The template is identified with a 'template' parameter in the
         querystring of the view URL or view keyword arguments.
-        It can either be a value for the template_id or slug field of 
+        It can either be a value for the template_id or slug field of
         the the ``StoryTemplate`` model.
 
         This method returns None if no matching story is found or if no
@@ -272,7 +272,7 @@ class StoryBuilderView(DetailView):
                 # in the builder
                 pass
 
-        return obj 
+        return obj
 
     def get_story_json(self, obj=None):
         if obj is None:
@@ -288,7 +288,7 @@ class StoryBuilderView(DetailView):
 
         This is used to add JSON data to the view's response context in
         order to bootstrap Backbone models and collections.
-        
+
         """
         if story is None:
             story = self.object
@@ -311,11 +311,11 @@ class StoryBuilderView(DetailView):
 
         This is used to add JSON data to the view's response context in
         order to bootstrap Backbone models and collections.
-        
+
         The response JSON is an object keyed with the section IDs.
         The asset data is accessible via the objects property of
         each section object.
-        
+
         """
         if story is None:
             story = self.object
@@ -388,7 +388,7 @@ class StoryBuilderView(DetailView):
         return resource.serialize(None, to_be_serialized, 'application/json')
 
     def get_topics_json(self):
-        to_be_serialized =[{ 'id': obj.pk, 'name': obj.name } 
+        to_be_serialized =[{ 'id': obj.pk, 'name': obj.name }
                            for obj in Category.objects.order_by('categorytranslation__name')]
         return json.dumps(to_be_serialized)
 
@@ -495,7 +495,7 @@ class StoryBuilderView(DetailView):
             'showSectionTitles': True,
             # Show the select input for changing section layouts
             'showLayoutSelection': True,
-            # Show the story title input in the section edit view 
+            # Show the story title input in the section edit view
             'showStoryInfoInline': False,
             # Prompt (for connected stories)
             'prompt': self.get_prompt(),
@@ -576,7 +576,7 @@ class StoryBuilderView(DetailView):
             context['show_story_info_inline'] = True
 
         related_stories_json = self.get_related_stories_json()
-        if related_stories_json: 
+        if related_stories_json:
             context['related_stories_json'] = mark_safe(
                 related_stories_json)
 
@@ -603,9 +603,9 @@ LANG_PREFIX_RE = re.compile(r"^/(%s)/" % "|".join([re.escape(lang[0]) for lang i
 class StoryWidgetView(Custom404Mixin, VersionTemplateMixin, DetailView):
     """
     An embedable widget for a story or list of stories
-    
+
     This view allows stories or lists of stories to be embedded in a page on an
-    external site.  It is designed to to be rendered inside an iframe by adding 
+    external site.  It is designed to to be rendered inside an iframe by adding
     the ``widgets.min.js`` script to a page.
 
     **Context**
@@ -664,8 +664,8 @@ class StoryWidgetView(Custom404Mixin, VersionTemplateMixin, DetailView):
             'related_field': 'tags',
         },
         'topic_stories': {
-            'queryset': Category.objects.all(), 
-            'lookup_fields': {'slug': 'categorytranslation__slug'}, 
+            'queryset': Category.objects.all(),
+            'lookup_fields': {'slug': 'categorytranslation__slug'},
             'related_field': 'topics',
         },
         'place_stories': {
@@ -688,14 +688,14 @@ class StoryWidgetView(Custom404Mixin, VersionTemplateMixin, DetailView):
         Returns a list of template names to search for when rendering the template.
 
         Includes one of:
-        
+
         - widget_story.html
         - widget_storylist.html
         - widget_story_storylist.html
-        
+
         For each case of story, list, or story+list. Includes 404 if something
         went wrong and we have a match for neither story nor list.
-        
+
         It will also include versioned template names if a ``version`` argument
         was passed to the view.
 
@@ -711,7 +711,7 @@ class StoryWidgetView(Custom404Mixin, VersionTemplateMixin, DetailView):
             template_names.append('storybase_story/widget_404.html')
 
         version = self.kwargs.get('version', None)
-        if version is not None: 
+        if version is not None:
             # If a version was included in the keyword arguments, search for a
             # version-specific template first
             template_names = self.get_versioned_template_names(template_names, version)
@@ -726,7 +726,7 @@ class StoryWidgetView(Custom404Mixin, VersionTemplateMixin, DetailView):
         Resolve a full URL
 
         This is a wrapper around ``django.core.urlresolvers.reverse()`` that
-        first strips the non-path URL parts. 
+        first strips the non-path URL parts.
 
         Returns a ``ResolverMatch`` object or None if there is no match
         """
@@ -797,7 +797,7 @@ class StoryWidgetView(Custom404Mixin, VersionTemplateMixin, DetailView):
                 return {
                     field_name: match.kwargs[kwarg]
                 }
-            
+
         raise AttributeError
 
     def get_queryset(self):
@@ -836,16 +836,16 @@ class StoryWidgetView(Custom404Mixin, VersionTemplateMixin, DetailView):
         related stories
 
         The view accepts an optional ``list-url`` query string parameter.
-        This parameter should be the full URL of a page for an organization, 
+        This parameter should be the full URL of a page for an organization,
         project, place, keyword (tag) or topic (category). If this parameter is
         present, the widget output will also contain a list of recent stories
         from that taxonomy item.
 
         """
-        # Calling super sets context['object'] 
+        # Calling super sets context['object']
         context = super(StoryWidgetView, self).get_context_data(**kwargs)
         context['stories'] = []
-        
+
         if self.list_match:
             filter_kwargs = self.get_filter_kwargs(self.list_match, self.get_related_field_name(self.list_match))
             context['stories'] = Story.objects.published().filter(**filter_kwargs).order_by('-published')[:3]
@@ -857,7 +857,7 @@ class StoryWidgetView(Custom404Mixin, VersionTemplateMixin, DetailView):
             # This is a story-only view. Get the related taxonomy models for the
             # story
             context['taxonomy_terms'] = self.get_story_taxonomy_terms(context['story'])
-            
+
 
         return context
 
@@ -868,14 +868,14 @@ class StoryListView(MultipleObjectMixin, ModelIdDetailView):
     project, place, keyword (tag) or topic (category)
     """
     template_name = "storybase_story/story_list.html"
-    paginate_by = 10 
-    
+    paginate_by = 10
+
     def get_related_field_name(self):
         """
         Returns the relationship field name
-        
+
         Returns the name of the field of the Story model that defines the
-        relationship with the model used to aggregate the stories. 
+        relationship with the model used to aggregate the stories.
 
         Defaults to the ``related_field_name`` attribute of the view class
 
@@ -886,7 +886,7 @@ class StoryListView(MultipleObjectMixin, ModelIdDetailView):
         """
         Returns the name of the slug field on the related model
         """
-        return 'slug' 
+        return 'slug'
 
     def get_story_filter_kwargs(self):
         filter_kwargs = {}

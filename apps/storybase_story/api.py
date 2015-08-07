@@ -28,7 +28,7 @@ from storybase_asset.api import AssetResource
 from storybase_geo.models import Place
 from storybase_help.models import Help
 from storybase_story.models import (Container, ContainerTemplate,
-                                    Section, SectionAsset, SectionLayout, 
+                                    Section, SectionAsset, SectionLayout,
                                     Story, StoryRelation, StoryTemplate)
 from storybase_taxonomy.models import Category
 from storybase_user.models import Organization, Project
@@ -71,7 +71,7 @@ class StoryResource(TranslatedModelResource):
         # Hide the underlying id
         excludes = ['id']
         filtering = {
-            'story_id': ALL, 
+            'story_id': ALL,
         }
 
         # Custom meta attributes
@@ -184,7 +184,7 @@ class StoryResource(TranslatedModelResource):
         return getter_fn(items)
 
     def _get_facet_choices_topic_ids(self, items):
-        return [{ 'id': obj.pk, 'name': obj.name } 
+        return [{ 'id': obj.pk, 'name': obj.name }
                 for obj in Category.objects.filter(pk__in=items)\
                                            .order_by('categorytranslation__name')]
 
@@ -199,7 +199,7 @@ class StoryResource(TranslatedModelResource):
                                                .order_by('organizationtranslation__name')]
 
     def _get_facet_choices_language_ids(self, items):
-        return sorted([{ 'id': item, 'name': get_language_name(item)} 
+        return sorted([{ 'id': item, 'name': get_language_name(item)}
                        for item in items],
                        key=lambda language: language['name'])
 
@@ -227,7 +227,7 @@ class StoryResource(TranslatedModelResource):
                     return (filter_name, filter_value)
             else:
                 return (None, None)
-                
+
         applicable_filters = {}
         filter_fields = self._meta.explore_filter_fields
         for filter_field in filter_fields:
@@ -240,7 +240,7 @@ class StoryResource(TranslatedModelResource):
         if num_points_filter_name:
             applicable_filters[num_points_filter_name] = int(num_points_filter_value)
 
-            
+
         return applicable_filters
 
     def _explore_spatial_filter_object_list(self, request, object_list):
@@ -249,7 +249,7 @@ class StoryResource(TranslatedModelResource):
             """
             Parse the ``near`` query string parameter
 
-            The parameter should be of the form lat@lng,miles 
+            The parameter should be of the form lat@lng,miles
 
             Returns a tuple of a Point and D object suitable for passing
             to ``SearchQuerySet.dwithin()``
@@ -263,7 +263,7 @@ class StoryResource(TranslatedModelResource):
         if near_param:
             (point, dist) = _parse_near_param(near_param)
             proximity_filtered_object_list = object_list.dwithin(self._meta.explore_point_field, point, dist).distance(self._meta.explore_point_field, point)
-            return proximity_filtered_object_list 
+            return proximity_filtered_object_list
 
         else:
             return object_list
@@ -275,7 +275,7 @@ class StoryResource(TranslatedModelResource):
             object_list = object_list.filter(**applicable_filters)
 
         return object_list.order_by('-published').load_all()
-        
+
     def explore_result_get_list(self, request=None, **kwargs):
         filters = {}
 
@@ -342,17 +342,25 @@ class StoryResource(TranslatedModelResource):
 
         for result in results:
             bundle = self.build_bundle(obj=result.object, request=request)
-            bundle = self.full_dehydrate(bundle)
             objects.append(bundle)
 
         paginator = self._meta.paginator_class(request_data, objects,
                                                resource_uri=resource_uri,
                                                limit=self._meta.limit)
         to_be_serialized = paginator.page()
+        objects = []
+
+        # full_dehydrate is a very slow process, so it should only
+        # run on things that will be displayed.
+
+        for obj in to_be_serialized['objects']:
+            objects.append(self.full_dehydrate(obj))
+
+        to_be_serialized['objects'] = objects
 
         # Add the resource URI to the response metadata so the client-side
         # code can be naive
-        to_be_serialized['meta']['resource_uri'] = resource_uri 
+        to_be_serialized['meta']['resource_uri'] = resource_uri
 
         for facet_field, items in results.facet_counts()['fields'].iteritems():
             filter_field = self._get_filter_field_name(facet_field)
@@ -362,7 +370,7 @@ class StoryResource(TranslatedModelResource):
         self._add_boundaries(request, to_be_serialized)
 
         return to_be_serialized
-            
+
     def explore_get_list(self, request, **kwargs):
         """Custom endpoint to drive the drill-down in the "Explore" view"""
         self.method_check(request, allowed=['get'])
@@ -388,7 +396,7 @@ class StoryResource(TranslatedModelResource):
             return http.HttpMultipleChoices("More than one resource is found at this URI.")
 
         section_resource = SectionResource()
-        return section_resource.dispatch_detail(request, 
+        return section_resource.dispatch_detail(request,
                                                 story__story_id=obj.story_id,
                                                 section_id=section_id)
 
@@ -418,7 +426,7 @@ class StoryResource(TranslatedModelResource):
             return http.HttpMultipleChoices("More than one resource is found at this URI.")
 
         resource = SectionAssetResource()
-        return resource.dispatch_list(request, 
+        return resource.dispatch_list(request,
             section__section_id=section_id)
 
     def dispatch_sectionasset_detail(self, request, **kwargs):
@@ -436,10 +444,10 @@ class StoryResource(TranslatedModelResource):
             return http.HttpMultipleChoices("More than one resource is found at this URI.")
 
         resource = SectionAssetResource()
-        return resource.dispatch_detail(request, 
+        return resource.dispatch_detail(request,
             section__section_id=section_id,
             asset__asset_id=asset_id)
-                                               
+
     def dispatch_template_list(self, request, **kwargs):
         template_resource = StoryTemplateResource()
         return template_resource.dispatch_list(request)
@@ -455,7 +463,7 @@ class StoryResource(TranslatedModelResource):
 
     def dispatch_metadata_list(self, request, resource, **kwargs):
         """
-        Dispatcher for nested resources that allow setting/replacing 
+        Dispatcher for nested resources that allow setting/replacing
         story metadata
 
         """
@@ -526,7 +534,7 @@ class SectionResource(TranslatedModelResource):
         kwargs = {}
 
         if isinstance(bundle_or_obj, Bundle):
-            obj = bundle_or_obj.obj 
+            obj = bundle_or_obj.obj
         else:
             obj = bundle_or_obj
 
@@ -544,7 +552,7 @@ class SectionResource(TranslatedModelResource):
 
         """
         kwargs = super(SectionResource, self).resource_uri_kwargs(bundle_or_obj)
-        kwargs['resource_name'] = self._meta.parent_resource._meta.resource_name 
+        kwargs['resource_name'] = self._meta.parent_resource._meta.resource_name
         if self._meta.parent_resource._meta.api_name is not None:
             kwargs['api_name'] = self._meta.parent_resource._meta.api_name
         return kwargs
@@ -570,8 +578,8 @@ class SectionResource(TranslatedModelResource):
 
     def authorized_create_detail(self, object_list, bundle):
         try:
-            return self._meta.authorization.obj_has_perms(bundle.obj.story, 
-                    bundle.request.user, ['change']) 
+            return self._meta.authorization.obj_has_perms(bundle.obj.story,
+                    bundle.request.user, ['change'])
         except Unauthorized, e:
             self.unauthorized_result(e)
 
@@ -646,7 +654,7 @@ class SectionAssetResource(HookedModelResource):
         kwargs = {}
 
         if isinstance(bundle_or_obj, Bundle):
-            obj = bundle_or_obj.obj 
+            obj = bundle_or_obj.obj
         else:
             obj = bundle_or_obj
 
@@ -665,7 +673,7 @@ class SectionAssetResource(HookedModelResource):
 
         """
         kwargs = super(SectionAssetResource, self).resource_uri_kwargs(bundle_or_obj)
-        kwargs['resource_name'] = self._meta.parent_resource._meta.resource_name 
+        kwargs['resource_name'] = self._meta.parent_resource._meta.resource_name
         if self._meta.parent_resource._meta.api_name is not None:
             kwargs['api_name'] = self._meta.parent_resource._meta.api_name
         return kwargs
@@ -704,13 +712,13 @@ class SectionAssetResource(HookedModelResource):
         except IntegrityError:
             # An asset is already assigned to this section/
             # container
-            
+
             # Roll back the transaction
             transaction.rollback_unless_managed()
             logger.warn("Attempted duplicate assignment of asset %s to "
-                        "section %s in container %s" % 
-                        (bundle.obj.asset.asset_id, 
-                         bundle.obj.section.section_id, 
+                        "section %s in container %s" %
+                        (bundle.obj.asset.asset_id,
+                         bundle.obj.section.section_id,
                          bundle.obj.container.name))
             msg = ("An asset has already been assigned to this section and "
                     "container")
@@ -729,14 +737,14 @@ class StoryTemplateResource(TranslatedModelResource):
     title = fields.CharField(attribute='title')
     description = fields.CharField(attribute='description')
     tag_line = fields.CharField(attribute='tag_line')
-    story = fields.ToOneField(StoryResource, attribute='story', 
+    story = fields.ToOneField(StoryResource, attribute='story',
                                blank=True, null=True)
     ingredients = fields.CharField(attribute='ingredients', blank=True,
                                    null=True)
     best_for = fields.CharField(attribute='best_for', blank=True, null=True)
     tip = fields.CharField(attribute='tip', blank=True, null=True)
     examples = fields.ListField(blank=True, null=True)
-    
+
     class Meta:
         queryset = StoryTemplate.objects.all()
         resource_name = 'templates'
@@ -762,7 +770,7 @@ class StoryTemplateResource(TranslatedModelResource):
         kwargs = {}
 
         if isinstance(bundle_or_obj, Bundle):
-            obj = bundle_or_obj.obj 
+            obj = bundle_or_obj.obj
         else:
             obj = bundle_or_obj
 
@@ -779,7 +787,7 @@ class StoryTemplateResource(TranslatedModelResource):
 
         """
         kwargs = super(StoryTemplateResource, self).resource_uri_kwargs(bundle_or_obj)
-        kwargs['resource_name'] = self._meta.parent_resource._meta.resource_name 
+        kwargs['resource_name'] = self._meta.parent_resource._meta.resource_name
         if self._meta.parent_resource._meta.api_name is not None:
             kwargs['api_name'] = self._meta.parent_resource._meta.api_name
         return kwargs
@@ -832,7 +840,7 @@ class PutListSubResource(HookedModelResource):
 
         """
         kwargs = super(PutListSubResource, self).resource_uri_kwargs(bundle_or_obj)
-        kwargs['resource_name'] = self._meta.parent_resource._meta.resource_name 
+        kwargs['resource_name'] = self._meta.parent_resource._meta.resource_name
         if self._meta.parent_resource._meta.api_name is not None:
             kwargs['api_name'] = self._meta.parent_resource._meta.api_name
         return kwargs
@@ -843,8 +851,8 @@ class PutListSubResource(HookedModelResource):
 
     def authorized_update_related_obj(self, request, related_obj):
         try:
-            return self._meta.authorization.obj_has_perms(related_obj, 
-                    request.user, ['change']) 
+            return self._meta.authorization.obj_has_perms(related_obj,
+                    request.user, ['change'])
         except Unauthorized, e:
             self.unauthorized_result(e)
 
@@ -858,8 +866,8 @@ class PutListSubResource(HookedModelResource):
         filter_kwargs = {}
         filter_kwargs[self._meta.related_id_name + "__in"] = related_ids
         related_objects = self._meta.related_queryset.filter(**filter_kwargs)
-        related_objects = self.alter_hydrated_object_list(request, 
-            related_objects) 
+        related_objects = self.alter_hydrated_object_list(request,
+            related_objects)
 
         if len(related_objects) != len(related_ids):
             raise BadRequest("Invalid IDs")
