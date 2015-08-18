@@ -8,3 +8,4 @@
 /solr/maincore/*
 !/solr/maincore/conf
 !/solr/maincore/conf/*
+/solr/maincore/conf/_rest_managed.json
