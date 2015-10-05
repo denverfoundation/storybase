@@ -166,7 +166,7 @@ CMS_TEMPLATES = (
     ('activity_guides.html', 'Activity Guides'),
 )
 
-INSTALLED_APPS = (
+INSTALLED_APPS = [
     'django.contrib.auth',
     'django.contrib.contenttypes',
     'django.contrib.sessions',
@@ -226,7 +226,7 @@ INSTALLED_APPS = (
     'storybase_geo',
     'storybase_messaging',
     'cmsplugin_storybase',
-)
+]
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
