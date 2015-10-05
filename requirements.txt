@@ -43,6 +43,7 @@ django-compressor
 BeautifulSoup<4.0
 
 django-dotenv
+django-debug-toolbar
 django-email-bandit
 dj-database-url
 python-memcached

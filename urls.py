@@ -37,7 +37,7 @@ v0_1_api.register(HelpResource())
 v0_1_api.register(TagResource())
 v0_1_api.register(BadgeResource())
 
-urlpatterns += patterns('', 
+urlpatterns += patterns('',
     # REST API
     (r'^api/', include(v0_1_api.urls)),
     # Proxy for Creative Commons endpoint
@@ -94,15 +94,17 @@ urlpatterns += patterns('',
     (r'^jsi18n/$', 'django.views.i18n.javascript_catalog', {}),
 
     # JS errors
-    url(r'^errors/', JSErrorHandlerView.as_view(), name="js_error_log"), 
+    url(r'^errors/', JSErrorHandlerView.as_view(), name="js_error_log"),
 
     # 3rd-party apps
     (r'^tinymce/', include('tinymce.urls')),
 )
 
 if settings.DEBUG:
-    urlpatterns = patterns('',
-    url(r'^media/(?P<path>.*)$', 'django.views.static.serve',
-        {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}),
-    url(r'', include('django.contrib.staticfiles.urls')),
-) + urlpatterns
+    import debug_toolbar
+    urlpatterns += patterns('',
+        url(r'^media/(?P<path>.*)$', 'django.views.static.serve',
+            {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}),
+        url(r'', include('django.contrib.staticfiles.urls')),
+        url(r'^__debug__/', include(debug_toolbar.urls)),
+)
