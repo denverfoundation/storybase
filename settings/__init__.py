@@ -122,7 +122,7 @@ TEMPLATE_LOADERS = (
 #     'django.template.loaders.eggs.Loader',
 )
 
-MIDDLEWARE_CLASSES = (
+MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     # If not using Django CMS, or some other app that has
     # a "catch-all" url regex, just use
@@ -140,7 +140,7 @@ MIDDLEWARE_CLASSES = (
     'cms.middleware.toolbar.ToolbarMiddleware',
 
     'storybase.middleware.ExtractContentMiddleware',
-)
+]
 
 # This prevents clickjacking <http://en.wikipedia.org/wiki/Clickjacking>
 X_FRAME_OPTIONS = 'SAMEORIGIN'
