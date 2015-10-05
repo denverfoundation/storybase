@@ -41,3 +41,9 @@ lxml
 shortuuid
 django-compressor
 BeautifulSoup<4.0
+
+django-dotenv
+django-email-bandit
+dj-database-url
+raven==5.1
+-e git+https://github.com/fusionbox/fusionbox-fabric-helpers.git#egg=fusionbox-fabric-helpers
