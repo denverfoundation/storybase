@@ -1,0 +1,35 @@
+#!/usr/bin/env bash
+
+set -e
+
+ENV=.deployment_virtualenv
+# version of fusionbox-fabric-helpers to run
+HELPERS_COMMIT=b887c83d2dbc
+HELPERS_COMMIT_FILE=$ENV/HELPERS_COMMIT
+
+if which python2 > /dev/null 2> /dev/null
+then
+    EXE=$(which python2)
+elif python --version 2>&1 | egrep "^Python 2" > /dev/null
+then
+    EXE=$(which python)
+fi
+
+if [ -z "$EXE" ]
+then
+    echo "Couldn't find Python 2" > /dev/stderr
+    exit 127
+fi
+
+if [ ! -d $ENV ]
+then
+  virtualenv -p "$EXE" $ENV
+  touch $HELPERS_COMMIT_FILE
+fi
+source $ENV/bin/activate
+if [ "$HELPERS_COMMIT" != "$(cat $HELPERS_COMMIT_FILE)" ]
+then
+  pip install fabric -e "git+https://github.com/fusionbox/fusionbox-fabric-helpers@$HELPERS_COMMIT#egg=fusionbox-fabric-helpers" >/dev/null
+  echo $HELPERS_COMMIT > $HELPERS_COMMIT_FILE
+fi
+exec fab "$@"
