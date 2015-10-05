@@ -47,4 +47,5 @@ django-email-bandit
 dj-database-url
 python-memcached
 raven==5.1
+django-backupdb>=0.6.0
 -e git+https://github.com/fusionbox/fusionbox-fabric-helpers.git#egg=fusionbox-fabric-helpers

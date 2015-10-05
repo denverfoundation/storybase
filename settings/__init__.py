@@ -182,6 +182,7 @@ INSTALLED_APPS = [
 
     'raven.contrib.django',
     'bandit',
+    'backupdb',
 
     # django CMS requirements
     'cms',
