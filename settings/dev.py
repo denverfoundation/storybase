@@ -40,5 +40,5 @@ STATIC_ROOT = os.environ['STATIC_ROOT']
 
 ALLOWED_HOSTS = [
     'floodlightproject.dev.fusionbox.com',
-    'localhost',
+    '127.0.0.1',
 ]
