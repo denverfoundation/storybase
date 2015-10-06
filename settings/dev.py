@@ -35,5 +35,3 @@ CACHES = {
 BACKUPDB_DIRECTORY = os.environ['BACKUP_DIR']
 MEDIA_ROOT = os.environ['MEDIA_ROOT']
 STATIC_ROOT = os.environ['STATIC_ROOT']
-
-ALLOWED_HOSTS = ['10.1.1.122']
