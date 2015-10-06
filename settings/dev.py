@@ -16,7 +16,7 @@ RAVEN_CONFIG = {
 }
 
 TEMPLATE_LOADERS = (
-    ('django.template.loders.cached.loader', TEMPLATE_LOADERS),
+    ('django.template.loaders.cached.Loader', TEMPLATE_LOADERS),
 )
 
 CACHES = {
