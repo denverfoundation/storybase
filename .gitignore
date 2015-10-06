@@ -7,7 +7,6 @@ data
 static/js/libs/tiny_mce/
 media/*
 settings/local.py
-wsgi.py
 config/fabricrc
 .idea/
 *.mo
