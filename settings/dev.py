@@ -3,11 +3,6 @@ from settings import *
 DEBUG = True
 TEMPLATE_DEBUG = DEBUG
 
-DEBUG_TOOLBAR_CONFIG = {
-    'INTERCEPT_REDIRECTS': False,
-}
-DEBUG_TOOLBAR_PATCH_SETTINGS = False
-
 # Hijack all emails and send them to the BANDIT_EMAIL address
 EMAIL_BACKEND = 'bandit.backends.smtp.HijackSMTPBackend'
 BANDIT_EMAIL = 'plee@fusionbox.com'
