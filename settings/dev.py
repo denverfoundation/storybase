@@ -32,6 +32,13 @@ CACHES = {
     }
 }
 
+# TODO: HAYSTACK_CONNECTIONS
+
 BACKUPDB_DIRECTORY = os.environ['BACKUP_DIR']
 MEDIA_ROOT = os.environ['MEDIA_ROOT']
 STATIC_ROOT = os.environ['STATIC_ROOT']
+
+ALLOWED_HOSTS = [
+    'floodlightproject.dev.fusionbox.com',
+    'localhost',
+]
