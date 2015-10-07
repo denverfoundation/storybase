@@ -72,7 +72,12 @@ FILER_STORAGES = {
     },
 }
 
-# TODO: HAYSTACK_CONNECTIONS
+HAYSTACK_CONNECTIONS = {
+    'default': {
+        'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
+        'URL': 'http://127.0.0.2:8983/solr/maincore/'
+    },
+}
 
 BACKUPDB_DIRECTORY = os.environ['BACKUP_DIR']
 MEDIA_ROOT = os.environ['MEDIA_ROOT']
