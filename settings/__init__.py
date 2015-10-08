@@ -35,9 +35,7 @@ INTERNAL_IPS = (
     '208.186.142.130',
 )
 
-# Hijack all emails and send them to the BANDIT_EMAIL address
-EMAIL_BACKEND = 'bandit.backends.smtp.HijackSMTPBackend'
-BANDIT_EMAIL = 'plee@fusionbox.com'
+EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
 # Tell raven to report errors even when debug is True
 RAVEN_CONFIG = {
