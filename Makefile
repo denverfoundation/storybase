@@ -11,10 +11,10 @@ CLOSURE_COMPILE=scripts/closure_compile
 all: styles
 
 styles: global_styles widget_styles
-       
+
 global_styles: $(LESS_DIR)/base.less
-	$(LESSC) $(LESSCFLAGS) $(LESS_DIR)/base.less > $(CSS_DIR)/style.css 
- 
+	$(LESSC) $(LESSCFLAGS) $(LESS_DIR)/base.less > $(CSS_DIR)/style.css
+
 widget_styles: $(LESS_DIR)/widget.less
 	$(LESSC) $(LESSCFLAGS) $(LESS_DIR)/widget.less > $(CSS_DIR)/widget.css
 
@@ -25,3 +25,5 @@ widget_script: $(JS_DIR)/widgets.js
 
 jquery_plugins: apps/cmsplugin_storybase/$(JS_DIR)/jquery.storybase.activityguide.js
 	$(CLOSURE_COMPILE) apps/cmsplugin_storybase/$(JS_DIR)/jquery.storybase.activityguide.js > apps/cmsplugin_storybase/$(JS_DIR)/jquery.storybase.activityguide.min.js
+
+include Makefile.solr
