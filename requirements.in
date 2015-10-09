@@ -11,6 +11,7 @@ django-compressor
 django-dag
 django-dotenv
 django-email-bandit
+django-extensions
 django-haystack
 django-localflavor
 django-model-utils

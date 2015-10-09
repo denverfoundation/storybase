@@ -20,6 +20,7 @@ django-contrib-comments==1.6.1  # via django-threadedcomments
 django-dag==1.3
 django-dotenv==1.3.0
 django-email-bandit==1.0
+django-extensions==1.5.7
 django-filer==0.9.12      # via cmsplugin-filer
 django-haystack==2.4.0
 django-localflavor==1.1
@@ -64,7 +65,7 @@ pytz==2015.6
 raven==5.1
 requests==2.8.0           # via pysolr
 shortuuid==0.4.2
-six==1.10.0               # via bleach, django-appconf, html5lib, python-dateutil, python-memcached
+six==1.10.0               # via bleach, django-appconf, django-extensions, html5lib, python-dateutil, python-memcached
 south==1.0.2              # via django-cms
 termcolor==1.1.0
 unicode-slugify==0.1.1    # via django-categories
