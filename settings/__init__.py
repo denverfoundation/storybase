@@ -181,6 +181,7 @@ INSTALLED_APPS = [
     'raven.contrib.django',
     'bandit',
     'backupdb',
+    'django_extensions',
 
     # django CMS requirements
     'cms',
@@ -193,12 +194,12 @@ INSTALLED_APPS = [
     'sekizai',
 
     # django CMS plugins
-    'cms.plugins.text',
     'cmsplugin_filer_file',
     'cmsplugin_filer_folder',
     'cmsplugin_filer_image',
     'cmsplugin_filer_teaser',
     'cmsplugin_filer_video',
+    'djangocms_text_ckeditor',
 
     # StoryBase dependencies
     #'ajax_select',
@@ -226,6 +227,10 @@ INSTALLED_APPS = [
     'storybase_messaging',
     'cmsplugin_storybase',
 ]
+
+SOUTH_MIGRATION_MODULES = {
+    'djangocms_text_ckeditor': 'djangocms_text_ckeditor.south_migrations',
+}
 
 TEMPLATE_CONTEXT_PROCESSORS = (
     'django.contrib.auth.context_processors.auth',
