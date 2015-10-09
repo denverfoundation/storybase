@@ -98,7 +98,8 @@ class StorybasePageAdmin(PageAdmin):
 
 def update_fieldsets(cls):
     """Add our custom fields to the Admin fieldsets"""
-    cls.fieldsets[0][1]['fields'].append('teaser')
+    # TODO: http://docs.django-cms.org/en/latest/upgrade/3.0.html#placeholderadmin
+    # cls.fieldsets[0][1]['fields'].append('teaser')
 
 
 update_fieldsets(StorybasePageAdmin)
