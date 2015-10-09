@@ -282,17 +282,17 @@ SOCIAL_AUTH_DISCONNECT_REDIRECT_URL = '/accounts/'
 # more details on how to customize your logging configuration.
 LOGGING = {
     'version': 1,
-    'disable_existing_loggers': False,
+    'disable_existing_loggers': True,
+    'root': {
+        'level': 'WARNING',
+        'handlers': ['sentry'],
+    },
     'formatters': {
-        'default': {
-            'format': '%(asctime)s %(levelname)s %(module)s %(message)s'
+        'verbose': {
+            'format': '%(levelname)s %(asctime)s %(module)s %(process)d %(thread)d %(message)s'
         },
     },
     'handlers': {
-        'null': {
-            'level':'DEBUG',
-            'class':'django.utils.log.NullHandler',
-        },
         'sentry': {
             'level': 'WARNING',
             'class': 'raven.contrib.django.handlers.SentryHandler',
@@ -300,7 +300,11 @@ LOGGING = {
         'console':{
             'level':'DEBUG',
             'class':'logging.StreamHandler',
-            'formatter': 'default',
+            'formatter': 'verbose',
+        },
+        'exception': {
+            'level': 'ERROR',
+            'class': 'exception_logging.ExceptionHandler'
         },
         'mail_admins': {
             'level': 'INFO',
@@ -329,7 +333,7 @@ LOGGING = {
             'propagate': True,
         },
         'storybase': {
-            'handlers': ['null'],
+            'handlers': ['console'],
             'level': 'INFO',
             'propogate': True,
         },
