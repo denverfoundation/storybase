@@ -1,5 +1,6 @@
 """Interpret a story and render its structure"""
-from django.utils import simplejson
+import json
+
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
@@ -161,7 +162,7 @@ class BaseStructure(object):
                 sections[-1]['next_section_id'] = 'connected-stories'
                 sections.append(connected_stories_section)
 
-        return mark_safe(simplejson.dumps(sections))
+        return mark_safe(json.dumps(sections))
 
     def get_next_section(self, section):
         return self._next_sections[section]

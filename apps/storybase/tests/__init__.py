@@ -1,3 +1,4 @@
+import json
 import sys
 from urlparse import parse_qs
 
@@ -5,10 +6,9 @@ from django.conf import settings
 from django.contrib.auth.models import User
 from django.contrib.sites.models import Site
 from django.core.files import File
-from django.core.serializers import json
+from django.core.serializers.json import DjangoJSONEncoder
 from django.template import Context, Template, RequestContext
 from django.test import TestCase
-from django.utils import simplejson
 
 from storybase.models import PermissionMixin
 from storybase.forms import UserEmailField 
@@ -208,10 +208,10 @@ class UtilsTestCase(TestCase):
             'body': "<script src=\"http://floodlightproject.org/fake.js\"></script>",
         }
 
-        json_str = simplejson.dumps(data, cls=json.DjangoJSONEncoder, sort_keys=True, ensure_ascii=False)
+        json_str = json.dumps(data, cls=DjangoJSONEncoder, sort_keys=True, ensure_ascii=False)
         escaped_json_str = escape_json_for_html(json_str)
-        self.assertEqual(simplejson.loads(json_str)['body'],
-                         simplejson.loads(escaped_json_str)['body'])
+        self.assertEqual(json.loads(json_str)['body'],
+                         json.loads(escaped_json_str)['body'])
 
     def test_get_language_name(self):
         self.assertEqual("English", get_language_name("en"))

@@ -1,4 +1,5 @@
 """Models for stories and story sections"""
+import json
 import time
 from datetime import datetime
 import bleach
@@ -11,7 +12,6 @@ from django.db import models
 from django.db.models import Q
 from django.db.models.signals import post_save, pre_save, m2m_changed
 from django.template.loader import render_to_string
-from django.utils import simplejson
 from django.utils.safestring import mark_safe
 from django.utils.translation import get_language, ugettext_lazy as _
 from django_dag.models import edge_factory, node_factory
@@ -240,7 +240,7 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
 
     def to_json(self):
         """Return JSON representation of this object"""
-        return mark_safe(simplejson.dumps(self.to_simple())) 
+        return mark_safe(json.dumps(self.to_simple()))
 
     def get_default_featured_asset(self):
         """

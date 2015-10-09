@@ -1,8 +1,9 @@
 """Common context processors used across StoryBase apps"""
 
+import json
+
 from django.conf import settings
 from django.contrib.sites.models import Site, RequestSite
-from django.utils import simplejson
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
@@ -17,7 +18,7 @@ def conf(request):
         if setting_val is not None:
             if setting in storybase_settings.JSON_SETTINGS:
                 # Value needs to be JSONified
-                setting_val = mark_safe(simplejson.dumps(setting_val))
+                setting_val = mark_safe(json.dumps(setting_val))
             else:
                 if isinstance(setting_val, (str, unicode)):
                     # Value is text, translate it

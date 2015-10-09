@@ -3,6 +3,7 @@
 
 import datetime
 import json
+
 from time import sleep
 from unittest import skipIf
 from urllib import urlencode
@@ -14,7 +15,6 @@ from django.db import IntegrityError
 from django.http import HttpRequest, Http404
 from django.template import Context, Template
 from django.test import RequestFactory, TestCase, TransactionTestCase
-from django.utils import simplejson
 from django.utils.translation import get_language
 
 from tastypie.bundle import Bundle
@@ -2463,7 +2463,7 @@ class StructureTest(TestCase):
                                        weight=0)
         SectionRelation.objects.create(parent=section3, child=section2,
                                        weight=0)
-        json_sections = simplejson.loads(story.structure.sections_json(
+        json_sections = json.loads(story.structure.sections_json(
             include_summary=False, include_call_to_action=False))
         self.assertIn(section8.section_id,
             self._get_section(
@@ -2534,7 +2534,7 @@ class StructureTest(TestCase):
                                        weight=0)
         SectionRelation.objects.create(parent=section3, child=section2,
                                        weight=0)
-        json_sections = simplejson.loads(story.structure.sections_json(
+        json_sections = json.loads(story.structure.sections_json(
             include_summary=True, include_call_to_action=True))
         self.assertIn(
             section8.section_id,
@@ -2607,7 +2607,7 @@ class StoryResourceTest(ResourceTestCase):
         req = HttpRequest()
         req.GET['story_id'] = story.story_id
         resp = self.resource.get_detail(req)
-        dehydrated = simplejson.loads(resp.content)
+        dehydrated = json.loads(resp.content)
         self.assertEqual(len(dehydrated['points']), 2)
         for location in locations:
             self.assertPointInList([location.lat, location.lng],
@@ -3695,7 +3695,7 @@ class StoryExploreResourceTest(ResourceTestCase):
         #self._rebuild_index()
         req = RequestFactory().get('/explore/?near=39.7414581054089@-104.9877892025,1')
         resp = self.resource.explore_get_list(req)
-        dehydrated = simplejson.loads(resp.content)
+        dehydrated = json.loads(resp.content)
         self.assertEqual(len(dehydrated['objects']), 1)
         self.assertEqual(dehydrated['objects'][0]['story_id'], story.story_id)
 
