@@ -275,11 +275,6 @@ SOCIAL_AUTH_PIPELINE = (
 SOCIAL_AUTH_NEW_ASSOCIATION_REDIRECT_URL = '/accounts/'
 SOCIAL_AUTH_DISCONNECT_REDIRECT_URL = '/accounts/'
 
-# A sample logging configuration. The only tangible logging
-# performed by this configuration is to send an email to
-# the site admins on every HTTP 500 error.
-# See http://docs.djangoproject.com/en/dev/topics/logging for
-# more details on how to customize your logging configuration.
 LOGGING = {
     'version': 1,
     'disable_existing_loggers': True,
@@ -302,14 +297,6 @@ LOGGING = {
             'class':'logging.StreamHandler',
             'formatter': 'verbose',
         },
-        'exception': {
-            'level': 'ERROR',
-            'class': 'exception_logging.ExceptionHandler'
-        },
-        'mail_admins': {
-            'level': 'INFO',
-            'class': 'django.utils.log.AdminEmailHandler'
-        }
     },
     'loggers': {
         'django.db.backends': {
@@ -326,21 +313,6 @@ LOGGING = {
             'level': 'DEBUG',
             'handlers': ['console'],
             'propagate': False,
-        },
-        'django.request': {
-            'handlers': ['mail_admins'],
-            'level': 'ERROR',
-            'propagate': True,
-        },
-        'storybase': {
-            'handlers': ['console'],
-            'level': 'INFO',
-            'propogate': True,
-        },
-        'storybase_user.admin': {
-            'handlers': ['mail_admins'],
-            'level': 'INFO',
-            'propogate': True,
         },
     }
 }
