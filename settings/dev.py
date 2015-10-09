@@ -15,8 +15,6 @@ RAVEN_CONFIG = {
     'register_signals': True,
 }
 
-SENTRY_DSN = None
-
 TEMPLATE_LOADERS = (
     ('django.template.loaders.cached.Loader', TEMPLATE_LOADERS),
 )
