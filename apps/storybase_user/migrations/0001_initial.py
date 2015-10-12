@@ -1,261 +1,216 @@
-# encoding: utf-8
-import datetime
-from south.db import db
-from south.v2 import SchemaMigration
-from django.db import models
+# -*- coding: utf-8 -*-
+from __future__ import unicode_literals
 
-class Migration(SchemaMigration):
-
-    def forwards(self, orm):
-        
-        # Adding model 'Organization'
-        db.create_table('storybase_user_organization', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-            ('last_edited', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
-            ('organization_id', self.gf('uuidfield.fields.UUIDField')(unique=True, max_length=32, blank=True)),
-            ('website_url', self.gf('django.db.models.fields.URLField')(max_length=200, blank=True)),
-        ))
-        db.send_create_signal('storybase_user', ['Organization'])
-
-        # Adding M2M table for field members on 'Organization'
-        db.create_table('storybase_user_organization_members', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('organization', models.ForeignKey(orm['storybase_user.organization'], null=False)),
-            ('user', models.ForeignKey(orm['auth.user'], null=False))
-        ))
-        db.create_unique('storybase_user_organization_members', ['organization_id', 'user_id'])
-
-        # Adding model 'OrganizationTranslation'
-        db.create_table('storybase_user_organizationtranslation', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('translation_id', self.gf('uuidfield.fields.UUIDField')(unique=True, max_length=32, blank=True)),
-            ('language', self.gf('django.db.models.fields.CharField')(default='en', max_length=15)),
-            ('created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-            ('last_edited', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
-            ('organization', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['storybase_user.Organization'])),
-            ('name', self.gf('storybase.fields.ShortTextField')()),
-            ('slug', self.gf('django.db.models.fields.SlugField')(max_length=50, db_index=True)),
-            ('description', self.gf('django.db.models.fields.TextField')(blank=True)),
-        ))
-        db.send_create_signal('storybase_user', ['OrganizationTranslation'])
-
-        # Adding unique constraint on 'OrganizationTranslation', fields ['organization', 'language']
-        db.create_unique('storybase_user_organizationtranslation', ['organization_id', 'language'])
-
-        # Adding model 'Project'
-        db.create_table('storybase_user_project', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('created', self.gf('django.db.models.fields.DateTimeField')(auto_now_add=True, blank=True)),
-            ('last_edited', self.gf('django.db.models.fields.DateTimeField')(auto_now=True, blank=True)),
-            ('project_id', self.gf('uuidfield.fields.UUIDField')(unique=True, max_length=32, blank=True)),
-            ('website_url', self.gf('django.db.models.fields.URLField')(max_length=200, blank=True)),
-        ))
-        db.send_create_signal('storybase_user', ['Project'])
-
-        # Adding M2M table for field organizations on 'Project'
-        db.create_table('storybase_user_project_organizations', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('project', models.ForeignKey(orm['storybase_user.project'], null=False)),
-            ('organization', models.ForeignKey(orm['storybase_user.organization'], null=False))
-        ))
-        db.create_unique('storybase_user_project_organizations', ['project_id', 'organization_id'])
-
-        # Adding M2M table for field members on 'Project'
-        db.create_table('storybase_user_project_members', (
-            ('id', models.AutoField(verbose_name='ID', primary_key=True, auto_created=True)),
-            ('project', models.ForeignKey(orm['storybase_user.project'], null=False)),
-            ('user', models.ForeignKey(orm['auth.user'], null=False))
-        ))
-        db.create_unique('storybase_user_project_members', ['project_id', 'user_id'])
-
-        # Adding model 'ProjectTranslation'
-        db.create_table('storybase_user_projecttranslation', (
-            ('id', self.gf('django.db.models.fields.AutoField')(primary_key=True)),
-            ('translation_id', self.gf('uuidfield.fields.UUIDField')(unique=True, max_length=32, blank=True)),
-            ('language', self.gf('django.db.models.fields.CharField')(default='en', max_length=15)),
-            ('project', self.gf('django.db.models.fields.related.ForeignKey')(to=orm['storybase_user.Project'])),
-            ('name', self.gf('storybase.fields.ShortTextField')()),
-            ('slug', self.gf('django.db.models.fields.SlugField')(max_length=50, db_index=True)),
-            ('description', self.gf('django.db.models.fields.TextField')(blank=True)),
-        ))
-        db.send_create_signal('storybase_user', ['ProjectTranslation'])
-
-        # Adding unique constraint on 'ProjectTranslation', fields ['project', 'language']
-        db.create_unique('storybase_user_projecttranslation', ['project_id', 'language'])
+from django.db import models, migrations
+import storybase_user.models
+import storybase_asset.models
+import storybase_badge.models
+import storybase.fields
+from django.conf import settings
+import uuidfield.fields
+import storybase.models.dirtyfields
 
 
-    def backwards(self, orm):
-        
-        # Removing unique constraint on 'ProjectTranslation', fields ['project', 'language']
-        db.delete_unique('storybase_user_projecttranslation', ['project_id', 'language'])
+class Migration(migrations.Migration):
 
-        # Removing unique constraint on 'OrganizationTranslation', fields ['organization', 'language']
-        db.delete_unique('storybase_user_organizationtranslation', ['organization_id', 'language'])
+    dependencies = [
+        migrations.swappable_dependency(settings.AUTH_USER_MODEL),
+        ('storybase_asset', '0001_initial'),
+        ('storybase_badge', '0001_initial'),
+        ('storybase_story', '0001_initial'),
+    ]
 
-        # Deleting model 'Organization'
-        db.delete_table('storybase_user_organization')
-
-        # Removing M2M table for field members on 'Organization'
-        db.delete_table('storybase_user_organization_members')
-
-        # Deleting model 'OrganizationTranslation'
-        db.delete_table('storybase_user_organizationtranslation')
-
-        # Deleting model 'Project'
-        db.delete_table('storybase_user_project')
-
-        # Removing M2M table for field organizations on 'Project'
-        db.delete_table('storybase_user_project_organizations')
-
-        # Removing M2M table for field members on 'Project'
-        db.delete_table('storybase_user_project_members')
-
-        # Deleting model 'ProjectTranslation'
-        db.delete_table('storybase_user_projecttranslation')
-
-
-    models = {
-        'auth.group': {
-            'Meta': {'object_name': 'Group'},
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '80'}),
-            'permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'})
-        },
-        'auth.permission': {
-            'Meta': {'ordering': "('content_type__app_label', 'content_type__model', 'codename')", 'unique_together': "(('content_type', 'codename'),)", 'object_name': 'Permission'},
-            'codename': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'content_type': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['contenttypes.ContentType']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '50'})
-        },
-        'auth.user': {
-            'Meta': {'object_name': 'User'},
-            'date_joined': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'email': ('django.db.models.fields.EmailField', [], {'max_length': '75', 'blank': 'True'}),
-            'first_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'groups': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Group']", 'symmetrical': 'False', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'is_active': ('django.db.models.fields.BooleanField', [], {'default': 'True'}),
-            'is_staff': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'is_superuser': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'last_login': ('django.db.models.fields.DateTimeField', [], {'default': 'datetime.datetime.now'}),
-            'last_name': ('django.db.models.fields.CharField', [], {'max_length': '30', 'blank': 'True'}),
-            'password': ('django.db.models.fields.CharField', [], {'max_length': '128'}),
-            'user_permissions': ('django.db.models.fields.related.ManyToManyField', [], {'to': "orm['auth.Permission']", 'symmetrical': 'False', 'blank': 'True'}),
-            'username': ('django.db.models.fields.CharField', [], {'unique': 'True', 'max_length': '30'})
-        },
-        'contenttypes.contenttype': {
-            'Meta': {'ordering': "('name',)", 'unique_together': "(('app_label', 'model'),)", 'object_name': 'ContentType', 'db_table': "'django_content_type'"},
-            'app_label': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'model': ('django.db.models.fields.CharField', [], {'max_length': '100'}),
-            'name': ('django.db.models.fields.CharField', [], {'max_length': '100'})
-        },
-        'storybase_asset.asset': {
-            'Meta': {'object_name': 'Asset'},
-            'asset_created': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
-            'asset_id': ('uuidfield.fields.UUIDField', [], {'unique': 'True', 'max_length': '32', 'blank': 'True'}),
-            'attribution': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'datasets': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'assets'", 'blank': 'True', 'to': "orm['storybase_asset.DataSet']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'last_edited': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
-            'license': ('django.db.models.fields.CharField', [], {'default': "'CC BY-NC-SA'", 'max_length': '25'}),
-            'owner': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'assets'", 'null': 'True', 'to': "orm['auth.User']"}),
-            'published': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
-            'section_specific': ('django.db.models.fields.BooleanField', [], {'default': 'False'}),
-            'source_url': ('django.db.models.fields.URLField', [], {'max_length': '200', 'blank': 'True'}),
-            'status': ('django.db.models.fields.CharField', [], {'default': "u'draft'", 'max_length': '10'}),
-            'type': ('django.db.models.fields.CharField', [], {'max_length': '10'})
-        },
-        'storybase_asset.dataset': {
-            'Meta': {'object_name': 'DataSet'},
-            'attribution': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'dataset_created': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
-            'dataset_id': ('uuidfield.fields.UUIDField', [], {'unique': 'True', 'max_length': '32', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'last_edited': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
-            'owner': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'datasets'", 'null': 'True', 'to': "orm['auth.User']"}),
-            'published': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
-            'source': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'status': ('django.db.models.fields.CharField', [], {'default': "u'draft'", 'max_length': '10'})
-        },
-        'storybase_story.story': {
-            'Meta': {'object_name': 'Story'},
-            'assets': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'stories'", 'blank': 'True', 'to': "orm['storybase_asset.Asset']"}),
-            'author': ('django.db.models.fields.related.ForeignKey', [], {'blank': 'True', 'related_name': "'stories'", 'null': 'True', 'to': "orm['auth.User']"}),
-            'byline': ('django.db.models.fields.TextField', [], {}),
-            'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'last_edited': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
-            'license': ('django.db.models.fields.CharField', [], {'default': "'CC BY-NC-SA'", 'max_length': '25'}),
-            'organizations': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'stories'", 'blank': 'True', 'to': "orm['storybase_user.Organization']"}),
-            'projects': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'stories'", 'blank': 'True', 'to': "orm['storybase_user.Project']"}),
-            'published': ('django.db.models.fields.DateTimeField', [], {'null': 'True', 'blank': 'True'}),
-            'status': ('django.db.models.fields.CharField', [], {'default': "u'draft'", 'max_length': '10'}),
-            'story_id': ('uuidfield.fields.UUIDField', [], {'unique': 'True', 'max_length': '32', 'blank': 'True'})
-        },
-        'storybase_user.organization': {
-            'Meta': {'object_name': 'Organization'},
-            'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'curated_stories': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'curated_in_organizations'", 'blank': 'True', 'through': "orm['storybase_user.OrganizationStory']", 'to': "orm['storybase_story.Story']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'last_edited': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
-            'members': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'organizations'", 'blank': 'True', 'to': "orm['auth.User']"}),
-            'organization_id': ('uuidfield.fields.UUIDField', [], {'unique': 'True', 'max_length': '32', 'blank': 'True'}),
-            'website_url': ('django.db.models.fields.URLField', [], {'max_length': '200', 'blank': 'True'})
-        },
-        'storybase_user.organizationstory': {
-            'Meta': {'object_name': 'OrganizationStory'},
-            'added': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'organization': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['storybase_user.Organization']"}),
-            'story': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['storybase_story.Story']"}),
-            'weight': ('django.db.models.fields.IntegerField', [], {'default': '0'})
-        },
-        'storybase_user.organizationtranslation': {
-            'Meta': {'unique_together': "(('organization', 'language'),)", 'object_name': 'OrganizationTranslation'},
-            'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'description': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'language': ('django.db.models.fields.CharField', [], {'default': "'en'", 'max_length': '15'}),
-            'last_edited': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
-            'name': ('storybase.fields.ShortTextField', [], {}),
-            'organization': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['storybase_user.Organization']"}),
-            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'db_index': 'True'}),
-            'translation_id': ('uuidfield.fields.UUIDField', [], {'unique': 'True', 'max_length': '32', 'blank': 'True'})
-        },
-        'storybase_user.project': {
-            'Meta': {'object_name': 'Project'},
-            'created': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'curated_stories': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'curated_in_projects'", 'blank': 'True', 'through': "orm['storybase_user.ProjectStory']", 'to': "orm['storybase_story.Story']"}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'last_edited': ('django.db.models.fields.DateTimeField', [], {'auto_now': 'True', 'blank': 'True'}),
-            'members': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'projects'", 'blank': 'True', 'to': "orm['auth.User']"}),
-            'organizations': ('django.db.models.fields.related.ManyToManyField', [], {'symmetrical': 'False', 'related_name': "'projects'", 'blank': 'True', 'to': "orm['storybase_user.Organization']"}),
-            'project_id': ('uuidfield.fields.UUIDField', [], {'unique': 'True', 'max_length': '32', 'blank': 'True'}),
-            'website_url': ('django.db.models.fields.URLField', [], {'max_length': '200', 'blank': 'True'})
-        },
-        'storybase_user.projectstory': {
-            'Meta': {'object_name': 'ProjectStory'},
-            'added': ('django.db.models.fields.DateTimeField', [], {'auto_now_add': 'True', 'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'project': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['storybase_user.Project']"}),
-            'story': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['storybase_story.Story']"}),
-            'weight': ('django.db.models.fields.IntegerField', [], {'default': '0'})
-        },
-        'storybase_user.projecttranslation': {
-            'Meta': {'unique_together': "(('project', 'language'),)", 'object_name': 'ProjectTranslation'},
-            'description': ('django.db.models.fields.TextField', [], {'blank': 'True'}),
-            'id': ('django.db.models.fields.AutoField', [], {'primary_key': 'True'}),
-            'language': ('django.db.models.fields.CharField', [], {'default': "'en'", 'max_length': '15'}),
-            'name': ('storybase.fields.ShortTextField', [], {}),
-            'project': ('django.db.models.fields.related.ForeignKey', [], {'to': "orm['storybase_user.Project']"}),
-            'slug': ('django.db.models.fields.SlugField', [], {'max_length': '50', 'db_index': 'True'}),
-            'translation_id': ('uuidfield.fields.UUIDField', [], {'unique': 'True', 'max_length': '32', 'blank': 'True'})
-        }
-    }
-
-    complete_apps = ['storybase_user']
+    operations = [
+        migrations.CreateModel(
+            name='Organization',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('status', models.CharField(default='draft', max_length=10, choices=[('pending', 'pending'), ('draft', 'draft'), ('staged', 'staged'), ('published', 'published')])),
+                ('published', models.DateTimeField(null=True, blank=True)),
+                ('created', models.DateTimeField(auto_now_add=True)),
+                ('last_edited', models.DateTimeField(auto_now=True)),
+                ('organization_id', uuidfield.fields.UUIDField(auto=True, db_index=True)),
+                ('slug', models.SlugField(blank=True)),
+                ('contact_info', models.TextField(help_text='Contact information such as phone number and postal address for this Organization', verbose_name='contact information', blank=True)),
+                ('website_url', models.URLField(verbose_name='Website URL', blank=True)),
+                ('on_homepage', models.BooleanField(default=False, verbose_name='Featured on homepage')),
+            ],
+            options={
+                'abstract': False,
+            },
+            bases=(storybase_user.models.PermissionBase, storybase_user.models.MembershipUtilsMixin, storybase_asset.models.FeaturedAssetsMixin, storybase_user.models.RecentStoriesMixin, storybase_user.models.FeaturedStoriesMixin, storybase.models.dirtyfields.DirtyFieldsMixin, models.Model),
+        ),
+        migrations.CreateModel(
+            name='OrganizationMembership',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('member_type', models.CharField(default=b'member', max_length=140, choices=[(b'member', 'Member'), (b'owner', 'Owner')])),
+                ('added', models.DateTimeField(auto_now_add=True)),
+                ('organization', models.ForeignKey(to='storybase_user.Organization')),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+            ],
+            options={
+                'abstract': False,
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='OrganizationStory',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('weight', models.IntegerField(default=0)),
+                ('added', models.DateTimeField(auto_now_add=True)),
+                ('organization', models.ForeignKey(to='storybase_user.Organization')),
+                ('story', models.ForeignKey(to='storybase_story.Story')),
+            ],
+            options={
+                'abstract': False,
+                'verbose_name': 'story',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='OrganizationTranslation',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('created', models.DateTimeField(auto_now_add=True)),
+                ('last_edited', models.DateTimeField(auto_now=True)),
+                ('translation_id', uuidfield.fields.UUIDField(auto=True)),
+                ('language', models.CharField(default=b'en', max_length=15, choices=[(b'en', b'English'), (b'es', b'Spanish')])),
+                ('name', storybase.fields.ShortTextField(verbose_name='Organization Name')),
+                ('description', models.TextField()),
+                ('organization', models.ForeignKey(to='storybase_user.Organization')),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='Project',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('status', models.CharField(default='draft', max_length=10, choices=[('pending', 'pending'), ('draft', 'draft'), ('staged', 'staged'), ('published', 'published')])),
+                ('published', models.DateTimeField(null=True, blank=True)),
+                ('created', models.DateTimeField(auto_now_add=True)),
+                ('last_edited', models.DateTimeField(auto_now=True)),
+                ('project_id', uuidfield.fields.UUIDField(auto=True, db_index=True)),
+                ('slug', models.SlugField(blank=True)),
+                ('website_url', models.URLField(verbose_name='Website URL', blank=True)),
+                ('on_homepage', models.BooleanField(default=False, verbose_name='Featured on homepage')),
+            ],
+            options={
+                'abstract': False,
+            },
+            bases=(storybase_user.models.PermissionBase, storybase_user.models.MembershipUtilsMixin, storybase_asset.models.FeaturedAssetsMixin, storybase_user.models.RecentStoriesMixin, storybase_user.models.FeaturedStoriesMixin, storybase.models.dirtyfields.DirtyFieldsMixin, models.Model),
+        ),
+        migrations.CreateModel(
+            name='ProjectMembership',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('member_type', models.CharField(default=b'member', max_length=140, choices=[(b'member', 'Member'), (b'owner', 'Owner')])),
+                ('added', models.DateTimeField(auto_now_add=True)),
+                ('project', models.ForeignKey(to='storybase_user.Project')),
+                ('user', models.ForeignKey(to=settings.AUTH_USER_MODEL)),
+            ],
+            options={
+                'abstract': False,
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='ProjectStory',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('weight', models.IntegerField(default=0)),
+                ('added', models.DateTimeField(auto_now_add=True)),
+                ('project', models.ForeignKey(to='storybase_user.Project')),
+                ('story', models.ForeignKey(to='storybase_story.Story')),
+            ],
+            options={
+                'abstract': False,
+                'verbose_name': 'story',
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='ProjectTranslation',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('translation_id', uuidfield.fields.UUIDField(auto=True)),
+                ('language', models.CharField(default=b'en', max_length=15, choices=[(b'en', b'English'), (b'es', b'Spanish')])),
+                ('name', storybase.fields.ShortTextField(verbose_name='Project Name')),
+                ('description', models.TextField()),
+                ('project', models.ForeignKey(to='storybase_user.Project')),
+            ],
+            options={
+            },
+            bases=(models.Model,),
+        ),
+        migrations.CreateModel(
+            name='UserProfile',
+            fields=[
+                ('id', models.AutoField(verbose_name='ID', serialize=False, auto_created=True, primary_key=True)),
+                ('profile_id', uuidfield.fields.UUIDField(auto=True, db_index=True)),
+                ('notify_admin', models.BooleanField(default=True, help_text=b'Administrative account updates', verbose_name=b'Administrative Updates')),
+                ('notify_digest', models.BooleanField(default=True, help_text=b'A weekly digest of Floodlight stories, events and new features', verbose_name=b'Weekly Digest')),
+                ('notify_story_unpublished', models.BooleanField(default=True, help_text=b'Remind me to complete unpublished stories', verbose_name=b'Unpublished Story Reminder')),
+                ('notify_story_published', models.BooleanField(default=True, help_text=b'Alert me when I publish a story', verbose_name=b'Published Story Notification')),
+                ('notify_story_comment', models.BooleanField(default=True, help_text=b'Alert me when someone comments on one of my stories', verbose_name=b'Comment Notification')),
+                ('badges', models.ManyToManyField(related_name='users', to='storybase_badge.Badge')),
+                ('user', models.OneToOneField(to=settings.AUTH_USER_MODEL)),
+            ],
+            options={
+            },
+            bases=(storybase_user.models.RecentStoriesMixin, models.Model, storybase_badge.models.BadgeEditor),
+        ),
+        migrations.AlterUniqueTogether(
+            name='projecttranslation',
+            unique_together=set([('project', 'language')]),
+        ),
+        migrations.AddField(
+            model_name='project',
+            name='curated_stories',
+            field=models.ManyToManyField(related_name='curated_in_projects', through='storybase_user.ProjectStory', to='storybase_story.Story', blank=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='project',
+            name='featured_assets',
+            field=models.ManyToManyField(help_text='Assets to be displayed in teaser version of this Project', related_name='featured_in_projects', to='storybase_asset.Asset', blank=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='project',
+            name='members',
+            field=models.ManyToManyField(related_name='projects', through='storybase_user.ProjectMembership', to=settings.AUTH_USER_MODEL, blank=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='project',
+            name='organizations',
+            field=models.ManyToManyField(related_name='projects', to='storybase_user.Organization', blank=True),
+            preserve_default=True,
+        ),
+        migrations.AlterUniqueTogether(
+            name='organizationtranslation',
+            unique_together=set([('organization', 'language')]),
+        ),
+        migrations.AddField(
+            model_name='organization',
+            name='curated_stories',
+            field=models.ManyToManyField(related_name='curated_in_organizations', through='storybase_user.OrganizationStory', to='storybase_story.Story', blank=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='organization',
+            name='featured_assets',
+            field=models.ManyToManyField(help_text='Assets to be displayed in teaser version of this Organization', related_name='featured_in_organizations', to='storybase_asset.Asset', blank=True),
+            preserve_default=True,
+        ),
+        migrations.AddField(
+            model_name='organization',
+            name='members',
+            field=models.ManyToManyField(related_name='organizations', through='storybase_user.OrganizationMembership', to=settings.AUTH_USER_MODEL, blank=True),
+            preserve_default=True,
+        ),
+    ]
