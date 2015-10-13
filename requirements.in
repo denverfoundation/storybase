@@ -25,7 +25,7 @@ django-taggit
 django-tastypie
 django-threadedcomments
 django-tinymce
-django>=1.7,<1.8
+django>=1.8
 djangocms-text-ckeditor
 geopy
 lxml

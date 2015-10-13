@@ -40,7 +40,7 @@ django-threadedcomments==1.0
 django-tinymce==2.0.5
 django-treebeard==3.0     # via django-cms
 django-user-accounts==1.2.0  # via django-notification
-django==1.7.10
+django==1.8.5
 djangocms-admin-style==0.2.8  # via django-cms
 djangocms-text-ckeditor==2.6.0
 easy-thumbnails==2.2      # via cmsplugin-filer, django-filer
