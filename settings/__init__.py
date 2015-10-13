@@ -339,6 +339,30 @@ TAGGIT_AUTOSUGGEST_MODEL = 'storybase_tag.models.Tag'
 
 FILER_STATICMEDIA_PREFIX = os.path.join(STATIC_URL, 'filer/')
 
+DEFAULT_FILE_STORAGE =  'django.core.files.storage.FileSystemStorage'
+
+FILER_STORAGES = {
+    'public': {
+        'main': {
+            'ENGINE': DEFAULT_FILE_STORAGE,
+            'OPTIONS': {
+                'location': os.path.abspath(os.path.join(MEDIA_ROOT, 'filer')),
+                'base_url': MEDIA_URL + 'filer/',
+            },
+            'UPLOAD_TO': 'filer.utils.generate_filename.by_date',
+            'UPLOAD_TO_PREFIX': '',
+        },
+        'thumbnails': {
+            'ENGINE': DEFAULT_FILE_STORAGE,
+            'OPTIONS': {
+                'location': os.path.abspath(os.path.join(MEDIA_ROOT, 'filer_thumbnails')),
+                'base_url': MEDIA_URL + 'filer_thumbnails/',
+            },
+            'THUMBNAIL_OPTIONS': {},
+        },
+    },
+}
+
 # define the lookup channels for use with ajax_select
 AJAX_LOOKUP_CHANNELS = {
     'asset': {'model': 'storybase_asset.asset', 'search_field': 'title'},

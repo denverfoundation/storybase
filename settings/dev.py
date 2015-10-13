@@ -30,47 +30,8 @@ CACHES = {
     }
 }
 
-DEFAULT_FILE_STORAGE =  'django.core.files.storage.FileSystemStorage'
-FILER_STORAGES = {
-    'public': {
-        'main': {
-            'ENGINE': DEFAULT_FILE_STORAGE,
-            'OPTIONS': {
-                'location': os.path.abspath(os.path.join(MEDIA_ROOT, 'filer')),
-                'base_url': '/media/filer/',
-            },
-            'UPLOAD_TO': 'filer.utils.generate_filename.by_date',
-            'UPLOAD_TO_PREFIX': '',
-        },
-        'thumbnails': {
-            'ENGINE': DEFAULT_FILE_STORAGE,
-            'OPTIONS': {
-                'location': os.path.abspath(os.path.join(MEDIA_ROOT, 'filer_thumbnails')),
-                'base_url': '/media/filer_thumbnails/',
-            },
-            'THUMBNAIL_OPTIONS': {},
-        },
-    },
-    'private': {
-        'main': {
-            'ENGINE': 'filer.storage.PrivateFileSystemStorage',
-            'OPTIONS': {
-                'location': os.path.abspath(os.path.join(MEDIA_ROOT, '../smedia/filer_private')),
-                'base_url': '/smedia/filer_private/',
-            },
-            'UPLOAD_TO': 'filer.utils.generate_filename.by_date',
-            'UPLOAD_TO_PREFIX': '',
-        },
-        'thumbnails': {
-            'ENGINE': 'filer.storage.PrivateFileSystemStorage',
-            'OPTIONS': {
-                'location': os.path.abspath(os.path.join(MEDIA_ROOT, '../smedia/filer_private_thumbnails')),
-                'base_url': '/smedia/filer_private_thumbnails/',
-            },
-            'THUMBNAIL_OPTIONS': {},
-        },
-    },
-}
+FILER_STORAGES['public']['main']['OPTIONS']['location'] = os.path.abspath(os.path.join(MEDIA_ROOT, 'filer')),
+FILER_STORAGES['public']['thumbnails']['OPTIONS']['location'] = os.path.abspath(os.path.join(MEDIA_ROOT, 'filer_thumbnails')),
 
 HAYSTACK_CONNECTIONS = {
     'default': {
