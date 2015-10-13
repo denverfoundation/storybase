@@ -1,6 +1,7 @@
 """Models for stories and story sections"""
 import json
 import time
+import uuid
 from datetime import datetime
 import bleach
 
@@ -17,8 +18,6 @@ from django.utils.translation import get_language, ugettext_lazy as _
 from django_dag.models import edge_factory, node_factory
 
 from taggit.managers import TaggableManager
-
-from uuidfield.fields import UUIDField
 
 from storybase.fields import ShortTextField
 from storybase.models import (TzDirtyFieldsMixin, LicensedModel, PermissionMixin,
@@ -110,7 +109,7 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
     media assets
 
     """
-    story_id = UUIDField(auto=True, db_index=True)
+    story_id = models.UUIDField(default=uuid.uuid4, db_index=True)
     slug = models.SlugField(blank=True)
     byline = models.TextField()
     structure_type = models.CharField(_("structure"), max_length=20,
@@ -855,7 +854,7 @@ class StoryRelation(StoryRelationPermission, models.Model):
     )
     DEFAULT_TYPE = 'connected'
 
-    relation_id = UUIDField(auto=True)
+    relation_id = models.UUIDField(default=uuid.uuid4)
     relation_type = models.CharField(max_length=25, choices=RELATION_TYPES,
                                       default=DEFAULT_TYPE)
     source = models.ForeignKey(Story, related_name="target")
@@ -901,7 +900,7 @@ class SectionTranslation(TranslationModel):
 class Section(node_factory('SectionRelation'), TranslatedModel, 
               SectionPermission):
     """ Section of a story """
-    section_id = UUIDField(auto=True, db_index=True)
+    section_id = models.UUIDField(default=uuid.uuid4, db_index=True)
     story = models.ForeignKey('Story', related_name='sections')
     # True if this section the root section of the story, either
     # the first section in a linear story, or the central node
@@ -1149,7 +1148,7 @@ class StoryTemplate(TranslatedModel):
         ('beginner', _("Beginner")),
     )
     
-    template_id = UUIDField(auto=True, db_index=True)
+    template_id = models.UUIDField(default=uuid.uuid4, db_index=True)
     story = models.ForeignKey('Story', blank=True, null=True,
         help_text=_("The story that provides the structure for this "
                     "template"))
@@ -1195,7 +1194,7 @@ class SectionLayout(TranslatedModel):
     TEMPLATE_CHOICES = [(name, name) for name 
                         in settings.STORYBASE_LAYOUT_TEMPLATES]
 
-    layout_id = UUIDField(auto=True, db_index=True)
+    layout_id = models.UUIDField(default=uuid.uuid4, db_index=True)
     template = models.CharField(_("template"), max_length=100, choices=TEMPLATE_CHOICES)
     containers = models.ManyToManyField('Container', related_name='layouts',
                                         blank=True)
@@ -1240,7 +1239,7 @@ class Container(models.Model):
 
 class ContainerTemplate(models.Model):
     """Per-asset configuration for template assets in builder"""
-    container_template_id = UUIDField(auto=True, db_index=True)
+    container_template_id = models.UUIDField(default=uuid.uuid4, db_index=True)
     template = models.ForeignKey('StoryTemplate')
     section = models.ForeignKey('Section')
     container = models.ForeignKey('Container')

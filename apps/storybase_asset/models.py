@@ -2,6 +2,7 @@
 import mimetypes
 import os
 import re
+import uuid
 from ssl import SSLError
 
 from lxml.etree import XMLSyntaxError
@@ -24,7 +25,6 @@ from filer.fields.image import FilerFileField, FilerImageField
 from filer.models import File as FilerFile, Image 
 from micawber.exceptions import ProviderException, ProviderNotFoundException
 from model_utils.managers import InheritanceManager
-from uuidfield.fields import UUIDField
 
 from storybase.fields import ShortTextField
 from storybase.models import (LicensedModel, PublishedModel,
@@ -180,7 +180,7 @@ class Asset(ImageRenderingMixin, TranslatedModel, LicensedModel,
     use one of the model classes that inherits form Asset.
 
     """
-    asset_id = UUIDField(auto=True, db_index=True)
+    asset_id = models.UUIDField(default=uuid.uuid4, db_index=True)
     type = models.CharField(max_length=10, choices=ASSET_TYPES)
     attribution = models.TextField(blank=True)
     source_url = models.URLField(blank=True)
@@ -812,7 +812,7 @@ class DataSet(TranslatedModel, PublishedModel, TimestampedModel,
     instead use one of the model classes that inherits from DataSet.
 
     """
-    dataset_id = UUIDField(auto=True, db_index=True)
+    dataset_id = models.UUIDField(default=uuid.uuid4, db_index=True)
     source = models.TextField(blank=True)
     attribution = models.TextField(blank=True)
     links_to_file = models.BooleanField(_("Links to file"), default=True)

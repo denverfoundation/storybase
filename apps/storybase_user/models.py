@@ -18,8 +18,6 @@ from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
 from django.template.loader import render_to_string 
 
-from uuidfield.fields import UUIDField
-
 from storybase.fields import ShortTextField
 from storybase.managers import FeaturedManager
 from storybase.models import (DirtyFieldsMixin, PermissionMixin,
@@ -155,7 +153,7 @@ class Organization(PermissionBase, MembershipUtilsMixin, FeaturedAssetsMixin,
         RecentStoriesMixin, FeaturedStoriesMixin, DirtyFieldsMixin,
         PublishedModel, TranslatedModel, TimestampedModel):
     """ An organization or a community group that users and stories can be associated with. """
-    organization_id = UUIDField(auto=True, db_index=True)
+    organization_id = models.UUIDField(default=uuid.uuid4, db_index=True)
     slug = models.SlugField(blank=True)
     contact_info = models.TextField(blank=True,
             help_text=_("Contact information such as phone number and "
@@ -324,7 +322,7 @@ class Project(PermissionBase, MembershipUtilsMixin, FeaturedAssetsMixin,
     
     Users can also be related to projects.
     """
-    project_id = UUIDField(auto=True, db_index=True)
+    project_id = models.UUIDField(default=uuid.uuid4, db_index=True)
     slug = models.SlugField(blank=True)
     website_url = models.URLField(blank=True,
             verbose_name=_("Website URL"))
@@ -481,7 +479,7 @@ class ProfileImage(ImageRenderingMixin, DefaultImageMixin, object):
 class UserProfile(RecentStoriesMixin, models.Model, BadgeEditor):
     user = models.OneToOneField(User)
 
-    profile_id = UUIDField(auto=True, db_index=True)
+    profile_id = models.UUIDField(default=uuid.uuid4, db_index=True)
 
     # Notification preferences
     # Right now these represent e-mail contact

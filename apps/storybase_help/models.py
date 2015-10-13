@@ -1,8 +1,8 @@
+import uuid
+
 from django.conf import settings
 from django.db import models
 from django.utils.translation import ugettext_lazy as _
-
-from uuidfield.fields import UUIDField
 
 from storybase.fields import ShortTextField
 from storybase.models.translation import TranslatedModel, TranslationModel
@@ -20,7 +20,7 @@ class HelpTranslation(TranslationModel):
     
 
 class Help(TranslatedModel):
-    help_id = UUIDField(auto=True)
+    help_id = models.UUIDField(default=uuid.uuid4)
     slug = models.SlugField(blank=True)
     searchable = models.BooleanField(default=False)
 

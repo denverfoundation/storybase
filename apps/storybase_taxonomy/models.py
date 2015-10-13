@@ -1,3 +1,5 @@
+import uuid
+
 from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.db import models
@@ -12,8 +14,6 @@ from categories.base import CategoryManager
 from categories.settings import SLUG_TRANSLITERATOR
 
 from taggit.models import TagBase, GenericTaggedItemBase
-
-from uuidfield.fields import UUIDField
 
 from storybase.models import TranslatedModel, TranslationModel, PermissionMixin
 from storybase.utils import slugify
@@ -113,7 +113,7 @@ class TagPermission(PermissionMixin):
 
 
 class Tag(TagPermission, TagBase):
-    tag_id = UUIDField(auto=True)
+    tag_id = models.UUIDField(default=uuid.uuid4)
 
     def get_absolute_url(self):
         return reverse('tag_stories', kwargs={'slug': self.slug})

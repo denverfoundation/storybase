@@ -1,12 +1,11 @@
 import logging
+import uuid
 
 from django.conf import settings
 from django.core.exceptions import ObjectDoesNotExist
 from django.db import models
 from django.db.models.fields.related import OneToOneField
 from django.utils import translation
-
-from uuidfield.fields import UUIDField
 
 from storybase.utils import get_language_name
 
@@ -190,7 +189,7 @@ class TranslatedModel(models.Model):
 
 class TranslationModel(models.Model):
     """Base class for model that encapsulates translated fields"""
-    translation_id = UUIDField(auto=True)
+    translation_id = models.UUIDField(default=uuid.uuid4)
     language = models.CharField(max_length=15, choices=settings.LANGUAGES,
                                 default=settings.LANGUAGE_CODE)
 

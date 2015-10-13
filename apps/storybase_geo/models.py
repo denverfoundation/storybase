@@ -1,3 +1,5 @@
+import uuid
+
 from django.contrib.auth.models import User
 from django.contrib.gis.db import models
 from django.contrib.gis.geos import Point
@@ -8,7 +10,6 @@ from django.utils.translation import ugettext_lazy as _
 from django_dag.models import edge_factory, node_factory
 from localflavor.us.us_states import STATE_CHOICES
 from mptt.models import MPTTModel, TreeForeignKey
-from uuidfield.fields import UUIDField
 
 from storybase.models import DirtyFieldsMixin, PermissionMixin
 from storybase.fields import ShortTextField
@@ -55,8 +56,8 @@ class LocationPermission(PermissionMixin):
 
 class Location(LocationPermission, DirtyFieldsMixin, models.Model):
     """A location with a specific address or latitude and longitude"""
-    location_id = UUIDField(auto=True, verbose_name=_("Location ID"),
-                            db_index=True)
+    location_id = models.UUIDField(default=uuid.uuid4,
+                                   verbose_name=_("Location ID"), db_index=True)
     name = ShortTextField(_("Name"), blank=True)
     address = ShortTextField(_("Address"), blank=True)
     address2 = ShortTextField(_("Address 2"), blank=True)
@@ -142,7 +143,8 @@ class Place(node_factory('PlaceRelation')):
                                  verbose_name=_("GeoLevel"))
     boundary = models.MultiPolygonField(blank=True, null=True,
                                         verbose_name=_("Boundary"))
-    place_id = UUIDField(auto=True, verbose_name=_("Place ID"), db_index=True)
+    place_id = models.UUIDField(default=uuid.uuid4, verbose_name=_("Place ID"),
+                                db_index=True)
     slug = models.SlugField(blank=True)
 
     def get_absolute_url(self):
