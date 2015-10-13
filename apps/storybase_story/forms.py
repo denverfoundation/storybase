@@ -73,12 +73,16 @@ class SectionRelationAdminForm(forms.ModelForm):
     child = SectionModelChoiceField(queryset=Section.objects.all())
 
     class Meta:
-	model = SectionRelation
+        model = SectionRelation
+        # TODO: explicitly list fields
+        fields = '__all__'
 
 
 class StoryAdminForm(forms.ModelForm):
     class Meta:
         model = Story 
+        # TODO: explicitly list fields
+        fields = '__all__'
         widgets = {
             'call_to_action': TinyMCE(
                 attrs={'cols': 80, 'rows': 30},
@@ -95,6 +99,8 @@ class StoryAdminForm(forms.ModelForm):
 class StoryTranslationAdminForm(forms.ModelForm):
     class Meta:
         model = StoryTranslation 
+        # TODO: explicitly list fields
+        fields = '__all__'
         widgets = {
             'call_to_action': TinyMCE(
                 attrs={'cols': 80, 'rows': 30},

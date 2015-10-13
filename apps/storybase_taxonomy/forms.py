@@ -9,7 +9,8 @@ from storybase_taxonomy.models import Category, CategoryTranslation
 class CategoryAdminForm(CategoryBaseAdminForm):
     class Meta:
         model = Category
-
+        # TODO: explicitly list fields
+        fields = '__all__'
     
     def clean(self):
 	# Skip a level when calling super because our name and slug fields are 
@@ -35,6 +36,8 @@ class CategoryAdminForm(CategoryBaseAdminForm):
 class CategoryTranslationAdminForm(forms.ModelForm):
     class Meta:
         model = CategoryTranslation
+        # TODO: explicitly list fields
+        fields = '__all__'
 
     def clean(self):
         super(CategoryTranslationAdminForm, self).clean()

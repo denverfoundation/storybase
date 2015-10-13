@@ -11,6 +11,8 @@ tinymce_widget = TinyMCE(
 class ActivityTranslationAdminForm(forms.ModelForm):
     class Meta:
         model = ActivityTranslation
+        # TODO: explicitly list fields
+        fields = '__all__'
         widgets = {
             'links': tinymce_widget, 
         }
@@ -19,6 +21,8 @@ class ActivityTranslationAdminForm(forms.ModelForm):
 class NewsItemTranslationAdminForm(forms.ModelForm):
     class Meta:
         model = NewsItemTranslation 
+        # TODO: explicitly list fields
+        fields = '__all__'
         widgets = {
             'body': tinymce_widget, 
         }

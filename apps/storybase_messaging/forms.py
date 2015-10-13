@@ -7,3 +7,4 @@ class SiteContactMessageForm(ModelForm):
 
     class Meta:
         model = SiteContactMessage
+        fields = ['name', 'email', 'phone', 'message']

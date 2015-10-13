@@ -8,6 +8,7 @@ from storybase_help.models import HelpTranslation, Help
 class HelpTranslationAdminForm(forms.ModelForm):
     class Meta:
         model = HelpTranslation
+        fields = ['help', 'title', 'body']
         if 'tinymce' in settings.INSTALLED_APPS:
             from tinymce.widgets import TinyMCE
             widgets = {

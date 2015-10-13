@@ -68,6 +68,8 @@ class AssetAdmin(StorybaseModelAdmin):
 class HtmlAssetTranslationAdminForm(forms.ModelForm):
     class Meta:
         model = HtmlAsset
+        # TODO: explicitly list fields
+        fields = '__all__'
         widgets = {
                 'body': TinyMCE(
                     attrs={'cols': 80, 'rows': 30},
@@ -91,6 +93,8 @@ class LocalImageAssetTranslationInline(StorybaseStackedInline):
 class HtmlAssetAdminForm(DefaultPublishedModelForm):
     class Meta:
         model = HtmlAsset
+        # TODO: explicitly list fields
+        fields = '__all__'
 
 class HtmlAssetAdmin(AssetAdmin):
     form = HtmlAssetAdminForm
@@ -100,6 +104,8 @@ class HtmlAssetAdmin(AssetAdmin):
 class ExternalAssetAdminForm(DefaultPublishedModelForm):
     class Meta:
         model = ExternalAsset
+        # TODO: explicitly list fields
+        fields = '__all__'
 
 class ExternalAssetAdmin(AssetAdmin):
     form = ExternalAssetAdminForm
@@ -109,6 +115,8 @@ class ExternalAssetAdmin(AssetAdmin):
 class LocalImageAssetAdminForm(DefaultPublishedModelForm):
     class Meta:
         model = LocalImageAsset
+        # TODO: explicitly list fields
+        fields = '__all__'
 
 class LocalImageAssetAdmin(AssetAdmin):
     form = LocalImageAssetAdminForm
@@ -122,6 +130,8 @@ class DataSetTranslationInline(StorybaseStackedInline):
 class DataSetAdminForm(DefaultPublishedModelForm):
     class Meta:
         model = DataSet
+        # TODO: explicitly list fields
+        fields = '__all__'
 
 class DataSetAdmin(StorybaseModelAdmin):
     form = DataSetAdminForm
