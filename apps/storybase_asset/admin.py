@@ -48,9 +48,9 @@ class AssetAdmin(StorybaseModelAdmin):
             the_obj = self.model.objects.get_subclass(pk=obj.pk)
 
         app_label = the_obj._meta.app_label
-        module_name = the_obj._meta.module_name
+        model_name = the_obj._meta.model_name
         change_url = urlresolvers.reverse(
-            "admin:%s_%s_change" % (app_label, module_name),
+            "admin:%s_%s_change" % (app_label, model_name),
             args=(the_obj.pk,))
         # We call str(obj) instead of getting asset.title because we need
         # to auto-generate the title from the content in cases when the

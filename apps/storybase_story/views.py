@@ -900,7 +900,7 @@ class StoryListView(MultipleObjectMixin, ModelIdDetailView):
             model_id = None
             try:
                 related_field = getattr(Story, related_field_name).field
-                model_name = related_field.model._meta.module_name
+                model_name = related_field.model._meta.model_name
                 model_id = '%s_id' % model_name
             except AttributeError:
                 pass

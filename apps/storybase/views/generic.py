@@ -38,8 +38,8 @@ class ModelIdDetailView(DetailView):
     def get_object_id_name(self):
         """Retrieve the name of the object's custom id field"""
         queryset = self.get_queryset()
-        module_name = queryset.model._meta.module_name
-        return '%s_id' % module_name
+        model_name = queryset.model._meta.model_name
+        return '%s_id' % model_name
 
     def get_short_object_id_name(self):
         return 'short_%s' % (self.get_object_id_name())
