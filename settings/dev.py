@@ -1,5 +1,9 @@
 from settings import *
 
+BACKUPDB_DIRECTORY = os.environ['BACKUP_DIR']
+MEDIA_ROOT = os.environ['MEDIA_ROOT']
+STATIC_ROOT = os.environ['STATIC_ROOT']
+
 DEBUG = True
 
 # Hijack all emails and send them to the BANDIT_EMAIL address
@@ -74,10 +78,6 @@ HAYSTACK_CONNECTIONS = {
         'URL': 'http://127.0.0.2:8983/solr/maincore/'
     },
 }
-
-BACKUPDB_DIRECTORY = os.environ['BACKUP_DIR']
-MEDIA_ROOT = os.environ['MEDIA_ROOT']
-STATIC_ROOT = os.environ['STATIC_ROOT']
 
 ALLOWED_HOSTS = [
     'floodlightproject.dev.fusionbox.com',
