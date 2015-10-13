@@ -1,12 +1,11 @@
 from fabric.api import env, roles
 
-from fusionbox.fabric import fb_env
-from fusionbox.fabric.django import stage, deploy
+from fusionbox.fabric.django.new import stage, deploy
 
 def dev():
     env.project_name = 'floodlightproject.dev'
     env.vassal_name = 'floodlightproject_dev'
-    return ['fusionbox@10.1.1.122']
+    return ['fusionbox@floodlightproject.dev.fusionbox.com']
 
 env.roledefs['dev'] = dev
 
