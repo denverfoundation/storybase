@@ -19,6 +19,6 @@ class Command(BaseCommand):
         # databases
         cursor.execute("ALTER TABLE auth_user ALTER COLUMN username TYPE varchar(254)")
         cursor.execute("ALTER TABLE auth_user ALTER COLUMN email TYPE varchar(254)")
-        transaction.commit_unless_managed()
+        transaction.commit()
         if verbosity >= 1:
-          self.stdout.write("Field length increased successfully.\n")
+            self.stdout.write("Field length increased successfully.\n")
