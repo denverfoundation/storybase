@@ -64,7 +64,7 @@ urlpatterns += i18n_patterns('',
     (r'^messaging/', include('storybase_messaging.urls')),
 
     # Comments
-    (r'^comments/', include('django.contrib.comments.urls')),
+    (r'^comments/', include('django_comments.urls')),
 
     # Search via Haystack
     (r'^search/', include('search_urls')),

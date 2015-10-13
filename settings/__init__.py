@@ -45,24 +45,20 @@ TEMPLATE_CONTEXT_PROCESSORS = (
     'django.core.context_processors.request',
     'django.core.context_processors.media',
     'django.core.context_processors.static',
-    'cms.context_processors.media',
+    'cms.context_processors.cms_settings',
     'sekizai.context_processors.sekizai',
     'social_auth.context_processors.social_auth_by_name_backends',
     'storybase.context_processors.conf',
     'storybase.context_processors.site',
 )
 
-SOUTH_MIGRATION_MODULES = {
-    'djangocms_text_ckeditor': 'djangocms_text_ckeditor.south_migrations',
-    'cmsplugin_storybase': 'cmsplugin_storybase.south_migrations',
-    'storybase_asset': 'storybase_asset.south_migrations',
-    'storybase_badge': 'storybase_badge.south_migrations',
-    'storybase_geo': 'storybase_geo.south_migrations',
-    'storybase_help': 'storybase_help.south_migrations',
-    'storybase_messaging': 'storybase_messaging.south_migrations',
-    'storybase_story': 'storybase_story.south_migrations',
-    'storybase_taxonomy': 'storybase_taxonomy.south_migrations',
-    'storybase_user': 'storybase_user.south_migrations',
+MIGRATION_MODULES = {
+    'cmsplugin_filer_file': 'cmsplugin_filer_file.migrations_django',
+    'cmsplugin_filer_folder': 'cmsplugin_filer_folder.migrations_django',
+    'cmsplugin_filer_link': 'cmsplugin_filer_link.migrations_django',
+    'cmsplugin_filer_image': 'cmsplugin_filer_image.migrations_django',
+    'cmsplugin_filer_teaser': 'cmsplugin_filer_teaser.migrations_django',
+    'cmsplugin_filer_video': 'cmsplugin_filer_video.migrations_django',
 }
 
 # List of callables that know how to import templates from various sources.
@@ -213,12 +209,12 @@ INSTALLED_APPS = [
 
     # django CMS requirements
     'cms',
+    'treebeard',
     'easy_thumbnails',
     'filer',
     'mptt',
     'menus',
     'reversion',
-    'south',
     'sekizai',
 
     # django CMS plugins
@@ -238,7 +234,7 @@ INSTALLED_APPS = [
     'tinymce',
     'registration',
     'social_auth',
-    'django.contrib.comments',
+    'django_comments',
     'threadedcomments',
     'notification',
     'compressor',

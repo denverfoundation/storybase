@@ -8,7 +8,7 @@ cssselect
 dj-database-url
 django-backupdb>=0.6.0
 django-categories
-django-cms>=3.0,<3.1
+django-cms>=3.1
 django-compressor
 django-dotenv
 django-email-bandit
@@ -25,7 +25,7 @@ django-taggit
 django-tastypie
 django-threadedcomments
 django-tinymce
-django>=1.6,<1.7
+django>=1.7,<1.8
 djangocms-text-ckeditor
 geopy
 lxml
