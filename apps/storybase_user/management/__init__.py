@@ -1,5 +1,4 @@
 from django.conf import settings
-from django.contrib.auth.management import create_superuser as default_create_superuser
 from django.contrib.auth import models as auth_app
 from django.contrib.auth.models import User, Group
 from django.db.models.signals import post_save, post_syncdb
@@ -74,16 +73,3 @@ def create_superuser(sender, app, **kwargs):
             if confirm == 'yes':
                 call_command("createsuperuser", interactive=True)
             break
-
-
-if 'south' in settings.INSTALLED_APPS:
-    # We have to wait until the user profile model is created before
-    # creating the initial superuser.  Otherwise, the post_save handler
-    # that creates the profile fails
-    #from south.signals import post_migrate
-    post_syncdb.disconnect(default_create_superuser, sender=auth_app,
-            dispatch_uid = "django.contrib.auth.management.create_superuser")
-    # TODO: Figure out if there's a way to successfully connect this.
-    # Unfortunately, it's being called during unit tests, so I'm just 
-    # disabling the new user creation prompt altogether.
-    #post_migrate.connect(create_superuser)
