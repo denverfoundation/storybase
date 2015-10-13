@@ -1,7 +1,6 @@
 from settings import *
 
 DEBUG = True
-TEMPLATE_DEBUG = DEBUG
 
 # Hijack all emails and send them to the BANDIT_EMAIL address
 EMAIL_BACKEND = 'bandit.backends.smtp.HijackSMTPBackend'
