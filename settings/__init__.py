@@ -150,7 +150,7 @@ STATICFILES_FINDERS = (
     'django.contrib.staticfiles.finders.FileSystemFinder',
     'django.contrib.staticfiles.finders.AppDirectoriesFinder',
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
-    'media_staticfiles_finder.AppDirectoriesFinderAsMedia',
+    # 'media_staticfiles_finder.AppDirectoriesFinderAsMedia',
     'compressor.finders.CompressorFinder',
 )
 
