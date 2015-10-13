@@ -1,4 +1,6 @@
 -e git+https://github.com/fusionbox/fusionbox-fabric-helpers.git#egg=fusionbox-fabric-helpers
+-e git+https://github.com/macropin/django-uuidfield.git@9bd27e96ede8cf770df60808f2c772c48ec73e74#egg=django-uuidfield
+-e git+https://github.com/elpaso/django-dag@74165d7298202818a6b9cb099a322213b2079740#egg=django-dag
 beautifulsoup
 bleach
 cmsplugin-filer
@@ -8,7 +10,6 @@ django-backupdb>=0.6.0
 django-categories
 django-cms>=3.0,<3.1
 django-compressor
-django-dag
 django-dotenv
 django-email-bandit
 django-extensions
@@ -17,14 +18,13 @@ django-localflavor
 django-model-utils
 django-notification
 django-passwords
-django-registration
+django-registration-redux
 django-reversion==1.8.5
 django-social-auth
 django-taggit
 django-tastypie
 django-threadedcomments
 django-tinymce
-django-uuidfield
 django>=1.6,<1.7
 djangocms-text-ckeditor
 geopy

@@ -37,6 +37,49 @@ INTERNAL_IPS = (
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 
+TEMPLATE_CONTEXT_PROCESSORS = (
+    'django.contrib.auth.context_processors.auth',
+    'django.core.context_processors.debug',
+    'django.contrib.messages.context_processors.messages',
+    'django.core.context_processors.i18n',
+    'django.core.context_processors.request',
+    'django.core.context_processors.media',
+    'django.core.context_processors.static',
+    'cms.context_processors.media',
+    'sekizai.context_processors.sekizai',
+    'social_auth.context_processors.social_auth_by_name_backends',
+    'storybase.context_processors.conf',
+    'storybase.context_processors.site',
+)
+
+SOUTH_MIGRATION_MODULES = {
+    'djangocms_text_ckeditor': 'djangocms_text_ckeditor.south_migrations',
+    'cmsplugin_storybase': 'cmsplugin_storybase.south_migrations',
+    'storybase_asset': 'storybase_asset.south_migrations',
+    'storybase_badge': 'storybase_badge.south_migrations',
+    'storybase_geo': 'storybase_geo.south_migrations',
+    'storybase_help': 'storybase_help.south_migrations',
+    'storybase_messaging': 'storybase_messaging.south_migrations',
+    'storybase_story': 'storybase_story.south_migrations',
+    'storybase_taxonomy': 'storybase_taxonomy.south_migrations',
+    'storybase_user': 'storybase_user.south_migrations',
+}
+
+# List of callables that know how to import templates from various sources.
+TEMPLATE_LOADERS = (
+    'django.template.loaders.filesystem.Loader',
+    'django.template.loaders.app_directories.Loader',
+#     'django.template.loaders.eggs.Loader',
+)
+
+TEMPLATE_DIRS = (
+    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
+    # Always use forward slashes, even on Windows.
+    # Don't forget to use absolute paths, not relative paths.
+    os.path.join(PROJECT_PATH, "templates2"),
+    os.path.join(PROJECT_PATH, "templates")
+)
+
 # Tell raven to report errors even when debug is True
 RAVEN_CONFIG = {
     'register_signals': True,
@@ -113,13 +156,6 @@ STATICFILES_FINDERS = (
     'compressor.finders.CompressorFinder',
 )
 
-# List of callables that know how to import templates from various sources.
-TEMPLATE_LOADERS = (
-    'django.template.loaders.filesystem.Loader',
-    'django.template.loaders.app_directories.Loader',
-#     'django.template.loaders.eggs.Loader',
-)
-
 MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     # If not using Django CMS, or some other app that has
@@ -147,14 +183,6 @@ ROOT_URLCONF = 'urls'
 
 WSGI_APPLICATION = 'wsgi.application'
 FORCE_SCRIPT_NAME = ''
-
-TEMPLATE_DIRS = (
-    # Put strings here, like "/home/html/django_templates" or "C:/www/django/templates".
-    # Always use forward slashes, even on Windows.
-    # Don't forget to use absolute paths, not relative paths.
-    os.path.join(PROJECT_PATH, "templates2"),
-    os.path.join(PROJECT_PATH, "templates")
-)
 
 CMS_TEMPLATES = (
     ('homepage.html', 'Home Page'),
@@ -227,25 +255,6 @@ INSTALLED_APPS = [
     'storybase_messaging',
     'cmsplugin_storybase',
 ]
-
-SOUTH_MIGRATION_MODULES = {
-    'djangocms_text_ckeditor': 'djangocms_text_ckeditor.south_migrations',
-}
-
-TEMPLATE_CONTEXT_PROCESSORS = (
-    'django.contrib.auth.context_processors.auth',
-    'django.core.context_processors.debug',
-    'django.contrib.messages.context_processors.messages',
-    'django.core.context_processors.i18n',
-    'django.core.context_processors.request',
-    'django.core.context_processors.media',
-    'django.core.context_processors.static',
-    'cms.context_processors.media',
-    'sekizai.context_processors.sekizai',
-    'social_auth.context_processors.social_auth_by_name_backends',
-    'storybase.context_processors.conf',
-    'storybase.context_processors.site',
-)
 
 AUTH_PROFILE_MODULE = 'storybase_user.UserProfile'
 
