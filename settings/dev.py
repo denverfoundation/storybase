@@ -44,10 +44,7 @@ FILER_STORAGES = {
                 'location': os.path.abspath(os.path.join(MEDIA_ROOT, 'filer_thumbnails')),
                 'base_url': '/media/filer_thumbnails/',
             },
-            'THUMBNAIL_OPTIONS': {
-                #'base_dir': 'filer_thumbnails',
-                #'base_dir': os.path.abspath(os.path.join(MEDIA_ROOT, 'filer_thumbnails'))
-            },
+            'THUMBNAIL_OPTIONS': {},
         },
     },
     'private': {
