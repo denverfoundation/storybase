@@ -392,7 +392,7 @@ THUMBNAIL_PRESERVE_EXTENSIONS = True
 HAYSTACK_CONNECTIONS = {
     'default': {
         'ENGINE': 'storybase_geo.search.backends.Solr2155Engine',
-        'URL': 'http://localhost:8983/solr/floodlight_dev',
+        'URL': 'http://127.0.0.1:8983/solr/floodlight_dev',
         'INCLUDE_SPELLING': True,
     },
 }

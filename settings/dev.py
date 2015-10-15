@@ -34,13 +34,6 @@ CACHES = {
 FILER_STORAGES['public']['main']['OPTIONS']['location'] = os.path.abspath(os.path.join(MEDIA_ROOT, 'filer'))
 FILER_STORAGES['public']['thumbnails']['OPTIONS']['location'] = os.path.abspath(os.path.join(MEDIA_ROOT, 'filer_thumbnails'))
 
-HAYSTACK_CONNECTIONS = {
-    'default': {
-        'ENGINE': 'haystack.backends.solr_backend.SolrEngine',
-        'URL': 'http://127.0.0.2:8983/solr/maincore/'
-    },
-}
-
 ALLOWED_HOSTS = [
     'floodlightproject.dev.fusionbox.com',
 ]
