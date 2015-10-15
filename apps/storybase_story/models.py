@@ -199,7 +199,7 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
         if self.title:
             return self.title
 
-        return _("Untitled Story") + " " + self.story_id
+        return _("Untitled Story") + " " + unicode(self.story_id)
 
     @models.permalink
     def get_absolute_url(self):

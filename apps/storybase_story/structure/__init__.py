@@ -1,10 +1,13 @@
 """Interpret a story and render its structure"""
 import json
+from uuid import UUID
 
+from django.core.serializers.json import DjangoJSONEncoder
 from django.utils.safestring import mark_safe
 from django.utils.translation import ugettext as _
 
 from storybase.utils import open_html_element, close_html_element
+
 
 class StructureManager(object):
     def __init__(self):
@@ -162,7 +165,7 @@ class BaseStructure(object):
                 sections[-1]['next_section_id'] = 'connected-stories'
                 sections.append(connected_stories_section)
 
-        return mark_safe(json.dumps(sections))
+        return mark_safe(json.dumps(sections, cls=DjangoJSONEncoder))
 
     def get_next_section(self, section):
         return self._next_sections[section]
