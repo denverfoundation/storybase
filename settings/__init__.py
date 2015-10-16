@@ -369,11 +369,11 @@ COMPRESS_ENABLED = True
 COMPRESS_CSS_FILTERS = ('django_compressor_autoprefixer.AutoprefixerFilter',)
 
 COMPRESS_AUTOPREFIXER_BINARY = os.path.abspath(os.path.join(PROJECT_PATH, 'node_modules/.bin/postcss'))
-COMPRESS_AUTOPREFIXER_ARGS = '--use autoprefixer --config %s' % os.path.abspath(os.path.join(PROJECT_PATH, 'postcss.json'))
+COMPRESS_AUTOPREFIXER_ARGS = '--use autoprefixer -- autoprefixer.browsers "> 5%, ie > 9"'
 
 STATIC_PRECOMPILER_COMPILERS = (
     ('static_precompiler.compilers.LESS', {
-        'executable': os.path.abspath(os.path.join(PROJECT_PATH, 'node_modules/.bin/lessc --source-map-map-inline')),
+        'executable': os.path.abspath(os.path.join(PROJECT_PATH, 'node_modules/.bin/lessc')),
         # 'sourcemap_enabled': True,
     }),
 )
