@@ -7,6 +7,7 @@ import urlparse
 from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
+from django.core.serializers.json import DjangoJSONEncoder
 from django.core.urlresolvers import resolve, reverse, get_script_prefix
 from django.db.models import Q
 from django.http import Http404, HttpResponseRedirect
@@ -370,7 +371,7 @@ class StoryBuilderView(DetailView):
                              'layout_id': layout.layout_id,
                              'slug': layout.slug} for layout
                             in SectionLayout.objects.all()]
-        return json.dumps(to_be_serialized)
+        return json.dumps(to_be_serialized, cls=DjangoJSONEncoder)
 
     def get_asset_types_json(self):
         to_be_serialized = [{'name': asset_type[1], 'type': asset_type[0]} for asset_type in ASSET_TYPES]
@@ -395,7 +396,7 @@ class StoryBuilderView(DetailView):
     def get_places_json(self):
         to_be_serialized = [{ 'id': place.place_id, 'name': place.name }
                             for place in Place.objects.order_by('geolevel__name', 'name')]
-        return json.dumps(to_be_serialized)
+        return json.dumps(to_be_serialized, cls=DjangoJSONEncoder)
 
     def get_organizations_json(self):
         to_be_serialized = [{'organization_id': org.organization_id,
