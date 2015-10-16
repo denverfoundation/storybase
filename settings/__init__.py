@@ -152,6 +152,7 @@ STATICFILES_FINDERS = (
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
     # 'media_staticfiles_finder.AppDirectoriesFinderAsMedia',
     'compressor.finders.CompressorFinder',
+    'static_precompiler.finders.StaticPrecompilerFinder',
 )
 
 MIDDLEWARE_CLASSES = [
@@ -239,6 +240,7 @@ INSTALLED_APPS = [
     'django_comments',
     'threadedcomments',
     'notification',
+    'static_precompiler',
     'compressor',
 
     # StoryBase
@@ -362,6 +364,19 @@ FILER_STORAGES = {
         },
     },
 }
+
+COMPRESS_ENABLED = True
+COMPRESS_CSS_FILTERS = ('django_compressor_autoprefixer.AutoprefixerFilter',)
+
+COMPRESS_AUTOPREFIXER_BINARY = os.path.abspath(os.path.join(PROJECT_PATH, 'node_modules/.bin/postcss'))
+COMPRESS_AUTOPREFIXER_ARGS = '--use autoprefixer --config %s' % os.path.abspath(os.path.join(PROJECT_PATH, 'postcss.json'))
+
+STATIC_PRECOMPILER_COMPILERS = (
+    ('static_precompiler.compilers.LESS', {
+        'executable': os.path.abspath(os.path.join(PROJECT_PATH, 'node_modules/.bin/lessc --source-map-map-inline')),
+        # 'sourcemap_enabled': True,
+    }),
+)
 
 # define the lookup channels for use with ajax_select
 AJAX_LOOKUP_CHANNELS = {
@@ -493,12 +508,6 @@ STORYBASE_ALLOWED_TAGS = [
   'u',
   'ul',
 ]
-
-# Should we use LESS stylesheets in the browser and compile them using less.js
-# It would be easy to just toggle this using the DEBUG setting, but IE8
-# isn't supported by less.js and we need to be able to quickly test out
-# stylesheet fixes with the development server.
-STORYBASE_USE_LESS_IN_BROWSER = False
 
 # Attempt to configure sentry from an environment variable.
 try:

@@ -1,0 +1,6 @@
+{
+  "autoprefixer": {
+    "browsers": "> 5%, ie > 9"
+  }
+}
+

@@ -1,4 +1,4 @@
-{% load cms_tags sekizai_tags menu_tags storybase_tags i18n compress %}
+{% load static cms_tags sekizai_tags menu_tags storybase_tags i18n compress compile_static %}
 <!doctype html>
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
 <!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
@@ -25,25 +25,15 @@
 
   {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/flexslider.css">{% endaddtoblock %}
   <!-- These styles make use of the awesome Font Awesome - http://fortawesome.github.com/Font-Awesome/ -->
-  {% if storybase_use_less_in_browser %}
   {% addtoblock "css" %}
   <script>
   // HACK: Force development mode for LESS, even when not on localhost
   var less = { env: 'development' };
   </script>
   {% endaddtoblock %}
-  {% addtoblock "css" %}<link rel="stylesheet/less" type="text/css" href="{{ STATIC_URL }}less/base.less">{% endaddtoblock %}
-  {% endif %}
-  {% comment %}
-  If we're not compiling less with less.js, we'll be passing the styleshset 
-  through django-compressor below. 
-  {% endcomment %}
+  {% addtoblock "css" %}<link rel="stylesheet" type="text/css" href="{% static 'less/base.less'|compile %}">{% endaddtoblock %}
 
-  {% render_block "css" %}
-
-  {% if not storybase_use_less_in_browser %}
-  {% compress css %}<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css">{% endcompress %}
-  {% endif %}
+  {% render_block "css" postprocessor "compressor.contrib.sekizai.compress" %}
   <!-- end CSS-->
 
   <script src="{{ STATIC_URL }}js/libs/respond.min.js"></script>

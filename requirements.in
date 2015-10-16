@@ -10,6 +10,7 @@ django-backupdb>=0.6.0
 django-categories
 django-cms>=3.1
 django-compressor
+django-compressor-autoprefixer
 django-debug-toolbar
 django-dotenv
 django-email-bandit
@@ -22,6 +23,7 @@ django-passwords
 django-registration-redux
 django-reversion==1.8.5
 django-social-auth
+django-static-precompiler
 django-taggit
 django-tastypie
 django-threadedcomments
