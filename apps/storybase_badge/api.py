@@ -12,7 +12,7 @@ class BadgeAuthorization(ReadOnlyAuthorization, UserAuthorization):
 
     def update_detail(self, object_list, bundle):
 
-        if self.user_valid(bundle) and bundle.request.user.get_profile().can_edit_badge(bundle.obj):
+        if self.user_valid(bundle) and bundle.request.user.userprofile.can_edit_badge(bundle.obj):
             return True
         else:
             raise Unauthorized()

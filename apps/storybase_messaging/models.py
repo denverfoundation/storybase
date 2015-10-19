@@ -283,7 +283,7 @@ def update_story_unpublished_notification(sender, instance, **kwargs):
         # in the tests
         return
 
-    profile = instance.author.get_profile()
+    profile = instance.author.userprofile
     if not profile.notify_story_unpublished:
         # The user doesn't want to be notified of unpublished stories
         # so return early
@@ -319,7 +319,7 @@ def create_story_published_notification(sender, instance, **kwargs):
         # in the tests
         return
 
-    profile = instance.author.get_profile()
+    profile = instance.author.userprofile
     if profile.notify_story_published:
         # The user wants to be notified of published stories
         # so return early

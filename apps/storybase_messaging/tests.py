@@ -314,7 +314,7 @@ class StoryNotificationSignalsTest(SloppyComparisonTestMixin, TestCase):
         Test that a user's communication preferences are honored and
         a notification is not created if a user turns them off
         """
-        profile = self.user.get_profile()
+        profile = self.user.userprofile
         profile.notify_story_unpublished = False
         profile.notify_story_published = False
         profile.save()

@@ -22,7 +22,7 @@ class BadgeResourceTest(ResourceTestCase):
         self.badge_uri = '/api/0.1/badges/{}/'.format(self.badge.id)
 
         self.user_authorized = User.objects.create_user('wilbertom', 'wilbertom@pr.com', 'filoteo_muy_elegante')
-        self.user_authorized.get_profile().badges.add(self.badge)
+        self.user_authorized.userprofile.badges.add(self.badge)
         self.user_authorized.save()
 
     def get_credentials(self):
@@ -97,7 +97,7 @@ class BadgeResourceTest(ResourceTestCase):
     def test_user_can_edit_badge(self):
         user = User.objects.create_user('Nicky Jam', 'nicky@gmail.com', 'el_perdon')
         user.save()
-        profile = user.get_profile()
+        profile = user.userprofile
         self.assertFalse(profile.can_edit_badge(self.badge))
         profile.badges.add(self.badge)
         self.assertTrue(profile.can_edit_badge(self.badge))
@@ -106,7 +106,7 @@ class BadgeResourceTest(ResourceTestCase):
 
         new_user = User.objects.create_user('centro', 'hacker@pr.com', 'filoteo_muy_elegante')
         new_user.save()
-        profile = new_user.get_profile()
+        profile = new_user.userprofile
 
         response = self.api_client.patch(self.badge_uri, data={
             'stories': []

@@ -101,7 +101,7 @@ class StoryUserAdmin(UserAdmin):
             obj.organizations.clear()
             obj.projects.clear()
             obj.stories.clear()
-            obj.get_profile().badges.clear()
+            obj.userprofile.badges.clear()
             for organization in form.cleaned_data['organizations']:
                 OrganizationMembership.objects.create(user=obj,
                         organization=organization)
@@ -111,14 +111,14 @@ class StoryUserAdmin(UserAdmin):
             for story in form.cleaned_data['stories']:
                 obj.stories.add(story)
             for badge in form.cleaned_data['badges']:
-                obj.get_profile().badges.add(badge)
+                obj.userprofile.badges.add(badge)
 
         obj.save()
 
     def get_form(self, request, obj=None, **kwargs):
         if obj:
             self.form.base_fields['organizations'].initial = obj.organizations.all()
-            self.form.base_fields['badges'].initial = obj.get_profile().badges.all()
+            self.form.base_fields['badges'].initial = obj.userprofile.badges.all()
             self.form.base_fields['projects'].initial = obj.projects.all()
             self.form.base_fields['stories'].queryset = obj.stories.all()
             self.form.base_fields['stories'].initial = obj.stories.all()
@@ -187,7 +187,7 @@ class StoryUserAdmin(UserAdmin):
         writer = csv.writer(response)
         writer.writerow(header_row(user_field_names, profile_field_names))
         for obj in queryset:
-            profile = obj.get_profile()
+            profile = obj.userprofile
             row = [encode(obj, field_name) for field_name in user_field_names]
             row.extend([encode(profile, field_name) for field_name in profile_field_names])
             writer.writerow(row)

@@ -43,7 +43,7 @@ class AccountNotificationsView(UpdateView):
             return reverse('account_notifications')
 
     def get_object(self, queryset=None):
-        return self.request.user.get_profile()
+        return self.request.user.userprofile
 
     def form_valid(self, form):
         messages.success(self.request, _("Updated notification settings")) 

@@ -256,8 +256,6 @@ INSTALLED_APPS = [
     'cmsplugin_storybase',
 ]
 
-AUTH_PROFILE_MODULE = 'storybase_user.UserProfile'
-
 LOGIN_REDIRECT_URL = '/accounts/stories/'
 LOGOUT_URL = '/'
 
