@@ -8,7 +8,7 @@ from django.db.models.signals import pre_save, post_save
 from django.dispatch import receiver
 from django.template import Context
 from django.template.loader import get_template, TemplateDoesNotExist
-from django.utils.translation import get_language, ugettext as _
+from django.utils.translation import get_language, ugettext_lazy as _
 
 from storybase.fields import ShortTextField
 from storybase.models import (TranslatedModel, TranslationModel,

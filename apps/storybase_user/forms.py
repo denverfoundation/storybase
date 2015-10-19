@@ -1,6 +1,6 @@
 from django.conf import settings
 from django.forms import ModelForm
-from django.utils.translation import ugettext as _
+from django.utils.translation import ugettext_lazy as _
 
 from storybase.utils import is_file
 from storybase.forms import (FileOrUrlField, TranslatedModelForm,
