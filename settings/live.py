@@ -14,6 +14,7 @@ EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = True
 
 DATABASES = {'default': dj_database_url.config()}
+DATABASES['default']['ATOMIC_REQUESTS'] = True
 
 RAVEN_CONFIG = {
     'dsn': 'https://223a9ba8b85b4ba1b5ae2d09831e77e4:8d9c8e76d4854806b3cbf728e2276045@sentry.fusionbox.com/67'
@@ -28,7 +29,7 @@ CACHES = {
     'default': {
         'BACKEND': 'django.core.cache.backends.memcached.MemcachedCache',
         'LOCATION': '127.0.0.1:11211',
-        'KEY_PREFIX': 'floodlight',
+        'KEY_PREFIX': 'floodlightproject',
     }
 }
 
