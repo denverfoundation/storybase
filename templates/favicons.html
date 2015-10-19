@@ -1,9 +1,10 @@
+{% load static %}
 <!-- Favicons and touch icons -->
-<link rel="shortcut icon" href="{{ STATIC_URL }}img/icon/favicon.ico" />
+<link rel="shortcut icon" href="{% static 'img/icon/favicon.ico' %}" />
 <!-- For iPhone 4 with high-resolution Retina display: -->
-<link rel="apple-touch-icon-precomposed" sizes="114x114" href="{{ STATIC_URL}}img/icon/apple-touch-icon-114x114-precomposed.png">
+<link rel="apple-touch-icon-precomposed" sizes="114x114" href="{% static 'img/icon/apple-touch-icon-114x114-precomposed.png' %}">
 <!-- For first-generation iPad: -->
-<link rel="apple-touch-icon-precomposed" sizes="72x72" href="{{ STATIC_URL}}img/icon/apple-touch-icon-72x72-precomposed.png">
+<link rel="apple-touch-icon-precomposed" sizes="72x72" href="{% static 'img/icon/apple-touch-icon-72x72-precomposed.png' %}">
 <!-- For non-Retina iPhone, iPod Touch, and Android 2.1+ devices: -->
-<link rel="apple-touch-icon-precomposed" href="{{ STATIC_URL}}img/icon/apple-touch-icon-precomposed.png">  
+<link rel="apple-touch-icon-precomposed" href="{% static 'img/icon/apple-touch-icon-precomposed.png' %}">  
 <!-- end Favicons and touch icons -->

@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load cms_tags i18n story organization project storybase_featured %}
+{% load static cms_tags i18n story organization project storybase_featured %}
 
 {% block extrameta %}
 <meta name="author" content="The Piton Foundation">
@@ -45,21 +45,21 @@
       <p>{% trans "Explore what others are posting on Floodlight" %}:</p>
       <ul class="explore-others-posts">
         <li>
-          <a href="{% url "explore_stories" %}"><img src="{{ STATIC_URL }}img/homepage-story-image.jpg"></a>
+          <a href="{% url "explore_stories" %}"><img src="{% static 'img/homepage-story-image.jpg' %}"></a>
           <h3><a href="{% url "explore_stories" %}">{% trans "Stories" %}</a></h3>
           <p>
             {% trans "From glimpses to in-depth explorations, see your community in a new light." %}
           </p>
         </li>
         <li>
-          <a href="{% url "project_list" %}"><img src="{{ STATIC_URL }}img/homepage-project-image.jpg"></a>
+          <a href="{% url "project_list" %}"><img src="{% static 'img/homepage-project-image.jpg' %}"></a>
           <h3><a href="{% url "project_list" %}">{% trans "Projects" %}</a></h3>
           <p>
             {% trans "A project is a collection of stories about a common theme, place, issue or event." %}
           </p>
         </li>
         <li>
-          <a href="{% url "organization_list" %}"><img src="{{ STATIC_URL }}img/homepage-organization-image.jpg"></a>
+          <a href="{% url "organization_list" %}"><img src="{% static 'img/homepage-organization-image.jpg' %}"></a>
           <h3><a href="{% url "organization_list" %}">{% trans "Organizations" %}</a></h3>
           <p>
             {% trans "An organization is a group of people creating stories together." %}
@@ -102,7 +102,7 @@
         <li>
           <div class="image">
             <a href="{% page_url "partners" %}">
-              <img src="{{ STATIC_URL }}img/piton-foundation-logo.jpg" alt=""/>
+              <img src="{% static 'img/piton-foundation-logo.jpg' %}" alt=""/>
             </a>
           </div>
           <div class="text">
@@ -113,7 +113,7 @@
         <li>
           <div class="image">
             <a href="{% page_url "partners" %}">
-              <img src="{{ STATIC_URL }}img/denver-foundation-logo.gif" alt=""/>
+              <img src="{% static 'img/denver-foundation-logo.gif' %}" alt=""/>
             </a>
           </div>
           <div class="text">
@@ -124,7 +124,7 @@
         <li>
           <div class="image">
             <a href="{% page_url "partners" %}">
-              <img src="{{ STATIC_URL }}img/knight-foundation-logo.jpg" alt=""/>
+              <img src="{% static 'img/knight-foundation-logo.jpg' %}" alt=""/>
             </a>
           </div>
           <div class="text">
@@ -140,6 +140,6 @@
 {% endblock base_content %}
 
 {% block extrajs %}
-	<script src="{{ STATIC_URL }}js/libs/jquery.cycle.all.min.js"></script>
-	<script src="{{ STATIC_URL }}js/libs/jquery.flexslider.js" type="text/javascript"></script>
+	<script src="{% static 'js/libs/jquery.cycle.all.min.js' %}"></script>
+	<script src="{% static 'js/libs/jquery.flexslider.js' %}" type="text/javascript"></script>
 {% endblock %}

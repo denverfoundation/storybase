@@ -1,4 +1,4 @@
-{% load storybase_tags i18n compress %}
+{% load static storybase_tags i18n compress %}
 {% load url from future %}
 {% comment %}
 Base template for embed widget
@@ -11,12 +11,12 @@ See documentation for ``storybase_story.views.StoryWidgetView`` for context.
     <title>{{ storybase_site_name }} | {{ story.title }}</title>
     {# Force IE8 into standards mode. #}
     <meta http-equiv="x-ua-compatible" content="IE=8">
-    <script type="text/javascript" src="{{ STATIC_URL }}js/libs/modernizr-2.0.6.min.js"></script>
+    <script type="text/javascript" src="{% static 'js/libs/modernizr-2.0.6.min.js' %}"></script>
     {% if debug %}
-    <link rel="stylesheet/less" type="text/css" href="{{ STATIC_URL }}less/widget.less">
-    <script src="{{ STATIC_URL }}js/libs/less-1.4.1.min.js"></script>
+    <link rel="stylesheet/less" type="text/css" href="{% static 'less/widget.less' %}">
+    <script src="{% static 'js/libs/less-1.4.1.min.js' %}"></script>
     {% else %}
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/widget.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/widget.css' %}">
     {% endif %}
   </head>
   <body>
@@ -114,7 +114,7 @@ See documentation for ``storybase_story.views.StoryWidgetView`` for context.
     </script>
     {% endcompress %}
     <!--[if lte IE 8]>
-    <script type="text/javascript" src="{{ STATIC_URL }}js/libs/css3-mediaqueries.js"></script>
+    <script type="text/javascript" src="{% static 'js/libs/css3-mediaqueries.js' %}"></script>
     <![endif]-->
   </body>
 </html>

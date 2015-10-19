@@ -1,4 +1,4 @@
-{% load i18n sekizai_tags storybase_tags story compress %}
+{% load static i18n sekizai_tags storybase_tags story compress %}
 <!doctype html>
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
 <!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
@@ -24,8 +24,8 @@
     {% include "favicons.html" %}
 
     {% if storybase_use_less_in_browser %}
-    {% addtoblock "css" %}<link rel="stylesheet/less" href="{{ STATIC_URL }}less/base.less">{% endaddtoblock %}
-    {% addtoblock "css" %}<script src="{{ STATIC_URL }}js/libs/less-1.4.1.min.js"></script>{% endaddtoblock %}
+    {% addtoblock "css" %}<link rel="stylesheet/less" href="{% static 'less/base.less' %}">{% endaddtoblock %}
+    {% addtoblock "css" %}<script src="{% static 'js/libs/less-1.4.1.min.js' %}"></script>{% endaddtoblock %}
     {% endif %}
     {% comment %}
     If we're not compiling the LESS stylesheet with less.js, we'll be passing
@@ -35,16 +35,16 @@
     {% render_block "css" %}
     {% compress css %}
     {% if not storybase_use_less_in_browser %}
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css">
+    <link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">
     {% endif %}
-    <link rel="stylesheet" href="{{ STATIC_URL }}js/libs/tooltipster-2.1.4/css/tooltipster.css">
+    <link rel="stylesheet" href="{% static 'js/libs/tooltipster-2.1.4/css/tooltipster.css' %}">
     {% endcompress %}
     <!-- end CSS-->
 
-    <script src="{{ STATIC_URL }}js/libs/respond.min.js"></script>
+    <script src="{% static 'js/libs/respond.min.js' %}"></script>
 
     {% include "storybase/js_error.html" %}
-    <script src="{{ STATIC_URL }}js/libs/modernizr.custom.63515.js"></script>
+    <script src="{% static 'js/libs/modernizr.custom.63515.js' %}"></script>
 
     {% include "storybase_story/story_viewer_handlebars.html" %}
   </head>
@@ -194,34 +194,34 @@
 
     <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline -->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-    <script>window.jQuery || document.write('<script src="{{ STATIC_URL }}js/libs/jquery-1.7.2.min.js"><\/script>')</script>
+    <script>window.jQuery || document.write('<script src="{% static "js/libs/jquery-1.7.2.min.js" %}"><\/script>')</script>
 
     <script type="text/javascript" src="{% url "django.views.i18n.javascript_catalog" %}"></script>
-    <script src="{{ STATIC_URL }}js/libs/underscore-min.js"></script>
-    <script src="{{ STATIC_URL }}js/libs/json2.js"></script>
-    <script src="{{ STATIC_URL }}js/libs/backbone-min.js"></script>
-    <script src="{{ STATIC_URL }}js/libs/handlebars-1.0.0.beta.6.js"></script>
-    <script src="{{ STATIC_URL }}js/libs/d3.v2.min.js"></script>
-    <script src="{{ STATIC_URL }}js/libs/jquery.imagesloaded.min.js"></script>
-    <script src="{{ STATIC_URL }}js/libs/jquery.condense.js"></script>
-    <script src="{{ STATIC_URL }}js/libs/jquery.bpopup.min.js"></script>
+    <script src="{% static 'js/libs/underscore-min.js' %}"></script>
+    <script src="{% static 'js/libs/json2.js' %}"></script>
+    <script src="{% static 'js/libs/backbone-min.js' %}"></script>
+    <script src="{% static 'js/libs/handlebars-1.0.0.beta.6.js' %}"></script>
+    <script src="{% static 'js/libs/d3.v2.min.js' %}"></script>
+    <script src="{% static 'js/libs/jquery.imagesloaded.min.js' %}"></script>
+    <script src="{% static 'js/libs/jquery.condense.js' %}"></script>
+    <script src="{% static 'js/libs/jquery.bpopup.min.js' %}"></script>
 
     {% compress js %}
-    <script src="{{ STATIC_URL }}js/jquery.storybaseshare.js"></script>
+    <script src="{% static 'js/jquery.storybaseshare.js' %}"></script>
 
 
-    <script src="{{ STATIC_URL }}js/storybase.js"></script>
-    <script src="{{ STATIC_URL }}js/models.js"></script>
-    <script src="{{ STATIC_URL }}js/utils.js"></script>
-    <script src="{{ STATIC_URL }}js/views.js"></script>
-    <script src="{{ STATIC_URL }}js/viewer/application.js"></script>
-    <script src="{{ STATIC_URL }}js/viewer/views.js"></script>
-    <script src="{{ STATIC_URL }}js/viewer/routes.js"></script>
-    <script src="{{ STATIC_URL }}js/libs/tooltipster-2.1.4/js/jquery.tooltipster.min.js"></script>
+    <script src="{% static 'js/storybase.js' %}"></script>
+    <script src="{% static 'js/models.js' %}"></script>
+    <script src="{% static 'js/utils.js' %}"></script>
+    <script src="{% static 'js/views.js' %}"></script>
+    <script src="{% static 'js/viewer/application.js' %}"></script>
+    <script src="{% static 'js/viewer/views.js' %}"></script>
+    <script src="{% static 'js/viewer/routes.js' %}"></script>
+    <script src="{% static 'js/libs/tooltipster-2.1.4/js/jquery.tooltipster.min.js' %}"></script>
 
-    <script src="{{ STATIC_URL }}js/badges/application.js"></script>
-    <script src="{{ STATIC_URL }}js/badges/models.js"></script>
-    <script src="{{ STATIC_URL }}js/badges/views.js"></script>
+    <script src="{% static 'js/badges/application.js' %}"></script>
+    <script src="{% static 'js/badges/models.js' %}"></script>
+    <script src="{% static 'js/badges/views.js' %}"></script>
 
 
     {% endcompress %}
