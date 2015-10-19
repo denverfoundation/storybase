@@ -67,7 +67,7 @@
                 <span class="text">{% trans "Share This Story" %}</span> <i class="icon-share"></i>
               </a>
 
-              {% if user.get_profile.badges.count > 0 %}
+              {% if user.userprofile.badges.count > 0 %}
               <a href="#" class="popup-container" data-el="#add-badge">
                 <span class="text">Add badge</span> <i class="icon-plus"></i>
               </a>
@@ -250,7 +250,7 @@
 
         // the badges the current user is allowed to edit
         var userAllowedBadgeIds = [];
-        {% for badge in user.get_profile.badges.all %}
+        {% for badge in user.userprofile.badges.all %}
         userAllowedBadgeIds.push({{badge.id}});
         {% endfor %}
 

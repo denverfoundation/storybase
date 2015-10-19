@@ -69,7 +69,7 @@
 						<dl class="object-metadata">
 							{% if story.contributor_name %}
 							<dt>{% trans "Contributed by" %}</dt>
-                            <dd class="contributor"><a href="{{ story.author.get_profile.get_absolute_url }}" title="{{ story.contributor_name }}">{{ story.contributor_name }}</a></dd>
+                            <dd class="contributor"><a href="{{ story.author.userprofile.get_absolute_url }}" title="{{ story.contributor_name }}">{{ story.contributor_name }}</a></dd>
 							{% endif %}
 							{% if story.published %}
 							<dt>{% trans "Published" %}</dt>
