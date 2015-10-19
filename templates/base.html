@@ -22,7 +22,8 @@
   {% include "favicons.html" %}
 
   <!-- CSS: implied media=all -->
-  {% addtoblock "css" %}<link rel="stylesheet" href="{% static 'css/flexslider.css' %}">{% endaddtoblock %}
+
+  {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/flexslider.css">{% endaddtoblock %}
   <!-- These styles make use of the awesome Font Awesome - http://fortawesome.github.com/Font-Awesome/ -->
   {% addtoblock "css" %}
   <script>
@@ -35,9 +36,9 @@
   {% render_block "css" postprocessor "compressor.contrib.sekizai.compress" %}
   <!-- end CSS-->
 
-  <script src="{% static 'js/libs/respond.min.js' %}"></script>
+  <script src="{{ STATIC_URL }}js/libs/respond.min.js"></script>
 
-  <script src="{% static 'js/libs/modernizr.custom.63515.js' %}"></script>
+  <script src="{{ STATIC_URL }}js/libs/modernizr.custom.63515.js"></script>
 
   {% block extrahead %}{% endblock %}
 </head>
@@ -48,7 +49,7 @@
 		<div id="logo-search" class="container_12">
 			<a href="/" class="logo" title="Return to Home">
 				<span class="logo-text">{% block logo_text %}{% endblock %}</span>
-				<img class="header-logo" src="{% static 'img/balloon-logo.png' %}" alt="{% trans "Floodlight: Tell a Story. Transform Your Community" %}" />
+				<img class="header-logo" src="{{ STATIC_URL }}img/balloon-logo.png" alt="{% trans "Floodlight: Tell a Story. Transform Your Community" %}" />
 			</a>
 			<div id="header-right">
                 {% show_menu 0 0 0 0 "menu/menu_top.html" %}
@@ -115,7 +116,7 @@
 
   <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline -->
   <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-  <script>window.jQuery || document.write('<script src="{% static "js/libs/jquery-1.7.2.min.js" %}"><\/script>')</script>
+  <script>window.jQuery || document.write('<script src="{{ STATIC_URL }}js/libs/jquery-1.7.2.min.js"><\/script>')</script>
   <script>
   // Save the up-to-date version of jQuery to avoid conflicts with other
   // jQueries loaded by Django/Django CMS
@@ -129,23 +130,23 @@
   $ = jQuery;
   </script>
   {% endaddtoblock %}
-  {% addtoblock "js" %}<script defer src="{% static 'js/plugins.js' %}"></script>{% endaddtoblock %}
-  {% addtoblock "js" %}<script src="{% static 'js/functions.js' %}"></script>{% endaddtoblock %}
+  {% addtoblock "js" %}<script defer src="{{ STATIC_URL }}js/plugins.js"></script>{% endaddtoblock %}
+  {% addtoblock "js" %}<script src="{{ STATIC_URL }}js/functions.js"></script>{% endaddtoblock %}
   {% addtoblock "js" %}
   <script>
   Modernizr.load({
     test: Modernizr.input.placeholder,
-    nope: '{% static "js/libs/polyfill.placeholder.js" %}'
+    nope: '{{ STATIC_URL }}js/libs/polyfill.placeholder.js'
   });
   </script>
   {% endaddtoblock %}
   {% if debug %}
-  {% addtoblock "js" %}<script src="{% static 'js/libs/less-1.4.1.min.js' %}"></script>{% endaddtoblock %}
+  {% addtoblock "js" %}<script src="{{ STATIC_URL }}js/libs/less-1.4.1.min.js"></script>{% endaddtoblock %}
   {% endif %}
   {% block extrajs %}{% endblock %}
   {% compress js %}
-  <script src="{% static 'js/jquery.storybasemegamenu.js' %}"></script>
-  <script src="{% static 'js/jquery.storybaseshare.js' %}"></script>
+  <script src="{{ STATIC_URL }}js/jquery.storybasemegamenu.js"></script>
+  <script src="{{ STATIC_URL }}js/jquery.storybaseshare.js"></script>
   {% endcompress %}
   {% render_block "js" %}
   <!-- end scripts-->

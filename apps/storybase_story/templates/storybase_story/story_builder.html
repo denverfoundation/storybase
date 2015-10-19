@@ -1,4 +1,4 @@
-{% load static i18n sekizai_tags compress %}
+{% load i18n sekizai_tags compress %}
 <!doctype html>
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
 <!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
@@ -21,10 +21,10 @@
 
     {% include "favicons.html" %}
 
-    {% addtoblock "css" %}<link rel="stylesheet" href="{% static 'js/libs/select2/select2.css' %}">{% endaddtoblock %}
-    {% addtoblock "css" %}<link rel="stylesheet" href="{% static 'js/libs/leaflet/leaflet.css' %}">{% endaddtoblock %}
-    {% addtoblock "css" %}<link rel="stylesheet" href="{% static 'js/libs/guiders/guiders-1.2.8.css' %}">{% endaddtoblock %}
-    {% addtoblock "css" %}<link rel="stylesheet" href="{% static 'js/libs/tooltipster-2.1.4/css/tooltipster.css' %}">{% endaddtoblock %}
+    {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/select2/select2.css">{% endaddtoblock %}
+    {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/leaflet/leaflet.css">{% endaddtoblock %}
+    {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/guiders/guiders-1.2.8.css">{% endaddtoblock %}
+    {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/tooltipster-2.1.4/css/tooltipster.css">{% endaddtoblock %}
 
     {% comment %}
     In development, use Javascript to compile the LESS to CSS. In
@@ -37,8 +37,8 @@
     var less = { env: 'development' };
     </script>
     {% endaddtoblock %}
-    {% addtoblock "css" %}<link rel="stylesheet/less" href="{% static 'less/base.less' %}">{% endaddtoblock %}
-    {% addtoblock "css" %}<script src="{% static 'js/libs/less-1.4.1.min.js' %}"></script>{% endaddtoblock %}
+    {% addtoblock "css" %}<link rel="stylesheet/less" href="{{ STATIC_URL }}less/base.less">{% endaddtoblock %}
+    {% addtoblock "css" %}<script src="{{ STATIC_URL }}js/libs/less-1.4.1.min.js"></script>{% endaddtoblock %}
     {% endif %}
     {% comment %}
     If not compiling LESS with less.js, CSS will be passed through Django 
@@ -47,12 +47,12 @@
 
     {% render_block "css" %}
     {% if not storybase_use_less_in_browser %}
-    {% compress css %}<link rel="stylesheet" type="text/css" href="{% static 'css/style.css' %}">{% endcompress %}
+    {% compress css %}<link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css">{% endcompress %}
     {% endif %}
     <!-- end CSS-->
 
     {% include "storybase/js_error.html" %}
-    <script src="{% static 'js/libs/modernizr.custom.63515.js' %}"></script>
+    <script src="{{ STATIC_URL }}js/libs/modernizr.custom.63515.js"></script>
 
     {% comment %}
     Handlebars templates for rendering Backbone views.
@@ -68,7 +68,7 @@
             <div id="workflow-bar">
                 <div id="workflow-bar-contents">
                     <a class="logo" href="{% url "story_builder" %}" title="{{ storybase_site_name }} {% trans "Story Builder" %}">
-                        <img src="{% static '/img/builder/builder-logo-balloon.png' %}" width="34" height="34" alt="{% trans "Story Builder Logo" %}" />
+                        <img src="{{ STATIC_URL }}/img/builder/builder-logo-balloon.png" width="34" height="34" alt="{% trans "Story Builder Logo" %}" />
                     </a>
                 </div>
             </div>
@@ -97,26 +97,26 @@
 
     <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline -->
     <script src="//ajax.googleapis.com/ajax/libs/jquery/1.7.2/jquery.min.js"></script>
-    <script>window.jQuery || document.write('<script src="{% static "js/libs/jquery-1.7.2.min.js" %}"><\/script>')</script>
+    <script>window.jQuery || document.write('<script src="{{ STATIC_URL }}js/libs/jquery-1.7.2.min.js"><\/script>')</script>
 
-    <script type="text/javascript" src="{% static 'js/plugins.js' %}"></script>	    
+    <script type="text/javascript" src="{{ STATIC_URL}}js/plugins.js"></script>	    
     <script type="text/javascript" src="{% url "django.views.i18n.javascript_catalog" %}"></script>
-    <script src="{% static 'js/libs/underscore-min.js' %}"></script>
-    <script src="{% static 'js/libs/json2.js' %}"></script>
-    <script src="{% static 'js/libs/backbone-min.js' %}"></script>
-    <script src="{% static 'js/libs/handlebars-1.0.0.beta.6.js' %}"></script>
-    <script src="{% static 'js/libs/backbone-forms/backbone-forms.min.js' %}"></script>
+    <script src="{{ STATIC_URL }}js/libs/underscore-min.js"></script>
+    <script src="{{ STATIC_URL }}js/libs/json2.js"></script>
+    <script src="{{ STATIC_URL }}js/libs/backbone-min.js"></script>
+    <script src="{{ STATIC_URL }}js/libs/handlebars-1.0.0.beta.6.js"></script>
+    <script src="{{ STATIC_URL }}js/libs/backbone-forms/backbone-forms.min.js"></script>
     <!-- TODO: Finalize editor matching views -->
-    <script src="{% static 'js/libs/wysihtml5/advanced.js' %}"></script>
-    <script src="{% static 'js/libs/wysihtml5/wysihtml5-0.3.0.min.js' %}"></script>
-    <script src="{% static 'js/libs/jquery-ui-1.8.22.custom.min.js' %}"></script>
-    <script src="{% static 'js/libs/select2/select2.min.js' %}"></script>
-    <script src="{% static 'js/libs/leaflet/leaflet.js' %}"></script>
-    <script src="{% static 'js/libs/jquery.cookie.js' %}"></script>
-    <script src="{% static 'js/libs/guiders/guiders-1.2.8.js' %}"></script>
-    <script src="{% static 'js/libs/tooltipster-2.1.4/js/jquery.tooltipster.min.js' %}"></script>
+    <script src="{{ STATIC_URL}}js/libs/wysihtml5/advanced.js"></script>
+    <script src="{{ STATIC_URL}}js/libs/wysihtml5/wysihtml5-0.3.0.min.js"></script>
+    <script src="{{ STATIC_URL }}js/libs/jquery-ui-1.8.22.custom.min.js"></script>
+    <script src="{{ STATIC_URL }}js/libs/select2/select2.min.js"></script>
+    <script src="{{ STATIC_URL}}js/libs/leaflet/leaflet.js"></script>
+    <script src="{{ STATIC_URL }}js/libs/jquery.cookie.js"></script>
+    <script src="{{ STATIC_URL }}js/libs/guiders/guiders-1.2.8.js"></script>
+    <script src="{{ STATIC_URL }}js/libs/tooltipster-2.1.4/js/jquery.tooltipster.min.js"></script>
 
-    <script src="{% static 'js/builder/jquery.graphicselect.js' %}"></script>
+    <script src="{{ STATIC_URL }}js/builder/jquery.graphicselect.js"></script>
 
     {% compress js %}
     {% comment %}
@@ -126,29 +126,29 @@
     TODO: Update styles to reflect current Backbone Forms templates and switch
     to current templates
     {% endcomment %}
-    <script src="{% static 'js/jquery.storybaseshare.js' %}"></script>
+    <script src="{{ STATIC_URL }}js/jquery.storybaseshare.js"></script>
 
-    <script src="{% static 'js/forms-templates.js' %}"></script>
-    <script src="{% static 'js/storybase.js' %}"></script>
-    <script src="{% static 'js/utils.js' %}"></script>
-    <script src="{% static 'js/forms.js' %}"></script>
-    <script src="{% static 'js/models.js' %}"></script>
-    <script src="{% static 'js/views.js' %}"></script>
-    <script src="{% static 'js/builder/application.js' %}"></script>
-    <script src="{% static 'js/builder/models.js' %}"></script>
-    <script src="{% static 'js/builder/views.js' %}"></script>
-    <script src="{% static 'js/builder/routes.js' %}"></script>
+    <script src="{{ STATIC_URL }}js/forms-templates.js"></script>
+    <script src="{{ STATIC_URL }}js/storybase.js"></script>
+    <script src="{{ STATIC_URL }}js/utils.js"></script>
+    <script src="{{ STATIC_URL }}js/forms.js"></script>
+    <script src="{{ STATIC_URL }}js/models.js"></script>
+    <script src="{{ STATIC_URL }}js/views.js"></script>
+    <script src="{{ STATIC_URL }}js/builder/application.js"></script>
+    <script src="{{ STATIC_URL }}js/builder/models.js"></script>
+    <script src="{{ STATIC_URL }}js/builder/views.js"></script>
+    <script src="{{ STATIC_URL }}js/builder/routes.js"></script>
     {% endcompress %}
 
     <script>
     Modernizr.load([
       {
         test: Modernizr.input.placeholder,
-        nope: '{% static "js/libs/polyfill.placeholder.js" %}'
+        nope: '{{ STATIC_URL }}js/libs/polyfill.placeholder.js'
       },
       {
         test: Modernizr.filereader,
-        nope: '{% static "js/libs/jquery.iframe-transport.js" %}' 
+        nope: '{{ STATIC_URL }}js/libs/jquery.iframe-transport.js' 
       }
     ]);
     </script>

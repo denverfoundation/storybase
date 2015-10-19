@@ -1,13 +1,13 @@
 {% extends "twocol.html" %}
-{% load static sekizai_tags storybase_menu %}
+{% load sekizai_tags storybase_menu %}
 
 {% block sidebar %}
-{% addtoblock "css" %}<link rel="stylesheet" href="{% static 'js/libs/tooltipster-2.1.4/css/tooltipster.css' %}">{% endaddtoblock %}
+{% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/tooltipster-2.1.4/css/tooltipster.css">{% endaddtoblock %}
 {% storybase_menu "my_account" "storybase_user/account_menu.html" request.path %}
 {% endblock %}
 
 {% block extrajs %}
-{% addtoblock "js" %}<script src="{% static 'js/libs/tooltipster-2.1.4/js/jquery.tooltipster.min.js' %}"></script>{% endaddtoblock %}
+{% addtoblock "js" %}<script src="{{ STATIC_URL }}js/libs/tooltipster-2.1.4/js/jquery.tooltipster.min.js"></script>{% endaddtoblock %}
 <script type="text/javascript">
 $(function() {
   if (jQuery().tooltipster) {

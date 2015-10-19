@@ -1,5 +1,5 @@
 <!DOCTYPE html>
-{% load static cms_tags i18n story organization project storybase_featured menu_tags storybase_menu storybase_cms_tags %}
+{% load cms_tags i18n story organization project storybase_featured menu_tags storybase_menu storybase_cms_tags %}
 
 <html>
     <head>
@@ -11,8 +11,8 @@
         {% include "favicons.html"%}
 
         {% block css %}
-        <link rel="stylesheet" href="{% static 'lib/css/bootstrap.min.css' %}" media="screen,projection"/>
-        <link rel="stylesheet" href="{% static 'css/styles.css' %}" media="screen,projection"/>
+        <link rel="stylesheet" href="{{ STATIC_URL }}lib/css/bootstrap.min.css" media="screen,projection"/>
+        <link rel="stylesheet" href="{{ STATIC_URL }}css/styles.css" media="screen,projection"/>
         {% endblock css %}
 
 
@@ -24,7 +24,7 @@
 
     <nav role="nav">
         <div class="logo">
-            <img src="{% static '/img/logo.png' %}" alt="" />
+            <img src="{{ STATIC_URL }}/img/logo.png" alt="" />
         </div>
         <div class="nav-wrapper">
         {# {% show_menu 0 0 0 0 "menu/menu_top.html" %} #}
@@ -42,9 +42,9 @@
     {% endblock %}
 
     {% block scripts %}
-    <!--<script src="{% static '/lib/js/jquery-2.1.1.min.js' %}"></script>-->
-    <script>window.jQuery || document.write('<script src="{% static "js/libs/jquery-1.7.2.min.js" %}"><\/script>')</script>
-    <script src="{% static '/lib/js/bootstrap.min.js' %}"></script>
+    <!--<script src="{{ STATIC_URL }}/lib/js/jquery-2.1.1.min.js"></script>-->
+    <script>window.jQuery || document.write('<script src="{{ STATIC_URL }}js/libs/jquery-1.7.2.min.js"><\/script>')</script>
+    <script src="{{ STATIC_URL }}/lib/js/bootstrap.min.js"></script>
     {% endblock %}
 
     </body>

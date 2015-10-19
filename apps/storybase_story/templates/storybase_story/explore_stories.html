@@ -1,6 +1,6 @@
 {% extends "base.html" %}
 
-{% load static i18n sekizai_tags menu_tags storybase_tags compress %}
+{% load i18n sekizai_tags menu_tags storybase_tags compress %}
 
 {% block head_title %}{{ storybase_explore_title }}{{ block.super }}{% endblock %}
 
@@ -165,9 +165,9 @@ Handlebars templates for rendering Backbone views.
 {% endblock %}
 
 {% block base_content %}
-{% addtoblock "css" %}<link rel="stylesheet" href="{% static 'js/libs/leaflet/leaflet.css' %}">{% endaddtoblock %}
-{% addtoblock "css" %}<link rel="stylesheet" href="{% static 'js/libs/select2/select2.css' %}">{% endaddtoblock %}
-{% addtoblock "css" %}<link rel="stylesheet" href="{% static 'js/libs/tooltipster-2.1.4/css/tooltipster.css' %}">{% endaddtoblock %}
+{% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/leaflet/leaflet.css">{% endaddtoblock %}
+{% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/select2/select2.css">{% endaddtoblock %}
+{% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/tooltipster-2.1.4/css/tooltipster.css">{% endaddtoblock %}
 
 
 <h1><span>{{ storybase_explore_title }}</span></h1>
@@ -181,23 +181,23 @@ jQuery = jqLatest;
 $ = jQuery;
 </script>
 <script type="text/javascript" src="{% url "django.views.i18n.javascript_catalog" %}"></script>
-<script src="{% static 'js/libs/underscore-min.js' %}"></script>
-<script src="{% static 'js/libs/json2.js' %}"></script>
-<script src="{% static 'js/libs/backbone-min.js' %}"></script>
-<script src="{% static 'js/libs/handlebars-1.0.0.beta.6.js' %}"></script>
-<script src="{% static 'js/libs/jquery.masonry.min.js' %}"></script>
-<script src="{% static 'js/libs/select2/select2.js' %}"></script>
-<script src="{% static 'js/libs/leaflet/leaflet.js' %}"></script>
-<script src="{% static 'js/libs/leafclusterer.js' %}"></script>
-<script src="{% static 'js/libs/spin.min.js' %}"></script>
-<script src="{% static 'js/libs/tooltipster-2.1.4/js/jquery.tooltipster.min.js' %}"></script>
+<script src="{{ STATIC_URL }}js/libs/underscore-min.js"></script>
+<script src="{{ STATIC_URL }}js/libs/json2.js"></script>
+<script src="{{ STATIC_URL }}js/libs/backbone-min.js"></script>
+<script src="{{ STATIC_URL }}js/libs/handlebars-1.0.0.beta.6.js"></script>
+<script src="{{ STATIC_URL }}js/libs/jquery.masonry.min.js"></script>
+<script src="{{ STATIC_URL }}js/libs/select2/select2.js"></script>
+<script src="{{ STATIC_URL}}js/libs/leaflet/leaflet.js"></script>
+<script src="{{ STATIC_URL}}js/libs/leafclusterer.js"></script>
+<script src="{{ STATIC_URL}}js/libs/spin.min.js"></script>
+<script src="{{ STATIC_URL }}js/libs/tooltipster-2.1.4/js/jquery.tooltipster.min.js"></script>
 {% compress js %}
-<script src="{% static 'js/storybase.js' %}"></script>
-<script src="{% static 'js/models.js' %}"></script>
-<script src="{% static 'js/utils.js' %}"></script>
-<script src="{% static 'js/views.js' %}"></script>
-<script src="{% static 'js/explorer/application.js' %}"></script>
-<script src="{% static 'js/explorer/views.js' %}"></script>
+<script src="{{ STATIC_URL }}js/storybase.js"></script>
+<script src="{{ STATIC_URL }}js/models.js"></script>
+<script src="{{ STATIC_URL }}js/utils.js"></script>
+<script src="{{ STATIC_URL }}js/views.js"></script>
+<script src="{{ STATIC_URL }}js/explorer/application.js"></script>
+<script src="{{ STATIC_URL }}js/explorer/views.js"></script>
 {% endcompress js %}
 <script type="text/javascript">
 $(document).ready(function() {

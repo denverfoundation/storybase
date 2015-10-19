@@ -1,4 +1,4 @@
-{% load static cms_tags thumbnail i18n sekizai_tags %}
+{% load cms_tags thumbnail i18n sekizai_tags %}
 {% with activity=instance.activity %}
 <div class="activity-plugin is-collapsed">
     <div class="img-container">
@@ -28,7 +28,7 @@
     Modernizr.load([
       {
           test: $.storybaseActivityGuide,
-          nope: ["{% static 'js/libs/jquery.masonry.min.js' %}","{% static 'js/jquery.storybase.activityguide.min.js' %}"],
+          nope: ["{{ STATIC_URL }}js/libs/jquery.masonry.min.js","{{ STATIC_URL }}js/jquery.storybase.activityguide.min.js"],
           complete: function() {
             $(document).ready(function() {
               $('.activity-plugin').storybaseActivityGuide();
