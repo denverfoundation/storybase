@@ -1,4 +1,4 @@
-{% load i18n sekizai_tags storybase_tags story compress %}
+{% load static i18n sekizai_tags storybase_tags story compress compile_static %}
 <!doctype html>
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
 <!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
@@ -23,20 +23,18 @@
 
     {% include "favicons.html" %}
 
-    {% if storybase_use_less_in_browser %}
-    {% addtoblock "css" %}<link rel="stylesheet/less" href="{{ STATIC_URL }}less/base.less">{% endaddtoblock %}
+    {% addtoblock "css" %}
+    <script>
+    // HACK: Force development mode for LESS, even when not on localhost
+    var less = { env: 'development' };
+    </script>
+    {% endaddtoblock %}
+    {% addtoblock "css" %}<link rel="stylesheet" type="text/css" href="{% static 'less/base.less'|compile %}">{% endaddtoblock %}
     {% addtoblock "css" %}<script src="{{ STATIC_URL }}js/libs/less-1.4.1.min.js"></script>{% endaddtoblock %}
-    {% endif %}
-    {% comment %}
-    If we're not compiling the LESS stylesheet with less.js, we'll be passing
-    the styleshset through django-compressor below.
-    {% endcomment %}
 
-    {% render_block "css" %}
+    {% render_block "css" postprocessor "compressor.contrib.sekizai.compress" %}
+
     {% compress css %}
-    {% if not storybase_use_less_in_browser %}
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/style.css">
-    {% endif %}
     <link rel="stylesheet" href="{{ STATIC_URL }}js/libs/tooltipster-2.1.4/css/tooltipster.css">
     {% endcompress %}
     <!-- end CSS-->
