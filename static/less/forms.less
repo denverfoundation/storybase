@@ -1,12 +1,12 @@
 
 .form-align-margin() {
   margin-left: 24%;
-} 
+}
 
 form {
 	overflow:hidden;
 	position:relative;
-	
+
 	fieldset {
 		&+ fieldset {
 			margin-top:1em;
@@ -16,8 +16,8 @@ form {
 			font-weight:bold;
 		}
 	}
-	
-	
+
+
 	// standard styling uses the label
 	// line-height to separate rows in a form.
 	// if labels have so much text that they wrap,
@@ -27,15 +27,15 @@ form {
 			line-height:1em;
 		}
 	}
-	
+
 	@text-base-color: #555;
 	@border-color: #aaa;
-	
+
 	.form-text {
 		font-size:14px;
 		color:@text-base-color;
 	}
-	
+
 	.soft-edge-style {
 		.rounded-corners;
 		.form-text;
@@ -43,7 +43,7 @@ form {
 		border:1px solid @border-color;
 		padding:5px;
 	}
-	
+
 	ul.errorlist li {
 		color:@error-color;
 
@@ -63,7 +63,7 @@ form {
 		clear:both;
 		line-height:30px;
 		overflow:hidden;
-		
+
 		label, label + input {
 			display:block;
 			float:left;
@@ -73,18 +73,18 @@ form {
 			position:absolute;
                         .form-align-margin;
 		}
-		
+
 		&.required label:after {
 			color:@error-color;
 			content: "*";
 		}
-		
+
 	}
 	input {
-		&[type=text], 
+		&[type=text],
 		&[type=password] {
 			.soft-edge-style;
-			
+
 			&[disabled] {
 				color:lighten(@text-base-color, 25%);
 				background:inherit;
@@ -94,7 +94,7 @@ form {
 		&[type=submit], &[type=reset], &[type=button] {
 			.button-style;
 		}
-		
+
 		&[type=checkbox] {
 			width:auto;
 			margin-top:7px;
@@ -109,7 +109,7 @@ form {
 		display:block;
 		clear:left;
 	}
-	
+
 }
 
 // Create Project and Organization forms

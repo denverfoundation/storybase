@@ -157,7 +157,7 @@
   text-shadow: 0 1px 1px rgba(0, 0, 0, .3);
   .rounded-corners(.5em);
   .box-shadow(0, 1px, 2px, rgba(0, 0, 0, .2));
-  
+
   color: @text-color;
   border: solid 1px darken(@base-color, 20%);
   background: @base-color;
@@ -166,7 +166,7 @@
   // While this produces a gradient in MSIE, it overflows the rounded corners
   // Disable it for now
   //filter:  progid:DXImageTransform.Microsoft.gradient(startColorstr='lighten(@base-color, 20%)', endColorstr='darken(@base-color, 20%)');
-  
+
   &:hover {
     background: darken(@base-color, 10%);
     background: -webkit-gradient(linear, left top, left bottom, from(lighten(@base-color, 10%)), to(darken(@base-color, 30%)));
@@ -208,7 +208,7 @@
 }
 
 .dropdown-menu.icons {
-  margin-left: 0;        
+  margin-left: 0;
   padding-left: 1em;
 }
 
@@ -246,7 +246,7 @@
   &:before { content: "H3"; }
 }
 
-// Mixins that replicate some of the Font Awesome classes 
+// Mixins that replicate some of the Font Awesome classes
 .fa-icon-mixin() {
   font-family: FontAwesome;
   font-weight: normal;
@@ -280,7 +280,7 @@
   .sans-serif-text;
   font-size:@base-font-size;
   line-height:@base-line-height;
-  color:@body-copy-color; 
+  color:@body-copy-color;
   p {
     margin-bottom: @body-copy-margin-bottom;
   }
@@ -326,26 +326,26 @@
 
 .line-through-header {
   margin-bottom: 10px;
-  
+
   // line-through effect looks best with 1em line height
   line-height: 1em !important;
- 
-  @media (min-width: @screen-sm-min) { 
-    background: url('../img/h3-line.png') repeat-x 0 8px; 
+
+  @media (min-width: @screen-sm-min) {
+    background: url('../img/h3-line.png') repeat-x 0 8px;
     span {
-      background: #fff; 
-      padding-left: 16px; 
+      background: #fff;
+      padding-left: 16px;
       padding-right: 16px;
     }
   }
 }
 
 .standard-headers(@align: center) {
-  h1 { 
+  h1 {
     font-size: ceil((@h1-size * 0.66));
-    color: @dark-gray; 
-    .styled-header(@align); 
-    .line-through-header; 
+    color: @dark-gray;
+    .styled-header(@align);
+    .line-through-header;
 
     @media (min-width: @screen-xs-min) {
       font-size: @h1-size;
@@ -360,7 +360,7 @@
     // explicit property seems neccesary to properly set line height using ems.
     line-height:@base-line-height;
   }
-  
+
   // if a header is following any other element, give the header
   // a little extra top-margin.
   * {
@@ -381,7 +381,7 @@
 
   >li {
     position:relative;
-    display: inline-block;  
+    display: inline-block;
     margin-right: 4px;
     padding: 4px 0 0;
     list-style-type: none;
@@ -395,7 +395,7 @@
           background-color: @visited-blue;
         }
       }
-      
+
       &:after {
         position:absolute;
         font-family: "FontAwesome";
@@ -431,7 +431,7 @@
         }
       }
     }
-    
+
     // (non-active error)
     &.error {
       >a {
@@ -451,7 +451,7 @@
       text-decoration: none;
 
       &:hover {
-        background-color: @light-gray; 
+        background-color: @light-gray;
       }
 
     }
@@ -512,11 +512,11 @@ ul.messages {
   .notification-list;
   li {
     .notification-list-item;
-    
+
     &.error {
       .error-item;
     }
-    
+
     &.success {
       .success-item;
     }

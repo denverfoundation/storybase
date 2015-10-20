@@ -10,12 +10,12 @@
     width:50%;
     margin:0 auto;
     display:block;
-    
+
     strong {
       font-size:1.2em;
     }
   }
-  
+
   .flex-direction-nav {
     li {
       // This is overriding a z-index of 5000 in the flexslider plugin's css.
@@ -27,11 +27,11 @@
         z-index: inherit;
       }
 
-      .next { 
+      .next {
         height: 100%;
         background: #fff url('../img/right-arrow2.jpg') no-repeat right 50%;
-        font-size: 0; 
-        line-height: 0; 
+        font-size: 0;
+        line-height: 0;
         text-indent: -4000px;
 
         @media (min-width: @screen-sm-min) {
@@ -40,11 +40,11 @@
       }
 
       .prev {
-        height: 100%; 
+        height: 100%;
         background: #fff url('../img/left-arrow2.jpg') no-repeat 0 50%;
         font-size: 0;
         line-height: 0;
-        text-indent: -4000px;  
+        text-indent: -4000px;
 
         @media (min-width: @screen-sm-min) {
           background-position: 0 0;
@@ -56,12 +56,12 @@
         background-size: 100%;
 
         @media (min-width: @screen-sm-min) {
-          width: 75px; 
+          width: 75px;
         }
       }
     }
   }
-  
+
   .homepage-header {
     padding-top: 1em;
 
@@ -74,7 +74,7 @@
 
   .homepage-header-left {
     // Hide the left column, "Everyone's got a story to tell ..." on
-    // very narrow displays 
+    // very narrow displays
     display: none;
 
     @media (min-width: @header-breakpoint) {
@@ -84,17 +84,17 @@
 
   ul.explore-others-posts {
     margin-top:2em;
-    
+
     li {
       clear: both;
       margin-bottom:1em;
       overflow:hidden;
-    
+
       h3 {
         text-align:left;
         margin-top:0;
       }
-      
+
       img {
         width:25%;
         height:auto;
@@ -104,14 +104,14 @@
       }
     }
   }
- 
+
   .supporting-foundations {
     .flexslider {
       .flex-control-nav, .flex-direction-nav {
         display:none !important;
       }
     }
-    
+
     ul.foundations {
       text-align: center;
 
@@ -147,7 +147,7 @@
         width: 45%;
       }
     }
-    
+
     .text {
       @media (min-width: @screen-sm-min) {
         border-left: 1px dotted #666666;
@@ -161,7 +161,7 @@
         width: 370px;
       }
     }
-    
+
     .image {
       text-align: center;
 
@@ -202,21 +202,21 @@
       display: block;
     }
   }
-  
-  .images { 
-    width:100%; 
-    position:relative; 
-    overflow:hidden; 
 
-    a { 
-      // Hide the banner initially, it gets shown in a window load event 
-      // handler in functions.js. 
+  .images {
+    width:100%;
+    position:relative;
+    overflow:hidden;
+
+    a {
+      // Hide the banner initially, it gets shown in a window load event
+      // handler in functions.js.
       display:none;
       // Height and width are set dynamically relative to window width in
-      // functions.js:intro_resize() 
-      float:left; 
-      display:inline; 
-      position:relative; 
+      // functions.js:intro_resize()
+      float:left;
+      display:inline;
+      position:relative;
       position:relative;
       &:hover {
         text-decoration:none;
@@ -224,27 +224,27 @@
       img {
         display:block;
       }
-      span.overlay { 
-        background:url('../img/image-overlay.png')  0 0; 
-        display:block; 
-        position:absolute; 
-        top:0; 
+      span.overlay {
+        background:url('../img/image-overlay.png')  0 0;
+        display:block;
+        position:absolute;
+        top:0;
         left:0;
         width:100%;
-        height:100%; 
+        height:100%;
       }
-      span.title { 
-        position:absolute; 
-        bottom:0; 
-        left:0; 
-        background:url('../img/transparent.png')  0 0; 
-        display:block; 
-        width:100%; 
+      span.title {
+        position:absolute;
+        bottom:0;
+        left:0;
+        background:url('../img/transparent.png')  0 0;
+        display:block;
+        width:100%;
         display:none;
       }
-      span.title em { 
-        font-size:12px; 
-        font-style:normal; 
+      span.title em {
+        font-size:12px;
+        font-style:normal;
         color:@highlight-blue;
         font-family: 'MuseoSlab500Regular';
         padding:7px 14px 12px 14px;
@@ -303,7 +303,7 @@
     .img-wrapper {
       display: block;
       float: left;
-      width: @latest-img-width; 
+      width: @latest-img-width;
       height: 60px;
       margin-right: .5em;
       position: relative;

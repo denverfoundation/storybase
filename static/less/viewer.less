@@ -22,7 +22,7 @@
   }
 
   figure {
-    border: 1px solid @light-gray; 
+    border: 1px solid @light-gray;
     padding: 4px;
     position: relative;
 
@@ -61,7 +61,7 @@
       }
     }
   }
-  
+
 
   blockquote {
     padding:1em;
@@ -70,7 +70,7 @@
     border:1px solid @gray;
     font-style:italic;
     color:@dark-gray;
-    
+
     &.asset-type-quotation {
       .pullquote;
       background:transparent;
@@ -109,26 +109,26 @@
     .title {
       .viewer-story-title();
     }
-    
+
     .byline {
       margin: 0;
       padding: 0 0 2px 0;
       font-style: italic;
     }
-    
+
     .section-title {
       font-size: 1em;
       margin: 0;
       padding: 0.25% 0;
     }
-    
+
     // needed to override viewer dd prop
     .storybase-share-popup {
       dd {
         margin:0;
       }
     }
-    
+
   }
 
   #tools .text,
@@ -156,11 +156,15 @@
       text-decoration: none;
       display: inline-block;
       margin-left: 4px;
+
+      &:last-of-type {
+        margin-right: 0;
+      }
     }
 
     .text {
       @media (min-width: @viewer-nav-breakpoint) {
-        padding-right: 2px; 
+        padding-right: 2px;
       }
     }
   }
@@ -170,14 +174,14 @@
     .body-copy-lists;
     width: 100%;
     padding-bottom: 120px;
-    
+
     #summary {
       padding: 1%;
 
       .title {
         width: 100%;
       }
-    
+
       #summary-image, #summary-text, #summary-toc {
         ul {
           padding:0;
@@ -189,9 +193,9 @@
         @media (min-width: @viewer-nav-breakpoint) {
           width: 48%;
           float: left;
-        } 
+        }
       }
-    
+
       #summary-image .featured-asset {
         margin-right: 0;
         max-width: 100%;
@@ -207,7 +211,7 @@
       #summary-image, #summary-toc {
         // Clear footer
         padding-bottom: 40px;
-      }     
+      }
     }
   }
 
@@ -219,22 +223,22 @@
   .connected-story {
     padding: 1%;
   }
-  
+
   .connected-stories {
     h2.title {
       margin-bottom:1.2em;
     }
   }
-  
+
   .connected-story-item {
     margin-bottom:1em;
     clear:both;
     overflow:hidden;
-    
+
     h3 {
       margin-top:0 !important;
     }
-    
+
     img {
       max-width:100px;
       margin-right:1em;
@@ -264,7 +268,7 @@
       &.title {
         font-size: 24px;
         font-weight: normal;
-        color: @orange; 
+        color: @orange;
         padding: 0;
       }
     }
@@ -283,7 +287,7 @@
       float: left;
     }
   }
-  
+
   .section-layout.side-by-side .left {
     margin-bottom: 10px;
 
@@ -297,9 +301,9 @@
     bottom: 0;
     width: 100%;
     padding: @viewer-bar-padding;
-    background-color: @footer-background-color; 
+    background-color: @footer-background-color;
     z-index: 9999;
-    
+
     .logo {
       position:absolute;
       right:30px;
@@ -311,7 +315,7 @@
 
       height: 27px;
       width: 26px;
-      
+
       span {
         .hide-text;
       }
@@ -321,18 +325,18 @@
         width:200px;
       }
     }
-    
+
   }
 
   #toggle-toc {
     .button-reset;
-    position: relative; 
+    position: relative;
     color: #fff;
 
     .bars {
       float: left;
       padding-right: 4px;
-      
+
       @media (min-width: @viewer-nav-breakpoint) {
         display: none;
       }
@@ -348,7 +352,7 @@
     left: 0;
     bottom: 0;
     padding: @viewer-bar-padding;
-    overflow: hidden; 
+    overflow: hidden;
 
     color: #fff;
     background-color: @footer-background-color;
@@ -369,7 +373,7 @@
         display:block;
         width:100%;
         padding: 4px 2px;
-        
+
         &:hover {
           background:darken(@dark-gray, 10%);
         }
@@ -407,9 +411,9 @@
       @media (min-width: @viewer-nav-breakpoint) {
         width: 80px;
         display: inline-block;
-        border: 1px solid #fff; 
+        border: 1px solid #fff;
         .rounded-corners(4px);
-        
+
         &:hover, &:focus {
           background: @dark-gray;
         }
@@ -423,7 +427,7 @@
         color:@gray;
         cursor:default;
 
-        
+
         &:hover {
           color:@gray;
         }
@@ -443,7 +447,7 @@
         padding: 0 8px;
       }
     }
-    
+
     .location {
       display: inline-block;
       font-size:.8em;
@@ -461,13 +465,13 @@
   .node.active {
     fill: red;
   }
-  
+
   iframe.sandboxed-asset {
     border:none;
   }
 
-  
-  // from here down to end of .story-viewer block copied from old style.css. 
+
+  // from here down to end of .story-viewer block copied from old style.css.
   // these are probably applicable in more places than in story-viewer.
   // to be more intelligently integrated.
 
@@ -536,7 +540,7 @@
 
   dl.story-metadata dd ul.inline li {
     display: inline;
-  }  
+  }
 
   dl.story-metadata dd ul.inline li:after {
     content: ", ";
@@ -572,13 +576,13 @@
   .project-list h3 a {
     color: #555;
     text-decoration: none;
-  }  
+  }
 
   .organization-list h3 a:hover,
   .project-list h3 a:hover {
     color: #0066CC;
-    text-decoration: underline; 
-  }  
+    text-decoration: underline;
+  }
 
   .organization-list .description,
   .project-list .description {
@@ -640,7 +644,7 @@
     padding: @viewer-bar-padding;
 
     text-align: right;
-    
+
     a {
       color: #fff;
       text-decoration: none;

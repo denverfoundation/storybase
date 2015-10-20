@@ -8,14 +8,14 @@
 
   /* generic content page: probably cms-driven */
   &.generic {
-    padding-bottom:34px; 
+    padding-bottom:34px;
     margin-bottom:39px;
-    
+
     /* generic text content */
     .content-block {
       .body-copy;
       .body-copy-lists;
-      
+
       h2, h3, h4, h5 {
         text-align:left;
         background:none;
@@ -24,7 +24,7 @@
       h3, h4, h5 {
         color:@almost-black;
       }
-      h4.first { 
+      h4.first {
         font-size:(@top-header-size * .8);
         line-height:27px;
         color:@dark-gray;
@@ -45,7 +45,7 @@
         // Override the .icon-* style that makes this inline-block
         display: block;
 
-        // Clicking the question toggles the answer, so make the cursor a pointer 
+        // Clicking the question toggles the answer, so make the cursor a pointer
         // so it appears more "clickable"
         cursor: pointer;
         border-top:1px solid #ddd;
@@ -58,39 +58,39 @@
       }
     }
 
-    .page-pull { 
+    .page-pull {
       margin-bottom:31px !important;
       h1, h2, h3, h4, h5 {
         text-align:left;
       }
-      h4 { 
-        background:none !important; 
+      h4 {
+        background:none !important;
         margin-bottom:10px !important;
         font-family: 'MuseoSlab500Regular';
-        a { 
+        a {
           color:@orange;
         }
       }
-      p { 
-        color:#5a5a5a; 
+      p {
+        color:#5a5a5a;
         padding-bottom:12px;
         a {
           color:@highlight-blue;
         }
         a.read-more {
-          font-size:14px; 
+          font-size:14px;
           color:@orange;
           font-family: 'MuseoSlab500Regular';
         }
-        strong { 
-          font-size:14px; 
+        strong {
+          font-size:14px;
           color:#666;
         }
       }
-      
+
     }
   }
-  
+
   /* object detail pages: story, project, etc */
   &.object-detail {
     .summary-container {
@@ -159,7 +159,7 @@
     }
 
     .object + hr,
-    .story-outreach { 
+    .story-outreach {
       clear:left;
     }
     .connected-stories dl {
@@ -186,7 +186,7 @@
     .object-metadata {
       color:#444;
       margin: 20px 0;
-      
+
       dt, dd { float:left; }
       dt { clear:left; margin-right:4px }
       dt:after { content:": " }
@@ -194,29 +194,29 @@
       .website-url {
         // Force long URLs to wrap
         display: block;
-        word-wrap: break-word;      
-        word-break: break-all; 
+        word-wrap: break-word;
+        word-break: break-all;
       }
     }
     .featured-story img { width: 100%; }
     .story-list ul { margin-bottom: 30px; }
-    .story-list li { 
-      margin-bottom: 10px; 
+    .story-list li {
+      margin-bottom: 10px;
       overflow:hidden;
       div {
         // HACK: Force div to have layout, even when
         // image is broken, so titles are aligned.
-        // This might be an edge case in my 
+        // This might be an edge case in my
         // development instance because stories
         // should at least get the default featured
         // image
-        min-height: 1px; 
+        min-height: 1px;
       }
       img {
         margin-top:8px; width: 100%;
       }
     }
-                
+
     .sidebar {
       a.button {
         display: block !important;
@@ -246,20 +246,20 @@
         img.featured-asset { max-width: 100%; }
       }
 
-      // Override the reset that gets rid of paragraph margins    
+      // Override the reset that gets rid of paragraph margins
       .description, .body {
         p { margin-bottom: 1em; }
       }
     }
   }
-  
+
   // content block: mostly has a bottom border
-  section.content-block { 
-    padding-bottom: 40px; 
-    border-bottom:1px solid #ccc; 
+  section.content-block {
+    padding-bottom: 40px;
+    border-bottom:1px solid #ccc;
     margin-bottom:20px;
     overflow:hidden;
-    
+
     &.last, &.no-hr {
       border-bottom: none;
     }
@@ -270,14 +270,14 @@
     font-size: 1.4em;
     line-height: 1.2em;
   }
-  
+
   a.bab {
     .button-style(hot);
     font-size:2em;
     padding:1.5em;
     margin:1.5em 0;
     display:block;
-    
+
     &.right {
       float: right;
       margin-left:1.5em;

@@ -9,7 +9,7 @@
 
 .container_12 {
   // HACK: Make the small container slightly wider so it can fit 3 columns
-  // of tiles 
+  // of tiles
   .mk-fluid-grid-container-sm(750px);
   .mk-fluid-grid-container-md();
 }
@@ -19,24 +19,24 @@
   width: 100%;
 }
 
-.list-view .box { 
+.list-view .box {
   background:none;
   width:100%;
   padding-top:12px;
   padding-bottom:9px;
   border-top:1px dotted @gray;
 
-  img { 
+  img {
     float:left;
     display:inline;
     margin-right:16px;
     width:160px;
-    margin-top:8px;  
+    margin-top:8px;
   }
 
   .cnt {
     border-top:0 !important;
-    margin-bottom:0 !important;  
+    margin-bottom:0 !important;
   }
 
   min-height: 20px;
@@ -81,14 +81,14 @@
   }
 
   .select2-container {
-    background:url('../img/filter-link.png') no-repeat 0 0; 
+    background:url('../img/filter-link.png') no-repeat 0 0;
     min-width:180px;
     width:191px;
-    display:block; 
+    display:block;
     font-size:13px;
-    color:#fbfaf2; 
-    font-family: 'MuseoSlab500Regular'; 
-    text-shadow:0 -1px #605f5f; 
+    color:#fbfaf2;
+    font-family: 'MuseoSlab500Regular';
+    text-shadow:0 -1px #605f5f;
     line-height:34px;
     height:34px;
     padding-right:7px;
@@ -148,7 +148,7 @@
     padding: 2px 0;
     font-weight: bold;
   }
-  
+
   a.clear-filters {
     display: block;
     padding-top: 10px;
@@ -159,7 +159,7 @@
   }
 }
 
-#filter-proxy {  
+#filter-proxy {
   display:none;
 
   &.shown {
@@ -184,13 +184,13 @@
     font-size: 22px;
     font-style: italic;
     font-weight: normal;
-    width: 100%; 
+    width: 100%;
   }
 
   h3 {
     display: inline-block;
   }
-  
+
   .spinner {
     display: inline-block;
     margin-left: 1em;
@@ -223,41 +223,41 @@
     a {
       height:29px;
       position:absolute;
-      left:0; 
+      left:0;
 
-      background:url('../img/cols-icons.png') no-repeat 0 0; 
-      font-size:14px; 
+      background:url('../img/cols-icons.png') no-repeat 0 0;
+      font-size:14px;
       color: @gray;
-      font-style:normal;  
-      font-family: 'MuseoSlab500Regular'; 
-      
+      font-style:normal;
+      font-family: 'MuseoSlab500Regular';
+
       span {
         position:relative;
         top:30px;
       }
     }
 
-    &.active a { 
+    &.active a {
       color: @orange !important;
     }
 
     &.tile-view {
-      a { 
-        background-position: 0 -29px; 
+      a {
+        background-position: 0 -29px;
       }
 
       &.active a {
-        background-position: 0 0; 
+        background-position: 0 0;
       }
     }
 
     &.list-view {
-      a { 
-        background-position: -43px -29px; 
+      a {
+        background-position: -43px -29px;
       }
 
       &.active a {
-        background-position: -43px 0; 
+        background-position: -43px 0;
       }
     }
 
@@ -270,11 +270,11 @@
       }
 
       a {
-        background-position: -86px -29px; 
+        background-position: -86px -29px;
       }
 
-      &.active a { 
-        background-position: -86px 0; 
+      &.active a {
+        background-position: -86px 0;
       }
     }
   }
@@ -287,8 +287,8 @@
 
   li.story {
     p.cnt {
-      color:@dark-gray; 
-      padding-top:6px; 
+      color:@dark-gray;
+      padding-top:6px;
       margin-top:6px;
       border-top:1px dotted @dark-gray;
       margin-bottom:15px;
@@ -308,18 +308,18 @@
       }
     }
 
-    .story-attributes { 
-      margin-top: 10px; 
+    .story-attributes {
+      margin-top: 10px;
     }
   }
 
   &.tile {
     margin-left: auto;
     margin-right: auto;
-    
+
     li.story {
       float: left;
-      width: @explorer-img-width; 
+      width: @explorer-img-width;
       padding: 7px;
       margin-bottom: 11px;
       margin-right: 14px;
@@ -328,7 +328,7 @@
       background: @light-gray;
     }
   }
-  
+
   &.list li.story {
     float:none;
     width:100%;
@@ -349,7 +349,7 @@
         padding-top: 0;
       }
     }
-    
+
     .image-container{
       @media (min-width: @explorer-list-breakpoint) {
         float: left;
@@ -417,7 +417,7 @@
   color:@dark-gray;
 }
 
-#story-list .byline, 
+#story-list .byline,
 #map-container .byline {
   font-style:italic;
 }
@@ -429,7 +429,7 @@
   padding: 0;
 }
 
-.leaflet-popup-content { 
+.leaflet-popup-content {
   p {
     margin: 0;
   }
@@ -492,7 +492,7 @@
   font-size: 2em;
   line-height: 1em;
 
-  .text, .spinner { 
+  .text, .spinner {
     display: inline-block;
     vertical-align: middle;
   }
