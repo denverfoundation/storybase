@@ -508,7 +508,7 @@ class UserProfile(RecentStoriesMixin, models.Model, BadgeEditor):
     @models.permalink
     def get_absolute_url(self):
         if shortuuid:
-            profile_uuid = uuid.UUID(self.profile_id)
+            profile_uuid = self.profile_id
             return ('userprofile_detail', (), 
                     {'short_profile_id': shortuuid.encode(profile_uuid)})
 
@@ -517,7 +517,7 @@ class UserProfile(RecentStoriesMixin, models.Model, BadgeEditor):
 
     def get_share_url(self):
         if shortuuid:
-            profile_uuid = uuid.UUID(self.profile_id)
+            profile_uuid = self.profile_id
             return urlresolvers.reverse('userprofile_share', 
                     kwargs={'short_profile_id': shortuuid.encode(profile_uuid)})
 
