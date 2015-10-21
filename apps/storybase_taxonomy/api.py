@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.conf.urls import url
 from django.core.exceptions import ObjectDoesNotExist
 
@@ -27,15 +28,16 @@ class TagResource(HookedModelResource):
         }
 
     def prepend_urls(self):
+        subs = (self._meta.resource_name, settings.UUID_PATTERN, trailing_slash())
         return [
-            url(r"^(?P<resource_name>%s)/stories/(?P<story_id>[0-9a-f]{32,32})%s$" %
-                (self._meta.resource_name, trailing_slash()),
+            url(r"^(?P<resource_name>{})/stories/(?P<story_id>{}){}$".format(*subs),
                 self.wrap_view('dispatch_list'),
-                name="api_dispatch_list"),
-            url(r"^(?P<resource_name>%s)/(?P<tag_id>[0-9a-f]{32,32})/stories/(?P<story_id>[0-9a-f]{32,32})%s$" %
-                (self._meta.resource_name, trailing_slash()),
+                name="api_dispatch_list",
+            ),
+            url(r"^(?P<resource_name>{0})/(?P<tag_id>{1})/stories/(?P<story_id>{1}){2}$".format(*subs),
                 self.wrap_view('dispatch_detail'),
-                name="api_dispatch_detail"),
+                name="api_dispatch_detail",
+            ),
         ]
 
     def get_related_object(self, request, **kwargs):

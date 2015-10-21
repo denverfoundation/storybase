@@ -175,7 +175,7 @@ def option_selected_by_text(name, text):
 @world.absorb
 def assert_is_uuid4(s):
     """ Check whether a string is a UUID4 """
-    assert re.match(r'^[0-9a-f]{32,32}$', s) is not None
+    assert re.match(r'^{}$'.format(settings.UUID_PATTERN), s) is not None
 
 @world.absorb
 def assert_text_present(s):

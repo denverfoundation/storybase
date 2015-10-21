@@ -1,6 +1,7 @@
 """REST API for Stories"""
 import logging
 
+from django.conf import settings
 from django.conf.urls import url
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.urlresolvers import NoReverseMatch
@@ -32,6 +33,7 @@ from storybase_story.models import (Container, ContainerTemplate,
                                     Story, StoryRelation, StoryTemplate)
 from storybase_taxonomy.models import Category
 from storybase_user.models import Organization, Project
+
 
 logger = logging.getLogger("storybase")
 
@@ -80,8 +82,7 @@ class StoryResource(TranslatedModelResource):
         explore_point_field = 'points'
 
     def prepend_urls(self):
-        from storybase_story.urls import uuid_pattern
-        subs = (self._meta.resource_name, uuid_pattern, trailing_slash())
+        subs = (self._meta.resource_name, settings.UUID_PATTERN, trailing_slash())
         return [
             url(r'^(?P<resource_name>{0})/explore{2}$'.format(*subs),
                 self.wrap_view('explore_get_list'),

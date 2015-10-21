@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.conf.urls import url
 
 from tastypie import fields
@@ -37,19 +38,20 @@ class HelpResource(TranslatedModelResource):
         delayed_authorization_methods = []
 
     def prepend_urls(self):
+        subs = (self._meta.resource_name, settings.UUID_PATTERN, trailing_slash())
         return [
-            url(r"^(?P<resource_name>%s)/(?P<help_id>[0-9a-f]{32,32})%s$" %
-                (self._meta.resource_name, trailing_slash()),
+            url(r"^(?P<resource_name>{})/(?P<help_id>{}){}$".format(*subs),
                 self.wrap_view('dispatch_detail'),
-                name="api_dispatch_detail"),
-            url(r"^(?P<resource_name>%s)/(?P<slug>[\w-]+)%s$" %
-                (self._meta.resource_name, trailing_slash()),
+                name="api_dispatch_detail",
+            ),
+            url(r"^(?P<resource_name>{0})/(?P<slug>[\w-]+){2}$".format(*subs),
                 self.wrap_view('dispatch_detail'),
-                name="api_dispatch_detail"),
-            url(r"^(?P<resource_name>%s)/sections/(?P<section_id>[0-9a-f]{32,32})%s$" %
-                (self._meta.resource_name, trailing_slash()),
+                name="api_dispatch_detail",
+            ),
+            url(r"^(?P<resource_name>{})/sections/(?P<section_id>{}){}$".format(*subs),
                 self.wrap_view('dispatch_list'),
-                name="api_dispatch_list"),
+                name="api_dispatch_list",
+            ),
         ]
 
     def apply_request_kwargs(self, obj_list, bundle, **kwargs):

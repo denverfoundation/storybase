@@ -1,3 +1,4 @@
+from django.conf import settings
 from django.conf.urls import url
 from django.core.exceptions import ObjectDoesNotExist
 from django.core.files.uploadedfile import UploadedFile
@@ -18,6 +19,8 @@ from storybase_asset.models import (Asset, ExternalAsset, HtmlAsset,
 from storybase_asset.utils import image_type_supported
 from storybase_story.models import Story
 
+
+uuid_pattern = settings.UUID_PATTERN
 
 class IframePostDetailResource(DataUriResourceMixin, TranslatedModelResource):
     """
@@ -124,29 +127,30 @@ class AssetResource(IframePostDetailResource):
 
 
     def prepend_urls(self):
+        subs = (self._meta.resource_name, uuid_pattern, trailing_slash())
         return [
-            url(r"^(?P<resource_name>%s)/(?P<asset_id>[0-9a-f]{32,32})%s$" %
-                (self._meta.resource_name, trailing_slash()),
+            url(r"^(?P<resource_name>{})/(?P<asset_id>{}){}$".format(*subs),
                 self.wrap_view('dispatch_detail'),
-                name="api_dispatch_detail"),
-            url(r"^(?P<resource_name>%s)/stories/(?P<story_id>[0-9a-f]{32,32})%s$" %
-                (self._meta.resource_name, trailing_slash()),
+                name="api_dispatch_detail",
+            ),
+            url(r"^(?P<resource_name>{})/stories/(?P<story_id>{}){}$".format(*subs),
                 self.wrap_view('dispatch_list'),
-                name="api_dispatch_list"),
-            url(r"^(?P<resource_name>%s)/stories/(?P<story_id>[0-9a-f]{32,32})/featured%s$" %
-                (self._meta.resource_name, trailing_slash()),
+                name="api_dispatch_list",
+            ),
+            url(r"^(?P<resource_name>{})/stories/(?P<story_id>{})/featured{}$".format(*subs),
                 self.wrap_view('dispatch_featured_list'),
                 kwargs={'featured': True},
-                name="api_dispatch_featured_list"),
-            url(r"^(?P<resource_name>%s)/stories/(?P<story_id>[0-9a-f]{32,32})/sections/none%s$" %
-                (self._meta.resource_name, trailing_slash()),
+                name="api_dispatch_featured_list",
+            ),
+            url(r"^(?P<resource_name>{})/stories/(?P<story_id>{})/sections/none{}$".format(*subs),
                 self.wrap_view('dispatch_list'),
                 kwargs={'no_section': True},
-                name="api_dispatch_list"),
-            url(r"^(?P<resource_name>%s)/sections/(?P<section_id>[0-9a-f]{32,32})%s$" %
-                (self._meta.resource_name, trailing_slash()),
+                name="api_dispatch_list",
+            ),
+            url(r"^(?P<resource_name>{})/sections/(?P<section_id>{}){}$".format(*subs),
                 self.wrap_view('dispatch_list'),
-                name="api_dispatch_list"),
+                name="api_dispatch_list",
+            ),
         ]
 
     def dispatch_featured_list(self, request, **kwargs):
@@ -390,11 +394,24 @@ class DataSetResource(IframePostDetailResource):
         return new_obj_list
 
     def prepend_urls(self):
+        subs = (self._meta.resource_name, uuid_pattern, trailing_slash())
         return [
-            url(r"^(?P<resource_name>%s)/stories/(?P<story_id>[0-9a-f]{32,32})%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
-            url(r"^(?P<resource_name>%s)/assets/(?P<asset_id>[0-9a-f]{32,32})%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_list'), name="api_dispatch_list"),
-            url(r"^(?P<resource_name>%s)/stories/(?P<story_id>[0-9a-f]{32,32})/(?P<dataset_id>[0-9a-f]{32,32})%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_related_detail'), name="api_dispatch_related_detail"),
-            url(r"^(?P<resource_name>%s)/assets/(?P<asset_id>[0-9a-f]{32,32})/(?P<dataset_id>[0-9a-f]{32,32})%s$" % (self._meta.resource_name, trailing_slash()), self.wrap_view('dispatch_related_detail'), name="api_dispatch_related_detail"),
+            url(r"^(?P<resource_name>{})/stories/(?P<story_id>{}){}$".format(*subs),
+                self.wrap_view('dispatch_list'),
+                name="api_dispatch_list",
+            ),
+            url(r"^(?P<resource_name>{})/assets/(?P<asset_id>{}){}$".format(*subs),
+                self.wrap_view('dispatch_list'),
+                name="api_dispatch_list",
+            ),
+            url(r"^(?P<resource_name>{0})/stories/(?P<story_id>{1})/(?P<dataset_id>{1}){2}$".format(*subs),
+                self.wrap_view('dispatch_related_detail'),
+                name="api_dispatch_related_detail",
+            ),
+            url(r"^(?P<resource_name>{0})/assets/(?P<asset_id>{1})/(?P<dataset_id>{1}){2}$".format(*subs),
+                self.wrap_view('dispatch_related_detail'),
+                name="api_dispatch_related_detail",
+            ),
         ]
 
     def obj_create(self, bundle, **kwargs):

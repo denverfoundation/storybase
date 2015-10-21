@@ -15,6 +15,7 @@ from storybase_geo.models import GeoLevel, Location, Place
 from storybase_geo.utils import get_geocoder
 from storybase_story.models import Story
 
+
 class GeoLevelResource(ModelResource):
     parent_id = fields.IntegerField(attribute='parent__id', blank=True, null=True)
     class Meta:
@@ -46,10 +47,14 @@ class LocationResource(HookedModelResource):
 
     def prepend_urls(self):
         return [
-            url(r"^(?P<resource_name>%s)/stories/(?P<story_id>[0-9a-f]{32,32})%s$" %
-                (self._meta.resource_name, trailing_slash()),
+            url(r"^(?P<resource_name>{})/stories/(?P<story_id>{}){}$".format(
+                    self._meta.resource_name,
+                    settings.settings.UUID_PATTERN,
+                    trailing_slash(),
+                ),
                 self.wrap_view('dispatch_list'),
-                name="api_dispatch_list"),
+                name="api_dispatch_list",
+            ),
         ]
 
     def apply_request_kwargs(self, obj_list, bundle, **kwargs):

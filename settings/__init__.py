@@ -416,6 +416,8 @@ HAYSTACK_SEARCH_RESULTS_PER_PAGE = 10
 #
 # HAYSTACK_SIGNAL_PROCESSOR = 'storybase.search.signals.RealtimeSignalProcessor'
 
+UUID_PATTERN = r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
+
 # storybase settings
 # The name of the group used for site administrators
 ADMIN_GROUP_NAME = 'CA Admin'
