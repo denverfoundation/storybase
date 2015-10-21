@@ -364,7 +364,10 @@ FILER_STORAGES = {
 }
 
 COMPRESS_ENABLED = True
-COMPRESS_CSS_FILTERS = ('django_compressor_autoprefixer.AutoprefixerFilter',)
+COMPRESS_CSS_FILTERS = (
+    'compressor.filters.css_default.CssAbsoluteFilter',
+    'django_compressor_autoprefixer.AutoprefixerFilter',
+)
 
 COMPRESS_AUTOPREFIXER_BINARY = os.path.abspath(os.path.join(PROJECT_PATH, 'node_modules/.bin/postcss'))
 COMPRESS_AUTOPREFIXER_ARGS = '--use autoprefixer -- autoprefixer.browsers "> 5%, ie > 9"'
