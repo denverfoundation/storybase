@@ -1,5 +1,5 @@
-// Embed widget styles 
-// 
+// Embed widget styles
+//
 // Styles for widget that allows embedding of content in external sites
 //
 // This styles markup in the template ``storybase_story/widget_base.html``
@@ -64,7 +64,7 @@ h1 {
   @media screen and (max-width:@width-break2) {
     font-size:@h1-font-size2;
   }
-  font-weight: bold;  
+  font-weight: bold;
 }
 
 h3 {
@@ -101,7 +101,7 @@ article {
   overflow: hidden;
   color: @dark-gray;
 
-  .story-link { 
+  .story-link {
     display: block;
     color: @highlight-blue;
     font-family: 'Museo300Regular';
@@ -112,7 +112,7 @@ article {
     font-style: italic;
     margin-bottom: 0.9em;
   }
-  
+
 }
 
 .widget-404 {
@@ -132,7 +132,7 @@ article {
     background:url() no-repeat center center;
     background-size:cover;
     height:100%;
-    
+
     img {
       width:100%;
       opacity:0;
@@ -151,15 +151,15 @@ article {
     width:50%;
     height:100%;
     float:left;
-    
+
     .featured-image {
       float:none;
       width:100%;
       // prevent image showing through embed-content padding in some cases
-      height:100%; 
+      height:100%;
       overflow:hidden;
     }
-    
+
     div.info {
       margin:0;
       padding: 1em 0 0;
@@ -167,7 +167,7 @@ article {
       position:absolute;
       bottom:0;
       background:white;
-      
+
       @media screen and (max-height:@height-break1) {
         font-size:@body-font-size1;
       }
@@ -187,25 +187,25 @@ article {
     padding-left:1em;
     width:50%;
   }
-  
+
   ul {
     height:100%;
   }
-  
+
   li {
     position:relative;
     overflow:hidden;
     height:33.33333%;
     border-bottom:1em solid white;
   }
-  
+
   .featured-image {
     position:absolute;
     width:40%;
     overflow:hidden;
     background:url() no-repeat center center;
     background-size:cover;
-    
+
     img {
       width:100%;
       opacity:0;
@@ -215,7 +215,7 @@ article {
   .story-link, .byline {
     margin-left:40%;
     padding-left:1em;
-    
+
     @media screen and (max-height:@height-break2) {
       font-size: @body-font-size2;
     }
@@ -231,12 +231,12 @@ header {
     text-decoration:none;
     color:white;
   }
-    
+
   h1 {
     font-weight:bold;
     font-family: 'Museo300Regular';
   }
-  
+
   // vertical centering
   h1, .logo-container {
     display: table;
@@ -247,18 +247,18 @@ header {
       padding:0 .5em;
     }
   }
-  
+
   .logo-container {
     float:right;
     padding-right:0.5em;
   }
-  
+
   .logo {
     width:140px;
     height:20px;
     text-indent:-30000px;
     background:url(../img/widget-logo.png) no-repeat left 50%;
-    
+
   }
 }
 
@@ -271,12 +271,12 @@ footer {
   border-top:2px solid @gray;
   width:100%;
   font-size:.75em;
-  
+
   a {
     color:@light-gray;
     text-decoration:underline;
   }
-  
+
   .related-container {
     // vertical centering
     display:table;
@@ -285,7 +285,7 @@ footer {
       display:table-cell;
       vertical-align:middle;
       padding:0 0.5em;
-      
+
       &:before {
         font-family: "FontAwesome";
         content:"\F08E";
@@ -305,7 +305,7 @@ header, footer {
 
 // Relies on modernizr.
 html.no-backgroundsize {
-  
+
   // This ruleset is legitimately tied to no-backgroundsize.
   .featured-image {
     background-image:none !important;
@@ -313,7 +313,7 @@ html.no-backgroundsize {
       opacity:1;
     }
   }
-  
+
   // @TODO: The remaining are IE fixes only tested in IE8!
 
   body {
@@ -328,16 +328,16 @@ html.no-backgroundsize {
     }
   }
 
-  
+
   .storybase-story-featured.with-list {
     width:48%;
   }
-  
+
   // the padding + margin scheme totally fails on IE8
   .storybase-storylist.with-featured {
     padding:0;
     margin:0;
-    
+
     .story-link {
       font-size: @body-font-size0;
       @media screen and (max-height:@height-break2) {
@@ -347,7 +347,7 @@ html.no-backgroundsize {
         font-size: @body-font-size1;
       }
     }
-    
+
     li {
       padding-left:1em;
     }

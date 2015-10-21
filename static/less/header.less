@@ -10,9 +10,9 @@
     background: none;
   }
 
-  // I deliberated over the best approach for a responsive header logo.  
-  // I wanted to consider the logo to be content, for many of the arguments 
-  // described at 
+  // I deliberated over the best approach for a responsive header logo.
+  // I wanted to consider the logo to be content, for many of the arguments
+  // described at
   // http://csswizardry.com/2010/10/your-logo-is-an-image-not-a-h1/
   // and because I wanted to separate style and content, which is discussed
   // here: http://mobile.smashingmagazine.com/2013/07/22/simple-responsive-images-with-css-backgrounds/
@@ -48,11 +48,11 @@
       display: none;
     }
   }
-  
+
   .logo-text {
     display:none;
   }
-  
+
   ul, ol {
     margin-bottom: 0;
   }
@@ -67,13 +67,13 @@
   .mk-fluid-grid-container-md();
 
   @media (min-width: @header-breakpoint) {
-    float: none;        
+    float: none;
   }
 }
 
 .header-item {
-  font-size:12px; 
-  color:#909090; 
+  font-size:12px;
+  color:#909090;
   font-family: 'MuseoSlab500Regular';
 }
 
@@ -83,30 +83,30 @@
   width: inherit;
 
   @media (min-width: @header-breakpoint) {
-    float: right; 
-    display: inline; 
-    width: 284px; 
+    float: right;
+    display: inline;
+    width: 284px;
   }
-  
-  ul { 
+
+  ul {
     list-style:none;
-    
-    li { 
-      float:left; 
-      display:inline; 
-      background:url('../img/sep2.png') no-repeat 0 2px; 
-      padding-left:11px; 
+
+    li {
+      float:left;
+      display:inline;
+      background:url('../img/sep2.png') no-repeat 0 2px;
+      padding-left:11px;
       margin-left:5px;
-      
+
       .header-item;
-      
-      &:first-child { 
-        margin-left:0; 
-        background:none; 
+
+      &:first-child {
+        margin-left:0;
+        background:none;
         padding-left:0;
       }
-      
-      // avoid wrapping in text in last child (currently where usernames are, 
+
+      // avoid wrapping in text in last child (currently where usernames are,
       // which can be of arbitrary length).
       &:last-child {
         white-space:nowrap;
@@ -117,19 +117,19 @@
         .header-item
       }
     }
-    
+
   }
 
   #search-placeholder {
     padding-top: 12px;
     height: 37px;
-  }        
+  }
 
   form#search {
     margin: 0 auto;
     width: 200px;
 
-    
+
     @media (min-width: 420px) {
       width: 278px;
     }
@@ -139,8 +139,8 @@
       margin: 0;
       width: auto;
     }
-    
-    .field { 
+
+    .field {
       display: inline;
       float: left;
       width: 150px;
@@ -163,7 +163,7 @@
       }
     }
 
-    button.submit { 
+    button.submit {
       width: 38px;
       height: 36px;
       background: url('../img/search.png') no-repeat right 0;

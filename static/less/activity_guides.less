@@ -9,7 +9,7 @@
   @container-padding: 7px;
 
   float: left;
-  width: @img-width; 
+  width: @img-width;
   position: relative;
   margin: 0 20px 20px 0;
   background: @light-gray;
@@ -21,24 +21,24 @@
 
   .img-container {
     display: block;
-    height: @img-height; 
+    height: @img-height;
     text-align: center;
     overflow: hidden;
     // HACK: Give this a white background to deal with "short"
     // images.  Ideally, we would vertically center the image
     // in the container, but this is hard to do with arbitrary-
-    // height images.  There's a technique at 
+    // height images.  There's a technique at
     // http://css-tricks.com/centering-in-the-unknown/
     // but it breaks for IE<8
     background-color: #fff;
-    
+
     img {
       width: 100%;
     }
   }
 
   .title {
-    // Clobber default header margins 
+    // Clobber default header margins
     margin-top: 10px;
     font-size: 16px;
     line-height: 16px;
@@ -61,15 +61,15 @@
   }
 
   .description {
-    margin: 4px 0;      
+    margin: 4px 0;
     text-align: justify;
   }
 
   dt, dd { float: left; }
 
-  dt { 
+  dt {
     clear: left;
-    margin-right: 4px; 
+    margin-right: 4px;
     font-weight: bold;
   }
   dt:after { content: ": " }

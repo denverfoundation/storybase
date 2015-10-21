@@ -4,7 +4,7 @@
 
 // mixin for "active" state on top-level links
 .active-top-nav-link {
-  color: @orange; 
+  color: @orange;
   text-decoration:underline;
 }
 
@@ -26,9 +26,9 @@
 }
 
 
-.megamenu { 
+.megamenu {
   width: 100%;
-  padding-top: 19px;  
+  padding-top: 19px;
   padding-bottom: 12px;
   display: none;
 
@@ -42,7 +42,7 @@
     display: block;
   }
 
-  .nav { 
+  .nav {
     position: relative;
     clear: both;
     padding-left: 12px;
@@ -54,10 +54,10 @@
     @media (min-width: @header-breakpoint) {
       padding-left: 0;
       padding-top: 0;
-      border-top: none; 
+      border-top: none;
     }
-    
-    > li { 
+
+    > li {
       display: block;
       padding-top: 4px;
 
@@ -93,7 +93,7 @@
         }
       }
 
-      > a { 
+      > a {
         font-size: 16px;
         color: #ffffff;
         font-family: 'MuseoSlab500Regular';
@@ -107,15 +107,15 @@
           background: url('../img/nav-arrow.png') no-repeat 0 3px;
         }
 
-        // This element is used for the dropdown pointer arrow        
-        em { 
-          height:8px; 
-          background:url('../img/dd-arrow.png') no-repeat center 0; 
-          width:100%; 
-          position:absolute; 
-          bottom:0px; 
-          left:0; 
-          display:none; 
+        // This element is used for the dropdown pointer arrow
+        em {
+          height:8px;
+          background:url('../img/dd-arrow.png') no-repeat center 0;
+          width:100%;
+          position:absolute;
+          bottom:0px;
+          left:0;
+          display:none;
           z-index: 5000;
         }
 
@@ -126,9 +126,9 @@
         }
       }
 
-      .dd { 
+      .dd {
         display:none;
-        position: absolute; 
+        position: absolute;
         top: 41px;
         left: 0;
 
@@ -168,7 +168,7 @@
         &.threecol {
           .dd-col.col1,
           .dd-col.col2,
-          .dd-col.col3 { 
+          .dd-col.col3 {
             width:33%;
           }
           .dd-col.col1-2,
@@ -176,12 +176,12 @@
             width:66%;
           }
         }
-        
+
         &.fourcol {
           .dd-col.col1,
           .dd-col.col2,
           .dd-col.col3,
-          .dd-col.col4 { 
+          .dd-col.col4 {
             width:25%;
           }
           .dd-col.col2-3 {
@@ -191,7 +191,7 @@
             width:75%;
           }
         }
-        
+
         .dd-col {
           .border-box;
           .sans-serif-text;
@@ -209,13 +209,13 @@
             padding-right:0;
             border-right:0;
           }
-          
-          a { 
-            font-size:13px; 
-            color:@orange; 
+
+          a {
+            font-size:13px;
+            color:@orange;
             background-image: none;
           }
-          
+
           p.legend {
             color:lighten(@gray, 10%);
             font-size:1.8em;
@@ -223,24 +223,24 @@
             padding: 30px 45px;
             font-family: 'Museo300Regular';
           }
-          
+
           h6 {
             font-size:16px !important;
-            font-weight:normal; 
+            font-weight:normal;
             font-family: 'MuseoSlab500Regular';
-            background:none; 
-            display:block;  
+            background:none;
+            display:block;
             margin-bottom:9px;
 
             a {
               font-family: 'MuseoSlab500Regular';
               font-size:16px !important; // (actually needed here and in h6 for specificity override)
-              padding: 0 0 0 8px; 
+              padding: 0 0 0 8px;
               left:-8px;
               position:relative;
               color:@orange;
-          
-              &:hover { 
+
+              &:hover {
                 background:url('../img/h6-a-arrow.png') no-repeat 0 center !important;
                 text-decoration:none;
               }
@@ -265,20 +265,20 @@
             }
           }
         }
-        
+
       }
 
-      ul li { 
+      ul li {
         padding-left:0;
         margin-bottom:.5em;
         float:none;
         display:block;
-        
-        a { 
-          background:none; 
+
+        a {
+          background:none;
           display:block;
         }
-        a:hover { 
+        a:hover {
           background:url('../img/a-arrow.png') no-repeat 0 2px;
         }
       }
@@ -296,7 +296,7 @@
   // by JavaScript
   &.wrapped {
     @media (min-width: @header-breakpoint) {
-      padding-top: @megamenu-padding-top - 10;  
+      padding-top: @megamenu-padding-top - 10;
 
       .nav > li {
         .dd {
@@ -310,7 +310,7 @@
         &.wrapped {
           > a {
             padding-bottom: 13px;
-          } 
+          }
 
           .dd {
             top: 50px;
