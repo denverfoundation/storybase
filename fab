@@ -4,7 +4,7 @@ set -e
 
 ENV=.deployment_virtualenv
 # version of fusionbox-fabric-helpers to run
-HELPERS_COMMIT=b887c83d2dbc
+HELPERS_COMMIT=bae54d6b9c94
 HELPERS_COMMIT_FILE=$ENV/HELPERS_COMMIT
 
 if which python2 > /dev/null 2> /dev/null

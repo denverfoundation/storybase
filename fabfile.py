@@ -1,6 +1,6 @@
-from fabric.api import env, roles
+from fabric.api import env, roles, run, task
+from fusionbox.fabric.django.new import cd_project, get_latest_src_dir
 
-from fusionbox.fabric.django.new import stage, deploy
 
 def dev():
     env.project_name = 'floodlightproject.dev'
@@ -9,4 +9,33 @@ def dev():
 
 env.roledefs['dev'] = dev
 
-stage = roles('dev')(stage)
+@task
+@roles('dev')
+def stage(*args, **kwargs):
+    """
+    Deploy the current branch to the dev server
+    """
+    from fusionbox.fabric.django.new import stage
+    stage(*args, **kwargs)
+    return npm('install')
+
+@task
+@roles('live')
+def deploy(*args, **kwargs):
+    """
+    Deploy the live branch to the live server
+    """
+    from fusionbox.fabric.django.new import deploy
+    deploy(*args, **kwargs)
+    return npm('install')
+
+@task
+def npm(command):
+    """
+    Run an npm command
+
+    You have to specify the role with -R <live,dev>
+    """
+    src_directory = get_latest_src_dir()
+    with cd_project(src_directory):
+        run("npm {}".format(command))

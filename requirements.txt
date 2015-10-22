@@ -6,7 +6,6 @@
 #
 -e git+https://github.com/elpaso/django-dag@74165d7298202818a6b9cb099a322213b2079740#egg=django-dag
 -e git+https://github.com/macropin/django-uuidfield.git@9bd27e96ede8cf770df60808f2c772c48ec73e74#egg=django-uuidfield
--e git+https://github.com/fusionbox/fusionbox-fabric-helpers.git#egg=fusionbox-fabric-helpers
 beautifulsoup==3.2.1
 bleach==1.4.2
 cmsplugin-filer==0.10.2
@@ -39,7 +38,7 @@ django-social-auth==0.7.28
 django-static-precompiler==1.0.1
 django-taggit==0.17.1
 django-tastypie==0.12.2
-django-threadedcomments==1.0
+django-threadedcomments==1.0.1
 django-tinymce==2.0.5
 django-treebeard==3.0     # via django-cms
 django-user-accounts==1.2.0  # via django-notification
@@ -47,8 +46,6 @@ django==1.8.5
 djangocms-admin-style==0.2.8  # via django-cms
 djangocms-text-ckeditor==2.6.0
 easy-thumbnails==2.2      # via cmsplugin-filer, django-filer
-ecdsa==0.13               # via paramiko
-fabric==1.10.2
 geopy==1.11.0
 html5lib==0.9999999       # via bleach, django-cms, djangocms-text-ckeditor
 httplib2==0.9.2           # via oauth2
@@ -56,10 +53,8 @@ lxml==3.4.4
 micawber==0.3.3
 mimeparse==0.1.3
 oauth2==1.9.0.post1
-paramiko==1.15.3          # via fabric
 pillow==3.0.0
 psycopg2==2.6.1
-pycrypto==2.6.1           # via paramiko
 pysolr==3.3.2
 python-dateutil==2.4.2    # via django-tastypie
 python-memcached==1.57
@@ -71,7 +66,6 @@ requests==2.8.1           # via pysolr
 shortuuid==0.4.2
 six==1.10.0               # via bleach, django-appconf, django-extensions, html5lib, python-dateutil, python-memcached
 sqlparse==0.1.16          # via django-debug-toolbar
-termcolor==1.1.0
 unicode-slugify==0.1.1    # via django-categories
 unidecode==0.4.18         # via django-filer
 
