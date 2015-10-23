@@ -1,4 +1,4 @@
-{% load static cms_tags sekizai_tags menu_tags storybase_tags i18n compress compile_static %}
+{% load static cms_tags sekizai_tags menu_tags storybase_tags i18n compress %}
 <!doctype html>
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
 <!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
@@ -31,7 +31,7 @@
   var less = { env: 'development' };
   </script>
   {% endaddtoblock %}
-  {% addtoblock "css" %}<link rel="stylesheet" type="text/css" href="{% static 'less/base.less'|compile %}">{% endaddtoblock %}
+  {% addtoblock "css" %}<link rel="stylesheet" type="text/less" href="{{ STATIC_URL }}less/base.less">{% endaddtoblock %}
 
   {% render_block "css" postprocessor "compressor.contrib.sekizai.compress" %}
   <!-- end CSS-->

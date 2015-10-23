@@ -152,7 +152,6 @@ STATICFILES_FINDERS = (
 #    'django.contrib.staticfiles.finders.DefaultStorageFinder',
     # 'media_staticfiles_finder.AppDirectoriesFinderAsMedia',
     'compressor.finders.CompressorFinder',
-    'static_precompiler.finders.StaticPrecompilerFinder',
 )
 
 MIDDLEWARE_CLASSES = [
@@ -240,7 +239,6 @@ INSTALLED_APPS = [
     'django_comments',
     'threadedcomments',
     'notification',
-    'static_precompiler',
     'compressor',
 
     # StoryBase
@@ -364,20 +362,18 @@ FILER_STORAGES = {
 }
 
 COMPRESS_ENABLED = True
+
 COMPRESS_CSS_FILTERS = (
     'compressor.filters.css_default.CssAbsoluteFilter',
     'django_compressor_autoprefixer.AutoprefixerFilter',
 )
 
+COMPRESS_PRECOMPILERS = (
+    ('text/less', 'node_modules/.bin/lessc --source-map-less-inline --source-map-map-inline {infile} {outfile}'),
+)
+
 COMPRESS_AUTOPREFIXER_BINARY = os.path.abspath(os.path.join(PROJECT_PATH, 'node_modules/.bin/postcss'))
 COMPRESS_AUTOPREFIXER_ARGS = '--use autoprefixer -- autoprefixer.browsers "> 5%, ie > 9"'
-
-STATIC_PRECOMPILER_COMPILERS = (
-    ('static_precompiler.compilers.LESS', {
-        'executable': os.path.abspath(os.path.join(PROJECT_PATH, 'node_modules/.bin/lessc')),
-        # 'sourcemap_enabled': True,
-    }),
-)
 
 # define the lookup channels for use with ajax_select
 AJAX_LOOKUP_CHANNELS = {
