@@ -13,7 +13,7 @@ class UserAuthorization(object):
         A valid user must exist, be authenticated and be active.
         """
         if (not hasattr(bundle.request, 'user') or
-            not bundle.request.user.is_authenticated or
+            not bundle.request.user.is_authenticated() or
             not bundle.request.user.is_active):
             raise Unauthorized("You are not allowed to access that resource.")
         else:
