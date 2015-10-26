@@ -7,7 +7,13 @@ def dev():
     env.vassal_name = 'floodlightproject_dev'
     return ['fusionbox@floodlightproject.dev.fusionbox.com']
 
+def live():
+    env.project_name = 'floodlightproject.org'
+    env.vassal_name = 'floodlightproject_live'
+    return ['fusionbox@floodlightproject.org']
+
 env.roledefs['dev'] = dev
+env.roledefs['live'] = live
 
 @task
 @roles('dev')
@@ -16,8 +22,7 @@ def stage(*args, **kwargs):
     Deploy the current branch to the dev server
     """
     from fusionbox.fabric.django.new import stage
-    stage(*args, **kwargs)
-    return npm('install')
+    return stage(*args, **kwargs) and npm('install')
 
 @task
 @roles('live')
@@ -26,8 +31,7 @@ def deploy(*args, **kwargs):
     Deploy the live branch to the live server
     """
     from fusionbox.fabric.django.new import deploy
-    deploy(*args, **kwargs)
-    return npm('install')
+    return deploy(*args, **kwargs) and npm('install')
 
 @task
 def npm(command):
