@@ -32,11 +32,11 @@ class StorybaseModelAdmin(admin.ModelAdmin):
         return super(StorybaseModelAdmin, self).add_view(request, form_url,
            extra_context=extra_context) 
 
-    def change_view(self, request, object_id, extra_context=None):
+    def change_view(self, request, object_id, form_url='', extra_context=None):
         extra_context = extra_context or {}
         extra_context['prefix_inline_classes'] = self.prefix_inline_classes
         return super(StorybaseModelAdmin, self).change_view(request, object_id,
-           extra_context=extra_context) 
+           form_url, extra_context=extra_context) 
 
 
 class StorybaseStackedInline(admin.StackedInline):

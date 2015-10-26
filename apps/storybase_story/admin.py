@@ -44,12 +44,12 @@ class StoryAdmin(StorybaseModelAdmin):
     prefix_inline_classes = ['StoryTranslationInline']
     actions = [toggle_featured]
 
-    def get_object(self, request, object_id):
+    def get_object(self, request, object_id, from_field=None):
         """
         Overridden get_object to make object accessible to other
         ModelAdmin methods via an attribute
         """
-        self.obj = super(StoryAdmin, self).get_object(request, object_id)
+        self.obj = super(StoryAdmin, self).get_object(request, object_id, from_field)
         return self.obj
 
     def save_model(self, request, obj, form, change):
