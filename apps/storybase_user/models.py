@@ -262,8 +262,8 @@ def send_approval_notification(sender, instance, created, **kwargs):
             owner = instance.owners[0]
             site_name = settings.STORYBASE_SITE_NAME
             contact_email = settings.STORYBASE_CONTACT_EMAIL
-            subject = _("%s has been added on %s") % (instance.name, 
-                    site_name)
+            subject = _("%(inst)s has been added on %(site)s" %
+                        {'inst': instance.name, 'site': site_name })
             message = render_to_string('storybase_user/admin_approved_email.txt',
                                        { 'object': instance, 'owner': owner,
                                          'site_name': site_name,
