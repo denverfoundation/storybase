@@ -22,7 +22,8 @@ def stage(*args, **kwargs):
     Deploy the current branch to the dev server
     """
     from fusionbox.fabric.django.new import stage
-    return stage(*args, **kwargs) and npm('install')
+    stage(*args, **kwargs)
+    npm('install')
 
 @task
 @roles('live')
@@ -31,7 +32,8 @@ def deploy(*args, **kwargs):
     Deploy the live branch to the live server
     """
     from fusionbox.fabric.django.new import deploy
-    return deploy(*args, **kwargs) and npm('install')
+    deploy(*args, **kwargs)
+    npm('install')
 
 @task
 def npm(command):
