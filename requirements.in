@@ -22,7 +22,6 @@ django-passwords
 django-registration-redux
 django-reversion==1.8.5
 django-social-auth
-django-static-precompiler
 django-taggit
 django-tastypie
 django-threadedcomments
