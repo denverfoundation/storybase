@@ -188,8 +188,20 @@
       </div>
     </div>
 
+    <div class="popup" id="show-badge">
+    <i class="b-close"></i>
+      <header>
+        <h3 id="show-badge-heading"></h3>
+      </header>
+      <div id="show-badge-body" class="popup-body">
+
+      </div>
+    </div>
+
     <script id="badge-template" type="text/template">
-      <img class="badge" src="<%= icon_uri %>" />
+      <a href="#" title="<%= name %>" >
+        <img class="badge" src="<%= icon_uri %>" />
+      </a>
     </script>
 
     <!-- Grab Google CDN's jQuery, with a protocol relative URL; fall back to local if offline -->
