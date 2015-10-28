@@ -3,8 +3,8 @@ import sys
 
 import dj_database_url
 
-# Dummy Gettext
-ugettext = lambda s: s
+from django.utils.translation import ugettext_lazy as _
+
 
 PROJECT_PATH = os.path.abspath(os.path.dirname(os.path.dirname(__file__)))
 
@@ -158,8 +158,7 @@ MIDDLEWARE_CLASSES = [
     'django.contrib.sessions.middleware.SessionMiddleware',
     # If not using Django CMS, or some other app that has
     # a "catch-all" url regex, just use
-    # 'django.middleware.locale.LocaleMiddleware',
-    'storybase.middleware.LocaleMiddleware',
+    'django.middleware.locale.LocaleMiddleware',
     'django.middleware.common.CommonMiddleware',
     'django.middleware.csrf.CsrfViewMiddleware',
     'django.contrib.auth.middleware.AuthenticationMiddleware',
@@ -323,8 +322,8 @@ LOGGING = {
 }
 
 LANGUAGES = [
-    ('en', ugettext('English')),
-    ('es', ugettext('Spanish')),
+    ('en', _('English')),
+    ('es', _('Spanish')),
 ]
 
 # Don't hide menu items that are untranslated
@@ -425,15 +424,15 @@ ADMIN_GROUP_NAME = 'CA Admin'
 #DEFAULT_FROM_EMAIL = ''
 # The name of the site
 STORYBASE_SITE_NAME = "Your Storybase Site"
-STORYBASE_SITE_DESCRIPTION = ugettext("A powerful story-building website that enables community change makers to inspire action and advance their issues through more substantive, engaging and persuasive data-driven storytelling.")
+STORYBASE_SITE_DESCRIPTION = _("A powerful story-building website that enables community change makers to inspire action and advance their issues through more substantive, engaging and persuasive data-driven storytelling.")
 # The tagline of the site
-STORYBASE_SITE_TAGLINE = ugettext("Your site tagline")
+STORYBASE_SITE_TAGLINE = _("Your site tagline")
 # The title of the organization list view
-STORYBASE_ORGANIZATION_LIST_TITLE = ugettext("Organizations")
+STORYBASE_ORGANIZATION_LIST_TITLE = _("Organizations")
 # The title of the project list view
-STORYBASE_PROJECT_LIST_TITLE = ugettext("Projects")
+STORYBASE_PROJECT_LIST_TITLE = _("Projects")
 # The title of the story exploration view
-STORYBASE_EXPLORE_TITLE = ugettext("Explore")
+STORYBASE_EXPLORE_TITLE = _("Explore")
 # A tuple representing the latitude and longitude of where the story
 # exploration map should be centered
 STORYBASE_MAP_CENTER = (39.74151, -104.98672)
