@@ -13,10 +13,12 @@ class ExtraInfoRegistrationView(RegistrationView):
     """Registration view that collects additional information"""
     form_class = ExtraInfoRegistrationForm
 
-    def register(self, request, **cleaned_data):
-        new_user = super(ExtraInfoRegistrationView, self).register(request, **cleaned_data)
-        new_user.first_name = cleaned_data['first_name']
-        new_user.last_name = cleaned_data['last_name']
+    def register(self, request, form):
+        data = form.cleaned_data
+        new_user = super(ExtraInfoRegistrationView, self).register(request, form)
+        new_user.username = data['username']
+        new_user.first_name = data['first_name']
+        new_user.last_name = data['last_name']
         new_user.save()
         return new_user
 
