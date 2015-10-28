@@ -41,9 +41,15 @@ Start by cloning the project::
     $ git clone https://github.com/denverfoundation/storybase.git
     $ cd storybase
 
-Copy settings from ``settings/default.py`` to ``settings/dev.py``::
+Copy settings from ``settings/local.sample.py`` to ``settings/local.py``::
 
-    $ cp settings/default.py settings/dev.py
+    $ cp settings/local.sample.py settings/local.py
+
+Copy environment variables from ``.env.sample`` to ``.env``::
+
+    $ cp .env.sample .env
+
+Inside ``.env``, set ``DJANGO_SETTINGS_MODULE`` to ``settings.local``.
 
 In a `virtual environment <https://virtualenv.pypa.io/en/latest/>`_, install the dependencies with pip::
 
@@ -53,16 +59,12 @@ In a `virtual environment <https://virtualenv.pypa.io/en/latest/>`_, install the
 Database
 ~~~~~~~~
 
-The database name, user, and password are set in ``settings/dev.py``.
-They are set to a default ``floodlight``.
+The database name, user, and password must be set via `Django Database URL <http://crate.io/packages/dj-database-url/>`_
+as an environment variable inside ``.env``.
 
 After creating a database, you will need to add the postgis extension::
 
     CREATE EXTENSION postgis;
-
-OR::
-
-    # psql floodlight -c "CREATE EXTENSION postgis";
 
 
 Search Platform
@@ -81,9 +83,8 @@ Start by spinning up the Solr system::
     $ cd storybase_solr
     $ java -Dsolr.solr.home=multicore -jar start.jar
 
-Sync and Migrate the database from the codebase directory::
+Migrate the database from the codebase directory::
 
-    $ python manage.py syncdb
     $ python manage.py migrate
 
 Finally, run the app::
