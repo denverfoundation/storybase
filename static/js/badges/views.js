@@ -14,7 +14,10 @@
       this.parent.clickedSubView(event, this);
     },
     render: function() {
-      this.$el.html(this.template(this.model.attributes)).children('a').tooltipster();
+      this.$el.html(this.template(this.model.attributes)).children('a').tooltipster({
+          position: 'bottom',
+          offsetY: -12
+        });
       return this;
     }
   });
