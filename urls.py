@@ -71,7 +71,7 @@ urlpatterns += i18n_patterns('',
 
     # 3rd-party apps
     (r'^accounts/', include('storybase_user.registration.backends.extrainfo.urls')),
-    (r'^accounts/', include('social_auth.urls')),
+    url(r'^accounts/', include('social.apps.django_app.urls', namespace='social')),
     (r'^notices/', include('notification.urls')),
 
     url(r'^$', RedirectView.as_view(url='/home/')),
