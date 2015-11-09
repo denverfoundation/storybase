@@ -11,11 +11,11 @@
 
 <p>{% trans "Already have an account?" %} <a href="{% url "auth_login" %}">{% trans "Sign in here" %}</a>.</p>
 
-{% if social_auth %}
+{% if backends %}
 <h2><span>{% blocktrans %}Join {{ storybase_site_name }} using your favorite social media account{% endblocktrans %}<span></h2>
 <ul>
-  {% for name, value in social_auth.items %}
-  <li><a href="{% url "socialauth_begin" name %}" class="{{ name }}">{% trans "Sign up with" %} {{ name|capfirst }}</a></li>
+  {% for backend in backends.backends %}
+  <li><a href="{% url "social:begin" backend %}" class="{{ backend }}">{% trans "Sign up with" %} {{ backend|capfirst }}</a></li>
   {% endfor %}
 </ul>
 {% endif %}

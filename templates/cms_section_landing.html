@@ -8,10 +8,11 @@
     the Page's teaser.
     {% endcomment %}
     {% placeholder description or %}
-    {% page_attribute "teaser" as teaser %}
+    {% with teaser=current_page.get_title_obj.teaserextension.teaser %}
     {% if teaser %}
     <p class="description teaser">{{ teaser }}</p>
     {% endif %}
+    {% endwith %}
     {% endplaceholder %}
 
     {% placeholder subpages or %}
@@ -26,10 +27,11 @@
       <div class="child-page grid_5 {% cycle 'alpha' 'omega' %}">
         {% page_attribute "title" child_page as title %}
         <h3><a href="{% page_url child_page %}" title="{{ title }}">{{ title }}</a></h3>
-        {% page_attribute "teaser" child_page as teaser %}
+        {% with teaser=child_page.get_title_obj.teaserextension.teaser %}
         {% if teaser %}
         <p class="teaser">{{ teaser }}</p>
         {% endif %}
+        {% endwith %}
       </div> {# /.child-page #}
       {% endif %}
     {% endfor %}

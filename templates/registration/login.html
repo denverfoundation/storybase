@@ -13,11 +13,11 @@
 
 <p><a href="{% url "registration_register" %}">{% trans "Don't have an account? Join now." %}</a></p>
 
-{% if social_auth %}
+{% if backends %}
 <h2><span>{% trans "Sign in using your favorite social media account" %}</span></h2>
 <ul>
-  {% for name, value in social_auth.items %}
-  <li><a href="{% url "socialauth_begin" name %}" class="{{ name }}">{% trans "Sign in with" %} {{ name|capfirst }}</a></li>
+  {% for backend in backends.backends %}
+  <li><a href="{% url "social:begin" backend %}" class="{{ backend }}">{% trans "Sign in with" %} {{ backend|capfirst }}</a></li>
   {% endfor %}
 </ul>
 {% endif %}

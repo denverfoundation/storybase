@@ -4,13 +4,15 @@ from django.core.files import File
 from django.core.urlresolvers import reverse, NoReverseMatch
 from django.db import models
 from django.db.models.signals import post_save, pre_save
-from django.utils.translation import get_language, ugettext_lazy as _
+from django.utils.translation import ugettext_lazy as _
+
+from cms.extensions import TitleExtension
+from cms.extensions.extension_pool import extension_pool
 from cms.models.pluginmodel import CMSPlugin
 from cms.models import Page
-from cms.signals import post_publish
-from cms.utils import i18n
 from filer.fields.image import FilerImageField
 from filer.models import Image 
+
 from storybase.managers import FeaturedManager
 from storybase.utils import unique_slugify
 from storybase.fields import ShortTextField
@@ -18,7 +20,7 @@ from storybase.models import (PermissionMixin, PublishedModel,
         TimestampedModel, TranslatedModel, TranslationModel, 
         set_date_on_published)
 from storybase_user.utils import format_user_name
-from cmsplugin_storybase.managers import TeaserManager
+
 
 class List(CMSPlugin):
     num_items = models.IntegerField(default=3)
@@ -221,109 +223,16 @@ def create_news_item(title, body, image=None, image_filename=None,
     return obj
 
 
-class Teaser(models.Model):
-    """
-    Brief summary of a Page
-
-    This is intended to be used when listing child pages on a top-level
-    page.
-    
-    """
-    teaser = models.TextField(blank=True)
-    language = models.CharField(_("language"), max_length=15, db_index=True)
-    page = models.ForeignKey(Page, verbose_name=_("page"), related_name="teaser_set")
-
-    objects = TeaserManager()
-
-    class Meta:
-        unique_together = (('language', 'page'),)
+class TeaserExtension(TitleExtension):
+    teaser = models.TextField(blank=True,
+        help_text=_("Brief description of the page to be "
+                    "included on parent pages"))
 
     def __unicode__(self):
         return self.teaser
 
+extension_pool.register(TeaserExtension)
 
-class EmptyTeaser(object):
-    """
-    Mock Teaser object 
-    
-    Lets us avoid branching in the admin code 
-    """
-    # This pattern was taken from Django CMS' Title implementation
-    teaser = u''
-
-
-def get_teaser(self, language=None, fallback=True, version_id=None, force_reload=False):
-    """
-    Get the teaser of the page depending on the given language
-    """
-    # This is based largely off of ``cms.models.Page.get_title``
-    # but it doesn't bother with revisions and flattens out
-    # the logic in ``get_title_obj_attribute``,
-    # ``get_title_obj`` and ``_get_title_cache`` into a single
-    # method
-    if not language:
-        language = get_language()
-    load = False
-    if not hasattr(self, 'teaser_cache') or force_reload:
-        # No teasers have been cached. We need to load the
-        # teaser from the database
-        load = True
-        # But first, create the cache attribute
-        self.teaser_cache = {}
-    elif not language in self.teaser_cache:
-        # We have the cache set up, but the desired language
-        # isn't cached.
-        if fallback:
-            # Check if we've cached the teaser in a fallback
-            # language
-            fallback_langs = i18n.get_fallback_languages(language)
-            for lang in fallback_langs:
-                if lang in self.teaser_cache:
-                    # We found a teaser for the fallback
-                    # language.  Return it!
-                    return self.teaser_cache[lang].teaser
-            # We didn't find teasers in any fallback language,
-            # We'll try to load it from the database below
-            load = True
-
-    if load:
-        # Use ``TeaserManager.get_teaser`` to handle
-        # getting the ``Teaser`` instance from the database
-        # wth language fallback
-        teaser = Teaser.objects.get_teaser(self, language, language_fallback=fallback)
-        if teaser:
-            # We found a teaser. Cache it and then return it
-            self.teaser_cache[teaser.language] = teaser
-            return teaser.teaser
-
-    # If all else fails, return an empty string
-    return ""
-
-# Patch the Page Model class to add our getter 
-setattr(Page, 'get_teaser', get_teaser)
-
-def _copy_teasers(self, target):
-    """Copy teasers from one Page to another"""
-    # Based on the implementation of Page._copy_titles()
-    old_teasers = dict(target.teaser_set.values_list('language', 'pk'))
-    for teaser in self.teaser_set.all():
-        # If an old teaser exists, overwrite. Otherwise create new
-        teaser.pk = old_teasers.pop(teaser.language, None)
-        teaser.page = target
-        teaser.save()
-    if old_teasers:
-        Teaser.objects.filter(id__in=old_teasers.values()).delete()
-
-# Patch the Page model class to add a _copy_teasers() method
-setattr(Page, '_copy_teasers', _copy_teasers)
-
-def copy_teasers(sender, instance, **kwargs):
-    """Copy the teasers from a draft page to its corresponding public page"""
-    public_page = instance.publisher_public
-    instance._copy_teasers(public_page)
-
-# When a page is published, copy the teaser from the draft page to 
-post_publish.connect(copy_teasers, sender=Page)
 
 class StoryPlugin(CMSPlugin):
     story = models.ForeignKey('storybase_story.Story', related_name='plugins')

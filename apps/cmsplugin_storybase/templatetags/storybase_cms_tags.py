@@ -5,9 +5,6 @@ from cmsplugin_storybase.settings import STORYBASE_MEGAMENU_ITEMS
 
 register = template.Library()
 
-# Patch the {% page_attribute %} tag to allow it to display the teaser
-PageAttribute.valid_attributes = PageAttribute.valid_attributes + ["teaser",]
-
 def _filter_menu_items(children, allowed_ids=None):
     filtered = []
     for child in children:

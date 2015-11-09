@@ -56,7 +56,7 @@ TEMPLATES = [
                 'django.template.context_processors.request',
                 'cms.context_processors.cms_settings',
                 'sekizai.context_processors.sekizai',
-                'social_auth.context_processors.social_auth_by_name_backends',
+                'social.apps.django_app.context_processors.backends',
                 'storybase.context_processors.conf',
                 'storybase.context_processors.site',
             ],
@@ -234,7 +234,7 @@ INSTALLED_APPS = [
     'categories.editor',
     'tinymce',
     'registration',
-    'social_auth',
+    'social.apps.django_app.default',
     'django_comments',
     'threadedcomments',
     'notification',
@@ -257,24 +257,27 @@ LOGIN_REDIRECT_URL = '/accounts/stories/'
 LOGOUT_URL = '/'
 
 AUTHENTICATION_BACKENDS = (
-    'social_auth.backends.twitter.TwitterBackend',
-    'social_auth.backends.facebook.FacebookBackend',
+    'social.backends.twitter.TwitterOAuth',
+    'social.backends.facebook.FacebookOAuth2',
     'storybase_user.auth.backends.EmailModelBackend',
     # Allow lookup by username, but try email address first
     'django.contrib.auth.backends.ModelBackend',
 )
 
 SOCIAL_AUTH_PIPELINE = (
-    'social_auth.backends.pipeline.social.social_auth_user',
-    'social_auth.backends.pipeline.associate.associate_by_email',
-    'social_auth.backends.pipeline.user.get_username',
-    'social_auth.backends.pipeline.misc.save_status_to_session',
+    'social.pipeline.social_auth.social_details',
+    'social.pipeline.social_auth.social_uid',
+    'social.pipeline.social_auth.auth_allowed',
+    'social.pipeline.social_auth.social_user',
+    'social.pipeline.social_auth.associate_by_email',
+    'social.pipeline.user.get_username',
+    'social.pipeline.partial.save_status_to_session',
     'storybase_user.social_auth.pipeline.redirect_to_form',
     'storybase_user.social_auth.pipeline.get_data_from_user',
-    'social_auth.backends.pipeline.user.create_user',
-    'social_auth.backends.pipeline.social.associate_user',
-    'social_auth.backends.pipeline.social.load_extra_data',
-    'social_auth.backends.pipeline.user.update_user_details',
+    'social.pipeline.user.create_user',
+    'social.pipeline.social_auth.associate_user',
+    'social.pipeline.social_auth.load_extra_data',
+    'social.pipeline.user.user_details'
 )
 SOCIAL_AUTH_NEW_ASSOCIATION_REDIRECT_URL = '/accounts/'
 SOCIAL_AUTH_DISCONNECT_REDIRECT_URL = '/accounts/'

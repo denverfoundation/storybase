@@ -21,7 +21,6 @@ django-notification
 django-passwords
 django-registration-redux
 django-reversion==1.8.5
-django-social-auth
 django-taggit
 django-tastypie
 django-threadedcomments
@@ -32,11 +31,11 @@ geopy
 lxml
 micawber
 mimeparse
-oauth2
 pillow
 psycopg2
 pysolr
 python-memcached
+python-social-auth
 pytz
 raven==5.1
 shortuuid
