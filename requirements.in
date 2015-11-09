@@ -6,7 +6,7 @@ cmsplugin-filer
 cssselect
 dj-database-url
 django-backupdb>=0.6.0
-django-categories
+django-categories==1.3b8
 django-cms>=3.1
 django-compressor
 django-compressor-autoprefixer
