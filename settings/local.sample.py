@@ -5,11 +5,16 @@ To use this, create a `.env` with DJANGO_SETTINGS_MODULE=settings.local
 
 DEBUG = True
 
+INSTALLED_APPS.append('debug_toolbar',)
+
 DEBUG_TOOLBAR_CONFG = {
     'INTERCEPT_REDIRECTS': False,
 }
+DEBUG_TOOLBAR_PATCH_SETTINGS = False
 
-INSTALLED_APPS.append('debug_toolbar',)
+# FIXME: debug toolbar middleware breaks model translation
+# implemented in storybase.models.translation.TranslatedModel
+MIDDLEWARE_CLASSES.append('debug_toolbar.middleware.DebugToolbarMiddleware',)
 
 ALLOWED_HOSTS = ['*']
 

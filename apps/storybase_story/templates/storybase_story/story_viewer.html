@@ -173,8 +173,9 @@
       <header>
         <h3>Add Badge</h3>
       </header>
-      <div id="add-badge-body" class="popup-body">
-
+      <div class="popup-body">
+        <div id="add-badge-body"></div>
+        <p><a href="{% url 'badges' %}" target="_blank">Learn more</a> about Floodlight's badges</p>
       </div>
     </div>
 
@@ -183,9 +184,7 @@
       <header>
         <h3>Remove badge</h3>
       </header>
-      <div id="remove-badge-body" class="popup-body">
-
-      </div>
+      <div id="remove-badge-body" class="popup-body"></div>
     </div>
 
     <div class="popup" id="show-badge">
@@ -195,6 +194,7 @@
       </header>
       <div class="popup-body">
         <p id="show-badge-body"></p>
+        <p><a href="{% url 'badges' %}" target="_blank">Learn more</a> about Floodlight's badges</p>
       </div>
     </div>
 

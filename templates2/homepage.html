@@ -33,7 +33,7 @@
             <form action="{% url 'haystack_search' %}" method="get">
                 <div class="row">
                     <div class="col-sm-4">
-                        <select class="search-select" name="topic_id">
+                        <select class="search-select" name="topic">
                             <option value="">Topic</option>
                             {% for topic in topics %}
                             <option value="{{ topic.id }}">{{ topic.name }}</option>
@@ -42,10 +42,20 @@
                         </select>
                     </div>
                     <div class="col-sm-4">
-                        <select class="search-select" name="place_id">
+                        <select class="search-select" name="place">
                             <option value="">Place</option>
                             {% for place in places %}
                             <option value="{{ place.id }}">{{ place.name }}</option>
+                            {% endfor %}
+                            <option value="">None</option>
+                        </select>
+
+                    </div>
+                    <div class="col-sm-4">
+                        <select class="search-select" name="badge">
+                            <option value="">Badge</option>
+                            {% for badge in badges %}
+                            <option value="{{ badge.id }}">{{ badge.name }}</option>
                             {% endfor %}
                             <option value="">None</option>
                         </select>
@@ -58,6 +68,9 @@
                                class="form-control"
                                placeholder="Search by keyword"
                                autocomplete="off"/>
+                    </div>
+                    <div class="col-sm-4">
+                        <input class="form-control" type="submit" value="{% trans "Search" %}" />
                     </div>
 
                 </div>
