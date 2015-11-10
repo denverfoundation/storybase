@@ -17,6 +17,7 @@ class StoryIndex(indexes.SearchIndex, indexes.Indexable):
     project_ids = indexes.FacetMultiValueField()
     language_ids = indexes.FacetMultiValueField()
     place_ids = indexes.FacetMultiValueField()
+    badge_ids = indexes.FacetMultiValueField()
     points = GeoHashMultiValueField()
     num_points = indexes.IntegerField()
     suggestions = TextSpellField()
@@ -38,6 +39,9 @@ class StoryIndex(indexes.SearchIndex, indexes.Indexable):
 
     def prepare_place_ids(self, obj):
         return [place.place_id for place in obj.inherited_places]
+
+    def prepare_badge_ids(self, obj):
+        return [badge.id for badge in obj.badges.all()]
 
     def prepare_points(self, obj):
         return ["%s,%s" % (point[0], point[1]) for point in obj.points]

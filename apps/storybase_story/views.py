@@ -32,6 +32,7 @@ from storybase_story.api import (ContainerTemplateResource,
 from storybase_story.models import (SectionLayout, Story, StoryRelation,
         StoryTemplate)
 from storybase_taxonomy.models import Category, Tag
+from storybase_badge.models import Badge
 from storybase_user.views import Organization, Project
 
 
@@ -42,6 +43,7 @@ class HomeView(TemplateView):
         context = super(HomeView, self).get_context_data(**kwargs)
         context['topics'] = Category.objects.all()
         context['places'] = Place.objects.all().values('name', 'id')
+        context['badges'] = Badge.objects.all().values('name', 'id')
         # TODO: put StorySearchForm here
 
         return context

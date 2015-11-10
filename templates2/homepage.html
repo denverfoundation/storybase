@@ -52,12 +52,25 @@
 
                     </div>
                     <div class="col-sm-4">
+                        <select class="search-select" name="badge">
+                            <option value="">Badge</option>
+                            {% for badge in badges %}
+                            <option value="{{ badge.id }}">{{ badge.name }}</option>
+                            {% endfor %}
+                            <option value="">None</option>
+                        </select>
+
+                    </div>
+                    <div class="col-sm-4">
                         <input required
                                name="q"
                                type="text"
                                class="form-control"
                                placeholder="Search by keyword"
                                autocomplete="off"/>
+                    </div>
+                    <div class="col-sm-4">
+                        <input class="form-control" type="submit" value="{% trans "Search" %}" />
                     </div>
 
                 </div>

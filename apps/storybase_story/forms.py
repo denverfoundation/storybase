@@ -10,6 +10,7 @@ from tinymce.widgets import TinyMCE
 
 from storybase_geo.models import Place
 from storybase_taxonomy.models import Category
+from storybase_badge.models import Badge
 from storybase.widgets import AdminLongTextInputWidget
 from storybase_story.fields import SectionModelChoiceField
 from storybase_story.models import (Section, SectionRelation,
@@ -120,6 +121,7 @@ class StorySearchForm(SearchForm):
     """
     topic = forms.ModelChoiceField(queryset=Category.objects.all(), required=False)
     place = forms.ModelChoiceField(queryset=Place.objects.all(), required=False)
+    badge = forms.ModelChoiceField(queryset=Badge.objects.all(), required=False)
 
     def search(self):
         sqs = super(StorySearchForm, self).search()
@@ -128,13 +130,15 @@ class StorySearchForm(SearchForm):
             return sqs
 
         topic = self.cleaned_data.get('topic', None)
-
         if topic is not None:
             sqs = sqs.filter(topic_ids__in=[topic.id])
 
         place = self.cleaned_data.get('place', None)
-
         if place is not None:
             sqs = sqs.filter(place_ids__in=[place.id])
+
+        badge = self.cleaned_data.get('badge', None)
+        if badge is not None:
+            sqs = sqs.filter(badge_ids__in=[badge.id])
 
         return sqs
