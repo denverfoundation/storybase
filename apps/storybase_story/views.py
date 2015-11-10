@@ -42,6 +42,7 @@ class HomeView(TemplateView):
         context = super(HomeView, self).get_context_data(**kwargs)
         context['topics'] = Category.objects.all()
         context['places'] = Place.objects.all().values('name', 'id')
+        # TODO: put StorySearchForm here
 
         return context
 

@@ -4,9 +4,12 @@ from django import forms
 from django.utils import translation
 
 from haystack.forms import SearchForm
+from haystack.query import EmptySearchQuerySet
 
 from tinymce.widgets import TinyMCE
 
+from storybase_geo.models import Place
+from storybase_taxonomy.models import Category
 from storybase.widgets import AdminLongTextInputWidget
 from storybase_story.fields import SectionModelChoiceField
 from storybase_story.models import (Section, SectionRelation,
@@ -115,20 +118,23 @@ class StorySearchForm(SearchForm):
     single topic and/or place ID.
 
     """
-    topic_id = forms.IntegerField(required=False)
-    place_id = forms.IntegerField(required=False)
+    topic = forms.ModelChoiceField(queryset=Category.objects.all(), required=False)
+    place = forms.ModelChoiceField(queryset=Place.objects.all(), required=False)
 
     def search(self):
         sqs = super(StorySearchForm, self).search()
 
-        topic_id = self.cleaned_data.get('topic_id', None)
+        if isinstance(sqs, EmptySearchQuerySet):
+            return sqs
 
-        if topic_id is not None:
-            sqs = sqs.filter(topic_ids__in=[topic_id])
+        topic = self.cleaned_data.get('topic', None)
 
-        place_id = self.cleaned_data.get('place_id', None)
+        if topic is not None:
+            sqs = sqs.filter(topic_ids__in=[topic.id])
 
-        if place_id is not None:
-            sqs = sqs.filter(place_ids__in=[place_id])
+        place = self.cleaned_data.get('place', None)
+
+        if place is not None:
+            sqs = sqs.filter(place_ids__in=[place.id])
 
         return sqs

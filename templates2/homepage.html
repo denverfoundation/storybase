@@ -33,7 +33,7 @@
             <form action="{% url 'haystack_search' %}" method="get">
                 <div class="row">
                     <div class="col-sm-4">
-                        <select class="search-select" name="topic_id">
+                        <select class="search-select" name="topic">
                             <option value="">Topic</option>
                             {% for topic in topics %}
                             <option value="{{ topic.id }}">{{ topic.name }}</option>
@@ -42,7 +42,7 @@
                         </select>
                     </div>
                     <div class="col-sm-4">
-                        <select class="search-select" name="place_id">
+                        <select class="search-select" name="place">
                             <option value="">Place</option>
                             {% for place in places %}
                             <option value="{{ place.id }}">{{ place.name }}</option>
