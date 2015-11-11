@@ -13,6 +13,8 @@ EMAIL_HOST = 'ASPMX.L.GOOGLE.COM'
 EMAIL_PORT = 25
 EMAIL_USE_TLS = False
 
+DEFAULT_FROM_EMAIL = 'no-reply@floodlightproject.dev'
+
 # Tell raven to report errors even when debug is True
 RAVEN_CONFIG = {
     'register_signals': True,
