@@ -106,3 +106,11 @@ if settings.DEBUG:
             {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}),
         url(r'', include('django.contrib.staticfiles.urls')),
     )
+    if 'debug_toolbar' in settings.INSTALLED_APPS:
+       try:
+           import debug_toolbar
+           urlpatterns += patterns('',
+               url(r'^__debug__/', include(debug_toolbar.urls)),
+           )
+       except ImportError:
+           pass
