@@ -4,16 +4,16 @@
 #
 #    pip-compile requirements.in
 #
+-e git+https://github.com/fusionbox/django-categories.git@e8ac3c644cc3fba01a08285224b3b30464f3651b#egg=django_categories
 -e git+https://github.com/elpaso/django-dag@74165d7298202818a6b9cb099a322213b2079740#egg=django-dag
 -e git+https://github.com/macropin/django-uuidfield.git@9bd27e96ede8cf770df60808f2c772c48ec73e74#egg=django-uuidfield
 beautifulsoup==3.2.1
 bleach==1.4.2
-cmsplugin-filer==0.10.2
+cmsplugin-filer==1.0.0
 cssselect==0.9.1
 dj-database-url==0.3.0
-django-appconf==1.0.1     # via cmsplugin-filer, django-compressor, django-user-accounts
+django-appconf==1.0.1     # via cmsplugin-filer, django-compressor, pinax-notifications
 django-backupdb==0.6.0
-django-categories==1.3b8
 django-classy-tags==0.6.2  # via django-cms, django-sekizai
 django-cms==3.1.3
 django-compressor-autoprefixer==0.1.0
@@ -22,13 +22,12 @@ django-contrib-comments==1.6.1  # via django-threadedcomments
 django-debug-toolbar==1.4
 django-dotenv==1.3.0
 django-email-bandit==1.0
-django-extensions==1.5.7
-django-filer==0.9.12      # via cmsplugin-filer
+django-extensions==1.5.9
+django-filer==1.0.2       # via cmsplugin-filer
 django-haystack==2.4.1
 django-localflavor==1.1
 django-model-utils==2.3.1
-django-mptt==0.7.4        # via django-categories, django-filer
-django-notification==1.3.3
+django-mptt==0.7.4        # via django-filer
 django-passwords==0.3.4
 django-polymorphic==0.7.2  # via django-filer
 django-registration-redux==1.2
@@ -39,11 +38,10 @@ django-tastypie==0.12.2
 django-threadedcomments==1.0.1
 django-tinymce==2.0.5
 django-treebeard==3.0     # via django-cms
-django-user-accounts==1.2.0  # via django-notification
-django==1.8.5
-djangocms-admin-style==0.2.8  # via django-cms
-djangocms-text-ckeditor==2.6.0
-easy-thumbnails==2.2      # via cmsplugin-filer, django-filer
+django==1.8.6
+djangocms-admin-style==1.0.5  # via django-cms
+djangocms-text-ckeditor==2.7.0
+easy-thumbnails==2.2.1    # via cmsplugin-filer, django-filer
 geopy==1.11.0
 html5lib==0.9999999       # via bleach, django-cms, djangocms-text-ckeditor
 lxml==3.4.4
@@ -51,6 +49,7 @@ micawber==0.3.3
 mimeparse==0.1.3
 oauthlib==1.0.3           # via python-social-auth, requests-oauthlib
 pillow==3.0.0
+pinax-notifications==3.0.0
 psycopg2==2.6.1
 pyjwt==1.4.0              # via python-social-auth
 pysolr==3.3.3
@@ -66,9 +65,9 @@ requests==2.8.1           # via pysolr, python-social-auth, requests-oauthlib
 shortuuid==0.4.2
 six==1.10.0               # via bleach, django-appconf, django-extensions, html5lib, python-dateutil, python-memcached, python-social-auth
 sqlparse==0.1.18          # via django-debug-toolbar
-unicode-slugify==0.1.1    # via django-categories
+unicode-slugify==0.1.1
 unidecode==0.4.18         # via django-filer
 
 # The following packages are commented out because they are
 # considered to be unsafe in a requirements file:
-# setuptools==18.4          # via django-polymorphic
+# setuptools==18.5          # via django-polymorphic

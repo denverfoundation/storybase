@@ -2,8 +2,8 @@ from django.db.models.signals import post_syncdb
 from django.conf import settings
 from django.utils.translation import ugettext_noop as _
 
-if "notification" in settings.INSTALLED_APPS:
-    from notification.models import NoticeType
+if "pinax.notifications" in settings.INSTALLED_APPS:
+    from pinax.notifications.models import NoticeType
 else:
     NoticeType = None 
 

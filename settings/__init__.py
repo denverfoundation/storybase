@@ -237,7 +237,7 @@ INSTALLED_APPS = [
     'social.apps.django_app.default',
     'django_comments',
     'threadedcomments',
-    'notification',
+    'pinax.notifications',
     'compressor',
 
     # StoryBase
