@@ -15,7 +15,7 @@ This template is designed to be included with the ``show_menu`` template tag::
     {% endwith %}
     {% endfor %}
     {% if user.is_authenticated %}
-    <li><a href="{% url "account_summary" %}">{% trans "Hi" %}, {{ user.first_name }}</a></li>
+    <li><a href="{% url "account_summary" %}">{% trans "Hi" %}, {% if user.first_name %}{{ user.first_name }}{% else %}{{ user.username }}{% endif %}</a></li>
     {% else %}
     <li><a href="{% url "auth_login" %}">{% trans "Sign In" %}</a></li>
     {% endif %}

@@ -72,7 +72,7 @@ urlpatterns += i18n_patterns('',
     # 3rd-party apps
     (r'^accounts/', include('storybase_user.registration.backends.extrainfo.urls')),
     url(r'^accounts/', include('social.apps.django_app.urls', namespace='social')),
-    (r'^notices/', include('notification.urls')),
+    (r'^notices/', include('pinax.notifications.urls')),
 
     url(r'^$', RedirectView.as_view(url='/home/')),
 
@@ -106,3 +106,11 @@ if settings.DEBUG:
             {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}),
         url(r'', include('django.contrib.staticfiles.urls')),
     )
+    if 'debug_toolbar' in settings.INSTALLED_APPS:
+       try:
+           import debug_toolbar
+           urlpatterns += patterns('',
+               url(r'^__debug__/', include(debug_toolbar.urls)),
+           )
+       except ImportError:
+           pass

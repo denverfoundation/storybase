@@ -405,7 +405,7 @@ class StoryBuilderView(DetailView):
         to_be_serialized = [{'organization_id': org.organization_id,
                              'name': org.name}
                             for org in self.request.user.organizations.all()]
-        return json.dumps(to_be_serialized);
+        return json.dumps(to_be_serialized, cls=DjangoJSONEncoder);
 
     def get_projects_json(self):
         # TODO: Update this to include "Open Projects"

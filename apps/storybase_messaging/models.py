@@ -20,8 +20,8 @@ from storybase_story.models import Story
 from storybase_user.utils import send_admin_mail
 
 
-if "notification" in settings.INSTALLED_APPS:
-    from notification import models as notification
+if "pinax.notifications" in settings.INSTALLED_APPS:
+    from pinax.notifications import models as notification
 else:
     notification = None
 
