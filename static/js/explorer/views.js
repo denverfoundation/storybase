@@ -514,6 +514,8 @@
       _.each(this.getFilterNames(), function(name) {
         that.clearFilter(name, false);
       });
+      // Remove the query string from the url and replace the history state
+      window.history.replaceState({queryString: ''}, '', '.');
       this.fetchStories();
     },
 
