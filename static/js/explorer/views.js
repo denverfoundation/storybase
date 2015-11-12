@@ -395,11 +395,7 @@
       }
     },
 
-    /**
-     * Get the resource URI including a query string based on the filters
-     */
-    getFilterUri: function() {
-      var filterUri = this.resourceUri;
+    getFilterQueryString: function() {
       var filterStrings = [];
       // Update the querystring based on the pull-down filters
       _.each(this.selectedFilters, function(value, key, list) {
@@ -424,8 +420,19 @@
       if (this.onlyPoints) {
         filterStrings.push("num_points__gt=0");
       }
-      filterUri = filterStrings.length > 0 ? filterUri + '?' : filterUri;
-      filterUri += filterStrings.join("&");
+      return filterStrings.length > 0 ? '?' + filterStrings.join('&') : '';
+    },
+
+    /**
+     * Get the resource URI including a query string based on the filters
+     */
+    getFilterUri: function() {
+      var filterUri = this.resourceUri;
+      var queryString = this.getFilterQueryString.call(this);
+      // Push the query string to the browser history and update the url
+      // to preserve the selected filters on browser's back and forward
+      window.history.replaceState({queryString: queryString}, '', queryString);
+      filterUri += queryString;
       return filterUri;
     },
 
