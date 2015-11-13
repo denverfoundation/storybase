@@ -636,21 +636,12 @@ class StoryWidgetView(Custom404Mixin, VersionTemplateMixin, DetailView):
     * ``storybase_story/widget_404.html``: Template when URL passed to the
       view cannot be resolved.
 
-    **Stylesheet**
-
-    The styles or the widget markup are in ``static/less/widget.less``
-    which is compiled to ``static/css/widget.css`` by running::
-
-        make styles
-
-    in the root directory of this project.
-
     """
 
     # A map of URL names from a URL pattern for a taxonomy term view to
     # the queryset, lookup fields and relationship field of the Story model
     url_name_lookup = {
-        'story_detail': {
+        'story_viewer': {
             'queryset': Story.objects.published(),
             'lookup_fields': {
                 'slug': 'slug',
