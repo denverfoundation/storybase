@@ -100,16 +100,18 @@
             </div>
           {% else %}
             <div id="summary-image">
-
             </div>
-              <div id="summary-text">
-              <h2 class="title">{%trans "Summary" %}</h2>
 
+            <div id="summary-wrap">
+              <h2 class="title">{%trans "Summary" %}</h2>
+              <div id="summary-text">
                   {{ story.summary|safe|linebreaks }}
-                <div id="summary-toc">
-                  <h2>Table of Contents</h2>
-                  {{ story.structure.render_toc }}
-                </div>
+              </div>
+
+              <div id="summary-toc">
+                <h2>Table of Contents</h2>
+                {{ story.structure.render_toc }}
+              </div>
               </div>
 
           {% endif %}

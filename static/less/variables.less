@@ -17,7 +17,7 @@
 @h5-size: (@top-header-size * .5);
 
 // Font families
-@styled-header-family: 'Museo300Regular';
+@styled-header-family: 'Roboto Condensed';//'Museo300Regular';
 
 @layout-padding: 10px;
 
@@ -34,11 +34,39 @@
 @almost-white: #f8f8f8;
 @highlight-blue: #2a88db;
 @visited-blue: desaturate(darken(@highlight-blue, 10%), 20%);
+@blue-xxdark: #111C27;
 @orange: #fe9703;
 
 @error-color: #e66;
 @error-background-color: #f2dede;
 @error-border-color: darken(spin(@error-background-color, -10), 3%);
+
+
+// Tints & Shades
+@black: #000000;
+@black90: rgba(0, 0, 0, .9);
+@black80: rgba(0, 0, 0, .8);
+@black70: rgba(0, 0, 0, .7);
+@black60: rgba(0, 0, 0, .6);
+@black50: rgba(0, 0, 0, .5);
+@black40: rgba(0, 0, 0, .4);
+@black30: rgba(0, 0, 0, .3);
+@black20: rgba(0, 0, 0, .2);
+@black10: rgba(0, 0, 0, .1);
+@black05: rgba(0, 0, 0, .05);
+@black02: rgba(0, 0, 0, .02);
+
+@white: #ffffff;
+@white90: rgba(255, 255, 255, .9);
+@white80: rgba(255, 255, 255, .8);
+@white70: rgba(255, 255, 255, .7);
+@white60: rgba(255, 255, 255, .6);
+@white50: rgba(255, 255, 255, .5);
+@white40: rgba(255, 255, 255, .4);
+@white30: rgba(255, 255, 255, .3);
+@white20: rgba(255, 255, 255, .2);
+@white10: rgba(255, 255, 255, .1);
+@white05: rgba(255, 255, 255, .05);
 
 // note yellow is harder to see so there's a little fudging here
 @warning-color: darken(saturate(spin(@error-color, 60), 25%), 45%);
@@ -74,7 +102,6 @@
 @screen-sm-max: (@screen-md-min - 1);
 
 // Grid
-
 @container-width: @container-md;
 @gutter-width: 20px;
 @num-columns: 12;
