@@ -12,12 +12,9 @@ See documentation for ``storybase_story.views.StoryWidgetView`` for context.
     {# Force IE8 into standards mode. #}
     <meta http-equiv="x-ua-compatible" content="IE=8">
     <script type="text/javascript" src="{{ STATIC_URL }}js/libs/modernizr-2.0.6.min.js"></script>
-    {% if debug %}
-    <link rel="stylesheet/less" type="text/css" href="{{ STATIC_URL }}less/widget.less">
-    <script src="{{ STATIC_URL }}js/libs/less-1.4.1.min.js"></script>
-    {% else %}
-    <link rel="stylesheet" type="text/css" href="{{ STATIC_URL }}css/widget.css">
-    {% endif %}
+    {% compress css %}
+    <link rel="stylesheet" type="text/less" href="{{ STATIC_URL }}less/widget.less">
+    {% endcompress %}
   </head>
   <body>
     <article>
