@@ -2,13 +2,10 @@
 
 // variables
 @import "variables.less";
-
 @import "grid.less";
 // Layout for story section content in the builder/viewer
 @import "story_layout.less";
-
 @import "fonts.less";
-
 @import "mixins.less";
 
 // global stuff
@@ -90,44 +87,37 @@ body.base-template {
 @import "tables.less";
 
 body.base-template {
-	@import "header.less";
-	@import "footer.less";
-	@import "sidebar.less";
-	@import "homepage.less";
-	@import "misc.less";
-	@import "content-page.less";
-	@import "forms.less";
-	@import "comments.less";
-	@import "accounts.less";
-	@import "template-layout.less";
+  @import "header.less";
+  @import "footer.less";
+  @import "sidebar.less";
+  @import "homepage.less";
+  @import "misc.less";
+  @import "content-page.less";
+  @import "forms.less";
+  @import "comments.less";
+  @import "accounts.less";
+  @import "template-layout.less";
 }
 
 @import "megamenu.less";
-
-
 @import "storybase-share.less";
 
 body.story-builder {
-	@import "builder.less";
+  @import "builder.less";
 }
 
 // viewer css already has .story-viewer qualification
 @import "viewer.less";
 
-
 body.explorer {
-	@import "explorer.less";
+  @import "explorer.less";
 }
 
 @import "paging.less";
-
 @import "search.less";
-
 @import "polyfills.less";
 
 // html5-boilerplate helpers want to go after other markup
 @import "helpers.less";
-
 @import "badges.less";
-
 @import "popup.less";
