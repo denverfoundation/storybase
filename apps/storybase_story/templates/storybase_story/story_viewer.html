@@ -38,7 +38,11 @@
     <link rel="stylesheet" href="{{ STATIC_URL }}js/libs/tooltipster-2.1.4/css/tooltipster.css">
     {% endcompress %}
     <!-- end CSS-->
-
+    {% compress css %}
+    <style>#summary-image {
+      background-image: url('{% featured_asset_thumbnail_url story %}');
+      }</style>
+    {% endcompress %}
     <script src="{{ STATIC_URL }}js/libs/respond.min.js"></script>
 
     {% include "storybase/js_error.html" %}
@@ -95,18 +99,18 @@
               {{ story.summary|safe|linebreaks }}
             </div>
           {% else %}
-            <h2 class="title">{%trans "Summary" %}</h2>
             <div id="summary-image">
-              {% featured_asset story %}
-            </div>
-            <div id="summary-text">
-              {{ story.summary|safe|linebreaks }}
-            </div>
-            <div id="summary-toc">
-              <h2>Table of Contents</h2>
-              {{ story.structure.render_toc }}
 
             </div>
+              <div id="summary-text">
+              <h2 class="title">{%trans "Summary" %}</h2>
+
+                  {{ story.summary|safe|linebreaks }}
+                <div id="summary-toc">
+                  <h2>Table of Contents</h2>
+                  {{ story.structure.render_toc }}
+                </div>
+              </div>
 
           {% endif %}
           </section>
