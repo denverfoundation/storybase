@@ -98,11 +98,6 @@ class ExploreStoriesView(TemplateView):
         }
 
 
-class StoryDetailView(ModelIdDetailView):
-    context_object_name = "story"
-    queryset = Story.objects.not_connected()
-
-
 class StoryViewerView(ModelIdDetailView):
     context_object_name = "story"
     queryset = Story.objects.not_connected()

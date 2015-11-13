@@ -4,9 +4,9 @@ from django.conf.urls import patterns, url
 
 from storybase_story.feeds import StoriesFeed, TopicStoriesFeed
 from storybase_story.views import (ExploreStoriesView, 
-    StoryBuilderView, StoryDetailView, StoryViewerView,
-    StoryUpdateView, StoryShareView, StorySharePopupView,
-    StoryEmbedView, StoryEmbedPopupView, HomeView)
+    StoryBuilderView, StoryViewerView, StoryUpdateView,
+    StoryShareView, StorySharePopupView, StoryEmbedView,
+    StoryEmbedPopupView, HomeView)
 
 
 uuid_pattern = settings.UUID_PATTERN
