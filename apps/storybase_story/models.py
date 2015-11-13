@@ -205,9 +205,9 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
     def get_absolute_url(self):
         """Calculate the canonical URL for a Story"""
         if self.slug:
-            return ('story_detail', [self.slug])
+            return ('story_viewer', [self.slug])
 
-        return ('story_detail', [self.story_id])
+        return ('story_viewer', [self.story_id])
 
     def get_share_url(self):
         return urlresolvers.reverse("story_share", kwargs={
