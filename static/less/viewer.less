@@ -96,14 +96,14 @@
   #header {
     min-height: 105px;
     top: 0;
-    .border-box;
+    box-sizing: border-box;
     width: 100%;
     padding: @viewer-bar-padding;
     z-index: 9999;
     position:relative;
 
     color: #fff;
-    background-color: #000;
+    background-color: @blue-xxdark;
 
     .title {
       .viewer-story-title();
@@ -111,8 +111,8 @@
 
     .byline {
       margin: 0;
-      padding: 0 0 2px 0;
-      font-style: italic;
+      padding: 0;
+      margin-left: 10px;
     }
 
     .section-title {
@@ -142,13 +142,15 @@
 
   #tools {
     position:absolute;
-    right:@viewer-bar-padding;
+    right:@viewer-bar-padding*2;
     bottom:@viewer-bar-padding;
-    padding:0 @viewer-bar-padding;
+    padding:4px @viewer-bar-padding;
+    background-color: @white20;
+    border-radius: 5px;
 
     a {
-      font-family: "Museo300Regular";
-      font-size: 14px;
+      font-family: "Roboto Condensed";
+      text-transform: uppercase;
       font-weight: normal;
       color: #fff !important;
       text-decoration: none;
@@ -158,6 +160,10 @@
 
       &:last-of-type {
         margin-right: 0;
+      }
+
+      i {
+        font-size: 11px;
       }
 
       &[data-el="#add-badge"] {
@@ -170,52 +176,126 @@
     .text {
       @media (min-width: @viewer-nav-breakpoint) {
         padding-right: 2px;
+        font-size: 12px;
+        font-weight: 700;
       }
     }
   }
 
   #body {
+    font-family: 'roboto';
     .standard-headers(left);
     .body-copy-lists;
     width: 100%;
-    padding-bottom: 120px;
 
     #summary {
-      padding: 1%;
+      display: block;
+      position: relative;
 
       .title {
         width: 100%;
       }
 
-      #summary-image, #summary-text, #summary-toc {
+      #summary-image, #summary-text {
+        .border-box;
+
+        @media (min-width: @viewer-nav-breakpoint) {
+          width: 50%;
+        }
+      }
+
+      #summary-toc {
         ul {
           padding:0;
           li {
             list-style-type:none;
           }
         }
-
-        @media (min-width: @viewer-nav-breakpoint) {
-          width: 48%;
-          float: left;
-        }
       }
 
       #summary-image .featured-asset {
+        position: fixed;
+        width: 50%;
         margin-right: 0;
         max-width: 100%;
         float:none;
-      }
+        left: 0;
 
-      #summary-image {
-        @media (min-width: @viewer-nav-breakpoint) {
-          padding-right: 4%;
+        img {
+          width: 100%;
         }
       }
 
-      #summary-image, #summary-toc {
-        // Clear footer
-        padding-bottom: 40px;
+      #summary-image {
+        position: static;
+        height: 30vh;
+        background-size: cover;
+        background-position: center;
+
+        @media (min-width: @viewer-nav-breakpoint) {
+          position: fixed;
+          border-right: 1px solid rgba(0,0,0,.05);
+          height: 0;
+          padding-bottom: 50%; // Match width to preserve 1:1 aspect ratio
+        }
+
+      }
+
+      #summary-wrap {
+        padding: 16px 16px 64px 16px;
+
+        @media (min-width: @viewer-nav-breakpoint) {
+          position: relative;
+          left: 50%;
+          padding: 64px;
+          box-sizing: border-box;
+          width: 50%;
+
+          > h2 {
+            padding-left: 16px;
+            font-weight: 900;
+            margin-bottom: 16px;
+          }
+        }
+      }
+
+      #summary-text {
+        width: 100%;
+        margin-bottom: 32px;
+        max-width: 40em;
+
+        p {
+          font-size: 20px;
+          font-weight: 100;
+          font-family: 'Roboto';
+          padding-left: 16px;
+          border-left: 1px solid @black30;
+          line-height: 1.25;
+        }
+
+        i {
+          font-style: normal;
+          font-weight: 100;
+          font-size: 20px;
+          line-height: 1.4;
+        }
+      }
+
+      #summary-toc {
+
+        h2 {
+          font-size: 18px;
+          font-weight: 700;
+          margin-bottom: 16px;
+        }
+
+        li {
+          margin-bottom: 8px;
+
+          a {
+            font-weight: 700;
+          }
+        }
       }
     }
   }
@@ -226,7 +306,11 @@
 
   .section,
   .connected-story {
-    padding: 1%;
+    padding: 32px;
+  }
+
+  .section.summary {
+    padding: 0;
   }
 
   .connected-stories {
@@ -306,7 +390,7 @@
     bottom: 0;
     width: 100%;
     padding: @viewer-bar-padding;
-    background-color: @footer-background-color;
+    background-color: @blue-xxdark;
     z-index: 9999;
 
     .logo {
@@ -501,6 +585,7 @@
     margin-right: 3.8%;
     background: none repeat scroll 0 0 #EEEEEE;
     border: 1px solid #CCCCCC;
+    width: 50%;
   }
 
   a#launch-story-viewer {
