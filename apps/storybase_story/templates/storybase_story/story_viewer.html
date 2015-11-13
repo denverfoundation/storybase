@@ -39,9 +39,11 @@
     {% endcompress %}
     <!-- end CSS-->
     {% compress css %}
-    <style>#summary-image {
-      background-image: url('{% featured_asset_thumbnail_url story %}');
-      }</style>
+    <style>
+      #summary-image {
+        background-image: url('{% featured_asset_thumbnail_url story width=500 height=0 %}');
+      }
+    </style>
     {% endcompress %}
     <script src="{{ STATIC_URL }}js/libs/respond.min.js"></script>
 
