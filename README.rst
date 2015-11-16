@@ -55,6 +55,9 @@ In a `virtual environment <https://virtualenv.pypa.io/en/latest/>`_, install the
 
     $ pip install -r requirements.txt
 
+Install all node packages needed to preprocessing::
+
+    $ npm install
 
 Database
 ~~~~~~~~
