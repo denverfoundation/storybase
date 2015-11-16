@@ -8,7 +8,7 @@ from django.conf import settings
 from django.contrib.auth.decorators import login_required
 from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.core.serializers.json import DjangoJSONEncoder
-from django.core.urlresolvers import resolve, reverse, get_script_prefix
+from django.core.urlresolvers import resolve, reverse, get_script_prefix, Resolver404
 from django.db.models import Q
 from django.http import Http404, HttpResponseRedirect
 from django.utils.decorators import method_decorator
@@ -106,6 +106,21 @@ class StoryViewerView(ModelIdDetailView):
     def get_context_data(self, **kwargs):
         context = super(StoryViewerView, self).get_context_data(**kwargs)
         preview = self.kwargs.get('preview', False)
+        referrer = self.request.META.get('HTTP_REFERER', None)
+        if referrer:
+            try:
+                match = resolve(getattr(urlparse.urlparse(referrer), 'path'))
+                if match.url_name is 'explore_stories':
+                    context['referrer'] = {'caption': _("Back to Explorer Results"),
+                                           'url': referrer}
+                elif match.url_name is 'haystack_search':
+                    context['referrer'] = {'caption': _("Back to Search Results"),
+                                           'url': referrer}
+            except Resolver404:
+                pass
+            except AttributeError:
+                pass
+
         if preview and self.request.user.is_authenticated():
             # Previewing the story in the viewer, include draft
             # connected stories belonging to this user
