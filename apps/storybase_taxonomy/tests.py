@@ -88,7 +88,7 @@ class TagResourceTest(ResourceTestCase):
                          post_data['name'])
         created_obj = Tag.objects.get()
         # Compare the id from the resource URI with the created object
-        self.assertEqual(created_obj.tag_id, returned_id)
+        self.assertEqual(str(created_obj.tag_id), returned_id)
         # Compare the created model instance with the post data
         self.assertEqual(created_obj.name, post_data['name'])
         # Test that the created object is associated with the story
@@ -117,7 +117,7 @@ class TagResourceTest(ResourceTestCase):
         # Confirm that a tag was added to the story
         self.assertEqual(self.story.tags.count(), 1)
         # Confirm the values match
-        self.assertEqual(tag.tag_id, self.deserialize(resp)['tag_id'])
+        self.assertEqual(str(tag.tag_id), self.deserialize(resp)['tag_id'])
         self.assertEqual(tag.name, self.deserialize(resp)['name'])
         story_tag = self.story.tags.get()
         self.assertEqual(story_tag, tag)
