@@ -176,6 +176,7 @@
           {% if referrer %}
           <a class="referrer" href="{{ referrer.url }}">{{ referrer.caption }}</a>
           {% endif %}
+          <a class="explorer" href="{% url 'explore_stories' %}">{% trans "Explore More Stories" %}</a>
           <nav id="toc">
             {{ story.structure.render_toc }}
             <button id="toggle-toc">
