@@ -97,7 +97,7 @@
           </div>
 
           <h1 class="title">{{ story.title }}</h1>
-          <p class="byline">{% trans "By" %} {% if story.byline %}{{ story.byline }}{% else %}{{ story.contributor_name }}{% endif %}</p>
+          <p class="byline">{% if story.byline %}{{ story.byline }}{% else %}{{ story.contributor_name }}{% for organization in story.organizations.all %}{% if forloop.first %} | {% else %}, {% endif %}{{ organization.name }}{% endfor %}{% endif %}</p>
 
         </header>
 
@@ -118,16 +118,37 @@
             </div>
 
             <div id="summary-wrap">
+              <div class="summary-title">
+                <h1 class="title">{{ story.title }}</h1>
+                <p class="byline">
+                {% if story.contributor_name %}
+                <a class="contributor" href="{{ story.author.get_profile.get_absolute_url }}" title="{{ story.contributor_name }}">{{ story.contributor_name }}</a>
+                {% endif %}
+                {% if story.organizations.count %}
+                {% for organization in story.organizations.all %}{% if forloop.first %} | {% else %}, {% endif %}<a href="{{ organization.get_absolute_url }}">{{ organization.name }}</a>{% endfor %}
+                {% endif %}
+                </p>
+              </div>
+              <div class="summary-meta">
+                {% if story.published %}
+                <p class="published">{% trans "Published" %} <time>{{ story.published|date:"SHORT_DATE_FORMAT" }}</time></p>
+                {% endif %}
+                {% if story.places.count %}
+                <p class="places">{% for place in story.places.all %}<a href="{{ place.get_absolute_url }}">{{ place.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+                {% endif %}
+                {% if story.topics.count %}
+                <p class="topics">{% trans "Topics" %}: {% for topic in story.topics_with_links %}<a href="{{ topic.url }}">{{ topic.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+                {% endif %}
+              </div>
               <h2 class="title">{%trans "Summary" %}</h2>
               <div id="summary-text">
                   {{ story.summary|safe|linebreaks }}
               </div>
-
               <div id="summary-toc">
                 <h2>Table of Contents</h2>
                 {{ story.structure.render_toc }}
               </div>
-              </div>
+            </div>
 
           {% endif %}
           </section>
