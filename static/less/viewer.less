@@ -167,8 +167,9 @@
       }
 
       &[data-el="#add-badge"] {
-          border: 2px solid white;
-          padding: 1px 7px;
+          border: 1px solid white;
+          padding: 2px 8px 3px 8px;
+          line-height: 1;
           border-radius: 14px;
       }
     }
@@ -228,9 +229,10 @@
 
       #summary-image {
         position: static;
-        height: 30vh;
+        height: 450px;
         background-size: cover;
         background-position: center;
+        border-bottom: 1px solid @black10;
 
         @media (min-width: @viewer-nav-breakpoint) {
           position: fixed;
@@ -263,13 +265,13 @@
         width: 100%;
         margin-bottom: 32px;
         max-width: 40em;
+        border-left: 1px solid @black30;
 
         p {
-          font-size: 20px;
-          font-weight: 100;
+          font-size: 18px;
+          font-weight: 300;
           font-family: 'Roboto';
           padding-left: 16px;
-          border-left: 1px solid @black30;
           line-height: 1.25;
         }
 
@@ -395,7 +397,8 @@
 
     .logo {
       position:absolute;
-      right:30px;
+      right: 20px;
+      bottom: 5px;
       display:block;
 
       background-image: url(../img/viewer-logo.png);
@@ -421,6 +424,7 @@
     .button-reset;
     position: relative;
     color: #fff;
+    min-width: 200px;
 
     .bars {
       float: left;
@@ -438,13 +442,19 @@
 
   #toc {
     position: fixed;
-    left: 0;
+    right: 260px;
     bottom: 0;
+    float: left;
     padding: @viewer-bar-padding;
     overflow: hidden;
-
     color: #fff;
     background-color: @footer-background-color;
+
+    .text {
+      text-transform: uppercase;
+      font-weight: 700;
+      margin-right: 5px;
+    }
 
     .story-toc {
       display: none;
@@ -486,6 +496,12 @@
     }
   }
 
+  .referrer,
+  .explorer {
+    color: @white;
+    float: left;
+  }
+
   #story-nav {
     color: #fff;
     text-align: center;
@@ -493,14 +509,16 @@
     margin-right: auto;
     padding: 0;
 
+
     a {
       text-decoration: none;
       color: #fff;
 
       @media (min-width: @viewer-nav-breakpoint) {
-        width: 80px;
+        width: 40px;
         display: inline-block;
-        border: 1px solid #fff;
+        background: @white10;
+        margin: 0;
         .rounded-corners(4px);
 
         &:hover, &:focus {
@@ -539,9 +557,10 @@
 
     .location {
       display: inline-block;
-      font-size:.8em;
-      padding:0 1em;
+      font-size:1em;
+      padding:0 .75em;
       color:@light-gray;
+      font-weight: 700;
     }
   }
 
@@ -558,7 +577,6 @@
   iframe.sandboxed-asset {
     border:none;
   }
-
 
   // from here down to end of .story-viewer block copied from old style.css.
   // these are probably applicable in more places than in story-viewer.
