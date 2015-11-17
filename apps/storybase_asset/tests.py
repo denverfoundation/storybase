@@ -713,7 +713,7 @@ class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
                          post_data['links_to_file'])
         created_dataset = DataSet.objects.get_subclass()
         # Compare the id from the resource URI with the created dataset
-        self.assertEqual(created_dataset.dataset_id, returned_id)
+        self.assertEqual(str(created_dataset.dataset_id), returned_id)
         # Compare the created model instance with the post data
         self.assertEqual(created_dataset.title, post_data['title'])
         self.assertEqual(created_dataset.description, post_data['description'])
@@ -775,7 +775,7 @@ class DataSetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
                          post_data['description'])
         created_dataset = DataSet.objects.get_subclass()
         # Compare the id from the resource URI with the created dataset
-        self.assertEqual(created_dataset.dataset_id, returned_id)
+        self.assertEqual(str(created_dataset.dataset_id), returned_id)
         # Compare the created model instance with the post data
         self.assertEqual(created_dataset.title, post_data['title'])
         self.assertEqual(created_dataset.description, post_data['description'])
@@ -1481,8 +1481,8 @@ class AssetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         self.assertEqual(len(self.deserialize(resp)['objects']), 2)
         asset_ids = [asset['asset_id'] for asset 
                      in self.deserialize(resp)['objects']]
-        self.assertIn(asset1.asset_id, asset_ids)
-        self.assertIn(asset2.asset_id, asset_ids)
+        self.assertIn(str(asset1.asset_id), asset_ids)
+        self.assertIn(str(asset2.asset_id), asset_ids)
         self.assertEqual(self.get_response_asset(resp, asset1.asset_id)['body'],
                          asset1.body)
         self.assertEqual(self.get_response_asset(resp, asset2.asset_id)['url'],
@@ -1504,7 +1504,7 @@ class AssetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)['objects']), 1)
         self.assertEqual(self.deserialize(resp)['objects'][0]['asset_id'],
-                         asset1.asset_id)
+                         str(asset1.asset_id))
 
     def test_get_list_published_drafts(self):
         """Test that a user's own unpublished assets appear in the list"""
@@ -1519,7 +1519,7 @@ class AssetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)['objects']), 1)
         self.assertEqual(self.deserialize(resp)['objects'][0]['asset_id'],
-                         asset1.asset_id)
+                         str(asset1.asset_id))
 
     def test_get_detail_image(self):
         """Test getting the details for a locally-stored image asset"""
@@ -1771,6 +1771,7 @@ class AssetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         self.api_client.client.login(username=self.username, password=self.password)
         response = self.api_client.post('/api/0.1/assets/',
                                format='json', data=post_data)
+
         self.assertHttpCreated(response)
         self.assertEqual(Asset.objects.count(), 1)
         created_asset = Asset.objects.get_subclass()
@@ -1911,9 +1912,9 @@ class AssetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         self.assertEqual(len(self.deserialize(resp)['objects']), 2)
         asset_ids = [asset['asset_id'] for asset 
                      in self.deserialize(resp)['objects']]
-        self.assertIn(asset1.asset_id, asset_ids)
-        self.assertIn(asset2.asset_id, asset_ids)
-        self.assertNotIn(asset3.asset_id, asset_ids)
+        self.assertIn(str(asset1.asset_id), asset_ids)
+        self.assertIn(str(asset2.asset_id), asset_ids)
+        self.assertNotIn(str(asset3.asset_id), asset_ids)
 
     def test_get_list_for_section(self):
         """Test getting assets for a single section"""
@@ -1949,10 +1950,10 @@ class AssetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         self.assertEqual(len(self.deserialize(resp)['objects']), 2)
         self.assertEqual(
             self.deserialize(resp)['objects'][0]['asset_id'],
-            asset1.asset_id)
+            str(asset1.asset_id))
         self.assertEqual(
             self.deserialize(resp)['objects'][1]['asset_id'],
-            asset2.asset_id)
+            str(asset2.asset_id))
         self.assertEqual(
             self.deserialize(resp)['objects'][0]['type'],
             asset1.type)
@@ -1998,7 +1999,7 @@ class AssetResourceTest(DataUrlMixin, FileCleanupMixin, ResourceTestCase):
         self.assertEqual(len(self.deserialize(resp)['objects']), 1)
         self.assertEqual(
             self.deserialize(resp)['objects'][0]['asset_id'],
-            asset3.asset_id)
+            str(asset3.asset_id))
         self.assertEqual(
             self.deserialize(resp)['objects'][0]['type'],
             asset3.type)
@@ -2185,7 +2186,7 @@ class AssetResourceFeaturedTest(FileCleanupMixin, ResourceTestCase):
         resp = self.api_client.get(uri, format='json')
         self.assertValidJSONResponse(resp)
         self.assertEqual(len(self.deserialize(resp)['objects']), 1)
-        self.assertEqual(self.deserialize(resp)['objects'][0]['asset_id'], asset2.asset_id)
+        self.assertEqual(self.deserialize(resp)['objects'][0]['asset_id'], str(asset2.asset_id))
 
     def test_put_list(self):
         asset_type = 'image'

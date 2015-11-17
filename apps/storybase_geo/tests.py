@@ -308,7 +308,7 @@ class LocationResourceTest(ResourceTestCase):
                          post_data['lng'])
         created_obj = Location.objects.get()
         # Compare the id from the resource URI with the created object
-        self.assertEqual(created_obj.location_id, returned_id)
+        self.assertEqual(str(created_obj.location_id), returned_id)
         # Compare the created model instance with the post data
         self.assertEqual(created_obj.name, post_data['name'])
         self.assertEqual(created_obj.lat, post_data['lat'])
