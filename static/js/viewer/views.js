@@ -130,7 +130,7 @@
       // Add the view's container element to the DOM and render the sub-views
       render: function() {
         this.$el.addClass(this.attributes['class']);
-        this.$('footer').append(this.navigationView.el);
+        this.$('footer>.explorer').after(this.navigationView.el);
         this.navigationView.render();
         this.$('.summary').show();
         this.$('.section').show();
