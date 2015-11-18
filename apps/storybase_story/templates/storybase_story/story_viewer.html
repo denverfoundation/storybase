@@ -68,147 +68,138 @@
 
   <body class="story-viewer">
     <div id="app">
-        <header id="header">
+      <header id="header">
+        <div class="pull-right">
+          <div id="badges"></div>
+        </div>
 
-          <div class="pull-right">
+        <div id="tools">
+          <a href="{{ story.get_share_url }}" title="{% trans "Share This Story"%}" class="tip storybase-share-link" data-options='{"appendeeSelector": "#app", "alignment": "bottom right" }'>
+            <span class="text">{% trans "Share This Story" %}</span> <i class="icon-share"></i>
+          </a>
+          {% if user.userprofile.badges.count > 0 %}
+          <a href="#" class="popup-container" data-el="#add-badge">
+            <span class="text">Add badge</span> <i class="icon-plus"></i>
+          </a>
+          <a href="#" class="popup-container" data-el="#remove-badge">
+            <span class="text">Remove badge</span> <i class="icon-minus"></i>
+          </a>
+          {% endif %}
+        </div>
 
-            <div id="badges">
+        <h1 class="title">{{ story.title }}</h1>
+        <p class="byline">{% if story.byline %}{{ story.byline }}{% else %}{{ story.contributor_name }}{% for organization in story.organizations.all %}{% if forloop.first %} | {% else %}, {% endif %}{{ organization.name }}{% endfor %}{% endif %}</p>
+      </header>
 
-            </div>
-
-          </div>
-
-          <div id="tools">
-              <a href="{{ story.get_share_url }}" title="{% trans "Share This Story"%}" class="tip storybase-share-link" data-options='{"appendeeSelector": "#app", "alignment": "bottom right" }'>
-                <span class="text">{% trans "Share This Story" %}</span> <i class="icon-share"></i>
-              </a>
-
-              {% if user.userprofile.badges.count > 0 %}
-              <a href="#" class="popup-container" data-el="#add-badge">
-                <span class="text">Add badge</span> <i class="icon-plus"></i>
-              </a>
-
-              <a href="#" class="popup-container" data-el="#remove-badge">
-                <span class="text">Remove badge</span> <i class="icon-minus"></i>
-              </a>
-              {% endif %}
-
-          </div>
-
-          <h1 class="title">{{ story.title }}</h1>
-          <p class="byline">{% if story.byline %}{{ story.byline }}{% else %}{{ story.contributor_name }}{% for organization in story.organizations.all %}{% if forloop.first %} | {% else %}, {% endif %}{{ organization.name }}{% endfor %}{% endif %}</p>
-
-        </header>
-
-        <div id="body">
-          {% if story.summary %}
-          <section id="summary" class="section summary" style="display: none;">
+      <div id="body">
+        {% if story.summary %}
+        <section id="summary" class="section summary" style="display: none;">
           {% comment %}
           HACK: Different markup for different story structures.  The
           ``#summary-text`` element gets moved inside a dynamically created
           sidebar by JavaScript.
           {% endcomment %}
           {% if story.structure_type == "spider" %}
-            <div id="summary-text">
-              {{ story.summary|safe|linebreaks }}
-            </div>
+          <div id="summary-text">
+            {{ story.summary|safe|linebreaks }}
+          </div>
           {% else %}
-            <div id="summary-image">
-            </div>
+          <div id="summary-image">
+          </div>
 
-            <div id="summary-wrap">
-              <div class="summary-title">
-                <h1 class="title">{{ story.title }}</h1>
-                <p class="byline">
+          <div id="summary-wrap">
+            <div class="summary-title">
+              <h1 class="title">{{ story.title }}</h1>
+              <p class="byline">
                 {% if story.contributor_name %}
                 <a class="contributor" href="{{ story.author.get_profile.get_absolute_url }}" title="{{ story.contributor_name }}">{{ story.contributor_name }}</a>
                 {% endif %}
                 {% if story.organizations.count %}
                 {% for organization in story.organizations.all %}{% if forloop.first %} | {% else %}, {% endif %}<a href="{{ organization.get_absolute_url }}">{{ organization.name }}</a>{% endfor %}
                 {% endif %}
-                </p>
-              </div>
-              <div class="summary-meta">
-                {% if story.published %}
-                <p class="published">{% trans "Published" %} <time>{{ story.published|date:"SHORT_DATE_FORMAT" }}</time></p>
-                {% endif %}
-                {% if story.places.count %}
-                <p class="places">{% for place in story.places.all %}<a href="{{ place.get_absolute_url }}">{{ place.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</p>
-                {% endif %}
-                {% if story.topics.count %}
-                <p class="topics">{% trans "Topics" %}: {% for topic in story.topics_with_links %}<a href="{{ topic.url }}">{{ topic.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</p>
-                {% endif %}
-              </div>
-              <h2 class="title">{%trans "Summary" %}</h2>
-              <div id="summary-text">
-                  {{ story.summary|safe|linebreaks }}
-              </div>
-              <div id="summary-toc">
-                <h2>Table of Contents</h2>
-                {{ story.structure.render_toc }}
-              </div>
+              </p>
             </div>
-
-          {% endif %}
-          </section>
-          {% endif %}
-
-          {% for section in story.structure.sections_flat %}
-          <section id="{{ section.section_id }}" class="section" style="display:none;">
-              {{ section.render }}
-          </section>
-          {% endfor %}
-
-          {% if story.call_to_action or story.allow_connected %}
-          <section id="call-to-action" class="section call-to-action" style="display:none;">
-	        <h2 class="title">{% trans "How Can You Help?" %}</h2>
-	        {{ story.call_to_action|safe }}
-            {% if story.allow_connected %}
-            <p>{{ story.connected_prompt|safe|linebreaks }}</p>
-            {# TODO: Style the links to the connected story builder as buttons #}
-            <p><a href="{% url "connected_story_builder" source_slug=story.slug %}" class="external" data-new-window-name="connectedBuilder">{% trans "Click here to contribute to this story" %}</a></p>
-            {% endif %}
-	      </section>
-	      {% endif %}
-
-          {% if story.allow_connected and connected_stories %}
-          <section id="connected-stories" class="section connected-stories" style="display: none;">
-            <h2 class="title">{% trans "Connected Stories" %}</h2>
-            {% for cs in connected_stories %}
-            <div class="connected-story-item">
-                {% featured_asset cs 100 %}
-                <h3><a href="#connected-stories/{{ cs.story_id }}">{{ cs.title }}</a></h3>
-                <p class="byline">{% trans "By" %} {{ cs.byline|default:cs.contributor_name }}</p>
+            <div class="summary-meta">
+              {% if story.published %}
+              <p class="published">{% trans "Published" %} <time>{{ story.published|date:"SHORT_DATE_FORMAT" }}</time></p>
+              {% endif %}
+              {% if story.places.count %}
+              <p class="places">{% for place in story.places.all %}<a href="{{ place.get_absolute_url }}">{{ place.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+              {% endif %}
+              {% if story.topics.count %}
+              <p class="topics">{% trans "Topics" %}: {% for topic in story.topics_with_links %}<a href="{{ topic.url }}">{{ topic.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+              {% endif %}
             </div>
-            {% endfor %}
-          </section>
+            <h2 class="title">{%trans "Summary" %}</h2>
+            <div id="summary-text">
+              {{ story.summary|safe|linebreaks }}
+            </div>
+            <div id="summary-toc">
+              <h2>Table of Contents</h2>
+              {{ story.structure.render_toc }}
+            </div>
+          </div>
+          {% endif %}
+        </section>
+        {% endif %}
 
+        {% for section in story.structure.sections_flat %}
+        <section id="{{ section.section_id }}" class="section" style="display:none;">
+          {{ section.render }}
+        </section>
+        {% endfor %}
+
+        {% if story.call_to_action or story.allow_connected %}
+        <section id="call-to-action" class="section call-to-action" style="display:none;">
+          <h2 class="title">{% trans "How Can You Help?" %}</h2>
+          {{ story.call_to_action|safe }}
+          {% if story.allow_connected %}
+          <p>{{ story.connected_prompt|safe|linebreaks }}</p>
+          {# TODO: Style the links to the connected story builder as buttons #}
+          <p><a href="{% url "connected_story_builder" source_slug=story.slug %}" class="external" data-new-window-name="connectedBuilder">{% trans "Click here to contribute to this story" %}</a></p>
+          {% endif %}
+        </section>
+        {% endif %}
+
+        {% if story.allow_connected and connected_stories %}
+        <section id="connected-stories" class="section connected-stories" style="display: none;">
+          <h2 class="title">{% trans "Connected Stories" %}</h2>
           {% for cs in connected_stories %}
-          <section id="connected-story-{{ cs.story_id }}" class="connected-story" style="display:none;">
-            {% connected_story cs %}
-          </section>
+          <div class="connected-story-item">
+            {% featured_asset cs 100 %}
+            <h3><a href="#connected-stories/{{ cs.story_id }}">{{ cs.title }}</a></h3>
+            <p class="byline">{% trans "By" %} {{ cs.byline|default:cs.contributor_name }}</p>
+          </div>
           {% endfor %}
-          {% endif %}
-        </div>
+        </section>
 
-        <footer id="footer">
-          {% if referrer %}
-          <a class="referrer" href="{{ referrer.url }}">{{ referrer.caption }}</a>
-          {% endif %}
-          <a class="explorer" href="{% url 'explore_stories' %}">{% trans "Explore More Stories" %}</a>
-          <nav id="toc">
-            {{ story.structure.render_toc }}
-            <button id="toggle-toc">
-              <span class="bars">
-                <span class="bar"></span>
-                <span class="bar"></span>
-                <span class="bar"></span>
-              </span>
-              <span class="text">Table of Contents</span>
-              <i class="icon-caret-up"></i></button>
-          </nav>
-          <a class="logo" href="/" title="{{ storybase_site_name }}"><span>{{ storybase_site_name }}</span></a>
-        </footer>
+        {% for cs in connected_stories %}
+        <section id="connected-story-{{ cs.story_id }}" class="connected-story" style="display:none;">
+          {% connected_story cs %}
+        </section>
+        {% endfor %}
+        {% endif %}
+      </div>
+
+      <footer id="footer">
+        {% if referrer %}
+        <a class="referrer" href="{{ referrer.url }}">{{ referrer.caption }}</a>
+        {% endif %}
+        <a class="explorer" href="{% url 'explore_stories' %}">{% trans "Explore More Stories" %}</a>
+        <nav id="toc">
+          {{ story.structure.render_toc }}
+          <button id="toggle-toc">
+            <span class="bars">
+              <span class="bar"></span>
+              <span class="bar"></span>
+              <span class="bar"></span>
+            </span>
+            <span class="text">Table of Contents</span>
+            <i class="icon-caret-up"></i>
+          </button>
+        </nav>
+        <a class="logo" href="/" title="{{ storybase_site_name }}"><span>{{ storybase_site_name }}</span></a>
+      </footer>
     </div>
 
     {% include "analytics.html" %}
@@ -225,7 +216,7 @@
     </div>
 
     <div class="popup" id="remove-badge">
-    <i class="b-close"></i>
+      <i class="b-close"></i>
       <header>
         <h3>Remove badge</h3>
       </header>
@@ -233,7 +224,7 @@
     </div>
 
     <div class="popup" id="show-badge">
-    <i class="b-close"></i>
+      <i class="b-close"></i>
       <header>
         <h3 id="show-badge-heading"></h3>
       </header>
@@ -266,7 +257,6 @@
     {% compress js %}
     <script src="{{ STATIC_URL }}js/jquery.storybaseshare.js"></script>
 
-
     <script src="{{ STATIC_URL }}js/storybase.js"></script>
     <script src="{{ STATIC_URL }}js/models.js"></script>
     <script src="{{ STATIC_URL }}js/utils.js"></script>
@@ -279,12 +269,10 @@
     <script src="{{ STATIC_URL }}js/badges/application.js"></script>
     <script src="{{ STATIC_URL }}js/badges/models.js"></script>
     <script src="{{ STATIC_URL }}js/badges/views.js"></script>
-
-
     {% endcompress %}
 
     <script type="text/javascript">
-    $(document).ready(function() {
+      $(document).ready(function() {
         storybase.API_ROOT = '/api/0.1/';
 
         var storyStructureType = '{{ story.structure_type }}';
@@ -380,7 +368,6 @@
 
             removeableView.render();
           }
-
         });
 
 
@@ -389,32 +376,32 @@
         sections.reset({{ sections_json }});
 
         if (viewerContext == 'iframe') {
-            storybase.viewer.router = null;
+          storybase.viewer.router = null;
         }
         else {
-            storybase.viewer.router = new storybase.viewer.routers.Router();
+          storybase.viewer.router = new storybase.viewer.routers.Router();
         }
 
         storybase.viewer.app = storybase.viewer.views.getViewerApp(
-            storyStructureType,
-            {
-                el: $('#app'),
-                router: storybase.viewer.router,
-                story: story,
-                sections: sections
-            }
+          storyStructureType,
+          {
+            el: $('#app'),
+            router: storybase.viewer.router,
+            story: story,
+            sections: sections
+          }
         );
 
         if (storybase.viewer.router) {
-            // Start history only after the main view has been initialized so
-            // the route event listeners have been wired up
-            Backbone.history.start();
+          // Start history only after the main view has been initialized so
+          // the route event listeners have been wired up
+          Backbone.history.start();
         }
 
         $('#tools a.tip').tooltipster();
 
         storybase.viewer.app.render();
-    });
+      });
     </script>
   </body>
 </html>
