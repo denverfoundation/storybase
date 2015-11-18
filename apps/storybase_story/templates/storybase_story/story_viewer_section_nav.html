@@ -1,0 +1,11 @@
+{% load i18n %}
+
+<nav class="story-nav">
+  {% if section.previous_section_id %}
+  <a class="previous" href="#sections/{{ section.previous_section_id }}" title="{% trans 'Previous Section' %}"><i class="icon-chevron-left"></i></a>
+  {% endif %}
+  <div class="location">{{ forloop.counter }} / {{ sections|length }}</div>
+  {% if section.next_section_id %}
+  <a class="next" href="#sections/{{ section.next_section_id }}" title="{% trans 'Next Section' %}"><i class="icon-chevron-right"></i></a>
+  {% endif %}
+</nav>

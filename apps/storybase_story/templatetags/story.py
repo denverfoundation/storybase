@@ -6,7 +6,7 @@ from django.core.exceptions import MultipleObjectsReturned, ObjectDoesNotExist
 from storybase.utils import latest_context
 from storybase_asset.models import Asset
 from storybase_story.banner import registry as banner_registry
-from storybase_story.models import Story
+from storybase_story.models import Story, Section
 
 logger = logging.getLogger('storybase')
 
@@ -60,10 +60,13 @@ def featured_stories():
         'objects': [obj.normalize_for_view(300) for obj in Story.objects.filter(on_homepage=True).order_by('-published')]
     }
 
+@register.assignment_tag
+def section(section_id):
+    return Section.objects.get(section_id=section_id)
+
 @register.simple_tag
 def connected_story_section(section):
     return section.render(show_title=False)
-
 
 @register.simple_tag
 def banner(banner_id=None, **kwargs):

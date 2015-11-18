@@ -107,15 +107,12 @@ class BaseStructure(object):
     def sections_flat(self):
         return self._sections_flat
 
-    def sections_json(self, include_summary=True, include_call_to_action=True,
-            connected_stories=None):
-        """Return a JSON representation of the story sections
+    def sections(self, include_summary=True, include_call_to_action=True,
+                 connected_stories=None):
+        """Return a simple representation of the story sections
 
         This representation doesn't include the content of sections, just
         their titles, IDs and the relationship with other sections.
-
-        This is useful for calling from templates to bootstrap a Backbone
-        collection.
 
         Keyword arguments:
         include_summary -- Include the story summary as the first section 
@@ -165,6 +162,18 @@ class BaseStructure(object):
                 sections[-1]['next_section_id'] = 'connected-stories'
                 sections.append(connected_stories_section)
 
+        return sections
+
+    def sections_json(self, include_summary=True, include_call_to_action=True,
+                      connected_stories=None):
+        """Return a JSON representation of the story sections
+
+        This is useful for calling from templates to bootstrap a Backbone
+        collection.
+
+        """
+        sections = self.sections(include_summary, include_call_to_action,
+                                 connected_stories)
         return mark_safe(json.dumps(sections, cls=DjangoJSONEncoder))
 
     def get_next_section(self, section):

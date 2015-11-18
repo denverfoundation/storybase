@@ -92,7 +92,9 @@
       </header>
 
       <div id="body">
-        {% if story.summary %}
+        {% with sections=story.structure.sections %}
+        {% for section in sections %}
+        {% if section.section_id == "summary" %}
         <section id="summary" class="section summary" style="display: none;">
           {% comment %}
           HACK: Different markup for different story structures.  The
@@ -138,18 +140,12 @@
               <h2>Table of Contents</h2>
               {{ story.structure.render_toc }}
             </div>
+            {% include "storybase_story/story_viewer_section_nav.html" %}
           </div>
           {% endif %}
         </section>
-        {% endif %}
 
-        {% for section in story.structure.sections_flat %}
-        <section id="{{ section.section_id }}" class="section" style="display:none;">
-          {{ section.render }}
-        </section>
-        {% endfor %}
-
-        {% if story.call_to_action or story.allow_connected %}
+        {% elif section.section_id == "call-to-action" %}
         <section id="call-to-action" class="section call-to-action" style="display:none;">
           <h2 class="title">{% trans "How Can You Help?" %}</h2>
           {{ story.call_to_action|safe }}
@@ -158,10 +154,10 @@
           {# TODO: Style the links to the connected story builder as buttons #}
           <p><a href="{% url "connected_story_builder" source_slug=story.slug %}" class="external" data-new-window-name="connectedBuilder">{% trans "Click here to contribute to this story" %}</a></p>
           {% endif %}
+          {% include "storybase_story/story_viewer_section_nav.html" %}
         </section>
-        {% endif %}
 
-        {% if story.allow_connected and connected_stories %}
+        {% elif section.section_id == "connected-stories" %}
         <section id="connected-stories" class="section connected-stories" style="display: none;">
           <h2 class="title">{% trans "Connected Stories" %}</h2>
           {% for cs in connected_stories %}
@@ -172,13 +168,22 @@
           </div>
           {% endfor %}
         </section>
-
         {% for cs in connected_stories %}
         <section id="connected-story-{{ cs.story_id }}" class="connected-story" style="display:none;">
           {% connected_story cs %}
         </section>
         {% endfor %}
+
+        {% else %}
+        <section id="{{ section.section_id }}" class="section" style="display:none;">
+          {% section section.section_id as content %}
+          {{ content.render }}
+          {% include "storybase_story/story_viewer_section_nav.html" %}
+        </section>
         {% endif %}
+
+        {% endfor %}
+        {% endwith %}
       </div>
 
       <footer id="footer">

@@ -35,6 +35,7 @@
     _.extend({}, NavigableMixin, {
       options: {
         tocEl: '.story-toc',
+        navEl: '.story-nav',
         chromeTocEl: '#toc .story-toc',
         tocButtonEl: '#toggle-toc',
         tocIconEl: '[class^="icon-"]',
@@ -56,6 +57,7 @@
         };
         events['click ' + this.options.tocButtonEl] = 'toggleToc';
         events['click ' + this.options.tocEl + ' a'] = 'handleNavClick';
+        events['click ' + this.options.navEl + ' a'] = 'handleNavClick';
         return events;
       },
 
@@ -234,7 +236,6 @@
       }
     })
   );
-
 
   // View to provide previous/next buttons to navigate between sections
   var StoryNavigation = Views.StoryNavigation = HandlebarsTemplateView.extend(
@@ -594,6 +595,7 @@
     initialize: function() {
       this.on('render', this.handleRendered, this);
       this._displayProperties = {};
+      this.initNavigationView();
       $(window).on('resize.viewer', _.bind(this.updateStickyHeader, this));
       ViewerApp.prototype.initialize.apply(this, arguments);
     },
@@ -714,6 +716,11 @@
       var storyId = $(event.target).attr('href').split('/')[1];
       this.showConnectedStory(storyId);
       return false;
+    // },
+
+    // render: function() {
+    //   this.navigationView.render();
+    //   return this;
     }
   });
 
