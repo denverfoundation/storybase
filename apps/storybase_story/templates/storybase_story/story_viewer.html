@@ -126,7 +126,7 @@
               <p class="published">{% trans "Published" %} <time>{{ story.published|date:"SHORT_DATE_FORMAT" }}</time></p>
               {% endif %}
               {% if story.places.count %}
-              <p class="places">{% for place in story.places.all %}<a href="{{ place.get_absolute_url }}">{{ place.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</p>
+              <p class="places">{% trans "Story Locations" %}: {% for place in story.places.all %}<a href="{{ place.get_absolute_url }}">{{ place.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</p>
               {% endif %}
               {% if story.topics.count %}
               <p class="topics">{% trans "Topics" %}: {% for topic in story.topics_with_links %}<a href="{{ topic.url }}">{{ topic.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</p>
@@ -188,7 +188,7 @@
 
       <footer id="footer">
         {% if referrer %}
-        <a class="referrer" href="{{ referrer.url }}">{{ referrer.caption }}</a>
+        <a class="referrer" href="{{ referrer.url }}"><i class="icon-chevron-left"></i>{{ referrer.caption }}</a>
         {% endif %}
         <a class="explorer" href="{% url 'explore_stories' %}">{% trans "Explore More Stories" %}</a>
         <nav id="toc">

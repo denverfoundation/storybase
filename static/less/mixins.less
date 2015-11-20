@@ -310,7 +310,8 @@
 .styled-header(@align: center) {
   text-align:@align;
   font-family: @styled-header-family;
-  font-weight:normal;
+  font-weight: 700;
+  text-rendering: optimizeLegibility;
 }
 
 // Story's title, as it appears in the viewer
@@ -319,7 +320,7 @@
 .viewer-story-title() {
   .styled-header(left);
   padding: 0;
-  font-weight: 900;
+  font-weight: 700;
   font-size: 22px; //28.8px;
   line-height:1.2em;
   margin-top: 12px;

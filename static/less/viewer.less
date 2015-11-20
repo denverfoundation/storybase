@@ -1,5 +1,5 @@
 // Padding for header/footer bars
-@viewer-bar-padding: 10px;
+@viewer-bar-padding: 8px;
 
 .callout-section {
   background:@light-gray;
@@ -8,7 +8,7 @@
 }
 
 .story-viewer {
-  @footer-background-color: #000;
+  @footer-background-color: @blue-xxdark;
 
   .caption-mixin(@font-color: @gray) {
     font-style:italic;
@@ -22,8 +22,8 @@
   }
 
   figure {
-    border: 1px solid @light-gray;
-    padding: 4px;
+    // border: 1px solid @light-gray;
+    // padding: 4px;
     position: relative;
 
     img {
@@ -107,6 +107,7 @@
 
     .title {
       .viewer-story-title();
+      font-family: @roboto-condensed;
     }
 
     .byline {
@@ -143,13 +144,13 @@
   #tools {
     position:absolute;
     right:@viewer-bar-padding*2;
-    bottom:@viewer-bar-padding;
+    bottom:10px;
     padding:4px @viewer-bar-padding;
     background-color: @white20;
     border-radius: 5px;
 
     a {
-      font-family: "Roboto Condensed";
+      font-family: @roboto-condensed;
       text-transform: uppercase;
       font-weight: normal;
       color: #fff !important;
@@ -184,7 +185,7 @@
   }
 
   #body {
-    font-family: 'roboto';
+    font-family: @roboto;
     .standard-headers(left);
     .body-copy-lists;
     width: 100%;
@@ -208,6 +209,7 @@
       #summary-toc {
         ul {
           padding:0;
+
           li {
             list-style-type:none;
           }
@@ -236,15 +238,14 @@
 
         @media (min-width: @viewer-nav-breakpoint) {
           position: fixed;
-          border-right: 1px solid rgba(0,0,0,.05);
+          border-right: 1px solid @light-gray;
           height: 0;
-          padding-bottom: 50%; // Match width to preserve 1:1 aspect ratio
+          padding-bottom: 100vh; // Match width to preserve 1:1 aspect ratio
         }
-
       }
 
       #summary-wrap {
-        padding: 16px 16px 64px 16px;
+        padding: 16px 16px 48px 16px;
 
         @media (min-width: @viewer-nav-breakpoint) {
           position: relative;
@@ -254,9 +255,11 @@
           width: 50%;
 
           > h2 {
+            font-size: 18px;
             padding-left: 16px;
             font-weight: 900;
-            margin-bottom: 16px;
+            margin-bottom: 4px;
+            clear: both;
           }
         }
       }
@@ -270,9 +273,9 @@
         p {
           font-size: 18px;
           font-weight: 300;
-          font-family: 'Roboto';
+          font-family: @roboto;
           padding-left: 16px;
-          line-height: 1.25;
+          line-height: 1.35;
         }
 
         i {
@@ -298,6 +301,117 @@
             font-weight: 700;
           }
         }
+      }
+
+      .summary-title {
+        width: 57.5%;
+        margin-right: 2.5%;
+        display: inline-block;
+
+        h1 {
+          background: none;
+          font-size: 24px;
+          font-weight: 700;
+          font-family: @roboto-condensed;
+          margin-bottom: 0;
+        }
+      }
+
+      .summary-meta {
+        box-sizing: border-box;
+        padding: 10px;
+        display: inline-block;
+        width: 40%;
+        float: right;
+
+        p {
+          font-weight: 700;
+          padding: 0;
+          margin-bottom: 0;
+          font-size: 12px;
+        }
+      }
+
+      .published {
+        font-weight: 700;
+      }
+
+      p.places {
+        display: inline-block;
+      }
+
+      .topics {
+        display: inline-block;
+
+        a {
+          display: inline-block;
+          white-space: nowrap;
+        }
+      }
+
+      .byline {
+          color: @gray;
+        a {
+          color: @gray;
+          text-decoration: none;
+          font-weight: 400;
+          text-decoration: none;
+        }
+      }
+    }
+
+    .story-nav {
+      padding: 5px 20px;
+      margin-bottom: 20px;
+      display: flex;
+      justify-content: flex-end;
+      align-items: center;
+      position: relative;
+      right: 0;
+
+      a {
+        transition: background-color .2s ease, color .2s ease, border-color .2s ease;
+        border-radius: 4px;
+        margin: 0 10px;
+        font-weight: 700;
+
+
+        i {
+          font-size: 75%;
+          vertical-align: middle;
+        }
+      }
+
+      .previous {
+        color: @gray;
+
+        i {
+          margin-right: 5px;
+          text-decoration: none;
+        }
+      }
+
+      .next {
+        text-decoration: none;
+        padding: 5px 15px;
+        background: @light-gray;
+        color: @blue-xxdark;
+        border: 1px solid @black10;
+
+        &:hover {
+          border-color: @black30;
+          background: @blue-xxdark;
+          color: @orange;
+        }
+
+        i {
+          margin-left: 5px;
+        }
+      }
+
+      .location {
+        display: inline-block;
+        font-weight: 700;
       }
     }
   }
@@ -356,9 +470,11 @@
 
   .section {
     h1, h2, h3 {
+      font-family: @roboto;
+
       &.title {
         font-size: 24px;
-        font-weight: normal;
+        font-weight: 700;
         color: @orange;
         padding: 0;
       }
@@ -392,19 +508,16 @@
     bottom: 0;
     width: 100%;
     padding: @viewer-bar-padding;
-    background-color: @blue-xxdark;
+    background-color: @footer-background-color;
     z-index: 9999;
 
     .logo {
-      position:absolute;
-      right: 20px;
-      bottom: 5px;
-      display:block;
-
+      position: static;
+      float: right;
+      display: block;
       background-image: url(../img/viewer-logo.png);
-      background-position: -42px 0px;
       background-repeat: no-repeat;
-
+      background-position: -42px 0;
       height: 27px;
       width: 26px;
 
@@ -414,17 +527,16 @@
 
       @media (min-width: @viewer-nav-breakpoint) {
         background-position: 0px 0px;
-        width:200px;
+        width: 200px;
       }
     }
-
   }
 
   #toggle-toc {
     .button-reset;
     position: relative;
     color: #fff;
-    min-width: 200px;
+    width: 100%;
 
     .bars {
       float: left;
@@ -432,6 +544,8 @@
 
       @media (min-width: @viewer-nav-breakpoint) {
         display: none;
+        min-width: 220px;
+        width: 100%;
       }
     }
 
@@ -442,13 +556,21 @@
 
   #toc {
     position: fixed;
-    right: 260px;
     bottom: 0;
-    float: left;
-    padding: @viewer-bar-padding;
+    right: 60px;
+    padding: 11px;
     overflow: hidden;
     color: #fff;
-    background-color: @footer-background-color;
+    background-color: @blue-gray;
+    width: @toc-width;
+
+    &:hover {
+      color: @orange;
+    }
+
+    @media (min-width: @viewer-nav-breakpoint) {
+      right: 230px;
+    }
 
     .text {
       text-transform: uppercase;
@@ -463,7 +585,8 @@
       margin-bottom: @viewer-bar-padding;
 
       @media (min-width: @viewer-nav-breakpoint) {
-        min-width: 200px;
+        width: @toc-width;
+        min-width: @toc-width;
       }
 
       a {
@@ -474,16 +597,17 @@
         padding: 4px 2px;
 
         &:hover {
-          background:darken(@dark-gray, 10%);
+          color:@orange;
         }
+
         &.current {
           color:@orange;
-          background:darken(@dark-gray, 10%);
         }
       }
 
       li {
         padding: 0;
+        border-bottom: 1px solid @black10;
       }
 
       li ul {
@@ -498,31 +622,43 @@
 
   .referrer,
   .explorer {
-    color: @white;
     float: left;
+    color: @white;
+    font-weight: 700;
+    font-size: 12px;
+    display: inline-block;
+    margin-right: 10px;
+  }
+
+  .referrer {
+
+    i {
+      font-size: 10px;
+      vertical-align: middle;
+      text-decoration: none;
+    }
   }
 
   #story-nav {
-    color: #fff;
+    position: absolute;
+    color: @almost-white;
     text-align: center;
     margin-left: auto;
     margin-right: auto;
     padding: 0;
-
+    bottom: 10px;
+    width: auto;
+    right: 480px;
 
     a {
       text-decoration: none;
-      color: #fff;
+      color: @almost-white;
 
       @media (min-width: @viewer-nav-breakpoint) {
-        width: 40px;
         display: inline-block;
-        background: @white10;
-        margin: 0;
-        .rounded-corners(4px);
 
         &:hover, &:focus {
-          background: @dark-gray;
+          color: @dark-gray;
         }
       }
 
@@ -530,24 +666,25 @@
         margin-right:5px;
       }
 
+      &:last-child {
+        margin-left: 5px;
+      }
+
       &.disabled {
         color:@gray;
         cursor:default;
-
 
         &:hover {
           color:@gray;
         }
 
         @media (min-width: @viewer-nav-breakpoint) {
-          border:1px solid @dark-gray;
 
           &:hover {
             background:darken(@dark-gray, 10%);
           }
         }
       }
-
 
       &.connected {
         width: auto;
@@ -557,10 +694,10 @@
 
     .location {
       display: inline-block;
-      font-size:1em;
-      padding:0 .75em;
-      color:@light-gray;
-      font-weight: 700;
+      font-size:.875rem;
+      padding: 0;
+      color: @light-gray;
+      font-weight: 400;
     }
   }
 

@@ -3,6 +3,8 @@
 // Paths
 @font-path: "../css/font-face";
 
+@roboto: 'Roboto', 'Helvetica', 'Arial', sans-serif;
+@roboto-condensed: 'Roboto Condensed', 'Helvetica', 'Arial', sans-serif;
 // Font sizes
 // note: Times New Roman is visually smaller than Georgia.
 // if the body copy font family is Georgia, this should probably
@@ -17,7 +19,7 @@
 @h5-size: (@top-header-size * .5);
 
 // Font families
-@styled-header-family: 'Roboto Condensed';//'Museo300Regular';
+@styled-header-family: @roboto;
 
 @layout-padding: 10px;
 
@@ -30,17 +32,16 @@
 @dark-gray: #5a5a5a;
 @gray: #777777;
 @medium-gray: #999999;
+@blue-gray: #232B38;
 @light-gray: #f0efef;
 @almost-white: #f8f8f8;
 @highlight-blue: #2a88db;
 @visited-blue: desaturate(darken(@highlight-blue, 10%), 20%);
 @blue-xxdark: #111C27;
 @orange: #fe9703;
-
 @error-color: #e66;
 @error-background-color: #f2dede;
 @error-border-color: darken(spin(@error-background-color, -10), 3%);
-
 
 // Tints & Shades
 @black: #000000;
@@ -108,3 +109,7 @@
 
 @container-sm: ((720px + @gutter-width));
 @container-md: ((1000px + @gutter-width));
+
+
+// Viewer Components
+@toc-width: 220px;
