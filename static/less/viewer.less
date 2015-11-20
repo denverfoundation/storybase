@@ -11,8 +11,8 @@
   @footer-background-color: @blue-xxdark;
 
   .caption-mixin(@font-color: @gray) {
-    font-style: italic;
-    color: @font-color;
+    // font-style: italic;
+    color: @dark-gray;
   }
 
   background-color: #fff;
@@ -32,7 +32,6 @@
 
     .popup-caption {
       .caption-mixin(#fff);
-
       padding: 4px;
       margin: 4px;
       background-color: fadeout(@dark-gray, 50%);
@@ -41,15 +40,17 @@
       display: none;
     }
 
-    &:hover {
-      // When the figure is hovered, show the caption at the very top of the image
-      .popup-caption {
-        display: block;
-        position: absolute;
-        top: 0;
-        left: 0;
-      }
-    }
+    // TODO: Either remove this content from the viewer
+    // (currently duplicated below) or fix overlay position
+    // &:hover {
+    //   // When the figure is hovered, show the caption at the very top of the image
+    //   .popup-caption {
+    //     display: block;
+    //     position: absolute;
+    //     top: 0;
+    //     left: 0;
+    //   }
+    // }
 
     // Popup captions look weird over YouTube videos. Hide them
     &.asset-provider-youtube:hover {
@@ -268,19 +269,13 @@
         max-width: 40em;
         border-left: 1px solid @black30;
 
-        p {
+        p, i, strong, span {
           font-size: 18px;
           font-weight: 300;
           font-family: @roboto;
           padding-left: 16px;
           line-height: 1.35;
-        }
-
-        i {
           font-style: normal;
-          font-weight: 100;
-          font-size: 20px;
-          line-height: 1.4;
         }
       }
 
@@ -625,10 +620,10 @@
     font-weight: 700;
     font-size: 12px;
     display: inline-block;
-    margin-right: 10px;
   }
 
   .referrer {
+    margin-right: 16px;
 
     i {
       font-size: 10px;
@@ -636,6 +631,16 @@
       text-decoration: none;
     }
   }
+
+  .explorer {
+    text-decoration: none;
+    padding: 4px 8px;
+    line-height: 1;
+    background: @blue-gray;
+    border: 1px solid @white20;
+    border-radius: 4px;
+  }
+
 
   #story-nav {
     position: absolute;

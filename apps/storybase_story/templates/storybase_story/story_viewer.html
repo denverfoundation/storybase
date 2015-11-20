@@ -154,6 +154,16 @@
           {# TODO: Style the links to the connected story builder as buttons #}
           <p><a href="{% url "connected_story_builder" source_slug=story.slug %}" class="external" data-new-window-name="connectedBuilder">{% trans "Click here to contribute to this story" %}</a></p>
           {% endif %}
+          <div class="next-steps">
+            <h2>Next Steps</h2>
+            <div>
+
+            </div>
+
+            <div>
+
+            </div>
+          </div>
           {% include "storybase_story/story_viewer_section_nav.html" %}
         </section>
 
@@ -188,7 +198,7 @@
 
       <footer id="footer">
         {% if referrer %}
-        <a class="referrer" href="{{ referrer.url }}"><i class="icon-chevron-left"></i>{{ referrer.caption }}</a>
+        <a class="referrer" href="{{ referrer.url }}"><i class="icon-arrow-left"></i>&nbsp;{{ referrer.caption }}</a>
         {% endif %}
         <a class="explorer" href="{% url 'explore_stories' %}">{% trans "Explore More Stories" %}</a>
         <nav id="toc">
