@@ -269,7 +269,7 @@
         max-width: 40em;
         border-left: 1px solid @black30;
 
-        p, i, strong, span {
+        p, i, strong, span, h1, h2, h3 {
           font-size: 18px;
           font-weight: 300;
           font-family: @roboto;
@@ -306,7 +306,7 @@
           font-size: 24px;
           font-weight: 700;
           font-family: @roboto-condensed;
-          margin-bottom: 0;
+          margin-bottom: 4px;
         }
       }
 
@@ -472,6 +472,10 @@
         padding: 0;
       }
     }
+
+    p {
+      max-width: 42em; // Set reasonable measure for large text blocks
+    }
   }
 
   .section-layout.side-by-side .left,
@@ -623,6 +627,8 @@
   }
 
   .referrer {
+    position: relative;
+    top: 2px;
     margin-right: 16px;
 
     i {
