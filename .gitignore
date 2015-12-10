@@ -12,6 +12,5 @@ config/fabricrc
 *.mo
 !.gitkeep
 /.env
-/.deployment_virtualenv
-
-/node_modules
+.deployment_virtualenv/
+node_modules/
