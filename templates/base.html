@@ -22,7 +22,6 @@
   {% include "favicons.html" %}
 
   <!-- CSS: implied media=all -->
-
   {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}css/flexslider.css">{% endaddtoblock %}
   <!-- These styles make use of the awesome Font Awesome - http://fortawesome.github.com/Font-Awesome/ -->
   {% addtoblock "css" %}
@@ -32,12 +31,10 @@
   </script>
   {% endaddtoblock %}
   {% addtoblock "css" %}<link rel="stylesheet" type="text/less" href="{{ STATIC_URL }}less/base.less">{% endaddtoblock %}
-
   {% render_block "css" postprocessor "compressor.contrib.sekizai.compress" %}
   <!-- end CSS-->
 
   <script src="{{ STATIC_URL }}js/libs/respond.min.js"></script>
-
   <script src="{{ STATIC_URL }}js/libs/modernizr.custom.63515.js"></script>
 
   {% block extrahead %}{% endblock %}
@@ -140,15 +137,16 @@
   });
   </script>
   {% endaddtoblock %}
-  {% if debug %}
-  {% addtoblock "js" %}<script src="{{ STATIC_URL }}js/libs/less-1.4.1.min.js"></script>{% endaddtoblock %}
-  {% endif %}
   {% block extrajs %}{% endblock %}
   {% compress js %}
   <script src="{{ STATIC_URL }}js/jquery.storybasemegamenu.js"></script>
   <script src="{{ STATIC_URL }}js/jquery.storybaseshare.js"></script>
   {% endcompress %}
+
   {% render_block "js" %}
+  {% comment %}
+  {% render_block "js" postprocessor "compressor.contrib.sekizai.compress" %}
+  {% endcomment %}
   <!-- end scripts-->
 
   {% include "analytics.html" %}
