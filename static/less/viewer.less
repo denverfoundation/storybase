@@ -2,17 +2,17 @@
 @viewer-bar-padding: 8px;
 
 .callout-section {
-  background:@light-gray;
-  border-top:1px solid darken(@light-gray, 10%);
-  border-bottom:1px solid darken(@light-gray, 10%);
+  background: @light-gray;
+  border-top: 1px solid darken(@light-gray, 10%);
+  border-bottom: 1px solid darken(@light-gray, 10%);
 }
 
 .story-viewer {
   @footer-background-color: @blue-xxdark;
 
   .caption-mixin(@font-color: @gray) {
-    font-style:italic;
-    color: @font-color;
+    // font-style: italic;
+    color: @dark-gray;
   }
 
   background-color: #fff;
@@ -32,27 +32,25 @@
 
     .popup-caption {
       .caption-mixin(#fff);
-
       padding: 4px;
       margin: 4px;
-
       background-color: fadeout(@dark-gray, 50%);
-
       // Hide popup captions unless the user hovers over the parent
       // element
       display: none;
     }
 
-    &:hover {
-      // When the figure is hovered, show the caption at the very top of the image
-      .popup-caption {
-        display: block;
-        position: absolute;
-        top: 0;
-        left: 0;
-
-      }
-    }
+    // TODO: Either remove this content from the viewer
+    // (currently duplicated below) or fix overlay position
+    // &:hover {
+    //   // When the figure is hovered, show the caption at the very top of the image
+    //   .popup-caption {
+    //     display: block;
+    //     position: absolute;
+    //     top: 0;
+    //     left: 0;
+    //   }
+    // }
 
     // Popup captions look weird over YouTube videos. Hide them
     &.asset-provider-youtube:hover {
@@ -63,17 +61,17 @@
   }
 
   blockquote {
-    padding:1em;
-    background:@light-gray;
+    padding: 1em;
+    background: @light-gray;
     .rounded-corners(4px);
-    border:1px solid @gray;
-    font-style:italic;
-    color:@dark-gray;
+    border: 1px solid @gray;
+    font-style: italic;
+    color: @dark-gray;
 
     &.asset-type-quotation {
       .pullquote;
-      background:transparent;
-      border:0;
+      background: transparent;
+      border: 0;
     }
   }
 
@@ -125,7 +123,7 @@
     // needed to override viewer dd prop
     .storybase-share-popup {
       dd {
-        margin:0;
+        margin: 0;
       }
     }
   }
@@ -142,10 +140,10 @@
   }
 
   #tools {
-    position:absolute;
-    right:@viewer-bar-padding*2;
-    bottom:10px;
-    padding:4px @viewer-bar-padding;
+    position: absolute;
+    right: @viewer-bar-padding*2;
+    bottom: 10px;
+    padding: 4px @viewer-bar-padding;
     background-color: @white20;
     border-radius: 5px;
 
@@ -198,7 +196,8 @@
         width: 100%;
       }
 
-      #summary-image, #summary-text {
+      #summary-image,
+      #summary-text {
         .border-box;
 
         @media (min-width: @viewer-nav-breakpoint) {
@@ -208,7 +207,7 @@
 
       #summary-toc {
         ul {
-          padding:0;
+          padding: 0;
 
           li {
             list-style-type:none;
@@ -221,7 +220,7 @@
         width: 50%;
         margin-right: 0;
         max-width: 100%;
-        float:none;
+        float: none;
         left: 0;
 
         img {
@@ -270,19 +269,13 @@
         max-width: 40em;
         border-left: 1px solid @black30;
 
-        p {
+        p, i, strong, span, h1, h2, h3 {
           font-size: 18px;
           font-weight: 300;
           font-family: @roboto;
           padding-left: 16px;
           line-height: 1.35;
-        }
-
-        i {
           font-style: normal;
-          font-weight: 100;
-          font-size: 20px;
-          line-height: 1.4;
         }
       }
 
@@ -313,7 +306,7 @@
           font-size: 24px;
           font-weight: 700;
           font-family: @roboto-condensed;
-          margin-bottom: 0;
+          margin-bottom: 4px;
         }
       }
 
@@ -431,23 +424,23 @@
 
   .connected-stories {
     h2.title {
-      margin-bottom:1.2em;
+      margin-bottom: 1.2em;
     }
   }
 
   .connected-story-item {
-    margin-bottom:1em;
-    clear:both;
-    overflow:hidden;
+    margin-bottom: 1em;
+    clear: both;
+    overflow: hidden;
 
     h3 {
-      margin-top:0 !important;
+      margin-top: 0 !important;
     }
 
     img {
-      max-width:100px;
-      margin-right:1em;
-      float:left;
+      max-width: 100px;
+      margin-right: 1em;
+      float: left;
     }
   }
 
@@ -478,6 +471,10 @@
         color: @orange;
         padding: 0;
       }
+    }
+
+    p {
+      max-width: 42em; // Set reasonable measure for large text blocks
     }
   }
 
@@ -592,16 +589,16 @@
       a {
         color: #fff;
         text-decoration: none;
-        display:block;
-        width:100%;
+        display: block;
+        width: 100%;
         padding: 4px 2px;
 
         &:hover {
-          color:@orange;
+          color: @orange;
         }
 
         &.current {
-          color:@orange;
+          color: @orange;
         }
       }
 
@@ -627,10 +624,12 @@
     font-weight: 700;
     font-size: 12px;
     display: inline-block;
-    margin-right: 10px;
   }
 
   .referrer {
+    position: relative;
+    top: 2px;
+    margin-right: 16px;
 
     i {
       font-size: 10px;
@@ -638,6 +637,16 @@
       text-decoration: none;
     }
   }
+
+  .explorer {
+    text-decoration: none;
+    padding: 4px 8px;
+    line-height: 1;
+    background: @blue-gray;
+    border: 1px solid @white20;
+    border-radius: 4px;
+  }
+
 
   #story-nav {
     position: absolute;
@@ -663,7 +672,7 @@
       }
 
       &:first-child {
-        margin-right:5px;
+        margin-right: 5px;
       }
 
       &:last-child {
@@ -671,11 +680,11 @@
       }
 
       &.disabled {
-        color:@gray;
-        cursor:default;
+        color: @gray;
+        cursor: default;
 
         &:hover {
-          color:@gray;
+          color: @gray;
         }
 
         @media (min-width: @viewer-nav-breakpoint) {
@@ -721,7 +730,8 @@
 
   /* Story detail */
 
-  section.story, section.actions {
+  section.story,
+  section.actions {
     overflow: hidden; /* Clear containing elements */
     padding: 2% 0 4% 0;
   }
