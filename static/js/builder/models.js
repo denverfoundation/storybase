@@ -72,4 +72,12 @@
       }
     })
   );
+
+  Collections.StorySearchResults = Backbone.Collection.extend({
+      model: storybase.models.Story,
+
+      url: function() {
+        return storybase.API_ROOT + 'stories/search';
+      }
+  });
 })(_, Backbone, storybase);

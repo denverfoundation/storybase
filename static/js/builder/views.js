@@ -24,6 +24,8 @@
   var Locations = storybase.collections.Locations;
   var Section = storybase.models.Section;
   var Story = storybase.models.Story;
+  var StoryRelations = storybase.collections.StoryRelations;
+  var StorySearchResults = storybase.collections.StorySearchResults;
   var Tags = storybase.collections.Tags;
   var getLabelText = storybase.forms.getLabelText;
   var capfirst = storybase.utils.capfirst;
@@ -2532,7 +2534,8 @@
         callEditView = new CallToActionEditView({
           dispatcher: this.dispatcher,
           help: this.help.where({slug: 'call-to-action'})[0],
-          model: this.model
+          model: this.model,
+          relatedStories: this.options.relatedStories
         });
         this._editViews.push(callEditView);
       }
@@ -3822,6 +3825,121 @@
     })
   );
 
+  var RelevantStoriesEditView = Views.RelevantStoriesEditView = HandlebarsTemplateView.extend({
+    className: 'relevant-stories-container',
+
+    options: {
+      storyRegex: '^(?:https?://)?(www\.)?' + window.location.host + '(/.*/)(#.*)?$',
+      storySearchEl: 'input.story-search',
+      templateSource: {
+        '__main': $('#relevant-stories-edit-template').html(),
+        'result': '<li><a href="{{url}}" target="_blank">{{title}}</a><button type="button" class="add-story">Add</button></li>',
+        'story': '<li><a href="{{url}}" target="_blank">{{title}}</a><button type="button" class="remove-story">Remove</button></li>'
+      }
+    },
+
+    events: function() {
+      var events = {
+        'click button': 'search'
+      };
+      events['keyup ' + this.options.storySearchEl] = 'handleKeyUp';
+      return events;
+    },
+
+    bindModelEvents: function() {
+      this.results.on('reset', this.renderResults, this);
+    },
+
+    handleKeyUp: function(evt) {
+      var code = evt.which;
+
+      // Only act when the enter key is the one that's pressed
+      if (code == 13) {
+        this.search();
+      }
+      // none of these work
+      evt.preventDefault();
+      evt.stopPropagation();
+      return false;
+    },
+
+    search: function() {
+      var $storySearchEl = this.$(this.options.storySearchEl);
+      var value = $storySearchEl.val();
+      var matches = value.match(this.options.storyRegex, 'i');
+
+      if (matches) {
+        // treat as story url
+        value = matches[2];
+        $.ajax(storybase.API_ROOT + 'stories', {
+          data: $.param({url: value}),
+          processData: false,
+          success: _.bind(function(data, textStatus) {
+            var model = new this.stories.model({
+              target: data.story_id,
+              target_title: data.title,
+              target_url: data.url
+            });
+            this.results.reset();
+            this.addStory(model);
+            $storySearchEl.val('');
+          }, this),
+          error: function(jqXHR, textStatus) {
+            debugger;
+          }
+        });
+      } else {
+        // treat as a search query
+        this.results.fetch({
+          data: $.param({q: value}),
+          success: _.bind(this.renderResults, this),
+          error: function() {
+            debugger;
+          }
+        });
+      }
+      // $storySearchEl.val('');
+      return false;
+    },
+
+    initialize: function() {
+      this.compileTemplates();
+      this.stories = new StoryRelations(this.options.relatedStories);
+      this.results = new StorySearchResults();
+      this.bindModelEvents();
+    },
+
+    addStory: function(model) {
+      this.stories.add(model);
+      this.renderStories();
+    },
+
+    renderStories: function() {
+      var $stories = this.$('.stories').html('');
+      this.stories.map(function(model) {
+        $stories.append(this.getTemplate('story')({
+          title: model.get('target_title'),
+          url: model.get('target_url'),
+        }));
+      }, this);
+      return this;
+    },
+
+    renderResults: function() {
+      var $results = this.$('.story-search-results').html('');
+      this.results.map(function(model) {
+        $results.append(this.getTemplate('result')(model.toJSON()));
+      }, this);
+      return this;
+    },
+
+    render: function() {
+      this.$el.html(this.template());
+      this.renderStories();
+      return this;
+    }
+  });
+
   /**
    * View for editing the story's call to action 
    */
@@ -3858,6 +3976,14 @@
       }
     },
 
+    initialize: function() {
+      PseudoSectionEditView.prototype.initialize.apply(this, arguments);
+      this.relevantStoriesEditView = new RelevantStoriesEditView({
+        model: this.story,
+        relatedStories: this.options.relatedStories.where({relation_type: 'relevant'})
+      });
+    },
+
     render: function() {
       var that = this;
       var handleChange = function () {
@@ -3865,6 +3991,7 @@
         that.$(that.options.callToActionEl).trigger('change');
       };
       this.$el.html(this.template(this.model.toJSON()));
+      this.$('.right').prepend(this.relevantStoriesEditView.render().$el);
       // Add the toolbar element for the wysihtml5 editor
       // Initialize wysihmtl5 editor
       this.callEditor = new RichTextEditor(

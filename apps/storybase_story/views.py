@@ -111,10 +111,10 @@ class StoryViewerView(ModelIdDetailView):
             try:
                 match = resolve(getattr(urlparse.urlparse(referrer), 'path'))
                 if match.url_name is 'explore_stories':
-                    context['referrer'] = {'caption': _("Back to Explorer Results"),
+                    context['referrer'] = {'caption': _(u"Back to Explorer Results"),
                                            'url': referrer}
                 elif match.url_name is 'haystack_search':
-                    context['referrer'] = {'caption': _("Back to Search Results"),
+                    context['referrer'] = {'caption': _(u"Back to Search Results"),
                                            'url': referrer}
             except Resolver404:
                 pass
@@ -437,11 +437,13 @@ class StoryBuilderView(DetailView):
                   {
                       'source': rel.source.story_id,
                       'target': rel.target.story_id,
+                      'target_title': rel.target.title,
+                      'target_url': rel.target.get_absolute_url(),
                       'relation_type': rel.relation_type,
                   }
                   for rel in StoryRelation.objects.filter(q)
                 ]
-            })
+            }, cls=DjangoJSONEncoder)
         elif self.source_story:
             # New connected story, bootstrap the Backbone view with
             return json.dumps({

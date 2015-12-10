@@ -4,7 +4,8 @@ import logging
 from django.conf import settings
 from django.conf.urls import url
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
-from django.core.urlresolvers import NoReverseMatch
+from django.core.paginator import Paginator, InvalidPage
+from django.core.urlresolvers import resolve, NoReverseMatch
 from django.db import transaction, IntegrityError
 from django.db.models import Q
 try:
@@ -84,6 +85,14 @@ class StoryResource(TranslatedModelResource):
     def prepend_urls(self):
         subs = (self._meta.resource_name, settings.UUID_PATTERN, trailing_slash())
         return [
+            url(r"^(?P<resource_name>{0}){2}$".format(*subs),
+                self.wrap_view('get_by_url'),
+                name="api_get_by_url",
+            ),
+            url(r"^(?P<resource_name>{0})/search{2}$".format(*subs),
+                self.wrap_view('search_get_list'),
+                name="api_search_get_list",
+            ),
             url(r'^(?P<resource_name>{0})/explore{2}$'.format(*subs),
                 self.wrap_view('explore_get_list'),
                 name="api_explore_get_list",
@@ -257,6 +266,49 @@ class StoryResource(TranslatedModelResource):
                                         .order_by('name')\
                                         .values('place_id', 'name')]
 
+    def get_by_url(self, request, **kwargs):
+        self.method_check(request, allowed=['get'])
+        self.is_authenticated(request)
+        self.throttle_check(request)
+
+        try:
+            match = resolve(request.GET.get('url', ''))
+            story = self._meta.queryset.get(**match.kwargs)
+        except Exception:
+            raise http.HttpNotFound()
+
+        bundle = self.build_bundle(obj=story, request=request)
+        bundle = self.full_dehydrate(bundle)
+
+        return self.create_response(request, bundle)
+
+    def search_get_list(self, request, **kwargs):
+        self.method_check(request, allowed=['get'])
+        self.is_authenticated(request)
+        self.throttle_check(request)
+
+        # Do the query.
+        sqs = SearchQuerySet().models(Story).load_all().auto_query(request.GET.get('q', ''))
+        paginator = Paginator(sqs, 20)
+
+        try:
+            page = paginator.page(int(request.GET.get('page', 1)))
+        except InvalidPage:
+            raise http.HttpNoContent()
+
+        objects = []
+
+        for result in page.object_list:
+            bundle = self.build_bundle(obj=result.object, request=request)
+            bundle = self.full_dehydrate(bundle)
+            objects.append(bundle)
+
+        object_list = {
+            'objects': objects,
+        }
+
+        return self.create_response(request, object_list)
+    
     def explore_get_result_list(self, request):
         sqs = SearchQuerySet().models(Story)
         filter_fields = self._meta.explore_filter_fields

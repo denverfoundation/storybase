@@ -146,6 +146,17 @@ Handlebars.js templates for story builder Backbone application
 <input class="byline" name="byline" value="{{byline}}" placeholder="{{gettext "Edit your byline"}}" />
 </script>
 
+<script type="text/x-handlebars-template" id="relevant-stories-edit-template">
+<div class="relevant-stories-container">
+  <h3>{{gettext "Related Stories"}}</h3>
+  <p>{{gettext "List other stories relevant to your story."}}</p>
+  <ul class="stories"></ul>
+  <input type="text" class="story-search" placeholder="{{gettext "Search stories or paste a story URL here."}}"></input>
+  <button type="button">{{gettext "Search"}}</button>
+  <ul class="story-search-results"></ul>
+</div>
+</script>
+
 <script type="text/x-handlebars-template" id="story-call-to-action-edit-template">
 <h2>{{gettext "Call to Action"}}</h2>
 <form>
@@ -350,6 +361,7 @@ Handlebars.js templates for story builder Backbone application
 <script type="text/x-handlebars-template" id="featured-asset-template">
 <h3>{{title}}</h3>
 <ul class="nav pills"></ul>
+<p>{{gettext "For best results, choose a square image no smaller than 1000x1000 pixels."}}</p>
 </script>
 
 <script type="text/x-handlebars-template" id="featured-asset-select-template">

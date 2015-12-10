@@ -656,6 +656,18 @@
       }
   });
 
+  Collections.StorySearchResults = Backbone.Collection.extend({
+    model: Story,
+
+    parse: function(response) {
+      return response.objects;
+    },
+
+    url: function() {
+      return storybase.API_ROOT + 'stories/search';
+    }
+  });
+
   var Section = Models.Section = Backbone.Model.extend(
     _.extend({}, TastypieModelMixin, {
       idAttribute: "section_id",
