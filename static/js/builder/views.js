@@ -3833,8 +3833,8 @@
       storySearchEl: 'input.story-search',
       templateSource: {
         '__main': $('#relevant-stories-edit-template').html(),
-        'result': '<li><a href="{{url}}" target="_blank">{{title}}</a><button type="button" class="add-story">Add</button></li>',
-        'story': '<li><a href="{{url}}" target="_blank">{{title}}</a><button type="button" class="remove-story">Remove</button></li>'
+        'result': '<li><button type="button" class="add-story">Add</button><a href="{{url}}" target="_blank">{{title}}</a></li>',
+        'story': '<li><button type="button" class="remove-story">Remove</button><a href="{{url}}" target="_blank">{{title}}</a></li>'
       }
     },
 
