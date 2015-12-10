@@ -851,6 +851,7 @@ class StoryRelation(StoryRelationPermission, models.Model):
     """Relationship between two stories"""
     RELATION_TYPES = (
         ('connected', u"Connected Story"),
+        ('relevant', u"Relevant Story"),
     )
     DEFAULT_TYPE = 'connected'
 
@@ -859,6 +860,9 @@ class StoryRelation(StoryRelationPermission, models.Model):
                                       default=DEFAULT_TYPE)
     source = models.ForeignKey(Story, related_name="target")
     target = models.ForeignKey(Story, related_name="source")
+
+    class Meta:
+        unique_together = (('source', 'target'),)
 
 
 class SectionPermission(PermissionMixin):
