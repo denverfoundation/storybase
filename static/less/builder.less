@@ -20,7 +20,7 @@ fieldset {
 }
 
 .bbf-help {
-  margin-bottom: @body-copy-margin-bottom; 
+  margin-bottom: @body-copy-margin-bottom;
 }
 
 .bbf-editor + .bbf-help {
@@ -74,9 +74,9 @@ li.select2-search-choice {
 }
 
 .alert-success {
-  background-color: @success-background; 
+  background-color: @success-background;
   border-color: @success-border;
-  color: @success-text; 
+  color: @success-text;
   button.close {
     color: @success-text !important;
   }
@@ -126,7 +126,7 @@ button.help {
   padding:2px 6px;
   .rounded-corners(5px);
   border:1px solid transparent;
-  
+
   &.over-limit {
     color:@warning-color;
     background:@warning-background-color;
@@ -166,7 +166,7 @@ button.help {
       text-decoration: underline;
     }
   }
-  
+
 }
 
 (~"[data-wysihtml5-command], [data-wysihtml5-action]") {
@@ -259,10 +259,9 @@ button.help {
 #title-bar {
   // Hide this element unless a story is present
   display: none;
-
-  background-color: #f7941e; 
+  background-color: #f7941e;
   overflow: hidden;
-  height: @title-bar-height; 
+  height: @title-bar-height;
 
   .title {
     .viewer-story-title();
@@ -273,7 +272,6 @@ button.help {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-
     color: #fff;
   }
 
@@ -329,13 +327,13 @@ button.help {
 }
 
 #workflow-bar {
-  background-color: black; 
+  background-color: @blue-xxdark;
 }
 
 #workflow-bar .logo {
   display: block;
   float: left;
-  width: 34px; 
+  width: 64px;
   padding: 0 8px;
   padding-top: floor((@workflow-bar-height - @logo-height) / 2);
 
@@ -346,7 +344,7 @@ button.help {
 
 #workflow-step {
   // note: This is an arguably more appropriate way to
-  // make space above workflow step items, but in 
+  // make space above workflow step items, but in
   // Chrome 0.25, items following the first are bumped
   // down an extra 10px for no apparent reason.
   //
@@ -362,10 +360,10 @@ button.help {
     padding: 0 19px 0;
     height: @workflow-item-height;
     border-right:1px solid @almost-black;
-    font-family:'Museo300Regular';
+    // font-family:@roboto;
     line-height: @workflow-item-height;
     position:relative;
-   
+
     &:first-child {
       border-left:1px solid @almost-black;
     }
@@ -384,7 +382,7 @@ button.help {
     .workflow-icon-orange (@n) {
       background: url(../img/builder/workflow-step-icons-8d75a92a0d87c2e329539c09cb89f310ee59f28a.png) no-repeat (@icon-width / 2) ((-@n * @icon-next-d) - (2 * @icon-highlight-d));
     }
-    
+
     em {
       display:none;
       background:url(../img/builder/step-selected.png) no-repeat left top;
@@ -395,7 +393,7 @@ button.help {
       left:48%;
       z-index:10;
     }
-    
+
     a {
       .workflow-icon-white(0);
       &#build { .workflow-icon-white(0); }
@@ -406,12 +404,12 @@ button.help {
       padding: 3px 0 1px (@icon-width * 2);
       height: @icon-height;
       color: white;
-      font-family: 'Museo300Regular';
+      font-family: @roboto;
       font-size: @workflow-item-font-size;
       text-transform:uppercase;
       text-decoration:none;
     }
-    
+
     &.selected {
       em {
         display:block;
@@ -457,7 +455,7 @@ button.help {
     overflow: hidden;
 
     &:before {
-      font-family: FontAwesome; 
+      font-family: FontAwesome;
       font-size: @workflow-item-font-size;
       line-height: @workflow-item-height;
     }
@@ -469,7 +467,7 @@ button.help {
   }
 
   .next {
-    &:before { content: "\f054"; } 
+    &:before { content: "\f054"; }
   }
 
   .prev {
@@ -530,7 +528,7 @@ button.preview {
   position: absolute !important;
   right: 0px;
   //top: 28px;
-  font-family:'Museo300Regular';
+  font-family:@roboto;
   font-size:16px;
   li {
     height: @workflow-item-height;
@@ -551,7 +549,7 @@ button.preview {
   display: none;
 
   top: @workflow-bar-height;
-  background-color: black; 
+  background-color: black;
   padding-right: 20px;
   z-index: 1000;
   padding-bottom: 10px;
@@ -602,16 +600,16 @@ button.preview {
       &:hover {
         color:@orange;
       }
-    }  
+    }
   }
-  
+
   p, ol, ul, dl {
     &+h1, &+h2, &+h3, &+h4, &+h5 {
       margin-top:1.2em;
     }
   }
-  
-  input[type=reset], input[type=submit], input[type=cancel], 
+
+  input[type=reset], input[type=submit], input[type=cancel],
   button[type=reset], button[type=submit], button[type=cancel] {
     margin-right:1em;
     float:left;
@@ -624,7 +622,7 @@ button.preview {
   button[type=submit] {
     .button-style(hot);
   }
-  
+
 }
 
 // Containers need to shrink when the drawer is open
@@ -639,7 +637,7 @@ button.preview {
 
 // Drawer
 #drawer-container {
-  position: fixed; 
+  position: fixed;
   right: 0;
   height: 100%;
   z-index: 998;
@@ -653,7 +651,7 @@ button.preview {
 #drawer-controls {
   float: left;
   height: 100%;
-  border-right: solid 2px @highlight-blue; 
+  border-right: solid 2px @highlight-blue;
 
   .btn {
     display: block;
@@ -661,7 +659,7 @@ button.preview {
     border: none;
     padding: 8px 14px;
     color: white;
-    font-family: 'Museo300Regular';
+    font-family: @roboto;
     font-size:16px;
     background-color: @highlight-blue;
     border-radius: 4px 4px 0 0;
@@ -671,7 +669,7 @@ button.preview {
     transform-origin: 100% 100%;
     transform: rotate(-90deg);
     // TODO: Use modernizer to detect when a transform property isn't available
-    // and use this.  If it's just enabled by default, it makes the buttons 
+    // and use this.  If it's just enabled by default, it makes the buttons
     // look wonky in IE9.
     //
     // This is for rotations in older versions of IE.
@@ -693,7 +691,7 @@ button.preview {
 
 .drawer-open #drawer-contents {
   display: block;
-  padding: 1em;
+  padding: 2em;
 }
 
 // Help Drawer
@@ -722,6 +720,11 @@ button.preview {
 .builder,
 #story-info,
 #title-bar-contents {
+
+  h1 {
+    margin-left: 0;
+  }
+
   input, textarea {
     .sans-serif-text;
     box-shadow:inset 0 0 3px #ccc;
@@ -740,7 +743,7 @@ button.preview {
   .container_12;
   list-style: none;
   padding-top:30px;
-  
+
 }
 
 #app .story-templates li {
@@ -754,12 +757,12 @@ button.preview {
   p {
     margin-bottom:1em !important;
   }
-  
+
   h3 {
     height:1em;
   }
-  
-  // bit tricky here. using the anchor inside the 
+
+  // bit tricky here. using the anchor inside the
   // header to display the image. makes the anchor target
   // area overlap the containing li in an incomplete way.
   // @todo: probably need to massage the markup to get this just
@@ -772,10 +775,10 @@ button.preview {
     position:absolute;
     background:url(../img/builder/story-template-icons.png) no-repeat top left;
   }
-  
+
   @icon-height:80px;
   @icon-next-d:@icon-height;
-  
+
   .details, .examples {
     dt {
       .styled-header(left);
@@ -783,7 +786,7 @@ button.preview {
       margin-top:.8em;
     }
   }
-  
+
   // content block containing template details
   .details {
     display:none;
@@ -797,20 +800,20 @@ button.preview {
     width:auto;
     background:@light-gray;
     .box-shadow-inset(0, 0, 4px, lighten(@gray, 20%));
-    
+
     .details {
       display:block;
       position:relative;
       padding-top:1em;
       padding-bottom:2em;
     }
-    
+
     .divot {
       .inner-section-divot(4em, white);
       position:absolute;
       left:0;
       top: -4px;
-      
+
       &.odd {
         // this is a bit of a hack: not really sure why this value is right.
         left:52%;
@@ -825,12 +828,12 @@ button.preview {
     margin-top:1em;
     display:block;
     width:100%; // override font awesome's [li a] width rule.
-    
+
     &:before {
       padding-right:.5em;
     }
   }
-  
+
   &.data-story h3 a {
     background-position: 0 0;
   }
@@ -855,7 +858,7 @@ button.preview {
     .styled-header(left);
     font-weight:bold;
   }
-  
+
   * + dt {
     margin-top:.8em;
   }
@@ -888,7 +891,7 @@ button.preview {
 .section-controls {
   float:right;
   margin: 1em 20px 0 0;
-  
+
   h5 {
     display:inline-block;
     width:auto;
@@ -899,19 +902,20 @@ button.preview {
 
 .graphic-select-container {
   display:inline-block;
-  
+
   .widget {
     font-size:14px;
     color:white;
     padding:10px;
     border:none;
-    font-family: 'Museo300Regular';
+    font-family: @roboto-condensed;
     width:100%;
     border-radius:5px;
     background:@gray;
     z-index:301;
     position:relative;
-    
+    min-width: 110px;
+
     .arrow {
       display:block;
       position:absolute;
@@ -927,34 +931,35 @@ button.preview {
     background:@light-gray;
     border:1px solid @gray;
     border-radius: 0 0 3px 3px;
-    width:278px;  // account for 2px border, left and right
+    width:180px;
     overflow:hidden;
     position:absolute;
     z-index:300;  // *something* is covering it. sigh.
-    margin:0 !important;
+    margin:8px 0 0 0 !important;
     right:0;
-    
+
     @item-height: 83px;
     @item-next-d: @item-height * 2;
     @item-selected-d: @item-height;
-    
+
     .item {
       list-style: none;
       float:left;
       margin:0 12px 16px 0;
       opacity:.7;
       background:url(../img/builder/layouts.png) no-repeat left top;
-      text-indent:-32000px;
+      text-align: center;
+      padding-top: 32px;
       display:block;
       width:133px;
       height:@item-height;
-      
-      
+
+
       &.hover, &.selected {
         opacity:1;
         cursor:pointer;
       }
-      
+
       &.last {
         margin-right:0;
         &+.item {
@@ -964,7 +969,7 @@ button.preview {
       &.bottom {
         margin-bottom:0;
       }
-      
+
       &.one-up { background-position:0 0; }
       &.side-by-side { background-position:0 (@item-next-d * -1); }
       &.above-below { background-position:0 (@item-next-d * -2); }
@@ -1085,13 +1090,13 @@ button.preview {
   position: relative;
   margin-left: auto;
   margin-right: auto;
-  
+
   // TODO: Pick a more consistent padding
   // fsm 8/13: edited to provide a consistent space for
   // the character counter above the summary section title
   // padding-top: 2%;
   padding-top:2em;
-  
+
   width: 85%;
   height: 70%;
 
@@ -1145,9 +1150,9 @@ button.preview {
       margin: 0 !important;
       font-size: @h4-size !important;
     }
-    
+
   }
-  
+
   &.edit .wrapper {
     border-color:@highlight-blue;
     box-shadow:inset 0 0 5px @highlight-blue;
@@ -1174,7 +1179,7 @@ button.preview {
     width:100%;
     margin:0 auto;
     overflow:hidden;
-    height:180px;
+    min-height: 300px;
 
     &:before {
       //background:@highlight-blue;
@@ -1205,7 +1210,7 @@ button.preview {
         }
       }
     }
-    
+
     @item-y-offset:45px;
     @item-height: 35px;
     @item-margin: 10px;
@@ -1219,10 +1224,10 @@ button.preview {
         a {
           text-decoration:none;
           text-transform:uppercase;
-          font-family:"Museo300Regular";
+          font-family: @roboto;
           color:@gray;
           line-height:22px; // ???
-          
+
           &:after {
             .rounded-corners(3px);
             font-family:"FontAwesome";
@@ -1243,15 +1248,15 @@ button.preview {
               background:@orange;
             }
           }
-          
+
           &.unavailable {
             // Hide icons for unavailable asset types
             display: none;
           }
         }
       }
-  
-      
+
+
       &.image, &.audio, &.video, &.map {
         right:75%;
         text-align:right;
@@ -1273,19 +1278,19 @@ button.preview {
       &.audio, &.table { top: @item-y-offset + (1 * @item-next-d); }
       &.video, &.quotation { top: @item-y-offset + (2 * @item-next-d); }
       &.map, &.text { top: @item-y-offset + (3 * @item-next-d); }
-      
+
       &.image a:after { content:""; }
       &.audio a:after { content:""; }
       &.video a:after { content:""; }
       &.map a:after { content:""; }
-      
+
       &.chart a:after { content: ""; }
       &.table a:after { content: ""; }
       &.quotation a:after { content: ""; }
       &.text a:after { content: ""; }
     }
   }
-  
+
 }
 
 .storybase-container-placeholder.display {
@@ -1333,11 +1338,11 @@ button.preview {
   background-color: fadeout(#fff, 20%);
   border: solid 1px #bbb;
   .rounded-corners(5px);
-  border-radius: 0 5px 0 5px; 
+  border-radius: 0 5px 0 5px;
   box-shadow: inset 0 0 3px #ccc;
- 
+
   // TODO: If we decide to definitely use text instead of icons,
-  // delete img/builder/asset-edit-remove-icons.png 
+  // delete img/builder/asset-edit-remove-icons.png
   li {
     list-style: none !important;
     display: inline-block;
@@ -1354,7 +1359,7 @@ button.preview {
   }
 }
 
-// Asset Data Set List 
+// Asset Data Set List
 
 table.datasets {
   margin: 2% 0;
@@ -1381,7 +1386,7 @@ table.datasets {
     padding: 6px;
     border-bottom: 1px solid #CCCCCC;
   }
-  
+
   .url a {
     text-decoration: none;
   }
@@ -1393,35 +1398,35 @@ table.datasets {
 
 #app .bbf-form {
   overflow:hidden;
-  
+
   fieldset {
     border:none;
     min-width:100%;
   }
-  
+
   .bbf-field, .mutex-group {
     list-style-type:none;
     clear:both;
     min-width:100%;
-    
+
     label {
       float: none;
       width: 100%;
     }
-    
+
     .bbf-editor {
       margin-left: 0;
       width: 100%;
-      
+
       input[type=text], input[type=password], textarea {
         .box-sizing(border-box);
         width:100%
       }
-      
+
       input[type=file] {
         max-width:60%;
       }
-      
+
       .file-thumbnail, .not-set-thumbnail, .data-thumbnail {
         float:right;
         width:25%;
@@ -1429,7 +1434,7 @@ table.datasets {
         margin: 0 0 1em 1em;
         display:block;
       }
-      
+
       .not-set-thumbnail, .data-thumbnail {
         width:50px;
         height:60px;
@@ -1443,7 +1448,7 @@ table.datasets {
       .data-thumbnail {
         background-image: url(../img/data-file.png);
       }
-      
+
     }
 
     // Default select2 styles cut off placeholder text
@@ -1459,15 +1464,15 @@ table.datasets {
       }
     }
   }
-  
+
   .mutex-group {
-    
+
     fieldset {
       legend {
         display:none;
       }
     }
-    
+
     &.boxed {
       fieldset {
         border: 1px solid @light-gray;
@@ -1475,21 +1480,21 @@ table.datasets {
         .box-shadow-inset(0, 0, 5px, lighten(@medium-gray, 10%));
         padding: 1em;
         margin-bottom:1em;
-        
+
         legend {
           background:white;
           padding:0 .5em;
         }
       }
-      
+
     }
-    
+
     ul.nav {
       margin-bottom:10px;
     }
-    
+
   }
-  
+
   ul, ol {
     margin: 0;
     padding: 0;
@@ -1505,7 +1510,7 @@ table.datasets {
 #app .caption {
   overflow:hidden;
   padding:.5em;
-  
+
   form {
     overflow:hidden;
     textarea, button {
@@ -1574,7 +1579,7 @@ table.datasets {
   background-position: 0 (@scroll-arrow-height * 2);
   position: absolute;
   right: 10px;
-  
+
   &:hover {
     background-position: 0 ((@scroll-arrow-height * 2) - @scroll-arrow-hover-d);
   }
@@ -1593,7 +1598,7 @@ table.datasets {
   display: block;
   float: left;
   list-style: none;
-  
+
   em {
       background: url(../img/builder/section-selected.png) no-repeat left top;
       display:none;
@@ -1604,11 +1609,11 @@ table.datasets {
       left:60px;
       z-index:10;
   }
-  
+
   .spacer + em {
     left:70px;
   }
-  
+
   &.selected em {
     display:block;
   }
@@ -1677,7 +1682,7 @@ table.datasets {
     vertical-align: middle;
     text-align: center;
   }
-  
+
   .remove {
     display: none;
     position: absolute;
@@ -1691,7 +1696,7 @@ table.datasets {
   &:hover .remove {
     display: block;
   }
-  
+
 }
 
 .spacer {
@@ -1739,14 +1744,14 @@ table.datasets {
   width: 85% !important;
 
   .summary {
-    width: 95%;
+    // width: 95%;
     min-height: 400px;
   }
 
   .wysihtml5-sandbox {
     .vertical-space-important;
     // Override the element width that gets set by the Javascript plugin
-    // so the element adapts as the container width changes (e.g. to 
+    // so the element adapts as the container width changes (e.g. to
     // accomodate the drawer)
     width: 95% !important;
   }
@@ -1762,10 +1767,10 @@ table.datasets {
 
 // Featured Asset View
 
-#featured-asset { 
-  position: relative; 
+#featured-asset {
+  position: relative;
 
-  .nav { 
+  .nav {
     // TODO: Decide if padding-left: 0 should be the default style for uls
     // in the builder
     padding-left: 0 !important;
@@ -1779,12 +1784,12 @@ table.datasets {
 }
 
 #featured-asset-select {
-  padding: 0 !important; 
+  padding: 0 !important;
   // Clear the floated child elements
   overflow: hidden;
 
   li {
-    padding: 8px; 
+    padding: 8px;
     overflow: hidden;
     position: relative;
     float: left;
@@ -1792,7 +1797,7 @@ table.datasets {
     text-align: center;
     // TODO: change the ol li selector upstream to ol > li so these
     // don't get numbered bullets, for now, just override it
-    list-style-type: none !important; 
+    list-style-type: none !important;
 
     &.selected {
       background-color: @orange;
@@ -1911,7 +1916,7 @@ input[name=address] {
 }
 
 .story-url-wrapper {
-  margin-bottom: 0.6em; 
+  margin-bottom: 0.6em;
 }
 
 #story-url {
@@ -1951,9 +1956,9 @@ ol#publish-steps {
     &:before {
       content:counter(li)+'.';
       counter-increment:li;
-      font-family: @styled-header-family; 
+      font-family: @styled-header-family;
       font-size: @h3-size;
-      line-height: @base-line-height; 
+      line-height: @base-line-height;
       color: @dark-gray;
       position: absolute;
       left: 0;
@@ -1985,18 +1990,18 @@ ol#publish-steps {
   padding:20px;
   .box-shadow(0, 0, 8px, rgba(0, 0, 0, 0.4));
   .guider-text;
-  
+
   h1, h2, h3, h4, h5 {
     .styled-header(left);
     line-height:1em;
     margin-bottom:1em;
     color:@guider-text-color;
   }
-  
+
   ol, ul {
     padding-left:1em;
   }
-  
+
   .guider_content {
     p {
       .guider-text;
@@ -2008,11 +2013,11 @@ ol#publish-steps {
     .button-style(cool);
     font-size:17px;
   }
-  
+
   .guider_content {
     padding-top:10px;
   }
-  
+
   .guider_arrow {
       background:none;
       top:-19px;
@@ -2051,11 +2056,11 @@ ol#publish-steps {
   width: 100%;
 
   .meter {
-    position: relative; 
+    position: relative;
     width: 80%;
     height: 20px;
     border: @builder-input-border-width solid #bbb;
-    margin: -10px auto 0; 
+    margin: -10px auto 0;
   }
 
   .meter > span {
