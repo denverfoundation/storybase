@@ -1081,7 +1081,20 @@ button.preview {
 }
 
 .story-search {
-  width: 100%;
+  width: 80%;
+}
+
+.story-search-results {
+  padding-left: 0;
+
+  li {
+    list-style: none;
+  }
+
+  button {
+    padding: 2px 8px;
+    margin-right: 6px;
+  }
 }
 
 // Section Editor
@@ -1102,6 +1115,9 @@ button.preview {
 
   .section-title {
     width:75%;
+    // Keep from overlapping on small screens, set reasonable max width
+    max-width: 400px;
+    margin-bottom: 1em;
   }
 
   // Show label for section title input on its own line, above the input
@@ -1195,6 +1211,7 @@ button.preview {
       width: 25%;
       left:37.5%;
       position:absolute;
+      padding-bottom: 16px;
     }
 
     &.collapsed:before {
@@ -1605,7 +1622,7 @@ table.datasets {
       width:20px;
       height:12px;
       position:absolute;
-      top:86px;
+      top:84px;
       left:60px;
       z-index:10;
   }
@@ -1676,6 +1693,7 @@ table.datasets {
     position:relative;
     font-size: 12px;
     line-height: 1.2em;
+    margin-left: 0;
 
     // Required by the table-cell vertical centering technique.
     display: table-cell;
