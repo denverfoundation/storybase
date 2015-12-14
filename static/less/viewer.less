@@ -504,19 +504,21 @@
     position: fixed;
     bottom: 0;
     width: 100%;
-    padding: @viewer-bar-padding;
+    padding: 0;
     background-color: @footer-background-color;
     z-index: 9999;
 
     .logo {
-      position: static;
+      position: relative;
       float: right;
-      display: block;
+      display: inline-block;
       background-image: url(../img/viewer-logo.png);
       background-repeat: no-repeat;
       background-position: -42px 0;
       height: 27px;
       width: 26px;
+      top: 10px;
+      margin-left: 10px;
 
       span {
         .hide-text;
@@ -524,7 +526,7 @@
 
       @media (min-width: @viewer-nav-breakpoint) {
         background-position: 0px 0px;
-        width: 200px;
+        width: 205px;
       }
     }
   }
@@ -541,7 +543,7 @@
 
       @media (min-width: @viewer-nav-breakpoint) {
         display: none;
-        min-width: 220px;
+        min-width: @toc-width;
         width: 100%;
       }
     }
@@ -552,21 +554,19 @@
   }
 
   #toc {
-    position: fixed;
     bottom: 0;
-    right: 60px;
     padding: 11px;
     overflow: hidden;
     color: #fff;
     background-color: @blue-gray;
-    width: @toc-width;
+    float: right;
+
+    @media (min-width: @viewer-nav-breakpoint) {
+     width: @toc-width;
+    }
 
     &:hover {
       color: @orange;
-    }
-
-    @media (min-width: @viewer-nav-breakpoint) {
-      right: 230px;
     }
 
     .text {
@@ -628,8 +628,17 @@
 
   .referrer {
     position: relative;
-    top: 2px;
+    top: 10px;
+    left: 5px;
     margin-right: 16px;
+
+    span {
+      display: none;
+
+      @media (min-width: @viewer-nav-breakpoint) {
+        display: inline-block;
+      }
+    }
 
     i {
       font-size: 10px;
@@ -645,6 +654,7 @@
     background: @blue-gray;
     border: 1px solid @white20;
     border-radius: 4px;
+    margin-top: 8px;
   }
 
 
@@ -657,7 +667,7 @@
     padding: 0;
     bottom: 10px;
     width: auto;
-    right: 480px;
+    right: 440px;
 
     a {
       text-decoration: none;
