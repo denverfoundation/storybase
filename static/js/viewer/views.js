@@ -17,12 +17,12 @@
           // we allow our router to handle the location change.
           return true;
         }
-      
-        // if there is no router we trigger an event for internal 
+
+        // if there is no router we trigger an event for internal
         // use and prevent the anchor click from bubbling.
         var sectionId = $(event.currentTarget).attr('href').split('/')[1];
         this.trigger('navigate:section', sectionId);
-      
+
         return false;
       }
     }
@@ -48,7 +48,7 @@
         // 360x640 device is held in landscape mode.  In that case the
         // window height will be 360px, the header will be at least 80px,
         // making a ratio of 80/360 or 0.22.
-        stickyHeaderPercentage: 0.2 
+        stickyHeaderPercentage: 0.2
       },
 
       events: function() {
@@ -67,7 +67,7 @@
       initNavigationView: function() {
         this.navigationView = new StoryNavigation({
           sections: this.options.sections
-        }); 
+        });
       },
 
       /**
@@ -89,9 +89,9 @@
           this.options.router.on('route:section', this.setSectionById, this);
           this.options.router.on('route:connectedStory', this.showConnectedStory, this);
         }
-        
+
         $(window).on('resize.viewer', _.bind(this.handleResize, this));
-        
+
         // Has the view been rendered yet?
         this._rendered = false;
 
@@ -100,7 +100,7 @@
         _.bindAll(this, 'handleScroll');
         $(window).scroll(this.handleScroll);
       },
-      
+
       remove: function() {
         $(window).off('resize.viewer');
       },
@@ -146,7 +146,7 @@
       // Update the active story section in the sub-views
       updateSubviewSections: function() {
         this.navigationView.setSection(this.activeSection);
-        
+
         // highlight TOC entry
         this.$(this.options.tocEl).find('a')
           .removeClass('current')
@@ -189,14 +189,14 @@
       handleScroll: function(e) {
         // Do nothing. Subclasses might want to implement this to do some work
       },
-      
+
       handleResize: function(event) {
         storybase.views.sizeAssets({
           assetSelector: 'figure img',
           scope: this.$('#' + this.activeSection.id)
         });
       },
-      
+
       openToc: function() {
         var $tocEl = $(this.options.chromeTocEl);
         if (!$tocEl.data('open') || _.isUndefined($tocEl.data('open'))) {
@@ -247,7 +247,7 @@
       options: {
         templateSource: $('#navigation-template').html()
       },
-      
+
       events: {
         'click a.previous, a.next': 'handleNavClick'
       },
@@ -289,22 +289,22 @@
         }
         context.totalSectionsNum = this.sections.length;
         context.currentSectionNum = this.sections.indexOf(this.activeSection) + 1;
-        
+
         this.$el.html(this.template(context));
         return this;
       },
 
       // Set the section pointed to by the next button
       setNextSection: function(section) {
-        this.nextSection = section ? section : null; 
+        this.nextSection = section ? section : null;
       },
 
       // Set the section pointed to by the previous button
-      setPreviousSection: function(section) { 
+      setPreviousSection: function(section) {
         this.previousSection = section ? section : null;
       },
 
-      // Set the active section of the view 
+      // Set the active section of the view
       setSection: function(section) {
         this.showingConnectedStory = false;
         this.activeSection = section;
@@ -320,7 +320,7 @@
       },
 
       showConnectedStory: function() {
-        this.showingConnectedStory = true; 
+        this.showingConnectedStory = true;
         this.render();
       }
     })
@@ -350,8 +350,8 @@
     // Walk the section hierarchy to build a sense of its "shape"
     walkSectionHierarchy: function(depth, section) {
       if (this.maxDepth === null ||  depth > this.maxDepth) {
-        this.maxDepth = depth; 
-      } 
+        this.maxDepth = depth;
+      }
 
       if (this.sectionsAtDepth[depth] === undefined) {
         this.sectionsAtDepth[depth] = 1;
@@ -363,7 +363,7 @@
       if (this.sectionsAtDepth[depth] > this.maxSectionsAtDepth) {
         this.maxSectionsAtDepth = this.sectionsAtDepth[depth];
       }
-      
+
       var that = this;
       _.each(section.get('children'), function(childId) {
         that.walkSectionHierarchy(depth + 1, that.sections.get(childId));
@@ -400,8 +400,8 @@
         height -= $(selector).outerHeight();
       });
       return {
-        width: width, 
-        height: height 
+        width: width,
+        height: height
       };
     },
 
@@ -414,7 +414,7 @@
       var that = this;
       var elId = this.$el.attr('id');
       var dimensions = this.getVisDimensions();
-      var treeRadius = this.getTreeRadius(dimensions.width, dimensions.height); 
+      var treeRadius = this.getTreeRadius(dimensions.width, dimensions.height);
       // Create an SVG element for the spider visualization, attache it to the
       // DOM and set some properties.
       var svg = d3.select("#" + elId).insert("svg", this.insertBefore)
@@ -428,13 +428,13 @@
       // Initialize some attributes used by event handlers
       that.mouseDown = false;
 
-      // Bind some event handlers to the SVG element 
+      // Bind some event handlers to the SVG element
       // It would be nice to use Backbone/jQuery to do this, but
       // it's hard to give the handlers access to both the view
       // object and the d3 event/element
-      
+
       // Disable text selection when we enter the SVG element
-      // We need to do this in order to switch the cursor to the 
+      // We need to do this in order to switch the cursor to the
       // move icon
       svg.on('mouseover', function() {
         document.onselectstart = function() { return false; };
@@ -444,7 +444,7 @@
       svg.on('mouseout', function() {
         if (!that.mouseDown) {
           document.onselectstart = null;
-        }	
+        }
       });
 
       // Bind an event handler for when there's a click inside the SVG element
@@ -452,7 +452,7 @@
         // Change the curser icon
         d3.event.target.style.cursor = 'move';
         // Set our flag
-        that.mouseDown = true; 
+        that.mouseDown = true;
         // Make a record of our present mouse position
         that.pos = d3.svg.mouse(this);
       });
@@ -471,7 +471,7 @@
         svg.on('selectstart', function() { return false; });
         if (that.mouseDown) {
           // Only move things around if the mouse button is held down
-    
+
           // Save the new mouse position
           var currentPos = d3.svg.mouse(this);
           // Calculate how far we've moved since the last recorded mouse
@@ -486,7 +486,7 @@
 
           // Only pan the visualization if it remains partially visible
           // within the SVG element
-          if (newTranslateX > 0 && newTranslateY > 0 && 
+          if (newTranslateX > 0 && newTranslateY > 0 &&
               newTranslateX < dimensions.width && newTranslateY < dimensions.height) {
             that.translateX = newTranslateX;
             that.translateY = newTranslateY;
@@ -497,7 +497,7 @@
           that.pos = currentPos;
         }
       });
-      
+
       var rootSection = this.firstSection.populateChildren();
       var tree = d3.layout.tree()
         .size([360, treeRadius - 120])
@@ -525,7 +525,7 @@
         .attr('class', function(d) {
           return "node section-" + d.id;
         })
-        .attr("transform", function(d) { 
+        .attr("transform", function(d) {
           var transform = "";
           if (d.depth > 0) {
             transform += "rotate(" + (d.x - 90) + ")";
@@ -538,14 +538,14 @@
           .attr("r", 15);
 
       node.append("text")
-        .attr("x", function(d) { 
+        .attr("x", function(d) {
           if (d.depth === 0) { return 20; }
-          return d.x < 180 ? 20 : -20; 
+          return d.x < 180 ? 20 : -20;
         })
         .attr("y", ".31em")
-        .attr("text-anchor", function(d) { 
+        .attr("text-anchor", function(d) {
           if (d.depth === 0) { return "start"; }
-          return d.x < 180 ? "start" : "end"; 
+          return d.x < 180 ? "start" : "end";
         })
         .attr("transform", function(d) {
           var rotation = 0;
@@ -555,14 +555,14 @@
           else if (d.depth > 0) {
             rotation = 90 - d.x;
           }
-          return "rotate(" + rotation + ")"; 
+          return "rotate(" + rotation + ")";
         })
         .text(function(d) { return d.get('title'); });
 
       // Center the tree within the viewport
-      var treeBBox = vis[0][0].getBBox(); 
+      var treeBBox = vis[0][0].getBBox();
       that.translateX = (0 - treeBBox.x) + ((dimensions.width - treeBBox.width) / 2);
-      that.translateY = (0 - treeBBox.y) + ((dimensions.height - treeBBox.height) / 2); 
+      that.translateY = (0 - treeBBox.y) + ((dimensions.height - treeBBox.height) / 2);
       vis.attr("transform", "translate(" + that.translateX + ", " + that.translateY + ")");
     },
 
@@ -603,7 +603,7 @@
     footerTop: function() {
       return this.$('footer').offset().top;
     },
-    
+
     setStickyHeader: function(isSticky) {
       if (isSticky) {
         this.$('#header').css('position', 'fixed');
@@ -615,7 +615,7 @@
       else {
         this.$('#header').css('position', 'relative');
         this.$('#body').css(
-          'padding-top', 
+          'padding-top',
           this._displayProperties.bodyPaddingTop
         );
       }
@@ -624,7 +624,7 @@
     updateStickyHeader: function() {
       this.setStickyHeader((this.headerPercentage() < this.options.stickyHeaderPercentage));
     },
-  
+
     headerPercentage: function() {
       return this.$('#header').outerHeight() / $(window).height();
     },
@@ -632,20 +632,20 @@
     updateDisplayProperties: function() {
       this._displayProperties.bodyPaddingTop = parseInt(this.$('#body').css('padding-top'), 10);
     },
-    
+
     handleRendered: function() {
       this.updateDisplayProperties();
       this.updateStickyHeader();
 
       // defer loading of iframed assets until their section is shown.
-      storybase.views.deferSrcLoad({ 
-        selector: 'iframe.sandboxed-asset', 
+      storybase.views.deferSrcLoad({
+        selector: 'iframe.sandboxed-asset',
         scope: this.$el
       });
 
       this.showActiveSection();
     },
-    
+
     // Show the active section
     showActiveSection: function() {
       var $section = this.$('#' + this.activeSection.id);
@@ -653,26 +653,26 @@
       this.showingConnectedStory = false;
       // Hide connected stories
       this.$('.connected-story').hide();
-          
+
       this.$('.section')
         .not($section.show())
         .hide();
-      
+
       if (this._rendered) {
         // load any iframe assets in this section that were deferred
         // after initial render.
         storybase.views.loadDeferredAssetsAndSize({
-          assetSelector: 'iframe.sandboxed-asset', 
+          assetSelector: 'iframe.sandboxed-asset',
           scope: $section
         });
         // for image assets, we do some sizing logic once they have loaded.
-        // note that because image sizing depends on container dimensions, 
+        // note that because image sizing depends on container dimensions,
         // they must be visible to run the sizing logic.
         storybase.views.sizeAssetsOnLoad({
           assetSelector: 'figure img',
           scope: $section
         });
-        
+
       }
 
       // Some sections are long, and may require scrolling to see all the content.
@@ -711,7 +711,7 @@
         // allow the router to handle the location change
         return true;
       }
-      
+
       // just show the story, without affecting location or history.
       var storyId = $(event.target).attr('href').split('/')[1];
       this.showConnectedStory(storyId);
@@ -760,7 +760,7 @@
 
     render: function() {
       this.$el.addClass(this.attributes['class']);
-      // Create an element for the sidebar 
+      // Create an element for the sidebar
       $('<div></div>').prependTo(this.$('#body')).addClass('sidebar');
       // Clone the summary and place it in the sidebar
       this.$('#summary-text').clone().appendTo('.sidebar').show().condense({moreText: gettext("Read more")});
@@ -782,7 +782,7 @@
       // Hide all sections other than the active one
       this.$('.section').hide();
       this.$('#' + this.activeSection.id).show();
-      // Hide the visualization 
+      // Hide the visualization
       this.initialView.$('svg').hide();
     },
 
@@ -813,7 +813,7 @@
       var activeSectionEl = this.activeSectionEl();
       if (activeSectionEl !== null) {
         // Only toggle the topic map if an active section has been set
-        // The only time there should not be one set is when the viewer 
+        // The only time there should not be one set is when the viewer
         // first loads
         activeSectionEl.toggle();
         this.$('.sidebar').toggle();
@@ -825,7 +825,7 @@
           // Explicitly set the position of the svg element to accomodate the
           // sidebar
           this.initialView.visEl().css(
-            'left', 
+            'left',
             this.$('.sidebar').outerWidth()
           );
         }

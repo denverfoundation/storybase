@@ -2,7 +2,7 @@ var initializeGlobals = function() {
   storybase.API_ROOT = '/api/0.1/';
   storybase.MAP_CENTER = [39.74151, -104.98672];
   storybase.MAP_ZOOM_LEVEL = 11;
-  storybase.MAP_POINT_ZOOM_LEVEL = 14; 
+  storybase.MAP_POINT_ZOOM_LEVEL = 14;
 };
 
 /**
@@ -63,7 +63,7 @@ describe('AppView', function() {
 
   it('sets a "has-story" class on its element when the user selects a template', function() {
     var template = new MockStoryTemplate();
-    EventBus.trigger('select:template', template); 
+    EventBus.trigger('select:template', template);
     expect(this.view.$el.hasClass('has-story')).toBeTruthy();
   });
 
@@ -93,7 +93,7 @@ describe('AlertManagerView', function() {
       this.level = 'info';
       this.msg = "Test alert message";
       this.alertId = 'test-alert';
-      EventBus.on('show:alert', showAlertSpy); 
+      EventBus.on('show:alert', showAlertSpy);
       this.view.showAlert(this.level, this.msg, {
         alertId: this.alertId
       });
@@ -139,12 +139,12 @@ describe('SectionEditView view', function() {
       this.section = new Section({
         id: "dc044f23e93649d6b1bd48625fc301cd",
         layout_template: "<div class=\"section-layout side-by-side\">\n    <div class=\"left\">\n        <div class=\"storybase-container-placeholder\" id=\"left\"></div>\n    </div>\n    <div class=\"right\">\n        <div class=\"storybase-container-placeholder\" id=\"right\"></div>\n    </div>\n</div>\n",
-      }); 
+      });
       this.section.assets = new SectionAssets();
       this.view = new storybase.builder.views.SectionEditView({
         dispatcher: EventBus,
         model: this.section,
-        story: new Story(), 
+        story: new Story(),
         templateSource: $('#section-edit-template').html()
       });
     });
@@ -158,7 +158,7 @@ describe('SectionEditView view', function() {
            body: 'Test text asset body',
            content: 'Test text asset body'
         });
-        EventBus.trigger('do:add:sectionasset', this.section, this.asset, container); 
+        EventBus.trigger('do:add:sectionasset', this.section, this.asset, container);
       });
 
       it('should add the asset to the assets collection', function() {
@@ -184,7 +184,7 @@ function implementsWorkflowStep(context) {
 }
 
 describe('BuilderView view', function() {
-  var context = {}; 
+  var context = {};
 
   beforeEach(function() {
     spyOn(storybase.builder.views.BuilderView.prototype, 'setStoryTemplate');
@@ -204,7 +204,7 @@ describe('BuilderView view', function() {
         "story": "/api/0.1/stories/0b2b9e3f38e3422ea3899ee66d1e334b/",
         "tag_line": "it doesn't have to be so complicated",
         "template_id": "5586de9ad3674c7e926ca4f4f04da27b",
-        "time_needed": "30 minutes", 
+        "time_needed": "30 minutes",
         "title": "Explainer"
       });
     });
@@ -686,7 +686,7 @@ describe('PublishButtonView', function() {
       afterEach(function() {
         this.story.validateStory.restore();
       });
-    
+
       it('should save the story', function() {
         expect(this.story.save).toHaveBeenCalled();
       });
@@ -715,7 +715,7 @@ describe('PublishButtonView', function() {
         EventBus.off('alert', alertSpy);
         this.story.validateStory.restore();
       });
-    
+
       it('should not save the story', function() {
         expect(this.story.save).not.toHaveBeenCalled();
       });
@@ -752,7 +752,7 @@ describe('PublishButtonView', function() {
         EventBus.off('alert', alertSpy);
         this.story.validateStory.restore();
       });
-    
+
       it('should save the story', function() {
         expect(this.story.save).toHaveBeenCalled();
       });
@@ -944,10 +944,10 @@ describe('LicenseView', function() {
 describe('FeaturedAssetDisplayView', function() {
   beforeEach(function() {
     this.featuredAsset1 = new MockAsset({
-        content: '<img class="asset-thumbnail featured-asset" alt="" src="/media/filer_thumbnails/2013/01/02/test_image1.jpg">' 
+        content: '<img class="asset-thumbnail featured-asset" alt="" src="/media/filer_thumbnails/2013/01/02/test_image1.jpg">'
     });
     this.featuredAsset2 = new MockAsset({
-        content: '<img class="asset-thumbnail featured-asset" alt="" src="/media/filer_thumbnails/2013/01/02/test_image2.jpg">' 
+        content: '<img class="asset-thumbnail featured-asset" alt="" src="/media/filer_thumbnails/2013/01/02/test_image2.jpg">'
     });
     this.story = new MockStory();
     this.defaultImageUrl = '../img/default-image-story-335-200.png';
@@ -1013,25 +1013,25 @@ describe('FeaturedAssetSelectView', function() {
     this.asset1 = new MockAsset({
       asset_id: '0e279cbb85af43d9a9244c9b252edf71',
       type: 'image',
-      content: '<img class="asset-thumbnail featured-asset" alt="" src="/media/filer_thumbnails/2013/01/02/test_image1.jpg">', 
+      content: '<img class="asset-thumbnail featured-asset" alt="" src="/media/filer_thumbnails/2013/01/02/test_image1.jpg">',
       thumbnail_url: '/media/filer_thumbnails/2013/01/02/test_image1__222x222_q85.jpg'
     });
     this.asset2 = new MockAsset({
       asset_id: 'ecbe6e3f515a46259481c1efeb06d0b6',
       type: 'image',
-      content: '<img class="asset-thumbnail featured-asset" alt="" src="/media/filer_thumbnails/2013/01/02/test_image2.jpg">', 
+      content: '<img class="asset-thumbnail featured-asset" alt="" src="/media/filer_thumbnails/2013/01/02/test_image2.jpg">',
       thumbnail_url: '/media/filer_thumbnails/2013/01/02/test_image2__222x222_q85.jpg'
     });
     this.asset3 = new MockAsset({
       asset_id: '8e07570bb73940839026864cdb931501',
       type: 'image',
-      content: '<img class="asset-thumbnail featured-asset" alt="" src="/media/filer_thumbnails/2013/01/02/test_image2.jpg">', 
+      content: '<img class="asset-thumbnail featured-asset" alt="" src="/media/filer_thumbnails/2013/01/02/test_image2.jpg">',
       thumbnail_url: '/media/filer_thumbnails/2013/01/02/test_image3__222x222_q85.jpg'
     });
     // Simulate SectionAssetEditView.addAsset's behavior
     this.simulateAddAsset = function(asset) {
       this.story.assets.add(asset);
-      // Simulate saving the assets to the server 
+      // Simulate saving the assets to the server
       this.story.assets.trigger('sync');
     };
   });
@@ -1110,7 +1110,7 @@ describe('FeaturedAssetSelectView', function() {
         expect(this.view.$('.selected').first().html()).toContain(
           this.asset3.get('thumbnail_url'));
       });
-    });  
+    });
 
     describe("when a user clicks a thumbnail to select a featured asset", function() {
       beforeEach(function() {
@@ -1151,7 +1151,7 @@ describe("FeaturedAssetAddView", function() {
    beforeEach(function() {
      this.story = new MockStory();
      // Stub the saving of the asset.  In a perfect world, we'd
-     // mock the entire class, but we'd have to repeat the 
+     // mock the entire class, but we'd have to repeat the
      // implementation of the schema method.
      var MockSavingAsset = storybase.models.Asset.extend({
        save: mockSave
@@ -1168,7 +1168,7 @@ describe("FeaturedAssetAddView", function() {
      beforeEach(function() {
        this.view.render();
      });
-     
+
      it("should show an input for a URL", function() {
        expect(this.view.$('input[type=text][name=url]').length).toEqual(1);
      });
@@ -1216,12 +1216,12 @@ describe("FeaturedAssetAddView", function() {
          this.mockSaveHandler = function() {
            this.view.model.save();
          };
-         doSaveSpy = jasmine.createSpy('doSaveSpy'); 
-         EventBus.on("do:save:story", doSaveSpy); 
+         doSaveSpy = jasmine.createSpy('doSaveSpy');
+         EventBus.on("do:save:story", doSaveSpy);
        });
 
        afterEach(function() {
-         EventBus.off("do:save:story", doSaveSpy); 
+         EventBus.off("do:save:story", doSaveSpy);
        });
 
        it("should trigger an event to save the story and related models when the form is submitted", function() {
@@ -1262,7 +1262,7 @@ describe("FeaturedAssetView", function() {
        enabled: false
      });
      this.getNavItem = function(view) {
-       return this.view.$('[href=#' + view.id + ']'); 
+       return this.view.$('[href=#' + view.id + ']');
      };
      this.story = new MockStory();
      this.story.featuredAssets = new Backbone.Collection();
@@ -1325,14 +1325,14 @@ describe("FeaturedAssetView", function() {
      });
 
      it("should set the featured asset when an image asset is added to the story", function() {
-       this.mockImageAdd(this.imgAsset); 
+       this.mockImageAdd(this.imgAsset);
        expect(this.story.setFeaturedAsset).toHaveBeenCalledWith(this.imgAsset);
      });
 
      it("should not set the featured asset when a second image asset is added to the story", function() {
-       this.mockImageAdd(this.imgAsset); 
+       this.mockImageAdd(this.imgAsset);
        expect(this.story.setFeaturedAsset).toHaveBeenCalledWith(this.imgAsset);
-       this.mockImageAdd(this.imgAsset2); 
+       this.mockImageAdd(this.imgAsset2);
        expect(this.story.setFeaturedAsset).wasNotCalledWith(this.imgAsset2);
      });
    });
@@ -1353,9 +1353,9 @@ describe("FeaturedAssetView", function() {
      });
 
      it("should show only the display view's navigation item as active", function() {
-       expect(this.getNavItem(this.view.displayView).parent().hasClass('active')).toBeTruthy(); 
-       expect(this.getNavItem(this.view.addView).parent().hasClass('active')).toBeFalsy(); 
-       expect(this.getNavItem(this.view.selectView).parent().hasClass('active')).toBeFalsy(); 
+       expect(this.getNavItem(this.view.displayView).parent().hasClass('active')).toBeTruthy();
+       expect(this.getNavItem(this.view.addView).parent().hasClass('active')).toBeFalsy();
+       expect(this.getNavItem(this.view.selectView).parent().hasClass('active')).toBeFalsy();
      });
    });
 
@@ -1372,9 +1372,9 @@ describe("FeaturedAssetView", function() {
     });
 
     it("should show only the add subview's navigation item as active", function() {
-       expect(this.getNavItem(this.view.displayView).parent().hasClass('active')).toBeFalsy(); 
-       expect(this.getNavItem(this.view.addView).parent().hasClass('active')).toBeTruthy(); 
-       expect(this.getNavItem(this.view.selectView).parent().hasClass('active')).toBeFalsy(); 
+       expect(this.getNavItem(this.view.displayView).parent().hasClass('active')).toBeFalsy();
+       expect(this.getNavItem(this.view.addView).parent().hasClass('active')).toBeTruthy();
+       expect(this.getNavItem(this.view.selectView).parent().hasClass('active')).toBeFalsy();
     });
 
     describe("when a featured image is selected", function() {
@@ -1386,9 +1386,9 @@ describe("FeaturedAssetView", function() {
        expect(this.view.displayView.$el.is(':hidden')).toBeFalsy();
        expect(this.view.addView.$el.is(':hidden')).toBeTruthy();
        expect(this.view.selectView.$el.is(':hidden')).toBeTruthy();
-       expect(this.getNavItem(this.view.displayView).parent().hasClass('active')).toBeTruthy(); 
-       expect(this.getNavItem(this.view.addView).parent().hasClass('active')).toBeFalsy(); 
-       expect(this.getNavItem(this.view.selectView).parent().hasClass('active')).toBeFalsy(); 
+       expect(this.getNavItem(this.view.displayView).parent().hasClass('active')).toBeTruthy();
+       expect(this.getNavItem(this.view.addView).parent().hasClass('active')).toBeFalsy();
+       expect(this.getNavItem(this.view.selectView).parent().hasClass('active')).toBeFalsy();
       });
     });
   });
@@ -1399,18 +1399,18 @@ describe("FeaturedAssetView", function() {
        this.view.render();
      });
     it("should show the select subview's nav item as disabled", function() {
-       expect(this.getNavItem(this.view.selectView).parent().hasClass('disabled')).toBeTruthy(); 
+       expect(this.getNavItem(this.view.selectView).parent().hasClass('disabled')).toBeTruthy();
     });
 
     it("should not change the the displayed view when the select subview's navigation item is clicked", function() {
        this.getNavItem(this.view.selectView).click();
-       expect(this.getNavItem(this.view.selectView).parent().hasClass('active')).toBeFalsy(); 
+       expect(this.getNavItem(this.view.selectView).parent().hasClass('active')).toBeFalsy();
        expect(this.view.selectView.$el.is(':hidden')).toBeTruthy();
     });
 
     describe("when an asset is added to the story", function() {
       beforeEach(function() {
-        var asset = new MockAsset(); 
+        var asset = new MockAsset();
         this.view.selectView.enabled = true;
         this.story.assets.add(asset);
       });
@@ -1418,8 +1418,8 @@ describe("FeaturedAssetView", function() {
       it("should enable the navigation item for the select subview", function() {
         expect(this.getNavItem(this.view.selectView).parent().hasClass('disabled')).toBeFalsy();
       });
-    });  
-  });  
+    });
+  });
 });
 
 function getHeader(title, byline) {
@@ -1436,11 +1436,11 @@ function getHeader(title, byline) {
 describe('TitleView', function() {
   beforeEach(function() {
     var spec = this;
-    this.title = "Near Northeast Profile: Interactive Slideshow"; 
+    this.title = "Near Northeast Profile: Interactive Slideshow";
     // Selectors, relative to the view's element for interface elements of
     // interest.  Make these variables so the tests are less brittle if
     // we change the markup.
-    // 
+    //
     // Input for editing the title
     this.$el = getHeader(this.title).appendTo($('#sandbox'));
     // Element that contains the title text for display
@@ -1460,7 +1460,7 @@ describe('TitleView', function() {
     sinon.spy(this.view, 'render');
 
     this.initialSaveCallback = sinon.spy(function() {
-      this.view.model.save();  
+      this.view.model.save();
     });
     EventBus.on('do:save:story', this.initialSaveCallback, this);
 
@@ -1472,11 +1472,11 @@ describe('TitleView', function() {
     this.addMatchers({
       toHaveTitle: function(expected) {
         var view = this.actual;
-        var $title = spec.$title; 
+        var $title = spec.$title;
         var $input = spec.$editor();
         var title = view.model.get('title');
 
-        // The view's model's title should have the expected value       
+        // The view's model's title should have the expected value
         if (title != expected) {
           this.message = function() {
             return 'Expected the view\'s model to have the title "' + expected + ' instead it has "' + title + '"';
@@ -1582,7 +1582,7 @@ describe('TitleView', function() {
 
   it('fires a "display" event when the text input loses focus', function() {
     var spy = sinon.spy();
-   
+
     this.view.render();
     this.editTitle("New Title");
     this.view.once('display', spy);
@@ -1796,7 +1796,7 @@ var workflowStepItems = [
     title: "Label your story with topics and places so that people can easily discover it on Floodlight",
     text: "Tag",
     visible: true,
-    enabled: true, 
+    enabled: true,
     path: 'tag/'
   },
   {
@@ -1804,7 +1804,7 @@ var workflowStepItems = [
     title: "Post your story to Floodlight and your social networks",
     text: "Publish/Share",
     visible: true,
-    enabled: true, 
+    enabled: true,
     path: 'publish/'
   }
 ];
@@ -1815,7 +1815,7 @@ describe('WorkflowStepView', function() {
 
     this.view = new storybase.builder.views.WorkflowStepView({
       dispatcher: EventBus,
-      items: workflowStepItems 
+      items: workflowStepItems
     });
   });
 
@@ -2011,7 +2011,7 @@ describe('WorkflowNextPrevView', function() {
     });
 
     it("displays a link to the next step", function() {
-      expect(this.view).toHaveNextLinkTo(workflowStepItems[1].id); 
+      expect(this.view).toHaveNextLinkTo(workflowStepItems[1].id);
     });
   });
 
@@ -2026,11 +2026,11 @@ describe('WorkflowNextPrevView', function() {
     });
 
     it('displays a link to the previous step', function() {
-      expect(this.view).toHavePrevLinkTo(workflowStepItems[0].id); 
+      expect(this.view).toHavePrevLinkTo(workflowStepItems[0].id);
     });
 
     it('displays a link to the next step', function() {
-      expect(this.view).toHaveNextLinkTo(workflowStepItems[2].id); 
+      expect(this.view).toHaveNextLinkTo(workflowStepItems[2].id);
     });
   });
 
@@ -2047,17 +2047,17 @@ describe('WorkflowNextPrevView', function() {
     });
 
     it('displays a link to the previous step', function() {
-      expect(this.view).toHavePrevLinkTo(workflowStepItems[lastIndex - 1].id); 
+      expect(this.view).toHavePrevLinkTo(workflowStepItems[lastIndex - 1].id);
     });
 
     it('displays no link to the next step', function() {
-      expect(this.view).not.toHaveNextLink(); 
+      expect(this.view).not.toHaveNextLink();
     });
   });
 });
 
 describe('StoryInfoView', function() {
-  var context = {}; 
+  var context = {};
 
   beforeEach(function() {
     var view;

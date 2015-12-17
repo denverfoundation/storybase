@@ -17,7 +17,7 @@
     this.each(function() {
       var $el = $(this);
       if (!$container) {
-        // We couldn't match a container.  Create a new element before the first 
+        // We couldn't match a container.  Create a new element before the first
         // matched element.
         $container = $('<div>').addClass(settings.containerClassName).insertBefore($el);
       }
@@ -28,14 +28,14 @@
         $(this).toggleClass('icon-plus icon-minus');
         $el.toggleClass('is-collapsed is-expanded');
 
-        // Refresh the masonry to fill any gaps created by the expanded element 
+        // Refresh the masonry to fill any gaps created by the expanded element
         $container.masonry('reload');
         return false;
       });
     });
 
     $container.masonry({
-      itemSelector: this.selector 
+      itemSelector: this.selector
     });
 
     return this;

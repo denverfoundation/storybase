@@ -1,15 +1,15 @@
-/** 
+/**
  * Include this template file after backbone-forms.amd.js to override the default templates
- * 
+ *
  * 'data-*' attributes control where elements are placed
  */
 ;(function(Form) {
 
-    
+
   /**
    * Templates to match those used previous versions of Backbone Form, i.e. <= 0.11.0.
    * NOTE: These templates are deprecated.
-   * NOTE: This version is hacked from the distribution old.js to remove 
+   * NOTE: This version is hacked from the distribution old.js to remove
    * references to Form.editors.List as that editor no longer appears to be
    * supported.
    */

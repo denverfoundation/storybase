@@ -23,7 +23,7 @@
             'id': geoLevel
           },
           success: function(data) {
-            // If the place's geolevel doesn't have a parent, set the 
+            // If the place's geolevel doesn't have a parent, set the
             // filter id to 0 which should always return an empty list
             var parentId = data.objects[0].parent_id !== null ? data.objects[0].parent_id : 0;
             newFilters['geolevel__id'] = parentId;

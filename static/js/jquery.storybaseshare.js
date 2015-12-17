@@ -1,5 +1,5 @@
 (function($) {
-  
+
   var defaultOptions = {
     markup: '<h3>Loading&hellip;</h3>',
     header: 'Sharing Options',
@@ -17,10 +17,10 @@
       }
       return false;
     }
-  }; 
-  
+  };
+
   var instances = [];
-  
+
   var instanceMethods = {
     open: function() {
       var align = this.options.alignment.split(' ');
@@ -50,13 +50,13 @@
       this.isOpen = false;
     }
   };
-  
+
   // content cached per-object
   var popupContent = {};
-  
+
   // only add addThis script tag once
   var scriptAdded = false;
-  
+
   var fetchContent = function(instance) {
     var header = '<header>' + instance.options.header + '<span class="close"></span></header>';
     var url = instance.options.popupUrl;
@@ -86,7 +86,7 @@
       loadContent(instance);
     }
   };
-  
+
   var loadContent = function(instance) {
     instance.$popup.html(popupContent[instance.options.popupUrl]);
     // render off-screen, capture dimensions
@@ -102,22 +102,22 @@
       };
     }
   };
-  
+
   var pluginMethods = {
     init: function(pluginOptions) {
       // override defaults with passed options
       pluginOptions = $.extend(true, {}, defaultOptions, pluginOptions);
-      
+
       var plugin = this;
       this.each(function() {
         var $button = $(this);
-        
+
         // clone pluginOptions for this instance
         var instanceOptions = $.extend(true, {}, pluginOptions);
 
         var href = $button.attr('href');
         href = href.slice(-1) === '/' ? href : href + '/';
-        
+
         // defaults can be overridden by data-options JSON attribute on individual elements
         if ($button.data('options')) {
           $.extend(instanceOptions, $button.data('options'));
@@ -125,17 +125,17 @@
         // Either append 'popup' to the link target, or use the ``popupUrl`` specified in
         // the options
         instanceOptions.popupUrl = instanceOptions.popupUrl || href + 'popup/';
-        
+
         var $appendee = $(instanceOptions.appendeeSelector);
         if ($appendee.length) {
-          
+
           var instance = {};
           instance.$popup = $('<div class="storybase-share-popup"></div>');
           instance.$button = $button;
           instance.$appendee = $appendee;
-          
+
           $appendee.append(instance.$popup);
-          
+
           // copy over instance methods
           for (var name in instanceMethods) {
             instance[name] = $.proxy(instanceMethods[name], instance);
@@ -143,12 +143,12 @@
           // store options used for this instance
           instance.options = instanceOptions;
           instance.isOpen = false;
-          
+
           // attach instance to element
           $button.data('share-popup', instance);
-          
+
           $button.on('click', instanceOptions.onClick);
-          
+
           fetchContent(instance);
 
           instances.push(instance);
@@ -163,18 +163,18 @@
       // @todo
     }
   };
-  
+
   $.fn.storybaseShare = function(method) {
     if (pluginMethods[method]) {
       return pluginMethods[method].apply(this, Array.prototype.slice.call(arguments, 1));
-    } 
+    }
     else if ($.isPlainObject(method) || !method) {
       return pluginMethods.init.apply(this, arguments);
     }
     else {
       $.error('Method ' +  method + ' does not exist on jQuery.storybaseShare');
     }
-    
+
     return this;
   };
 })(jQuery);

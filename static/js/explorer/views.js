@@ -56,11 +56,11 @@
       }
       if (typeof opts.cluster === "object" && opts.cluster != this.cluster_) {
         this.cluster_ = opts.cluster;
-        this.stories_ = _.uniq(_.map(this.cluster_.getMarkers(), 
+        this.stories_ = _.uniq(_.map(this.cluster_.getMarkers(),
           function(marker) {
             return marker.marker.story;
         }));
-        this.count_ = this.stories_.length; 
+        this.count_ = this.stories_.length;
       }
 
       var styles_updated = 0;
@@ -111,11 +111,11 @@
       });
       popup.setLatLng(cluster.latlng_);
       popup.setContent(popupContent);
-      map.openPopup(popup); 
+      map.openPopup(popup);
     }
   });
   StoryClusterMarker.template = Handlebars.compile($('#story-list-marker-template').html());
-  // Monkey patch leafclusterer's ClusterMarker_ to use our inherited 
+  // Monkey patch leafclusterer's ClusterMarker_ to use our inherited
   // class
   ClusterMarker_ = StoryClusterMarker;
 
@@ -145,16 +145,16 @@
     initialize: function(options) {
       var that = this;
       this.selectedFilters = this.options.selectedFilters;
-      // Point around which to filter stories 
+      // Point around which to filter stories
       this.near = null;
       // Radius in miles around this.near to filter stories
       this.distance = Explorer.SEARCH_DISTANCE;
       // Should only stories with geographic points be shown
       this.onlyPoints = false;
-      // Flag to keep from re-fetching the same page of items when we're 
+      // Flag to keep from re-fetching the same page of items when we're
       // scrolled near the bottom of the window, but the new items haven't yet
       // loaded
-      this.isDuringAjax = false; 
+      this.isDuringAjax = false;
       // Is the tile, list or map view currently active
       this.activeView = null;
       // Total number of matching stories
@@ -166,7 +166,7 @@
           seen: false
         }
       };
-      this.compileTemplates(); 
+      this.compileTemplates();
       this.counterView = new StoryCount({
         count: this.stories.length,
         total: this.totalMatchingStories,
@@ -238,7 +238,7 @@
       // Distance from story list to bottom
       // Computed as: height of the document - top offset of story list container
       // - outer height of story list container
-      this.options.pixelsFromListToBottom = $(document).height() - this.storyListView.$el.offset().top - this.storyListView.$el.outerHeight(); 
+      this.options.pixelsFromListToBottom = $(document).height() - this.storyListView.$el.offset().top - this.storyListView.$el.outerHeight();
       this.$('.select-map-view,.select-tile-view,.select-list-view').tooltipster({
         position: 'bottom'
       });
@@ -327,7 +327,7 @@
       return false;
     },
 
-    /** 
+    /**
      * Check if the window has been scrolled to the bottom.
      */
     _nearbottom: function() {
@@ -560,7 +560,7 @@
           radius: this.$el.innerHeight() / 8,
           width: 2
         }).spin();
-        this.$el.append(spinner.el); 
+        this.$el.append(spinner.el);
       }
       return this;
     },
@@ -594,7 +594,7 @@
       this.initialOffset = null;
       this.compileTemplates();
 
-      // Manually bind window events 
+      // Manually bind window events
       $(window).bind('scroll', function(ev) {
         view.scrollWindow(ev);
       });
@@ -644,7 +644,7 @@
       this.$('select').each(function() {
         var select2 = $(this).data('select2');
         var title = $(this).attr('title');
-        var tooltipOptions; 
+        var tooltipOptions;
         if (title) {
           select2.container.attr('title', title);
           tooltipOptions = _.extend({
@@ -677,7 +677,7 @@
     },
 
     updatePercentageHeight: function() {
-      this._percentageHeight = this.$el.outerHeight() / $(window).height(); 
+      this._percentageHeight = this.$el.outerHeight() / $(window).height();
     },
 
     getPercentageHeight: function() {
@@ -702,7 +702,7 @@
     },
 
     setInitialProperties: function() {
-      this.initialOffset = this.$el.offset(); 
+      this.initialOffset = this.$el.offset();
       this.initialWidth = this.$el.width();
 
       // Enable tooltips if the filters aren't stacked on a small screen.
@@ -724,24 +724,24 @@
      */
     resizeWindow: function(ev) {
       var parentWidth = this.$el.parents().width();
-      var newWidth = parentWidth - (this.$el.outerWidth() - this.$el.width()); 
+      var newWidth = parentWidth - (this.$el.outerWidth() - this.$el.width());
 
       this.updatePercentageHeight();
 
-      this.initialWidth = newWidth; 
+      this.initialWidth = newWidth;
       this.$el.width(newWidth);
     },
 
     /*
      * Event handler for window scroll
      *
-     * Check to see if the filters would have scroll off screen and stick them 
+     * Check to see if the filters would have scroll off screen and stick them
      * to the top of the screen so they're always visible
      */
     scrollWindow: function(ev) {
       var scrollTop = $(window).scrollTop();
 
-      if (scrollTop > this.initialOffset.top && 
+      if (scrollTop > this.initialOffset.top &&
           this.getPercentageHeight() < this.options.stickyFilterPercentage) {
         $('#filter-proxy').addClass('shown').height(this.$el.outerHeight() + 'px');
         this.$el.addClass('sticky');
@@ -796,7 +796,7 @@
       this.$el.width('100%');
       this.$el.css('min-height', height);
       var spinner = new Spinner({
-        top: height / 2, 
+        top: height / 2,
         left: this.$el.width() / 2
       }).spin(this.$el[0]);
     },
@@ -878,8 +878,8 @@
 
   var Map = Views.Map = HandlebarsTemplateView.extend({
     tagName: 'div',
-    
-    id: 'map-container',  
+
+    id: 'map-container',
 
     mapId: 'map',
 
@@ -891,7 +891,7 @@
 
     events: function() {
       var events = {};
-      events["click #" + this.searchButtonId] = "proximitySearch"; 
+      events["click #" + this.searchButtonId] = "proximitySearch";
       events["click #" + this.clearButtonId] = "clearProximitySearch";
       return events;
     },
@@ -915,8 +915,8 @@
       this.initialZoom = Explorer.MAP_ZOOM_LEVEL;
 
       // Bind our callbacks to the view object
-      _.bindAll(this, 'redrawMap', 'geocode', 'geocodeFail', 
-                'checkPlaceInMapBounds', 'clearPlaceFilters', 'keepPlaceFilters', 
+      _.bindAll(this, 'redrawMap', 'geocode', 'geocodeFail',
+                'checkPlaceInMapBounds', 'clearPlaceFilters', 'keepPlaceFilters',
                 '_placeMarker', '_placeStoryMarkers');
       this.$el.append('<div id="' + this.mapId + '"></div>');
       this.map = null;
@@ -929,23 +929,23 @@
     makeLatLngs: function(featurePoints) {
       return _.map(featurePoints, function(point) {
         var latlng = new L.LatLng(point[1], point[0]);
-        return latlng; 
+        return latlng;
       });
     },
 
     /**
-     * Create a mapping library objects representing place boundaries  
+     * Create a mapping library objects representing place boundaries
      * @param {array} boundaryPoints Three dimensional array representing
      *    multipolygons.  The top level of the array represents the
      *    different place boundaries, the next level is each shape in the
      *    boundary, and the smallest level is a latitude/longitude pair.
-     * @return {array} An array of L.MultiPolygon objects 
+     * @return {array} An array of L.MultiPolygon objects
      */
     makeBoundaries: function(boundaryPoints) {
       var that = this;
       var boundaries = [];
       _.each(boundaryPoints, function(singleBoundaryPoints) {
-        var singleBoundaryLatlngs = [];  
+        var singleBoundaryLatlngs = [];
         _.each(singleBoundaryPoints, function(shapePoints) {
           var latlngs = that.makeLatLngs(shapePoints);
           singleBoundaryLatlngs.push(latlngs);
@@ -1031,7 +1031,7 @@
      * @param {object} story a Story model instance
      */
     _placeStoryMarkers: function(story) {
-      _.each(this._makeBundle(story, story.get("points")), this._placeMarker); 
+      _.each(this._makeBundle(story, story.get("points")), this._placeMarker);
     },
 
     render: function() {
@@ -1047,8 +1047,8 @@
           closePopupOnClick: false
         });
         this.map.setView(this.initialCenter, this.initialZoom);
-        
-        // See http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames 
+
+        // See http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
         var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
             osmAttrib = 'Map data &copy; 2012 OpenStreetMap contributors',
             osm = new L.TileLayer(osmUrl, {maxZoom: 18, attribution: osmAttrib});
@@ -1056,7 +1056,7 @@
         // Initialize the clusterer
         var clustererOpts = {
           maxZoom: 30,
-          gridSize: 30 
+          gridSize: 30
         };
         this.clusterer = new LeafClusterer(this.map, null, clustererOpts);
         this.$el.prepend(searchTemplate({
@@ -1066,14 +1066,14 @@
         }));
         this.map.addLayer(this.boundaryLayers);
         this.map.on('move', this.checkPlaceInMapBounds);
-        
+
       }
       else {
         // Map has already been initialized
         this.clusterer.clearMarkers();
       }
 
-      this.stories.each(that._placeStoryMarkers); 
+      this.stories.each(that._placeStoryMarkers);
 
       // Remove existing boundaries from the map
       this.boundaryLayers.clearLayers();
@@ -1134,7 +1134,7 @@
           }
         }
       });
-      
+
     },
 
     /**
@@ -1167,7 +1167,7 @@
      */
     redrawMap: function(point) {
       this.parentView.setMessageSeen('placeNotVisible');
-      // Recenter the map based on the geocoded point 
+      // Recenter the map based on the geocoded point
       var center = new L.LatLng(point.lat, point.lng);
       this.map.setView(center, Explorer.MAP_POINT_ZOOM_LEVEL);
       this.parentView.setNear(point);
@@ -1176,7 +1176,7 @@
 
     geocodeFail: function(address) {
       // TODO: Do something more exciting when geocoding fails
-      var popupContent = "<p>Geocoding of address " + address + " failed.  Try including a city and state in your address.</p>"; 
+      var popupContent = "<p>Geocoding of address " + address + " failed.  Try including a city and state in your address.</p>";
       var popup = new L.Popup();
       popup.setLatLng(this.map.getCenter());
       popup.setContent(popupContent);

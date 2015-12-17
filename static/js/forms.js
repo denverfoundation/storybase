@@ -18,12 +18,12 @@
 
     /**
      * Set up for file/image thumbnail rendering.
-     * 
+     *
      * We can't seem to render thumbnails directly from here. It seems that
      * render is called while our element is detached, so inserting an image
-     * before or after the input element has no effect once this editor's 
+     * before or after the input element has no effect once this editor's
      * element is inserted into the page.
-     * 
+     *
      * We *could* probably customize this editor to use a div container
      * and render the thumbnail inside the div, as a sibling to the input,
      * making the thumbnail a part of the BB.Forms "editor" definition.
@@ -31,7 +31,7 @@
      * For now, just annotate the input with its thumbnail as data—either a
      * path or a special value of some sort. The view can then be
      * responsible for actually rendering the thumb at the appropriate time.
-     * 
+     *
      * Also @see BBFFormMixin.renderFileFieldThumbnail.
      */
     render: function() {
@@ -67,7 +67,7 @@
         return this.$el.val();
       }
     },
-   
+
     /**
      * Retrieve the file selected in this input as a data URL
      */
@@ -85,7 +85,7 @@
 
 
   /**
-   * Custom validator for checkboxes.  
+   * Custom validator for checkboxes.
    *
    * For whatever reason, 'required' didn't work
    */
@@ -109,7 +109,7 @@
     var editorAttrs = fieldDef.editorAttrs || {};
 
     validators.push('required');
-    fieldClass += ' required'; 
+    fieldClass += ' required';
 
     // For now, we are not using the "required" attribute. Browser
     // support and UI for validation is inconsistent.
@@ -133,15 +133,15 @@
     }
     return labelText;
   };
-  
+
   /**
    * A form which groups any fields with a "mutex-group" class under a
    * pill selection menu. The first label in the field becomes the title
-   * of the pill. Only supports one such group per form. Assumes 
+   * of the pill. Only supports one such group per form. Assumes
    * fields are rendered as list items.
    */
   forms.MutexGroupedInputForm = Backbone.Form.extend({
-    
+
     events: {
       'click .nav a': 'handleNavClick'
     },
@@ -173,35 +173,35 @@
       }
       return result;
     },
-    
+
     showOption: function(index) {
       this.$el.find('.option').hide().filter('.option-' + index).show();
       this.$el.find('.nav li').removeClass('active').filter('.option-' + index).addClass('active');
       this.activeOption = index;
     },
-    
+
     handleNavClick: function(event) {
       var index = $(event.target).data('option');
       this.showOption(index);
       event.preventDefault();
     },
-    
+
     clearInactiveOptions: function(event) {
       this.$el.find('.mutex-group .option')
         .not('.option-' + this.activeOption)
           .find(':input')
             .val('');
     },
-    
+
     stashOptions: function() {
       var view = this;
       this.$el.find('.mutex-group .option :input').each(function() {
         view.valueStash[$(this).attr('name')] = $(this).val();
       });
     },
-    
+
     /**
-     * Note that security restrictions forbid setting a file input 
+     * Note that security restrictions forbid setting a file input
      * programmatically.
      */
     restoreOptions: function() {
@@ -212,9 +212,9 @@
       }
       this.valueStash = {};
     },
-    
+
     /**
-     * Override to clear hidden input values before submission. If 
+     * Override to clear hidden input values before submission. If
      * client-side validation fails, restore the hidden values before
      * continuing.
      */
@@ -232,7 +232,7 @@
 
   var RichTextEditor = forms.RichTextEditor = wysihtml5.Editor.extend({
     /*
-     * Create a rich text editor bound to a textarea. 
+     * Create a rich text editor bound to a textarea.
      *
      * Currently uses the wysihtml5 editor
      *
@@ -278,7 +278,7 @@
       }
 
       wysihtml5.Editor.call(this,
-        el,    
+        el,
         _.defaults(opts, {
           parserRules: wysihtml5ParserRules
         })
@@ -299,8 +299,8 @@
     _toolbarTemplateSource: $('#editor-toolbar-template').html(),
 
     _createEditorToolbarEl: function() {
-      return $(this._toolbarTemplateSource)[0]; 
-    }, 
+      return $(this._toolbarTemplateSource)[0];
+    },
 
     _toggleToolbarCallbacks: {
       'focus': function() {
@@ -365,5 +365,5 @@
         }
     }
   });
-  
+
 })($, _, Backbone, wysihtml5, storybase);

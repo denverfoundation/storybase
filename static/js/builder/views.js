@@ -42,7 +42,7 @@
 
 
   /**
-   * Default visible steps of the story builder workflow.  
+   * Default visible steps of the story builder workflow.
    *
    * These are usually passed to AppView when it is initialized.  However,
    * these defaults are provided to better document the behavior of the
@@ -50,7 +50,7 @@
    */
   var VISIBLE_STEPS = {
     build: true,
-    info: true, 
+    info: true,
     publish: true,
     tag: true
   };
@@ -76,7 +76,7 @@
    * @event save:section
    * @param Section section Section that was saved
    *     been saved.
-   * @param Boolean [showAlert] Should an alert be displayed by a callback 
+   * @param Boolean [showAlert] Should an alert be displayed by a callback
    *     bound to this event.
    */
 
@@ -86,7 +86,7 @@
    * @event save:story
    * @param {Story} story Story model instance that was successfully
    *     saved.
-   * @param {Boolean} [showAlert] Should an alert be displayed by a callback 
+   * @param {Boolean} [showAlert] Should an alert be displayed by a callback
    *     bound to this event.
    */
 
@@ -112,7 +112,7 @@
    * Currently, this is just used for the button that re-launches the tour.
    *
    * @event do:set:helpactions
-   * @param View actionView View that controls the display and UI events 
+   * @param View actionView View that controls the display and UI events
    *     for action buttons at the top of the help content in the drawer.
    */
 
@@ -124,7 +124,7 @@
    *
    * @event do:clear:helpactions
    */
-   
+
   /**
    * Hide any detail panes associated with StoryTemplateViews.
    *
@@ -175,7 +175,7 @@
    *   The asset types are objects with ``name`` and ``type`` properties.
    * @property {ContainerTemplates} options.containerTemplates - Collection
    *   of models describing help, default asset types and other properties of
-   *   a template story's section asset container. 
+   *   a template story's section asset container.
    * @property {Backbone.Events} options.dispatcher - Global event bus.
    *   This will be passed to subviews.
    * @property {Backbone.Collection} options.help - Collection of help items.
@@ -198,7 +198,7 @@
    *   related to the current story or story that will be created. This is
    *   used to specify the seed story in connected story relationships.
    * @property {StoryTemplates} options.storyTemplates - Collection of
-   *   available story templates. 
+   *   available story templates.
    * @property {object} options.startOverUrl - Path to launch a new instance
    *   of the builder.
    * @property {object} options.storyListUrl - Path to view that lists the
@@ -229,7 +229,7 @@
    *   story builder.
    * @property {boolean} options.forceTour - If truthy, force showing a tour
    *   of the story builder, even if options.showTour is falsey.
-   * @property {string} options.siteName 
+   * @property {string} options.siteName
    * @property {string} options.drawerEl - Selector for DOM element of the
    *   drawer.
    * @property {string} options.headerEl - Selector for DOM element of the
@@ -253,7 +253,7 @@
   Views.AppView = Backbone.View.extend({
     options: {
       alertsEl: '#alerts',
-      browserSupportMessage: "This site works best on a modern browser", 
+      browserSupportMessage: "This site works best on a modern browser",
       drawerEl: '#drawer-container',
       headerEl: '#header',
       language: 'en',
@@ -263,7 +263,7 @@
       subNavContainerEl: '#subnav-bar-contents',
       subviewContainerEl: '#app',
       toolsContainerEl: '#workflow-bar-contents',
-      visibleSteps: VISIBLE_STEPS, 
+      visibleSteps: VISIBLE_STEPS,
       workflowContainerEl: '#workflow-bar-contents',
       titleEl: '#title-bar-contents',
       bylineEl: '#title-bar-contents .byline-container',
@@ -298,8 +298,8 @@
 
       this.dispatcher = this.options.dispatcher;
       // The currently active step of the story building process
-      // This will get set by an event callback 
-      this.activeStep = null; 
+      // This will get set by an event callback
+      this.activeStep = null;
 
       if (!options.showStoryInfoInline) {
         this.titleView = new TitleView({
@@ -310,7 +310,7 @@
         this.titleView.render();
         if (_.isUndefined(this.model)) {
           // If this is a new story, show the title input initially
-          this.titleView.once('set:model', this.showTitleEditor, this); 
+          this.titleView.once('set:model', this.showTitleEditor, this);
         }
 
         this.bylineView = new BylineView({
@@ -320,7 +320,7 @@
         });
         this.bylineView.render();
 
-        this.bylineView.on('edit', this.toggleByline, this); 
+        this.bylineView.on('edit', this.toggleByline, this);
         this.titleView.on('edit', this.toggleTitle, this);
       }
 
@@ -380,7 +380,7 @@
       // in options. We don't iterate through the steps because the
       // views use different constructor options. If this gets to
       // unwieldy, maybe use a factory function.
-     
+
       if (this.options.visibleSteps.info) {
         this.subviews.info = new StoryInfoView(
           _.defaults({
@@ -390,7 +390,7 @@
         );
         workflowSteps.push(_.result(this.subviews.info, 'workflowStep'));
       }
-      
+
       if (this.options.visibleSteps.publish) {
         this.subviews.publish =  new PublishView(
           _.defaults({
@@ -466,7 +466,7 @@
       this.dispatcher.off('open:drawer', this.openDrawer, this);
       this.dispatcher.off('close:drawer', this.closeDrawer, this);
       this.dispatcher.off('select:template', this.setTemplate, this);
-      this.dispatcher.off('select:workflowstep', this.updateStep, this); 
+      this.dispatcher.off('select:workflowstep', this.updateStep, this);
       this.dispatcher.off('error', this.error, this);
       this.dispatcher.off('select:template', this.setStoryClass, this);
       this.dispatcher.off('select:section', this.handleSelectSection, this);
@@ -487,9 +487,9 @@
      */
     updatePath: function(story) {
       var path = story.id + '/';
-      path += this.activeStep === 'build' ? '' : this.activeStep + '/'; 
+      path += this.activeStep === 'build' ? '' : this.activeStep + '/';
       this.dispatcher.trigger('navigate', path, {
-        trigger: true 
+        trigger: true
       });
     },
 
@@ -526,8 +526,8 @@
 
     /**
      * Set the active step of the workflow and re-render the view
-     * 
-     * @param {String} step ID of the workflow step to set.  Must be one 
+     *
+     * @param {String} step ID of the workflow step to set.  Must be one
      *     of "build", "data", "tag", "info" or "publish"
      * @param {Function} [callback] Callback function that will be called
      *     after the active workflow step is set.
@@ -537,7 +537,7 @@
       // Checking that step is different from the active step is
       // required for the initial saving of the story.  The active view
       // has already been changed by ``this.setTemplate`` so we don't
-      // want to re-render.  In all other cases the changing of the 
+      // want to re-render.  In all other cases the changing of the
       // active view is initiated by the router triggering the ``select:
       // workflowstep`` signal
       if (this.activeStep != step) {
@@ -579,7 +579,7 @@
       }
       this._activeSubNavView = _.isUndefined(activeView.getSubNavView) ? null : activeView.getSubNavView();
       if (this._activeSubNavView) {
-        $subNavContainerEl.append(this._activeSubNavView.el);  
+        $subNavContainerEl.append(this._activeSubNavView.el);
       }
     },
 
@@ -591,7 +591,7 @@
      *   padding adjusted.
      *
      * This has to be done dynamically because the header is different
-     * heights based on different workflow steps. 
+     * heights based on different workflow steps.
      */
     pushDown: function($el) {
       var $header = this.$(this.options.headerEl);
@@ -599,7 +599,7 @@
 
       if ($header.length) {
         // Calculate the offset, factoring in scroll position
-        offsetTop = $header.offset().top - $(window).scrollTop(); 
+        offsetTop = $header.offset().top - $(window).scrollTop();
         orig = $el.css('margin-top');
         headerBottom = offsetTop + $header.outerHeight();
         $el.css('margin-top', headerBottom);
@@ -696,7 +696,7 @@
       }
 
       // If we haven't returned yet, we have support for everything needed
-      return true; 
+      return true;
     },
 
     setStoryClass: function() {
@@ -705,7 +705,7 @@
       //
       // In particular, this causes the story title bar to be revealed.
       this.$el.addClass('has-story');
-     
+
       // Setting the ``has-story`` class causes the title bar to be revealed
       // so we need to readjust the top padding on the subview container
       // and the drawer in order to accomodate the larger header.
@@ -780,10 +780,10 @@
       var val, inputHtml;
 
       if (this.model) {
-        val = this.getVal() || ''; 
-        inputHtml = this.options.template({ 
+        val = this.getVal() || '';
+        inputHtml = this.options.template({
           attr: this.options.attr,
-          value: val, 
+          value: val,
           placeholder: this.options.placeholder,
           editorTooltip: this.options.editorTooltip
         });
@@ -794,7 +794,7 @@
         this.$display().attr('title', this.options.tooltip)
             .tooltipster({
               position: 'top-left'
-            }); 
+            });
 
         // Add the hidden form element
         $(inputHtml).hide().appendTo(this.$el)
@@ -897,7 +897,7 @@
      * Hook for toggling the display of the views elements.
      *
      * Because this view may operate on pre-existing elements, with
-     * additional subelements, calling this.$el.toggle() might hide 
+     * additional subelements, calling this.$el.toggle() might hide
      * elements outside of the view's concern.
      */
     toggle: function() {
@@ -921,7 +921,7 @@
 
     extraRender: function() {
       // Add a character counter
-      this.charCountView = new CharacterCountView({ 
+      this.charCountView = new CharacterCountView({
         dispatcher: this.dispatcher,
         target: this.$editor(),
         warningLimit: 100,
@@ -966,7 +966,7 @@
   var AlertManagerView = Views.AlertManagerView = Backbone.View.extend({
     initialize: function(options) {
       this.dispatcher = options.dispatcher;
-      // Track messages that are currently visible 
+      // Track messages that are currently visible
       this._visible = {};
 
       this.dispatcher.on("alert", this.showAlert, this);
@@ -975,7 +975,7 @@
     _hashAlert: function(level, msg) {
       return level + ':' + msg;
     },
-    
+
     /**
      * Callback for when an AlertView is closed
      *
@@ -1081,18 +1081,18 @@
       }
       this.$el.addClass('alert-' + this.options.level);
       this.$el.html(html);
-      
+
       return this;
     },
 
     /**
      * Trigger a fadeOut animation on the element, then remove the view
      *
-     * This must be called after the view has been added to the DOM 
+     * This must be called after the view has been added to the DOM
      */
     fadeOut: function() {
       if (this.options.timeout) {
-        this.$el.fadeOut(this.options.timeout, _.bind(this.close, this)); 
+        this.$el.fadeOut(this.options.timeout, _.bind(this.close, this));
       }
       return this;
     },
@@ -1154,7 +1154,7 @@
 
       // The state of the drawer
       this._open = false;
-      // Store the button views 
+      // Store the button views
       this._buttons = {};
       // Store the order of buttons
       this._buttonIds = [];
@@ -1164,10 +1164,10 @@
     /**
      * Register a view with the drawer.
      *
-     * @param {Object} view Backbone view 
+     * @param {Object} view Backbone view
      *
      * The view must have the following properties:
-     *   drawerButton: an instance (or function returning an instance) of 
+     *   drawerButton: an instance (or function returning an instance) of
      *     DrawerButtonView
      *   drawerOpenEvents: a string with a space-separated list of events that
      *     will open the drawer and show the view.  This provides a
@@ -1281,7 +1281,7 @@
     isOpen: function() {
       return this._open;
     },
-    
+
     toggle: function(view) {
       var activeView = this.activeView();
       if (this.isOpen()) {
@@ -1365,7 +1365,7 @@
         this.dispatcher = this.options.dispatcher;
         this.help = null;
         this.helpHistory = [];
-       
+
         this.$el.hide();
 
         this.dispatcher.on('do:show:help', this.show, this);
@@ -1414,7 +1414,7 @@
        */
       set: function(help, opts) {
         if (!_.isUndefined(opts) && opts.remember && this.help) {
-          // Save the current help value before replacing it 
+          // Save the current help value before replacing it
           this.helpHistory.push(this.help);
         }
 
@@ -1452,7 +1452,7 @@
       clearActions: function() {
         this.actionsView = null;
       },
-     
+
       /**
        * Render the action buttons.
        */
@@ -1529,18 +1529,18 @@
      *
      * If the property value is a string, it tries to call a method of that name
      * on this view instance and return that value.  Otherwise, it returns the
-     * value of the property or the return value of a call to the property if 
+     * value of the property or the return value of a call to the property if
      * it is a function.
      */
     getPropertyValue: function(item, property, defaultVal) {
       defaultVal = _.isUndefined(defaultVal) ? true : defaultVal;
       if (_.isUndefined(item[property])) {
-        // Property is undefined, return the default value 
-        return defaultVal; 
+        // Property is undefined, return the default value
+        return defaultVal;
       }
       else if (_.isString(item[property])) {
         // Visible property is a string, treat it as the name of a
-        // property of this view and return its value. 
+        // property of this view and return its value.
         return _.result(this, item[property]);
       }
       else {
@@ -1564,10 +1564,10 @@
     getItemClass: function(itemOptions) {
       var cssClass = itemOptions.className || "";
       var enabled = this.getPropertyValue(itemOptions, 'enabled', true);
-      var selected = this.getPropertyValue(itemOptions, 'selected', false); 
+      var selected = this.getPropertyValue(itemOptions, 'selected', false);
 
       if (!enabled) {
-        cssClass = cssClass + " disabled"; 
+        cssClass = cssClass + " disabled";
       }
 
       if (selected) {
@@ -1606,7 +1606,7 @@
    * List of clickable items that navigate to different workflow
    * steps.
    */
-  var WorkflowNavView = Views.WorkflowNavView = ClickableItemsView.extend({ 
+  var WorkflowNavView = Views.WorkflowNavView = ClickableItemsView.extend({
     tagName: 'div',
 
     className: 'workflow-nav',
@@ -1702,11 +1702,11 @@
       var valid = _.isFunction(item.validate) ? item.validate() : true;
       var href;
       var route;
-      if (!$button.hasClass("disabled") && !$button.parent().hasClass("disabled") && valid) { 
+      if (!$button.hasClass("disabled") && !$button.parent().hasClass("disabled") && valid) {
         href = $button.attr("href");
         // Strip the base path of this app
         route = href.substr(Builder.APP_ROOT.length);
-        this.dispatcher.trigger('navigate', route, 
+        this.dispatcher.trigger('navigate', route,
           {trigger: true, replace: true});
       }
     }
@@ -1742,7 +1742,7 @@
     extraInit: function(options) {
       this._itemIndexes = {};
       _.each(this.items, function(item, idx) {
-        this._itemIndexes[item.id] = idx;  
+        this._itemIndexes[item.id] = idx;
       }, this);
     },
 
@@ -1752,7 +1752,7 @@
       this.activeStep = step;
       this._prevStep = null;
       this._nextStep = null;
-      
+
       activeIdx = this._itemIndexes[this.activeStep];
       if (!_.isUndefined(activeIdx)) {
         prevIdx = activeIdx - 1;
@@ -1866,7 +1866,7 @@
           title: gettext("Preview your story in a new window"),
           text: gettext('Preview'),
           callback: 'previewStory',
-          visible: false, 
+          visible: false,
           enabled: 'isStorySaved'
         },
         {
@@ -1874,14 +1874,14 @@
           title: gettext("Leave your story and start a new one with a different template"),
           text: gettext('Start Over'),
           path: this.options.startOverUrl,
-          visible: false 
+          visible: false
         },
         {
           id: 'exit',
           title: gettext("Leave the Story Builder and go back to the homepage. You can always return later"),
           text: gettext('Exit'),
           path: '/',
-          visible: true 
+          visible: true
         }
       ];
     },
@@ -1918,11 +1918,11 @@
       evt.preventDefault();
       this.dispatcher.trigger('do:show:help');
     },
-    
+
     handleStorySave: function(story) {
       var item = this.getItem('preview');
       if (!story.isNew() && _.isUndefined(this.storyId)) {
-        this.storyId = story.id; 
+        this.storyId = story.id;
         item.path = this.previewURLTemplate({story_id: this.storyId});
       }
       item.visible = true;
@@ -1957,7 +1957,7 @@
    */
   var SelectStoryTemplateView = Views.SelectStoryTemplateView = HandlebarsTemplateView.extend({
     tagName: 'ul',
-   
+
     className: 'story-templates view-container',
 
     options: {
@@ -1965,7 +1965,7 @@
     },
 
     initialize: function() {
-      this.compileTemplates(); 
+      this.compileTemplates();
       this.dispatcher = this.options.dispatcher;
       _.bindAll(this, 'addTemplateEntry');
     },
@@ -1997,9 +1997,9 @@
     attributes: function() {
       return {
         // Use this instead of the className property so we can set the class
-        // dynamically when the view is instantiated based on the model's 
+        // dynamically when the view is instantiated based on the model's
         // slug
-        'class': 'template ' + this.model.get('slug') 
+        'class': 'template ' + this.model.get('slug')
       };
     },
 
@@ -2013,7 +2013,7 @@
     },
 
     initialize: function() {
-      this.compileTemplates(); 
+      this.compileTemplates();
       this.dispatcher = this.options.dispatcher;
       this.dispatcher.on('do:hide:template:detail', this.removeDetailPane, this);
     },
@@ -2051,7 +2051,7 @@
         }, this));
       }
     },
-    
+
     showDetailPane: function() {
       var $insertAfter = this.$el;
       var isEven = this.$el.hasClass('even');
@@ -2070,7 +2070,7 @@
             this.scrollToDetailPane();
           }, this));
     },
-    
+
     scrollToDetailPane: function() {
       var pane = this.$el.parent().find('.template-details.' + this.model.get('slug') + ':visible');
       if (pane.length) {
@@ -2081,7 +2081,7 @@
         }
       }
     },
-    
+
     /**
      * Event handler for clicking a template's link
      */
@@ -2134,7 +2134,7 @@
      * Detect if a guider's element falls outside of the window and push it
      * in place if it does.
      *
-     * This is meant to be bound to the guider element's 'guiders.show' event 
+     * This is meant to be bound to the guider element's 'guiders.show' event
      */
     nudgeIntoWindow: function($guiderEl) {
       var windowWidth = $(window).width();
@@ -2142,7 +2142,7 @@
       var guiderElemWidth = $guiderEl.outerWidth();
       var isGuiderRight = (guiderOffset.left + guiderElemWidth > windowWidth);
       var isGuiderLeft = (guiderOffset.left < 0);
-      // Check if the guider ends up to the left or to the right of the 
+      // Check if the guider ends up to the left or to the right of the
       // window and nudge it over until it fits
       if (isGuiderRight) {
         this.nudge($guiderEl, windowWidth - guiderOffset.left - guiderElemWidth);
@@ -2159,7 +2159,7 @@
      *
      * @param {Boolean} [force=false] Force showing the tour, ignoring
      *    other checks.
-     *     
+     *
      */
     showTour: function(force) {
       if (force) {
@@ -2173,7 +2173,7 @@
       if (this.options.forceTour) {
         return true;
       }
-    
+
       if ($.cookie('storybase_builder_tour_seen') === TOUR_VERSION) {
         return false;
       }
@@ -2198,7 +2198,7 @@
         $(myGuider.elem).bind("guiders.show", function() {
           that.nudgeIntoWindow($(this));
         });
-      }; 
+      };
 
       // Set a cookie so the builder tour is not shown again
       var setCookie = function() {
@@ -2225,8 +2225,8 @@
         onShow: bindNudge,
         onClose: setCookie
       };
-      
-      if (this.showTour(force)) { 
+
+      if (this.showTour(force)) {
         guiders.createGuider(_.defaults({
           id: 'workflow-step-guider',
           attachTo: '#workflow-step #build',
@@ -2249,10 +2249,10 @@
           // title-bar element.  Position it more to the left.
           offset: {
             left: -200,
-            top: -50 
+            top: -50
           },
           title: gettext("Edit your title and author information here."),
-          description: gettext("Clicking on the title or author information here lets you set your story's title or your name and affiliation. Press Enter to save your changes.  You can edit the title or byline at any point during the story building process."), 
+          description: gettext("Clicking on the title or author information here lets you set your story's title or your name and affiliation. Press Enter to save your changes.  You can edit the title or byline at any point during the story building process."),
           next: 'section-list-guider'
         }, defaultOpts));
         guiders.createGuider(_.defaults({
@@ -2362,7 +2362,7 @@
         }, defaultOpts));
         guiders.show('workflow-step-guider');
         // HACK: Workaround for #415.  In IE, re-nudge the first guider element
-        // after waiting a little bit. In some cases, the initial CSS change 
+        // after waiting a little bit. In some cases, the initial CSS change
         // above doesn't render properly. The pause seems to fix this.  Note
         // that this uses the internal guiders API to get the element.
         if (MSIE) {
@@ -2467,7 +2467,7 @@
           // some story and section fields from the template. But, we
           // have to wait for the sections to sync first
           this.model.sections.once("reset", function(sections) {
-            this.model.suggestionsFromTemplate(this.templateStory); 
+            this.model.suggestionsFromTemplate(this.templateStory);
             this.dispatcher.trigger('ready:story', this.model);
           }, this);
         }
@@ -2528,7 +2528,7 @@
     createEditViews: function() {
       var callEditView = null;
 
-      this.model.sections.each(this.createSectionEditView); 
+      this.model.sections.each(this.createSectionEditView);
 
       if (this.options.showCallToAction) {
         callEditView = new CallToActionEditView({
@@ -2652,8 +2652,8 @@
       if (this._saveRelatedStories) {
         // Only save the related stories if they've never been saved before
         if (this.model.relatedStories.length) {
-          // Only bother making the request if there is actually data to 
-          // save 
+          // Only bother making the request if there is actually data to
+          // save
           this.model.saveRelatedStories();
         }
         this._saveRelatedStories = false;
@@ -2679,7 +2679,7 @@
     hasAssetList: function() {
       var hasAssets = false;
       if (this.model.unusedAssets.length) {
-        hasAssets = true; 
+        hasAssets = true;
       }
       this.dispatcher.trigger('has:assetlist', hasAssets);
     },
@@ -2758,7 +2758,7 @@
     /**
      * Make an ISO-8601 formatted string adhere to the 'strict' standard.
      *
-     * In our case, this just means removing the microseconds from the 
+     * In our case, this just means removing the microseconds from the
      * string.
      */
     _makeStrict: function(dateStr) {
@@ -2781,7 +2781,7 @@
       this.dispatcher.on('save:section', this.updateLastSaved, this);
       this.dispatcher.on('save:story', this.updateLastSaved, this);
       this.dispatcher.on('ready:story', this.showButton, this);
-      this.dispatcher.on('do:save:story', this.setSaving, this); 
+      this.dispatcher.on('do:save:story', this.setSaving, this);
 
       this.$buttonEl = $('<button type="button">' + this.options.buttonText[this.state] + '</button>')
         .attr('id', this.options.buttonId)
@@ -2811,7 +2811,7 @@
 
     updateLastSaved: function() {
       var view = this;
-      this.lastSaved = new Date(); 
+      this.lastSaved = new Date();
       this.render();
       view.setState('saved');
       setTimeout(function() {
@@ -2859,7 +2859,7 @@
     drawerCloseEvents: 'do:hide:assetlist'
   };
 
-  /** 
+  /**
    * A list of assets associated with the story but not used in any section.
    */
   var UnusedAssetView = Views.UnusedAssetView = HandlebarsTemplateView.extend(
@@ -2873,7 +2873,7 @@
       },
 
       initialize: function() {
-        this.compileTemplates(); 
+        this.compileTemplates();
         this.dispatcher = this.options.dispatcher;
         this.assets = this.options.assets;
 
@@ -2943,11 +2943,11 @@
 
   /**
    * Create a character count view attached to either an input or wysihtml5 editor.
-   * 
+   *
    * Required parameter:
-   * 
+   *
    * @param {Object|HTMLElement} options.target The wysihtml5 editor, or an input element.
-   * 
+   *
    */
   var CharacterCountView = Views.CharacterCountView = HandlebarsTemplateView.extend({
     tagName: 'div',
@@ -2973,7 +2973,7 @@
 
       this.setEditor(options.target);
 
-      this.dispatcher.on('select:section', 
+      this.dispatcher.on('select:section',
         this.handleSectionChanged, this
       );
 
@@ -2988,7 +2988,7 @@
      */
     setEditor: function(editor) {
       if (editor instanceof wysihtml5.Editor) {
-        this.editor = editor; 
+        this.editor = editor;
         this.editorType = 'wysihtml5';
       }
       else {
@@ -3018,18 +3018,18 @@
         this.$el.slideDown();
       }
     },
-    
+
     handleEditorBlur: function() {
       this.stopPolling();
       if (this.options.showOnFocus) {
         this.$el.slideUp();
       }
     },
-    
+
     handleEditorChange: function() {
       this.updateCharacterCount();
     },
-    
+
     handleEditorLoad: function() {
       this.updateCharacterCount();
     },
@@ -3046,7 +3046,7 @@
       }
       return this.editor.val();
     },
-    
+
     updateCharacterCount: function() {
       var text = this.getEditorValue();
 
@@ -3070,22 +3070,22 @@
       }
     },
 
-    // Ideally we would not need to poll but listen for an 
-    // editor-supplied change event that fires on every visible 
+    // Ideally we would not need to poll but listen for an
+    // editor-supplied change event that fires on every visible
     // change.
     // @see https://github.com/PitonFoundation/atlas/issues/530
     // @see https://github.com/xing/wysihtml5/issues/174
     startPolling: function() {
       this.timer = setInterval($.proxy(this.updateCharacterCount, this), 250);
     },
-    
+
     stopPolling: function() {
       if (this.timer) {
         clearInterval(this.timer);
         this.timer = null;
       }
     },
-    
+
     render: function() {
       this.$el
         .html(this.getTemplate())
@@ -3150,7 +3150,7 @@
    */
   var SectionListView = Views.SectionListView = HandlebarsTemplateView.extend({
     tagName: 'div',
-    
+
     id: 'section-list',
 
     className: 'section-list',
@@ -3181,7 +3181,7 @@
        * of the thumbnails.
        *
        * We have to define this instead of just using the sections collection
-       * of the Story model because of the story information and call to 
+       * of the Story model because of the story information and call to
        * action "pseudo sections".
        * @type array
        */
@@ -3205,7 +3205,7 @@
         dispatcher: this.dispatcher,
         model: section
       });
-      index = _.isUndefined(index) ? this._sortedThumbnailViews.length - 1 : index; 
+      index = _.isUndefined(index) ? this._sortedThumbnailViews.length - 1 : index;
       this._sortedThumbnailViews.splice(index, 0, view);
       this._thumbnailViews[sectionId] = view;
       if (section.isNew()) {
@@ -3258,13 +3258,13 @@
       var spacerWidth;
       this._thumbnailWidth = this._thumbnailWidth ||  $thumbnails.eq(0).outerWidth(true);
       this._spacerWidth = this._spacerWidth || this.$('.sections .spacer').first().outerWidth(true);
-      // Set a default spacer width if it hasn't already been defined or 
+      // Set a default spacer width if it hasn't already been defined or
       // can't be detected from the DOM. This is needed because when a story
       // is initially created, there aren't any spacers.  They appear once
       // the story is saved.
       spacerWidth = this._spacerWidth || 32;
       var newWidth = ($thumbnails.length * this._thumbnailWidth) + (($thumbnails.length + 2) * spacerWidth);
-      this.$('.sections').width(newWidth); 
+      this.$('.sections').width(newWidth);
     },
 
     render: function() {
@@ -3278,16 +3278,16 @@
           this.$('.sections').append(thumbnailView.render().el);
         }
 
-        // Enable the jQuery UI Sortable Widget on this element 
+        // Enable the jQuery UI Sortable Widget on this element
         this.$('.sections').sortable({
           axis: 'x',
           items: 'li:not(.pseudo)'
         });
       }
-   
+
       this.setWidth();
       this.$('.sections-clip').css({overflow: 'hidden'});
-   
+
       this.delegateEvents();
 
       return this;
@@ -3303,8 +3303,8 @@
         // was initialized
         view = this._thumbnailViews[section.cid];
       }
-      
-      return view; 
+
+      return view;
     },
 
     removeThumbnailView: function(view) {
@@ -3331,8 +3331,8 @@
       var handleError = function(section, response) {
         this.dispatcher.trigger('error', gettext("Error removing section"));
       };
-      handleSuccess = _.bind(handleSuccess, this); 
-      handleError = _.bind(handleError, this); 
+      handleSuccess = _.bind(handleSuccess, this);
+      handleError = _.bind(handleError, this);
       if (this.model.sections.length > 1) {
         doRemove = confirm(gettext("Are you sure you want to delete the section"));
         if (doRemove) {
@@ -3343,7 +3343,7 @@
         }
       }
       else {
-        this.dispatcher.trigger('error', 
+        this.dispatcher.trigger('error',
           gettext("You must have at least one section")
         );
       }
@@ -3355,7 +3355,7 @@
      * Initiates adding a section.
      */
     clickAddSection: function(evt) {
-      evt.stopPropagation(); 
+      evt.stopPropagation();
       evt.preventDefault();
       var index = $(evt.currentTarget).find('.add-section').data('index');
       this.addNewSection(index);
@@ -3431,10 +3431,10 @@
      * @param clipRight {Integer} Offset of the right hand side of
      *     the clipping element
      * @returns {Boolean} true if the element is FULLY visible
-     */ 
+     */
     _tmbVisible: function($el, direction, clipLeft, clipRight) {
       if (direction === 'right') {
-        return $el.offset().left + $el.outerWidth() <= clipRight; 
+        return $el.offset().left + $el.outerWidth() <= clipRight;
       }
       else {
         return $el.offset().left >= clipLeft;
@@ -3459,7 +3459,7 @@
       var lastVisible;
       var i = (direction === 'right') ? 0 : numTmb - 1;
       for (i; this._forCond(i, direction, numTmb); i = this._forFinal(i, direction)) {
-        $tmb = this._getThumbnailEl(i); 
+        $tmb = this._getThumbnailEl(i);
         if (this._tmbVisible($tmb, direction, clipLeft, clipRight)) {
           lastVisible = i;
         }
@@ -3480,7 +3480,7 @@
       var $tmb;
       var tmbLeft, tmbRight;
       var scrollVal = null;
-   
+
       if (direction === 'right' && lastIdx < numTmb - 1) {
         lastIdx++;
         $tmb = this._getThumbnailEl(lastIdx);
@@ -3661,7 +3661,7 @@
         if (id == this.pseudoSectionId) {
           this.$el.show();
           // For now, don't automatically show help
-          //this.dispatcher.trigger('do:show:help', this.help.toJSON()); 
+          //this.dispatcher.trigger('do:show:help', this.help.toJSON());
           this.dispatcher.trigger('do:set:help', this.help.toJSON());
         }
         else {
@@ -3729,7 +3729,7 @@
 
         if (_.isUndefined(this.model)) {
           this.dispatcher.once("ready:story", this.setStory, this);
-        }  
+        }
       },
 
       setStory: function(story) {
@@ -3740,7 +3740,7 @@
       render: function() {
         var view = this;
         var handleChange = function () {
-          // Trigger the change event on the underlying element 
+          // Trigger the change event on the underlying element
           view.$(view.options.summaryEl).trigger('change');
         };
 
@@ -3758,7 +3758,7 @@
 
         // Similarly, initialize the character count view because it's a
         // pain to unbind/rebind the event bindings to the editor. :-(
-        this.summaryCharCountView = new CharacterCountView({ 
+        this.summaryCharCountView = new CharacterCountView({
           dispatcher: this.dispatcher,
           target: this.summaryEditor,
           showOnFocus: false
@@ -3767,7 +3767,7 @@
 
         this.$el.append(this.featuredAssetView.render().el);
 
-        this.delegateEvents(); 
+        this.delegateEvents();
 
         return this;
       },
@@ -3818,8 +3818,8 @@
         var context = this.model.toJSON();
         context.prompt = this.options.prompt;
         this.$el.html(this.template(context));
-          
-        this.delegateEvents(); 
+
+        this.delegateEvents();
         return this;
       }
     })
@@ -3941,9 +3941,9 @@
   });
 
   /**
-   * View for editing the story's call to action 
+   * View for editing the story's call to action
    */
-  var CallToActionEditView = Views.CallToActionEditView = PseudoSectionEditView.extend({ 
+  var CallToActionEditView = Views.CallToActionEditView = PseudoSectionEditView.extend({
     className: 'edit-call-to-action edit-section',
 
     // The section edit views can be identified by the ID of their
@@ -3969,10 +3969,10 @@
     changeConnectedEl: function(evt) {
       this.change(evt);
       if ($(evt.target).prop('checked')) {
-        this.$(this.options.connectedPromptEl).show(); 
+        this.$(this.options.connectedPromptEl).show();
       }
       else {
-        this.$(this.options.connectedPromptEl).hide(); 
+        this.$(this.options.connectedPromptEl).hide();
       }
     },
 
@@ -3987,7 +3987,7 @@
     render: function() {
       var that = this;
       var handleChange = function () {
-        // Trigger the change event on the underlying element 
+        // Trigger the change event on the underlying element
         that.$(that.options.callToActionEl).trigger('change');
       };
       this.$el.html(this.template(this.model.toJSON()));
@@ -4029,8 +4029,8 @@
          *
          * This allows the reassignment of assets to new containers when the
          * layout changes.  For example, in the 'side-by-side' layout, the
-         * 'left' container has a weight of 0.  In the 'one-up' layout, the 
-         * 'top' container has a weight of 0.  So, when switching from the 
+         * 'left' container has a weight of 0.  In the 'one-up' layout, the
+         * 'top' container has a weight of 0.  So, when switching from the
          * 'side-by-side' to 'top' layout, the asset in the 'left' container
          * will be moved to the  'top' container.
          *
@@ -4046,7 +4046,7 @@
           },
           'one-up': {
             center: 0,
-            0: 'center' 
+            0: 'center'
           },
           'above-below': {
             'top': 0,
@@ -4161,10 +4161,10 @@
         var containerTemplate;
         var options = {
           el: el,
-          container: container, 
+          container: container,
           dispatcher: this.dispatcher,
           language: this.options.language,
-          section: this.model, 
+          section: this.model,
           story: this.story,
           assetTypes: this.options.assetTypes
         };
@@ -4176,7 +4176,7 @@
         if (this.templateSection && this.containerTemplates.length) {
           containerTemplate = this.containerTemplates.where({
             section: this.templateSection.id,
-            container: container 
+            container: container
           })[0];
           if (containerTemplate) {
             options.suggestedType = containerTemplate.get('asset_type');
@@ -4185,7 +4185,7 @@
           }
         }
         this._assetEditViews[container] = new SectionAssetEditView(options);
-        return this._assetEditViews[container]; 
+        return this._assetEditViews[container];
       },
 
       /**
@@ -4196,7 +4196,7 @@
       },
 
       /**
-      * Indicate that the assets have been fetched. 
+      * Indicate that the assets have been fetched.
       *
       * This should be connected to the ``sync`` event
       * of ``this.assets``.
@@ -4216,8 +4216,8 @@
             assetEditView = view.createAssetEditView(container, el);
           }
           else if (assetEditView.el != el) {
-            // If the view's element isn't the one detected in the DOM,  update 
-            // the view's element. This occurs when switching back to the build 
+            // If the view's element isn't the one detected in the DOM,  update
+            // the view's element. This occurs when switching back to the build
             // step view from another workflow step
             assetEditView.setElement(el);
           }
@@ -4230,7 +4230,7 @@
             view._refreshModelForContainer = null;
             containerAssets = view.assets.where({container: container});
             if (containerAssets.length && assetEditView.model != containerAssets[0]) {
-              assetEditView.setModel(containerAssets[0]); 
+              assetEditView.setModel(containerAssets[0]);
               assetEditView.setState('display');
             }
           }
@@ -4278,15 +4278,15 @@
         if (section == this.model) {
           this.$el.show();
           // For now, don't show help automatically
-          //this.dispatcher.trigger('do:show:help', help); 
+          //this.dispatcher.trigger('do:show:help', help);
           this.dispatcher.trigger('do:set:help', help);
         }
         else {
           this.$el.hide();
         }
-        storybase.views.loadDeferredAssetsAndSize({ 
+        storybase.views.loadDeferredAssetsAndSize({
           assetSelector: 'iframe.sandboxed-asset',
-          scope: this.$el 
+          scope: this.$el
         });
         return this;
       },
@@ -4319,7 +4319,7 @@
           return layout.layout_id == layoutId;
         });
         var prevLayoutId = section.previous('layout');
-        var prevLayout = _.find(this.layouts, function(layout) { 
+        var prevLayout = _.find(this.layouts, function(layout) {
           return layout.layout_id == prevLayoutId;
         });
 
@@ -4344,7 +4344,7 @@
 
         this.assets.each(function(asset) {
           var weight = this.options.containerWeights[prevSlug][asset.get('container')];
-          var container = this.options.containerWeights[slug][weight]; 
+          var container = this.options.containerWeights[slug][weight];
 
           if (container) {
             // There's a corresponding container in the new layout.
@@ -4366,7 +4366,7 @@
        * Event handler for when assets are added to the section
        */
       addAsset: function(section, asset, container) {
-        var addOptions; 
+        var addOptions;
 
         if (section == this.model) {
           addOptions = {
@@ -4382,7 +4382,7 @@
 
           if (this.story.isNew()) {
             // We haven't saved the story or the section yet.
-            // Defer the saving of the asset relation 
+            // Defer the saving of the asset relation
             this._unsavedAssets.push(asset);
             // Trigger an event that will cause the story and section to be saved
             this.dispatcher.trigger("do:save:story");
@@ -4568,7 +4568,7 @@
           if (memo === false) {
             return false;
           }
-          else { 
+          else {
             matching = this.assets.where({container: id});
             return matching.length > 0;
           }
@@ -4599,7 +4599,7 @@
     * Knows about MutexGroupedInputForms but compatible
     * with regular BBF Forms as well.
     *
-    * @param {Array} errors Hash of errors provided by BBF or 
+    * @param {Array} errors Hash of errors provided by BBF or
     *        hand-made.
     */
     handleValidationErrors: function(errors) {
@@ -4644,10 +4644,10 @@
         // or simple strings.
         // @see https://github.com/powmedia/backbone-forms#model-validation
         if (fieldName == '_others') {
-          _.each(errors._others, addFormError); 
+          _.each(errors._others, addFormError);
         }
         else {
-          // if we can put in an error inline do so, otherwise throw into 
+          // if we can put in an error inline do so, otherwise throw into
           // the combined basket up top.
           inline = false;
           $field = view.form.$('.field-' + fieldName);
@@ -4676,7 +4676,7 @@
         // there may be multiple errors on a field, but we only show the first.
         $field.find('.bbf-error').html(errors[0]).slideDown('fast');
 
-        // highlight relevant option pill, if any 
+        // highlight relevant option pill, if any
         // (for MutexGroupedInputForms)
         var optionIndex = $field.data('option-index');
         if (!_.isUndefined(optionIndex)) {
@@ -4698,7 +4698,7 @@
     * Render a thumbnail for any file inputs.
     * TODO: revisit, see if there's a way to cleanly splice this
     * into the "natural" Backbone.Forms templating pipeline.
-    * 
+    *
     * Also @see storybase.forms.File.render.
     */
     renderFileFieldThumbnail: function() {
@@ -4734,7 +4734,7 @@
     getFormSchema: function(model) {
       var schema;
       var filename;
-      
+
       // Start with the schema defined in either the model instance
       // or class
       if (model) {
@@ -4771,7 +4771,7 @@
       // one field is present, i.e. when an existing DataSet is being
       // edited
       if (!_.isUndefined(schema.url) && _.isUndefined(schema.file)) {
-        schema.url.title = getLabelText(schema.url.title, true); 
+        schema.url.title = getLabelText(schema.url.title, true);
       }
 
       return schema;
@@ -4802,11 +4802,11 @@
           fields: contentFields
         };
       }
-      
-      options = options || {}; 
+
+      options = options || {};
       _.extend(options, {
         schema: schema,
-        // HACK: If a model instance wasn't specified, create an empty instance 
+        // HACK: If a model instance wasn't specified, create an empty instance
         // to force the form to use model validation
         model: model || new DataSet(),
         fieldsets: [
@@ -4896,7 +4896,7 @@
       // Action to be taken after the form is submitted. Default is
       // 'close' which will hide this view. 'add' will show a blank
       // form allowing the user to add another
-      this._postSaveAction = 'close'; 
+      this._postSaveAction = 'close';
       this.handleSave = this.addDataSet;
     },
 
@@ -4928,7 +4928,7 @@
         this._postSaveAction = 'add';
       }
       else {
-        this._postSaveAction = 'close'; 
+        this._postSaveAction = 'close';
       }
     },
 
@@ -4955,7 +4955,7 @@
           view.trigger('create:dataset', model, view._postSaveAction);
         },
         error: function(model, response) {
-          view.reattachForm(); 
+          view.reattachForm();
           view.dispatcher.trigger('error', 'Error saving the dataset');
         }
       };
@@ -5033,7 +5033,7 @@
           view.trigger('save:dataset', model);
         },
         error: function(model, response) {
-          view.reattachForm(); 
+          view.reattachForm();
           view.dispatcher.trigger('error', 'Error saving the dataset');
         }
       };
@@ -5053,7 +5053,7 @@
           this.renderUploading();
         }
       }
-      else if (_.has(attrs, 'file')) { 
+      else if (_.has(attrs, 'file')) {
         // The attributes have a ``file`` key, but it's undefined.
         // This means we're not updating the file field.  Just throw away
         // the undefined file attribute so we keep whatever value is in the
@@ -5161,7 +5161,7 @@
       var headerBottom = $header.outerHeight();
       var scrollTo = $el.offset().top - headerBottom;
       $('html, body').animate({
-        scrollTop: scrollTo 
+        scrollTop: scrollTo
       }, 500);
     },
 
@@ -5270,7 +5270,7 @@
       this.renderList();
       this.closeEdit();
     },
-    
+
     clickRemove: function(evt) {
       var datasetId = $(evt.target).data('dataset-id');
       var model = this.collection.get(datasetId);
@@ -5313,7 +5313,7 @@
    * @constructor
    *
    * @param {SectionAssetEditView} view
-   */ 
+   */
   var SectionAssetEditViewState = function(view) {
     this.view = view;
     this.initialize();
@@ -5336,7 +5336,7 @@
      * Get template context used in SectionAssetEditView.render
      * @returns {object} - Template context
      */
-    context: function() { 
+    context: function() {
       return {};
     },
 
@@ -5454,7 +5454,7 @@
       if (!view.modelNew) {
         // Save the model attributes in case the user cancels editing and we
         // need to revert an auto-saved version
-        view.oldModelAttributes = _.clone(view.model.attributes); 
+        view.oldModelAttributes = _.clone(view.model.attributes);
       }
     },
 
@@ -5480,15 +5480,15 @@
         view.form.fields.body.$('label').hide();
 
         // Make sure that the textarea element is visible, if it was
-        // previously hidden by the rich text editor and not revealed.  
-        // This occurs when the "Cancel" button is clicked as the 
+        // previously hidden by the rich text editor and not revealed.
+        // This occurs when the "Cancel" button is clicked as the
         // editor never re-reveals the element before being destroyed
-        // When a new editor is initialized, it copies the old 
+        // When a new editor is initialized, it copies the old
         // ``display: none`` style from the textarea, causing the iframe
         // to be hidden.
         view.form.fields.body.editor.$el.show();
 
-        // Create a rich-text editor for the 'body' field 
+        // Create a rich-text editor for the 'body' field
         view.bodyEditor = new RichTextEditor(
           view.form.fields.body.editor.el,
           undefined,
@@ -5515,16 +5515,16 @@
             // wysihtml5 doesn't sync the composer and textarea
             // immediately. Force a sync so the form view will
             // detect that the textarea's value has changed
-            editor.synchronizer.sync(true); 
+            editor.synchronizer.sync(true);
             view.form.fields.body.editor.$el.trigger('keyup');
           });
         });
 
-        view.form.on('body:change', view.autosave, view); 
+        view.form.on('body:change', view.autosave, view);
       }
 
       view.renderFileFieldThumbnail();
-          
+
       $wrapperEl.append(view.form.el);
     }
   });
@@ -5595,14 +5595,14 @@
           'map-help': $('#map-help-template').html(),
           'quotation-help': $('#quotation-help-template').html(),
           'table-help': $('#table-help-template').html(),
-          'text-help': $('#text-help-template').html(), 
+          'text-help': $('#text-help-template').html(),
           'video-help': $('#video-help-template').html()
         }
       },
 
       events: {
         "hover .wrapper": "toggleTypeListVisible",
-        "click .asset-type": "selectType", 
+        "click .asset-type": "selectType",
         "click .remove": "handleClickRemove",
         "click .edit": "edit",
         "click .edit-data": "handleClickEditData",
@@ -5634,7 +5634,7 @@
         else {
           // If it's an existing model, initialize views for
           // associated data
-          this.initializeDataViews(); 
+          this.initializeDataViews();
         }
         this.states = {
           select: new SelectState(this),
@@ -5682,7 +5682,7 @@
       getFormSchema: function(model) {
         var schema = _.result(this.model, 'schema');
         var type = this.model.get('type');
-        var num_elements = _.size(_.pick(schema, 'image', 'body', 'url')); 
+        var num_elements = _.size(_.pick(schema, 'image', 'body', 'url'));
         var prefix = num_elements > 1 ? gettext("or") + ", " : "";
 
         if (schema.url) {
@@ -5735,7 +5735,7 @@
       },
 
       /**
-       * Get a list of asset types, their labels, and properties. 
+       * Get a list of asset types, their labels, and properties.
        * Properties on returned hash:
        *  type {string}
        *  name {string}
@@ -5749,7 +5749,7 @@
         _.each(this.assetTypes, function(type) {
           var isSuggested = type.type == this.options.suggestedType;
           // note we don't modify this.assetTypes
-          result.push(_.extend({}, type, { 
+          result.push(_.extend({}, type, {
             suggested: isSuggested,
             available: canChangeAssetType || isSuggested
           }));
@@ -5775,7 +5775,7 @@
             },
             error: function() {
               // TODO: Handle this error in a more meaningful way, perhaps by
-              // showing an alert. For now, just render the old information 
+              // showing an alert. For now, just render the old information
               view.setState('display').render();
             }
           });
@@ -5788,7 +5788,7 @@
       /**
        * Initialize subviews for related datasets
        *
-       * The first time this method is called, it creates a new instance 
+       * The first time this method is called, it creates a new instance
        * of the subviews. On subsequent calls, it binds the subviews to
        * this view's model. The latter behavior is useful for when the
        * model is updated, either because a new asset has been created
@@ -5817,7 +5817,7 @@
       },
 
       render: function() {
-        var context = this.state.context(); 
+        var context = this.state.context();
         var template = this.state.getTemplate();
         var $wrapperEl;
 
@@ -5857,7 +5857,7 @@
        * Event handler for selecting asset type
        */
       selectType: function(e) {
-        e.preventDefault(); 
+        e.preventDefault();
         if (!$(e.target).hasClass('unavailable')) {
           this.setType($(e.target).data('asset-type'));
         }
@@ -5888,13 +5888,13 @@
                 removeFromStory: true,
                 trigger: false,
                 success: function(sectionAsset, asset) {
-                  // Destroy the asset only after the asset has already been 
-                  // disassociated with the section. Otherwise, there's 
+                  // Destroy the asset only after the asset has already been
+                  // disassociated with the section. Otherwise, there's
                   // a race condition on the server
                   asset.destroy();
                 }
               }
-            ); 
+            );
           }
           else {
             // Asset was autosaved, restore the old attributes
@@ -5910,15 +5910,15 @@
       /**
        * Save the asset model to the server.
        *
-       * This method mostly handles initializing the callbacks and options for 
+       * This method mostly handles initializing the callbacks and options for
        * Asset.save()
        *
        * @param {Object} attributes - Model attributes to be passed to
        *     Asset.save()
        * @param {Object} [options] - Options for altering save timing and
        *     side effects.
-       * @param {boolean} [options.changeState=true] - Change the state of this view 
-       *     and re-render after a successful save. 
+       * @param {boolean} [options.changeState=true] - Change the state of this view
+       *     and re-render after a successful save.
        * @param {number} [options.delay=null] - Delay saving by this number of
        *     milliseconds.
        * @param {function} [success] - Callback function called after model
@@ -6009,7 +6009,7 @@
           }, options.delay);
         }
         else {
-          this.model.save(attributes, saveOptions); 
+          this.model.save(attributes, saveOptions);
         }
       },
 
@@ -6106,7 +6106,7 @@
       setModel: function(model) {
         // This view should no longer listen to events on this model
         this.unbindModelEvents();
-        this.model = model; 
+        this.model = model;
         // Listen to events on the new model
         this.bindModelEvents();
         this.initializeDataViews();
@@ -6129,7 +6129,7 @@
           }
         }
       },
-      
+
       /**
        * @param {String} type - The asset type.
        */
@@ -6145,7 +6145,7 @@
           }
         }
 
-        // See if there's state-specific help for this type 
+        // See if there's state-specific help for this type
         help = this.state.help(type);
         if (help) {
           return help;
@@ -6161,7 +6161,7 @@
       },
 
       /**
-       * Show help 
+       * Show help
        */
       showHelp: function(evt) {
         var help = _.extend({
@@ -6177,7 +6177,7 @@
         help.body += assetHelp;
         this.dispatcher.trigger('do:show:help', help, {remember: true});
         // When the drawer is closed, revert to the previous help item
-        this.dispatcher.once('close:drawer', this.revertHelp, this); 
+        this.dispatcher.once('close:drawer', this.revertHelp, this);
       },
 
       revertHelp: function() {
@@ -6190,7 +6190,7 @@
         if (id) {
           this.setModel(this.story.unusedAssets.get(id));
           // HACK: The call to this.story.unusedAssets.remove results in
-          // removing the draggable element before the ``stop`` event is 
+          // removing the draggable element before the ``stop`` event is
           // handled, causing an exception when the jQuery-UI tries to
           // update the cursor when the dragging stops. Delaying the call
           // seems to work around this.
@@ -6198,7 +6198,7 @@
           // See http://stackoverflow.com/a/13151132/386210
           setTimeout(function() {
             view.story.unusedAssets.remove(view.model);
-          }, 0);  
+          }, 0);
           if (!this.story.unusedAssets.length) {
             this.dispatcher.trigger('has:assetlist', false);
           }
@@ -6226,7 +6226,7 @@
           title: gettext("Label your story with topics and places so that people can easily discover it on Floodlight"),
           text: gettext('Tag'),
           visible: true,
-          enabled: _.bind(storySaved, this), 
+          enabled: _.bind(storySaved, this),
           path: 'tag/'
         };
       },
@@ -6264,14 +6264,14 @@
         };
         // Official taxonomies
         var schema = {
-          topics: { 
-            type: 'Select', 
-            options: topicsOptions, 
+          topics: {
+            type: 'Select',
+            options: topicsOptions,
             editorAttrs: _.defaults({placeholder: gettext("Click to select topics")}, editorAttrs)
           },
-          places: { 
-            type: 'Select', 
-            options: placesOptions, 
+          places: {
+            type: 'Select',
+            options: placesOptions,
             editorAttrs: _.defaults({placeholder: gettext("Click to select places")}, editorAttrs)
           },
           organizations: {
@@ -6325,7 +6325,7 @@
         labelAttr = labelAttr ? labelAttr: 'name';
         return _.map(rawOptions, function(value) {
           return {
-            val: value[valAttr], 
+            val: value[valAttr],
             label: value[labelAttr]
           };
         });
@@ -6334,7 +6334,7 @@
       replaceRelated: function(url, data) {
         data = data ? data : [];
         $.ajax(url, {
-          type: "PUT", 
+          type: "PUT",
           data: JSON.stringify(data),
           contentType: "application/json",
           processData: false
@@ -6342,22 +6342,22 @@
       },
 
       changeTopics: function(form, editor) {
-        var url = this.model.url() + 'topics/'; 
+        var url = this.model.url() + 'topics/';
         this.replaceRelated(url, editor.getValue());
       },
 
       changePlaces: function(form, editor) {
-        var url = this.model.url() + 'places/'; 
+        var url = this.model.url() + 'places/';
         this.replaceRelated(url, editor.getValue());
       },
 
       changeOrganizations: function(form, editor) {
-        var url = this.model.url() + 'organizations/'; 
+        var url = this.model.url() + 'organizations/';
         this.replaceRelated(url, editor.getValue());
       },
 
       changeProjects: function(form, editor) {
-        var url = this.model.url() + 'projects/'; 
+        var url = this.model.url() + 'projects/';
         this.replaceRelated(url, editor.getValue());
       },
 
@@ -6375,7 +6375,7 @@
           initialValues.projects = _.pluck(this.model.get('projects'), 'id');
         }
         this.officialForm.setValue(initialValues);
-        
+
         // TODO: Custom editor that automatically does this?
         this.officialForm.fields.topics.editor.$el.select2({width: 'resolve'});
         this.officialForm.fields.places.editor.$el.select2({width: 'resolve'});
@@ -6458,7 +6458,7 @@
 
     renderLocationList: function(collection) {
       var template = this.getTemplate('location');
-      this.$('#locations').empty(); 
+      this.$('#locations').empty();
       this.collection.each(function(loc) {
         this.$('#locations').append($(template(loc.toJSON())));
       }, this);
@@ -6498,7 +6498,7 @@
       this.$('#do-add-location').prop('disabled', false);
       this.markers.addLayer(marker);
       this.map.setView(marker.getLatLng(), this.pointZoom, true);
-      this.latLng = latLng; 
+      this.latLng = latLng;
     },
 
     addLocation: function(evt) {
@@ -6507,7 +6507,7 @@
       // Make sure we found a point
       if (this.latLng) {
         this.collection.create({
-          name: name ? name : '', 
+          name: name ? name : '',
           lat: this.latLng.lat,
           lng: this.latLng.lng,
           raw: this.rawAddress
@@ -6570,7 +6570,7 @@
           },
           results: function(data, page) {
             var result = {
-              results: []  
+              results: []
             };
             _.each(data.objects, function(tag) {
               result.results.push({
@@ -6728,7 +6728,7 @@
         }
       };
     },
-   
+
     setStory: function(story) {
       this.model = story;
     },
@@ -6855,7 +6855,7 @@
         // Selector for the element (defined in templateSource) that
         // contains the controls for a published story
         publishedButtonsEl: '#published-buttons',
-        // Selector for the element (defined in templateSource) that 
+        // Selector for the element (defined in templateSource) that
         // contains the subviews
         subviewEl: '#publish-steps',
         // Selector for the element (defined in templateSource) that
@@ -6869,7 +6869,7 @@
           title: gettext("Post your story to Floodlight and your social networks"),
           text: gettext('Publish/Share'),
           visible: true,
-          enabled: _.bind(storySaved, this), 
+          enabled: _.bind(storySaved, this),
           path: 'publish/'
         };
       },
@@ -7053,7 +7053,7 @@
       var featuredAsset;
 
       if (this.model) {
-        featuredAsset = this.model.getFeaturedAsset();  
+        featuredAsset = this.model.getFeaturedAsset();
         if (featuredAsset) {
           // If the model is defined and it has a featured asset,
           // display the featured asset.
@@ -7061,10 +7061,10 @@
           return this;
         }
       }
-     
+
       // The model isn't defined, or there's no featured asset, show the
       // default image
-      this.$el.html('<img src="' + this.options.defaultImageUrl + 
+      this.$el.html('<img src="' + this.options.defaultImageUrl +
                     '" alt="' + this.options.defaultImageAlt +
                     '" />');
       return this;
@@ -7122,7 +7122,7 @@
       var $oldSelected = this.$('.selected');
       // Change the highlighting for instant response
       $oldSelected.removeClass('selected');
-      $targetEl.addClass('selected'); 
+      $targetEl.addClass('selected');
       this.model.setFeaturedAsset(selected, {
         error: function() {
           // Reset the highlighting
@@ -7216,8 +7216,8 @@
       });
 
       if (this.form) {
-        // If there was a previous version of the form, remove it from the 
-        // DOM and detach event listeners 
+        // If there was a previous version of the form, remove it from the
+        // DOM and detach event listeners
         this.form.remove();
       }
       // Create a new form with a new bound model instance
@@ -7426,7 +7426,7 @@
 
     // Always true because the default image will be used if the user
     // doesn't select an image.
-    completed: true, 
+    completed: true,
 
     setStory: function(story) {
       this.model = story;
@@ -7456,7 +7456,7 @@
     },
 
     getNavItem: function(view) {
-      return this.getNavContainer().find('[href="#' + view.id + '"]').parent(); 
+      return this.getNavContainer().find('[href="#' + view.id + '"]').parent();
     },
 
     isActive: function(view) {
@@ -7532,7 +7532,7 @@
       if (!this._rendered) {
         return this.renderInitial();
       }
-      _.each(this._subviews, this.updateSubView, this); 
+      _.each(this._subviews, this.updateSubView, this);
 
       return this;
     },
@@ -7561,7 +7561,7 @@
           // a race condition where FeaturedAssetDisplayView would render
           // before the asset attributes were updated.
           asset.once('change:content', function(asset) {
-            this.model.setFeaturedAsset(asset);    
+            this.model.setFeaturedAsset(asset);
           }, this);
         }
       }
@@ -7623,8 +7623,8 @@
         that.dispatcher.trigger('error', "Error unpublishing story");
       };
       this.model.save({'status': 'draft'}, {
-        success: success, 
-        error: triggerError 
+        success: success,
+        error: triggerError
       });
     },
 
@@ -7730,7 +7730,7 @@
      */
     _requiredComponentMissingMsg: function(validation) {
       if (validation.errors && validation.errors.title) {
-        return gettext("You haven't given your story a <strong>title</strong>. You'll need to do this before you can publish."); 
+        return gettext("You haven't given your story a <strong>title</strong>. You'll need to do this before you can publish.");
       }
 
       // Should never get here, but just add a default case
@@ -7769,7 +7769,7 @@
 
     handlePublish: function(evt) {
       var validation = this.model.validateStory();
-      
+
       this.clearAlerts();
 
       if (_.isUndefined(validation) || _.isUndefined(validation.errors)) {
@@ -7782,8 +7782,8 @@
           view.dispatcher.trigger('error', "Error publishing story");
         };
         this.model.save({'status': 'published'}, {
-          success: triggerPublished, 
-          error: triggerError 
+          success: triggerPublished,
+          error: triggerError
         });
         this.render();
 

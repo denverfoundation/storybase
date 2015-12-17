@@ -15,7 +15,7 @@
     idAttribute: "template_id",
 
     /**
-     * Retrive the story ID for the story that provides the structure for 
+     * Retrive the story ID for the story that provides the structure for
      * the model.
      */
     getStoryId: function() {
@@ -28,7 +28,7 @@
      * the structure for the model.
      */
     getStory: function(options) {
-      var story = new storybase.models.Story({ story_id: this.getStoryId() }); 
+      var story = new storybase.models.Story({ story_id: this.getStoryId() });
       story.fetch({
         success: function(model, response) {
           if (_.isFunction(options.success)) {

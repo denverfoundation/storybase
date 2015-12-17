@@ -5,7 +5,7 @@ describe('Error handler', function() {
     delete window._sbJsErrs;
     this.mockErrorUrl = '/errors/';
     window.jsLogUrl = this.mockErrorUrl;
-    this.xhr = sinon.useFakeXMLHttpRequest(); 
+    this.xhr = sinon.useFakeXMLHttpRequest();
     this.requests = [];
     this.xhr.onCreate = function(req) {
       spec.requests.push(req);

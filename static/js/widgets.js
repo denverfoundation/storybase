@@ -38,7 +38,7 @@
   /*
 	Developed by Robert Nyman, http://www.robertnyman.com
 	Code/licensing: http://code.google.com/p/getelementsbyclassname/
-  */	
+  */
   var getElementsByClassName = function (className, tag, elm){
     if (document.getElementsByClassName) {
       getElementsByClassName = function (className, tag, elm) {
@@ -135,9 +135,9 @@
       if (!url) {
         // No URL, assume story + list style embed
         storyUrl = getElementsByClassName('storybase-story', null, el)[0].getAttribute('href');
-        storyUrl = storyUrl ? trim(storyUrl) : storyUrl; 
+        storyUrl = storyUrl ? trim(storyUrl) : storyUrl;
         listUrl = getElementsByClassName('storybase-list', null, el)[0].getAttribute('href');
-        listUrl = listUrl ? trim(listUrl) : listUrl; 
+        listUrl = listUrl ? trim(listUrl) : listUrl;
       }
 
       if (url) {
@@ -151,14 +151,14 @@
         }
       }
 
-    }    
+    }
     catch (e) {
       // Do nothing
     }
 
     return [storyUrl, listUrl];
   };
- 
+
   /**
    * Return the URL suitable for the src attribute of the widget iframe
    *
@@ -166,11 +166,11 @@
    * @param {String} listUrl URL for taxonomy term used to populate story list
    * @param {String} baseWidgetUrl URL of page that serves the widget content
    * @param {Object} opts Options for the widget URL
-   * @param {String} [opts.version] Widget version 
-   */ 
+   * @param {String} [opts.version] Widget version
+   */
   var getUrl = function(storyUrl, listUrl, baseWidgetUrl, opts) {
     var queryArgs = [];
-    var widgetUrl = baseWidgetUrl; 
+    var widgetUrl = baseWidgetUrl;
 
     if (storyUrl) {
       queryArgs.push('story-url=' + encodeURIComponent(storyUrl));
@@ -186,7 +186,7 @@
     }
 
     return widgetUrl;
-  }; 
+  };
 
   var showWidgets = widgets.showWidgets = function(baseUrl) {
     baseUrl = baseUrl || getBaseUrl();
@@ -212,7 +212,7 @@
       if (ph.style.display != 'none') {
         urls = parseUrls(ph);
         if (urls[0] || urls[1]) {
-          opts.version = ph.getAttribute('data-version') || defaults.version; 
+          opts.version = ph.getAttribute('data-version') || defaults.version;
           // If we're only showing a single story, use the shorter height
           opts.height = ph.getAttribute('data-height') || (!urls[1] ? defaults.shortHeight : defaults.height);
           opts.width = ph.getAttribute('data-width') || defaults.width;
@@ -228,5 +228,5 @@
       }
     }
   };
-  showWidgets(); 
+  showWidgets();
 }).call(this);

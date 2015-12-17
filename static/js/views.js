@@ -14,7 +14,7 @@
         }, this);
       }
       else if (templateSource) {
-        this.templates['__main'] = this.compileTemplate(this.options.templateSource); 
+        this.templates['__main'] = this.compileTemplate(this.options.templateSource);
       }
 
       if (this.templates['__main']) {
@@ -40,7 +40,7 @@
    * Remove the src attribute on selected elements and move its value to a
    * data field named "src". Later, call loadDeferredSrcs on these elements
    * to load them on demand.
-   * 
+   *
    * @param {hash} [options] {
    *   selector: string or jQuery selection,
    *   scope:    scope for selection
@@ -63,9 +63,9 @@
   };
 
   /**
-   * When called, selected elements with a data-src attribue will have their 
+   * When called, selected elements with a data-src attribue will have their
    * src attribute set to the value of data-src.
-   * 
+   *
    * @param {hash} [options]  {
    *   selector:  string or jQuery selection
    *   scope:     scope for selection,
@@ -98,9 +98,9 @@
       }
     });
   };
-  
-  /** 
-   * Selectors and other data used as defaults in methods relating to asset 
+
+  /**
+   * Selectors and other data used as defaults in methods relating to asset
    * sizing.
    */
   var defaultAssetStructure = {
@@ -110,9 +110,9 @@
     scope: undefined,
     callback: null
   };
-  
+
   /**
-   * 
+   *
    */
   var sizeImgAsset = function(options) {
     options = $.extend(defaultAssetStructure, options);
@@ -130,17 +130,17 @@
         options.callback.apply(this);
       }
     };
-    setDataNativeImgSize({ 
+    setDataNativeImgSize({
       selector: $img,
       callback: setSizes
     });
   };
-  
+
   /**
-   * Size passed iframe element based on its contents. Size its container 
+   * Size passed iframe element based on its contents. Size its container
    * and caption to match. Iframe must be loaded.
-   * 
-   * @param {hash} options @see {@link defaultAssetStructure}. 
+   *
+   * @param {hash} options @see {@link defaultAssetStructure}.
    */
   var sizeIframeAsset = function(options) {
     options = $.extend(defaultAssetStructure, options);
@@ -152,7 +152,7 @@
         $(iframe)
           .height($body.prop('scrollHeight'))
           .width($body.prop('scrollWidth'))
-        ;        
+        ;
         var calculatedWidth = $(iframe).width();
         var $container = $(iframe).parent(options.containerSelector);
         if ($container) {
@@ -165,14 +165,14 @@
       }
     }
   };
-  
+
   /**
-   * Size an asset. Assumes a structure of asset element in a container 
-   * with a sibling caption element. Iframes are sized to fit content. 
+   * Size an asset. Assumes a structure of asset element in a container
+   * with a sibling caption element. Iframes are sized to fit content.
    * Imgs are sized to fill container unless filling would require upsampling.
    * Container and caption are sized to fit asset. Asset must be loaded.
-   * 
-   * @param {hash} options @see {@link defaultAssetStructure}. 
+   *
+   * @param {hash} options @see {@link defaultAssetStructure}.
    * }
    */
   var sizeAsset = function(options) {
@@ -189,11 +189,11 @@
       }
     }
   };
-  
+
   /**
    * Run sizing logic on selected assets.
-   * 
-   * @param {hash} options @see {@link defaultAssetStructure}. 
+   *
+   * @param {hash} options @see {@link defaultAssetStructure}.
    */
   var sizeAssets = function(options) {
     options = $.extend(defaultAssetStructure, options);
@@ -203,24 +203,24 @@
       }));
     });
   };
-  
+
   /**
    * Size assets when their load event is triggered.
    *
-   * @param {hash} options @see {@link defaultAssetStructure}. 
+   * @param {hash} options @see {@link defaultAssetStructure}.
    */
   var sizeAssetsOnLoad = function(options) {
     options = $.extend(defaultAssetStructure, options);
     $(options.assetSelector, options.scope).each(function() {
       if ($(this).prop('tagName').toLowerCase() == 'img') {
         $(this).imagesLoaded(function() {
-          sizeAsset($.extend(options, { 
+          sizeAsset($.extend(options, {
             assetSelector: this
           }));
         });
       }
       else {
-        $(this).on('load', function() { 
+        $(this).on('load', function() {
           sizeAsset($.extend(options, {
             assetSelector: this
           }));
@@ -228,9 +228,9 @@
       }
     });
   };
-  
+
   /**
-   * Load elements with deferred src attributes (@see {@link deferSrcLoad}). 
+   * Load elements with deferred src attributes (@see {@link deferSrcLoad}).
    * On load, call {@link sizeAsset}.
    *
    * @param {hash} options @see {@link defaultAssetStructure}, with addition
@@ -240,14 +240,14 @@
     options = $.extend(defaultAssetStructure, {
       force: false,
     }, options);
-    
-    loadDeferredSrcs($.extend({}, options, { 
+
+    loadDeferredSrcs($.extend({}, options, {
       selector: options.assetSelector,
       callback: function() {
         sizeAsset($.extend(options, {
           assetSelector: this
         }));
-      } 
+      }
     }));
   };
 
@@ -255,10 +255,10 @@
    * Mark selected img elements with data:
    *  native-width
    *  native-height
-   * 
-   * Ping a callback when data is available. Will invoke callback 
+   *
+   * Ping a callback when data is available. Will invoke callback
    * immediately for elements that already have those data set.
-   * 
+   *
    * @param {hash} [options] {
    *   selector:          selector for img elements,
    *   scope:             scope element for limiting selectors,
@@ -296,7 +296,7 @@
       }
     });
   };
-  
+
 
   storybase.views = storybase.views || {};
   storybase.views.HandlebarsTemplateMixin = HandlebarsTemplateMixin;

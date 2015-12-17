@@ -20,7 +20,7 @@ describe('TastypieMixin collection mixin', function() {
       }
     ];
     var mockResponse = {
-      objects: objects 
+      objects: objects
     };
     expect(this.collection.parse(mockResponse)).toEqual(objects);
   });
@@ -160,7 +160,7 @@ describe("Sections collection", function() {
     afterEach(function() {
       this.server.restore();
     });
-    
+
     describe("when the server returns a valid response", function() {
       beforeEach(function() {
         this.server.respondWith(
@@ -169,11 +169,11 @@ describe("Sections collection", function() {
           this.validResponse(this.sectionsFixture)
         );
         _.each(this.sectionsFixture.objects, function(section) {
-          var sectionId = section.section_id; 
+          var sectionId = section.section_id;
           var url = this.collection.url + sectionId + "/assets/";
           this.server.respondWith(
             "GET",
-            url, 
+            url,
             this.validResponse(this.fixtures.SectionAssets.getList[sectionId])
           );
         }, this);
@@ -193,7 +193,7 @@ describe("Sections collection", function() {
         };
         var callback = sinon.spy(checkAssertions);
         this.collection.fetchAssets({
-          success: callback 
+          success: callback
         });
         this.server.respond();
         expect(callback.called).toBe(true);
@@ -434,7 +434,7 @@ describe('Tag model', function() {
       this.model = new storybase.models.Tag({
         "tag_id": "0644b72fc1eb46dba8ed68daff0228d3"
       });
-      this.model.set('resource_uri', '/api/0.1/tags/0644b72fc1eb46dba8ed68daff0228d3/stories/472d5039b37748ba8d78d685aa898475'); 
+      this.model.set('resource_uri', '/api/0.1/tags/0644b72fc1eb46dba8ed68daff0228d3/stories/472d5039b37748ba8d78d685aa898475');
       expect(this.model.isNew()).toBe(false);
     });
   });

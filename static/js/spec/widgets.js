@@ -31,12 +31,12 @@ describe('Embed widget', function() {
         queryParams.push('list-url=' + encodeURIComponent(listUrl));
       }
       if (queryParams.length) {
-        url = url + '?' + queryParams.join('&'); 
+        url = url + '?' + queryParams.join('&');
       }
 
       return url;
     };
-                  
+
     var $sandbox;
     var $storyLink;
     var $listLink;

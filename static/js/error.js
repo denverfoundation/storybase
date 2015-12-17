@@ -9,7 +9,7 @@
     document.body.appendChild(errorBox);
     return true;
   }
-  
+
   function logError(logUrl, message, url, lineNumber) {
     if (logUrl && window.XMLHttpRequest) {
       var xhr = new XMLHttpRequest();

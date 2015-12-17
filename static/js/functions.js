@@ -100,7 +100,7 @@
     $('.storybase-share-button').storybaseShare();
     $('.storybase-embed-button').storybaseShare();
 
-    // Analytics events 
+    // Analytics events
     if (window._gaq) {
       $('.homepage .latest .connected-link').click(function() {
         _gaq.push(['_trackEvent', 'Links', 'Latest stories connected']);

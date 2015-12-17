@@ -53,7 +53,7 @@
     },
 
     /**
-     * Handle hashed story IDs in the URL, reloading the page if neccessary 
+     * Handle hashed story IDs in the URL, reloading the page if neccessary
      *
      * @param {Boolean} reload Should the page be reloaded in the browser?
      *
@@ -68,7 +68,7 @@
         _gaq.push(['_trackEvent', 'Routes', 'Page load with hashed story ID']);
       }
       if (window.location.hash) {
-        // Remove the hash from the URL. The server will generate the 
+        // Remove the hash from the URL. The server will generate the
         // correct content for the workflow step when requested directly
         url = window.location.href.replace('#', '');
       }
@@ -81,7 +81,7 @@
         // If we're attempting to load an existing story, reload the page
         // in the browser with an un-hashed story ID to force the bootstrapping
         // of the views. If this is the initial save of a new story, don't
-        // reload. 
+        // reload.
         window.location.replace(url);
       }
     },

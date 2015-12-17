@@ -45,7 +45,7 @@
      * This is needed because a variable number of path elements might proceed
      * the part of the URL that represents the base, for example,
      * internatialization path prefixes.
-     * 
+     *
      * This function is useful for providing a value for the 'root' argument
      * to a call to Backbone.history.start().
      *
@@ -96,17 +96,17 @@
         pos = extraPos;
       }
 
-      return _.first(pathParts, pos + 1).join('/') + '/'; 
+      return _.first(pathParts, pos + 1).join('/') + '/';
     },
 
     /**
-     * Convert the license value stored in the database (as a String) to 
+     * Convert the license value stored in the database (as a String) to
      * form parameters.
      *
      * The parameters keys try to match those of the Creative Commons
      * Web Services API. See http://wiki.creativecommons.org/Web_Services
      *
-     * @param {String} [license='CC BY'] License string 
+     * @param {String} [license='CC BY'] License string
      */
     licenseStrToParams: function(license) {
       license = license || 'CC BY';
@@ -154,7 +154,7 @@
       var ccLicenses = {
         'y': {
           'y': 'CC BY',
-          'sa': 'CC BY-SA', 
+          'sa': 'CC BY-SA',
           'n': 'CC BY-ND'
         },
         'n': {
@@ -192,7 +192,7 @@
      * Copyright (c) 2011 John Resig (ejohn.org)
      * Licensed under the MIT and GPL licenses.
      *
-     * Updated by Geoff Hing (geoffhing@gmail.com) to take either a Date 
+     * Updated by Geoff Hing (geoffhing@gmail.com) to take either a Date
      * object or a string representation of a date and to support localizing
      * strings, 2013.
      *
@@ -202,10 +202,10 @@
         diff = (((new Date()).getTime() - date.getTime()) / 1000),
         day_diff = Math.floor(diff / 86400);
       gettext = gettext || function(s) { return s; };
-          
+
       if ( isNaN(day_diff) || day_diff < 0 || day_diff >= 31 )
         return;
-          
+
       return day_diff == 0 && (
           diff < 60 && gettext("just now") ||
           diff < 120 && gettext("1 minute ago") ||
@@ -220,7 +220,7 @@
 
   /**
    * Translate a string in a template using Django's gettext Javascript API.
-   * @param {String} message The string to be translated 
+   * @param {String} message The string to be translated
    * @return {String} Translated string
    */
   Handlebars.registerHelper('gettext', function(message) {
@@ -278,7 +278,7 @@
      $el.html(s);
      if ($el.find('p').length > 0) {
        // Found a paragraph tag.  Return its contents
-       result = $el.find('p').html(); 
+       result = $el.find('p').html();
      }
      if (result === null) {
        // We didn't find a paragraph tag, try splitting on newlines
@@ -288,15 +288,15 @@
      if (typeof maxWords === "number" && words.length > maxWords) {
        result = "";
        for (var i = 0; i <= maxWords; i++) {
-           result += words[i] + " "; 
+           result += words[i] + " ";
        }
        result += "&hellip;"
      }
-     return new Handlebars.SafeString("<p>" + result + "</p>"); 
+     return new Handlebars.SafeString("<p>" + result + "</p>");
   });
 
   /**
-   * Iterate over a list and separate items with a comma. Use just like 
+   * Iterate over a list and separate items with a comma. Use just like
    * the #each Handlebars block helper.
    *
    * @param {Array} items The context over which to iterate.
@@ -305,8 +305,8 @@
    * @todo Allow for any separator.
    */
   Handlebars.registerHelper('commaeach', function(items, fn) {
-    return new Handlebars.SafeString(_.map(items, function(item) { 
-      return fn(item); 
+    return new Handlebars.SafeString(_.map(items, function(item) {
+      return fn(item);
     }).join(', '));
   });
 
@@ -316,7 +316,7 @@
     }
     return new Handlebars.SafeString(gettext(ifEmpty));
   });
-  
+
   /**
    * Capitalize the first letter.
    */

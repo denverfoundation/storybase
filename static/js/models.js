@@ -18,7 +18,7 @@
 
   /**
    * Mixin that expects the model attributes to be within an objects attribute
-   * 
+   *
    * This is the way Tastypie structures its response the objects.
    */
   var TastypieCollectionMixin = Collections.TastypieMixin = {
@@ -30,8 +30,8 @@
   var TastypieModelMixin = Models.TastypieMixin = {
     url: function() {
       // Ensure data always ends in a '/', for Tastypie
-      var url = Backbone.Model.prototype.url.call(this); 
-      url = url + (url.charAt(url.length - 1) == '/' ? '' : '/'); 
+      var url = Backbone.Model.prototype.url.call(this);
+      url = url + (url.charAt(url.length - 1) == '/' ? '' : '/');
       return url;
     }
   };
@@ -44,7 +44,7 @@
    */
   var SaveableCollection = Collections.SaveableCollection = Backbone.Collection.extend({
     save: function(options) {
-      // TODO: Test this 
+      // TODO: Test this
       options = options ? _.clone(options) : {};
       var collection = this;
       var success = options.success;
@@ -75,7 +75,7 @@
         // encodes null values as strings with a value of 'null',
         // confusing the server-side code
         if (!_.isNull(value)) {
-          formData.append(key, value); 
+          formData.append(key, value);
         }
       }, this);
       return formData;
@@ -89,15 +89,15 @@
      * This is for browsers that don't support the FileReader
      * API.
      *
-     * It requires the jQuery Iframe Transport to be available. 
-     * See http://cmlenz.github.com/jquery-iframe-transport/ 
+     * It requires the jQuery Iframe Transport to be available.
+     * See http://cmlenz.github.com/jquery-iframe-transport/
      */
     syncWithUploadIframe: function(method, model, options) {
       var data; // Attribute data, passed to jQuery.sync
 
       _.extend(options, {
         iframe: true, // Tell jQuery to use the IFRAME transport
-        files: options.form.find(':file'), 
+        files: options.form.find(':file'),
         processData: false,
         dataType: 'json',
         // We can't set the accepts header of the IFRAMEd post,
@@ -193,7 +193,7 @@
      * This version always uses the collection's URL if the instance is new,
      * otherwise it uses the value returned by the API.  This is needed
      * because sometimes a collection will have a URL set to fetch a
-     * particular story's data sets.  By default, Backbone uses the 
+     * particular story's data sets.  By default, Backbone uses the
      * collection's URL to build an individual model's URL.  We don't want
      * to do this.
      */
@@ -204,7 +204,7 @@
       }
       // Make sure the URL ends in a '/'
       url = url + (url.charAt(url.length - 1) == '/' ? '' : '/');
-      return url; 
+      return url;
     },
 
     /**
@@ -293,7 +293,7 @@
   });
 
 
-  Collections.DataSets = Backbone.Collection.extend( 
+  Collections.DataSets = Backbone.Collection.extend(
     _.extend({}, TastypieCollectionMixin, {
       model: DataSet,
 
@@ -310,7 +310,7 @@
         else if (this._story !== null) {
           url = url + 'stories/' + this._story.id + '/';
         }
-        return url; 
+        return url;
       },
 
       /**
@@ -342,7 +342,7 @@
         models = _.isArray(models) ? models.slice() : [models];
         var i, l, index, model, url;
         for (i = 0, l = models.length; i < l; i++) {
-          model = models[i]; 
+          model = models[i];
           url = _.result(this, 'url') + model.id + '/';
           this.sync('delete', model, {
             url: url
@@ -355,7 +355,7 @@
        * Remove a model (or an array of models) from the collection.
        *
        * Unlike the default ``Collection.remove`` this takes an additional
-       * ``sync`` option that, if truthy, will cause the models to be 
+       * ``sync`` option that, if truthy, will cause the models to be
        * removed on the server.
        */
       remove: function(models, options) {
@@ -380,7 +380,7 @@
     },
 
     /**
-     * Get the URL for the model.  
+     * Get the URL for the model.
      *
      * Unlike the default version, for new models this uses the collection url
      * first, instead of the urlRoot value.
@@ -454,7 +454,7 @@
       setCollectionUrls: function() {
         if (!this.isNew()) {
           this.sections.url = this.url() + 'sections/';
-          this.unusedAssets.url = storybase.API_ROOT + 'assets/stories/' + this.id + '/sections/none/'; 
+          this.unusedAssets.url = storybase.API_ROOT + 'assets/stories/' + this.id + '/sections/none/';
           this.assets.url = storybase.API_ROOT + 'assets/stories/' + this.id + '/';
         }
       },
@@ -477,7 +477,7 @@
       },
 
       /**
-       * Re-set the section weights based on their order in the collection 
+       * Re-set the section weights based on their order in the collection
        */
       resetSectionWeights: function() {
         this.sections.each(function(section, index) {
@@ -506,7 +506,7 @@
       },
 
       getFeaturedAsset: function(index) {
-        index = _.isUndefined(index) ? 0 : index; 
+        index = _.isUndefined(index) ? 0 : index;
         if (this.featuredAssets) {
           return this.featuredAssets.at(index);
         }
@@ -552,7 +552,7 @@
         this.set('summary_suggestion', story.get('summary'));
         this.set('call_to_action_suggestion', story.get('call_to_action'));
         this.set('template_story', story.get('story_id'));
-                      
+
         story.sections.each(function(section) {
           var sectionCopy = new Section();
           sectionCopy.set("title_suggestion", section.get("title"));
@@ -613,7 +613,7 @@
 
           if (_.isUndefined(value) || value === '') {
             // TODO: Decide if a warning should be set instead of a boolean
-            errors[fieldName] = true; 
+            errors[fieldName] = true;
             hasErrors = true;
           }
         }, this);
@@ -753,7 +753,7 @@
        */
       _assetsFetchedSuccess: function(section, assets, response) {
         var callback = this._fetchAssetsSuccess ? this._fetchAssetsSuccess : null;
-        this._assetsFetched.push(section.id);  
+        this._assetsFetched.push(section.id);
         if (this._assetsFetched.length == this.length) {
           // All the sections have been fetched!
           this._fetchAssetsCleanup();
@@ -764,7 +764,7 @@
       },
 
       /**
-       * Callback for when an individual section's assets failed to be 
+       * Callback for when an individual section's assets failed to be
        * fetched
        */
       _assetsFetchedError: function(section, assets, response) {
@@ -777,8 +777,8 @@
 
       _fetchAssetsCleanup: function() {
         this._assetsFetched = [];
-        this._fetchAssetsSuccess = null; 
-        this._fetchAssetsError = null; 
+        this._fetchAssetsSuccess = null;
+        this._fetchAssetsError = null;
       },
 
       /**
@@ -803,7 +803,7 @@
           };
           section.assets.fetch({
             success: success,
-            error: error 
+            error: error
           });
         }, this);
       }
@@ -867,7 +867,7 @@
        *   would be passed to the constructor of Backbone.Model.  However,
        *   certain attributes are preprocessed rather than being set as a
        *   model attribute.  The ``asset`` attribute's url property is set on
-       *   the constructed model.  The ``id`` of the model is taken from the 
+       *   the constructed model.  The ``id`` of the model is taken from the
        *   ``asset`` attributes id property.  The ``attribute`` is
        *   assigned to ``model.section`` instead of being set as a model
        *   attribute.
@@ -952,7 +952,7 @@
           'table': true
         }
       },
-      
+
       mutexGroups: {
         image: ['url', 'image'],
         map: ['url', 'image', 'body'],
@@ -1118,7 +1118,7 @@
        * Associate an asset in the collection with this collection's Section.
        *
        * This is used as a handler for the ``add`` event triggered
-       * on this collection. 
+       * on this collection.
        *
        * @param {Asset} asset Asset model.
        * @param {SectionAssets} collection This argument is needed to match
@@ -1130,9 +1130,9 @@
        * @param {boolean} [options.sync] If truthy, persist the relationship
        *   to the server.
        *
-       * Triggers a ``save:sectionasset`` event if the relationship is 
+       * Triggers a ``save:sectionasset`` event if the relationship is
        * successfully persisted to the server, and an ``error:sectionasset``
-       * event if there's a problem. Listeners to tese events as well as the 
+       * event if there's a problem. Listeners to tese events as well as the
        * ``success`` and ``error`` callbacks take (asset, response, options)
        * as the arguments.
        *
@@ -1176,7 +1176,7 @@
         options = options || {};
 
         asset.unset('container');
-        
+
         if (options.sync) {
           var success = options.success;
           var error = options.error;
@@ -1194,7 +1194,7 @@
                 error(asset, xhr, options);
               }
 
-              collection.trigger('error:sectionasset', asset, xhr, options); 
+              collection.trigger('error:sectionasset', asset, xhr, options);
             }
           });
         }
@@ -1222,9 +1222,9 @@
        * @param {function} [options.error] Callback for a successful request
        *   to the server.
        *
-       * Triggers a ``save:sectionasset`` event if the relationship is 
+       * Triggers a ``save:sectionasset`` event if the relationship is
        * successfully persisted to the server, and an ``error:sectionasset``
-       * event if there's a problem. Listeners to tese events as well as the 
+       * event if there's a problem. Listeners to tese events as well as the
        * ``success`` and ``error`` callbacks take (asset, response, options)
        * as the arguments.
        *
@@ -1249,7 +1249,7 @@
               error(asset, xhr, options);
             }
 
-            collection.trigger('error:sectionasset', asset, xhr, options); 
+            collection.trigger('error:sectionasset', asset, xhr, options);
           }
         });
       }
@@ -1293,7 +1293,7 @@
      * with a payload that includes a tag_id property. It makes sense to
      * do this with Backbone.Collection.create, but setting tag_id (this
      * model's idAttribute) causes the default isNew implementation to
-     * think the model already exists and do a PUT request to the 
+     * think the model already exists and do a PUT request to the
      * wrong url.
      */
     isNew: function() {

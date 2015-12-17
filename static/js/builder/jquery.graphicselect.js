@@ -1,5 +1,5 @@
 (function($) {
-  
+
   var defaults = {
     contextForOption: function() {
       return {
@@ -13,11 +13,11 @@
     markupForOption: function() {
       return defaults.markupForContext(defaults.contextForOption.apply(this));
     },
-    
+
     cols: 2,
     slideUpDelay: 500
-  }; 
-  
+  };
+
   var methods = {
     init: function(pluginOptions) {
       pluginOptions = $.extend(defaults, pluginOptions);
@@ -30,7 +30,7 @@
         var graphicItems = [];
         var nOptions = $options.length;
 
-        // for each <option> in the select, 
+        // for each <option> in the select,
         $options.each(function() {
           var $graphicItem = $(pluginOptions.markupForOption.apply(this));
           $graphicItem.data('graphic-select-option-value', $(this).prop('value'));
@@ -124,18 +124,18 @@
       });
     }
   };
-  
+
   $.fn.graphicSelect = function(method) {
     if (methods[method]) {
       return methods[method].apply(this, Array.prototype.slice.call(arguments, 1));
-    } 
+    }
     else if ($.isPlainObject(method) || !method) {
       return methods.init.apply(this, arguments);
     }
     else {
       $.error('Method ' +  method + ' does not exist on jQuery.graphicSelect');
     }
-    
+
     return this;
   };
 })(jQuery);
