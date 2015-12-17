@@ -4,11 +4,11 @@ from cms.extensions import TitleExtensionAdmin
 from cms.models import Page
 from storybase.admin import (StorybaseModelAdmin, StorybaseStackedInline,
         obj_title)
-from cmsplugin_storybase.forms import (ActivityTranslationAdminForm, 
+from cmsplugin_storybase.forms import (ActivityTranslationAdminForm,
     NewsItemTranslationAdminForm)
 from cmsplugin_storybase.models import (Activity, ActivityTranslation,
     NewsItem, NewsItemTranslation, TeaserExtension)
-    
+
 
 class ActivityTranslationInline(StorybaseStackedInline):
     model = ActivityTranslation
@@ -26,7 +26,7 @@ class ActivityAdmin(StorybaseModelAdmin):
 class NewsItemTranslationInline(StorybaseStackedInline):
     """Inline for translated fields of a NewsItem"""
     model = NewsItemTranslation
-    form = NewsItemTranslationAdminForm 
+    form = NewsItemTranslationAdminForm
     extra = 1
 
 
@@ -40,7 +40,7 @@ class NewsItemAdmin(StorybaseModelAdmin):
     prefix_inline_classes = ['NewsItemTranslationInline']
 
     def save_model(self, request, obj, form, change):
-        """Perform pre-save operations and save the News Item 
+        """Perform pre-save operations and save the News Item
 
         Sets the author field to the current user if it wasn't already set
 

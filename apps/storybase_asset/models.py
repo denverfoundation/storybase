@@ -17,12 +17,12 @@ from django.db import models
 from django.db.models.signals import pre_save, post_delete, m2m_changed
 from django.template.loader import render_to_string
 from django.utils.html import strip_tags
-from django.utils.text import Truncator 
+from django.utils.text import Truncator
 from django.utils.translation import ugettext_lazy as _
 from django.utils.safestring import mark_safe
 
 from filer.fields.image import FilerFileField, FilerImageField
-from filer.models import File as FilerFile, Image 
+from filer.models import File as FilerFile, Image
 from micawber.exceptions import ProviderException, ProviderNotFoundException
 from model_utils.managers import InheritanceManager
 
@@ -71,7 +71,7 @@ class ImageRenderingMixin(object):
         raise NotImplementedError
 
     def render_img_html(self, url=None, attrs={}):
-        """Render an image tag for this asset""" 
+        """Render an image tag for this asset"""
         if url is None:
             url = self.get_img_url()
         el_attrs = dict(src=url, alt=self.title)
@@ -80,7 +80,7 @@ class ImageRenderingMixin(object):
 
     def render_thumbnail(self, width=0, height=0, format='html',
                          **kwargs):
-        """Render a thumbnail-sized viewable representation of an asset 
+        """Render a thumbnail-sized viewable representation of an asset
 
         Arguments:
         height -- Height of the thumbnail in pixels
@@ -98,8 +98,8 @@ class ImageRenderingMixin(object):
 
     def render_thumbnail_html(self, width=0, height=0, **kwargs):
         """
-        Render HTML for a thumbnail-sized viewable representation of an 
-        asset 
+        Render HTML for a thumbnail-sized viewable representation of an
+        asset
 
         Arguments:
         height -- Height of the thumbnail in pixels
@@ -111,10 +111,10 @@ class ImageRenderingMixin(object):
         output = ("<div class='asset-thumbnail %s' "
                   "style='height: %dpx; width: %dpx'>"
                   "Asset Thumbnail</div>" % (html_class, height, width))
-        if url is not None: 
+        if url is not None:
             output = self.render_img_html(url, {
                 'class': "asset-thumbnail " + html_class})
-            
+
         return mark_safe(output)
 
 
@@ -152,26 +152,26 @@ class AssetTranslation(TranslationModel):
     Abstract base class for common translated metadata fields for Asset
     instances
     """
-    asset = models.ForeignKey('Asset',  
-        related_name="%(app_label)s_%(class)s_related") 
-    title = ShortTextField(blank=True) 
+    asset = models.ForeignKey('Asset',
+        related_name="%(app_label)s_%(class)s_related")
+    title = ShortTextField(blank=True)
     caption = models.TextField(blank=True)
 
     class Meta:
         abstract = True
-        unique_together = (('asset', 'language')) 
+        unique_together = (('asset', 'language'))
 
     def strings(self):
         return None
 
 
-class Asset(ImageRenderingMixin, TranslatedModel, LicensedModel, 
+class Asset(ImageRenderingMixin, TranslatedModel, LicensedModel,
     PublishedModel, TimestampedModel, AssetPermission):
     """A piece of content included in a story
 
     An asset could be an image, a block of text, an embedded resource
     represented by an HTML snippet or a media file.
-    
+
     This is a base class that provides common metadata for the asset.
     However, it does not provide the fields that specify the content
     itself.  Also, to reduce the number of database tables and queries
@@ -187,14 +187,14 @@ class Asset(ImageRenderingMixin, TranslatedModel, LicensedModel,
     """The URL where an asset originated.
 
     It could be used to store the canonical URL for a resource that is not
-    yet oEmbedable or the canonical URL of an article or tweet where text 
+    yet oEmbedable or the canonical URL of an article or tweet where text
     is quoted from.
 
     """
     owner = models.ForeignKey(User, related_name="assets", blank=True,
                               null=True)
     section_specific = models.BooleanField(default=False)
-    datasets = models.ManyToManyField('DataSet', related_name='assets', 
+    datasets = models.ManyToManyField('DataSet', related_name='assets',
                                       blank=True)
     asset_created = models.DateTimeField(blank=True, null=True)
     """Date/time the non-digital version of an asset was created
@@ -220,7 +220,7 @@ class Asset(ImageRenderingMixin, TranslatedModel, LicensedModel,
     def display_title(self):
         """
         Wrapper to handle displaying some kind of title when the
-        the title field is blank 
+        the title field is blank
         """
         # For now just call the __unicode__() method
         return unicode(self)
@@ -230,7 +230,7 @@ class Asset(ImageRenderingMixin, TranslatedModel, LicensedModel,
         Returns string of CSS classes for the asset's HTML container element
         """
         return "asset-%s asset-type-%s" % (self.asset_id, self.type)
-        
+
 
     def render(self, format='html', **kwargs):
         """Render a viewable representation of an asset
@@ -249,7 +249,7 @@ class Asset(ImageRenderingMixin, TranslatedModel, LicensedModel,
         """Return an HTML list of associated datasets"""
         if not self.datasets.count():
             return u""
-        
+
         return render_to_string("storybase_asset/asset_datasets.html", {
             'label': label,
             'datasets': self.datasets.select_subclasses()
@@ -278,7 +278,7 @@ class Asset(ImageRenderingMixin, TranslatedModel, LicensedModel,
 
     def strings(self):
         """Print all the strings in all languages for this asset
-        
+
         This is meant to be used to help generate a document for full-text
         search using Haystack.
 
@@ -312,14 +312,14 @@ class ExternalAsset(Asset):
     oembed_providers = bootstrap_providers(cache)
 
     IMAGE_MIMETYPES = (
-        "image/jpeg", 
+        "image/jpeg",
         "image/gif",
         "image/png",
         "image/svg+xml",
         "image/bmp",
         "image/x-ms-bmp",
     )
-    """Mimetypes that represent image files. 
+    """Mimetypes that represent image files.
 
     Non-oembed URLs matching these mimetypes will be rendered using an
     <img> tag. Otherwise, an <a> tag will be used.
@@ -334,9 +334,9 @@ class ExternalAsset(Asset):
         if self.title:
             return self.title
         elif self.url:
-            url = self.url 
+            url = self.url
             if len(url) > maxlength:
-                url = url[0:maxlength] 
+                url = url[0:maxlength]
             return url
         else:
             return "Asset %s" % self.asset_id
@@ -345,7 +345,7 @@ class ExternalAsset(Asset):
         """Does the url represent a link directly to an image file?"""
         (url_type, encoding) = mimetypes.guess_type(self.url)
         return url_type in self.IMAGE_MIMETYPES
-         
+
     def get_img_url(self):
         return self.url
 
@@ -372,7 +372,7 @@ class ExternalAsset(Asset):
             # doesn't support not having them.
             # TODO: Check if we need to hard-code maxwidth for Flickr
             # e.g. resource_data = self.get_oembed_response(self.url, maxwidth=1000, maxheight=1000)
-            resource_data = self.get_oembed_response(self.url)  
+            resource_data = self.get_oembed_response(self.url)
             if resource_data['type'] in ('rich', 'video'):
                 output.append(resource_data['html'])
             elif resource_data['type'] == 'photo':
@@ -382,7 +382,7 @@ class ExternalAsset(Asset):
             else:
                 raise AssertionError(
                     "oEmbed provider returned invalid type")
-                
+
         except ProviderNotFoundException:
             # URL not matched, just show an image or a link
             if self.type == 'image' or self.url_is_image_file():
@@ -439,10 +439,10 @@ class ExternalAsset(Asset):
                     self._thumbnail_url = None
             except ProviderException:
                 # Do nothing, return value gets set in finally clause
-                pass 
+                pass
             except ValueError:
                 # Do nothing, return value gets set in finally clause
-                pass 
+                pass
             finally:
                 url = getattr(self, '_thumbnail_url', None)
 
@@ -486,7 +486,7 @@ class HtmlAsset(Asset):
 
     def get_thumbnail_url(self, width=0, height=0, **kwargs):
         """Return the URL of the Asset's thumbnail
-        
+
         This doesn't really make sense for an HTML Asset, but
         there were a number of HTML Assets of type image that
         were created where the HTML contained just an image tag.
@@ -539,7 +539,7 @@ class HtmlAsset(Asset):
             output.append('</blockquote>')
         else:
             output.append(body)
-            
+
         return mark_safe(u'\n'.join(output))
 
     def has_script(self, **kwargs):
@@ -555,11 +555,11 @@ class LocalImageAsset(Asset):
     """
     An asset that can be stored as an image file accessible by the
     application through a Django API
-    
-    This currently uses the `django-filer <https://github.com/stefanfoulis/django-filer>`_ 
+
+    This currently uses the `django-filer <https://github.com/stefanfoulis/django-filer>`_
     application for storing images as this app adds a lot of convenience
     for working with images in the Django admin.  This is subject to change.
-    
+
     """
     translation_set = 'storybase_asset_localimageassettranslation_related'
     translated_fields = Asset.translated_fields + ['image']
@@ -585,7 +585,7 @@ class LocalImageAsset(Asset):
         if full_caption_html:
             output.append(full_caption_html)
         output.append('</figure>')
-            
+
         return mark_safe(u'\n'.join(output))
 
     def get_thumbnail(self, thumbnail_options):
@@ -602,7 +602,7 @@ class LocalImageAsset(Asset):
             # Disable crop for now in favor of CSS cropping, but this
             # is how you would do it. This particular argument crops
             # from the center on the x-axis and the top edge of the
-            # image on the y-axis.  
+            # image on the y-axis.
             # See http://easy-thumbnails.readthedocs.org/en/latest/ref/processors/#easy_thumbnails.processors.scale_and_crop
             #'crop': ',0',
             'size': (width, height),
@@ -635,13 +635,13 @@ def add_dataset_to_story(sender, **kwargs):
 # on status changes
 pre_save.connect(set_date_on_published, sender=ExternalAsset)
 pre_save.connect(set_date_on_published, sender=HtmlAsset)
-pre_save.connect(set_date_on_published, sender=LocalImageAsset) 
+pre_save.connect(set_date_on_published, sender=LocalImageAsset)
 m2m_changed.connect(add_dataset_to_story, sender=Asset.datasets.through)
 
 
 class DefaultImageMixin(object):
     """
-    Mixin for models that have some related image that needs a 
+    Mixin for models that have some related image that needs a
     default value to fall back on
     """
     @classmethod
@@ -655,7 +655,7 @@ class DefaultImageMixin(object):
         lgst_width = 0
         lgst_src = None
         for img_width, url in choices.iteritems():
-            if img_width <= width and img_width > lgst_width: 
+            if img_width <= width and img_width > lgst_width:
                 lgst_src = url
                 lgst_width = img_width
 
@@ -675,7 +675,7 @@ class DefaultImageMixin(object):
 class FeaturedAssetsMixin(DefaultImageMixin):
     """
     Mixins for models that have a featured asset
-    
+
     Models mixing in this class should have a ManyToMany field
     named ``featured_assets``.  This field is not defined in this mixin mostly
     because I couldn't think of a clever way to set the reverse name the way
@@ -684,7 +684,7 @@ class FeaturedAssetsMixin(DefaultImageMixin):
     def get_featured_asset(self):
         """Return the featured asset"""
         if self.featured_assets.count():
-            # Return the first featured asset.  We have the ability of 
+            # Return the first featured asset.  We have the ability of
             # selecting multiple featured assets.  Perhaps in the future
             # allow for specifying a particular feature asset or randomly
             # displaying one.
@@ -710,7 +710,7 @@ class FeaturedAssetsMixin(DefaultImageMixin):
             }
             if format == 'html':
                 thumbnail_options.update({'html_class': 'featured-asset'})
-            return featured_asset.render_thumbnail(format=format, 
+            return featured_asset.render_thumbnail(format=format,
                                                    **thumbnail_options)
 
     def featured_asset_thumbnail_url_key(self, include_host=True):
@@ -720,7 +720,7 @@ class FeaturedAssetsMixin(DefaultImageMixin):
         return key_from_instance(self, extra)
 
 
-    def featured_asset_thumbnail_url(self, include_host=True, 
+    def featured_asset_thumbnail_url(self, include_host=True,
         width=FEATURED_ASSET_THUMBNAIL_WIDTH,
         height=FEATURED_ASSET_THUMBNAIL_HEIGHT):
         """Return the URL of the featured asset's thumbnail
@@ -749,7 +749,7 @@ class FeaturedAssetsMixin(DefaultImageMixin):
         return url
 
 
-def invalidate_featured_asset_url_cache(sender, instance, **kwargs): 
+def invalidate_featured_asset_url_cache(sender, instance, **kwargs):
     """Signal handler to invalidate a model's cached featured asset URL"""
     action = kwargs.get('action')
     reverse = kwargs.get('reverse')
@@ -768,7 +768,7 @@ class DataSetPermission(PermissionMixin):
         if not user.is_active:
             return False
 
-        # Authenticated, active users can change their own dataset 
+        # Authenticated, active users can change their own dataset
         if self.owner == user:
             return True
 
@@ -791,13 +791,13 @@ class DataSetPermission(PermissionMixin):
 
 class DataSetTranslation(TranslationModel):
     """Translatable fields for a DataSet model instance"""
-    dataset = models.ForeignKey('DataSet', 
-        related_name="%(app_label)s_%(class)s_related") 
-    title = ShortTextField() 
+    dataset = models.ForeignKey('DataSet',
+        related_name="%(app_label)s_%(class)s_related")
+    title = ShortTextField()
     description = models.TextField(blank=True)
 
     class Meta:
-        unique_together = (('dataset', 'language')) 
+        unique_together = (('dataset', 'language'))
 
 
 class DataSet(TranslatedModel, PublishedModel, TimestampedModel,
@@ -859,12 +859,12 @@ class ExternalDataSet(DataSet):
         (url_type, encoding) = mimetypes.guess_type(url)
         if url_type is None:
             return False
-        
+
         return True
 
     def download_url(self):
         """Returns the URL to the downloadable version of the data set"""
-        return self.url 
+        return self.url
 
     def save(self, *args, **kwargs):
         # Take a guess at whether the url links to a file and set the
@@ -880,10 +880,10 @@ class LocalDataSet(DataSet):
     A data set stored as a file accessible by the application through
     a Django API
 
-    This currently uses the `django-filer <https://github.com/stefanfoulis/django-filer>`_ 
+    This currently uses the `django-filer <https://github.com/stefanfoulis/django-filer>`_
     application for storing files as this app adds a lot of convenience
     for working with files in the Django admin.  This is subject to change.
-    
+
     """
     file = FilerFileField(null=True)
 
@@ -911,7 +911,7 @@ def delete_dataset_file(sender, instance, **kwargs):
 post_delete.connect(delete_dataset_file, sender=LocalDataSet)
 
 
-def create_html_asset(type, title='', caption='', body='', 
+def create_html_asset(type, title='', caption='', body='',
                       language=settings.LANGUAGE_CODE, *args, **kwargs):
     """ Convenience function for creating a HtmlAsset
 
@@ -920,19 +920,19 @@ def create_html_asset(type, title='', caption='', body='',
 
     """
     obj = HtmlAsset(
-        type=type, 
+        type=type,
         *args, **kwargs)
     obj.save()
     translation = HtmlAssetTranslation(
-        asset=obj, 
-        title=title, 
+        asset=obj,
+        title=title,
         caption=caption,
         body=body,
         language=language)
     translation.save()
     return obj
 
-def create_external_asset(type, title='', caption='', url='', 
+def create_external_asset(type, title='', caption='', url='',
                           language=settings.LANGUAGE_CODE, *args, **kwargs):
     """ Convenience function for creating a HtmlAsset
 
@@ -941,12 +941,12 @@ def create_external_asset(type, title='', caption='', url='',
 
     """
     obj = ExternalAsset(
-        type=type, 
+        type=type,
         *args, **kwargs)
     obj.save()
     translation = ExternalAssetTranslation(
-        asset=obj, 
-        title=title, 
+        asset=obj,
+        title=title,
         caption=caption,
         url=url,
         language=language)
@@ -986,8 +986,8 @@ def create_external_dataset(title, url, description='',
         *args, **kwargs)
     obj.save()
     translation = DataSetTranslation(
-        dataset=obj, 
-        title=title, 
+        dataset=obj,
+        title=title,
         description=description,
         language=language)
     translation.save()
@@ -1007,14 +1007,14 @@ def create_local_dataset(title, data_file, data_filename=None, description='',
     file_model = File(data_file, name=data_filename)
     filer_file_model = FilerFile.objects.create(owner=kwargs.get('owner', None),
          original_filename=data_filename, file=file_model)
-    
+
     obj = LocalDataSet(
         file=filer_file_model,
         *args, **kwargs)
     obj.save()
     translation = DataSetTranslation(
-        dataset=obj, 
-        title=title, 
+        dataset=obj,
+        title=title,
         description=description,
         language=language)
     translation.save()

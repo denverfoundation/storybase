@@ -19,14 +19,14 @@ def create_admin_group(sender, app, created_models, verbosity, interactive,
                     confirm = raw_input('Please enter either "yes" or "no": ')
                     continue
                 if confirm == 'yes':
-                    Group.objects.create(name=settings.ADMIN_GROUP_NAME)    
+                    Group.objects.create(name=settings.ADMIN_GROUP_NAME)
                 break
 post_syncdb.connect(create_admin_group)
 
 def create_superuser(sender, app, **kwargs):
     """
     Custom version of the create_superuser signal handler
-    
+
     This version connects to South's post_migrate signal instead of
     post_syncd
     """

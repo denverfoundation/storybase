@@ -16,13 +16,13 @@ from django.db import models
 from django.db.models.signals import post_save
 from django.dispatch import receiver
 from django.utils.translation import ugettext_lazy as _
-from django.template.loader import render_to_string 
+from django.template.loader import render_to_string
 
 from storybase.fields import ShortTextField
 from storybase.managers import FeaturedManager
 from storybase.models import (DirtyFieldsMixin, PermissionMixin,
         PublishedModel, TimestampedModel, TranslatedModel, TranslationModel)
-                             
+
 from storybase.utils import full_url, unique_slugify
 from storybase_asset.models import (DefaultImageMixin, FeaturedAssetsMixin,
     ImageRenderingMixin)
@@ -136,7 +136,7 @@ class PermissionBase(PermissionMixin):
 
         return False
 
-        
+
 class OrganizationTranslation(TranslationModel, TimestampedModel):
     organization = models.ForeignKey('Organization')
     name = ShortTextField(verbose_name=_("Organization Name"))
@@ -161,7 +161,7 @@ class Organization(PermissionBase, MembershipUtilsMixin, FeaturedAssetsMixin,
             verbose_name=_("contact information"))
     website_url = models.URLField(blank=True,
             verbose_name=_("Website URL"))
-    members = models.ManyToManyField(User, related_name='organizations', 
+    members = models.ManyToManyField(User, related_name='organizations',
             blank=True, through='OrganizationMembership')
     curated_stories = models.ManyToManyField('storybase_story.Story', related_name='curated_in_organizations', blank=True, through='OrganizationStory')
     on_homepage = models.BooleanField(_("Featured on homepage"),
@@ -194,8 +194,8 @@ class Organization(PermissionBase, MembershipUtilsMixin, FeaturedAssetsMixin,
         })
 
     def add_story(self, story, weight=0):
-        """ Associate a story with the Organization 
-        
+        """ Associate a story with the Organization
+
         Arguments:
         story -- The Story model instance object to be associated
         weight -- The ordering of the story relative to other stories
@@ -207,7 +207,7 @@ class Organization(PermissionBase, MembershipUtilsMixin, FeaturedAssetsMixin,
     def ordered_stories(self):
         """ Return sorted curated stories
 
-        This is a helper method to make it easy to access a sorted 
+        This is a helper method to make it easy to access a sorted
         list of stories associated with the project in a template.
 
         Sorts first by weight, then by when a story was associated with
@@ -222,7 +222,7 @@ class Organization(PermissionBase, MembershipUtilsMixin, FeaturedAssetsMixin,
 
     def normalize_for_view(self, img_width):
         """Return attributes as a dictionary for use in a view context
-        
+
         This allows using the same template across different models with
         differently-named attributes that hold similar information.
 
@@ -232,7 +232,7 @@ class Organization(PermissionBase, MembershipUtilsMixin, FeaturedAssetsMixin,
             "title": self.name,
             "date": self.created,
             "image_html": self.render_featured_asset(width=img_width),
-            "excerpt": self.description, 
+            "excerpt": self.description,
             "url": self.get_absolute_url(),
             "more_link_text": _("View All Organizations"),
             "more_link_url": urlresolvers.reverse("organization_list"),
@@ -243,7 +243,7 @@ def set_organization_slug(sender, instance, **kwargs):
     """
     When an OrganizationTranslation is saved, set its Organization's slug if it
     doesn't have one
-    
+
     Should be connected to OrganizationTranslation's post_save signal.
     """
     if not instance.organization.slug:
@@ -252,7 +252,7 @@ def set_organization_slug(sender, instance, **kwargs):
 
 def send_approval_notification(sender, instance, created, **kwargs):
     """
-    Signal handler for sending notifications when an admin has approved a 
+    Signal handler for sending notifications when an admin has approved a
     Project or Organization
     """
     dirty_fields = instance.get_dirty_fields()
@@ -295,7 +295,7 @@ class OrganizationStory(CuratedStory):
 
 @receiver(post_save, sender=Organization)
 def add_story_to_organization(sender, instance, **kwargs):
-    """ Add stories in curated stories list to stories list if they're not already there """ 
+    """ Add stories in curated stories list to stories list if they're not already there """
     for story in instance.curated_stories.all():
         if instance not in story.organizations.all():
             story.organizations.add(instance)
@@ -314,12 +314,12 @@ class ProjectTranslation(TranslationModel):
         return self.name
 
 
-class Project(PermissionBase, MembershipUtilsMixin, FeaturedAssetsMixin, 
-        RecentStoriesMixin, FeaturedStoriesMixin, DirtyFieldsMixin, 
+class Project(PermissionBase, MembershipUtilsMixin, FeaturedAssetsMixin,
+        RecentStoriesMixin, FeaturedStoriesMixin, DirtyFieldsMixin,
         PublishedModel, TranslatedModel, TimestampedModel):
-    """ 
-    A project that collects related stories.  
-    
+    """
+    A project that collects related stories.
+
     Users can also be related to projects.
     """
     project_id = models.UUIDField(default=uuid.uuid4, db_index=True)
@@ -327,7 +327,7 @@ class Project(PermissionBase, MembershipUtilsMixin, FeaturedAssetsMixin,
     website_url = models.URLField(blank=True,
             verbose_name=_("Website URL"))
     organizations = models.ManyToManyField(Organization, related_name='projects', blank=True)
-    members = models.ManyToManyField(User, related_name='projects', 
+    members = models.ManyToManyField(User, related_name='projects',
             blank=True, through='ProjectMembership')
     curated_stories = models.ManyToManyField('storybase_story.Story', related_name='curated_in_projects', blank=True, through='ProjectStory')
     on_homepage = models.BooleanField(_("Featured on homepage"),
@@ -360,8 +360,8 @@ class Project(PermissionBase, MembershipUtilsMixin, FeaturedAssetsMixin,
         })
 
     def add_story(self, story, weight=0):
-        """ Associate a story with the Project 
-        
+        """ Associate a story with the Project
+
         Arguments:
         story -- The Story model instance object to be associated
         weight -- The ordering of the story relative to other stories
@@ -373,7 +373,7 @@ class Project(PermissionBase, MembershipUtilsMixin, FeaturedAssetsMixin,
     def ordered_stories(self):
         """ Return sorted curated stories
 
-        This is a helper method to make it easy to access a sorted 
+        This is a helper method to make it easy to access a sorted
         list of stories associated with the project in a template.
 
         Sorts first by weight, then by when a story was associated with
@@ -388,7 +388,7 @@ class Project(PermissionBase, MembershipUtilsMixin, FeaturedAssetsMixin,
 
     def normalize_for_view(self, img_width):
         """Return attributes as a dictionary for use in a view context
-        
+
         This allows using the same template across different models with
         differently-named attributes that hold similar information.
 
@@ -398,7 +398,7 @@ class Project(PermissionBase, MembershipUtilsMixin, FeaturedAssetsMixin,
             "title": self.name,
             "date": self.created,
             "image_html": self.render_featured_asset(width=img_width),
-            "excerpt": self.description, 
+            "excerpt": self.description,
             "url": self.get_absolute_url(),
             "more_link_text": _("View All Projects"),
             "more_link_url": urlresolvers.reverse("project_list"),
@@ -409,7 +409,7 @@ def set_project_slug(sender, instance, **kwargs):
     """
     When an ProjectTranslation is saved, set its Project's slug if it
     doesn't have one
-    
+
     Should be connected to ProjectTranslation's post_save signal.
     """
     if not instance.project.slug:
@@ -430,7 +430,7 @@ class ProjectStory(CuratedStory):
 
 @receiver(post_save, sender=Project)
 def add_story_to_project(sender, instance, **kwargs):
-    """ Add stories in curated stories list to stories list if they're not already there """ 
+    """ Add stories in curated stories list to stories list if they're not already there """
     for story in instance.curated_stories.all():
         if instance not in story.projects.all():
             story.projects.add(instance)
@@ -509,16 +509,16 @@ class UserProfile(RecentStoriesMixin, models.Model, BadgeEditor):
     def get_absolute_url(self):
         if shortuuid:
             profile_uuid = self.profile_id
-            return ('userprofile_detail', (), 
+            return ('userprofile_detail', (),
                     {'short_profile_id': shortuuid.encode(profile_uuid)})
 
-        return ('userprofile_detail', (), 
+        return ('userprofile_detail', (),
                 {'profile_id': self.profile_id})
 
     def get_share_url(self):
         if shortuuid:
             profile_uuid = self.profile_id
-            return urlresolvers.reverse('userprofile_share', 
+            return urlresolvers.reverse('userprofile_share',
                     kwargs={'short_profile_id': shortuuid.encode(profile_uuid)})
 
         return urlresolvers.reverse('userprofile_share',
@@ -553,8 +553,8 @@ post_save.connect(create_user_profile, sender=User)
 
 def create_project(name, description='', website_url='',
         language=settings.LANGUAGE_CODE, **kwargs):
-    """ Convenience function for creating a Project 
-    
+    """ Convenience function for creating a Project
+
     Allows for the creation of stories without having to explicitely
     deal with the translations.
 
@@ -563,15 +563,15 @@ def create_project(name, description='', website_url='',
     project.save()
     project_translation = ProjectTranslation(
         name=name,
-        description=description, 
+        description=description,
         project=project)
     project_translation.save()
     return project
 
-def create_organization(name, description='', website_url='', 
+def create_organization(name, description='', website_url='',
         language=settings.LANGUAGE_CODE, **kwargs):
     """ Convenience function for creating an Organization
-    
+
     Allows for the creation of organizations without having to explicitely
     deal with the translations.
 

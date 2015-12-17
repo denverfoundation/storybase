@@ -18,7 +18,7 @@ class Command(BaseCommand):
                 default=None,
                 help="Specify a send on date/time other than now"),
             )
-    
+
     def handle(self, *args, **options):
         try:
             send_on = options.get('send_on', None)

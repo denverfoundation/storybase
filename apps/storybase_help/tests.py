@@ -100,7 +100,7 @@ class HelpResourceTest(ResourceTestCase):
         """
         Test that a user can't set the help text for another user's section
         """
-        user2 = User.objects.create(username="test2", 
+        user2 = User.objects.create(username="test2",
             email="test2@example.com", password="test2")
         section_help = create_help(title="Test section help item",
                           body="Test section help item body")

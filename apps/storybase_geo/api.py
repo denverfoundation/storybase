@@ -4,7 +4,7 @@ from django.core.exceptions import ObjectDoesNotExist
 from tastypie import fields, http
 from tastypie.authentication import Authentication
 from tastypie.authorization import ReadOnlyAuthorization
-from tastypie.constants import ALL, ALL_WITH_RELATIONS 
+from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.exceptions import ImmediateHttpResponse
 from tastypie.resources import Resource, ModelResource
 from tastypie.utils import trailing_slash
@@ -71,7 +71,7 @@ class LocationResource(HookedModelResource):
         story_id = kwargs.get('story_id')
         if story_id:
             try:
-                story = Story.objects.get(story_id=story_id) 
+                story = Story.objects.get(story_id=story_id)
                 if not story.has_perm(bundle.request.user, 'change'):
                     raise ImmediateHttpResponse(response=http.HttpUnauthorized("You are not authorized to change the story matching the provided story ID"))
             except ObjectDoesNotExist:
@@ -91,7 +91,7 @@ class LocationResource(HookedModelResource):
             story.save()
 
         return bundle
-        
+
 
 class PlaceResource(ModelResource):
     geolevel = fields.ToOneField(GeoLevelResource, 'geolevel')
@@ -126,7 +126,7 @@ class GeocodeObject(object):
 class GeocoderResource(Resource):
     """
     Proxy for geocoding as most geocoders don't support JSONP
-   
+
     This simply wraps a geopy geocoder object.
     """
     lat = fields.FloatField(attribute='lat')
@@ -145,7 +145,7 @@ class GeocoderResource(Resource):
 
     def get_geocoder(self):
         return get_geocoder()
-        
+
     def obj_get_list(self, bundle, **kwargs):
         results = []
         geocoder = self.get_geocoder()

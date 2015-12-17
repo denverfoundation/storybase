@@ -308,7 +308,7 @@ class StoryResource(TranslatedModelResource):
         }
 
         return self.create_response(request, object_list)
-    
+
     def explore_get_result_list(self, request):
         sqs = SearchQuerySet().models(Story)
         filter_fields = self._meta.explore_filter_fields

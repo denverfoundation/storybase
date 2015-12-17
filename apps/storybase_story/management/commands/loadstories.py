@@ -10,7 +10,7 @@ class Command(BaseCommand):
             "This is mostly useful for testing\n"
             "Arguments:\n"
             "  csv_file\t\tA CSV file containing mappings between places\n")
-    
+
     def handle(self, *args, **options):
         try:
             csv_file = open(args[0])

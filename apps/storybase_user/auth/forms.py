@@ -33,14 +33,14 @@ class EmailAuthenticationForm(AuthenticationForm):
         context = {
             'name': user if user.first_name else user.username,
             'site_name': get_site_name(),
-            'site_contact_email': settings.STORYBASE_CONTACT_EMAIL 
+            'site_contact_email': settings.STORYBASE_CONTACT_EMAIL
         }
         context.update(self.extra_context)
         return template.render(Context(context))
 
     def clean(self):
         """Override the default validation error message
-        
+
         Reference the email address field instead of username and provides a
         more verbose, templated error message for inactive users.
 
@@ -76,9 +76,9 @@ class CustomContextPasswordResetForm(PasswordResetForm):
 
         """
         from storybase.context_processors import conf
-        # Return site-wide configuration context variables 
+        # Return site-wide configuration context variables
         context = conf(request)
-        return context 
+        return context
 
     def save(self, domain_override=None,
              subject_template_name='registration/password_reset_subject.txt',
@@ -91,7 +91,7 @@ class CustomContextPasswordResetForm(PasswordResetForm):
         from storybase_user.auth.utils import send_password_reset_email
         for user in self.users_cache:
             send_password_reset_email(user,
-                domain_override=domain_override, 
+                domain_override=domain_override,
                 subject_template_name=subject_template_name,
                 email_template_name=email_template_name,
                 use_https=use_https,

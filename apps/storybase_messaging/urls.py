@@ -5,7 +5,7 @@ from storybase_messaging.views import (SiteContactMessageCreateView,
 
 urlpatterns = patterns('',
     url(r'^contact/$',
-        SiteContactMessageCreateView.as_view(), name='contact'), 
+        SiteContactMessageCreateView.as_view(), name='contact'),
     url(r'^notifications/(?P<pk>[0-9]+)/$',
         StoryNotificationDetailView.as_view(), name='storynotification_detail'),
 )

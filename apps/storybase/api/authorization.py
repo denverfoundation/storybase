@@ -61,7 +61,7 @@ class LoggedInAuthorization(Authorization, UserAuthorization):
             return True
 
         raise Unauthorized("You are not allowed to access that resource.")
-       
+
     def has_perms(self, object_list, bundle, perms):
         """
         Use an object's ``has_perms`` method to check whether the request's
@@ -80,7 +80,7 @@ class LoggedInAuthorization(Authorization, UserAuthorization):
         Returns either ``True`` if the user is allowed to create the object in
         question or throw ``Unauthorized`` if they are not.
 
-        Returns ``True`` if the user is authenticated and active. 
+        Returns ``True`` if the user is authenticated and active.
         """
         return self.user_valid(bundle)
 
@@ -137,7 +137,7 @@ class PublishedOwnerAuthorization(LoggedInAuthorization):
     # TODO: Move these filtering operations to the model/manager/queryset
 
     def read_list(self, object_list, bundle):
-        # All users can see published items 
+        # All users can see published items
         q = Q(status='published')
         if (hasattr(bundle.request, 'user') and
                 bundle.request.user.is_authenticated()):
@@ -155,7 +155,7 @@ class PublishedOwnerAuthorization(LoggedInAuthorization):
         return object_list.filter(q)
 
     def update_list(self, object_list, bundle):
-        if not (hasattr(bundle.request, 'user') and 
+        if not (hasattr(bundle.request, 'user') and
                 bundle.request.user.is_authenticated()):
             # Unauthenticated users shouldn't be able to update anything
             return []

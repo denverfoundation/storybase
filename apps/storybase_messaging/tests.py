@@ -15,7 +15,7 @@ from storybase_messaging.models import SiteContactMessage, StoryNotification
 from storybase_story.models import create_story
 
 class EmailSendingTestCaseMixin(object):
-    def check_backend(self): 
+    def check_backend(self):
         backend = getattr(settings, 'EMAIL_BACKEND', None)
         if backend != 'django.core.mail.backends.locmem.EmailBackend':
             self.fail("You must use the in-memory e-mail backend when "
@@ -40,7 +40,7 @@ class SiteContactMessageModelTest(EmailSendingTestCaseMixin, TestCase):
     """Test methods of the SiteContactMessge model"""
     def test_email_sent_on_save(self):
         """
-        Tests that an email is sent when a message is saved. 
+        Tests that an email is sent when a message is saved.
         """
         self.check_backend()
 
@@ -53,16 +53,16 @@ class SiteContactMessageModelTest(EmailSendingTestCaseMixin, TestCase):
                         "Thanks,\n"
                         "Jane")
         admin_group = Group.objects.create(name=ADMIN_GROUP_NAME)
-        admin = User.objects.create(username='admin', 
+        admin = User.objects.create(username='admin',
             password='password', email='admin@example.com')
         admin.groups.add(admin_group)
         admin.save()
         SiteContactMessage.objects.create(name=name, email=email,
             phone=phone, message=message_body)
-            
-        sent_email = self.get_sent_email(0) 
+
+        sent_email = self.get_sent_email(0)
         self.assertEqual(sent_email.from_email, settings.DEFAULT_FROM_EMAIL)
-        self.assertEqual(sent_email.subject, 
+        self.assertEqual(sent_email.subject,
                          "New message from %s" % email)
         self.assertIn(admin.email, sent_email.to)
         self.assertIn(name, sent_email.body)
@@ -158,7 +158,7 @@ class StoryNotificationModelTest(TestCase):
                                   author=self.user)
         notification = StoryNotification.objects.get(story=story, notification_type='unpublished')
         # The template text is likely to change, so to make the tests
-        # flexible, just check that the content is nonempty 
+        # flexible, just check that the content is nonempty
         content = notification.get_text_content()
         self.assertNotEqual(content, "")
         story.status = 'published'
@@ -253,14 +253,14 @@ class StoryNotificationManagerTest(EmailSendingTestCaseMixin, TestCase):
 
 class StoryNotificationSignalsTest(SloppyComparisonTestMixin, TestCase):
     """
-    Test that StoryNotification signal handlers are properly wired to Story 
+    Test that StoryNotification signal handlers are properly wired to Story
     model save signals
     """
     def setUp(self):
         self.username = 'test'
         self.password = 'test'
         self.user = User.objects.create_user(self.username, 'test@floodlightproject.org', self.password)
-        
+
     def test_unpublished_notification_created(self):
         """Test that a notification model instance is created when a story is saved"""
         story = create_story(title="Test Story", summary="Test Summary",
@@ -268,7 +268,7 @@ class StoryNotificationSignalsTest(SloppyComparisonTestMixin, TestCase):
                                   author=self.user)
 
         five_days = timedelta(days=5)
-        send_on = datetime.now() + five_days 
+        send_on = datetime.now() + five_days
         notification = StoryNotification.objects.get(story=story, notification_type='unpublished')
         self.assertEqual(notification.sent, None)
         self.assertTimesEqualish(notification.send_on, send_on)
@@ -286,7 +286,7 @@ class StoryNotificationSignalsTest(SloppyComparisonTestMixin, TestCase):
 
     def test_unpublished_notification_deleted_on_publish(self):
         """
-        Test that any unsent notification is deleted when the story is 
+        Test that any unsent notification is deleted when the story is
         published
         """
         story = create_story(title="Test Story", summary="Test Summary",

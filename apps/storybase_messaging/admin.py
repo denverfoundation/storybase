@@ -29,7 +29,7 @@ class SystemMessageAdmin(StorybaseModelAdmin):
 
     def obj_subject(self, obj):
         return obj.subject
-    obj_subject.short_description = _("Subject") 
+    obj_subject.short_description = _("Subject")
 
     def send_message(self, request, queryset):
         """

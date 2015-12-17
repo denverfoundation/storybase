@@ -7,7 +7,7 @@ from storybase.widgets import AdminLongTextInputWidget
 
 class StorybaseModelAdmin(admin.ModelAdmin):
     """
-    Base class for ModelAdmin classes in this project 
+    Base class for ModelAdmin classes in this project
 
     Correctly sets the widget for our text field class in the Django
     Admin.  It seems like this is the only place you can do it, though
@@ -20,7 +20,7 @@ class StorybaseModelAdmin(admin.ModelAdmin):
     # List of classes listed in ModelAdmin.inlines that should have their
     # form shown before the model's non-inline fields rahter than after
     # Useful for translations
-    prefix_inline_classes = [] 
+    prefix_inline_classes = []
 
     formfield_overrides = {
         ShortTextField: {'widget': AdminLongTextInputWidget},
@@ -30,13 +30,13 @@ class StorybaseModelAdmin(admin.ModelAdmin):
         extra_context = extra_context or {}
         extra_context['prefix_inline_classes'] = self.prefix_inline_classes
         return super(StorybaseModelAdmin, self).add_view(request, form_url,
-           extra_context=extra_context) 
+           extra_context=extra_context)
 
     def change_view(self, request, object_id, form_url='', extra_context=None):
         extra_context = extra_context or {}
         extra_context['prefix_inline_classes'] = self.prefix_inline_classes
         return super(StorybaseModelAdmin, self).change_view(request, object_id,
-           form_url, extra_context=extra_context) 
+           form_url, extra_context=extra_context)
 
 
 class StorybaseStackedInline(admin.StackedInline):
@@ -66,7 +66,7 @@ class StorybaseStackedInline(admin.StackedInline):
 class Select2StackedInline(admin.StackedInline):
     """
     Stacked inline that allows for using Select2 for the select widget
-    
+
     The heavy lifting is performed by additional JavaScript in the template.
 
     """
@@ -83,7 +83,7 @@ class Select2StackedInline(admin.StackedInline):
 def obj_title(obj):
     """ Callable to display an object title in the Django admin
 
-    This is needed because title isn't an attribute of the Story or 
+    This is needed because title isn't an attribute of the Story or
     Section models, it's an attribute of the translation class.
 
     """

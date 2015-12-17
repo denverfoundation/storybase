@@ -14,7 +14,7 @@ from storybase_help.models import Help
 
 class HelpValidation(Validation):
     def is_valid(self, bundle, request=None):
-        errors = {} 
+        errors = {}
         if bundle.data.get('help_id', None) is None:
             errors['__all__'] = 'You must specify a help_id value'
         return errors
@@ -63,10 +63,10 @@ class HelpResource(TranslatedModelResource):
         new_obj_list = obj_list.filter(**filters)
 
         return new_obj_list
-    
+
     def assign_help_to_section(self, bundle, **kwargs):
         self.is_valid(bundle)
-        # We can assume that there will be a section id because of 
+        # We can assume that there will be a section id because of
         # this resource's implementation of is_authorized
         section_id = kwargs.get('section_id', None)
         section = Section.objects.get(section_id=section_id)
@@ -80,17 +80,17 @@ class HelpResource(TranslatedModelResource):
         Handles checking of permissions to see if the user has authorization
         to POST this resource.
         """
-        try: 
+        try:
             auth_result = self._meta.authorization.create_detail(object_list, bundle)
             section_id = kwargs.get('section_id', None)
 
             if section_id is None:
-                auth_result = False 
+                auth_result = False
             else:
                 # Lookup the section. It's owner should match the request's
                 section = Section.objects.get(section_id=section_id)
                 if not section.story.author == bundle.request.user:
-                    auth_result = False 
+                    auth_result = False
 
             if auth_result is not True:
                 raise Unauthorized("You are not allowed to access that resource.")
@@ -105,6 +105,6 @@ class HelpResource(TranslatedModelResource):
         Instead of actually creating an object, delegate to another
         hook
         """
-        self.authorized_create_detail(self.get_object_list(bundle.request), 
+        self.authorized_create_detail(self.get_object_list(bundle.request),
                 bundle, **kwargs)
         return self.assign_help_to_section(bundle, **kwargs)

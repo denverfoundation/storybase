@@ -14,15 +14,15 @@ class ActivityTranslationAdminForm(forms.ModelForm):
         # TODO: explicitly list fields
         fields = '__all__'
         widgets = {
-            'links': tinymce_widget, 
+            'links': tinymce_widget,
         }
 
 
 class NewsItemTranslationAdminForm(forms.ModelForm):
     class Meta:
-        model = NewsItemTranslation 
+        model = NewsItemTranslation
         # TODO: explicitly list fields
         fields = '__all__'
         widgets = {
-            'body': tinymce_widget, 
+            'body': tinymce_widget,
         }

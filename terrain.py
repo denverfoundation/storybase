@@ -29,7 +29,7 @@ from storybase_user.models import (create_organization, create_project,
 @world.absorb
 def set_changed(model, field):
     """ Mark a field of a Model instance as changed
-    
+
     The changed fields are ignored when checking that the model instance
     fields are the same pre/post editing the instance.
 
@@ -76,17 +76,17 @@ def language_lookup(language):
 @world.absorb
 def save_info(model, instance_id):
     """ Save a model instance's info for later comparison
-    
+
     Assumes that world.browser is on a Model instance's admin  edit page
-    
+
     Arguments:
     model -- Class name of the model instance, e.g. "Project"
     instance_id -- UUID ID attribute of the model instance
-    
+
     """
-    klass = _class_lookup(model) 
+    klass = _class_lookup(model)
     model_lower = model.lower()
-    setattr(world, model_lower, 
+    setattr(world, model_lower,
             klass.objects.get(**{"%s_id" % model_lower: instance_id}))
     setattr(world, "%s_changed" % model_lower, [])
 
@@ -98,13 +98,13 @@ def find_translation_form(language, model):
         if language_select.value == language_lookup(language):
             return translation_form
 
-    raise ElementDoesNotExist 
+    raise ElementDoesNotExist
 
 @world.absorb
 def translate_date(date_str, language):
     """ Cheap way of translating the internationalized version of the date
 
-    This is Needed because the way we output Spanish dates doesn't 
+    This is Needed because the way we output Spanish dates doesn't
     exactly match what a localized strptime expects.  For example,
     we still output times as HH:MM AM|PM as opposed to a 24-hour hour
     field.
@@ -134,7 +134,7 @@ def translate_date(date_str, language):
             if date_str.find(month_es) != -1:
                 return date_str.replace(month_es, months_es[month_es])
 
-    raise Exception 
+    raise Exception
 
 @world.absorb
 def format_field_name(field_name):
@@ -194,8 +194,8 @@ def assert_today(dt):
 
 @world.absorb
 def assert_now(dt, allowance=0):
-    """ Test whether a datetime object is equivalent to the current date/time 
-    
+    """ Test whether a datetime object is equivalent to the current date/time
+
     Arguments:
     dt -- datetime object
     allowance -- seconds of difference allowed while still considering times equal
@@ -203,12 +203,12 @@ def assert_now(dt, allowance=0):
     """
     now = datetime.now()
     delta = now - dt
-    assert delta.seconds <= allowance 
+    assert delta.seconds <= allowance
 
 @world.absorb
 def assert_text_in_list(selector, text):
     """ Check whether the text appears in a list's items
-    
+
     Arguments:
     selector -- CSS selector for list item elements
     text -- Text to search for in selected list items
@@ -224,7 +224,7 @@ def assert_text_in_list(selector, text):
 @world.absorb
 def assert_text_not_in_list(selector, text):
     """ Check whether the text doesn't appears in a list's items
-    
+
     Arguments:
     selector -- CSS selector for list item elements
     text -- Text to search for in selected list items
@@ -254,10 +254,10 @@ def assert_list_equals(selector, list_items):
 
 @world.absorb
 def assert_url_path_equal(url, path, language='en'):
-    url_parts = urlparse(url) 
+    url_parts = urlparse(url)
     assert url_parts.path == path or url_parts.path == ("/%s" % language) + path
 
-# TODO: Figure out why database create with create_test_db doesn't 
+# TODO: Figure out why database create with create_test_db doesn't
 # allow writing.
 #@before.runserver
 #def setup_database(server):
@@ -267,7 +267,7 @@ def assert_url_path_equal(url, path, language='en'):
 #    # syncdb gets run automatically by create_test_db(), and
 #    # South's syncdb (that runs migrations after the default
 #    # syncdb) normally gets called in a test environment, but
-#    # apparently not when calling create_test_db(). 
+#    # apparently not when calling create_test_db().
 #    # So, we have to use this monkey patched version.
 #    patch_for_test_db_setup()
 #    connection.creation.create_test_db(verbosity=5)
@@ -324,7 +324,7 @@ def teardown(total):
 
 @after.all
 def teardown_browser(total):
-    """ Close the test browser 
+    """ Close the test browser
 
     Leaves the browser open if tests failed as it may be helpful in debugging
     """
@@ -359,7 +359,7 @@ def create_user(step, username):
     except User.DoesNotExist:
         email = username
         if '@' not in email:
-            email = "%s@floodlightproject.org" % (username) 
+            email = "%s@floodlightproject.org" % (username)
         User.objects.create_user(username, email, 'password')
 
 @step(u'Given the User "([^"]*)" has the first name "([^"]*)" and last name "([^"]*)"')
@@ -374,7 +374,7 @@ def create_group(step, name):
     try:
         Group.objects.get(name=name)
     except Group.DoesNotExist:
-        Group.objects.create(name=name) 
+        Group.objects.create(name=name)
 
 @step(u'Given the User "([^"]*)" exists')
 def user_exists(step, username):
@@ -404,7 +404,7 @@ def edit_field(step, field_name, model, field_value):
         world.browser.fill(formatted_field_name, field_value)
     except ElementDoesNotExist:
         translated_field_name = "%stranslation_set-0-%s" % (model.lower(), formatted_field_name)
-        world.browser.fill(translated_field_name, field_value) 
+        world.browser.fill(translated_field_name, field_value)
     world.set_changed(model, field_name)
 
 @step(u'Given the user sets the "([^"]*)" of the "([^"]*)" to the following:')
@@ -414,7 +414,7 @@ def edit_field_long(step, field_name, model):
         world.browser.fill(formatted_field_name, step.multiline)
     except ElementDoesNotExist:
         translated_field_name = "%stranslation_set-0-%s" % (model.lower(), formatted_field_name)
-        world.browser.fill(translated_field_name, step.multiline) 
+        world.browser.fill(translated_field_name, step.multiline)
 
     world.set_changed(model, formatted_field_name)
 
@@ -598,10 +598,10 @@ def project_created(step, name):
 @step(u'Given the Story "([^"]*)" has the following summary:')
 def set_story_summary(step, title):
     story = Story.objects.get(storytranslation__title=title)
-    translation = StoryTranslation.objects.get(story=story, language='en') 
+    translation = StoryTranslation.objects.get(story=story, language='en')
     translation.summary = step.multiline
     translation.save()
-    
+
 @step(u'Given the Story "([^"]*)" has the byline "([^"]*)"')
 def set_story_byline(step, title, byline):
     story = Story.objects.get(storytranslation__title=title)
@@ -611,14 +611,14 @@ def set_story_byline(step, title, byline):
 @step(u'Given the Organization "([^"]*)" has the following description:')
 def set_organization_description(step, name):
     organization = Organization.objects.get(organizationtranslation__name=name)
-    translation = OrganizationTranslation.objects.get(organization=organization, language='en') 
+    translation = OrganizationTranslation.objects.get(organization=organization, language='en')
     translation.description = step.multiline
     translation.save()
 
 @step(u'Given the Project "([^"]*)" has the following description:')
 def set_project_description(step, name):
     project = Project.objects.get(projecttranslation__name=name)
-    translation = ProjectTranslation.objects.get(project=project, language='en') 
+    translation = ProjectTranslation.objects.get(project=project, language='en')
     translation.description = step.multiline
     translation.save()
 
@@ -640,7 +640,7 @@ def add_organization_to_project(step, name, title):
 def set_story_author(step, title, author_username):
     story = Story.objects.get(storytranslation__title=title)
     user = User.objects.get(username=author_username)
-    story.author = user 
+    story.author = user
     story.save()
 
 @step(u'the following topics have been created:')
@@ -723,7 +723,7 @@ def check_checkbox(step, field_name):
 def click_button(step, button_value):
     try:
         button = world.browser.find_by_value(button_value).first
-    except ElementDoesNotExist: 
+    except ElementDoesNotExist:
         button = world.browser.find_by_xpath("//button[contains(text(), '%s')]" % button_value).first
     button.click()
 

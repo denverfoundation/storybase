@@ -4,8 +4,8 @@ from django import forms
 from django.db import models
 
 class ShortTextField(models.TextField):
-    """ The unlimited length of a TextField, but uses the CharField widget 
-    
+    """ The unlimited length of a TextField, but uses the CharField widget
+
     There isn't any performance benefit to using varchar in Postgres, so
     it makes sense to use text instead of using varchar with an arbitrary
     charcter limit when the application doesn't call for one.
@@ -15,7 +15,7 @@ class ShortTextField(models.TextField):
     a block of text, even if the length isn't actually limited.
 
     See
-    http://www.postgresql.org/docs/8.4/interactive/datatype-character.html 
+    http://www.postgresql.org/docs/8.4/interactive/datatype-character.html
 
     """
     def formfield(self, **kwargs):

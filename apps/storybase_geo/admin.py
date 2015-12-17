@@ -20,7 +20,7 @@ class LocationAdmin(admin.OSMGeoAdmin):
     list_filter = ['stories']
 
     def save_model(self, request, obj, form, change):
-        """Perform pre-save operations and save the Location 
+        """Perform pre-save operations and save the Location
 
         Sets the owner field to the current user if it wasn't already set
 
@@ -52,7 +52,7 @@ class PlaceRelationAdminForm(forms.ModelForm):
         if parent_pk:
             parent_obj = Place.objects.get(pk=parent_pk)
             self.initial['parent'] = parent_obj.place_id
-            
+
         if (hasattr(self.instance, 'child') and
                 self.instance.child.geolevel):
             # This is a bound instance
@@ -92,7 +92,7 @@ class PlaceRelationAdminForm(forms.ModelForm):
         if parent.geolevel != child.geolevel.parent:
             raise forms.ValidationError(
                 _("You tried to set a parent with the wrong GeoLevel. "
-                  "You need to pick one with a GeoLevel of %s" % 
+                  "You need to pick one with a GeoLevel of %s" %
                   child.geolevel.parent))
 
         return cleaned_data

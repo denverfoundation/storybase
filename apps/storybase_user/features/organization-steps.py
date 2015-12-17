@@ -175,7 +175,7 @@ def see_name(step, name):
 # use this function to do the heavy lifting
 def assert_organization_date_now(name, date_type):
     org = Organization.objects.get(organizationtranslation__name=name)
-    if date_type == "created": 
+    if date_type == "created":
         date = getattr(org, 'created')
     elif date_type == "last edited":
         date = getattr(org, 'last_edited')

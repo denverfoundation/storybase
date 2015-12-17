@@ -1,7 +1,7 @@
 """
 URL configuration for list and detail views for news items
 
-This is meant to be attached to ``NewsItemApphook`` 
+This is meant to be attached to ``NewsItemApphook``
 """
 from django.conf.urls import patterns, url
 from cmsplugin_storybase.views import NewsItemDetailView, NewsItemListView

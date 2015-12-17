@@ -3,15 +3,15 @@ from django.contrib import admin
 from django.core import urlresolvers
 from tinymce.widgets import TinyMCE
 from storybase.admin import (StorybaseModelAdmin, StorybaseStackedInline)
-from models import (Asset, 
+from models import (Asset,
     DataSet, DataSetTranslation, ExternalDataSet, LocalDataSet,
     ExternalAsset, ExternalAssetTranslation,
-    HtmlAsset, HtmlAssetTranslation, 
+    HtmlAsset, HtmlAssetTranslation,
     LocalImageAsset, LocalImageAssetTranslation)
 
 class DefaultPublishedModelForm(forms.ModelForm):
     """ Model Form that sets the default status to published
-    
+
     The default status for a model inheriting from PublishedModel is
     'draft', just to be safe and because, in code, we'll probably want to
     explicitly define the status.  However, in the Django admin, the
@@ -31,10 +31,10 @@ class AssetAdmin(StorybaseModelAdmin):
 
     def change_link(self, obj):
         """
-        Display the title of an Asset and a link to its change page 
+        Display the title of an Asset and a link to its change page
 
         This is meant to be included in the class' list_display option.
-       
+
         """
         the_obj = obj
         if obj.__class__ == Asset:

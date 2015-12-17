@@ -11,7 +11,7 @@ from django.template import Context, Template, RequestContext
 from django.test import TestCase
 
 from storybase.models import PermissionMixin
-from storybase.forms import UserEmailField 
+from storybase.forms import UserEmailField
 from storybase.tests.base import SettingsChangingTestCase
 from storybase.utils import (escape_json_for_html, full_url,
     get_language_name, is_file)
@@ -22,7 +22,7 @@ class ContextProcessorTest(TestCase):
         from django.http import HttpRequest
         from django.contrib.auth.models import AnonymousUser
         contact_email = "contactme@example.com"
-        settings.STORYBASE_CONTACT_EMAIL = contact_email 
+        settings.STORYBASE_CONTACT_EMAIL = contact_email
         t = Template("{{ storybase_contact_email }}")
         user = AnonymousUser()
         req = HttpRequest()
@@ -43,7 +43,7 @@ class FilterTest(TestCase):
 
 
     def test_camelsplit(self):
-        t = Template("{% load storybase_tags %}{{ s|camelsplit|first }}") 
+        t = Template("{% load storybase_tags %}{{ s|camelsplit|first }}")
         c = Context({'s': "UserProfile"})
         output = "User"
         self.assertEqual(t.render(c), output)
@@ -61,7 +61,7 @@ class TemplateTagTest(SettingsChangingTestCase):
     def test_storybase_conf(self):
         """Test the storybase_conf template tag"""
         contact_email = "contactme@example.com"
-        settings.STORYBASE_CONTACT_EMAIL = contact_email 
+        settings.STORYBASE_CONTACT_EMAIL = contact_email
         t = Template("{% load storybase_tags %}{% storybase_conf \"storybase_contact_email\"%}")
         c = Context()
         self.assertEqual(t.render(c), contact_email)
@@ -111,7 +111,7 @@ class TestPermissionClass(PermissionMixin):
 
 
 class PermissionMixinTest(TestCase):
-    """Test the PermissionMixin class""" 
+    """Test the PermissionMixin class"""
 
     def setUp(self):
         super(PermissionMixinTest, self).setUp()
@@ -168,7 +168,7 @@ class UtilsTestCase(TestCase):
 
     def test_full_url_path_https(self):
         """
-        Test that a full url is returned when a path is given and the 
+        Test that a full url is returned when a path is given and the
         scheme is specified.
 
         """

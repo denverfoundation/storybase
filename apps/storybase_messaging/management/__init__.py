@@ -5,7 +5,7 @@ from django.utils.translation import ugettext_noop as _
 if "pinax.notifications" in settings.INSTALLED_APPS:
     from pinax.notifications.models import NoticeType
 else:
-    NoticeType = None 
+    NoticeType = None
 
 if NoticeType:
     def create_notice_types(app, created_models, verbosity, **kwargs):

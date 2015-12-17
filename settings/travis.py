@@ -24,8 +24,8 @@ SOUTH_TESTS_MIGRATE = False
 
 HAYSTACK_CONNECTIONS = {
     'default': {
-        'ENGINE': 'storybase_geo.search.backends.Solr2155Engine', 
-        'URL': 'http://localhost:8983/solr/travis', 
+        'ENGINE': 'storybase_geo.search.backends.Solr2155Engine',
+        'URL': 'http://localhost:8983/solr/travis',
         # If the Solr/Jetty install on Travis CI is broken, use the
         # mock backend which will cause some tests to be skipped
         #'ENGINE': 'haystack.backends.simple_backend.SimpleEngine',

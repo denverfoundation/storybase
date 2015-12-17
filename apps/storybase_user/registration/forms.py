@@ -26,7 +26,7 @@ class EmailUsernameRegistrationForm(RegistrationFormUniqueEmail):
 
     def clean_email(self):
         """
-        Validates email address is unique and sets username field to email 
+        Validates email address is unique and sets username field to email
         """
         email = super(EmailUsernameRegistrationForm, self).clean_email()
         self.cleaned_data['username'] = email

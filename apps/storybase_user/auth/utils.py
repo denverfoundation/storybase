@@ -7,11 +7,11 @@ from django.utils.translation import ugettext_lazy as _
 
 from storybase.utils import get_site_name
 
-def send_password_reset_email(user, domain_override=None, 
+def send_password_reset_email(user, domain_override=None,
                               subject_template_name='registration/password_reset_subject.txt',
                               email_template_name='registration/password_reset_email.html',
-                              use_https=False, 
-                              token_generator=default_token_generator, 
+                              use_https=False,
+                              token_generator=default_token_generator,
                               from_email=None, request=None,
                               extra_context={}):
     """
@@ -49,8 +49,8 @@ def send_password_reset_email(user, domain_override=None,
     logger.info("Password reset email sent to %s" % (user.email))
 
 
-def send_account_deactivate_email(user, 
-            email_template_name="registration/account_deactivate_email.txt", 
+def send_account_deactivate_email(user,
+            email_template_name="registration/account_deactivate_email.txt",
             subject=None,
             from_email=None, request=None, extra_context={}):
     site_name = get_site_name(request)
@@ -61,14 +61,14 @@ def send_account_deactivate_email(user,
     context = {
         'user': user,
         'site_name': site_name,
-        'site_contact_email': settings.STORYBASE_CONTACT_EMAIL 
+        'site_contact_email': settings.STORYBASE_CONTACT_EMAIL
     }
     context.update(extra_context)
-    send_mail(subject, template.render(Context(context)), 
+    send_mail(subject, template.render(Context(context)),
               from_email, [user.email])
 
 def send_email_change_email(user, email,
-            email_template_name="registration/email_change_email.txt", 
+            email_template_name="registration/email_change_email.txt",
             subject=None,
             from_email=None, request=None, extra_context={}):
     site_name = get_site_name(request)
@@ -79,8 +79,8 @@ def send_email_change_email(user, email,
     context = {
         'user': user,
         'site_name': site_name,
-        'site_contact_email': settings.STORYBASE_CONTACT_EMAIL 
+        'site_contact_email': settings.STORYBASE_CONTACT_EMAIL
     }
     context.update(extra_context)
-    send_mail(subject, template.render(Context(context)), 
+    send_mail(subject, template.render(Context(context)),
               from_email, [email])

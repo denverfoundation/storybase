@@ -16,8 +16,8 @@ class Command(BaseCommand):
             "\t\t\tidentifier for the parent place\n"
             "  lookup_field\t\tName of model field used to look up places\n"
             "  child_geolevel\tGeoLevel model slug for GeoLevel of\n"
-            "\t\t\tchild places\n") 
-    
+            "\t\t\tchild places\n")
+
     def handle(self, *args, **options):
         try:
             csv_file = open(args[0])
@@ -37,11 +37,11 @@ class Command(BaseCommand):
                 parent_val = row[parent_field]
                 if child_val and parent_val:
                     child_kwargs = {
-                        lookup_field: child_val, 
+                        lookup_field: child_val,
                         'geolevel': child_geolevel
                     }
                     parent_kwargs = {
-                        lookup_field: parent_val, 
+                        lookup_field: parent_val,
                         'geolevel': child_geolevel.parent
                     }
                     try:

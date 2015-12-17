@@ -21,15 +21,15 @@ from tastypie.bundle import Bundle
 from tastypie.test import ResourceTestCase
 
 from storybase.admin import toggle_featured
-from storybase.tests.base import (SloppyComparisonTestMixin, 
+from storybase.tests.base import (SloppyComparisonTestMixin,
         PermissionTestCase, FixedTestApiClient)
 from storybase.tests.utils import setup_view
 from storybase.utils import slugify
 from storybase_asset.models import (Asset, create_html_asset,
         create_external_asset, create_external_dataset)
 from storybase_geo.models import Location, GeoLevel, Place
-from storybase_help.models import create_help 
-from storybase_story.api import (SectionAssetResource, SectionResource, 
+from storybase_help.models import create_help
+from storybase_story.api import (SectionAssetResource, SectionResource,
                                  StoryResource)
 from storybase_story.forms import SectionRelationAdminForm
 from storybase_story.managers import StoryQuerySet
@@ -153,7 +153,7 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
         """
         Test that the published date gets set when the status is changed
         to published
-        """ 
+        """
         title = ('Transportation Challenges Limit Education Choices for '
                  'Denver Parents')
         summary = """
@@ -166,7 +166,7 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
             """
         byline = "Mile High Connects"
         story = create_story(title=title, summary=summary, byline=byline)
-        # Default status should be draft 
+        # Default status should be draft
         self.assertEqual(story.status, 'draft')
         # and there should be no published date
         self.assertEqual(story.published, None)
@@ -203,7 +203,7 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
         of the Story's author user when no last name is set
         """
         user = User.objects.create(username='admin', first_name='Jordan')
-                                   
+
         title = ('Transportation Challenges Limit Education Choices for '
                  'Denver Parents')
         summary = """
@@ -221,7 +221,7 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
 
     def test_contributor_name_no_names(self):
         """
-        Test that the Story.contributor_name returns an empty string 
+        Test that the Story.contributor_name returns an empty string
          when there is no first or last name
         """
         user = User.objects.create(username='admin')
@@ -258,20 +258,20 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
     def test_builder_url_connected(self):
         story = create_story(title="Test Story", summary="Test Summary",
                              byline="Test Byline", status='published')
-        story2 = create_story(title="Test Related Story", 
+        story2 = create_story(title="Test Related Story",
                              summary="Test Related Story Summary",
                              byline="Test Related Story Byline",
                              status='published')
         StoryRelation.objects.create(source=story, target=story2,
                                      relation_type='connected')
-        self.assertEqual(story2.builder_url(), 
-                         "/en/stories/%s/build-connected/%s/" % 
+        self.assertEqual(story2.builder_url(),
+                         "/en/stories/%s/build-connected/%s/" %
                          (story.slug, story2.story_id))
 
     def test_viewer_url(self):
         story = create_story(title="Test Story", summary="Test Summary",
                              byline="Test Byline", status='published')
-        story2 = create_story(title="Test Related Story", 
+        story2 = create_story(title="Test Related Story",
                              summary="Test Related Story Summary",
                              byline="Test Related Story Byline",
                              status='published')
@@ -291,14 +291,14 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
         """
         story = create_story(title="Test Story", summary="Test Summary",
                              byline="Test Byline", status='published')
-        asset = create_html_asset(type='text', title='Test Asset', 
+        asset = create_html_asset(type='text', title='Test Asset',
                                   body='Test content')
         self.assertEqual(story.assets.count(), 0)
         story.featured_assets.add(asset)
         story.save()
         self.assertEqual(story.assets.count(), 1)
 
-    def test_render_featured_asset_empty(self): 
+    def test_render_featured_asset_empty(self):
         """
         Test that Story.render_featured_assets returns an empty string
         when the story has no featured assets and there isn't an
@@ -311,7 +311,7 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
 
     def test_get_featured_asset_thumbnail_url_empty(self):
         """
-        Test that Story.featured_asset_thumbnail_url returns None 
+        Test that Story.featured_asset_thumbnail_url returns None
         when the story has no featured assets and there isn't an
         acceptable default.
         """
@@ -354,7 +354,7 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
         layout = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
         story = create_story(title="Test Story", summary="Test Summary",
             byline="Test Byline")
-        body1 = """awesome hyperhyperhyperlocal hyperhyperlocal the notional night cops reporter in Des Moines election-night hologram serendipity John Dewey masthead engagement, information overload #twittermakesyoustupid going forward content farm community curation Groupon commons-based peer production, Dan Fleckner Rupert Murdoch Snarkmarket hot news doctrine audience atomization overcome DocumentCloud dying. pay curtain do what you do best and link to the rest John Dewey Jeff Jarvis tabloid Voice of San Diego, content is king Rupert Murdoch every dog loves food open newsroom Tumblr location-based, Dan Fleckner Walter Cronkite died for your sins inverted pyramid right-sizing.""" 
+        body1 = """awesome hyperhyperhyperlocal hyperhyperlocal the notional night cops reporter in Des Moines election-night hologram serendipity John Dewey masthead engagement, information overload #twittermakesyoustupid going forward content farm community curation Groupon commons-based peer production, Dan Fleckner Rupert Murdoch Snarkmarket hot news doctrine audience atomization overcome DocumentCloud dying. pay curtain do what you do best and link to the rest John Dewey Jeff Jarvis tabloid Voice of San Diego, content is king Rupert Murdoch every dog loves food open newsroom Tumblr location-based, Dan Fleckner Walter Cronkite died for your sins inverted pyramid right-sizing."""
         body2 = """CPC the audience knows more than I do Alberto Ibarguen discuss What Would Google Do semipermeable church of the savvy rubber cement, the medium is the massage totally blowing up on Twitter the power of the press belongs to the person who owns one data journalism TweetDeck Arab spring newsonomics Project Thunderdome, attracting young readers tabloid stupid commenters awesome nut graf RT. put the paper to bed cognitive surplus bloggers in their mother's basement layoffs in the slot Politics & Socks page monetization YouTube Flipboard I love the Weather & Opera section, he said she said pay curtain Knight Foundation TechCrunch curmudgeon innovation CNN leaves it there layoffs vast wasteland, cancel my subscription 5 praise erasers & how to avoid them process vs. product Buttry dying we need a Nate Silver Fuego Tim Carmody."""
         body3 = """recontextualize RT morgue natural-born blogger Tim Carmody DocumentCloud Project Thunderdome linkbait, Dan Fleckner curmudgeon nut graf Neil Postman This Week in Review bringing a tote bag to a knife fight NYT R&D, writing Rupert Murdoch ProPublica hyperhyperhyperlocal Encyclo community. bloggers in their mother's basement gamification Mozilla Like button crowdfunding information wants to be free DocumentCloud audience atomization overcome bringing a tote bag to a knife fight blog future newspaper Aron Pilhofer DocumentCloud go viral Demand Media digital circulation strategy Steve Jobs, Aron Pilhofer 5% corruption social media cognitive surplus 5 praise erasers & how to avoid them WordPress information wants to be free Groupon future of narrative the notional night cops reporter in Des Moines ProPublica Arianna but what's the business model #twittermakesyoustupid tags."""
         asset1 = create_html_asset(type='text', title="Test Asset 1",
@@ -369,11 +369,11 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
                                   layout=layout)
         left = Container.objects.get(name='left')
         right = Container.objects.get(name='right')
-        SectionAsset.objects.create(section=section1, asset=asset1, 
+        SectionAsset.objects.create(section=section1, asset=asset1,
                                     container=left)
-        SectionAsset.objects.create(section=section2, asset=asset2, 
+        SectionAsset.objects.create(section=section2, asset=asset2,
                                     container=right)
-        SectionAsset.objects.create(section=section2, asset=asset3, 
+        SectionAsset.objects.create(section=section2, asset=asset3,
                                     container=left)
         strings = story.asset_strings()
         self.assertIn(body1, strings)
@@ -386,7 +386,7 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
         asset_strings method.
 
         """
-        body1 = """awesome hyperhyperhyperlocal hyperhyperlocal the notional night cops reporter in Des Moines election-night hologram serendipity John Dewey masthead engagement, information overload #twittermakesyoustupid going forward content farm community curation Groupon commons-based peer production, Dan Fleckner Rupert Murdoch Snarkmarket hot news doctrine audience atomization overcome DocumentCloud dying. pay curtain do what you do best and link to the rest John Dewey Jeff Jarvis tabloid Voice of San Diego, content is king Rupert Murdoch every dog loves food open newsroom Tumblr location-based, Dan Fleckner Walter Cronkite died for your sins inverted pyramid right-sizing.""" 
+        body1 = """awesome hyperhyperhyperlocal hyperhyperlocal the notional night cops reporter in Des Moines election-night hologram serendipity John Dewey masthead engagement, information overload #twittermakesyoustupid going forward content farm community curation Groupon commons-based peer production, Dan Fleckner Rupert Murdoch Snarkmarket hot news doctrine audience atomization overcome DocumentCloud dying. pay curtain do what you do best and link to the rest John Dewey Jeff Jarvis tabloid Voice of San Diego, content is king Rupert Murdoch every dog loves food open newsroom Tumblr location-based, Dan Fleckner Walter Cronkite died for your sins inverted pyramid right-sizing."""
         body2 = """CPC the audience knows more than I do Alberto Ibarguen discuss What Would Google Do semipermeable church of the savvy rubber cement, the medium is the massage totally blowing up on Twitter the power of the press belongs to the person who owns one data journalism TweetDeck Arab spring newsonomics Project Thunderdome, attracting young readers tabloid stupid commenters awesome nut graf RT. put the paper to bed cognitive surplus bloggers in their mother's basement layoffs in the slot Politics & Socks page monetization YouTube Flipboard I love the Weather & Opera section, he said she said pay curtain Knight Foundation TechCrunch curmudgeon innovation CNN leaves it there layoffs vast wasteland, cancel my subscription 5 praise erasers & how to avoid them process vs. product Buttry dying we need a Nate Silver Fuego Tim Carmody."""
         story = create_story(title="Test Story", summary="Test Summary",
             byline="Test Byline")
@@ -398,7 +398,7 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
         section = create_section(title="Test Section 1", story=story,
                                  layout=layout)
         left = Container.objects.get(name='left')
-        SectionAsset.objects.create(section=section, asset=asset1, 
+        SectionAsset.objects.create(section=section, asset=asset1,
                                     container=left)
         story.assets.add(asset2)
         story.save()
@@ -477,7 +477,7 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
         # differ by >= 1 second
         sleep(1)
         # Publish the connected story.  This should bump
-        # the sort weight of the seed story 
+        # the sort weight of the seed story
         connected_story.status = 'published'
         connected_story.save()
         # Refresh the seed story
@@ -485,7 +485,7 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
         # The seed story' sort weight should now be greater
         # than the other story
         self.assertTrue(seed_story.weight > story.weight)
-        
+
     def test_get_related_list(self):
         story = create_story(title="Test Story", summary="Test Summary",
             byline="Test Byline", license="CC BY-NC-SA")
@@ -551,14 +551,14 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
                                  layout=layout)
         left = Container.objects.get(name='left')
         right = Container.objects.get(name='right')
-        body = "<p>Mock chart HTML</p>" 
+        body = "<p>Mock chart HTML</p>"
         asset1 = create_html_asset(type='chart', title="Test Asset 1",
                                   body=body)
         asset2 = create_html_asset(type='chat', title="Test Asset 2",
                                    body=body)
-        SectionAsset.objects.create(section=section, asset=asset1, 
+        SectionAsset.objects.create(section=section, asset=asset1,
                                     container=left)
-        SectionAsset.objects.create(section=section, asset=asset2, 
+        SectionAsset.objects.create(section=section, asset=asset2,
                                     container=right)
         dataset1 = create_external_dataset(
             title=("Metro Denver Free and Reduced Lunch Trends by "
@@ -598,7 +598,7 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
         story = create_story(title=title, summary=summary, byline=byline)
         side_by_side = SectionLayout.objects.get(sectionlayouttranslation__name="Side by Side")
         oneup = SectionLayout.objects.get(sectionlayouttranslation__name="1 Up")
-               
+
         left = Container.objects.get(name='left')
         right = Container.objects.get(name='right')
         center = Container.objects.get(name='center')
@@ -609,7 +609,7 @@ class StoryModelTest(TestCase, SloppyComparisonTestMixin):
         section2 = create_section(title="Test Section 2", story=story,
                 layout=oneup)
 
-        asset1 = create_html_asset(type='text', title='Test Asset', 
+        asset1 = create_html_asset(type='text', title='Test Asset',
             body='Test content')
         asset2 = create_html_asset(type='text', title='Test Asset 2',
             body='Test content 2')
@@ -658,7 +658,7 @@ class StoryPermissionTest(PermissionTestCase):
         # Publish the story to set up for next tests
         self.story.status = 'published'
         self.story.save()
-        
+
         # Test that author can view a published story
         self.assertTrue(self.story.user_can_view(self.user1))
 
@@ -701,7 +701,7 @@ class StoryPermissionTest(PermissionTestCase):
     def test_user_can_change_inactive(self):
         """Test that an inactive user can't change their own story"""
         self.assertTrue(self.story.user_can_change(self.user1))
-        self.user1.is_active = False 
+        self.user1.is_active = False
         self.assertFalse(self.story.user_can_change(self.user1))
 
     def test_has_perm_change(self):
@@ -721,7 +721,7 @@ class StorySignalsTest(TestCase):
 
         story = create_story(title="Test Story", summary="Test Summary",
                              byline="Test Byline", status='published')
-        asset = create_html_asset(type='text', title='Test Asset', 
+        asset = create_html_asset(type='text', title='Test Asset',
                                   body='Test content')
         story.assets.add(asset)
         story.save()
@@ -739,7 +739,7 @@ class StorySignalsTest(TestCase):
         """
         story = create_story(title="Test Story", summary="Test Summary",
                              byline="Test Byline", status='published')
-        asset = create_html_asset(type='text', title='Test Asset', 
+        asset = create_html_asset(type='text', title='Test Asset',
                                   body='Test content')
         story.assets.add(asset)
         story.save()
@@ -795,13 +795,13 @@ class StorySignalsTest(TestCase):
 
     def test_invalidate_topics_cache_remove(self):
         topic = create_category(name="Schools")
-        self._test_invalidate_related_cache('topics', 'topics', 'remove', 
+        self._test_invalidate_related_cache('topics', 'topics', 'remove',
                                             topic)
 
     def test_invalidate_topics_cache_clear(self):
         topic = create_category(name="Schools")
         self._test_invalidate_related_cache('topics', 'topics', 'clear', topic)
-                                           
+
     def test_invalidate_organizations_cache_add(self):
         org = create_organization(name="Mile High Connects")
         self._test_invalidate_related_cache('organizations', 'organizations',
@@ -819,26 +819,26 @@ class StorySignalsTest(TestCase):
 
     def test_invalidate_projects_cache_add(self):
         project = create_project(name="Soccer in the Corridor")
-        
+
         self._test_invalidate_related_cache('projects', 'projects',
                                             'add', project)
 
     def test_invalidate_projects_cache_remove(self):
         project = create_project(name="Soccer in the Corridor")
-        
+
         self._test_invalidate_related_cache('projects', 'projects',
                                             'remove', project)
 
     def test_invalidate_projects_cache_clear(self):
         project = create_project(name="Soccer in the Corridor")
-        
+
         self._test_invalidate_related_cache('projects', 'projects',
                                             'clear', project)
 
 
     def test_set_story_slug_on_publish(self):
-        story = create_story(title="Test Story", 
-                summary="Test summary", byline="Test byline", 
+        story = create_story(title="Test Story",
+                summary="Test summary", byline="Test byline",
                 status='draft', allow_connected=True)
         translation = StoryTranslation.objects.get(story=story)
         translation.title = "Updated Story Title"
@@ -903,7 +903,7 @@ class StoryAdminTest(TestCase):
         story = create_story(title="Test Story", summary="Test Summary",
                              byline="Test Byline", status='published',
                              on_homepage=True)
-        story2 = create_story(title="Test Related Story", 
+        story2 = create_story(title="Test Related Story",
                              summary="Test Related Story Summary",
                              byline="Test Related Story Byline",
                              status='published',
@@ -952,20 +952,20 @@ class StoryQuerySetTest(TestCase):
     """
     Tests for StoryQuerySet custom QuerySet
 
-    This also tests storybase.managers.FeaturedQuerySetMixin and 
+    This also tests storybase.managers.FeaturedQuerySetMixin and
     storybase.managers.PublishedQuerySetMixin so we don't have to
     define a mock model class to test them in the storybase app
-    
+
     """
     def setUp(self):
         # Always create a normal story
-        self.story = create_story(title="Test Story", 
+        self.story = create_story(title="Test Story",
                 summary="Test Story Summary",
                 byline="Test Story Byline")
 
     # Initialization for certain types of stories
     def _setUpConnected(self):
-        self.seed_story = create_story(title="Test Seed Story", 
+        self.seed_story = create_story(title="Test Seed Story",
                 summary="Test Seed Story Summary",
                 byline="Test Seed Story Byline")
         self.connected_story1 = create_story(title="Test Connected Story 1",
@@ -1079,7 +1079,7 @@ class StoryManagerTest(TestCase):
 	    if title in published_titles:
 		status = 'published'
 	    create_story(title=title, on_homepage=True, status=status)
-			 
+
 	homepage_stories = Story.objects.on_homepage()
 	self.assertEqual(homepage_stories.count(), len(published_titles))
 	for title in published_titles:
@@ -1097,7 +1097,7 @@ class RelatedStoriesTest(TestCase):
                                   author=self.user)
 
     def test_create_relation(self):
-        story = create_story(title="Test Related Story", 
+        story = create_story(title="Test Related Story",
                              summary="Test Related Story Summary",
                              byline="Test Related Story Byline",
                              connected_prompt="Test connected prompt",
@@ -1111,12 +1111,12 @@ class RelatedStoriesTest(TestCase):
         self.assertEqual(self.story.related_stories.all()[0], story)
 
     def test_connected_stories(self):
-        story = create_story(title="Test Related Story", 
+        story = create_story(title="Test Related Story",
                              summary="Test Related Story Summary",
                              byline="Test Related Story Byline",
                              status='published',
                              author=self.user)
-        story2 = create_story(title="Test Related Story 2", 
+        story2 = create_story(title="Test Related Story 2",
                               summary="Test Related Story Summary 2",
                               byline="Test Related Story Byline 2",
                               status='published',
@@ -1130,12 +1130,12 @@ class RelatedStoriesTest(TestCase):
         self.assertEqual(self.story.connected_stories()[0], story)
 
     def test_connected_stories_published_only_default(self):
-        story = create_story(title="Test Related Story", 
+        story = create_story(title="Test Related Story",
                              summary="Test Related Story Summary",
                              byline="Test Related Story Byline",
                              status='published',
                              author=self.user)
-        story2 = create_story(title="Test Related Story 2", 
+        story2 = create_story(title="Test Related Story 2",
                               summary="Test Related Story Summary 2",
                               byline="Test Related Story Byline 2",
                               status='draft',
@@ -1149,12 +1149,12 @@ class RelatedStoriesTest(TestCase):
                          story)
 
     def test_connected_stories_published_only_false(self):
-        story = create_story(title="Test Related Story", 
+        story = create_story(title="Test Related Story",
                              summary="Test Related Story Summary",
                              byline="Test Related Story Byline",
                              status='published',
                              author=self.user)
-        story2 = create_story(title="Test Related Story 2", 
+        story2 = create_story(title="Test Related Story 2",
                               summary="Test Related Story Summary 2",
                               byline="Test Related Story Byline 2",
                               status='draft',
@@ -1171,17 +1171,17 @@ class RelatedStoriesTest(TestCase):
     def connected_stories_draft_author(self):
         user2 = User.objects.create_user('test2',
                 'test2@floodlightproject.org', 'test')
-        story = create_story(title="Test Related Story", 
+        story = create_story(title="Test Related Story",
                              summary="Test Related Story Summary",
                              byline="Test Related Story Byline",
                              status='published',
                              author=self.user)
-        story2 = create_story(title="Test Related Story 2", 
+        story2 = create_story(title="Test Related Story 2",
                               summary="Test Related Story Summary 2",
                               byline="Test Related Story Byline 2",
                               status='draft',
                               author=self.user)
-        story3 = create_story(title="Test Related Story 3", 
+        story3 = create_story(title="Test Related Story 3",
                               summary="Test Related Story Summary 2",
                               byline="Test Related Story Byline 2",
                               status='draft',
@@ -1199,7 +1199,7 @@ class RelatedStoriesTest(TestCase):
         self.assertIn(story3, connected)
 
     def test_connected_to_stories(self):
-        story = create_story(title="Test Related Story", 
+        story = create_story(title="Test Related Story",
                              summary="Test Related Story Summary",
                              byline="Test Related Story Byline",
                              status='published',
@@ -1212,7 +1212,7 @@ class RelatedStoriesTest(TestCase):
         self.assertEqual(story.connected_to_stories()[0], self.story)
 
     def test_is_connected(self):
-        story = create_story(title="Test Related Story", 
+        story = create_story(title="Test Related Story",
                              summary="Test Related Story Summary",
                              byline="Test Related Story Byline",
                              status='published',
@@ -1229,7 +1229,7 @@ class RelatedStoriesTest(TestCase):
         Test retrieving the prompt from the parent story in a connected
         story relationship.
         """
-        story = create_story(title="Test Related Story", 
+        story = create_story(title="Test Related Story",
                              summary="Test Related Story Summary",
                              byline="Test Related Story Byline",
                              status='published',
@@ -1243,7 +1243,7 @@ class RelatedStoriesTest(TestCase):
         Test that an empty prompt is returned when there is no
         connected story relationship.
         """
-        story = create_story(title="Test Related Story", 
+        story = create_story(title="Test Related Story",
                              summary="Test Related Story Summary",
                              byline="Test Related Story Byline",
                              status='published',
@@ -1254,7 +1254,7 @@ class RelatedStoriesTest(TestCase):
 class StoryBuilderViewTest(TestCase):
     """Test case for view that bootstraps Backbone view for editing stories"""
     fixtures = ['section_layouts.json']
-    
+
     def setUp(self):
         self.username = 'test'
         self.password = 'test'
@@ -1269,7 +1269,7 @@ class StoryBuilderViewTest(TestCase):
                                   layout=layout)
         section3 = create_section(title="Test Section 2", story=self.story,
                                   layout=layout)
-        create_html_asset(type='text', title='Test Asset', 
+        create_html_asset(type='text', title='Test Asset',
             body='Test content', owner=self.user)
         create_html_asset(type='text', title='Test Asset 2',
             body='Test content 2', owner=self.user)
@@ -1335,7 +1335,7 @@ class StoryBuilderViewTest(TestCase):
             self.assertEqual(len(data[section.section_id]['objects']),
                              len(section.assets.all()))
             asset_ids = [sectionasset['asset']['asset_id'] for
-                         sectionasset in 
+                         sectionasset in
                          data[section.section_id]['objects']]
             for asset in section.assets.all():
                 self.assertIn(asset.asset_id, asset_ids)
@@ -1344,14 +1344,14 @@ class StoryBuilderViewTest(TestCase):
 class StoryDetailViewTest(TestCase):
     def test_connected_story_404(self):
         """
-        Test that when trying to access the detail view for a 
+        Test that when trying to access the detail view for a
         connected story, the user gets a 404 error.
         """
         user = User.objects.create_user(username='test',
                 email='test@floodlightproject.org',
                 password='password')
-        story1 = create_story(title="Test Story", 
-                summary="Test summary", byline="Test byline", 
+        story1 = create_story(title="Test Story",
+                summary="Test summary", byline="Test byline",
                 author=user, status='published', allow_connected=True)
         connected_story = create_story(title="Test Connected Story",
                 author=user, byline="Test byline", status="published")
@@ -1371,7 +1371,7 @@ class StoryViewerViewTest(TestCase):
         self.story = create_story(title="Test Story", summary="Test Summary",
                 byline="Test Byline", status='published', author=self.user)
         self.factory = RequestFactory()
-    
+
     def test_get_context_connected_story_view(self):
         """
         Test that that only published connected stories are
@@ -1380,17 +1380,17 @@ class StoryViewerViewTest(TestCase):
         """
         user2 = User.objects.create_user('test2',
                 'test2@floodlightproject.org', 'test')
-        story = create_story(title="Test Related Story", 
+        story = create_story(title="Test Related Story",
                              summary="Test Related Story Summary",
                              byline="Test Related Story Byline",
                              status='published',
                              author=self.user)
-        story2 = create_story(title="Test Related Story 2", 
+        story2 = create_story(title="Test Related Story 2",
                               summary="Test Related Story Summary 2",
                               byline="Test Related Story Byline 2",
                               status='draft',
                               author=self.user)
-        story3 = create_story(title="Test Related Story 3", 
+        story3 = create_story(title="Test Related Story 3",
                               summary="Test Related Story Summary 2",
                               byline="Test Related Story Byline 2",
                               status='draft',
@@ -1416,17 +1416,17 @@ class StoryViewerViewTest(TestCase):
         """
         user2 = User.objects.create_user('test2',
                 'test2@floodlightproject.org', 'test')
-        story = create_story(title="Test Related Story", 
+        story = create_story(title="Test Related Story",
                              summary="Test Related Story Summary",
                              byline="Test Related Story Byline",
                              status='published',
                              author=self.user)
-        story2 = create_story(title="Test Related Story 2", 
+        story2 = create_story(title="Test Related Story 2",
                               summary="Test Related Story Summary 2",
                               byline="Test Related Story Byline 2",
                               status='draft',
                               author=self.user)
-        story3 = create_story(title="Test Related Story 3", 
+        story3 = create_story(title="Test Related Story 3",
                               summary="Test Related Story Summary 2",
                               byline="Test Related Story Byline 2",
                               status='draft',
@@ -1449,11 +1449,11 @@ class StoryViewerViewTest(TestCase):
 
     def test_connected_story_404(self):
         """
-        Test that when trying to access the story viewer for a 
+        Test that when trying to access the story viewer for a
         connected story, the user gets a 404 error.
         """
-        story1 = create_story(title="Test Story", 
-                summary="Test summary", byline="Test byline", 
+        story1 = create_story(title="Test Story",
+                summary="Test summary", byline="Test byline",
                 author=self.user, status='published', allow_connected=True)
         connected_story = create_story(title="Test Connected Story",
                 author=self.user, byline="Test byline", status="published")
@@ -1510,7 +1510,7 @@ class SectionModelTest(TestCase, SloppyComparisonTestMixin):
         section = create_section(title="Test Section 1", story=story, layout=layout)
         self.assertFalse(section.has_all_assets())
 
-        asset1 = create_html_asset(type='text', title='Test Asset', 
+        asset1 = create_html_asset(type='text', title='Test Asset',
             body='Test content')
         asset2 = create_html_asset(type='text', title='Test Asset 2',
             body='Test content 2')
@@ -1542,7 +1542,7 @@ class TemplateTagTest(TestCase):
         byline = "Mile High Connects"
         self.story = create_story(title=title, summary=summary,
             byline=byline)
-        create_html_asset(type='text', title='Test Asset', 
+        create_html_asset(type='text', title='Test Asset',
             body='Test content')
         create_html_asset(type='text', title='Test Asset 2',
             body='Test content 2')
@@ -1555,8 +1555,8 @@ class TemplateTagTest(TestCase):
 
     def test_container_no_assets(self):
         """
-        Test that the container tag returns a placeholder when no 
-        assets are provided in the context 
+        Test that the container tag returns a placeholder when no
+        assets are provided in the context
         """
         context = {}
         container_name = "left"
@@ -1566,7 +1566,7 @@ class TemplateTagTest(TestCase):
 
     def test_container_empty_assets(self):
         """
-        Test that the container tag returns a placeholder when no 
+        Test that the container tag returns a placeholder when no
         assets are associated with a section.
 
         """
@@ -1627,11 +1627,11 @@ class TemplateTagTest(TestCase):
         user = User.objects.create_user(username='test',
                 email='test@floodlightproject.org',
                 password='password')
-        story1 = create_story(title="Test Story", 
-                summary="Test summary", byline="Test byline", 
+        story1 = create_story(title="Test Story",
+                summary="Test summary", byline="Test byline",
                 author=user, status='published', allow_connected=True)
-        story2 = create_story(title="Test Story 2", 
-                summary="Test summary", byline="Test byline", 
+        story2 = create_story(title="Test Story 2",
+                summary="Test summary", byline="Test byline",
                 author=user, status='published')
         connected_story = create_story(title="Test Connected Story",
                 author=user, byline="Test byline", status="published")
@@ -1655,17 +1655,17 @@ class TemplateTagTest(TestCase):
                 email='test@floodlightproject.org',
                 password='password')
         # Create some stories
-        story1 = create_story(title="Test Featured Story", 
-                summary="Test summary", byline="Test byline", 
+        story1 = create_story(title="Test Featured Story",
+                summary="Test summary", byline="Test byline",
                 author=user, status='published', on_homepage=True)
-        story2 = create_story(title="Test Story 2", 
-                summary="Test summary", byline="Test byline", 
+        story2 = create_story(title="Test Story 2",
+                summary="Test summary", byline="Test byline",
                 author=user, status='published')
-        story3 = create_story(title="Test Story 3", 
-                summary="Test summary", byline="Test byline", 
+        story3 = create_story(title="Test Story 3",
+                summary="Test summary", byline="Test byline",
                 author=user, status='published')
-        story4 = create_story(title="Test Story 4", 
-                summary="Test summary", byline="Test byline", 
+        story4 = create_story(title="Test Story 4",
+                summary="Test summary", byline="Test byline",
                 author=user, status='published')
 
         # Render the latest story list
@@ -1714,7 +1714,7 @@ class SectionRenderTest(TestCase):
         byline = "Mile High Connects"
         self.story = create_story(title=title, summary=summary,
             byline=byline)
-        create_html_asset(type='text', title='Test Asset', 
+        create_html_asset(type='text', title='Test Asset',
             body='Test content')
         create_html_asset(type='text', title='Test Asset 2',
             body='Test content 2')
@@ -1742,13 +1742,13 @@ class SectionRenderTest(TestCase):
         """
         Test rendering a section when no section layout is specified and when
         there are no containers associated with section assets.
-        
+
         This is the case for stories created with the Django backend in early
-        versions of the software, when there wasn't the concept of 
+        versions of the software, when there wasn't the concept of
         layouts/containers, just weights.
         """
         assets = Asset.objects.select_subclasses()
-        # Create a section without specifying layout 
+        # Create a section without specifying layout
         section = create_section(title="Test Section1", story=self.story)
         # Associate assets with the section without specifying a container
         SectionAsset.objects.create(section=section, asset=assets[0])
@@ -1756,7 +1756,7 @@ class SectionRenderTest(TestCase):
         html = section.render_html()
         self.assertIn(assets[0].title, html)
         self.assertIn(assets[1].title, html)
-                
+
 
 class SectionLayoutModelTest(TestCase):
     fixtures = ['section_layouts.json']
@@ -1896,7 +1896,7 @@ class SectionAssetModelTest(TransactionTestCase):
 
     def test_remove_asset(self):
         """
-        Test that when an asset is removed from a section, it is not 
+        Test that when an asset is removed from a section, it is not
         removed from the story
         """
         # Confirm that the story has no assets
@@ -1928,14 +1928,14 @@ class SectionAssetModelTest(TransactionTestCase):
         asset = create_html_asset(type='text', title="Test Asset 2")
 
         # Assign it to the same section and container as the the first
-        # asset 
+        # asset
         section_asset2 = SectionAsset(section=section_asset.section,
                                       asset=asset,
                                       container=section_asset.container)
         # It should rais an IntegriyError
         self.assertRaises(IntegrityError, section_asset2.save)
         # Roll back the connection because we caught the IntegrityError
-        from django.db import transaction 
+        from django.db import transaction
         transaction.rollback()
 
         # Assign the new asset to a different container and all should be
@@ -1992,7 +1992,7 @@ class StructureTest(TestCase):
         for i in range(1, len(section_data)):
             self.assertEqual(section_data[i-1]['title'],
                              elements[i].text_content().strip())
-        
+
     def test_sections_flat_linear_nested(self):
         """
         Test sections_flat() when sections are arranged in a linear
@@ -2002,7 +2002,7 @@ class StructureTest(TestCase):
         title = ("Neighborhood Outreach for I-70 Alignment Impacting "
                  "Elyria, Globeville and Swansea")
         summary = """
-            The City of Denver and Colorado Department of Transportation 
+            The City of Denver and Colorado Department of Transportation
             (CDOT) are working together to do neighborhood outreach
             regarding the I-70 alignment between Brighton Boulevard and
             Colorado. For detailed information on the neighborhood outreach
@@ -2016,14 +2016,14 @@ class StructureTest(TestCase):
                                   layout=layout,
                                   root=True)
         section2 = create_section(title="Decisions to be made", story=story, layout=layout)
-        section3 = create_section(title="Who has been involved", 
+        section3 = create_section(title="Who has been involved",
                                   story=story, layout=layout)
         section4 = create_section(title="Next steps", story=story,
                                   layout=layout)
         SectionRelation.objects.create(parent=section1, child=section2)
         SectionRelation.objects.create(parent=section2, child=section3)
         SectionRelation.objects.create(parent=section3, child=section4)
-        self.assertEqual(story.structure.sections_flat, [section1, section2, 
+        self.assertEqual(story.structure.sections_flat, [section1, section2,
                                                 section3, section4])
 
     def test_sections_flat_spider(self):
@@ -2034,7 +2034,7 @@ class StructureTest(TestCase):
         title = ("Neighborhood Outreach for I-70 Alignment Impacting "
                  "Elyria, Globeville and Swansea")
         summary = """
-            The City of Denver and Colorado Department of Transportation 
+            The City of Denver and Colorado Department of Transportation
             (CDOT) are working together to do neighborhood outreach
             regarding the I-70 alignment between Brighton Boulevard and
             Colorado. For detailed information on the neighborhood outreach
@@ -2048,7 +2048,7 @@ class StructureTest(TestCase):
                                   layout=layout,
                                   root=True)
         section2 = create_section(title="Decisions to be made", story=story, layout=layout)
-        section3 = create_section(title="Who has been involved", 
+        section3 = create_section(title="Who has been involved",
                                   story=story, layout=layout)
         section4 = create_section(title="Next steps", story=story, layout=layout)
         SectionRelation.objects.create(parent=section1, child=section2,
@@ -2068,7 +2068,7 @@ class StructureTest(TestCase):
         title = ("Neighborhood Outreach for I-70 Alignment Impacting "
                  "Elyria, Globeville and Swansea")
         summary = """
-            The City of Denver and Colorado Department of Transportation 
+            The City of Denver and Colorado Department of Transportation
             (CDOT) are working together to do neighborhood outreach
             regarding the I-70 alignment between Brighton Boulevard and
             Colorado. For detailed information on the neighborhood outreach
@@ -2082,7 +2082,7 @@ class StructureTest(TestCase):
                                   layout=layout,
                                   root=True)
         section2 = create_section(title="Decisions to be made", story=story, layout=layout)
-        section3 = create_section(title="Who has been involved", 
+        section3 = create_section(title="Who has been involved",
                                   story=story, layout=layout)
         section4 = create_section(title="Next steps", story=story, layout=layout)
         section5 = create_section(title="Last section", story=story, layout=layout)
@@ -2105,7 +2105,7 @@ class StructureTest(TestCase):
         title = ("Neighborhood Outreach for I-70 Alignment Impacting "
                  "Elyria, Globeville and Swansea")
         summary = """
-            The City of Denver and Colorado Department of Transportation 
+            The City of Denver and Colorado Department of Transportation
             (CDOT) are working together to do neighborhood outreach
             regarding the I-70 alignment between Brighton Boulevard and
             Colorado. For detailed information on the neighborhood outreach
@@ -2122,7 +2122,7 @@ class StructureTest(TestCase):
         title = ("Neighborhood Outreach for I-70 Alignment Impacting "
                  "Elyria, Globeville and Swansea")
         summary = """
-            The City of Denver and Colorado Department of Transportation 
+            The City of Denver and Colorado Department of Transportation
             (CDOT) are working together to do neighborhood outreach
             regarding the I-70 alignment between Brighton Boulevard and
             Colorado. For detailed information on the neighborhood outreach
@@ -2144,7 +2144,7 @@ class StructureTest(TestCase):
         title = ("Neighborhood Outreach for I-70 Alignment Impacting "
                  "Elyria, Globeville and Swansea")
         summary = """
-            The City of Denver and Colorado Department of Transportation 
+            The City of Denver and Colorado Department of Transportation
             (CDOT) are working together to do neighborhood outreach
             regarding the I-70 alignment between Brighton Boulevard and
             Colorado. For detailed information on the neighborhood outreach
@@ -2167,7 +2167,7 @@ class StructureTest(TestCase):
         title = ("Neighborhood Outreach for I-70 Alignment Impacting "
                  "Elyria, Globeville and Swansea")
         summary = """
-            The City of Denver and Colorado Department of Transportation 
+            The City of Denver and Colorado Department of Transportation
             (CDOT) are working together to do neighborhood outreach
             regarding the I-70 alignment between Brighton Boulevard and
             Colorado. For detailed information on the neighborhood outreach
@@ -2180,13 +2180,13 @@ class StructureTest(TestCase):
                                   story=story, layout=layout,
                                   root=True)
         section2 = create_section(title="Decisions to be made", story=story, layout=layout)
-        section3 = create_section(title="Who has been involved", 
+        section3 = create_section(title="Who has been involved",
                                   story=story, layout=layout)
         section4 = create_section(title="Next steps", story=story, layout=layout)
         SectionRelation.objects.create(parent=section1, child=section2)
         SectionRelation.objects.create(parent=section2, child=section3)
         SectionRelation.objects.create(parent=section3, child=section4)
-        self.assertEqual(story.structure.get_next_section(section1),   
+        self.assertEqual(story.structure.get_next_section(section1),
                          section2)
         self.assertEqual(story.structure.get_next_section(section2),
                          section3)
@@ -2204,7 +2204,7 @@ class StructureTest(TestCase):
         title = ("Neighborhood Outreach for I-70 Alignment Impacting "
                  "Elyria, Globeville and Swansea")
         summary = """
-            The City of Denver and Colorado Department of Transportation 
+            The City of Denver and Colorado Department of Transportation
             (CDOT) are working together to do neighborhood outreach
             regarding the I-70 alignment between Brighton Boulevard and
             Colorado. For detailed information on the neighborhood outreach
@@ -2217,14 +2217,14 @@ class StructureTest(TestCase):
                                   story=story, layout=layout,
                                   root=True)
         section2 = create_section(title="Decisions to be made", story=story, layout=layout)
-        section3 = create_section(title="Who has been involved", 
+        section3 = create_section(title="Who has been involved",
                                   story=story, layout=layout)
         section4 = create_section(title="Next steps", story=story,
                                   layout=layout)
         SectionRelation.objects.create(parent=section1, child=section2)
         SectionRelation.objects.create(parent=section2, child=section3)
         SectionRelation.objects.create(parent=section3, child=section4)
-        self.assertEqual(story.structure.get_previous_section(section1),   
+        self.assertEqual(story.structure.get_previous_section(section1),
                          None)
         self.assertEqual(story.structure.get_previous_section(section2),
                          section1)
@@ -2241,7 +2241,7 @@ class StructureTest(TestCase):
         title = ("Neighborhood Outreach for I-70 Alignment Impacting "
                  "Elyria, Globeville and Swansea")
         summary = """
-            The City of Denver and Colorado Department of Transportation 
+            The City of Denver and Colorado Department of Transportation
             (CDOT) are working together to do neighborhood outreach
             regarding the I-70 alignment between Brighton Boulevard and
             Colorado. For detailed information on the neighborhood outreach
@@ -2253,9 +2253,9 @@ class StructureTest(TestCase):
         section1 = create_section(title="Background and context",
                                   story=story, layout=layout,
                                   root=True)
-        section2 = create_section(title="Decisions to be made", 
+        section2 = create_section(title="Decisions to be made",
                                   story=story, layout=layout)
-        section3 = create_section(title="Who has been involved", 
+        section3 = create_section(title="Who has been involved",
                                   story=story, layout=layout)
         section4 = create_section(title="Next steps",
                                   story=story, layout=layout)
@@ -2265,7 +2265,7 @@ class StructureTest(TestCase):
                                        weight=1)
         SectionRelation.objects.create(parent=section1, child=section4,
                                        weight=2)
-        self.assertEqual(story.structure.get_next_section(section1),   
+        self.assertEqual(story.structure.get_next_section(section1),
                          section2)
         self.assertEqual(story.structure.get_next_section(section2),
                          section3)
@@ -2276,13 +2276,13 @@ class StructureTest(TestCase):
 
     def test_get_previous_section_spider(self):
         """
-        Test test_get_previous_section() when sections are arranged as 
+        Test test_get_previous_section() when sections are arranged as
         children of a single root section.
         """
         title = ("Neighborhood Outreach for I-70 Alignment Impacting "
                  "Elyria, Globeville and Swansea")
         summary = """
-            The City of Denver and Colorado Department of Transportation 
+            The City of Denver and Colorado Department of Transportation
             (CDOT) are working together to do neighborhood outreach
             regarding the I-70 alignment between Brighton Boulevard and
             Colorado. For detailed information on the neighborhood outreach
@@ -2296,7 +2296,7 @@ class StructureTest(TestCase):
                                   layout=layout,
                                   root=True)
         section2 = create_section(title="Decisions to be made", story=story, layout=layout)
-        section3 = create_section(title="Who has been involved", 
+        section3 = create_section(title="Who has been involved",
                                   story=story, layout=layout)
         section4 = create_section(title="Next steps", story=story, layout=layout)
         SectionRelation.objects.create(parent=section1, child=section2,
@@ -2305,7 +2305,7 @@ class StructureTest(TestCase):
                                        weight=1)
         SectionRelation.objects.create(parent=section1, child=section4,
                                        weight=2)
-        self.assertEqual(story.structure.get_previous_section(section1),   
+        self.assertEqual(story.structure.get_previous_section(section1),
                          None)
         self.assertEqual(story.structure.get_previous_section(section2),
                          section1)
@@ -2322,7 +2322,7 @@ class StructureTest(TestCase):
         title = ("Neighborhood Outreach for I-70 Alignment Impacting "
                  "Elyria, Globeville and Swansea")
         summary = """
-            The City of Denver and Colorado Department of Transportation 
+            The City of Denver and Colorado Department of Transportation
             (CDOT) are working together to do neighborhood outreach
             regarding the I-70 alignment between Brighton Boulevard and
             Colorado. For detailed information on the neighborhood outreach
@@ -2336,7 +2336,7 @@ class StructureTest(TestCase):
                                   layout=layout,
                                   root=True)
         section2 = create_section(title="Decisions to be made", story=story, layout=layout)
-        section3 = create_section(title="Who has been involved", 
+        section3 = create_section(title="Who has been involved",
                                   story=story, layout=layout)
         section4 = create_section(title="Next steps", story=story, layout=layout)
         section5 = create_section(title="Last section", story=story, layout=layout)
@@ -2348,15 +2348,15 @@ class StructureTest(TestCase):
                                        weight=1)
         SectionRelation.objects.create(parent=section1, child=section5,
                                        weight=1)
-        self.assertEqual(story.structure.get_next_section(section1),   
+        self.assertEqual(story.structure.get_next_section(section1),
                          section2)
-        self.assertEqual(story.structure.get_next_section(section2),   
+        self.assertEqual(story.structure.get_next_section(section2),
                          section3)
-        self.assertEqual(story.structure.get_next_section(section3),   
+        self.assertEqual(story.structure.get_next_section(section3),
                          section4)
-        self.assertEqual(story.structure.get_next_section(section4),   
+        self.assertEqual(story.structure.get_next_section(section4),
                          section5)
-        self.assertEqual(story.structure.get_next_section(section5),   
+        self.assertEqual(story.structure.get_next_section(section5),
                          None)
 
     def test_get_previous_section_tree(self):
@@ -2367,7 +2367,7 @@ class StructureTest(TestCase):
         title = ("Neighborhood Outreach for I-70 Alignment Impacting "
                  "Elyria, Globeville and Swansea")
         summary = """
-            The City of Denver and Colorado Department of Transportation 
+            The City of Denver and Colorado Department of Transportation
             (CDOT) are working together to do neighborhood outreach
             regarding the I-70 alignment between Brighton Boulevard and
             Colorado. For detailed information on the neighborhood outreach
@@ -2381,7 +2381,7 @@ class StructureTest(TestCase):
                                   layout=layout,
                                   root=True)
         section2 = create_section(title="Decisions to be made", story=story, layout=layout)
-        section3 = create_section(title="Who has been involved", 
+        section3 = create_section(title="Who has been involved",
                                   story=story, layout=layout)
         section4 = create_section(title="Next steps", story=story, layout=layout)
         section5 = create_section(title="Last section", story=story, layout=layout)
@@ -2393,15 +2393,15 @@ class StructureTest(TestCase):
                                        weight=1)
         SectionRelation.objects.create(parent=section1, child=section5,
                                        weight=1)
-        self.assertEqual(story.structure.get_previous_section(section1),   
+        self.assertEqual(story.structure.get_previous_section(section1),
                          None)
-        self.assertEqual(story.structure.get_previous_section(section2),   
+        self.assertEqual(story.structure.get_previous_section(section2),
                          section1)
-        self.assertEqual(story.structure.get_previous_section(section3),   
+        self.assertEqual(story.structure.get_previous_section(section3),
                          section2)
-        self.assertEqual(story.structure.get_previous_section(section4),   
+        self.assertEqual(story.structure.get_previous_section(section4),
                          section3)
-        self.assertEqual(story.structure.get_previous_section(section5),   
+        self.assertEqual(story.structure.get_previous_section(section5),
                          section4)
 
     def _get_section(self, sections, section_id):
@@ -2415,12 +2415,12 @@ class StructureTest(TestCase):
 
     def test_sections_json_spider_three_levels(self):
         """
-        Test that sections_json() returns the sections in the correct 
+        Test that sections_json() returns the sections in the correct
         order and with the correct relationships
         """
 
         title = ("Taking Action for the Social and Emotional Health of "
-	             "Young Children: A Report to the Community from the "  
+	             "Young Children: A Report to the Community from the "
                  "Denver Early Childhood Council")
         summary = ("Now, Denver has a plan of action to make it easier "
                    "for families to access early childhood mental health "
@@ -2436,13 +2436,13 @@ class StructureTest(TestCase):
 			                      story=story, layout=layout, root=True,
                                   weight=1)
         section4 = create_section("Healthy Minds Support Strong Futures",
-                                  story=story, layout=layout, weight=5) 
+                                  story=story, layout=layout, weight=5)
         section5 = create_section("Community Voices",
 			                      story=story, layout=layout, weight=3)
         section6 = create_section("Our Vision: That All Children in Denver are Valued, Healthy and Thriving",
 			                      story=story, layout=layout, weight=4)
         section7 = create_section("Defining a \"Framework for Change\" with Actionable Goals and Strategies",
-			                      story=story, layout=layout, weight=5) 
+			                      story=story, layout=layout, weight=5)
         section8 = create_section("How Can the Plan Make a Difference?",
 			                      story=story, layout=layout, weight=5)
         section9 = create_section("Impact", story=story, layout=layout,
@@ -2485,12 +2485,12 @@ class StructureTest(TestCase):
 
     def test_sections_json_spider_three_levels_with_summary_and_call(self):
         """
-        Test that sections_json() returns the sections in the correct 
+        Test that sections_json() returns the sections in the correct
         order and with the correct relationships and also includes
         the summary and call to action
         """
         title = ("Taking Action for the Social and Emotional Health of "
-                 "Young Children: A Report to the Community from the " 
+                 "Young Children: A Report to the Community from the "
 		         "Denver Early Childhood Council")
         summary = ("Now, Denver has a plan of action to make it easier "
                    "for families to access early childhood mental health "
@@ -2507,16 +2507,16 @@ class StructureTest(TestCase):
         section3 = create_section("Meeting the need for better child mental health services",
 			           story=story, layout=layout, root=True, weight=1)
         section4 = create_section("Healthy Minds Support Strong Futures",
-			          story=story, layout=layout, weight=5) 
+			          story=story, layout=layout, weight=5)
         section5 = create_section("Community Voices",
 			          story=story, layout=layout, weight=3)
         section6 = create_section("Our Vision: That All Children in Denver are Valued, Healthy and Thriving",
 			          story=story, layout=layout, weight=4)
         section7 = create_section("Defining a \"Framework for Change\" with Actionable Goals and Strategies",
-			          story=story, layout=layout, weight=5) 
+			          story=story, layout=layout, weight=5)
         section8 = create_section("How Can the Plan Make a Difference?",
 			          story=story, layout=layout, weight=5)
-        section9 = create_section("Impact", 
+        section9 = create_section("Impact",
                                   story=story, layout=layout,  weight=6)
         SectionRelation.objects.create(parent=section6, child=section8,
                                        weight=0)
@@ -2561,11 +2561,11 @@ class StructureTest(TestCase):
           section2.section_id,
           self._get_section(json_sections, section3.section_id)['children'])
         self.assertEqual(json_sections[0]['section_id'], 'summary')
-        self.assertEqual(json_sections[0]['next_section_id'], 
+        self.assertEqual(json_sections[0]['next_section_id'],
                  json_sections[1]['section_id'])
         self.assertEqual(json_sections[1]['previous_section_id'], 'summary')
         self.assertEqual(json_sections[-1]['section_id'], 'call-to-action')
-        self.assertEqual(json_sections[-1]['previous_section_id'], 
+        self.assertEqual(json_sections[-1]['previous_section_id'],
                  json_sections[-2]['section_id'])
         self.assertEqual(json_sections[-2]['next_section_id'], 'call-to-action')
 
@@ -2623,7 +2623,7 @@ class StoryResourceTest(ResourceTestCase):
                                 'created',
                                 'featured_asset_url',
                                 'language',
-                                'languages', 
+                                'languages',
                                 'last_edited',
                                 'license',
                                 'is_template',
@@ -2645,7 +2645,7 @@ class StoryResourceTest(ResourceTestCase):
                                 'url',
                                 'viewer_url',
                                 'weight',]
-                                
+
         story = create_story(title="Test Story", summary="Test Summary",
                              byline="Test Byline", status="published",
                              language="en")
@@ -2716,7 +2716,7 @@ class StoryResourceTest(ResourceTestCase):
         self.assertEqual(created_story.status, post_data['status'])
         self.assertEqual(created_story.get_languages(), [post_data['language']])
         self.assertEqual(created_story.author, self.user)
-        # Check that the language returned in the response is the 
+        # Check that the language returned in the response is the
         # same as the post
         self.assertEqual(self.deserialize(response)['language'],
                          post_data['language'])
@@ -2730,7 +2730,7 @@ class StoryResourceTest(ResourceTestCase):
         provides the structure for this story.
         """
         template_story = create_story(title="Test Template Story",
-            summary="Test Template Story Summary", 
+            summary="Test Template Story Summary",
             byline="Test Template Story Byline",  status="published",
             language="en")
         post_data = {
@@ -2916,7 +2916,7 @@ class StoryResourceTest(ResourceTestCase):
         """
         Test that authenticated users see their own stories regardless of
         publication status
-        
+
         """
         story1 = create_story(title="Test Story", summary="Test Summary",
                               byline="Test Byline", status='published',
@@ -3049,7 +3049,7 @@ class SectionResourceTest(ResourceTestCase):
         story = Story.objects.get(story_id=story_id)
         self.assertEqual(len(story.sections.all()), 1)
         section = story.sections.all()[0]
-        self.assertEqual("%s%s/" % (sections_uri, section.section_id), 
+        self.assertEqual("%s%s/" % (sections_uri, section.section_id),
                          section_resource_uri)
         self.assertEqual(section.title, section_post_data['title'])
         self.assertEqual(section.layout.layout_id, section_post_data['layout'])
@@ -3072,7 +3072,7 @@ class SectionResourceTest(ResourceTestCase):
                              byline="Test Byline", status='published',
                              author=self.user2)
         self.api_client.client.login(username=self.username, password=self.password)
-        story_resource_uri = '/api/0.1/stories/%s/' % story.story_id 
+        story_resource_uri = '/api/0.1/stories/%s/' % story.story_id
         # Confirm there are no sections
         self.assertEqual(len(story.sections.all()), 0)
         # Create a new section
@@ -3125,7 +3125,7 @@ class SectionResourceTest(ResourceTestCase):
         story = Story.objects.get(story_id=story_id)
         self.assertEqual(len(story.sections.all()), 1)
         section = story.sections.all()[0]
-        self.assertEqual("%s%s/" % (sections_uri, section.section_id), 
+        self.assertEqual("%s%s/" % (sections_uri, section.section_id),
                          section_resource_uri)
         self.assertEqual(section.title, section_post_data['title'])
         self.assertEqual(section.layout.layout_id, section_post_data['layout'])
@@ -3177,7 +3177,7 @@ class SectionResourceTest(ResourceTestCase):
         story = Story.objects.get(story_id=story_id)
         self.assertEqual(len(story.sections.all()), 1)
         section = story.sections.all()[0]
-        self.assertEqual("%s%s/" % (sections_uri, section.section_id), 
+        self.assertEqual("%s%s/" % (sections_uri, section.section_id),
                          section_resource_uri)
         self.assertEqual(section.title, section_post_data['title'])
         self.assertEqual(section.layout.layout_id, section_post_data['layout'])
@@ -3302,7 +3302,7 @@ class SectionResourceTest(ResourceTestCase):
         self.assertHttpCreated(response)
         section_uri = response['location']
         section_id = section_uri.split('/')[-2]
-        # Update the section help 
+        # Update the section help
         response = self.api_client.put(section_uri, format='json',
                                          data=section_put_data)
         self.assertHttpAccepted(response)
@@ -3310,7 +3310,7 @@ class SectionResourceTest(ResourceTestCase):
         story = Story.objects.get(story_id=story_id)
         self.assertEqual(len(story.sections.all()), 1)
         section = story.sections.get(section_id=section_id)
-        self.assertEqual(section.help, section_help) 
+        self.assertEqual(section.help, section_help)
 
     def test_delete_detail(self):
         """Test that a user can delete a section"""
@@ -3514,7 +3514,7 @@ class SectionAssetResourceTest(ResourceTestCase):
                                   layout=layout)
         asset = create_html_asset(type='text', title='Test Asset',
                                    body='Test content', owner=self.user)
-        
+
         asset2 = create_html_asset(type='text', title='Test Asset',
                                    body='Test content 2', owner=self.user)
         self.assertEqual(SectionAsset.objects.count(), 0)
@@ -3688,7 +3688,7 @@ class StoryExploreResourceTest(ResourceTestCase):
         story2.save()
         # If south migrations are enabled, we need to explicitly rebuild
         # the indexes because the RealTimeIndex signal handlers don't get
-        # wired up. 
+        # wired up.
         # See https://github.com/toastdriven/django-haystack/issues/599
         # In general, I think we can work around this by just setting
         # SOUTH_TESTS_MIGRATE = False in the settings
@@ -3704,7 +3704,7 @@ class StoryExploreResourceTest(ResourceTestCase):
         """Test that story exploration endpoint doesn't show unpublished stories"""
         story1 = create_story(title="Test Story", summary="Test Summary",
                              byline="Test Byline", status='published')
-        
+
         story2 = create_story(title="Test Story 2", summary="Test Summary 2",
                              byline="Test Byline 2", status='draft')
         resp = self.api_client.get('/api/0.1/stories/explore/')
@@ -3714,7 +3714,7 @@ class StoryExploreResourceTest(ResourceTestCase):
 
 
 class StoryTemplateResourceTest(ResourceTestCase):
-    fixtures = ['admin_user.json', 'section_layouts.json', 
+    fixtures = ['admin_user.json', 'section_layouts.json',
                 'story_templates.json']
 
     def setUp(self):
@@ -4028,7 +4028,7 @@ class StoryRelationResourceTest(ResourceTestCase):
                                   author=self.user)
 
     def test_get_list(self):
-        related_story = create_story(title="Test Related Story", 
+        related_story = create_story(title="Test Related Story",
              summary="Test Related Story Summary",
              byline="Test Related Story Byline",
              status='published',
@@ -4038,7 +4038,7 @@ class StoryRelationResourceTest(ResourceTestCase):
                               byline="Test Story Byline 2",
                               status='published',
                               author=self.user)
-        related_story2 = create_story(title="Test Related Story", 
+        related_story2 = create_story(title="Test Related Story",
                              summary="Test Related Story Summary",
                              byline="Test Related Story Byline",
                              status='published',
@@ -4051,7 +4051,7 @@ class StoryRelationResourceTest(ResourceTestCase):
         StoryRelation.objects.create(source=story2,
             target=related_story2, relation_type='connected')
         self.assertEqual(len(self.story.related_stories.all()), 1)
-        self.assertEqual(self.story.related_stories.all()[0], 
+        self.assertEqual(self.story.related_stories.all()[0],
                          related_story)
         # Test getting the relation through the target story
         uri = '/api/0.1/stories/%s/related/' % (related_story.story_id)
@@ -4071,7 +4071,7 @@ class StoryRelationResourceTest(ResourceTestCase):
         self.assertEqual(self.deserialize(resp)['objects'][0]['target'], related_story.story_id)
 
     def test_post_list(self):
-        related_story = create_story(title="Test Related Story", 
+        related_story = create_story(title="Test Related Story",
              summary="Test Related Story Summary",
              byline="Test Related Story Byline",
              status='published',
@@ -4084,7 +4084,7 @@ class StoryRelationResourceTest(ResourceTestCase):
         }
         uri = '/api/0.1/stories/%s/related/' % (related_story.story_id)
         self.api_client.client.login(username=self.username, password=self.password)
-        resp = self.api_client.post(uri,  format='json', 
+        resp = self.api_client.post(uri,  format='json',
                                     data=post_data)
         self.assertHttpCreated(resp)
         self.assertEqual(StoryRelation.objects.count(), 1)
@@ -4096,7 +4096,7 @@ class StoryRelationResourceTest(ResourceTestCase):
 
     def test_post_list_unauthenticated(self):
         """Test that an aunauthenticated user can't create a relation"""
-        related_story = create_story(title="Test Related Story", 
+        related_story = create_story(title="Test Related Story",
              summary="Test Related Story Summary",
              byline="Test Related Story Byline",
              status='published',
@@ -4117,7 +4117,7 @@ class StoryRelationResourceTest(ResourceTestCase):
         Test that a user can't define a connected story relation for a story
         they don't own
         """
-        related_story = create_story(title="Test Related Story", 
+        related_story = create_story(title="Test Related Story",
              summary="Test Related Story Summary",
              byline="Test Related Story Byline",
              status='published',
@@ -4138,7 +4138,7 @@ class StoryRelationResourceTest(ResourceTestCase):
         Test that a user can define their own story as connected
         to another user's story
         """
-        related_story = create_story(title="Test Related Story", 
+        related_story = create_story(title="Test Related Story",
              summary="Test Related Story Summary",
              byline="Test Related Story Byline",
              status='published',
@@ -4151,7 +4151,7 @@ class StoryRelationResourceTest(ResourceTestCase):
         }
         uri = '/api/0.1/stories/%s/related/' % (related_story.story_id)
         self.api_client.client.login(username=self.username, password=self.password)
-        resp = self.api_client.post(uri,  format='json', 
+        resp = self.api_client.post(uri,  format='json',
                                     data=post_data)
         self.assertHttpCreated(resp)
         self.assertEqual(StoryRelation.objects.count(), 1)
@@ -4162,7 +4162,7 @@ class StoryRelationResourceTest(ResourceTestCase):
         self.assertEqual(created_rel.target, self.story)
 
     def test_put_list(self):
-        related_story = create_story(title="Test Related Story", 
+        related_story = create_story(title="Test Related Story",
              summary="Test Related Story Summary",
              byline="Test Related Story Byline",
              status='published',
@@ -4227,14 +4227,14 @@ class StoryWidgetViewTest(TestCase):
         url_base = "http://floodlightproject.org"
         if story_path:
             story_url = story_path if "http" in story_path else "%s%s" % (url_base, story_path)
-            query_args['story-url'] = story_url 
+            query_args['story-url'] = story_url
         if list_path:
             list_url = list_path if "http" in list_path else "%s%s" % (url_base, list_path)
             query_args['list-url'] = list_url
         if query_args:
             url = "%s?%s" % (url, urlencode(query_args))
 
-        return url 
+        return url
 
     def test_resolve_uri(self):
         # Story URL
@@ -4245,32 +4245,32 @@ class StoryWidgetViewTest(TestCase):
         # Project URL
         match = self.view.resolve_uri('http://floodlightproject.org/projects/finding-a-bite-food-access-in-the-childrens-corrid/')
         self.assertEqual(match.url_name, 'project_detail')
-        self.assertEqual(match.kwargs['slug'], 'finding-a-bite-food-access-in-the-childrens-corrid') 
+        self.assertEqual(match.kwargs['slug'], 'finding-a-bite-food-access-in-the-childrens-corrid')
 
         # Project URL with a language prefix
         match = self.view.resolve_uri('http://floodlightproject.org/en/projects/finding-a-bite-food-access-in-the-childrens-corrid/')
         self.assertEqual(match.url_name, 'project_detail')
-        self.assertEqual(match.kwargs['slug'], 'finding-a-bite-food-access-in-the-childrens-corrid') 
+        self.assertEqual(match.kwargs['slug'], 'finding-a-bite-food-access-in-the-childrens-corrid')
 
         # Organization URL
         match = self.view.resolve_uri('http://floodlightproject.org/organizations/america-scores-denver/')
         self.assertEqual(match.url_name, 'organization_detail')
-        self.assertEqual(match.kwargs['slug'], 'america-scores-denver') 
+        self.assertEqual(match.kwargs['slug'], 'america-scores-denver')
 
         # Topic URL
         match = self.view.resolve_uri('http://floodlightproject.org/topics/environment/')
         self.assertEqual(match.url_name, 'topic_stories')
-        self.assertEqual(match.kwargs['slug'], 'environment') 
+        self.assertEqual(match.kwargs['slug'], 'environment')
 
         # Tag URL
         match = self.view.resolve_uri('http://floodlightproject.org/tags/storytelling/')
         self.assertEqual(match.url_name, 'tag_stories')
-        self.assertEqual(match.kwargs['slug'], 'storytelling') 
+        self.assertEqual(match.kwargs['slug'], 'storytelling')
 
         # Place URL
         match = self.view.resolve_uri('http://floodlightproject.org/places/denver/')
         self.assertEqual(match.url_name, 'place_stories')
-        self.assertEqual(match.kwargs['slug'], 'denver') 
+        self.assertEqual(match.kwargs['slug'], 'denver')
 
         # Broken path
         match = self.view.resolve_uri('http://floodlightproject.org/stries/why-libraries-are-relevant-2/')
@@ -4317,7 +4317,7 @@ class StoryWidgetViewTest(TestCase):
         self.assertEqual(template_names[0], 'storybase_story/widget_story.html')
         self.assertEqual(response.context['story'], story)
         self.assertEqual(len(response.context['stories']), 0)
-        
+
     def test_get_unpublished(self):
         story = self.set_up_story()
         story.status = 'draft'
@@ -4362,7 +4362,7 @@ class StoryWidgetViewTest(TestCase):
         url = self.get_widget_url(story.get_absolute_url(), list_url)
 
         response = self.client.get(url)
-                                   
+
         self.assertEqual(response.context['story'], story)
         self.assertEqual(len(response.context['stories']), 0)
 
@@ -4387,7 +4387,7 @@ class StoryWidgetViewTest(TestCase):
 
     def _test_get_list_not_found(self, obj):
         obj_url = obj.get_absolute_url()
-        path = obj_url 
+        path = obj_url
         path = path.replace(obj.slug, 'invalid-slug')
         url = self.get_widget_url(list_path=path)
         response = self.client.get(url)
@@ -4436,7 +4436,7 @@ class PopupViewTest(TestCase):
         response = self.client.get("%sshare/popup/" %
                                    self.story.get_absolute_url())
         self.assertIn(self.story.get_absolute_url(), response.content)
-        
+
     def test_get_story_embed_popup(self):
         response = self.client.get("%sembed/popup/" %
                                    self.story.get_absolute_url())

@@ -10,7 +10,7 @@ def parse_args_kwargs_and_as_var(parser, bits):
     args = []
     kwargs = {}
     as_var = None
-    
+
     bits = iter(bits)
     for bit in bits:
         if bit == 'as':

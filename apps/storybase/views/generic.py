@@ -52,12 +52,12 @@ class ModelIdDetailView(DetailView):
         short_obj_id = self.kwargs.get(short_obj_id_name, None)
 
         if short_obj_id is None:
-            return None 
+            return None
 
         return shortuuid.decode(short_obj_id).hex
 
     def get_object_id(self):
-        obj_id_name = self.get_object_id_name() 
+        obj_id_name = self.get_object_id_name()
         obj_id = self.kwargs.get(obj_id_name, None)
         if obj_id is None:
             obj_id = self.get_short_object_id()
@@ -77,7 +77,7 @@ class ModelIdDetailView(DetailView):
             queryset = queryset.filter(**filter_args)
         else:
             raise AssertionError("%s must be called with "
-                                 "either a object %s or slug" % 
+                                 "either a object %s or slug" %
                                  (self.__class__.__name__, obj_id_name))
 
         try:
@@ -93,7 +93,7 @@ class VersionTemplateMixin(object):
     """Class-based view mixin that searches for a versioned template name"""
     def get_versioned_template_names(self, template_names, version):
         versioned_names = []
-        for template_name in template_names: 
+        for template_name in template_names:
             (head, tail) = os.path.split(template_name)
             (template_name_base, extension) = tail.split('.')
             versioned_names.append(
@@ -119,11 +119,11 @@ class VersionTemplateMixin(object):
         "0.1", the return value would look like::
 
             ["template_name-0.1.html", "template_name.html"]
-       
+
         """
         template_names = [self.template_name]
         version = self.kwargs.get('version', None)
-        if version is not None: 
+        if version is not None:
             # If a version was included in the keyword arguments, search for a
             # version-specific template first
             template_names = self.get_versioned_template_names(template_names, version)

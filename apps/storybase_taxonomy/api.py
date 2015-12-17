@@ -24,7 +24,7 @@ class TagResource(HookedModelResource):
         # Hide the underlying id
         excludes = ['id']
         filtering = {
-            'name': ('exact', 'startswith', 'istartswith'), 
+            'name': ('exact', 'startswith', 'istartswith'),
         }
 
     def prepend_urls(self):
@@ -43,7 +43,7 @@ class TagResource(HookedModelResource):
     def get_related_object(self, request, **kwargs):
         try:
             story_id = kwargs.get('story_id')
-            story = Story.objects.get(story_id=story_id) 
+            story = Story.objects.get(story_id=story_id)
             if not story.has_perm(request.user, 'change'):
                 raise ImmediateHttpResponse(response=http.HttpUnauthorized("You are not authorized to change the story matching the provided story ID"))
         except ObjectDoesNotExist:
@@ -55,7 +55,7 @@ class TagResource(HookedModelResource):
         story_id = kwargs.get('story_id')
         if story_id:
             story = self.get_related_object(bundle.request, **kwargs)
-            return story.tags.all() 
+            return story.tags.all()
         else:
             return obj_list
 
@@ -63,7 +63,7 @@ class TagResource(HookedModelResource):
         story_id = kwargs.get('story_id')
         if story_id:
             story = self.get_related_object(bundle.request, **kwargs)
-       
+
         tag_id = bundle.data.get('tag_id')
         if tag_id:
             # Existing tag, don't create it, just retrieve it

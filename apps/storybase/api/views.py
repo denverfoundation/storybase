@@ -15,7 +15,7 @@ class ProxyView(View):
     def get_endpoint(self):
         """
         Returns the remote endpoint URL
-        
+
         Defaults to the ``endpoint``.
         """
         return self.endpoint
@@ -51,7 +51,7 @@ class ProxyView(View):
         except urllib2.URLError, e:
             if hasattr(e, 'reason'):
                 if isinstance(e.reason, socket.timeout):
-                    return HttpResponseServerError("Request to %s timed out" % (endpoint)) 
+                    return HttpResponseServerError("Request to %s timed out" % (endpoint))
 
                 return HttpResponseServerError("Failed to retrieve %s. Reason: %s" % (endpoint, e.reason))
             elif hasattr(e, 'code'):
@@ -71,13 +71,13 @@ class CreativeCommonsLicenseGetProxyView(ProxyView):
 
     Ignores all data from the remote endpoint except for the HTML representation
     of the license.
-    
+
     """
     http_method_names = ['get']
     response_class = HttpResponse
 
     def get_endpoint(self):
-        return getattr(settings, 'CC_LICENSE_GET_ENDPOINT', 
+        return getattr(settings, 'CC_LICENSE_GET_ENDPOINT',
             'http://api.creativecommons.org/rest/1.5/license/standard/get')
 
     def create_response(self, resp):

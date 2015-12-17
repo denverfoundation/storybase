@@ -14,7 +14,7 @@ class StorybaseMenu(Menu):
     """
     Add views from the various StoryBase apps to the CMS menu
     """
-    def get_nodes(self, request): 
+    def get_nodes(self, request):
         nodes = []
         build = NavigationNode(
             title=_(plugin_settings.STORYBASE_BUILD_TITLE),
@@ -44,7 +44,7 @@ class StorybaseMenu(Menu):
                 id=organization.organization_id,
                 parent_id=organizations.id))
         projects = NavigationNode(
-            title=_(plugin_settings.STORYBASE_PROJECT_LIST_TITLE), 
+            title=_(plugin_settings.STORYBASE_PROJECT_LIST_TITLE),
             url=reverse('project_list'),
             id='projects',
             parent_id=explore.id)
@@ -62,7 +62,7 @@ class StorybaseMenu(Menu):
                     url=project.get_absolute_url(),
                     id=project.project_id,
                     parent_id=projects.id))
-                                        
+
         return nodes
 
 menu_pool.register_menu(StorybaseMenu)
@@ -117,7 +117,7 @@ class OrderMenuNodes(Modifier):
         if post_cut:
             return nodes
 
-        modified_nodes = self.move_node(nodes, 'explore', 
+        modified_nodes = self.move_node(nodes, 'explore',
             plugin_settings.STORYBASE_EXPLORE_MENU_POSITION)
         modified_nodes = self.move_node(modified_nodes, 'build',
             plugin_settings.STORYBASE_BUILD_MENU_POSITION)

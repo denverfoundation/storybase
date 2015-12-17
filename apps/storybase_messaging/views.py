@@ -4,7 +4,7 @@ from django.utils.translation import ugettext as _
 from django.views.generic import CreateView, DetailView
 
 from storybase_messaging.forms import SiteContactMessageForm
-from storybase_messaging.models import SiteContactMessage, StoryNotification 
+from storybase_messaging.models import SiteContactMessage, StoryNotification
 
 class SiteContactMessageCreateView(CreateView):
     """View for site-wide contact form"""
@@ -15,7 +15,7 @@ class SiteContactMessageCreateView(CreateView):
 
     def get_success_url(self):
         """
-        Determine the URL to redirect to when the form is successfully 
+        Determine the URL to redirect to when the form is successfully
         validated
         """
         success_url = self.request.GET.get('success', None)
@@ -25,15 +25,15 @@ class SiteContactMessageCreateView(CreateView):
         else:
             # Just redirect back to the contact page for now
             return reverse('contact')
-   
+
     def form_valid(self, form):
         """
-        Save the form instance, set the current object for the view and 
+        Save the form instance, set the current object for the view and
         redirect to get_success_url()
 
         Flashes a success message to the user
         """
-        messages.add_message(self.request, messages.SUCCESS, 
+        messages.add_message(self.request, messages.SUCCESS,
                          _("Thanks! Your message has been submitted to the "
                    "site administrators"),
                  fail_silently=False)
@@ -56,7 +56,7 @@ class StoryNotificationDetailView(DetailView):
         # Include some additional context since we're showing this in aweb
         # page instead of an email
         context.update({
-            'include_page_markup': True, 
+            'include_page_markup': True,
             'subject': self.object.get_subject(),
         })
         return context
@@ -68,6 +68,6 @@ class StoryNotificationDetailView(DetailView):
         return self.response_class(
             request = self.request,
             template = self.object.get_body_template(content_type="html"),
-            context = context, 
+            context = context,
             **response_kwargs
         )

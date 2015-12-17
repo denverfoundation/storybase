@@ -62,7 +62,7 @@ class BaseStructure(object):
 
             children_flat = self._section_children_flat(child)
             if len(children_flat) > 0:
-                section_children_flat = (section_children_flat + 
+                section_children_flat = (section_children_flat +
                                          children_flat)
                 # The next section is the first child
                 self._next_sections[child] = children_flat[0]
@@ -79,7 +79,7 @@ class BaseStructure(object):
         self._sections_flat = []
         self._previous_sections = {}
         self._next_sections = {}
-        # Build a representation of the sections flattened and 
+        # Build a representation of the sections flattened and
         # of the next and previous section for a given section
         root_sections = self.story.sections.filter(root=True) \
                                            .order_by('weight')
@@ -115,7 +115,7 @@ class BaseStructure(object):
         their titles, IDs and the relationship with other sections.
 
         Keyword arguments:
-        include_summary -- Include the story summary as the first section 
+        include_summary -- Include the story summary as the first section
                            (default True)
         include_call_to_action -- Include the call to action as the last
                                   section (default True)
@@ -123,7 +123,7 @@ class BaseStructure(object):
         """
         if connected_stories is None:
             connected_stories = self.story.connected_stories()
-        sections = [] 
+        sections = []
         for section in self._sections_flat:
             sections.append(section.to_simple())
 
@@ -139,7 +139,7 @@ class BaseStructure(object):
                sections[0]['previous_section_id'] = 'summary'
             sections.insert(0, summary_section)
 
-        if (include_call_to_action and 
+        if (include_call_to_action and
                 (self.story.call_to_action or self.story.allow_connected)):
             call_to_action_section = {
                 'section_id': 'call-to-action',

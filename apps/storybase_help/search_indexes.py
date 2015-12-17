@@ -1,6 +1,6 @@
 from haystack import indexes
 
-from storybase.search.fields import TextSpellField 
+from storybase.search.fields import TextSpellField
 from storybase_help.models import Help
 
 class HelpIndex(indexes.SearchIndex, indexes.Indexable):
@@ -8,7 +8,7 @@ class HelpIndex(indexes.SearchIndex, indexes.Indexable):
     suggestions = TextSpellField()
 
     def get_model(self):
-        return Help 
+        return Help
 
     def index_queryset(self, using=None):
         return self.get_model().objects.filter(searchable=True)
@@ -29,7 +29,7 @@ class HelpIndex(indexes.SearchIndex, indexes.Indexable):
         Update the index for a single object. Attached to the class's
         post-save hook.
 
-        This version removes help items no longer tagged as searchable from 
+        This version removes help items no longer tagged as searchable from
         the index
 
         """

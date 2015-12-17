@@ -27,8 +27,8 @@ class TranslatedModel(models.Model):
             translation_set = getattr(self, 'translation_set')
         except AttributeError:
             # Try the subclass
-            subclass_attrs = [rel.var_name 
-                              for rel 
+            subclass_attrs = [rel.var_name
+                              for rel
                               in self._meta.get_all_related_objects()
                               if isinstance(rel.field, OneToOneField)
                               and issubclass(rel.field.model,
@@ -46,11 +46,11 @@ class TranslatedModel(models.Model):
     def __getattribute__(self, name):
         """ Getter that searches for fields on the translation model class
 
-        This implementation is based on the one in django-mothertongue by 
+        This implementation is based on the one in django-mothertongue by
         Rob Charlwood https://github.com/robcharlwood/django-mothertongue
         """
         get = lambda p:super(TranslatedModel, self).__getattribute__(p)
-        translated_fields = get('translated_fields') 
+        translated_fields = get('translated_fields')
         if name in translated_fields:
             code = translation.get_language()
             translated_manager = self._get_translated_manager()
@@ -67,7 +67,7 @@ class TranslatedModel(models.Model):
                     try:
                         translated_object = translated_manager.get(language=new_code)
                     except ObjectDoesNotExist:
-                        # If a translation doesn't exist in the 
+                        # If a translation doesn't exist in the
                         # current language, try the default language
                         try:
                             translated_object = translated_manager.get(language=settings.LANGUAGE_CODE)
@@ -151,7 +151,7 @@ class TranslatedModel(models.Model):
     def get_languages(self):
         """Get a list of translated languages for the model instance"""
         translated_manager = self._get_translated_manager()
-        return [trans.language 
+        return [trans.language
                 for trans in translated_manager.all()]
 
     def get_language_urls(self):
@@ -180,7 +180,7 @@ class TranslatedModel(models.Model):
             if field.rel and field.rel.to == cls:
                 return field.name
 
-        return None 
+        return None
 
     class Meta:
         """Model metadata options"""

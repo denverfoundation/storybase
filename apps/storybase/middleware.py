@@ -27,14 +27,14 @@ class ExtractContentMiddleware(object):
     """
     def process_response(self, request, response):
         if 'extract' not in request.GET or 'selector' not in request.GET:
-            return response 
-        
+            return response
+
         selector = request.GET['selector']
         doc = lxml.html.fromstring(str(response))
         els = doc.cssselect(selector)
         if not len(els):
             return response
-        
+
         el = els[0]
         context = {
             'content': lxml.html.tostring(el)
@@ -46,12 +46,12 @@ class ExtractContentMiddleware(object):
 class LocaleMiddleware(DjangoLocaleMiddleware):
     """
     Version of ``LocaleMiddleware`` with modified redirection behavior
-    
+
     This is needed because the behavior reported at
     https://code.djangoproject.com/ticket/17734 still occurs when using
     Django CMS because the default regex for the page view of Django CMS will
     match most URL paths, causing ``LocaleMiddleware.process_response()``
-    to redirect to the CMS view instead of passing through the 404 error 
+    to redirect to the CMS view instead of passing through the 404 error
     """
 
     def _resolves_to_same_view(self, path, language_path, urlconf):

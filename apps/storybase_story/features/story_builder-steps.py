@@ -20,4 +20,4 @@ def story_id_in_location(step, title):
     story = Story.objects.get(storytranslation__title=title)
     path = reverse('story_builder', kwargs={'story_id': story.story_id})
     assert_equal(world.browser.url, django_url(path))
-                
+

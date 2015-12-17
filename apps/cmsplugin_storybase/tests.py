@@ -112,7 +112,7 @@ class TemplateTagTest(FileCleanupMixin, PermissionTestCase):
         self.assertNotIn(news_item.title, rendered)
         self.assertIn(project.name, rendered)
 
-        # Check that the news item isn't present for a normal user 
+        # Check that the news item isn't present for a normal user
         c = Context({
             'user': self.user1,
         })
@@ -164,7 +164,7 @@ class NewsItemPermissionTest(PermissionTestCase):
         # Publish the news item to set up for next tests
         news_item.status = 'published'
         news_item.save()
-        
+
         # Test that author can view a published news item
         self.assertTrue(news_item.user_can_view(self.user1))
 
@@ -180,7 +180,7 @@ class NewsItemPermissionTest(PermissionTestCase):
 
         # Anonymous user cannot view a draft
         self.assertFalse(news_item.anonymoususer_can_view(self.anonymous_user))
-      
+
         # Anonymous user cannot view a staged item
         news_item.status = 'staged'
         news_item.save()

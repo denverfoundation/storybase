@@ -13,7 +13,7 @@ from storybase_user.models import (Organization, Project, UserProfile)
 class StoryAggregatorModelFormBase(TranslatedModelForm):
     required_css_class = 'required'
 
-    members = UserEmailField(required=False, 
+    members = UserEmailField(required=False,
             help_text=_("Enter a comma-separated list of email addresses "
                         "of the users you would like to add. "
                         "The email addresses must match "
@@ -34,7 +34,7 @@ class StoryAggregatorModelFormBase(TranslatedModelForm):
                     **through_kwargs)
         image_asset = None
         img_val = self.cleaned_data.get('image', None)
-        if img_val: 
+        if img_val:
             if is_file(img_val):
                 image_asset = create_local_image_asset('image', img_val, img_val.name)
             else:

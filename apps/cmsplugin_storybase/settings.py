@@ -5,20 +5,20 @@ from django.utils.translation import ugettext_lazy as _
 
 __all__ = ["STORYBASE_EXPLORE_MENU_POSITION"]
 
-STORYBASE_BUILD_MENU_POSITION = getattr(settings, 
+STORYBASE_BUILD_MENU_POSITION = getattr(settings,
     'STORYBASE_BUILD_MENU_POSITION', 0)
 """
 Zero-indexed position where the "Build ..." menu should be inserted
 
-Setting this to 0 would make this menu the first item in the menu 
+Setting this to 0 would make this menu the first item in the menu
 """
 
-STORYBASE_EXPLORE_MENU_POSITION = getattr(settings, 
+STORYBASE_EXPLORE_MENU_POSITION = getattr(settings,
     'STORYBASE_EXPLORE_MENU_POSITION', 1)
 """
 Zero-indexed position where the "Explore ..." menu should be inserted
 
-Setting this to 0 would make this menu the first item in the menu 
+Setting this to 0 would make this menu the first item in the menu
 """
 
 STORYBASE_BUILD_TITLE = getattr(
@@ -61,5 +61,5 @@ STORYBASE_MEGAMENU_ITEMS = getattr(
 CMS Page Reverse IDs or menu entry menu IDs of items that should appear in
 the megamenu at the top of most pages
 """
-       
+
 

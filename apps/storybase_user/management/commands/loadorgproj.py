@@ -15,8 +15,8 @@ class Command(BaseCommand):
             "      \t\torganization\n"
             "  name_field\t\tColumn in CSV file that contains the name\n"
             "  desc_field\t\tColumn in CSV file that contains the description\n")
-   
-    
+
+
     def handle(self, *args, **options):
         try:
             csv_file = open(args[0])
@@ -31,7 +31,7 @@ class Command(BaseCommand):
         if obj_type == 'organization':
             bulk_create_organization(reader, name_field=name_field,
                                      description_field=desc_field)
-        elif obj_type == 'project': 
+        elif obj_type == 'project':
             bulk_create_project(reader, name_field=name_field,
                                 description_field=desc_field)
         else:

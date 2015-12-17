@@ -3,15 +3,15 @@ from django.conf import settings
 STORYBASE_GEOCODER = getattr(settings, 'STORYBASE_GEOCODER',
                              'geopy.geocoders.OpenMapQuest')
 """
-String containing import path of geocoder class.  
+String containing import path of geocoder class.
 
 Class should implement geopy's Geocoder interface.
 
 """
 
-STORYBASE_GEOCODER_ARGS = getattr(settings, 'STORYBASE_GEOCODER_ARGS', {}) 
+STORYBASE_GEOCODER_ARGS = getattr(settings, 'STORYBASE_GEOCODER_ARGS', {})
 """
-Keyword arguments to be passed to the constructor of the geocoder object. 
+Keyword arguments to be passed to the constructor of the geocoder object.
 """
 
 STORYBASE_GEOCODE_EXACTLY_ONE = getattr(settings,

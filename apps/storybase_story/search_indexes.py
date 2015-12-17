@@ -11,7 +11,7 @@ class StoryIndex(indexes.SearchIndex, indexes.Indexable):
     created = indexes.FacetDateTimeField(model_attr='created')
     last_edited = indexes.FacetDateTimeField(model_attr='last_edited')
     # TODO: Use a meta class to dynamically populate these from "official"
-    # tag sets 
+    # tag sets
     topic_ids = indexes.FacetMultiValueField()
     organization_ids = indexes.FacetMultiValueField()
     project_ids = indexes.FacetMultiValueField()
@@ -155,17 +155,17 @@ class StoryIndex(indexes.SearchIndex, indexes.Indexable):
         it won't neccessarily be available via instance.section.story at
         that point.
 
-        This is designed to be attached to the pre_delete signal 
+        This is designed to be attached to the pre_delete signal
 
         """
         instance._story = instance.section.story
 
     def asset_relation_update_object(self, instance, **kwargs):
         """
-        Signal handler for when an asset to section relationship is 
+        Signal handler for when an asset to section relationship is
         created or destroyed.
 
-        This is needed because the text from assets is part of the 
+        This is needed because the text from assets is part of the
         document field of the index.
 
         """

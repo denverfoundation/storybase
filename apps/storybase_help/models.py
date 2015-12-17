@@ -15,9 +15,9 @@ class HelpManager(models.Manager):
 
 class HelpTranslation(TranslationModel):
     help = models.ForeignKey('Help')
-    title = ShortTextField(blank=True) 
+    title = ShortTextField(blank=True)
     body = models.TextField(blank=True)
-    
+
 
 class Help(TranslatedModel):
     help_id = models.UUIDField(default=uuid.uuid4)
@@ -51,9 +51,9 @@ class Help(TranslatedModel):
         return ('help_detail', [self.help_id])
 
 
-def create_help(title='', body='', language=settings.LANGUAGE_CODE, 
+def create_help(title='', body='', language=settings.LANGUAGE_CODE,
                  *args, **kwargs):
-    """Convenience function for creating Help 
+    """Convenience function for creating Help
 
     Allows for the creation of help items without having to explicitly
     deal with the translations.

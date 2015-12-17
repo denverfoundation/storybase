@@ -38,7 +38,7 @@ class StoryAdmin(StorybaseModelAdmin):
                      'author__last_name']
     list_display = (obj_title, 'author', 'last_edited', 'status', 'view_link')
     list_filter = ('status', 'author', 'on_homepage', 'is_template')
-    filter_horizontal = ['assets', 'featured_assets', 'locations', 
+    filter_horizontal = ['assets', 'featured_assets', 'locations',
                          'places', 'projects', 'organizations', 'topics']
     inlines = [SectionInline, StoryTranslationInline]
     prefix_inline_classes = ['StoryTranslationInline']
@@ -67,7 +67,7 @@ class StoryAdmin(StorybaseModelAdmin):
         if db_field.name == "assets":
             # Limit to only assets owned by the owner
             kwargs["queryset"] = Asset.objects.filter(owner=request.user)
-        elif (db_field.name == "featured_assets" and 
+        elif (db_field.name == "featured_assets" and
               getattr(self, 'obj', None)):
             kwargs["queryset"] = self.obj.assets
 
@@ -79,13 +79,13 @@ class StoryAdmin(StorybaseModelAdmin):
         return "<a href='%s'>View</a>" % obj.get_absolute_url()
     view_link.short_description = 'View'
     view_link.allow_tags = True
-        
+
 
 class SectionAssetInline(admin.TabularInline):
     """Inline for Asset to Section relations
 
     Allows specifying the position of an Asset within a Section
-    
+
     """
     model = SectionAsset
     extra = 0
@@ -99,13 +99,13 @@ class SectionTranslationInline(StorybaseStackedInline):
 
 # TODO: Enable this on switch to Django 1.4
 #class SectionStoryTitleListFilter(SimpleListFilter):
-#    title = _('story title') 
+#    title = _('story title')
 #    parameter_name = 'title'
 #
 #    def lookups(self, request, model_admin):
 #        qs = model_admin.queryset(request)
 #        values = qs.values('pk', 'story__storytranslation__title').distinct()
-#        return [(value['pk'], value['story_storytranslation__title']) 
+#        return [(value['pk'], value['story_storytranslation__title'])
 #                for value in values]
 #
 #    def queryset(self, request, queryset):

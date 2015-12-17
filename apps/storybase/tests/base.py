@@ -40,7 +40,7 @@ class SloppyComparisonTestMixin(object):
         tolerance -- number of seconds that the times can differ
 
         """
-        delta = datetime.now() - timestamp 
+        delta = datetime.now() - timestamp
         self.assertTrue(delta.seconds <= tolerance)
 
     def assertTimesEqualish(self, timestamp1, timestamp2, tolerance=1):
@@ -88,7 +88,7 @@ class SettingsChangingTestCase(TestCase):
         except AttributeError:
             self._settings_to_delete.append(attr)
         setattr(settings_module, attr, val)
-            
+
 
 class PermissionTestCase(TestCase):
     def setUp(self):
@@ -115,7 +115,7 @@ class FixedTestApiClient(TestApiClient):
     Version of TestApiClient that fixes the patch() method
 
     See https://github.com/toastdriven/django-tastypie/issues/531
-    
+
     """
     def patch(self, uri, format='json', data=None, authentication=None, **kwargs):
         """

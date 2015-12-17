@@ -24,7 +24,7 @@ class MockGeocoder(Geocoder):
     PLACES = {
         "370 17th St, Denver, CO 80202": ("", (39.7438167, -104.9884953)),
         "370 17th St Denver CO 80202": ("", (39.7438167, -104.9884953)),
-        "800 S. Halsted St. Chicago IL 60607": ("", (41.8716782, -87.6474517)), 
+        "800 S. Halsted St. Chicago IL 60607": ("", (41.8716782, -87.6474517)),
         "colfax and chambers, aurora, co": ("", (39.7399986, -104.8099387)),
         "golden, co": ("", (39.756655, -105.224949)),
         "80202": ("", (39.7541032, -105.000224)),
@@ -34,7 +34,7 @@ class MockGeocoder(Geocoder):
     def geocode(self, string, exactly_one=True):
         if string in self.PLACES:
             return[self.PLACES[string]]
-        
+
         return []
 
 
@@ -61,7 +61,7 @@ class OpenMapQuestGeocoderTestMixin(object):
         self._old_settings['STORYBASE_GEOCODER_ARGS'] = getattr(settings, 'STORYBASE_GEOCODER_ARGS', None)
         self.set_setting('STORYBASE_GEOCODER', 'geopy.geocoders.OpenMapQuest')
 
-class LocationModelTest(MockGeocoderTestMixin, SloppyComparisonTestMixin, 
+class LocationModelTest(MockGeocoderTestMixin, SloppyComparisonTestMixin,
         SettingsChangingTestCase):
 
     def get_settings_module(self):
@@ -121,10 +121,10 @@ class LocationModelTest(MockGeocoderTestMixin, SloppyComparisonTestMixin,
         self.assertApxEqual(loc.point.y, 41.8716782)
 
 
-class DefaultGeocoderTest(OpenMapQuestGeocoderTestMixin, 
+class DefaultGeocoderTest(OpenMapQuestGeocoderTestMixin,
         SettingsChangingTestCase):
     """Test geocoding with the default geocoder, currently OpenMapQuest
-    
+
     This essentially warns us if the default geocoding service is down,
     breaking this for non-modified installs.
 
@@ -148,8 +148,8 @@ class DefaultGeocoderTest(OpenMapQuestGeocoderTestMixin,
         results = list(geocoder.geocode(address, exactly_one=False))
         self.assertTrue(len(results) > 0)
         place, (lat, lng) = results[0]
-        self.assertEqual(lat, 39.7434926) 
-        self.assertEqual(lng, -104.9886368) 
+        self.assertEqual(lat, 39.7434926)
+        self.assertEqual(lng, -104.9886368)
 
 
 class GeocoderResourceTest(MockGeocoderTestMixin, SloppyComparisonTestMixin,
@@ -168,8 +168,8 @@ class GeocoderResourceTest(MockGeocoderTestMixin, SloppyComparisonTestMixin,
         req.GET['q'] = "370 17th St, Denver, CO 80202"
         bundle = resource.build_bundle(request=req)
         results = resource.obj_get_list(bundle)
-        self.assertApxEqual(results[0].lat, 39.7434926) 
-        self.assertApxEqual(results[0].lng, -104.9886368) 
+        self.assertApxEqual(results[0].lat, 39.7434926)
+        self.assertApxEqual(results[0].lng, -104.9886368)
 
     def test_geocode_intersection(self):
         """Test geocoding an intersection"""
@@ -180,8 +180,8 @@ class GeocoderResourceTest(MockGeocoderTestMixin, SloppyComparisonTestMixin,
         req.GET['q'] = "colfax and chambers, aurora, co"
         bundle = resource.build_bundle(request=req)
         results = resource.obj_get_list(bundle)
-        self.assertApxEqual(results[0].lat, 39.7399986) 
-        self.assertApxEqual(results[0].lng, -104.8099387) 
+        self.assertApxEqual(results[0].lat, 39.7399986)
+        self.assertApxEqual(results[0].lng, -104.8099387)
 
     def test_geocode_city_state(self):
         """Test geocoding a city and state"""
@@ -192,8 +192,8 @@ class GeocoderResourceTest(MockGeocoderTestMixin, SloppyComparisonTestMixin,
         req.GET['q'] = "golden, co"
         bundle = resource.build_bundle(request=req)
         results = resource.obj_get_list(bundle)
-        self.assertApxEqual(results[0].lat, 39.756655, .001) 
-        self.assertApxEqual(results[0].lng, -105.224949, .001) 
+        self.assertApxEqual(results[0].lat, 39.756655, .001)
+        self.assertApxEqual(results[0].lng, -105.224949, .001)
 
     def test_geocode_zip(self):
         """Test geocoding a zip code with Yahoo geocoder"""
@@ -205,7 +205,7 @@ class GeocoderResourceTest(MockGeocoderTestMixin, SloppyComparisonTestMixin,
         bundle = resource.build_bundle(request=req)
         results = resource.obj_get_list(bundle)
         self.assertApxEqual(results[0].lat, 39.7541032, .01)
-        self.assertApxEqual(results[0].lng, -105.000224, .01) 
+        self.assertApxEqual(results[0].lng, -105.000224, .01)
 
     def test_geocode_city(self):
         """Test geocoding a city with Yahoo geocoder"""
@@ -237,12 +237,12 @@ class LocationResourceTest(ResourceTestCase):
         self.ap_client = TestApiClient()
         self.username = 'test'
         self.password = 'test'
-        self.user = User.objects.create_user(self.username, 
+        self.user = User.objects.create_user(self.username,
             'test@example.com', self.password)
         self.user2 = User.objects.create_user("test2", "test2@example.com",
                                               "test2")
         self.story = create_story(title="Test Story", summary="Test Summary",
-            byline="Test Byline", status="published", language="en", 
+            byline="Test Byline", status="published", language="en",
             author=self.user)
         self.location_attrs = [
             {

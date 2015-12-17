@@ -53,14 +53,14 @@ class StoryQuerySet(FeaturedQuerySet):
     def public(self, published_statuses=None):
         """
         Convenience method to filter for stories that are visible by all
-        users 
+        users
         """
         return self.published(published_statuses=published_statuses)\
                    .not_template().not_connected()
 
 
 class StoryManager(FeaturedManager):
-    use_for_related_fields = True 
+    use_for_related_fields = True
 
     def get_query_set(self):
         return StoryQuerySet(self.model, using=self._db)
@@ -70,7 +70,7 @@ class StoryManager(FeaturedManager):
 
     # Proxy methods to underlying querysets.
     # We could use PassThroughManager from django-model-utilities to
-    # avoid this boilerplate 
+    # avoid this boilerplate
     def connected(self):
         return self.get_query_set().connected()
 

@@ -11,5 +11,5 @@ DATABASES = {
     }
 }
 
-HAYSTACK_SOLR_URL = 'http://127.0.0.1:8080/solr' 
+HAYSTACK_SOLR_URL = 'http://127.0.0.1:8080/solr'
 

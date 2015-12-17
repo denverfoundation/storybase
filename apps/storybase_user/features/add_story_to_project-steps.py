@@ -17,7 +17,7 @@ def see_featured_story(step, name):
     world.browser.is_element_present_by_css('.featured-story')
     featured_text = world.browser.find_by_css('.featured-story').first.text
     assert_in(name, featured_text)
-  
+
 @step(u'Then the Project\'s stories list should list these stories')
 def see_stories_list(step):
     story_titles = [row['title'] for row in step.hashes]

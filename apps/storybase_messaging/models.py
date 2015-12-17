@@ -14,7 +14,7 @@ from storybase.fields import ShortTextField
 from storybase.models import (TranslatedModel, TranslationModel,
                               TimestampedModel)
 from storybase.utils import full_url
-from storybase_messaging.managers import StoryNotificationManager                        
+from storybase_messaging.managers import StoryNotificationManager
 import storybase_messaging.settings as messaging_settings
 from storybase_story.models import Story
 from storybase_user.utils import send_admin_mail
@@ -26,7 +26,7 @@ else:
     notification = None
 
 class MessageTranslation(TranslationModel):
-    subject = ShortTextField() 
+    subject = ShortTextField()
     body = models.TextField()
 
     class Meta:
@@ -58,7 +58,7 @@ class SiteContactMessage(models.Model):
 @receiver(post_save, sender=SiteContactMessage)
 def send_message_to_admins(sender, **kwargs):
     """Send a copy of the message to admins"""
-    from django.template.loader import render_to_string 
+    from django.template.loader import render_to_string
 
     instance = kwargs.get('instance')
     subject = _("New message from") + " " + instance.email
@@ -85,8 +85,8 @@ class SystemMessage(Message):
             context = {
                 'message': self,
             }
-            notification.send(User.objects.filter(is_active=True), 
-                              self.notification_type, 
+            notification.send(User.objects.filter(is_active=True),
+                              self.notification_type,
                               context, on_site=False, queue=True)
         else:
             pass
@@ -98,7 +98,7 @@ class SystemMessage(Message):
 class StoryNotification(models.Model):
     """
     Notification sent to user on certain story events
-    
+
     This model stores the notification type, story, and date the notification
     should be sent. This allows for using flexible, asynchronous mechanisms
     for sending the notification emails instead of blocking each time the
@@ -127,7 +127,7 @@ class StoryNotification(models.Model):
 
     _template_cache = {}
 
-    notification_type = models.CharField(max_length=25, 
+    notification_type = models.CharField(max_length=25,
         choices=NOTIFICATION_TYPES)
     story = models.ForeignKey(Story)
     sent = models.DateTimeField(blank=True, null=True)
@@ -144,7 +144,7 @@ class StoryNotification(models.Model):
 
     def get_template_name(self):
         """
-        Returns the template name, without filename extension or language 
+        Returns the template name, without filename extension or language
         code for a story notification email's body
         """
         return "storybase_messaging/storynotification_%s_email" % (self.notification_type)
@@ -159,10 +159,10 @@ class StoryNotification(models.Model):
         language_choices = [language_code]
         shortened_code = language_code.split('-')[0]
         if shortened_code != language_code:
-            # If the active language code specifies a country, e.g. "en-us", 
+            # If the active language code specifies a country, e.g. "en-us",
             # also try the language without the country, e.g. "en"
             language_choices.append(shortened_code)
-        if (settings.LANGUAGE_CODE != language_code and 
+        if (settings.LANGUAGE_CODE != language_code and
                 settings.LANGUAGE_CODE != shortened_code):
             # Finally, try the default language
             language_choices.append(settings.LANGUAGE_CODE)
@@ -172,7 +172,7 @@ class StoryNotification(models.Model):
     def get_template(self, template_name_base, content_type="text"):
         """
         Returns a ``Template`` object for the notification message
-        
+
         Keyword arguments:
 
         content_type - Either "text" or "html".  This determines the
@@ -200,7 +200,7 @@ class StoryNotification(models.Model):
         template = StoryNotification._template_cache[template_name] = get_template(template_name)
         for language in language_misses:
             template_name = template_name_base + "__" + language + extension
-            StoryNotification._template_cache[template_name] = template 
+            StoryNotification._template_cache[template_name] = template
 
         return template
 
@@ -239,7 +239,7 @@ class StoryNotification(models.Model):
     def get_subject(self):
         context = self.get_context()
         template = self.get_subject_template()
-        # Strip leading/trailing whitespace from the rendered output, 
+        # Strip leading/trailing whitespace from the rendered output,
         # otherwise there will be an error when sending the EmailMessage
         return template.render(context).strip()
 
@@ -252,10 +252,10 @@ class StoryNotification(models.Model):
         context = self.get_context()
         template = self.get_body_template("html")
         return template.render(context)
-            
+
     def get_email(self):
         """
-        Returns an ``EmailMultiAlternatives`` object for the story 
+        Returns an ``EmailMultiAlternatives`` object for the story
         notification message
         """
         subject = self.get_subject()
@@ -266,7 +266,7 @@ class StoryNotification(models.Model):
         email = EmailMultiAlternatives(subject, text_content, from_email, [to])
         if html_content:
             email.attach_alternative(html_content, "text/html")
-        return email 
+        return email
 
 
 def update_story_unpublished_notification(sender, instance, **kwargs):
@@ -308,7 +308,7 @@ def update_story_unpublished_notification(sender, instance, **kwargs):
     # Update the notification to be sent in the future
     days = messaging_settings.STORYBASE_UNPUBLISHED_STORY_NOTIFICATION_DELAY
     delay = timedelta(days=days)
-    notification.send_on = datetime.now() + delay 
+    notification.send_on = datetime.now() + delay
     notification.save()
 
 
@@ -338,11 +338,11 @@ def remove_story_unpublished_notification(sender, instance, **kwargs):
     post_save.disconnect(remove_story_unpublished_notification,
         sender=Story,
         dispatch_uid="remove_story_unpublished_notification_%s" % (instance.story_id))
-    
+
 
 def prepare_story_notification(sender, instance, **kwargs):
     changed_fields = instance.get_dirty_fields().keys()
-    if (instance.status == 'published' and instance.pk and 
+    if (instance.status == 'published' and instance.pk and
         'status' in changed_fields):
         # Story was newly published ...
         # Create a notification when it's saved

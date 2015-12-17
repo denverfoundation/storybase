@@ -12,7 +12,7 @@ class Command(BaseCommand):
 
     def get_template_files(self):
         def add_project_root(path):
-            return os.path.join(settings.PROJECT_PATH, path) 
+            return os.path.join(settings.PROJECT_PATH, path)
 
         template_files = (
             "apps/storybase_story/templates/storybase_story/story_builder_handlebars.html",

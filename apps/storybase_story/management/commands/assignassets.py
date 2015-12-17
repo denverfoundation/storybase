@@ -20,13 +20,13 @@ class Command(BaseCommand):
                 help="Show assets that would be added, but don't add them"),
             )
 
-    
+
     def handle(self, *args, **options):
         # Import here to prevent some weird circular import
         from storybase_story.models import Story, SectionAsset
 
         try:
-            slug_or_id = args[0] 
+            slug_or_id = args[0]
             q = Q(story_id=slug_or_id)
             q = q | Q(slug=slug_or_id)
             story = Story.objects.get(q)

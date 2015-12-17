@@ -9,8 +9,8 @@ from storybase_user.models import create_organization, create_project
 @before.each_scenario
 def setup_organization_and_project(scenario):
     matching_scenarios = ('An admin can create a story and it\'s core metadata in English')
-    if scenario.name in matching_scenarios: 
-        create_organization(name="Mile High Connects") 
+    if scenario.name in matching_scenarios:
+        create_organization(name="Mile High Connects")
         create_project(name='The Metro Denver Regional Equity Atlas')
 
 @step(u'Then the Story "([^"]*)" should have a canonical URL')
@@ -64,7 +64,7 @@ def visit_translated_detail_page(step, language):
 def detail_redirected_page(step, language):
     language_code = world.language_lookup(language)
     parsed_url = urlparse(world.browser.url)
-    assert_equal(parsed_url.path, 
+    assert_equal(parsed_url.path,
         "/%s/stories/%s/" % (language_code, world.story.slug))
 
 @step(u'Given the user sets Status to "([^"]*)"')

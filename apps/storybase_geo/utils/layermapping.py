@@ -3,7 +3,7 @@ import copy
 
 from django.contrib.gis.utils.layermapping import (InvalidInteger,
     InvalidString, InvalidDecimal, LayerMapping as DistLayerMapping)
-    
+
 from django.contrib.gis.gdal.field import OFTReal, OFTString
 from django.db import models
 

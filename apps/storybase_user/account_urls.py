@@ -2,7 +2,7 @@
 URL Configuration for views dealing with account management
 
 These are broken out into a separate URLconf as they are likely to be attached
-at a different root than the other URL patterns. 
+at a different root than the other URL patterns.
 
 """
 
@@ -14,7 +14,7 @@ from storybase_user.auth.forms import (EmailAuthenticationForm,
                                        StrongSetPasswordForm)
 from storybase_user.views import (AccountSummaryView, AccountStoriesView,
                                  AccountNotificationsView, password_change)
-from storybase_user.social_auth.views import GetExtraAccountDetailsView 
+from storybase_user.social_auth.views import GetExtraAccountDetailsView
 
 urlpatterns = patterns('',
     url(r'^$', AccountSummaryView.as_view(), name='account_summary'),
@@ -25,7 +25,7 @@ urlpatterns = patterns('',
     url(r'^password/change/$', 'django.contrib.auth.views.password_change',
         {'password_change_form': StrongSetPasswordForm},
         name='auth_password_change'),
-    url(r'^password/reset/$', 'django.contrib.auth.views.password_reset', 
+    url(r'^password/reset/$', 'django.contrib.auth.views.password_reset',
         {'password_reset_form': CustomContextPasswordResetForm},
         name='password_reset'),
     url(r'^password/reset/confirm/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)/$',

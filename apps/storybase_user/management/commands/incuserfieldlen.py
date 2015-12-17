@@ -2,7 +2,7 @@ from django.core.management.base import BaseCommand
 
 class Command(BaseCommand):
     """Increase the length of the username and email fields in the database
-    
+
     Increases the length of these fields to be RFC3696/5321-compliant, allowing
     a maximum length of 254 characters.
 

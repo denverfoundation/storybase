@@ -1,5 +1,5 @@
 from storybase_story.views import ExplorerRedirectView
-from storybase_geo.models import Place 
+from storybase_geo.models import Place
 
 
 class PlaceExplorerRedirectView(ExplorerRedirectView):

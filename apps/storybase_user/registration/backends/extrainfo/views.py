@@ -28,7 +28,7 @@ class ExtraInfoActivationView(ActivationView):
 
     def activate(self, request, activation_key):
         activated_user = super(ExtraInfoActivationView, self).activate(request, activation_key)
-       
+
         if activated_user:
             messages.success(request, _("Your account activation succeeded. Please log in below."))
         else:

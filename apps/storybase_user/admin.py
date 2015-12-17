@@ -17,10 +17,10 @@ from storybase.admin import (StorybaseModelAdmin, StorybaseStackedInline,
 from storybase_story.models import Story
 from storybase_badge.models import Badge
 from storybase_user.auth.utils import send_account_deactivate_email
-from storybase_user.models import (Organization, OrganizationTranslation, 
+from storybase_user.models import (Organization, OrganizationTranslation,
         OrganizationMembership, Project, ProjectStory, ProjectTranslation,
         ProjectMembership, UserProfile)
-                                  
+
 if 'social_auth' in settings.INSTALLED_APPS:
     import social_auth
 else:
@@ -28,10 +28,10 @@ else:
 
 
 class StoryUserAdminForm(UserChangeForm):
-    """ 
+    """
     Custom form for editing users in the Django admin
 
-    This adds fields for the ManyToMany relations to Organization and 
+    This adds fields for the ManyToMany relations to Organization and
     Project models.  These aren't included automatically because they're
     the relation is defined on Organization and Project, not on User
     """
@@ -55,14 +55,14 @@ class UserProfileInline(admin.StackedInline):
     can_delete = False
     fieldsets = (
         (
-             _('Notifications'), 
+             _('Notifications'),
              {
                  'fields': ('notify_admin', 'notify_digest', 'notify_story_unpublished', 'notify_story_published', 'notify_story_comment'),
                  'description': _("Users will receive emails about these kind of events"),
              }
         ),
     )
-    
+
 
 class StoryUserAdmin(UserAdmin):
     """
@@ -95,7 +95,7 @@ class StoryUserAdmin(UserAdmin):
         list_display = list_display + ('social_accounts',)
     actions = ['send_password_reset_emails', 'set_inactive']
 
-    def save_model(self, request, obj, form, change):  
+    def save_model(self, request, obj, form, change):
         if getattr(obj, 'pk', None) is not None:
             # Object is not new
             obj.organizations.clear()
@@ -133,16 +133,16 @@ class StoryUserAdmin(UserAdmin):
 
     def send_password_reset_emails(self, request, queryset):
         """Send a password reset email to users
-        
+
         This is an admin action.
         """
         # TODO: Figure out if there's any good reason why I imported
         # these locallly
         from storybase.context_processors import conf
         from storybase_user.auth.utils import send_password_reset_email
-        
+
         for user in queryset:
-            send_password_reset_email(user, request=request, 
+            send_password_reset_email(user, request=request,
                                       extra_context=conf(request))
         self.message_user(request, "Password reset email sent")
     send_password_reset_emails.short_description = "Send password reset email"
@@ -199,7 +199,7 @@ admin.site.register(User, StoryUserAdmin)
 
 
 class OrganizationTranslationInline(StorybaseStackedInline):
-    model = OrganizationTranslation 
+    model = OrganizationTranslation
     extra = 1
 
 
@@ -219,12 +219,12 @@ admin.site.register(Organization, OrganizationAdmin)
 
 
 class ProjectTranslationInline(StorybaseStackedInline):
-    model = ProjectTranslation 
+    model = ProjectTranslation
     extra = 1
 
 
 class ProjectStoryInline(admin.TabularInline):
-    model = ProjectStory 
+    model = ProjectStory
     extra = 0
 
 
@@ -238,7 +238,7 @@ class ProjectAdmin(StorybaseModelAdmin):
     filter_horizontal = ['members', 'organizations', 'featured_assets']
     list_filter = ('on_homepage',)
     readonly_fields = ['created', 'last_edited', 'project_id']
-    inlines = [ProjectMembershipInline, ProjectStoryInline, 
+    inlines = [ProjectMembershipInline, ProjectStoryInline,
             ProjectTranslationInline]
     prefix_inline_classes = ['ProjectTranslationInline']
     actions = [toggle_featured]

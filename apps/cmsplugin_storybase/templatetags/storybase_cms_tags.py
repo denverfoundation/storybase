@@ -15,7 +15,7 @@ def _filter_menu_items(children, allowed_ids=None):
 
         if menu_id in allowed_ids:
             filtered.append(child)
-    return filtered 
+    return filtered
 
 def filter_menu_items(value, arg):
     allowed_ids = arg.split(",")

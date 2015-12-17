@@ -4,7 +4,7 @@ from django.conf import settings
 from django.core.urlresolvers import reverse
 from django.views.generic.edit import FormView
 
-from storybase_user.social_auth.forms import TosForm, EmailTosForm 
+from storybase_user.social_auth.forms import TosForm, EmailTosForm
 
 class GetExtraAccountDetailsView(FormView):
     """Get additional user data during association with OAuth account"""

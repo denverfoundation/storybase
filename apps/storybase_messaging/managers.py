@@ -1,4 +1,4 @@
-from datetime import datetime 
+from datetime import datetime
 
 from django.core.mail import get_connection
 from django.db import models
@@ -12,7 +12,7 @@ class EmailMessageList(list):
 
         Returns a tuple of lists of messages that were successfully sent and
         those that were unsent
-        
+
         """
         sent = []
         unsent = []
@@ -56,7 +56,7 @@ class StoryNotificationQuerySet(models.query.QuerySet):
         return self.unsent().filter(send_on__lte=send_on)
 
     def emails(self):
-        emails = EmailMessageList() 
+        emails = EmailMessageList()
         for notification in self:
             emails.append(notification.get_email())
         return emails

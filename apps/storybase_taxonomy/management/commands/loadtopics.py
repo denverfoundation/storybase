@@ -15,7 +15,7 @@ class Command(BaseCommand):
             "\t\t\tname of the topic\n"
             "  slug_field\t\tName of column in CSV file containing the\n"
             "\t\t\tthe slug of the topic\n")
-    
+
     def handle(self, *args, **options):
         try:
             csv_file = open(args[0])

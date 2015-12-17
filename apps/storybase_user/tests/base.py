@@ -49,7 +49,7 @@ class CreateViewTestMixin(FileCleanupMixin):
 
     def test_get_authenticated(self):
         """
-        Test that the organizaiton creation view can be accessed by an 
+        Test that the organizaiton creation view can be accessed by an
         authenticated user
         """
         self.client.login(username=self.username, password=self.password)
@@ -67,7 +67,7 @@ class CreateViewTestMixin(FileCleanupMixin):
         This makes the tests more DRY
         """
         if data is None:
-            data = self.get_default_data() 
+            data = self.get_default_data()
         data.update(extra_data)
         form_id = "create-%s-form" % (self.model._meta.object_name.lower())
         self.assertEqual(self.model.objects.count(), 0)
@@ -96,7 +96,7 @@ class CreateViewTestMixin(FileCleanupMixin):
             }
             self.assertEqual(self.model.members.through.objects.filter(
                     **filter_kwargs).count(), 1)
-                    
+
             # The members should have emails that match the posted ones
             self.assertEqual(obj.members.count(), 3)
             for email in ("test2@example.com", "test3@example.com"):
@@ -178,7 +178,7 @@ class CreateViewTestMixin(FileCleanupMixin):
                       "running this test")
 
         admin_group = Group.objects.create(name=ADMIN_GROUP_NAME)
-        admin = User.objects.create(username='admin', 
+        admin = User.objects.create(username='admin',
             password='password', email='admin@example.com')
         admin.groups.add(admin_group)
         view = self.view_class()

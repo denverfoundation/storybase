@@ -85,7 +85,7 @@ class StoryPermission(PermissionMixin):
 class StoryTranslation(TranslationModel):
     """Encapsulates translated fields of a Story"""
     story = models.ForeignKey('Story')
-    title = ShortTextField(blank=True) 
+    title = ShortTextField(blank=True)
     summary = models.TextField(blank=True)
     call_to_action = models.TextField(_("Call to Action"),
                                       blank=True)
@@ -101,7 +101,7 @@ class StoryTranslation(TranslationModel):
 
 
 class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
-            TranslatedModel, LicensedModel, PublishedModel, 
+            TranslatedModel, LicensedModel, PublishedModel,
            TimestampedModel, StoryPermission):
     """Metadata for a story
 
@@ -223,8 +223,8 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
     def contributor_name(self):
         """
         Return the contributor's first name and last initial or username
-        """ 
-        return format_user_name(self.author) 
+        """
+        return format_user_name(self.author)
 
     def to_simple(self):
         """
@@ -258,7 +258,7 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
         """Return the featured asset"""
         featured_assets = self.featured_assets.select_subclasses()
         try:
-            # Return the first featured asset.  We have the ability of 
+            # Return the first featured asset.  We have the ability of
             # selecting multiple featured assets.  Perhaps in the future
             # allow for specifying a particular feature asset or randomly
             # displaying one.
@@ -290,19 +290,19 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
             if values:
                 qs_params.append("%s=%s" % (filter, ",".join([str(value) for value in values])))
 
-            url += "?" + "&".join(qs_params) 
+            url += "?" + "&".join(qs_params)
         return url
-	
+
     def topics_with_links(self):
         """
         Return topics with links to the explore view with filters set
         to that topic
 
         """
-        # This is a little kludgy and it seems to be cleaner to just 
-        # handle this in a ``get_absolute_url`` method of the 
-        # ``Category`` model.  However, I wanted to keep the knowledge of 
-        # the explore view decoupled from the Categories model in case we 
+        # This is a little kludgy and it seems to be cleaner to just
+        # handle this in a ``get_absolute_url`` method of the
+        # ``Category`` model.  However, I wanted to keep the knowledge of
+        # the explore view decoupled from the Categories model in case we
         # want to use Categories for categorizing things other than stories.
         topics = [{'name': topic.name, 'url': self.get_explore_url({'topics': [topic.pk]})} for topic in self.topics.all()]
         return topics
@@ -317,7 +317,7 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
         Get a list of id, name hashes for a ManyToMany field of this story
 
         Uses the cache if possible
-        
+
         Arguments:
         field -- the name of the ManyToMany field of the model instance
         id_field -- the name of the field on the related model that holds the
@@ -329,8 +329,8 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
         but is defined here to try to keep all knowledge fo the caching strategy
 
         """
-        language = get_language() 
-        key = self.related_key(field, language) 
+        language = get_language()
+        key = self.related_key(field, language)
         obj_list = cache.get(key, None)
         if obj_list is not None:
             return obj_list
@@ -369,7 +369,7 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
     def points(self):
         """
         Get points (longitude, latitude pairs) related to the story
-        
+
         If the story has locations related with the story, use those,
         otherwise try to find centroids of related places.
 
@@ -388,7 +388,7 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
             # with a boundary so we can try to add points for all other
             # places at that geolevel
             point_geolevel = None
-            # Loop through related places looking at smaller geographies 
+            # Loop through related places looking at smaller geographies
             # first
             for place in self.places.all().order_by('-geolevel__level'):
                 if place.boundary:
@@ -401,12 +401,12 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
                         if place.geolevel == point_geolevel:
                             points.append((centroid.y, centroid.x))
                         else:
-                            # We've exhausted all the points at the 
+                            # We've exhausted all the points at the
                             # lowest geolevel.  Quit.
                             break
 
             # TODO: Decide if we should check non-explicit places
-       
+
         cache.set(key, points)
         return points
 
@@ -417,7 +417,7 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
         """Get a queryset of connected stories"""
         qs = self.related_stories.connected()
         if published_only:
-            # By default only return published connected stories 
+            # By default only return published connected stories
             qs = qs.published()
         elif draft_author:
             # Alternately, include draft stories by a particular
@@ -473,7 +473,7 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
                 kwargs={'source_slug':self.connected_to().slug,
                         'story_id': self.story_id})
         else:
-            return urlresolvers.reverse('story_builder', 
+            return urlresolvers.reverse('story_builder',
                 kwargs={'story_id': self.story_id})
 
     def viewer_url(self):
@@ -484,7 +484,7 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
 
         url = urlresolvers.reverse('story_viewer',
             kwargs={'slug': slug})
-        
+
         if self.is_connected():
             url = "%s#connected-stories/%s" % (url, self.story_id)
 
@@ -512,11 +512,11 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
 
     def asset_strings(self):
         """Return all the text from a Story's assets as a single string
-        
+
         This is meant to be used to help generate the document used to
         index the story for full-text search using Haystack.
 
-        """ 
+        """
         strings = []
         # For now, only worry about text assets
         for asset in self.used_assets(asset_type='text'):
@@ -542,7 +542,7 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
                 'values': [
                     {
                         'name': lang['name'],
-                        'url': "%s?languages=%s" % (explore_url, lang['id']), 
+                        'url': "%s?languages=%s" % (explore_url, lang['id']),
                     }
                     for lang in languages
                 ],
@@ -552,9 +552,9 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
             topics_tags.extend([
                     {
                         'name': topic['name'],
-                        'url': "%s?topics=%s" % (explore_url, topic['id']), 
+                        'url': "%s?topics=%s" % (explore_url, topic['id']),
                     }
-                    for topic in topics 
+                    for topic in topics
             ])
 
         if self.tags.count():
@@ -576,7 +576,7 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
 
     def normalize_for_view(self, img_width):
         """Return attributes as a dictionary for use in a view context
-        
+
         This allows using the same template across different models with
         differently-named attributes that hold similar information.
 
@@ -584,9 +584,9 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
         context = {
             "type": _("Story"),
             "title": self.title,
-            "author": self.contributor_name, 
-            "date": self.created, 
-            "image_html": self.render_featured_asset(width=img_width), 
+            "author": self.contributor_name,
+            "date": self.created,
+            "image_html": self.render_featured_asset(width=img_width),
             "excerpt": self.summary,
             "url": self.get_absolute_url(),
             "more_link_text": _("View All Stories"),
@@ -610,7 +610,7 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
     def asset_datasets(self):
         """
         Return datasets used in the story
-        
+
         Story.datasets contains *all* datasets associated
         with the story, but could include datasets associated
         with assets that are no longer displayed in sections
@@ -630,9 +630,9 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
 
 def set_story_slug(sender, instance, **kwargs):
     """
-    When a StoryTranslation is saved, set its Story's slug if it doesn't have 
+    When a StoryTranslation is saved, set its Story's slug if it doesn't have
     one
-    
+
     Should be connected to StoryTranslation's post_save signal.
     """
     try:
@@ -666,7 +666,7 @@ def set_date_and_weight_on_published(sender, instance, **kwargs):
             # Update the weight, based on the new published date
             instance.weight = instance.get_weight()
     else:
-        if (instance.status == 'published' and 
+        if (instance.status == 'published' and
             old_instance.status != 'published'):
             instance.published = datetime.now()
             # Update the weight, based on the new published date
@@ -694,7 +694,7 @@ def add_assets(sender, **kwargs):
     This is meant as a signal handler to automatically add assets
     to a Story's assets list when they're added to the
     featured_assets relation
-    
+
     """
     instance = kwargs.get('instance')
     action = kwargs.get('action')
@@ -712,7 +712,7 @@ def set_default_featured_asset(sender, instance, **kwargs):
     If a story is published and no featured asset has been specified,
     set a default one.
     """
-    if (instance.pk and instance.status == 'published' and 
+    if (instance.pk and instance.status == 'published' and
         instance.featured_assets.count() == 0):
         asset = instance.get_default_featured_asset()
         if asset is not None:
@@ -741,42 +741,42 @@ def invalidate_related_cache(sender, instance, field_name, language_key=True,
             cache.delete(instance.related_key(field_name))
         else:
             languages = getattr(settings, 'LANGUAGES', None)
-            if languages: 
+            if languages:
                 keys = []
                 for (code, name) in settings.LANGUAGES:
                     keys.append(instance.related_key(field_name, code))
                 cache.delete_many(keys)
 
 
-def invalidate_places_cache(sender, instance, **kwargs): 
+def invalidate_places_cache(sender, instance, **kwargs):
     """Invalidate the cached version of a Story's ``places`` field"""
     invalidate_related_cache(sender, instance, 'places', **kwargs)
 
 
-def invalidate_points_cache(sender, instance, **kwargs): 
+def invalidate_points_cache(sender, instance, **kwargs):
     """Invalidate the cached version of a Story's ``locations`` field"""
     invalidate_related_cache(sender, instance, 'points', language_key=False,
                              **kwargs)
 
 
-def invalidate_topics_cache(sender, instance, **kwargs): 
+def invalidate_topics_cache(sender, instance, **kwargs):
     """Invalidate the cached version of a Story's ``topics`` field"""
     invalidate_related_cache(sender, instance, 'topics', **kwargs)
 
 
-def invalidate_organizations_cache(sender, instance, **kwargs): 
+def invalidate_organizations_cache(sender, instance, **kwargs):
     """Invalidate the cached version of Story's ``organizations`` field"""
     invalidate_related_cache(sender, instance, 'organizations', **kwargs)
 
 
-def invalidate_projects_cache(sender, instance, **kwargs): 
+def invalidate_projects_cache(sender, instance, **kwargs):
     """Invalidate the cached version of Story's ``projects`` field"""
     invalidate_related_cache(sender, instance, 'projects', **kwargs)
 
 
 def update_weight_for_connected(sender, instance, **kwargs):
     """
-    Update the weight field on the seed story when a 
+    Update the weight field on the seed story when a
     connected story is published.
     """
     if instance.status == 'published':
@@ -891,7 +891,7 @@ class SectionPermission(PermissionMixin):
 class SectionTranslation(TranslationModel):
     """Translated fields of a Section"""
     section = models.ForeignKey('Section')
-    title = ShortTextField() 
+    title = ShortTextField()
 
     class Meta:
         """Model metadata options"""
@@ -901,7 +901,7 @@ class SectionTranslation(TranslationModel):
         return self.title
 
 
-class Section(node_factory('SectionRelation'), TranslatedModel, 
+class Section(node_factory('SectionRelation'), TranslatedModel,
               SectionPermission):
     """ Section of a story """
     section_id = models.UUIDField(default=uuid.uuid4, db_index=True)
@@ -935,7 +935,7 @@ class Section(node_factory('SectionRelation'), TranslatedModel,
             # When deleting an object in the Django admin, a Section
             # object gets instantiated with no translation set.
             # So, the call to __getattr__() raises an IndexError
-            return super(Section, self).__unicode__() 
+            return super(Section, self).__unicode__()
 
     @property
     def sections_in_same_story(self):
@@ -946,7 +946,7 @@ class Section(node_factory('SectionRelation'), TranslatedModel,
         """
         Check if has no ancestors nor children
 
-        This is a patch for a broken implementation in django_dag.  
+        This is a patch for a broken implementation in django_dag.
         """
         # TODO: Remove this when django_dag is fixed.
         # See https://github.com/elpaso/django-dag/pull/4
@@ -993,7 +993,7 @@ class Section(node_factory('SectionRelation'), TranslatedModel,
                 {'previous_section_id': previous_section.section_id})
         for child_relation in self.child_relations():
             simple['children'].append(child_relation.child.section_id)
-        
+
         return simple
 
     def render_html(self, show_title=True):
@@ -1011,7 +1011,7 @@ class Section(node_factory('SectionRelation'), TranslatedModel,
         # orders the section's assets by their weight.
         template_filename = (self.layout.get_template_filename()
             if self.layout is not None else default_template)
-        
+
         output.append(render_to_string(template_filename, context))
         return mark_safe(u'\n'.join(output))
 
@@ -1020,7 +1020,7 @@ class Section(node_factory('SectionRelation'), TranslatedModel,
 
         You can specify this in the Model Admin's readonly_fields or
         list_display options
-        
+
         """
         if self.pk:
             change_url = urlresolvers.reverse(
@@ -1028,7 +1028,7 @@ class Section(node_factory('SectionRelation'), TranslatedModel,
             return "<a href='%s'>Change Section</a>" % change_url
         else:
             return ''
-    change_link.short_description = 'Change' 
+    change_link.short_description = 'Change'
     change_link.allow_tags = True
 
     def natural_key(self):
@@ -1099,7 +1099,7 @@ class SectionAsset(models.Model, SectionAssetPermission):
 
 def add_section_asset_to_story(sender, instance, **kwargs):
     """When an asset is added to a Section, also add it to the Story
-    
+
     Should be connected to SectionAsset's post_save signal.
     """
     try:
@@ -1119,7 +1119,7 @@ post_save.connect(add_section_asset_to_story, sender=SectionAsset)
 
 def update_story_last_edited(sender, instance, **kwargs):
     """Update the a section's story's last edited field
-    
+
     Should be connected to Section's post_save signal.
     """
     # Last edited is automatically set on save
@@ -1151,20 +1151,20 @@ class StoryTemplate(TranslatedModel):
     LEVEL_CHOICES = (
         ('beginner', _("Beginner")),
     )
-    
+
     template_id = models.UUIDField(default=uuid.uuid4, db_index=True)
     story = models.ForeignKey('Story', blank=True, null=True,
         help_text=_("The story that provides the structure for this "
                     "template"))
-    time_needed = models.CharField(max_length=140, 
+    time_needed = models.CharField(max_length=140,
         choices=TIME_NEEDED_CHOICES, blank=True,
-        help_text=_("The amount of time needed to create a story of this " 
+        help_text=_("The amount of time needed to create a story of this "
                     "type"))
     level = models.CharField(max_length=140,
         choices=LEVEL_CHOICES, blank=True,
         help_text=_("The level of storytelling experience suggested to "
                     "create stories with this template"))
-    slug = models.SlugField(unique=True, 
+    slug = models.SlugField(unique=True,
         help_text=_("A human-readable unique identifier"))
     examples = models.ManyToManyField('Story', blank=True, null=True,
         help_text=_("Stories that are examples of this template"),
@@ -1195,7 +1195,7 @@ class SectionLayoutTranslation(TranslationModel):
 
 
 class SectionLayout(TranslatedModel):
-    TEMPLATE_CHOICES = [(name, name) for name 
+    TEMPLATE_CHOICES = [(name, name) for name
                         in settings.STORYBASE_LAYOUT_TEMPLATES]
 
     layout_id = models.UUIDField(default=uuid.uuid4, db_index=True)
@@ -1219,7 +1219,7 @@ class SectionLayout(TranslatedModel):
         return "storybase_story/sectionlayouts/%s" % (self.template)
 
     def get_template_contents(self):
-        template_filename = self.get_template_filename() 
+        template_filename = self.get_template_filename()
         return render_to_string(template_filename)
 
     def natural_key(self):
@@ -1228,7 +1228,7 @@ class SectionLayout(TranslatedModel):
 
 class Container(models.Model):
     """
-    A space to put assets within a ``TemplateLayout`` 
+    A space to put assets within a ``TemplateLayout``
     """
     name = models.SlugField(unique=True)
 
@@ -1248,7 +1248,7 @@ class ContainerTemplate(models.Model):
     section = models.ForeignKey('Section')
     container = models.ForeignKey('Container')
     asset_type = models.CharField(max_length=10, choices=ASSET_TYPES,
-                                  blank=True, 
+                                  blank=True,
                                   help_text=_("Default asset type"))
     can_change_asset_type = models.BooleanField(default=False,
         help_text=_("User can change the asset type from the default"))
@@ -1256,14 +1256,14 @@ class ContainerTemplate(models.Model):
 
     def __unicode__(self):
         return "%s / %s / %s" % (self.template.title, self.section.title, self.container.name)
-       
+
 
 # Internal API functions for creating model instances in a way that
 # abstracts out the translation logic a bit.
 
 def create_story(title, structure_type=structure.DEFAULT_STRUCTURE,
                  summary='', call_to_action='', connected_prompt='',
-                 language=settings.LANGUAGE_CODE, 
+                 language=settings.LANGUAGE_CODE,
                  *args, **kwargs):
     """Convenience function for creating a Story
 
@@ -1290,7 +1290,7 @@ def create_section(title, story, layout=None,
     """
     obj = Section(story=story, layout=layout, *args, **kwargs)
     obj.save()
-    translation = SectionTranslation(section=obj, title=title, 
+    translation = SectionTranslation(section=obj, title=title,
                                      language=language)
     translation.save()
     return obj

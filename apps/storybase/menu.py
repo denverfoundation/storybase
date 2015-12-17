@@ -104,7 +104,7 @@ class Menu(object):
                 except Http404:
                     # Couldn't resolve active path
                     pass
-                           
+
             items.append(normalized_item)
 
         return items

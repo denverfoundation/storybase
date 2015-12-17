@@ -11,14 +11,14 @@ class CategoryAdminForm(CategoryBaseAdminForm):
         model = Category
         # TODO: explicitly list fields
         fields = '__all__'
-    
+
     def clean(self):
-	# Skip a level when calling super because our name and slug fields are 
-	# on the related translation model 
+	# Skip a level when calling super because our name and slug fields are
+	# on the related translation model
         super(CategoryBaseAdminForm, self).clean()
-        
+
         # Validate Category Parent
-        # Make sure the category doesn't set itself or any of its children as 
+        # Make sure the category doesn't set itself or any of its children as
         # its parent.
         decendant_ids = self.instance.get_descendants().values_list('id', flat=True)
         if self.cleaned_data.get('parent', None) is None or self.instance.id is None:
@@ -44,7 +44,7 @@ class CategoryTranslationAdminForm(forms.ModelForm):
 
         # Validate slug is valid in that level
 	# Moved this logic from categories.base.CategoryBaseAdminForm.clean()
-	# to the translation model's form (because that's where the slug 
+	# to the translation model's form (because that's where the slug
 	# lives)
 	related_model_name = self._meta.model.__name__.lower()
 	category = self.cleaned_data.get('category')
@@ -54,7 +54,7 @@ class CategoryTranslationAdminForm(forms.ModelForm):
         else:
             kwargs['parent__pk'] = int(category.parent.id)
 	slug_field = '%s__slug' % related_model_name
-        this_level_slugs = [c[slug_field] for c in 
+        this_level_slugs = [c[slug_field] for c in
 			    category.__class__.objects.filter(**kwargs).values(
 				    'id', slug_field)
                             if c['id'] != category.id]

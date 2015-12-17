@@ -14,7 +14,7 @@ from storybase_badge.models import Badge
 from storybase.widgets import AdminLongTextInputWidget
 from storybase_story.fields import SectionModelChoiceField
 from storybase_story.models import (Section, SectionRelation,
-		                    SectionTranslation, 
+		                    SectionTranslation,
 		                    Story, StoryTranslation)
 
 class InlineSectionAdminForm(forms.ModelForm):
@@ -73,7 +73,7 @@ class SectionRelationAdminForm(forms.ModelForm):
     to differentiate between sections with the same name.
 
     """
-    parent = SectionModelChoiceField(queryset=Section.objects.all()) 
+    parent = SectionModelChoiceField(queryset=Section.objects.all())
     child = SectionModelChoiceField(queryset=Section.objects.all())
 
     class Meta:
@@ -84,7 +84,7 @@ class SectionRelationAdminForm(forms.ModelForm):
 
 class StoryAdminForm(forms.ModelForm):
     class Meta:
-        model = Story 
+        model = Story
         # TODO: explicitly list fields
         fields = '__all__'
         widgets = {
@@ -102,7 +102,7 @@ class StoryAdminForm(forms.ModelForm):
 
 class StoryTranslationAdminForm(forms.ModelForm):
     class Meta:
-        model = StoryTranslation 
+        model = StoryTranslation
         # TODO: explicitly list fields
         fields = '__all__'
         widgets = {

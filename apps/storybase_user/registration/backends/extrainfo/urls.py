@@ -1,5 +1,5 @@
 """
-URLconf for registration and activation, using custom 
+URLconf for registration and activation, using custom
 django-registration view classes
 
 """

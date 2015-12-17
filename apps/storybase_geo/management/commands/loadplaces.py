@@ -33,7 +33,7 @@ class Command(BaseCommand):
             def _set_geolevel(sender, instance, **kwargs):
                 """
                 Signal callback to set the geolevel for a
-                place                 
+                place
                 """
                 instance.geolevel = geolevel
 

@@ -16,7 +16,7 @@ from storybase_story.models import create_story
 from storybase_user.auth.forms import ChangeUsernameEmailForm
 from storybase_user.forms import OrganizationModelForm
 from storybase_user.models import (create_organization, create_project,
-    Organization, OrganizationMembership, OrganizationStory, 
+    Organization, OrganizationMembership, OrganizationStory,
     OrganizationTranslation, Project, ProjectMembership, ProjectStory,
     ProjectTranslation, ADMIN_GROUP_NAME, send_approval_notification)
 from storybase_user.tests.base import CreateViewTestMixin
@@ -28,7 +28,7 @@ class ChangeUsernameEmailFormTest(TestCase):
     def setUp(self):
         self.username = 'test'
         self.password = 'test'
-        self.user = User.objects.create_user(self.username, 
+        self.user = User.objects.create_user(self.username,
             'test@example.com', self.password)
         self.user2 = User.objects.create_user('test3',
             'test3@example.com', 'test3')
@@ -133,7 +133,7 @@ class ChangeUsernameEmailFormTest(TestCase):
 
     def test_original_email_saved(self):
         """
-        Test that the original email is saved in an attribute of the 
+        Test that the original email is saved in an attribute of the
         form after the form is saved.
         """
         old_email = self.user.email
@@ -150,7 +150,7 @@ class ChangeUsernameEmailFormTest(TestCase):
 
 class OrganizationPermissionTest(PermissionTestCase):
     def test_user_can_view(self):
-        org = create_organization(name="Test Organization", 
+        org = create_organization(name="Test Organization",
                 status='pending')
         OrganizationMembership.objects.create(user=self.user1, organization=org,
                 member_type='owner')
@@ -164,21 +164,21 @@ class OrganizationPermissionTest(PermissionTestCase):
         # Test an admin user can view another user's pending organization
         self.assertTrue(org.user_can_view(self.admin_user))
 
-        # Test that a super user can view another user's pending organization 
+        # Test that a super user can view another user's pending organization
         self.assertTrue(org.user_can_view(self.superuser))
 
         # Publish the organization to set up for next tests
         org.status = 'published'
         org.save()
-        
-        # Test that owner can view a published organization 
+
+        # Test that owner can view a published organization
         self.assertTrue(org.user_can_view(self.user1))
 
-        # Test that another user can view a published organization 
+        # Test that another user can view a published organization
         self.assertTrue(org.user_can_view(self.user2))
 
     def test_anonymoususer_can_view(self):
-        org = create_organization(name="Test Organization", 
+        org = create_organization(name="Test Organization",
                 status='pending')
 
         # An anonymous user can't view a pending organization
@@ -221,7 +221,7 @@ class OrganizationModelTest(TestCase):
     def test_get_translated_field_first_fallback(self):
         """
         Tests that if a translated field doesn't exist in the current
-        language, and it doesn't exist in the default language, the 
+        language, and it doesn't exist in the default language, the
         first available language is used
         """
         org_name_es = "Mile High Conecta"
@@ -260,7 +260,7 @@ class OrganizationModelTest(TestCase):
         byline = "Mile High Connects"
         story = create_story(title=title, summary=summary, byline=byline)
         weight = 15
-        organization.add_story(story, weight) 
+        organization.add_story(story, weight)
         self.assertTrue(story in organization.curated_stories.all())
         OrganizationStory.objects.get(organization=organization, story=story,
                                  weight=weight)
@@ -335,7 +335,7 @@ class OrganizationModelFormTest(TestCase):
         self.assertEqual(org.website_url, data['website_url'])
 
     def test_update(self):
-        org = create_organization(name="Test Organization", 
+        org = create_organization(name="Test Organization",
                 description="Test organization description",
                 website_url="http://example.com/")
         data = {
@@ -360,7 +360,7 @@ class OrganizationModelFormTest(TestCase):
         html = f.as_p()
         for field_name in ('name', 'description', 'website_url'):
             self.assertIn('name="%s"' % (field_name), html)
-        
+
 
 class OrganizationApiTest(TestCase):
     def test_create_organization(self):
@@ -395,21 +395,21 @@ class ProjectPermissionTest(PermissionTestCase):
         # Test an admin user can view another user's pending Project
         self.assertTrue(proj.user_can_view(self.admin_user))
 
-        # Test that a super user can view another user's pending Project 
+        # Test that a super user can view another user's pending Project
         self.assertTrue(proj.user_can_view(self.superuser))
 
         # Publish the Project to set up for next tests
         proj.status = 'published'
         proj.save()
-        
-        # Test that owner can view a published Project 
+
+        # Test that owner can view a published Project
         self.assertTrue(proj.user_can_view(self.user1))
 
-        # Test that another user can view a published Project 
+        # Test that another user can view a published Project
         self.assertTrue(proj.user_can_view(self.user2))
 
     def test_anonymoususer_can_view(self):
-        proj = create_project(name="Test Project", 
+        proj = create_project(name="Test Project",
                 status='pending')
 
         # An anonymous user can't view a pending project
@@ -418,7 +418,7 @@ class ProjectPermissionTest(PermissionTestCase):
         proj.status = 'published'
         proj.save()
 
-        # An anonymous user can view a published project 
+        # An anonymous user can view a published project
         self.assertTrue(proj.anonymoususer_can_view(self.anonymous_user))
 
 
@@ -435,7 +435,7 @@ class ProjectModelTest(TestCase):
         name = "The Metro Denver Regional Equity Atlas"
         description = """
             The Denver Regional Equity Atlas is a product of Mile High
-            Connects (MHC), which came together in 2011 to ensure that 
+            Connects (MHC), which came together in 2011 to ensure that
             the region\'s significant investment in new rail and bus
             service will provide greater access to opportunity and a
             higher quality of life for all of the region\'s residents, but
@@ -461,7 +461,7 @@ class ProjectModelTest(TestCase):
         name = "The Metro Denver Regional Equity Atlas"
         description = """
             The Denver Regional Equity Atlas is a product of Mile High
-            Connects (MHC), which came together in 2011 to ensure that 
+            Connects (MHC), which came together in 2011 to ensure that
             the region\'s significant investment in new rail and bus
             service will provide greater access to opportunity and a
             higher quality of life for all of the region\'s residents, but
@@ -487,7 +487,7 @@ class ProjectModelTest(TestCase):
         byline = "Mile High Connects"
         story = create_story(title=title, summary=summary, byline=byline)
         weight = 15
-        project.add_story(story, weight) 
+        project.add_story(story, weight)
         self.assertTrue(story in project.curated_stories.all())
         ProjectStory.objects.get(project=project, story=story,
                                  weight=weight)
@@ -497,7 +497,7 @@ class ProjectModelTest(TestCase):
         name = "The Metro Denver Regional Equity Atlas"
         description = """
             The Denver Regional Equity Atlas is a product of Mile High
-            Connects (MHC), which came together in 2011 to ensure that 
+            Connects (MHC), which came together in 2011 to ensure that
             the region\'s significant investment in new rail and bus
             service will provide greater access to opportunity and a
             higher quality of life for all of the region\'s residents, but
@@ -526,7 +526,7 @@ class ProjectModelTest(TestCase):
         name = "The Metro Denver Regional Equity Atlas"
         description = """
             The Denver Regional Equity Atlas is a product of Mile High
-            Connects (MHC), which came together in 2011 to ensure that 
+            Connects (MHC), which came together in 2011 to ensure that
             the region\'s significant investment in new rail and bus
             service will provide greater access to opportunity and a
             higher quality of life for all of the region\'s residents, but
@@ -574,7 +574,7 @@ class ProjectApiTest(TestCase):
         name = "The Metro Denver Regional Equity Atlas"
         description = """
             The Denver Regional Equity Atlas is a product of Mile High
-            Connects (MHC), which came together in 2011 to ensure that 
+            Connects (MHC), which came together in 2011 to ensure that
             the region\'s significant investment in new rail and bus
             service will provide greater access to opportunity and a
             higher quality of life for all of the region\'s residents, but
@@ -612,7 +612,7 @@ class UtilityTest(TestCase):
                                      email='foo2@bar.com')
         admin2.groups.add(self.admin_group)
         admin2.save()
-        nonadmin = User.objects.create(username='test1', 
+        nonadmin = User.objects.create(username='test1',
                                        password='password',
                                        email='foo3@bar.com')
         admin_emails = get_admin_emails()
@@ -631,7 +631,7 @@ class UtilityTest(TestCase):
         admin2 = User.objects.create(username='admin2', password='password',
                                      email='foo2@bar.com',
                                      is_superuser=True)
-        nonadmin = User.objects.create(username='test1', 
+        nonadmin = User.objects.create(username='test1',
                                        password='password',
                                        email='foo3@bar.com')
         admin_emails = get_admin_emails()
@@ -645,7 +645,7 @@ class UtilityTest(TestCase):
         superuser = User.objects.create_user(username='superuser1',
                                              password='superuser1',
                                              email='superuser1@example.com')
-        nonadmin = User.objects.create_user(username='test1', 
+        nonadmin = User.objects.create_user(username='test1',
                                        password='password',
                                        email='foo3@bar.com')
         admin.groups.add(self.admin_group)
@@ -666,16 +666,16 @@ class UtilityTest(TestCase):
         from_email = "test@example.com"
         message_body = "Test message to admins"
         subject = "Test admin email"
-        admin = User.objects.create(username='admin', 
+        admin = User.objects.create(username='admin',
             password='password', email='admin@example.com')
         admin.groups.add(self.admin_group)
         admin.save()
         send_admin_mail(subject, message_body, from_email)
-            
+
         from django.core.mail import outbox
         sent_email = outbox[0]
         self.assertEqual(sent_email.from_email, from_email)
-        self.assertEqual(sent_email.subject, subject) 
+        self.assertEqual(sent_email.subject, subject)
         self.assertIn(admin.email, sent_email.to)
         self.assertIn(message_body, sent_email.body)
 
@@ -684,7 +684,7 @@ class AccountStoriesViewTest(TestCase):
     def setUp(self):
         self.username = 'test'
         self.password = 'test'
-        self.user = User.objects.create_user(self.username, 
+        self.user = User.objects.create_user(self.username,
             'test@example.com', self.password)
         self.path = "/en/accounts/stories/"
         self.client = Client()
@@ -698,9 +698,9 @@ class AccountStoriesViewTest(TestCase):
         story = create_story(title='Story 1', summary='', byline='',
                 author=self.user)
         publish_url = urlresolvers.reverse('story_publish', kwargs={
-            'slug': story.slug }) 
+            'slug': story.slug })
         unpublish_url = urlresolvers.reverse('story_unpublish', kwargs={
-            'slug': story.slug }) 
+            'slug': story.slug })
         resp = self.client.get(self.path)
         self.assertNotIn(unpublish_url, resp.content)
         self.assertNotIn(publish_url, resp.content)
@@ -717,9 +717,9 @@ class AccountStoriesViewTest(TestCase):
         story.status = 'draft'
         story.save()
         publish_url = urlresolvers.reverse('story_publish', kwargs={
-            'slug': story.slug }) 
+            'slug': story.slug })
         unpublish_url = urlresolvers.reverse('story_unpublish', kwargs={
-            'slug': story.slug }) 
+            'slug': story.slug })
         resp = self.client.get(self.path)
         self.assertNotIn(unpublish_url, resp.content)
         self.assertIn(publish_url, resp.content)
@@ -733,9 +733,9 @@ class AccountStoriesViewTest(TestCase):
         story.status = 'published'
         story.save()
         publish_url = urlresolvers.reverse('story_publish', kwargs={
-            'slug': story.slug }) 
+            'slug': story.slug })
         unpublish_url = urlresolvers.reverse('story_unpublish', kwargs={
-            'slug': story.slug }) 
+            'slug': story.slug })
         resp = self.client.get(self.path)
         self.assertNotIn(publish_url, resp.content)
         self.assertIn(unpublish_url, resp.content)
@@ -762,7 +762,7 @@ class CreateOrganizationViewTest(CreateViewTestMixin, TestCase):
 
 
 class CreateProjectViewTest(CreateViewTestMixin, TestCase):
-    model = Project 
+    model = Project
     view_class = CreateProjectView
 
     def create_model(self, name):
@@ -785,10 +785,10 @@ class ModelSignalsTest(TestCase):
     def setUp(self):
         self.username = 'test'
         self.password = 'test'
-        self.user = User.objects.create_user(self.username, 
+        self.user = User.objects.create_user(self.username,
             'test@example.com', self.password)
         self.admin_group = Group.objects.create(name=ADMIN_GROUP_NAME)
-        self.admin = User.objects.create(username='admin', 
+        self.admin = User.objects.create(username='admin',
             password='password', email='admin@example.com')
         self.admin.groups.add(self.admin_group)
 
@@ -826,7 +826,7 @@ class PopupViewTest(TestCase):
         url = "%sshare/popup/" % self.organization.get_absolute_url()
         response = self.client.get(url)
         self.assertIn(self.organization.get_absolute_url(), response.content)
-        
+
     def test_get_organization_embed_popup(self):
         self.setup_organization()
         response = self.client.get("%sembed/popup/" %
@@ -840,7 +840,7 @@ class PopupViewTest(TestCase):
         url = "%sshare/popup/" % self.project.get_absolute_url()
         response = self.client.get(url)
         self.assertIn(self.project.get_absolute_url(), response.content)
-        
+
     def test_get_project_embed_popup(self):
         self.setup_project()
         response = self.client.get("%sembed/popup/" %

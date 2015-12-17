@@ -3,7 +3,7 @@ from django.db import models
 
 
 class BadgeEditor(object):
-    
+
     def can_edit_badge(self, badge):
         return badge in self.badges.all()
 

@@ -38,7 +38,7 @@ def bootstrap_providers(cache=None):
     pr.register('https?://\S*?flickr.com/\S*', Provider('http://www.flickr.com/services/oembed/'))
     # As of 2012-09-10, the default URLs provided by the "share"
     # button on a YouTube video use the youtu.be domain and no
-    # "watch" parameter in the querystring, e.g. 
+    # "watch" parameter in the querystring, e.g.
     # http://youtu.be/KpichyyCutw
     pr.register('https?://youtu.be/\S*', Provider('http://www.youtube.com/oembed'))
     # Also match non-shortened YouTube URls

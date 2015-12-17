@@ -23,7 +23,7 @@ def get_data_from_user(request, *args, **kwargs):
         out['username'] = username
     else:
         # Should never get here as the username unless the pipeline is
-        # not correctly configured and a pipeline step that saves the 
+        # not correctly configured and a pipeline step that saves the
         # username (as returned by get_username()) is not placed before
         # this step
         raise StopPipeline()
@@ -38,7 +38,7 @@ def get_data_from_user(request, *args, **kwargs):
     if 'new_account_extra_details' in request.session:
         del request.session['new_account_extra_details']
 
-    return out 
+    return out
 
 def redirect_to_form(*args, **kwargs):
     """Redirect user to form to get additional account information"""

@@ -6,7 +6,7 @@ class Solr2155SearchBackend(SolrSearchBackend):
     See https://github.com/dsmiley/SOLR-2155
 
     To use this, one should also create a custom Solr schema template
-    (``search_configuration/solr.xml``) that sets that class of the 
+    (``search_configuration/solr.xml``) that sets that class of the
     ``geohash`` fieldtype to ``solr2155.solr.schema.GeoHashField`` instead
     of ``solr.GeoHashField``.
 
@@ -28,7 +28,7 @@ class Solr2155SearchBackend(SolrSearchBackend):
 
         (content_field_name, schema_fields) = super(Solr2155SearchBackend, self).build_schema(fields)
         # HACK: Do a second pass through the fields to properly set
-        # the type for geohash and textSpell fields.  
+        # the type for geohash and textSpell fields.
         # This is a little clunky, but better
         # than copying and pasting the implementation from SolrSearchBackend
         # here.

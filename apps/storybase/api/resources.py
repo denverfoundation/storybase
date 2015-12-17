@@ -2,7 +2,7 @@
 
 # Significant portions of this code are based on Tastypie
 # (http://tastypieapi.org)
-# 
+#
 # This is mostly because I had to patch methods in the Tastypie API
 # to provide additional hooks or workarounds.
 #
@@ -46,7 +46,7 @@ from django.http import HttpResponse
 from tastypie import fields, http
 from tastypie.bundle import Bundle
 from tastypie.exceptions import ImmediateHttpResponse, NotFound
-from tastypie.resources import (ModelResource, 
+from tastypie.resources import (ModelResource,
                                 convert_post_to_patch)
 from tastypie.utils import dict_strip_unicode_keys
 from tastypie.utils.mime import build_content_type
@@ -56,7 +56,7 @@ class MultipartFileUploadModelResource(ModelResource):
     A version of ModelResource that accepts file uploads via
     multipart forms.
 
-    Based on Work by Michael Wu and Philip Smith. 
+    Based on Work by Michael Wu and Philip Smith.
     See https://github.com/toastdriven/django-tastypie/pull/606
 
     This resource class also supports wrapping a serialized response in
@@ -73,7 +73,7 @@ class MultipartFileUploadModelResource(ModelResource):
 
         Mostly a hook, this uses the ``Serializer`` from ``Resource._meta``.
         """
-        # If the format of the request is 
+        # If the format of the request is
         # or multipart/form-data, then ignore the data attribute and
         # just grab the data to deserialize from the request
         if format.startswith('multipart'):
@@ -134,7 +134,7 @@ class MultipartFileUploadModelResource(ModelResource):
     def iframed_request(self, request):
         """
         Checks if the request was issued from an IFRAME
-        
+
         When being called from an IFRAME, an ``iframe`` parameter should be
         added to the querystring.
 
@@ -147,7 +147,7 @@ class MultipartFileUploadModelResource(ModelResource):
     def wrap_in_textarea(self, format, body):
         """
         Wrap response text in a textarea
-        
+
         This allows the jQuery Iframe transport to detect the content type.
 
         """
@@ -166,7 +166,7 @@ class MultipartFileUploadModelResource(ModelResource):
         if self.iframed_request(request):
             return 'text/html'
 
-        return build_content_type(desired_format) 
+        return build_content_type(desired_format)
 
     def create_response(self, request, data, response_class=HttpResponse, **response_kwargs):
         """
@@ -184,9 +184,9 @@ class MultipartFileUploadModelResource(ModelResource):
 
 class HookedModelResource(MultipartFileUploadModelResource):
     """
-    A version of ModelResource with extra actions at various points in 
+    A version of ModelResource with extra actions at various points in
     the pipeline
-    
+
     This allows for doing things like creating related translation model
     instances or doing row-level authorization checks in a DRY way since
     most of the logic for the core logic of the request/response cycle
@@ -204,7 +204,7 @@ class HookedModelResource(MultipartFileUploadModelResource):
 
     def get_object_class(self, bundle=None, **kwargs):
         """Get the resource's object class dynamically
-        
+
         By default just returns ``object_class`` as defined in the resource
         declaration, but this can be overridden in subclasses to do something
         more interesting.
@@ -511,9 +511,9 @@ class TranslatedModelResource(HookedModelResource):
 
     def bundle_obj_setattr(self, bundle, key, value):
         if not hasattr(bundle, 'translation_fields'):
-            bundle.translation_fields = self._get_translation_fields(bundle) 
+            bundle.translation_fields = self._get_translation_fields(bundle)
 
-        if key in bundle.translation_fields: 
+        if key in bundle.translation_fields:
             setattr(bundle.translation_obj, key, value)
         else:
             setattr(bundle.obj, key, value)
@@ -537,7 +537,7 @@ class DataUriResourceMixin(object):
         Parse a data URI string
 
         Returns a tuple of (mime_type, encoding, data) represented in the URI
-        
+
         See http://tools.ietf.org/html/rfc2397
 
         """
@@ -545,7 +545,7 @@ class DataUriResourceMixin(object):
         m = re.search(pattern, data_uri)
         return (m.group('mime'), m.group('encoding'), m.group('data'))
 
-    def _hydrate_file(self, bundle, file_model_class, file_field, 
+    def _hydrate_file(self, bundle, file_model_class, file_field,
         filename_field='filename'):
         """Decode the base-64 encoded file"""
         def file_size(f):
@@ -561,12 +561,12 @@ class DataUriResourceMixin(object):
             f = StringIO()
             f.write(base64.b64decode(data))
             size = file_size(f)
-            file = InMemoryUploadedFile(file=f, field_name=None, 
+            file = InMemoryUploadedFile(file=f, field_name=None,
                                         name=filename,
                                         content_type=content_type,
                                         size=size, charset=None)
             file_model = file_model_class.objects.create(file=file)
-            bundle.data[file_field] = file_model 
+            bundle.data[file_field] = file_model
             f.close()
 
         return bundle

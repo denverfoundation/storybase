@@ -52,7 +52,7 @@ def create_connected_story_template():
     """
     Create the connected stories template
 
-    This is essentially a programatic fixture for creating the 
+    This is essentially a programatic fixture for creating the
     connected story template
     """
     story = create_story(title="Connected Story Template", language="en",

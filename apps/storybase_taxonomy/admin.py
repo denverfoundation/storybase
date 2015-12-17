@@ -3,7 +3,7 @@ from django.utils.translation import ugettext_lazy as _
 
 from categories.base import CategoryBaseAdmin
 
-from storybase_taxonomy.forms import (CategoryAdminForm, 
+from storybase_taxonomy.forms import (CategoryAdminForm,
 		                      CategoryTranslationAdminForm)
 from storybase_taxonomy.models import Category, CategoryTranslation, Tag
 
@@ -21,13 +21,13 @@ class CategoryAdmin(CategoryBaseAdmin):
     form = CategoryAdminForm
     list_display = ('obj_name',)
     search_fields = ('categorytranslation__name',)
-    prepopulated_fields = {} 
+    prepopulated_fields = {}
     inlines = [CategoryTranslationInline]
 
     def get_actions(self, request):
         """
         Override CategoryBaseAdmin's implementation because we want to
-        allow bulk deletion 
+        allow bulk deletion
         """
         actions = super(CategoryBaseAdmin, self).get_actions(request)
         return actions
@@ -38,7 +38,7 @@ class CategoryAdmin(CategoryBaseAdmin):
 
         We need to do this because the name field is on the translation
         class
-        
+
         """
         return obj.name
     obj_name.short_description = _('Name')
@@ -47,6 +47,6 @@ class CategoryAdmin(CategoryBaseAdmin):
 class TagAdmin(admin.ModelAdmin):
     pass
 
-	
+
 admin.site.register(Category, CategoryAdmin)
 admin.site.register(Tag, TagAdmin)

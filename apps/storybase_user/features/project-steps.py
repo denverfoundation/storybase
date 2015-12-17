@@ -7,8 +7,8 @@ from storybase_user.models import create_organization, Organization, Project
 @before.each_scenario
 def setup_organization(scenario):
     matching_scenarios = ('Admin can create a new Project',)
-    if scenario.name in matching_scenarios: 
-        create_organization("Mile High Connects") 
+    if scenario.name in matching_scenarios:
+        create_organization("Mile High Connects")
 
 @step(u'Then the Project named "([^"]*)" should have a canonical URL')
 def project_canonical_url(step, name):

@@ -17,7 +17,7 @@ from django.utils.decorators import method_decorator
 from django.utils.translation import ugettext as _
 from django.views.decorators.csrf import csrf_protect
 from django.views.generic.base import TemplateView
-from django.views.generic.edit import CreateView, UpdateView 
+from django.views.generic.edit import CreateView, UpdateView
 from django.views.generic.list import ListView
 
 from storybase.menu import Menu, registry as menu_registry
@@ -46,7 +46,7 @@ class AccountNotificationsView(UpdateView):
         return self.request.user.userprofile
 
     def form_valid(self, form):
-        messages.success(self.request, _("Updated notification settings")) 
+        messages.success(self.request, _("Updated notification settings"))
         return super(AccountNotificationsView, self).form_valid(form)
 
     @method_decorator(login_required)
@@ -78,16 +78,16 @@ class AccountSummaryView(TemplateView):
         context = super(AccountSummaryView, self).get_context_data(**kwargs)
         if change_email_form is None:
             change_email_form = ChangeUsernameEmailForm(self.request.user)
-        context['change_email_form'] = change_email_form 
+        context['change_email_form'] = change_email_form
         return context
-    
+
     def post_change_email(self, request, *args, **kwargs):
         """Handle a POST request with the email change form submitted"""
         form = ChangeUsernameEmailForm(self.request.user, request.POST)
         if form.is_valid():
-            messages.success(request, _("Your email address has been changed")) 
+            messages.success(request, _("Your email address has been changed"))
             user = form.save()
-            # Send an email notification to the new email 
+            # Send an email notification to the new email
             send_email_change_email(user, user.email, request=self.request)
             # Send an email notification to the previous email
             send_email_change_email(user, form.previous_data['email'], request=self.request)
@@ -97,11 +97,11 @@ class AccountSummaryView(TemplateView):
 
     def post(self, request, *args, **kwargs):
         """Handle a POST request
-        
+
         This dispatches to different methods by checking a hidden
         input of the forms named ``form_id``.  You need to add this
         in the template for this view.
-        
+
         """
         if 'form_id' in request.POST:
             if request.POST['form_id'] == 'change_email':
@@ -128,8 +128,8 @@ menu_registry.register(my_account_menu)
 class RelatedStoriesDetailView(ModelIdDetailView):
     """
     Base view for details of models with related stories
-    
-    Subclasses of this view are meant to be rendered with a template that 
+
+    Subclasses of this view are meant to be rendered with a template that
     inherits from the ``storybase_user/detail_base.html`` template.
 
     """
@@ -260,7 +260,7 @@ class CreateStoryAggregatorView(CreateView):
         subject = "New %s %s needs your approval" % (
                 obj._meta.object_name, obj.name)
         send_admin_mail(subject, message, settings.DEFAULT_FROM_EMAIL)
-        return True 
+        return True
 
     @method_decorator(login_required)
     def dispatch(self, *args, **kwargs):
@@ -279,7 +279,7 @@ class CreateStoryAggregatorView(CreateView):
         # Send a notification to the admins that the object has been
         # created
         self.send_create_notification()
-        # The default behavior is to redirect to the URL provided by 
+        # The default behavior is to redirect to the URL provided by
         # self.get_success_url().  We just want to render a completed
         # message to the user via the template.
         return self.render_to_response(self.get_context_data())
@@ -312,7 +312,7 @@ def password_change(request,
                     current_app=None, extra_context=None):
     """
     Modified version of the default Django password change view
-    
+
     This version defaults to this app's custom template, redirects back to the
     same view, and flashes a success message.
 
@@ -322,7 +322,7 @@ def password_change(request,
     if request.method == "POST":
         form = password_change_form(user=request.user, data=request.POST)
         if form.is_valid():
-            messages.success(request, _("Password changed")) 
+            messages.success(request, _("Password changed"))
             form.save()
             return HttpResponseRedirect(post_change_redirect)
     else:

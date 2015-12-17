@@ -3,10 +3,10 @@ from storybase.views.generic import ModelIdDetailView
 
 class SharePopupView(ModelIdDetailView):
     """
-    Base view for popup content for sharing an item 
+    Base view for popup content for sharing an item
 
-    This view provides the HTML for a popup window of sharing tools.  
-    It is designed to be fetched via an asynchronous request from 
+    This view provides the HTML for a popup window of sharing tools.
+    It is designed to be fetched via an asynchronous request from
     JavaScript.
 
     """
@@ -28,7 +28,7 @@ class EmbedPopupView(ModelIdDetailView):
 
     While other views provide the HTML for the widget embedded
     in a partner website, this view provides the HTML for a popup window
-    of sharing tools.  It is designed to be fetched via an asynchronous 
+    of sharing tools.  It is designed to be fetched via an asynchronous
     request from JavaScript
 
     """

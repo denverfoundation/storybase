@@ -32,7 +32,7 @@ class LicensedModel(models.Model):
 
     def get_license_name(self, code):
         """Convert a license's code to its full name
-        
+
         Arguments:
         code -- String representing the first element of a tuple in LICENSES.
                 This is what is stored in the database for a LicensedModel.
@@ -76,12 +76,12 @@ class PublishedModel(models.Model):
 # Signal handlers
 def set_date_on_published(sender, instance, **kwargs):
     """Set the published date of a story on status change
-    
+
     For models inheriting from PublishedModel. Should be connected
     to the pre_save signal.
 
     """
-   
+
     try:
         old_instance = sender.objects.get(pk=instance.pk)
     except sender.DoesNotExist:
@@ -90,7 +90,7 @@ def set_date_on_published(sender, instance, **kwargs):
         if instance.status == 'published':
             instance.published = datetime.now()
     else:
-        if (instance.status == 'published' and 
+        if (instance.status == 'published' and
             old_instance.status != 'published'):
             instance.published = datetime.now()
 
@@ -121,7 +121,7 @@ class WeightedModel(models.Model):
     def get_weight(self):
         """
         Calculate a new value for the weight fieldi
-        
+
         This should be implemented in subclasses that inherit
         from weighted model.
         """

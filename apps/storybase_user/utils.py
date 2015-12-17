@@ -18,7 +18,7 @@ def is_admin(user):
 def get_admin_emails():
     """Get a list of admin email addresses"""
     admin_qs = User.objects.filter(groups__name=ADMIN_GROUP_NAME)
-                               
+
     if not admin_qs.count():
         # No CA admin users, default to superusers
         admin_qs = User.objects.filter(is_superuser=True)
@@ -53,11 +53,11 @@ def bulk_create_project(hashes, name_field='name',
     bulk_create(Project, hashes, name_field, description_field)
 
 def format_user_name(user):
-    """Return the user's first name and last initial""" 
-    user_name = "" 
+    """Return the user's first name and last initial"""
+    user_name = ""
     if user.is_active and user.first_name:
-        user_name = user.first_name 
-                            
+        user_name = user.first_name
+
         if user.last_name:
             user_name = "%s %s." % (user.first_name, user.last_name[0])
         else:

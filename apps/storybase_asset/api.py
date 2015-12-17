@@ -14,7 +14,7 @@ from filer.models import File, Image
 
 from storybase.api import (DataUriResourceMixin,
    TranslatedModelResource, PublishedOwnerAuthorization)
-from storybase_asset.models import (Asset, ExternalAsset, HtmlAsset, 
+from storybase_asset.models import (Asset, ExternalAsset, HtmlAsset,
     LocalImageAsset, DataSet, ExternalDataSet, LocalDataSet)
 from storybase_asset.utils import image_type_supported
 from storybase_story.models import Story
@@ -45,7 +45,7 @@ class IframePostDetailResource(DataUriResourceMixin, TranslatedModelResource):
         PUT method with forms, so we have to use POST.
         """
         # Only support POST to the detail endpoint if we're making the
-        # request from inside a hidden iframe 
+        # request from inside a hidden iframe
         if not self.iframed_request(request):
             return http.HttpNotImplemented()
 
@@ -56,8 +56,8 @@ class IframePostDetailResource(DataUriResourceMixin, TranslatedModelResource):
     def hydrate(self, bundle):
         """Manipulated data before all methods/fields have built out the hydrated data."""
         # If a DateTimeField field's data is passed as an empty string,
-        # convert it to None.  
-        # 
+        # convert it to None.
+        #
         # This is needed when doing a PUT using multipart/form-data as
         # the empty date/time fields are sent as empty strings instead of
         # ``null`` values.  They're passed as ``null`` values when the
@@ -69,7 +69,7 @@ class IframePostDetailResource(DataUriResourceMixin, TranslatedModelResource):
             if (field in bundle.data and
                 isinstance(bundle.data[field], basestring) and
                 len(bundle.data[field]) == 0):
-                
+
                 bundle.data[field] = None
 
         return bundle
@@ -123,7 +123,7 @@ class AssetResource(IframePostDetailResource):
         elif bundle.data.get('image'):
             return LocalImageAsset
         else:
-            raise BadRequest("You must specify an image, body, or url") 
+            raise BadRequest("You must specify an image, body, or url")
 
 
     def prepend_urls(self):
@@ -161,10 +161,10 @@ class AssetResource(IframePostDetailResource):
 
     def get_featured_list(self, request, **kwargs):
         # Just call through to get_list.  The filtering is handled
-        # in apply_request_kwargs. 
+        # in apply_request_kwargs.
         #
         # This is defined as a separate method
-        # to match the naming conventions expected by dispatch().  
+        # to match the naming conventions expected by dispatch().
         # We do this so dispatch() will do a separate check for allowed
         # methods.
         return self.get_list(request, **kwargs)
@@ -173,8 +173,8 @@ class AssetResource(IframePostDetailResource):
         story_id = kwargs.pop('story_id')
         story = Story.objects.get(story_id=story_id)
         try:
-            self._meta.authorization.obj_has_perms(story, 
-                    request.user, ['change']) 
+            self._meta.authorization.obj_has_perms(story,
+                    request.user, ['change'])
         except Unauthorized, e:
             self.unauthorized_result(e)
 
@@ -213,7 +213,7 @@ class AssetResource(IframePostDetailResource):
         PUT method with forms, so we have to use POST.
         """
         # Only support POST to the detail endpoint if we're making the
-        # request from inside a hidden iframe 
+        # request from inside a hidden iframe
         if not self.iframed_request(request):
             return http.HttpNotImplemented()
 
@@ -258,7 +258,7 @@ class AssetResource(IframePostDetailResource):
             # Create an image object and add it to the bundle
             image = Image.objects.create(file=bundle.data['image'])
             bundle.data['image'] = image
-            return bundle 
+            return bundle
         else:
             # Treat the image data as data-url-encoded
             # file
@@ -305,7 +305,7 @@ class AssetResource(IframePostDetailResource):
         # Exclude the filename field from the output
         del bundle.data['filename']
         return bundle
-    
+
     def dehydrate_content(self, bundle):
         return bundle.obj.render(format="html")
 
@@ -314,8 +314,8 @@ class AssetResource(IframePostDetailResource):
 
 class DataSetValidation(Validation):
     def is_valid(self, bundle, request=None, **kwargs):
-        errors = {} 
-        
+        errors = {}
+
         if bundle.data.get('url') and bundle.data.get('file'):
             errors['__all__'] = "You may specify either a URL or a file for the dataset, but not both"
 
@@ -420,14 +420,14 @@ class DataSetResource(IframePostDetailResource):
 
         if asset_id:
             try:
-                asset = Asset.objects.get(asset_id=asset_id) 
+                asset = Asset.objects.get(asset_id=asset_id)
                 if not asset.has_perm(bundle.request.user, 'change'):
                     raise ImmediateHttpResponse(response=http.HttpUnauthorized("You are not authorized to change the asset matching the provided asset ID"))
             except ObjectDoesNotExist:
                 raise ImmediateHttpResponse(response=http.HttpNotFound("An asset matching the provided asset ID could not be found"))
         elif story_id:
             try:
-                story = Story.objects.get(story_id=story_id) 
+                story = Story.objects.get(story_id=story_id)
                 if not story.has_perm(bundle.request.user, 'change'):
                     raise ImmediateHttpResponse(response=http.HttpUnauthorized("You are not authorized to change the story matching the provided story ID"))
             except ObjectDoesNotExist:
@@ -468,7 +468,7 @@ class DataSetResource(IframePostDetailResource):
             # and add it to the bundle
             file = File.objects.create(file=bundle.data['file'])
             bundle.data['file'] = file
-            return bundle 
+            return bundle
         else:
             # Treat the file data as data-url-encoded
             # file
@@ -493,14 +493,14 @@ class DataSetResource(IframePostDetailResource):
 
         if asset_id:
             try:
-                asset = Asset.objects.get(asset_id=asset_id) 
+                asset = Asset.objects.get(asset_id=asset_id)
                 if not asset.has_perm(bundle.request.user, 'change'):
                     raise ImmediateHttpResponse(response=http.HttpUnauthorized("You are not authorized to change the asset matching the provided asset ID"))
             except ObjectDoesNotExist:
                 raise ImmediateHttpResponse(response=http.HttpNotFound("An asset matching the provided asset ID could not be found"))
         elif story_id:
             try:
-                story = Story.objects.get(story_id=story_id) 
+                story = Story.objects.get(story_id=story_id)
                 if not story.has_perm(bundle.request.user, 'change'):
                     raise ImmediateHttpResponse(response=http.HttpUnauthorized("You are not authorized to change the story matching the provided story ID"))
             except ObjectDoesNotExist:

@@ -10,7 +10,7 @@ class JSErrorHandlerView(View):
     @method_decorator(csrf_exempt)
     def dispatch(self, *args, **kwargs):
         return super(JSErrorHandlerView, self).dispatch(*args, **kwargs)
-   
+
     def post(self, request, *args, **kwargs):
         """Read POST data and log it as an JS error"""
         error_dict = request.POST.dict()
@@ -23,6 +23,6 @@ class JSErrorHandlerView(View):
         # Serialize the error dictionary as JSON, to make it easier to
         # parse the logs on the other side
         logger.error("javascript error: %s", error_dict['message'], extra={
-            'data': error_dict,    
+            'data': error_dict,
         })
         return HttpResponse('Error logged')

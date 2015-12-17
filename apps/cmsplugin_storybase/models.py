@@ -11,13 +11,13 @@ from cms.extensions.extension_pool import extension_pool
 from cms.models.pluginmodel import CMSPlugin
 from cms.models import Page
 from filer.fields.image import FilerImageField
-from filer.models import Image 
+from filer.models import Image
 
 from storybase.managers import FeaturedManager
 from storybase.utils import unique_slugify
 from storybase.fields import ShortTextField
 from storybase.models import (PermissionMixin, PublishedModel,
-        TimestampedModel, TranslatedModel, TranslationModel, 
+        TimestampedModel, TranslatedModel, TranslationModel,
         set_date_on_published)
 from storybase_user.utils import format_user_name
 
@@ -48,7 +48,7 @@ class ActivityTranslation(TranslationModel):
 class Activity(TranslatedModel):
     """
     Metadata for a storytelling activity
-    
+
     This content is similar to Mozilla's Webmaker guides:
 
     * Overview - https://webmaker.org/event-guides
@@ -124,7 +124,7 @@ class NewsItemPermission(PermissionMixin):
 
 class NewsItemTranslation(TranslationModel):
     news_item = models.ForeignKey('NewsItem')
-    title = ShortTextField(blank=True) 
+    title = ShortTextField(blank=True)
     body = models.TextField(blank=True)
     image = FilerImageField(null=True)
 
@@ -136,7 +136,7 @@ class NewsItemTranslation(TranslationModel):
         return self.title
 
 
-class NewsItem(NewsItemPermission, PublishedModel, TimestampedModel, 
+class NewsItem(NewsItemPermission, PublishedModel, TimestampedModel,
         TranslatedModel):
     author = models.ForeignKey(User, related_name="news_items", blank=True,
                                null=True)
@@ -145,8 +145,8 @@ class NewsItem(NewsItemPermission, PublishedModel, TimestampedModel,
                                       default=False)
 
     objects = FeaturedManager()
-        
-    translated_fields = ['title', 'body', 'image',] 
+
+    translated_fields = ['title', 'body', 'image',]
     translation_set = 'newsitemtranslation_set'
     translation_class = NewsItemTranslation
 
@@ -170,7 +170,7 @@ class NewsItem(NewsItemPermission, PublishedModel, TimestampedModel,
 
     def normalize_for_view(self, img_width):
         """Return attributes as a dictionary for use in a view context
-        
+
         This allows using the same template across different models with
         differently-named attributes that hold similar information.
 
@@ -179,7 +179,7 @@ class NewsItem(NewsItemPermission, PublishedModel, TimestampedModel,
             "type": _("News"),
             "title": self.title,
             "author": format_user_name(self.author),
-            "date": self.created, 
+            "date": self.created,
             "image_html":' <img src="%s" />' % (self.image.url),
             "excerpt": self.body,
             "url": self.get_absolute_url(),

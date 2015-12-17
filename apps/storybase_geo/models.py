@@ -19,7 +19,7 @@ from storybase_geo.utils import get_geocoder
 class GeoLevel(MPTTModel):
     """A hierarchical type of geography"""
     name = models.CharField(_("Name"), max_length=255, unique=True)
-    parent = TreeForeignKey('self', null=True, blank=True, 
+    parent = TreeForeignKey('self', null=True, blank=True,
                             related_name='children',
                             verbose_name=_("Parent"))
     slug = models.SlugField(_("Slug"), unique=True)
@@ -69,7 +69,7 @@ class Location(LocationPermission, DirtyFieldsMixin, models.Model):
     lng = models.FloatField(_("Longitude"), blank=True, null=True)
     point = models.PointField(_("Point"), blank=True, null=True)
     # I'm not sure what the best solution for parsing addresses is, or
-    # what the best geocoder is for our application, or how users are 
+    # what the best geocoder is for our application, or how users are
     # going to use this feature. So rather than spending a bunch of time
     # writing/testing an address parser (or picking a particular geocoder
     # that breaks an address into pieces), just have a place to store
@@ -116,8 +116,8 @@ def geocode(sender, instance, **kwargs):
     elif ('address' in changed_fields or 'city' in changed_fields or
             'state' in changed_fields or 'postcode' in changed_fields or
             instance.lat is None or instance.lng is None):
-        point = instance._geocode("%s %s %s %s" % 
-            (instance.address, instance.city, instance.state, 
+        point = instance._geocode("%s %s %s %s" %
+            (instance.address, instance.city, instance.state,
              instance.postcode))
         if point:
             (lat, lng) = point
@@ -132,13 +132,13 @@ pre_save.connect(geocode, sender=Location)
 class Place(node_factory('PlaceRelation')):
     """
     A larger scale geographic area such as a neighborhood or zip code
-    
+
     Places are related hierachically using a directed graph as a place can
     have multiple parents.
 
     """
     name = ShortTextField(_("Name"))
-    geolevel = models.ForeignKey(GeoLevel, null=True, blank=True,  
+    geolevel = models.ForeignKey(GeoLevel, null=True, blank=True,
                                  related_name='places',
                                  verbose_name=_("GeoLevel"))
     boundary = models.MultiPolygonField(blank=True, null=True,
@@ -156,9 +156,9 @@ class Place(node_factory('PlaceRelation')):
 
 def set_place_slug(sender, instance, **kwargs):
     """
-    When a Place is saved, set its Story's slug if it doesn't have 
+    When a Place is saved, set its Story's slug if it doesn't have
     one
-    
+
     Should be connected to Place's pre_save signal.
     """
     if not instance.slug:

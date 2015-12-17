@@ -8,7 +8,7 @@ class BannerRegistry(object):
     """
     A registry of banner implementations.
 
-    You shouldn't instantiate this, but instead import 
+    You shouldn't instantiate this, but instead import
     ``storybase_story.banner.registry`` to register your banner classes.
 
     Example::
@@ -56,7 +56,7 @@ class Banner(object):
     """
     Base class for banner implementations.
 
-    In most cases, just override get_objects in the subclass to use a 
+    In most cases, just override get_objects in the subclass to use a
     different strategy for selecting stories.
 
     """
@@ -64,7 +64,7 @@ class Banner(object):
     # via BannerRegistry
     banner_id = "base"
     template_name = "storybase_story/banner.html"
-    # TODO: Decide on real value for this default 
+    # TODO: Decide on real value for this default
     img_width = 335
 
     def __init__(self, **kwargs):
@@ -124,7 +124,7 @@ class RandomBanner(Banner):
     banner_id = "random"
 
     def get_objects(self, count=10):
-        # Sort the objects randomly. Unfortunately, we can't use call 
+        # Sort the objects randomly. Unfortunately, we can't use call
         # the parent's get_objects because QuerySets can't be reordered
         # after being sliced.
         return Story.objects.public().order_by('?')[:count]
@@ -168,7 +168,7 @@ class TopicBanner(Banner):
             return None
 
         return topics[0]
-        
+
     def get_objects(self, count=10):
         if not self.topic:
             # No eligible topic, return an empty list
@@ -179,7 +179,7 @@ class TopicBanner(Banner):
 
     def encode_args(self):
         return getattr(self, 'slug', "")
-        
+
 
 # Create a single instance of BannerRegistry for import elsewhere
 registry = BannerRegistry()

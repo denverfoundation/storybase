@@ -6,7 +6,7 @@ class AdminLongTextInputWidget(widgets.AdminTextInputWidget):
     """ Slightly wider AdminTextInputWidget """
     def __init__(self, attrs=None):
         # Set size attribute as longer than default
-        # and override class so text input size doesn't get 
+        # and override class so text input size doesn't get
         # shortened by CSS
         final_attrs = {'size': 60, 'class': 'vLongTextField'}
         if attrs is not None:
@@ -17,11 +17,11 @@ class AdminLongTextInputWidget(widgets.AdminTextInputWidget):
 class Select2Select(forms.Select):
     """
     Select widget enabled with the Select2 JavaScript Library
-    
+
     This widget simply adds a CSS class to identify the select entity to
     client-side JavaScript.
 
-    The widget must be used in a context that loads the JavaScript for 
+    The widget must be used in a context that loads the JavaScript for
     the the additional functionality to be loaded.
 
     """

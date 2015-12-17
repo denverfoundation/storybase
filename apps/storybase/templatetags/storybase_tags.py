@@ -45,7 +45,7 @@ class StorybaseConfNode(Node):
             # serializing certain variables into JSON
             return getattr(settings, self.attr, None)
 
-        return None 
+        return None
 
 @register.tag
 def storybase_conf(parser, token):
@@ -54,10 +54,10 @@ def storybase_conf(parser, token):
 
     The preferred method of accessing these configuration values is through
     the ``conf`` context processor, but this template tag is useful for cases
-    where the template isn't rendered with a RequestContext object or you 
+    where the template isn't rendered with a RequestContext object or you
     can't modify the context passed to the template (such as in a third-party
     app)
-    
+
     """
     try:
         tag_name, format_string = token.split_contents()
@@ -180,7 +180,7 @@ def _object_name(obj):
     """
     Get the name if a model instance
 
-    Returns the ``title`` attribute if it's present, if not, 
+    Returns the ``title`` attribute if it's present, if not,
     returns the ``name`` attribute. If neither is present,
     return an empty string.
 
@@ -197,7 +197,7 @@ def embed_code(obj):
         'object': obj,
         'embed_class': ('storybase-story-embed' if obj.__class__.__name__ == 'Story'
                         else 'storybase-list-embed'),
-        'object_name': _object_name(obj), 
+        'object_name': _object_name(obj),
         'storybase_site_name': settings.STORYBASE_SITE_NAME,
         'widget_js_url': full_url(settings.STATIC_URL + 'js/widgets.min.js',
                                   scheme=''),

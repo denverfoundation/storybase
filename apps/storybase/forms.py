@@ -4,7 +4,7 @@ import re
 from django.contrib.auth.models import User
 from django.core.exceptions import ValidationError
 from django.forms import ModelForm
-from django.forms.fields import (CharField, FileField, MultiValueField, 
+from django.forms.fields import (CharField, FileField, MultiValueField,
         URLField)
 from django.forms.widgets import FileInput, Textarea, TextInput, MultiWidget
 from django.forms.models import ModelFormMetaclass, modelform_factory
@@ -16,7 +16,7 @@ COMMA_SPLIT_RE = re.compile(r'\s*,\s*')
 
 class UserEmailField(CharField):
     """
-    Field that takes a comma-separated list of email addresses and 
+    Field that takes a comma-separated list of email addresses and
     returns a queryset of User model instances whose email fields match the
     e-mail addresses passed as field data.
     """
@@ -87,12 +87,12 @@ class FileOrUrlField(MultiValueField):
         if data_list:
             if data_list[0]:
                 return data_list[0]
-            
+
             self.fields[1].run_validators(data_list[1])
             return data_list[1]
-            
+
         return None
-        
+
 
 class TranslatedModelFormMetaclass(ModelFormMetaclass):
     def __new__(cls, name, bases, attrs):
@@ -102,11 +102,11 @@ class TranslatedModelFormMetaclass(ModelFormMetaclass):
         # Add a translated_fields attribute to the form's meta
         # options
         if meta:
-            new_class._meta.translated_fields = getattr(meta, 
+            new_class._meta.translated_fields = getattr(meta,
                     'translated_fields', None)
 
         return new_class
-               
+
 
 class TranslatedModelForm(ModelForm):
     __metaclass__ = TranslatedModelFormMetaclass
@@ -149,12 +149,12 @@ class TranslatedModelForm(ModelForm):
 
     def _update_translation_relation(self):
         # Update the translation form's instance relation to point to
-        # the current value of the translated model instance.  
+        # the current value of the translated model instance.
         # The effect of this that we're concerned about is that this
         # sets the value of the <field_name>_id attribute to the that of
         # the instance's id.  In the case where both the instance and it's
         # translation are being created for the first time, the underlying
-        # id field will be set to None when the assignment is made in 
+        # id field will be set to None when the assignment is made in
         # __init__
         self._translation_form
         relation_field_name = self._meta.model.get_translation_fk_field_name()

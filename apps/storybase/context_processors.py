@@ -25,7 +25,7 @@ def conf(request):
                     setting_val = _(setting_val)
 
             context.update({setting.lower(): setting_val})
-    
+
 
     return context
 
