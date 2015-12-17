@@ -169,7 +169,7 @@ Handlebars.js templates for story builder Backbone application
             <p>{{gettext "Give your readers a clear way to contribute by asking them to add a mini Photovoice story. Prompt your readers with a specific question they can answer through a photo and a caption. "}}</p>
             <div>
                 <input class="connected" name="allow_connected" type="checkbox" {{#if allow_connected}}checked="checked" {{/if}}/>
-                <label for="allow_connected">{{gettext "Make this a Connected Story"}}</label> 
+                <label for="allow_connected">{{gettext "Make this a Connected Story"}}</label>
             </div>
             <div>
                 <textarea class="connected-prompt" name="connected_prompt" placeholder="{{gettext "Type your prompt here. Users will see this when creating their connected stories."}}"{{#unless allow_connected}} style="display: none"{{/unless}}>{{connected_prompt}}</textarea>
@@ -297,7 +297,7 @@ Handlebars.js templates for story builder Backbone application
 </script>
 
 <script type="text/x-handlebars-template" id="asset-dataset-list-container-template">
-<div class="wrapper"> 
+<div class="wrapper">
   <div class="dataset-list-container"></div>
   <div class="add-dataset-form-container"></div>
 </div>
@@ -368,7 +368,7 @@ Handlebars.js templates for story builder Backbone application
 {{#each assets}}
 <li class="asset{{#if selected}} selected{{/if}}" data-asset-id="{{asset_id}}">
   <img class="thumbnail" src="{{thumbnail_url}}" />
-</li> 
+</li>
 {{/each}}
 </script>
 
@@ -503,21 +503,21 @@ Handlebars.js templates for story builder Backbone application
 
 <script type="text/x-handlebars-template" id="share-cc-commercial-template">
 <label for="cc-allow-commercial">Allow commercial uses of your work?</label>
-<input type="radio" name="cc-allow-commercial" value="y" /> {{gettext "Yes"}} 
+<input type="radio" name="cc-allow-commercial" value="y" /> {{gettext "Yes"}}
 <input type="radio" name="cc-allow-commercial" value="n" /> {{gettext "No"}}
 </script>
 
 <script type="text/x-handlebars-template" id="share-cc-derivatives-template">
 <label for="cc-allow-commercial">Allow modifications of your work?</label>
-<input type="radio" name="cc-allow-modification" value="y" /> {{gettext "Yes"}} 
-<input type="radio" name="cc-allow-modification" value="sa" /> {{gettext "Yes, as long as others can share alike"}} 
+<input type="radio" name="cc-allow-modification" value="y" /> {{gettext "Yes"}}
+<input type="radio" name="cc-allow-modification" value="sa" /> {{gettext "Yes, as long as others can share alike"}}
 <input type="radio" name="cc-allow-modification" value="n" /> {{gettext "No"}}
 </script>
 
 <script type="text/x-handlebars-template" id="share-taxonomy-template">
 <p class="introduction">{{gettext "Label your story with topics and places so that people can easily discover it on Floodlight. The more information you add here, the more others can connect with your story."}}</p>
 <div id="taxonomy">
-    <h3>{{gettext "Tags"}}</h3> 
+    <h3>{{gettext "Tags"}}</h3>
 <p>{{gettext "For topics and places, choose from the list that appears when you click in the boxes below. Topics include categories like \"Crime and Justice\" or \"Education.\" Places include neighborhoods, cities and zip codes. Add as many places or topics as you want."}}</p>
 <p>{{gettext "If you are a member of an organization or project, you can also add those. Stories can be in multiple projects or organizations."}}</p>
 </div>

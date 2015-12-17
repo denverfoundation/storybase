@@ -69,11 +69,11 @@
         {% endblock %}
         </div>
         <div class="grid_3">
-            {% block metadata_center %}    
+            {% block metadata_center %}
             {% if object.members.all %}
             <h4>{% block metadata_center_title %}{% trans "Contributors" %}{% endblock %}</h4>
             <ul>
-                {% for member in object.members.all %}    
+                {% for member in object.members.all %}
                 <li><a href="{{ member.userprofile.get_absolute_url }}" title="{% format_user_name member %}">{% format_user_name member %}</a></li>
                 {% endfor %}
             </ul>
@@ -103,7 +103,7 @@
 {% endif %}
 {% endblock %}
 {% block recent %}
-{% if story_list %} 
+{% if story_list %}
 <section class="story-list content-block last">
     <h3>{{ story_list_title}}</h3>
     <ul>

@@ -29,18 +29,18 @@ Template for user profile page.
 {% if object.user.organizations.all %}
 <h4>{% block metadata_alpha_title %}{% trans "Organizations" %}{% endblock %}</h4>
 <ul>
-    {% for org in object.user.organizations.all %}    
+    {% for org in object.user.organizations.all %}
     <li><a href="{{ org.get_absolute_url }}" title="{{ org.name }}">{{ org.name }}</a></li>
     {% endfor %}
 </ul>
 {% endif %}
 {% endblock %}
 
-{% block metadata_center %}    
+{% block metadata_center %}
 {% if object.user.projects.all %}
 <h4>{% block metadata_center_title %}{% trans "Projects" %}{% endblock %}</h4>
 <ul>
-    {% for proj in object.user.projects.all %}    
+    {% for proj in object.user.projects.all %}
     <li><a href="{{ proj.get_absolute_url }}" title="{{ proj.name }}">{{ proj.name }}</a></li>
     {% endfor %}
 </ul>

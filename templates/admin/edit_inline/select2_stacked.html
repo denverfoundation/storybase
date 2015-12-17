@@ -74,12 +74,12 @@
                         var more = data.meta.next !== null;
                         var cleanedObjects = $(data.objects).map(function() {
                             return {
-                                id: this.place_id, 
+                                id: this.place_id,
                                 name: this.name
                             };
                         }).get();
                         return {
-                            results: cleanedObjects, 
+                            results: cleanedObjects,
                             more: more
                         };
                     };

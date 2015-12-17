@@ -59,7 +59,7 @@ See documentation for ``storybase_story.views.StoryWidgetView`` for context.
                 <a href="{{ item_viewer_url }}" title="{{ story_item.title }}" class="story-link">{{ story_item.title }}</a>
                 <p class="byline">{{ story_item.byline }}</p>
               </li>
-              
+
               {% endfor %}
             </ul>
         </section>
@@ -90,21 +90,21 @@ See documentation for ``storybase_story.views.StoryWidgetView`` for context.
         // In IE8, we must work with the global event object.
         event = event || window.event;
 
-        // Attempt to force a new window. This is still overridable via 
+        // Attempt to force a new window. This is still overridable via
         // modifier in modern browsers.
         win.open(this.getAttribute('href'), '_blank', 'modal=yes,alwaysRaised=yes');
-        
-        // Stop default action. In some versions of IE this is done via 
+
+        // Stop default action. In some versions of IE this is done via
         // returnValue prop. Compliant browsers offer preventDefault.
         event.preventDefault ? event.preventDefault() : event.returnValue = false;
       };
-      
+
       // Set up click handlers for all anchor tags.
       var anchors = doc.getElementsByTagName('a');
       for (var i = 0; i < anchors.length; i++) {
         // Bind anchor element to handler via closure.
-        anchors[i].onclick = (function(el) { 
-          return function(event) { handleClick.call(el, event); } 
+        anchors[i].onclick = (function(el) {
+          return function(event) { handleClick.call(el, event); }
         })(anchors[i]);
       }
     })(window, document);

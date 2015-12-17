@@ -45,12 +45,12 @@ h2 {
     <tbody>
         <tr><td align="center" valign="top" style="margin:0;padding-top:20px;padding-right:0;padding-bottom:0;padding-left:0;">
             <table class="storybase-content-table" align="center" border="0" cellspacing="0" cellpadding="0" width="555" style="width: 555px;"><tbody>
-                
+
                 <tr><td valign="top" align="left" style="padding:0;margin:0;">
                     <table align="left" width="100%" border="0" cellpadding="0" cellspacing="0"><tbody>
                         <tr><td align="left" valign="top" style="margin: 0px; padding: 0px 0px 21px;">
                             <p>Dear {{ story.author.first_name|default:"Floodlight User" }},</p>
-                            <p>We noticed you haven't published the story you started, {% if detail_url %}<a href="{{ detail_url }}{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %}" title ="{{ story.title }}" style="color: rgb(50, 197, 244);">{% endif %}{{ story.title }}{% if detail_url %}</a>{% endif %}. You can open this story in the <a href="{{ builder_url }}{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %}" style="color: rgb(50, 197, 244);"> story builder</a>. 
+                            <p>We noticed you haven't published the story you started, {% if detail_url %}<a href="{{ detail_url }}{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %}" title ="{{ story.title }}" style="color: rgb(50, 197, 244);">{% endif %}{{ story.title }}{% if detail_url %}</a>{% endif %}. You can open this story in the <a href="{{ builder_url }}{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %}" style="color: rgb(50, 197, 244);"> story builder</a>.
 
                             <p>Feeling stuck? It happens to everyone. Here are some tips to get unstuck:</p>
 
@@ -76,7 +76,7 @@ h2 {
 
                             <p>Bogged down by technical problems? Send an email to help@floodlightproject.org and we'll fix them as soon as we can. Have storytelling questions? Take a look at the <a href="http://floodlightproject.org/en/help/{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %}" title="Help">Floodlight FAQ</a> to see if it has what you're looking for. If your question isn't there, send it our way.</p>
 
-                            <p>You can manage your stories, including editing, deleting, and publishing/unpublishing, on your <a href="{% fullurl '/account/stories/' %}{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %}">account page</a>.</p> 
+                            <p>You can manage your stories, including editing, deleting, and publishing/unpublishing, on your <a href="{% fullurl '/account/stories/' %}{% ga_campaign_params "floodlight" "email reminder" "unpublished story reminder" %}">account page</a>.</p>
 
                             {% if unpublished_stories %}
                             <p>Here is a list of your unpublished stories:</p>

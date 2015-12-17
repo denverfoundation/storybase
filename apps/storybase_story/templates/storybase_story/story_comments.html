@@ -20,7 +20,7 @@
 <div id="comment-form">
   {% if user.is_authenticated %}
   {# TODO: Clean up the comment form #}
-  {% render_comment_form for story %}  
+  {% render_comment_form for story %}
   {% else %}
   <p>
     <a href="{% url "auth_login" %}?next={{ story.get_absolute_url }}#comment-form">{% trans "Log in" %}</a> {% trans "or" %} <a href="{% url "registration_register" %}">{% trans "register" %}</a> {% trans "to comment" %}

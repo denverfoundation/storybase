@@ -1,7 +1,7 @@
 {% url "js_error_log" as js_error_log_url %}
 {% if js_error_log_url %}
 <script>
-    window.jsLogUrl = "{{ js_error_log_url }}"; 
+    window.jsLogUrl = "{{ js_error_log_url }}";
 </script>
 {% endif %}
 <script src="{{ STATIC_URL }}js/error.min.js"></script>
