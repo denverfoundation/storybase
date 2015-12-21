@@ -457,6 +457,10 @@
       this.dispatcher.on('select:section', this.handleSelectSection, this);
       this.dispatcher.on('storyvalidation:failed', this.handleValidationFailure, this);
 
+      if (this.subviews.selecttemplate.collection.length === 1) {
+        this.dispatcher.trigger("select:template", this.subviews.selecttemplate.collection.models[0]);
+      }
+
       if (_.isUndefined(this.model) || this.model.isNew()) {
         this.dispatcher.once("save:story", this.updatePath, this);
       }
