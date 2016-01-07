@@ -85,9 +85,9 @@ class StoryResource(TranslatedModelResource):
     def prepend_urls(self):
         subs = (self._meta.resource_name, settings.UUID_PATTERN, trailing_slash())
         return [
-            url(r"^(?P<resource_name>{0}){2}$".format(*subs),
-                self.wrap_view('get_by_url'),
-                name="api_get_by_url",
+            url(r"^(?P<resource_name>{0})/resolve{2}$".format(*subs),
+                self.wrap_view('resolve_url'),
+                name="api_resolve_url",
             ),
             url(r"^(?P<resource_name>{0})/search{2}$".format(*subs),
                 self.wrap_view('search_get_list'),
@@ -266,7 +266,7 @@ class StoryResource(TranslatedModelResource):
                                         .order_by('name')\
                                         .values('place_id', 'name')]
 
-    def get_by_url(self, request, **kwargs):
+    def resolve_url(self, request, **kwargs):
         self.method_check(request, allowed=['get'])
         self.is_authenticated(request)
         self.throttle_check(request)

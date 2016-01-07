@@ -157,6 +157,14 @@ Handlebars.js templates for story builder Backbone application
 </div>
 </script>
 
+<script type="text/x-handlebars-template" id="story-info-edit-template">
+<h2>{{gettext "Story Info"}}</h2>
+<div id="summary-container">
+  <h3>{{gettext "Summarize Your Story"}}</h3>
+  <textarea name="summary" id="summary-textarea" class="summary" placeholder='{{{default summary_suggestion "Your summary goes here. Tell readers, in 250 characters or fewer, why your story matters. Write as if you were speaking with a friend. Sprinkle in a teaser or cliffhanger to entice your audience to read the full story."}}}'>{{summary}}</textarea>
+</div>
+</script>
+
 <script type="text/x-handlebars-template" id="story-call-to-action-edit-template">
 <h2>{{gettext "Call to Action"}}</h2>
 <form>
@@ -563,7 +571,7 @@ Handlebars.js templates for story builder Backbone application
 <ol>
     <li><strong>{{gettext "Build"}}</strong> - {{gettext "Construct your story using text, photos, videos, data visualizations, and other materials."}}</li>
     <li><strong>{{gettext "Story Info"}}</strong> - {{gettext "Write a summary and select a featured image to give readers a quick glimpse of your story."}}</li>
-    <li><strong>{{gettext "Publish/Share"}}</strong> - {{gettext "Post your story to Floodlight and your social networks."}}</li>
+    <li><strong>{{gettext "Publish"}}</strong> - {{gettext "Post your story to Floodlight and your social networks."}}</li>
     <li><strong>{{gettext "Tag"}}</strong> - {{gettext "Label your story with topics and places so that people can easily discover it on Floodlight."}}</li>
 </ol>
 </script>

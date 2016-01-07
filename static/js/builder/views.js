@@ -353,6 +353,7 @@
       buildViewOptions = _.defaults({
         assetTypes: this.options.assetTypes,
         containerTemplates: this.options.containerTemplates,
+        defaultImageUrl: this.options.defaultImageUrl,
         forceTour: this.options.forceTour,
         layouts: this.options.layouts,
         help: this.options.help,
@@ -381,14 +382,16 @@
       // views use different constructor options. If this gets to
       // unwieldy, maybe use a factory function.
 
-      if (this.options.visibleSteps.info) {
-        this.subviews.info = new StoryInfoView(
+      if (this.options.visibleSteps.tag) {
+        this.subviews.tag = new TaxonomyView(
           _.defaults({
-            defaultImageUrl: this.options.defaultImageUrl,
-            help: this.options.help
+            places: this.options.places,
+            topics: this.options.topics,
+            organizations: this.options.organizations,
+            projects: this.options.projects
           }, commonOptions)
         );
-        workflowSteps.push(_.result(this.subviews.info, 'workflowStep'));
+        workflowSteps.push(_.result(this.subviews.tag, 'workflowStep'));
       }
 
       if (this.options.visibleSteps.publish) {
@@ -400,18 +403,6 @@
           }, commonOptions)
         );
         workflowSteps.push(_.result(this.subviews.publish, 'workflowStep'));
-      }
-
-      if (this.options.visibleSteps.tag) {
-        this.subviews.tag = new TaxonomyView(
-          _.defaults({
-            places: this.options.places,
-            topics: this.options.topics,
-            organizations: this.options.organizations,
-            projects: this.options.projects
-          }, commonOptions)
-        );
-        workflowSteps.push(_.result(this.subviews.tag, 'workflowStep'));
       }
 
       this.subviews.alert = new AlertManagerView({
@@ -457,7 +448,7 @@
       this.dispatcher.on('select:section', this.handleSelectSection, this);
       this.dispatcher.on('storyvalidation:failed', this.handleValidationFailure, this);
 
-      if (this.subviews.selecttemplate.collection.length === 1) {
+      if (_.isUndefined(this.model) && this.subviews.selecttemplate.collection.length === 1) {
         this.dispatcher.trigger("select:template", this.subviews.selecttemplate.collection.models[0]);
       }
 
@@ -2531,6 +2522,15 @@
 
     createEditViews: function() {
       var callEditView = null;
+      var infoEditView = null;
+
+      infoEditView = new StoryInfoEditView({
+        dispatcher: this.dispatcher,
+        help: this.help.where({slug: 'story-information'})[0],
+        model: this.model,
+        defaultImageUrl: this.options.defaultImageUrl
+      });
+      this._editViews.push(infoEditView);
 
       this.model.sections.each(this.createSectionEditView);
 
@@ -3209,7 +3209,7 @@
         dispatcher: this.dispatcher,
         model: section
       });
-      index = _.isUndefined(index) ? this._sortedThumbnailViews.length - 1 : index;
+      index = _.isUndefined(index) ? this._sortedThumbnailViews.length - 1 : index + 1;
       this._sortedThumbnailViews.splice(index, 0, view);
       this._thumbnailViews[sectionId] = view;
       if (section.isNew()) {
@@ -3231,6 +3231,17 @@
       }
     },
 
+    addInfoThumbnail: function() {
+      var view = new PseudoSectionThumbnailView({
+        dispatcher: this.dispatcher,
+        title: gettext("Story Info"),
+        tooltip: gettext("Summarize your story and select a featured image"),
+        pseudoSectionId: 'story-info'
+      });
+      this._sortedThumbnailViews.splice(0, 0, view);
+      this._thumbnailViews[view.pseudoSectionId] = view;
+    },
+
     addCallToActionThumbnail: function() {
       var view = new PseudoSectionThumbnailView({
         dispatcher: this.dispatcher,
@@ -3249,6 +3260,7 @@
      * template or when it has been fetched from the server.
      */
     addSectionThumbnails: function(options) {
+      this.addInfoThumbnail();
       this.model.sections.each(this.addSectionThumbnail);
       this.addCallToActionThumbnail();
       this._thumbnailsAdded = true;
@@ -3875,7 +3887,7 @@
       if (matches) {
         // treat as story url
         value = matches[2];
-        $.ajax(storybase.API_ROOT + 'stories', {
+        $.ajax(storybase.API_ROOT + 'stories/resolve', {
           data: $.param({url: value}),
           processData: false,
           success: _.bind(function(data, textStatus) {
@@ -4009,6 +4021,97 @@
     }
   });
 
+  /**
+   * View for editing story metadata
+   */
+  var StoryInfoEditView = Views.StoryInfoEditView = PseudoSectionEditView.extend({
+    className: 'edit-story-info edit-section',
+
+    // The section edit views can be identified by the ID of their
+    // sections, but these pseudo-section edit views need an
+    // explicit identifier
+    pseudoSectionId: 'story-info',
+
+    options: {
+      summaryEl: 'textarea[name="summary"]',
+      templateSource: $('#story-info-edit-template').html()
+    },
+
+    events: function() {
+      var events = {};
+      events['change ' + this.options.summaryEl] = 'change';
+      return events;
+    },
+
+    initialize: function(options) {
+      PseudoSectionEditView.prototype.initialize.apply(this, arguments);
+
+      this.dispatcher = options.dispatcher;
+      this.compileTemplates();
+
+      this.featuredAssetView = new FeaturedAssetView({
+        model: this.model,
+        defaultImageUrl: this.options.defaultImageUrl,
+        dispatcher: this.dispatcher,
+        language: this.options.language
+      });
+
+      if (_.isUndefined(this.model)) {
+        this.dispatcher.once("ready:story", this.setStory, this);
+      }
+    },
+
+    setStory: function(story) {
+      this.model = story;
+      this.render();
+    },
+
+    render: function() {
+      var view = this;
+      var handleChange = function () {
+        // Trigger the change event on the underlying element
+        view.$(view.options.summaryEl).trigger('change');
+      };
+
+      this.$el.html(this.template(this.model.toJSON()));
+
+      // Initialize wysihmtl5 editor.
+      // We do this each time the view is rendered because wysihtml5 doesn't
+      // handle being removed and re-added to the DOM very gracefully
+      this.summaryEditor = new RichTextEditor(
+        this.$(this.options.summaryEl).get(0),
+        {
+          change: handleChange
+        }
+      );
+
+      // Similarly, initialize the character count view because it's a
+      // pain to unbind/rebind the event bindings to the editor. :-(
+      this.summaryCharCountView = new CharacterCountView({
+        dispatcher: this.dispatcher,
+        target: this.summaryEditor,
+        showOnFocus: false
+      });
+      this.summaryEditor.$toolbar.prepend(this.summaryCharCountView.render().$el);
+
+      this.$el.append(this.featuredAssetView.render().el);
+
+      this.delegateEvents();
+
+      return this;
+    },
+
+    onShow: function() {
+      if (this.help) {
+        this.dispatcher.trigger('do:set:help', this.help.toJSON());
+      }
+      this.featuredAssetView.onShow();
+    },
+
+    onHide: function() {
+      this.dispatcher.trigger('do:clear:help');
+    }
+  });
 
   /**
    * View for editing a section
@@ -6871,7 +6974,7 @@
         return {
           id: 'publish',
           title: gettext("Post your story to Floodlight and your social networks"),
-          text: gettext('Publish/Share'),
+          text: gettext('Publish'),
           visible: true,
           enabled: _.bind(storySaved, this),
           path: 'publish/'
@@ -7376,7 +7479,8 @@
      */
     setInitialFeaturedAsset: function() {
       var imgAsset;
-      if (this.model && this.model.featuredAssets.length === 0 &&
+      if (this.model && this.model.featuredAssets &&
+          this.model.featuredAssets.length === 0 &&
           this.model.assets.length !== 0) {
         imgAsset = this.model.assets.find(function(asset) {
           return asset.get('type') === 'image';
@@ -7392,7 +7496,7 @@
         this.listenTo(this.model.assets, "add", this.render);
         this.listenTo(this.model, "set:featuredasset", this.handleFeaturedAsset);
         this.listenTo(this.addView, "cancel", this.switchToDisplay);
-        if (this.model.featuredAssets.length === 0) {
+        if (this.model.featuredAssets && this.model.featuredAssets.length === 0) {
           // If the model doesn't have a featured asset set, try to
           // set it when new assets are added to the story
           this.listenTo(this.model.assets, "add", this.handleAddAsset);
