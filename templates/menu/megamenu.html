@@ -31,6 +31,8 @@ ID or the custom menu item ID.
     {# Show the "My Account" menu for authenticated users #}
     {% if user.is_authenticated %}
     {% storybase_menu "my_account" "menu/megamenu_account.html" request.path %}
+    {% else %}
+    <li class="right nodd"><a class="top-nav" href="{% url "auth_login" %}">{% trans "Sign In"|upper %}</a></li>
     {% endif %}
   </ul>
 </div>
