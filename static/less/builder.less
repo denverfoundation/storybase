@@ -259,7 +259,6 @@ button.help {
 #title-bar {
   // Hide this element unless a story is present
   display: none;
-
   background-color: #f7941e;
   overflow: hidden;
   height: @title-bar-height;
@@ -273,7 +272,6 @@ button.help {
     overflow: hidden;
     text-overflow: ellipsis;
     white-space: nowrap;
-
     color: #fff;
   }
 
@@ -329,13 +327,14 @@ button.help {
 }
 
 #workflow-bar {
-  background-color: black;
+
+  background-color: @blue-xxdark;
 }
 
 #workflow-bar .logo {
   display: block;
   float: left;
-  width: 34px;
+  width: 64px;
   padding: 0 8px;
   padding-top: floor((@workflow-bar-height - @logo-height) / 2);
 
@@ -362,7 +361,7 @@ button.help {
     padding: 0 19px 0;
     height: @workflow-item-height;
     border-right:1px solid @almost-black;
-    font-family:'Museo300Regular';
+    // font-family:@roboto;
     line-height: @workflow-item-height;
     position:relative;
 
@@ -406,7 +405,7 @@ button.help {
       padding: 3px 0 1px (@icon-width * 2);
       height: @icon-height;
       color: white;
-      font-family: 'Museo300Regular';
+      font-family: @roboto;
       font-size: @workflow-item-font-size;
       text-transform:uppercase;
       text-decoration:none;
@@ -530,7 +529,7 @@ button.preview {
   position: absolute !important;
   right: 0px;
   //top: 28px;
-  font-family:'Museo300Regular';
+  font-family:@roboto;
   font-size:16px;
   li {
     height: @workflow-item-height;
@@ -661,7 +660,7 @@ button.preview {
     border: none;
     padding: 8px 14px;
     color: white;
-    font-family: 'Museo300Regular';
+    font-family: @roboto;
     font-size:16px;
     background-color: @highlight-blue;
     border-radius: 4px 4px 0 0;
@@ -693,7 +692,7 @@ button.preview {
 
 .drawer-open #drawer-contents {
   display: block;
-  padding: 1em;
+  padding: 2em;
 }
 
 // Help Drawer
@@ -722,6 +721,11 @@ button.preview {
 .builder,
 #story-info,
 #title-bar-contents {
+
+  h1 {
+    margin-left: 0;
+  }
+
   input, textarea {
     .sans-serif-text;
     box-shadow:inset 0 0 3px #ccc;
@@ -905,12 +909,13 @@ button.preview {
     color:white;
     padding:10px;
     border:none;
-    font-family: 'Museo300Regular';
+    font-family: @roboto-condensed;
     width:100%;
     border-radius:5px;
     background:@gray;
     z-index:301;
     position:relative;
+    min-width: 110px;
 
     .arrow {
       display:block;
@@ -927,11 +932,11 @@ button.preview {
     background:@light-gray;
     border:1px solid @gray;
     border-radius: 0 0 3px 3px;
-    width:278px;  // account for 2px border, left and right
+    width:180px;
     overflow:hidden;
     position:absolute;
     z-index:300;  // *something* is covering it. sigh.
-    margin:0 !important;
+    margin:8px 0 0 0 !important;
     right:0;
 
     @item-height: 83px;
@@ -944,7 +949,8 @@ button.preview {
       margin:0 12px 16px 0;
       opacity:.7;
       background:url(../img/builder/layouts.png) no-repeat left top;
-      text-indent:-32000px;
+      text-align: center;
+      padding-top: 32px;
       display:block;
       width:133px;
       height:@item-height;
@@ -1076,7 +1082,20 @@ button.preview {
 }
 
 .story-search {
-  width: 100%;
+  width: 80%;
+}
+
+.story-search-results {
+  padding-left: 0;
+
+  li {
+    list-style: none;
+  }
+
+  button {
+    padding: 2px 8px;
+    margin-right: 6px;
+  }
 }
 
 // Section Editor
@@ -1097,6 +1116,9 @@ button.preview {
 
   .section-title {
     width:75%;
+    // Keep from overlapping on small screens, set reasonable max width
+    max-width: 400px;
+    margin-bottom: 1em;
   }
 
   // Show label for section title input on its own line, above the input
@@ -1174,7 +1196,7 @@ button.preview {
     width:100%;
     margin:0 auto;
     overflow:hidden;
-    height:180px;
+    min-height: 300px;
 
     &:before {
       //background:@highlight-blue;
@@ -1190,6 +1212,7 @@ button.preview {
       width: 25%;
       left:37.5%;
       position:absolute;
+      padding-bottom: 16px;
     }
 
     &.collapsed:before {
@@ -1219,7 +1242,7 @@ button.preview {
         a {
           text-decoration:none;
           text-transform:uppercase;
-          font-family:"Museo300Regular";
+          font-family: @roboto;
           color:@gray;
           line-height:22px; // ???
 
@@ -1671,6 +1694,7 @@ table.datasets {
     position:relative;
     font-size: 12px;
     line-height: 1.2em;
+    margin-left: 0;
 
     // Required by the table-cell vertical centering technique.
     display: table-cell;
@@ -1739,7 +1763,7 @@ table.datasets {
   width: 85% !important;
 
   .summary {
-    width: 95%;
+    // width: 95%;
     min-height: 400px;
   }
 
