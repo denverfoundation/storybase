@@ -14,7 +14,7 @@ Setting this to 0 would make this menu the first item in the menu
 """
 
 STORYBASE_EXPLORE_MENU_POSITION = getattr(settings,
-    'STORYBASE_EXPLORE_MENU_POSITION', 1)
+    'STORYBASE_EXPLORE_MENU_POSITION', 3)
 """
 Zero-indexed position where the "Explore ..." menu should be inserted
 
@@ -55,7 +55,7 @@ This will appear in the menus and on the page itself
 """
 
 STORYBASE_MEGAMENU_ITEMS = getattr(
-    settings, 'STORYBAE_MEGAMENU_ITEMS',
+    settings, 'STORYBASE_MEGAMENU_ITEMS',
     ['home', 'story-builder-landing', 'explore', 'skills', 'news', 'about'])
 """
 CMS Page Reverse IDs or menu entry menu IDs of items that should appear in

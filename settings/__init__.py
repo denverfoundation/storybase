@@ -41,7 +41,6 @@ TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
         'DIRS': [
-            os.path.join(PROJECT_PATH, 'templates2'),
             os.path.join(PROJECT_PATH, 'templates'),
         ],
         'OPTIONS': {
@@ -328,9 +327,6 @@ LANGUAGES = [
     ('en', _('English')),
     ('es', _('Spanish')),
 ]
-
-# Don't hide menu items that are untranslated
-CMS_HIDE_UNTRANSLATED = False
 
 # Allow overriding menu titles
 CMS_MENU_TITLE_OVERWRITE = True

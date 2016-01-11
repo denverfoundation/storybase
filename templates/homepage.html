@@ -1,5 +1,5 @@
 {% extends "base.html" %}
-{% load cms_tags i18n story organization project storybase_featured %}
+{% load i18n cms_tags sekizai_tags i18n story organization project storybase_featured %}
 
 {% block extrameta %}
 <meta name="author" content="The Piton Foundation">
@@ -14,7 +14,9 @@
 {% endblock %}
 
 {% block above_content %}
-{% banner "random" %}
+<div id="banner">
+  <div class="intro"></div>
+</div>
 {% endblock %}
 
 {% block body_class %}{{ request.current_page.reverse_id }} homepage{% endblock %}
@@ -22,6 +24,8 @@
 {% block logo_text %}<h1>Floodlight</h1>{% endblock %}
 
 {% block base_content %}
+{% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/select2/select2.css">{% endaddtoblock %}
+{% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/tooltipster-2.1.4/css/tooltipster.css">{% endaddtoblock %}
 <div class="content-page container_12">
   <section class="content-block homepage-header">
     <div class="grid_6 homepage-header-left">
@@ -42,49 +46,46 @@
           ({% trans "requires a free Floodlight account" %})
         </a>
       </p>
-      <p>{% trans "Explore what others are posting on Floodlight" %}:</p>
-      <ul class="explore-others-posts">
-        <li>
-          <a href="{% url "explore_stories" %}"><img src="{{ STATIC_URL }}img/homepage-story-image.jpg"></a>
-          <h3><a href="{% url "explore_stories" %}">{% trans "Stories" %}</a></h3>
-          <p>
-            {% trans "From glimpses to in-depth explorations, see your community in a new light." %}
-          </p>
-        </li>
-        <li>
-          <a href="{% url "project_list" %}"><img src="{{ STATIC_URL }}img/homepage-project-image.jpg"></a>
-          <h3><a href="{% url "project_list" %}">{% trans "Projects" %}</a></h3>
-          <p>
-            {% trans "A project is a collection of stories about a common theme, place, issue or event." %}
-          </p>
-        </li>
-        <li>
-          <a href="{% url "organization_list" %}"><img src="{{ STATIC_URL }}img/homepage-organization-image.jpg"></a>
-          <h3><a href="{% url "organization_list" %}">{% trans "Organizations" %}</a></h3>
-          <p>
-            {% trans "An organization is a group of people creating stories together." %}
-          </p>
-        </li>
-      </ul>
+      {% placeholder search or %}
+      <h2 class="title">Explore Floodlight</h2>
+      <form action="{% url 'haystack_search' %}" method="get">
+        <div class="row">
+          <div class="col-sm-4">
+            <input required
+                   name="q"
+                   type="text"
+                   class="form-control"
+                   placeholder="Search by keyword"
+                   autocomplete="off"/>
+          </div>
+          <div class="col-sm-4">
+            <input class="form-control" type="submit" value="{% trans "Search" %}" />
+          </div>
+        </div>
+      </form>
+      {% endplaceholder %}
+      <div class="row super-readers">
+        <div class="col-sm-8">
+          <div class="focus-text shadow-1">
+            <p>
+              <b>Are you a Super Reader? Floodlight Super Readers</b> are Denver Foundation
+              donors, who have the ability to boost stories through
+              <a href="{% page_url 'badges' %}">assigning special badges</a> that call out great ideas, inspiring
+              people, and projects that they have funded.
+            </p>
+          </div>
+        </div>
+        <div class="col-sm-4">
+          <a href="/en/accounts/login/">
+            <button type="button" class="btn btn-lg sb-btn-action sb-btn-action-light shadow-2">Super Readers, Read and Share Here</button>
+          </a>
+        </div>
+      </div>
     </div>
     <div class="grid_6 homepage-header-right">
       <div class="flexslider featured-on-floodlight">
         {% featured_items %}
       </div>
-    </div>
-  </section>
-  <section class="content-block latest-activity">
-    <div class="grid_4">
-      <h2>{% trans "Latest Stories" %}</h2>
-      {% latest_stories %}
-    </div>
-    <div class="grid_4">
-      <h2>{% trans "Latest Organizations" %}</h2>
-      {% latest_organizations %}
-    </div>
-    <div class="grid_4">
-      <h2>{% trans "Latest Projects" %}</h2>
-      {% latest_projects %}
     </div>
   </section>
   <section class="content-block last supporting-foundations">
@@ -142,4 +143,25 @@
 {% block extrajs %}
 	<script src="{{ STATIC_URL }}js/libs/jquery.cycle.all.min.js"></script>
 	<script src="{{ STATIC_URL }}js/libs/jquery.flexslider.js" type="text/javascript"></script>
+  <script src="{{ STATIC_URL }}js/libs/select2/select2.js"></script>
+  <script src="{{ STATIC_URL }}js/libs/tooltipster-2.1.4/js/jquery.tooltipster.min.js"></script>
+  {% comment %}
+  <script>
+jQuery(function($) {
+  $('select').each(function() {
+    var select2 = $(this).data('select2');
+    var title = $(this).attr('title');
+    var tooltipOptions;
+    if (title) {
+      select2.container.attr('title', title);
+      tooltipOptions = _.extend({
+        overrideText: title,
+        position: 'bottom'
+      }, options);
+      select2.container.tooltipster(tooltipOptions);
+    }
+  });
+});
+  </script>
+  {% endcomment %}
 {% endblock %}

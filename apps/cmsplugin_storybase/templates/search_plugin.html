@@ -1,0 +1,8 @@
+{% load i18n %}
+
+<form id="search-page-form" method="get" action="{% url 'haystack_search' %}">
+    {% for field in form.visible_fields %}
+    {{ field }}
+    {% endfor %}
+    <input type="submit" value="{% trans "Search" %}" />
+</form>

@@ -5,6 +5,8 @@ from cms.models.pluginmodel import CMSPlugin
 from cms.plugin_pool import plugin_pool
 
 from storybase_messaging.forms import SiteContactMessageForm
+from storybase_story.forms import StorySearchForm
+from storybase_badge.models import Badge
 
 from cmsplugin_storybase.models import (ActivityPlugin as ActivityPluginModel,
     StoryPlugin as StoryPluginModel,
@@ -49,7 +51,30 @@ class HelpPlugin(CMSPluginBase):
         context['instance'] = instance
         return context
 
+
+class BadgesPlugin(CMSPluginBase):
+    model = CMSPlugin
+    name = _("StoryBase Badges")
+    render_template = "badges_plugin.html"
+
+    def render(self, context, instance, placeholder):
+        context['badges'] = Badge.objects.all()
+        return context
+
+
+class SearchPlugin(CMSPluginBase):
+    model = CMSPlugin
+    name = _("StoryBase Search")
+    render_template = "search_plugin.html"
+
+    def render(self, context, instance, placeholder):
+         context['form'] = StorySearchForm
+         return context
+
+
 plugin_pool.register_plugin(ActivityPlugin)
 plugin_pool.register_plugin(ContactFormPlugin)
 plugin_pool.register_plugin(StoryPlugin)
 plugin_pool.register_plugin(HelpPlugin)
+plugin_pool.register_plugin(BadgesPlugin)
+plugin_pool.register_plugin(SearchPlugin)

@@ -36,18 +36,6 @@ from storybase_badge.models import Badge
 from storybase_user.views import Organization, Project
 
 
-class HomeView(TemplateView):
-    template_name = 'homepage.html'
-
-    def get_context_data(self, **kwargs):
-        context = super(HomeView, self).get_context_data(**kwargs)
-        context['topics'] = Category.objects.all()
-        context['places'] = Place.objects.all().values('name', 'id')
-        context['badges'] = Badge.objects.all().values('name', 'id')
-        # TODO: put StorySearchForm here
-
-        return context
-
 class ExploreStoriesView(TemplateView):
     """
     A view that lets users filter a list of stories

@@ -6,13 +6,12 @@ from storybase_story.feeds import StoriesFeed, TopicStoriesFeed
 from storybase_story.views import (ExploreStoriesView,
     StoryBuilderView, StoryViewerView, StoryUpdateView,
     StoryShareView, StorySharePopupView, StoryEmbedView,
-    StoryEmbedPopupView, HomeView)
+    StoryEmbedPopupView)
 
 
 uuid_pattern = settings.UUID_PATTERN
 
 urlpatterns = patterns('',
-    url(r'^home/$', HomeView.as_view(), name='home'),
     url(r'^build/$', StoryBuilderView.as_view(), name='story_builder'),
     url(r'^build/(?P<story_id>{})/$'.format(uuid_pattern),
         StoryBuilderView.as_view(), name='story_builder'),

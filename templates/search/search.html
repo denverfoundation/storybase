@@ -10,12 +10,7 @@
 <h1><span>{% trans "Search" %}</span></h1>
 {% endif %}
 
-<form id="search-page-form" method="get" action=".">
-    {% for field in form.visible_fields %}
-    {{ field }}
-    {% endfor %}
-    <input type="submit" value="{% trans "Search" %}" />
-</form>
+{% include "search_plugin.html" %}
 
 {% if query %}
 

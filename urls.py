@@ -55,7 +55,6 @@ urlpatterns += i18n_patterns('',
     (r'^', include('storybase_help.urls')),
     (r'^', include('storybase_taxonomy.urls')),
     (r'^', include('storybase_geo.urls')),
-    (r'^', include('storybase_badge.urls')),
 
     # StoryBase account management
     # This needs to come before the admin URLs in order to use
@@ -73,8 +72,6 @@ urlpatterns += i18n_patterns('',
     (r'^accounts/', include('storybase_user.registration.backends.extrainfo.urls')),
     url(r'^accounts/', include('social.apps.django_app.urls', namespace='social')),
     (r'^notices/', include('pinax.notifications.urls')),
-
-    url(r'^$', RedirectView.as_view(url='/home/')),
 
     # django CMS URLs
     url(r'^', include('cms.urls')),
