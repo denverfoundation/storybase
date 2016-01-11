@@ -1,13 +1,14 @@
 #header {
-  background: #000;
+  background: @blue-xxdark;
   position: relative;
   min-width: 260px;
+  min-height: 67px;
 
   @media (min-width: @header-breakpoint) {
     padding: 0;
 
     // At wider widths, the body background image will be used
-    background: none;
+    // background: none;
   }
 
   // I deliberated over the best approach for a responsive header logo.
@@ -32,11 +33,12 @@
     @media (min-width: @header-breakpoint) {
       position: absolute;
       top: 18px;
-      left: -10px;
-      width: 328px;
-      height: 55px;
+      width: 275px;
+      height: 67px;
       padding-left: 0;
-      background-image: url('../img/header-logo.png');
+      background-image: url('../img/logo-275x67.png');
+      background-repeat: no-repeat;
+      background-position: center;
     }
   }
 
@@ -61,10 +63,6 @@
 #logo-search {
   position: relative;
   float: left;
-  width: 100%;
-
-  .mk-fluid-grid-container-sm();
-  .mk-fluid-grid-container-md();
 
   @media (min-width: @header-breakpoint) {
     float: none;
@@ -129,7 +127,6 @@
     margin: 0 auto;
     width: 200px;
 
-
     @media (min-width: 420px) {
       width: 278px;
     }
@@ -145,12 +142,11 @@
       float: left;
       width: 150px;
 
-
       background: url('../img/search.png') no-repeat 0 0;
-      font-size: 18px;
+      font-size: 14px;
       color: #535353;
-      font-family: 'Museo300Regular';
-      padding: 8px 0 8px 5px;
+      font-family: @styled-header-family;
+      padding: 8px 0 8px 10px;
 
       // override site-wide default form styling
       border: none;
@@ -165,7 +161,7 @@
 
     button.submit {
       width: 38px;
-      height: 36px;
+      height: 35px;
       background: url('../img/search.png') no-repeat right 0;
       border: 0;
       cursor: pointer;

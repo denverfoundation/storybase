@@ -3,6 +3,10 @@
 // this is less than ideal; no pun intended.
 &.homepage {
 
+  #main {
+    padding-top: 20px;
+  }
+
   @image-border-color: darken(@light-gray, 10%);
 
   .button.create-your-story {
@@ -254,6 +258,7 @@
         font-style:normal;
         color:@highlight-blue;
         font-family: 'MuseoSlab500Regular';
+        font-weight: 700;
         padding:7px 14px 12px 14px;
         display:block;
       }
@@ -297,6 +302,18 @@
       }
 
       padding-top:1em;
+    }
+  }
+
+  .super-readers {
+    border-top: 1px solid @light-gray;
+    margin-top: 40px;
+    padding-top: 20px;
+
+
+    .btn {
+      margin: auto;
+      display: block;
     }
   }
 

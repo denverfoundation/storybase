@@ -12,6 +12,7 @@
   position: absolute;
   padding-top: 18px;
   right: 12px;
+  top: 5px;
 
   background: transparent;
   border-radius: 0;
@@ -27,14 +28,12 @@
 
 
 .megamenu {
-  width: 100%;
   padding-top: 19px;
   padding-bottom: 12px;
   display: none;
 
   @media (min-width: @header-breakpoint) {
     display: block;
-    width: 92%;
     padding-bottom: 0;
   }
 
@@ -96,7 +95,8 @@
       > a {
         font-size: 16px;
         color: #ffffff;
-        font-family: 'MuseoSlab500Regular';
+        font-family: @roboto-condensed;
+        font-weight: 700;
         position: relative;
         // This padding helps position the em element (see below) that is
         // used as the dropdown pointer
@@ -110,7 +110,7 @@
         // This element is used for the dropdown pointer arrow
         em {
           height:8px;
-          background:url('../img/dd-arrow.png') no-repeat center 0;
+          background:url('../img/dd-arrow-2.png') no-repeat center 0;
           width:100%;
           position:absolute;
           bottom:0px;
@@ -198,9 +198,9 @@
           float:left;
           display:inline;
           min-height:200px;
-          border-right:1px dotted #666;
+          border-right:1px dotted @medium-gray;
           line-height:1.2em;
-          padding: 0 @dd-col-std-padding;
+          padding: 0 @dd-col-std-padding*2;
 
           &:first-child {
             padding-left:0;
@@ -211,7 +211,7 @@
           }
 
           a {
-            font-size:13px;
+            font-size:1.25em;
             color:@orange;
             background-image: none;
           }
@@ -219,22 +219,28 @@
           p.legend {
             color:lighten(@gray, 10%);
             font-size:1.8em;
-            line-height:1.2em;
+            line-height:1.6em;
             padding: 30px 45px;
             font-family: 'Museo300Regular';
+          }
+
+          p {
+            line-height: 1.25;
           }
 
           h6 {
             font-size:16px !important;
             font-weight:normal;
-            font-family: 'MuseoSlab500Regular';
+            font-family: @roboto-condensed;
+            font-weight: 700;
             background:none;
             display:block;
             margin-bottom:9px;
 
             a {
-              font-family: 'MuseoSlab500Regular';
-              font-size:16px !important; // (actually needed here and in h6 for specificity override)
+              font-family: @roboto-condensed;
+              font-weight: 700;
+              font-size:22px !important; // (actually needed here and in h6 for specificity override)
               padding: 0 0 0 8px;
               left:-8px;
               position:relative;
@@ -265,7 +271,6 @@
             }
           }
         }
-
       }
 
       ul li {

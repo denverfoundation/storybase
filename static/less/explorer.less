@@ -1,6 +1,6 @@
 // Explorer-specific variables
 
-@explorer-img-width: 222px;
+@explorer-img-width: 184px;
 @explorer-img-height: 132px;
 @explorer-chrome-margin-bottom: 15px;
 // After this width, show the story metadata to the right of the featured
@@ -16,7 +16,6 @@
 
 #explorer {
   position: relative;
-  width: 100%;
 }
 
 .list-view .box {
@@ -60,12 +59,14 @@
 
   // Horizontally center filters
   .fields-container {
-    width: 98%;
+    width: 100%;
+    text-align: center;
     margin-left: auto;
     margin-right: auto;
   }
 
   .field {
+    text-align: left;
     display: inline-block;
     margin-right: 6px;
     margin-bottom: 6px;
@@ -87,7 +88,8 @@
     display:block;
     font-size:13px;
     color:#fbfaf2;
-    font-family: 'MuseoSlab500Regular';
+    font-family: @roboto;
+    font-weight: 700;
     text-shadow:0 -1px #605f5f;
     line-height:34px;
     height:34px;
@@ -132,7 +134,8 @@
   }
 
   .select2-result-label {
-    font-family: 'MuseoSlab500Regular';
+    font-family: @roboto;
+    font-weight: 700;
   }
 
   .select2-default {
@@ -152,9 +155,11 @@
   a.clear-filters {
     display: block;
     padding-top: 10px;
+    padding-right: 20px;
     text-align: right;
     color: #FE9703;
-    font-family: 'MuseoSlab500Regular';
+    font-family: @roboto;
+    font-weight: 700;
     font-size: 14px;
   }
 }
@@ -219,6 +224,7 @@
     position:relative;
     width:25px;
     height:40px;
+    margin-left: 20px;
 
     a {
       height:29px;
@@ -229,7 +235,8 @@
       font-size:14px;
       color: @gray;
       font-style:normal;
-      font-family: 'MuseoSlab500Regular';
+      font-family: @roboto;
+      font-weight: 700;
 
       span {
         position:relative;
@@ -322,7 +329,7 @@
       width: @explorer-img-width;
       padding: 7px;
       margin-bottom: 11px;
-      margin-right: 14px;
+      margin-right: 11px;
       overflow: hidden;
 
       background: @light-gray;
