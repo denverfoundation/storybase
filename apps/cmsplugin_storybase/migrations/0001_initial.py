@@ -41,6 +41,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 'abstract': False,
+                'db_table': 'cmsplugin_activityplugin',
             },
             bases=('cms.cmsplugin',),
         ),
@@ -71,6 +72,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 'abstract': False,
+                'db_table': 'cmsplugin_helpplugin',
             },
             bases=('cms.cmsplugin',),
         ),
@@ -82,6 +84,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 'abstract': False,
+                'db_table': 'cmsplugin_list',
             },
             bases=('cms.cmsplugin',),
         ),
@@ -125,6 +128,7 @@ class Migration(migrations.Migration):
             ],
             options={
                 'abstract': False,
+                'db_table': 'cmsplugin_storyplugin',
             },
             bases=('cms.cmsplugin',),
         ),
