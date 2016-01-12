@@ -1,5 +1,4 @@
 // base.less imports all other less files.
-
 // variables
 @import "variables.less";
 @import "grid.less";
@@ -7,18 +6,32 @@
 @import "story_layout.less";
 @import "fonts.less";
 @import "mixins.less";
-
 // global stuff
+html {
+  font-size: 100%;
+  -webkit-text-size-adjust: 100%;
+  -ms-text-size-adjust: 100%;
+}
 
-html { font-size: 100%; -webkit-text-size-adjust: 100%; -ms-text-size-adjust: 100%; }
-
-body, button, input, select, textarea {
+body,
+button,
+input,
+select,
+textarea {
   .body-copy;
 }
 
-* { margin: 0; padding: 0; outline: 0; box-sizing: border-box;}
+* {
+  margin: 0;
+  padding: 0;
+  outline: 0;
+  box-sizing: border-box;
+}
 
-body, html { height: 100%; }
+body,
+html {
+  height: 100%;
+}
 
 button {
   .button;
@@ -28,53 +41,84 @@ body.base-template {
   .sans-serif-text;
   .standard-headers;
   font-size: @base-font-size;
-  line-height:@base-line-height;
+  line-height: @base-line-height;
   color: @dark-gray;
   min-width: 100%;
-  overflow-y:scroll;
-
+  overflow-y: scroll;
   @media (min-width: @header-breakpoint) {
     background: url('../img/body.jpg') repeat-x 0 0;
   }
-
   // based on "everything" comp, text content
   // headers are relatively diminuitive.
   // @see content-page.less. putting this here
   // for reference to "regular" header sizes.
   // could probably make a variable or something...
   .content-block {
-    h2 { font-size:(@top-header-size * .6); }
-    h3 { font-size:(@top-header-size * .5); }
-    h4 { font-size:(@top-header-size * .4); }
-    h5 { font-size:(@top-header-size * .3); }
+    h2 {
+      font-size: (@top-header-size * .6);
+    }
+    h3 {
+      font-size: (@top-header-size * .5);
+    }
+    h4 {
+      font-size: (@top-header-size * .4);
+    }
+    h5 {
+      font-size: (@top-header-size * .3);
+    }
   }
-
-  a { color: @highlight-blue; text-decoration: none; cursor: pointer; }
-  a:hover { text-decoration: underline; }
-  a:visited { color: @visited-blue; }
-  a img { border: 0; }
-
-  textarea { overflow: auto; }
-
-  .cl { display: block; height: 0; font-size: 0; line-height: 0; text-indent: -4000px; clear: both; }
-  .notext { font-size: 0; line-height: 0; text-indent: -4000px; }
-  .left, .alignleft { float: left; display: inline; }
-  .right, .alignright { float: right; display: inline; }
-
-  ul { list-style:none; }
-
+  a {
+    color: @highlight-blue;
+    text-decoration: none;
+    cursor: pointer;
+  }
+  a:hover {
+    text-decoration: underline;
+  }
+  a:visited {
+    color: @visited-blue;
+  }
+  a img {
+    border: 0;
+  }
+  textarea {
+    overflow: auto;
+  }
+  .cl {
+    display: block;
+    height: 0;
+    font-size: 0;
+    line-height: 0;
+    text-indent: -4000px;
+    clear: both;
+  }
+  .notext {
+    font-size: 0;
+    line-height: 0;
+    text-indent: -4000px;
+  }
+  .left,
+  .alignleft {
+    float: left;
+    display: inline;
+  }
+  .right,
+  .alignright {
+    float: right;
+    display: inline;
+  }
+  ul {
+    list-style: none;
+  }
   .modal {
     display: none;
   }
-
   a.button {
     .button-style(cool);
-    display:inline-block;
-
+    display: inline-block;
     &.hot {
       .button-style(hot);
     }
-
     &.gray {
       .button-style(gray);
     }
@@ -82,9 +126,7 @@ body.base-template {
 }
 
 // imports
-
 @import "tables.less";
-
 body.base-template {
   @import "header.less";
   @import "footer.less";
@@ -100,14 +142,12 @@ body.base-template {
 
 @import "megamenu.less";
 @import "storybase-share.less";
-
 body.story-builder {
   @import "builder.less";
 }
 
 // viewer css already has .story-viewer qualification
 @import "viewer.less";
-
 body.explorer {
   @import "explorer.less";
 }
@@ -115,8 +155,8 @@ body.explorer {
 @import "paging.less";
 @import "search.less";
 @import "polyfills.less";
-
 // html5-boilerplate helpers want to go after other markup
 @import "helpers.less";
 @import "badges.less";
 @import "popup.less";
+

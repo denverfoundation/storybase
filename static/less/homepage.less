@@ -72,10 +72,23 @@
     padding-top: 1em;
 
     h1 {
+      padding-bottom: initial;
       text-align:left;
       margin: .25em 0 .75em 0;
       line-height:1.2em;
       font-size: 1.75em;
+    }
+  }
+
+  .homepage-header-left {
+    h1 {
+      background-image: none;
+      font-size: 1.5em;
+    }
+
+    .btn {
+      margin: auto;
+      display: block;
     }
   }
 
@@ -302,12 +315,6 @@
     border-top: 1px solid @light-gray;
     margin-top: 40px;
     padding-top: 20px;
-
-
-    .btn {
-      margin: auto;
-      display: block;
-    }
   }
 
   .latest {
@@ -342,12 +349,54 @@
   }
 
   #search-page-form {
+    background: @light-gray;
+    padding: 20px;
+    margin: .5em 0 1em 0;
+
+    .fields-container > div:first-of-type {
+      // Search field
+      width: 100%;
+      margin-bottom: 0;
+
+      label {
+        width: 20%;
+        float: left;
+      }
+    }
+
+    label {
+      font-size: 1em;
+      padding-right: 8px;
+    }
+
     input[type="search"] {
-      width: 100% !important;
+      width: 80% !important;
+      float: left;
+    }
+
+    input[type="submit"] {
+      float: right;
+      position: relative;
+      top: 25px;
+      width: 100px;
+      right: -10px;
     }
 
     .select2-container {
-      width: (100% / 3);
+      width: 100%;
+    }
+
+    .field {
+      display: inline-block;
+      width: 22.5%;
+      margin-right: 2.5%;
+      margin-bottom: 10px;
+
+      label {
+        display: block;
+        width: 100%;
+        text-align: left;
+      }
     }
   }
 }
