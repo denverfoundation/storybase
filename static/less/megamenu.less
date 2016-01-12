@@ -103,8 +103,9 @@
         padding-bottom: 23px;
 
         @media (min-width: @header-breakpoint) {
-          padding-left: 12px;
-          background: url('../img/nav-arrow.png') no-repeat 0 3px;
+          padding-left: 10px;
+          background: url('../img/nav-arrow.png') no-repeat 0 4px;
+          background-size: 12px 12px;
         }
 
         // This element is used for the dropdown pointer arrow
@@ -137,7 +138,7 @@
         min-height:200px;
 
         background: #fff;
-        box-shadow: 0 0 5px #9a9a9a;
+        box-shadow: 0 2px 5px @black30;
         padding:20px 25px 20px;
 
         // Uncomment these lines to show a drop-shadow dividing the megamenu
@@ -198,7 +199,7 @@
           float:left;
           display:inline;
           min-height:200px;
-          border-right:1px dotted @medium-gray;
+          border-right:1px solid @light-gray;
           line-height:1.2em;
           padding: 0 @dd-col-std-padding*2;
 
