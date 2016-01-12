@@ -11,7 +11,7 @@
   @footer-background-color: @blue-xxdark;
 
   .caption-mixin(@font-color: @gray) {
-    // font-style: italic;
+    font-style: normal;
     color: @dark-gray;
   }
 
@@ -84,7 +84,7 @@
 
   .intro {
     font-size: 2em;
-    font-family: georgia;
+    font-family: @roboto;
   }
 
   .caption {
@@ -502,6 +502,7 @@
 
   #footer {
     position: fixed;
+    height: 41px;
     bottom: 0;
     width: 100%;
     padding: 0;
@@ -559,7 +560,8 @@
     overflow: hidden;
     color: #fff;
     background-color: @blue-gray;
-    float: right;
+    position: absolute;
+    right: 230px;
 
     @media (min-width: @viewer-nav-breakpoint) {
      width: @toc-width;
@@ -667,7 +669,7 @@
     padding: 0;
     bottom: 10px;
     width: auto;
-    right: 440px;
+    right: 490px;
 
     a {
       text-decoration: none;
