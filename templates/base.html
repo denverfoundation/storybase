@@ -36,7 +36,19 @@
 
   <script src="{{ STATIC_URL }}js/libs/respond.min.js"></script>
   <script src="{{ STATIC_URL }}js/libs/modernizr.custom.63515.js"></script>
-
+  <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.5.18/webfont.js"></script>
+  {% compress js %}
+  <script>
+  WebFont.load({
+    google: {
+      families: [
+        'Roboto:100,300,400,700,900',
+        'Roboto Condensed:300,700'
+      ]
+    }
+  });
+  </script>
+  {% endcompress %}
   {% block extrahead %}{% endblock %}
 </head>
 
