@@ -1,38 +1,41 @@
 .footer {
   padding-top: 26px;
-  background: #000000;
+  background: @blue-xxdark;
   padding-bottom: 60px;
-
   .footer-left {
     p {
       color: #999;
     }
   }
-
   .footer-right {
     margin-bottom: 12px;
-
     @media (min-width: @screen-sm-min) {
       float: right;
       margin-bottom: 0;
     }
-
     ul {
       list-style: none;
-
       li {
         a {
           font-size: 14px;
           color: #909090;
-          font-family:  'MuseoSlab500Regular';
+          font-family: @roboto;
+          font-weight: 700;
           line-height: 22px;
-
-          &:hover { text-decoration: none; color: #fff;  }
+          &:hover {
+            text-decoration: none;
+            color: #fff;
+          }
         }
-
-        &.middle { padding-bottom: 14px;  }
-        &.last a { font-family:  'MuseoSlab500Regular';   }
+        &.middle {
+          padding-bottom: 14px;
+        }
+        &.last a {
+          font-family: @roboto;
+          font-weight: 700;
+        }
       }
     }
   }
 }
+

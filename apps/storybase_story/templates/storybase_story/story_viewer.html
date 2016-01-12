@@ -1,4 +1,4 @@
-{% load static i18n sekizai_tags storybase_tags story compress %}
+{% load static i18n sekizai_tags storybase_tags story compress cms_tags %}
 <!doctype html>
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
 <!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
@@ -226,7 +226,7 @@
       </header>
       <div class="popup-body">
         <div id="add-badge-body"></div>
-        <p><a href="{% url 'badges' %}" target="_blank">Learn more</a> about Floodlight's badges</p>
+        <p><a href="{% page_url 'badges' %}" target="_blank">Learn more</a> about Floodlight's badges</p>
       </div>
     </div>
 
@@ -245,7 +245,7 @@
       </header>
       <div class="popup-body">
         <p id="show-badge-body"></p>
-        <p><a href="{% url 'badges' %}" target="_blank">Learn more</a> about Floodlight's badges</p>
+        <p><a href="{% page_url 'badges' %}" target="_blank">Learn more</a> about Floodlight's badges</p>
       </div>
     </div>
 

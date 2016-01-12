@@ -34,24 +34,26 @@
       .next {
         height: 100%;
         background: #fff url('../img/right-arrow2.jpg') no-repeat right 50%;
+        background-position: right 0;
         font-size: 0;
         line-height: 0;
         text-indent: -4000px;
 
         @media (min-width: @screen-sm-min) {
-          background-position: right 0;
+          background-position: top;
         }
       }
 
       .prev {
         height: 100%;
         background: #fff url('../img/left-arrow2.jpg') no-repeat 0 50%;
+        background-position: 0 40px;
         font-size: 0;
         line-height: 0;
         text-indent: -4000px;
 
         @media (min-width: @screen-sm-min) {
-          background-position: 0 0;
+          background-position: top;
         }
       }
 
@@ -73,16 +75,7 @@
       text-align:left;
       margin: .25em 0 .75em 0;
       line-height:1.2em;
-    }
-  }
-
-  .homepage-header-left {
-    // Hide the left column, "Everyone's got a story to tell ..." on
-    // very narrow displays
-    display: none;
-
-    @media (min-width: @header-breakpoint) {
-      display: block;
+      font-size: 1.75em;
     }
   }
 
@@ -211,7 +204,7 @@
     background: url(/static/img/skyline.jpg) no-repeat center center;
     background-position: top;
     background-size: cover;
-    height: 475px;
+    height: 340px;
   }
 
   .images {

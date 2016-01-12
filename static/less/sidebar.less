@@ -1,11 +1,13 @@
 .sidebar {
   ul {
-    padding:0;
+    padding:0 0 0 20px;
   }
 	li {
 		color:#4a4a4a;
-		font-family: 'MuseoSlab500Regular';
+		font-family: @roboto;
+    font-weight: 400;
 		list-style:none;
+    margin-bottom: 5px;
 
 		a {
 			color:@highlight-blue;
@@ -16,19 +18,25 @@
 		text-align:left;
 	}
 
+  .sibling-nav {
+    border-bottom: 1px solid @light-gray;
+  }
+
 	.sibling-nav li {
 		margin-bottom:8px;
-		padding-right:17px;
+		padding-left:17px;
+    margin-left: -17px;
 
 		a {
-			font-size:18px;
-			line-height:22px;
-			font-family: 'MuseoSlab500Regular';
+			font-size:14px;
+			line-height:18px;
+			font-family: @roboto-condensed;
+      font-weight: 400;
 		}
 
 		&.selected,
 		&.hover {
-			background:url('../img/arrow-nav.png') no-repeat right center;
+			background:url('../img/arrow-nav.png') no-repeat left center;
 		}
 
 		a:hover {
