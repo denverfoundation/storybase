@@ -79,6 +79,7 @@
   padding-top: 14px;
   display: inline-block;
   width: inherit;
+  position: relative;
 
   @media (min-width: @header-breakpoint) {
     float: right;
@@ -88,9 +89,12 @@
 
   ul {
     list-style:none;
+    white-space: nowrap;
+    position: absolute;
+    top: 18px;
+    right: 0;
 
     li {
-      float:left;
       display:inline;
       background:url('../img/sep2.png') no-repeat 0 2px;
       padding-left:11px;
@@ -125,14 +129,10 @@
 
   form#search {
     margin: 0 auto;
-    width: 200px;
-
-    @media (min-width: 420px) {
-      width: 278px;
-    }
+    width: 230px;
 
     @media (min-width: @header-breakpoint) {
-      padding-top: 12px;
+      padding-top: 32px;
       margin: 0;
       width: auto;
     }
@@ -155,12 +155,12 @@
       font-style:normal;
 
       @media (min-width: 420px) {
-        width: 233px;
+        width: 85%;
       }
     }
 
     button.submit {
-      width: 38px;
+      width: 15%;
       height: 35px;
       background: url('../img/search.png') no-repeat right 0;
       border: 0;
