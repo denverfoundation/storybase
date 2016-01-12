@@ -57,33 +57,42 @@ body.base-template {
     h2 {
       font-size: (@top-header-size * .6);
     }
+
     h3 {
       font-size: (@top-header-size * .5);
     }
+
     h4 {
       font-size: (@top-header-size * .4);
     }
+
     h5 {
       font-size: (@top-header-size * .3);
     }
   }
+
   a {
     color: @highlight-blue;
     text-decoration: none;
     cursor: pointer;
   }
+
   a:hover {
     text-decoration: underline;
   }
+
   a:visited {
     color: @visited-blue;
   }
+
   a img {
     border: 0;
   }
+
   textarea {
     overflow: auto;
   }
+
   .cl {
     display: block;
     height: 0;
@@ -92,33 +101,41 @@ body.base-template {
     text-indent: -4000px;
     clear: both;
   }
+
   .notext {
     font-size: 0;
     line-height: 0;
     text-indent: -4000px;
   }
+
   .left,
   .alignleft {
     float: left;
     display: inline;
   }
+
   .right,
   .alignright {
     float: right;
     display: inline;
   }
+
   ul {
     list-style: none;
   }
+
   .modal {
     display: none;
   }
+
   a.button {
     .button-style(cool);
     display: inline-block;
+
     &.hot {
       .button-style(hot);
     }
+
     &.gray {
       .button-style(gray);
     }
