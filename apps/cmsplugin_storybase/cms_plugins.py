@@ -8,9 +8,10 @@ from storybase_messaging.forms import SiteContactMessageForm
 from storybase_story.forms import StorySearchForm
 from storybase_badge.models import Badge
 
-from cmsplugin_storybase.models import (ActivityPlugin as ActivityPluginModel,
-    StoryPlugin as StoryPluginModel,
-    HelpPlugin as HelpPluginModel)
+from cmsplugin_storybase.models import (
+    ActivityPlugin as ActivityPluginModel, StoryPlugin as StoryPluginModel,
+    HelpPlugin as HelpPluginModel, PartnerPlugin as PartnerPluginModel
+)
 
 
 class ActivityPlugin(CMSPluginBase):
@@ -64,12 +65,32 @@ class BadgesPlugin(CMSPluginBase):
 
 class SearchPlugin(CMSPluginBase):
     model = CMSPlugin
-    name = _("StoryBase Search")
+    name = _("StoryBase Search Form")
     render_template = "search_plugin.html"
 
     def render(self, context, instance, placeholder):
-         context['form'] = StorySearchForm
+         context['form'] = StorySearchForm()
          return context
+
+
+class PartnersPlugin(CMSPluginBase):
+    model = CMSPlugin
+    name = _("StoryBase Partners Slider")
+    render_template = "partners_plugin.html"
+    allow_children = True
+    child_classes = ['PartnerPlugin']
+
+    def render(self, context, instance, placeholder):
+         context['instance'] = instance
+         return context
+
+
+class PartnerPlugin(CMSPluginBase):
+    model = PartnerPluginModel
+    name = _("Storybase Partner Slide")
+    render_plugin = False
+    require_parent = True
+    parent_classes = ['PartnersPlugin']
 
 
 plugin_pool.register_plugin(ActivityPlugin)
@@ -78,3 +99,5 @@ plugin_pool.register_plugin(StoryPlugin)
 plugin_pool.register_plugin(HelpPlugin)
 plugin_pool.register_plugin(BadgesPlugin)
 plugin_pool.register_plugin(SearchPlugin)
+plugin_pool.register_plugin(PartnersPlugin)
+plugin_pool.register_plugin(PartnerPlugin)

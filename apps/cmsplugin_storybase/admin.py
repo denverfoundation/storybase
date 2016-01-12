@@ -5,9 +5,30 @@ from cms.models import Page
 from storybase.admin import (StorybaseModelAdmin, StorybaseStackedInline,
         obj_title)
 from cmsplugin_storybase.forms import (ActivityTranslationAdminForm,
-    NewsItemTranslationAdminForm)
+    NewsItemTranslationAdminForm, PartnerTranslationAdminForm)
 from cmsplugin_storybase.models import (Activity, ActivityTranslation,
-    NewsItem, NewsItemTranslation, TeaserExtension)
+    NewsItem, NewsItemTranslation, Partner, PartnerTranslation,
+    TeaserExtension)
+
+
+class PartnerTranslationInline(StorybaseStackedInline):
+    model = PartnerTranslation
+    form = PartnerTranslationAdminForm
+    extra = 1
+
+
+def obj_name(obj):
+    if obj.name:
+        return obj.name
+    else:
+        return str(obj)
+obj_name.short_description = 'Name'
+
+class PartnerAdmin(StorybaseModelAdmin):
+    list_display = (obj_name,)
+    search_fields = ['partnertranslation__name',]
+    inlines = [PartnerTranslationInline,]
+    prefix_inline_classes = ['PartnerTranslationInline',]
 
 
 class ActivityTranslationInline(StorybaseStackedInline):
@@ -50,6 +71,7 @@ class NewsItemAdmin(StorybaseModelAdmin):
         obj.save()
 
 
+admin.site.register(Partner, PartnerAdmin)
 admin.site.register(Activity, ActivityAdmin)
 admin.site.register(NewsItem, NewsItemAdmin)
 admin.site.register(TeaserExtension, TitleExtensionAdmin)

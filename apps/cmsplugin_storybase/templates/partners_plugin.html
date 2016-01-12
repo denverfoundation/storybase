@@ -1,0 +1,25 @@
+{% load cms_tags %}
+<div class="grid_3">
+  <ul class="foundations">
+    {% for plugin in instance.child_plugin_instances %}
+    <li><a href="#"{% if forloop.first %} class="active"{% endif %}>{{ plugin.partner.name }}</a></li>
+    {% endfor %}
+  </ul>
+</div>
+<div class="grid_9 flexslider">
+  <ul class="slides">
+    {% for plugin in instance.child_plugin_instances %}
+    <li>
+      <div class="image">
+        <a href="{% page_url "partners" %}">
+          <img src="{{ plugin.partner.image.url }}" alt="{{ plugin.partner.name }}"/>
+        </a>
+      </div>
+      <div class="text">
+        {{ plugin.partner.description|safe }}
+      </div>
+      <div class="cl"> </div>
+    </li>
+    {% endfor %}
+  </ul>
+</div>

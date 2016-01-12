@@ -26,6 +26,36 @@ class List(CMSPlugin):
     num_items = models.IntegerField(default=3)
 
 
+class PartnerTranslation(TranslationModel):
+    partner = models.ForeignKey('Partner')
+    name = ShortTextField()
+    description = models.TextField()
+
+
+class Partner(TranslatedModel):
+    """
+    Supporting Foundation or partner to be included on the homepage
+    """
+    image = FilerImageField(blank=True, null=True,
+                            help_text=_("Image of the partner's logo."))
+    translated_fields = ['name', 'description']
+    translation_set = 'partnertranslation_set'
+    translation_class = PartnerTranslation
+
+    class Meta:
+        verbose_name_plural = _("Partners")
+
+    def __unicode__(self):
+        return self.name
+
+
+class PartnerPlugin(CMSPlugin):
+    partner = models.ForeignKey(Partner, related_name='plugins')
+
+    def __unicode__(self):
+        return self.partner.name
+
+
 class ActivityTranslation(TranslationModel):
     activity = models.ForeignKey('Activity')
     title = ShortTextField()
