@@ -350,6 +350,7 @@
 
   #search-page-form {
     background: @light-gray;
+    border-radius: 4px;
     padding: 20px;
     margin: .5em 0 1em 0;
 
@@ -357,10 +358,14 @@
       // Search field
       width: 100%;
       margin-bottom: 0;
+      display: inline-block;
 
       label {
-        width: 20%;
-        float: left;
+        vertical-align: middle;
+        display: inline-block;
+        width: 17%;
+        font-size: 20px;
+        font-weight: 300;
       }
     }
 
@@ -371,15 +376,19 @@
 
     input[type="search"] {
       width: 80% !important;
-      float: left;
+      -webkit-appearance: none;
+      border: 1px solid #aaa;
+      height: 25px;
+      margin-bottom: 10px;
+      border-radius: 4px;
+      height: 36px;
+      padding: 4px;
     }
 
     input[type="submit"] {
-      float: right;
-      position: relative;
-      top: 25px;
+      display: inline-block;
+      vertical-align: middle;
       width: 100px;
-      right: -10px;
     }
 
     .select2-container {
