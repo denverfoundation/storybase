@@ -180,7 +180,6 @@ Handlebars templates for rendering Backbone views.
 jQuery = jqLatest;
 $ = jQuery;
 </script>
-<script type="text/javascript" src="{% url "django.views.i18n.javascript_catalog" %}"></script>
 <script src="{{ STATIC_URL }}js/libs/underscore-min.js"></script>
 <script src="{{ STATIC_URL }}js/libs/json2.js"></script>
 <script src="{{ STATIC_URL }}js/libs/backbone-min.js"></script>
@@ -216,4 +215,8 @@ $(document).ready(function() {
 });
 </script>
 {% endaddtoblock %}
+{% endblock %}
+
+{% block extrajs %}
+<script type="text/javascript" src="{% url "django.views.i18n.javascript_catalog" %}"></script>
 {% endblock %}
