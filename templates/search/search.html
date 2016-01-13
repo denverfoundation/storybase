@@ -1,11 +1,12 @@
 {% extends 'base.html' %}
-{% load i18n storybase_tags %}
+{% load i18n sekizai_tags storybase_tags %}
 
 {% block head_title %}{% if query %}{% trans "Search Results for" %} "{{ query }}"{% else %}{% trans "Search" %}{% endif %}{% endblock %}
 
 {% block body_class %}search{% endblock %}
 
 {% block base_content %}
+{% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/select2/select2.css">{% endaddtoblock %}
 {% if not query %}
 <h1><span>{% trans "Search" %}</span></h1>
 {% endif %}
@@ -66,4 +67,13 @@
 {% else %}
 {# Show some example queries to run, maybe query syntax, something else? #}
 {% endif %}
+{% endblock %}
+
+{% block extrajs %}
+  <script src="{{ STATIC_URL }}js/libs/select2/select2.min.js"></script>
+  <script>
+    jQuery(function($) {
+      $('select').select2();
+    });
+  </script>
 {% endblock %}
