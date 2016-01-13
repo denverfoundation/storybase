@@ -299,34 +299,6 @@
   a.top-nav.ancestor {
     .active-top-nav-link;
   }
-
-  // Menu items wrap across two or more lines.  This is class is added/removed
-  // by JavaScript
-  &.wrapped {
-    @media (min-width: @header-breakpoint) {
-      padding-top: @megamenu-padding-top - 10;
-
-      .nav > li {
-        .dd {
-          top: 50px;
-        }
-
-        > a {
-          padding-bottom: 33px;
-        }
-
-        &.wrapped {
-          > a {
-            padding-bottom: 13px;
-          }
-
-          .dd {
-            top: 50px;
-          }
-        }
-      }
-    }
-  }
 }
 
 #my-account {
