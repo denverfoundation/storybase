@@ -17,15 +17,8 @@ class PartnerTranslationInline(StorybaseStackedInline):
     extra = 1
 
 
-def obj_name(obj):
-    if obj.name:
-        return obj.name
-    else:
-        return str(obj)
-obj_name.short_description = 'Name'
-
 class PartnerAdmin(StorybaseModelAdmin):
-    list_display = (obj_name,)
+    list_display = ('name',)
     search_fields = ['partnertranslation__name',]
     inlines = [PartnerTranslationInline,]
     prefix_inline_classes = ['PartnerTranslationInline',]

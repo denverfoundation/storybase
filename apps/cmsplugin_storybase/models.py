@@ -28,7 +28,6 @@ class List(CMSPlugin):
 
 class PartnerTranslation(TranslationModel):
     partner = models.ForeignKey('Partner')
-    name = ShortTextField()
     description = models.TextField()
 
 
@@ -36,9 +35,10 @@ class Partner(TranslatedModel):
     """
     Supporting Foundation or partner to be included on the homepage
     """
+    name = ShortTextField()
     image = FilerImageField(blank=True, null=True,
                             help_text=_("Image of the partner's logo."))
-    translated_fields = ['name', 'description']
+    translated_fields = ['description']
     translation_set = 'partnertranslation_set'
     translation_class = PartnerTranslation
 
