@@ -19,11 +19,9 @@
 	font-size:14px;
 	border-radius:4px;
 	border:none;
-	font-weight:normal;
 	color:white !important;
 	cursor:pointer;
   text-decoration: none;
-	text-shadow:0 -1px 0 rgba(0, 0, 0, .4);
 	display:inline-block;
 
 	&.right {
@@ -36,6 +34,7 @@
 
 .button-style(hot) {
   background:@orange;
+
   &:hover {
     background:darken(desaturate(@orange, 20%), 20%);
   }
@@ -76,6 +75,7 @@
 
 // CSS classes for button styles
 .button {
+  font-weight: 700;
   .button-style;
   &.hot {
     .button-style(hot);
