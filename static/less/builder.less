@@ -264,9 +264,10 @@ button.help {
   height: @title-bar-height;
 
   .title {
-    .viewer-story-title();
+  .viewer-story-title();
     width: 100%;
     margin-top: 2px;
+    margin-left: 0;
     height: 32px;
     line-height: 32px;
     overflow: hidden;
@@ -904,6 +905,7 @@ button.preview {
 
   .widget {
     font-size:14px;
+    font-weight: 700;
     color:white;
     padding:10px;
     border:none;
@@ -913,7 +915,7 @@ button.preview {
     background:@gray;
     z-index:301;
     position:relative;
-    min-width: 110px;
+    min-width: 130px;
 
     .arrow {
       display:block;
@@ -965,7 +967,11 @@ button.preview {
           clear:left;
         }
       }
-      &.bottom {
+      &:last-of-type {
+        // TODO: jquery.graphicselect.js is adding .bottom class
+        // to the two last elements. Using a pseudo selector
+        // works around that, but that script should probably be fixed
+        // or removed.
         margin-bottom:0;
       }
 
