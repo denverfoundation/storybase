@@ -514,21 +514,20 @@
       position: relative;
       float: right;
       display: inline-block;
-      background-image: url(../img/viewer-logo.png);
+      background-image: url(../img/viewer-logo-bubble.png);
       background-repeat: no-repeat;
-      background-position: -42px 0;
       height: 27px;
-      width: 26px;
       top: 9px;
-      margin-left: 10px;
+      width: 50px;
 
       span {
         .hide-text;
       }
 
       @media (min-width: @viewer-nav-breakpoint) {
+        background-image: url(../img/viewer-logo.png);
         background-position: 0px 0px;
-        width: 205px;
+        width: 190px;
       }
     }
   }
@@ -562,10 +561,11 @@
     color: #fff;
     background-color: @blue-gray;
     position: absolute;
-    right: 230px;
+    right: 60px;
 
     @media (min-width: @viewer-nav-breakpoint) {
      width: @toc-width;
+     right: @toc-width + 20px;
     }
 
     &:hover {
@@ -583,6 +583,7 @@
       overflow-x: hidden;
       overflow-y: auto;
       margin-bottom: @viewer-bar-padding;
+      right: 50px;
 
       @media (min-width: @viewer-nav-breakpoint) {
         width: @toc-width;
@@ -671,7 +672,11 @@
     padding: 0;
     bottom: 10px;
     width: auto;
-    right: 490px;
+    right: 140px;
+
+    @media (min-width: @viewer-nav-breakpoint) {
+      right: 400px;
+    }
 
     a {
       text-decoration: none;
