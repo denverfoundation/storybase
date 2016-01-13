@@ -37,18 +37,16 @@
   <script src="{{ STATIC_URL }}js/libs/respond.min.js"></script>
   <script src="{{ STATIC_URL }}js/libs/modernizr.custom.63515.js"></script>
   <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.5.18/webfont.js"></script>
-  {% compress js %}
   <script>
-  WebFont.load({
-    google: {
-      families: [
-        'Roboto:100,300,400,700,900',
-        'Roboto Condensed:300,700'
-      ]
-    }
-  });
+    WebFont.load({
+      google: {
+        families: [
+          'Roboto:100,300,400,700,900',
+          'Roboto Condensed:300,700'
+        ]
+      }
+    });
   </script>
-  {% endcompress %}
   {% block extrahead %}{% endblock %}
 </head>
 
@@ -134,19 +132,19 @@
 
   {% addtoblock "js" %}
   <script>
-  // Before loading all of our jQuery plugins, switch jQuery to our recent version
-  jQuery = jqLatest;
-  $ = jQuery;
+    // Before loading all of our jQuery plugins, switch jQuery to our recent version
+    jQuery = jqLatest;
+    $ = jQuery;
   </script>
   {% endaddtoblock %}
   {% addtoblock "js" %}<script defer src="{{ STATIC_URL }}js/plugins.js"></script>{% endaddtoblock %}
   {% addtoblock "js" %}<script src="{{ STATIC_URL }}js/functions.js"></script>{% endaddtoblock %}
   {% addtoblock "js" %}
   <script>
-  Modernizr.load({
-    test: Modernizr.input.placeholder,
-    nope: '{{ STATIC_URL }}js/libs/polyfill.placeholder.js'
-  });
+    Modernizr.load({
+      test: Modernizr.input.placeholder,
+      nope: '{{ STATIC_URL }}js/libs/polyfill.placeholder.js'
+    });
   </script>
   {% endaddtoblock %}
   {% block extrajs %}{% endblock %}
