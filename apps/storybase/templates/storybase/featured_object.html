@@ -18,7 +18,7 @@ context:
     {% for object in objects %}
     <li>
         <div class="title">
-          <p class="featured-type">{{ object.type }} Spotlight</p>
+          <p class="featured-type">{{ object.type }}</p>
           <h3><a href="{{ object.url }}" title="{{ object.title }}">{{ object.title }}</a></h3>
           <p class="byline">{% if object.author %}<span class="author">{{ object.author }}</span> {% endif %}<span class="date">{{ object.date|date:"F j, Y" }}</span></p>
         </div>
