@@ -9,6 +9,7 @@
 <div class="grid_9 flexslider">
   <ul class="slides">
     {% for plugin in instance.child_plugin_instances %}
+    {% render_plugin plugin %}
     <li>
       <div class="image">
         <a href="{% page_url "partners" %}">
