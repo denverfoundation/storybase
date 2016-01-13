@@ -153,10 +153,7 @@
   <script src="{{ STATIC_URL }}js/jquery.storybaseshare.js"></script>
   {% endcompress %}
 
-  {% render_block "js" %}
-  {% comment %}
   {% render_block "js" postprocessor "compressor.contrib.sekizai.compress" %}
-  {% endcomment %}
   <!-- end scripts-->
 
   {% include "analytics.html" %}
