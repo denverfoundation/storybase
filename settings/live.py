@@ -44,5 +44,5 @@ COMPRESS_PRECOMPILERS = (
 
 ALLOWED_HOSTS = [
     'www.floodlightproject.org',
-    'test.floodlightproject.org',
+    'new.floodlightproject.org',
 ]
