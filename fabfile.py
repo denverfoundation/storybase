@@ -9,8 +9,8 @@ def dev():
 
 def live():
     env.project_name = 'floodlightproject.org'
-    env.vassal_name = 'floodlightproject_live'
-    return ['fusionbox@floodlightproject.org']
+    env.vassal_name = 'floodlightproject_org'
+    return ['fusionbox@45.56.69.248']
 
 env.roledefs['dev'] = dev
 env.roledefs['live'] = live
