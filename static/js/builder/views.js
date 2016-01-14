@@ -21,7 +21,6 @@
   var DataSet = storybase.models.DataSet;
   var DataSets = storybase.collections.DataSets;
   var FeaturedAssets = storybase.collections.FeaturedAssets;
-  var Locations = storybase.collections.Locations;
   var Section = storybase.models.Section;
   var Story = storybase.models.Story;
   var StoryRelations = storybase.collections.StoryRelations;
@@ -29,7 +28,6 @@
   var Tags = storybase.collections.Tags;
   var getLabelText = storybase.forms.getLabelText;
   var capfirst = storybase.utils.capfirst;
-  var geocode = storybase.utils.geocode;
   var hasAnalytics = storybase.utils.hasAnalytics;
   var licenseParamsToStr = storybase.utils.licenseParamsToStr;
   var licenseStrToParams = storybase.utils.licenseStrToParams;
@@ -6341,10 +6339,6 @@
       initialize: function() {
         this.dispatcher = this.options.dispatcher;
         this.compileTemplates();
-        this.addLocationView = new AddLocationView({
-          model: this.model,
-          dispatcher: this.dispatcher
-        });
         this.tagView = new TagView({
           model: this.model,
           dispatcher: this.dispatcher
@@ -6493,150 +6487,11 @@
           this.officialForm.fields.projects.editor.$el.select2({width: 'resolve'});
         }
         this.$el.append(this.tagView.render().el);
-        this.$el.append(this.addLocationView.render().el);
 
         return this;
       },
-
-      onShow: function() {
-        this.addLocationView.onShow();
-      }
     })
   );
-
-  var AddLocationView = Views.AddLocationView = HandlebarsTemplateView.extend({
-    id: 'add-location',
-
-    mapId: 'map',
-
-    events: {
-      'click #search-address': 'searchAddress',
-      'click .delete': 'deleteLocation',
-      'submit': 'addLocation'
-    },
-
-    options: {
-      templateSource: {
-        '__main':  $('#add-location-template').html(),
-        'location': $('#add-location-location-item-template').html()
-      }
-    },
-
-    initialize: function(options) {
-      this.dispatcher = options.dispatcher;
-      this.compileTemplates();
-      this.initialCenter = new L.LatLng(storybase.MAP_CENTER[0],
-                                        storybase.MAP_CENTER[1]);
-      this.initialZoom = storybase.MAP_ZOOM_LEVEL;
-      this.collection = new Locations([], {story: this.model});
-      this.pointZoom = storybase.MAP_POINT_ZOOM_LEVEL;
-      this.latLng = null;
-      this._collectionFetched = false;
-      this.collection.on("reset", this.renderLocationList, this);
-      this.collection.on("add", this.renderLocationList, this);
-      this.collection.on("remove", this.renderLocationList, this);
-    },
-
-    render: function() {
-      if (!this._collectionFetched) {
-        this.collection.fetch();
-      }
-      this.$el.html(this.template());
-      this.renderLocationList();
-      // Don't show the address name input until an address has been found
-      this.$('#address-name-container').hide();
-      // Disable the submission button until an address has been found
-      this.$('#do-add-location').prop('disabled', true);
-      this.delegateEvents();
-      return this;
-    },
-
-    onShow: function() {
-      this.map = new L.Map(this.$('#map')[0], {
-      });
-      this.map.setView(this.initialCenter, this.initialZoom);
-      var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-          osmAttrib = 'Map data &copy; 2012 OpenStreetMap contributors',
-          osm = new L.TileLayer(osmUrl, {maxZoom: 18, attribution: osmAttrib});
-      this.map.addLayer(osm);
-      this.markers = new L.LayerGroup();
-      this.map.addLayer(this.markers);
-    },
-
-    renderLocationList: function(collection) {
-      var template = this.getTemplate('location');
-      this.$('#locations').empty();
-      this.collection.each(function(loc) {
-        this.$('#locations').append($(template(loc.toJSON())));
-      }, this);
-    },
-
-    searchAddress: function(evt) {
-      evt.preventDefault();
-      var address = this.$("#address").val();
-      var that = this;
-      this.rawAddress = '';
-      // Don't show the address name input until an address has been found
-      this.$('#address-name-container').hide();
-      // Disable the submission button until an address has been found
-      this.$('#do-add-location').prop('disabled', true);
-      this.$('#found-address').html(gettext("Searching ..."));
-      this.$('#address-name').val(null);
-      this.markers.clearLayers();
-      geocode(address, {
-        success: function(latLng, place) {
-          that.geocodeSuccess(latLng, place, address);
-        },
-        failure: function(address) {
-          that.$('#found-address').val(gettext("No address found"));
-        }
-      });
-    },
-
-    /**
-     * Callback for a successful response from the geocoder.
-     */
-    geocodeSuccess: function(latLng, place, queryAddress) {
-      var center = new L.LatLng(latLng.lat, latLng.lng);
-      var marker = new L.Marker(center);
-      this.rawAddress = place || queryAddress || "";
-      this.$('#found-address').html(this.rawAddress);
-      this.$('#address-name-container').show();
-      this.$('#do-add-location').prop('disabled', false);
-      this.markers.addLayer(marker);
-      this.map.setView(marker.getLatLng(), this.pointZoom, true);
-      this.latLng = latLng;
-    },
-
-    addLocation: function(evt) {
-      evt.preventDefault();
-      var name = this.$('#address-name').val();
-      // Make sure we found a point
-      if (this.latLng) {
-        this.collection.create({
-          name: name ? name : '',
-          lat: this.latLng.lat,
-          lng: this.latLng.lng,
-          raw: this.rawAddress
-        }, {
-          wait: true,
-          success: function(model, resp) {
-            // TODO: Handle success in saving
-          },
-          failure: function(model, resp) {
-            // TODO: Handle failure in saving
-          }
-        });
-      }
-    },
-
-    deleteLocation: function(evt) {
-      evt.preventDefault();
-      var id = $(evt.target).data('location-id');
-      var loc = this.collection.get(id);
-      loc.destroy();
-    }
-  });
 
   var TagView = Views.TagView = HandlebarsTemplateView.extend({
     id: 'story-tags',
