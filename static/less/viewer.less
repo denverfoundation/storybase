@@ -410,9 +410,114 @@
     }
   }
 
-  .call-to-action {
-    .callout-section;
-  }
+  #call-to-action {
+
+    .next-steps {
+      background: @light-gray;
+      padding: 20px 40px;
+      display: flex;
+      flex-wrap: wrap;
+      margin: 20px 0;
+      border-radius: 4px;
+
+      section {
+        padding: 0 10px;
+        flex: 1 0 300px;
+        margin-right: 20px;
+        margin-bottom: 20px;
+        border-bottom: 1px dotted @medium-gray;
+
+        &:last-of-type {
+          border-bottom: none;
+        }
+
+        @media (min-width: @header-breakpoint) {
+          border-bottom: none;
+          border-right: 1px dotted @medium-gray;
+        }
+
+        h4 {
+          margin-bottom: 8px;
+          color: @dark-gray !important;
+          font-size: 1.25em;
+        }
+
+        &.related {
+
+          li {
+            margin-bottom: 8px;
+            float: left;
+            clear: both;
+          }
+
+          a {
+            display: block;
+            font-weight: 700;
+            text-decoration: none;
+
+            &:hover {
+              text-decoration: underline;
+            }
+
+            span {
+              font-weight: 400;
+            }
+          }
+        }
+
+        &.sharing {
+          a,
+          p {
+            font-weight: 700;
+            font-family: @roboto-condensed;
+            color: @dark-gray;
+          }
+
+          a {
+            display: inline-block;
+            width: 100%;
+            margin-bottom: 8px;
+          }
+
+          // Icon images
+          img {
+            width: 18px;
+            margin-right: 8px;
+            vertical-align: middle;
+          }
+
+          .url-block {
+            span {
+              display: inline-block;
+              border-radius: 4px;
+              padding: 4px 6px;
+              background: @white30;
+              border: 1px solid @black20;
+              margin-top: 4px;
+            }
+          }
+        }
+
+        &.contact {
+          a {
+            text-decoration: none;
+            font-size: 1.125em;
+            font-weight: 300;
+            display: inline-block;
+            margin-bottom: 2px;
+
+            &:hover {
+              text-decoration: underline;
+            }
+          }
+        }
+
+          &:last-of-type {
+            border-right: 0;
+          }
+        }
+      }
+    }
 
   .section,
   .connected-story {
