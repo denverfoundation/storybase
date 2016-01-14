@@ -23,102 +23,6 @@
   Handlebars.registerPartial("story", $("#story-partial-template").html());
   Handlebars.registerPartial("story_link", $("#story-link-partial-template").html());
 
-  var StoryMarker = L.Marker.extend({
-    initialize: function (latlng, story, options) {
-      L.Util.setOptions(this, options);
-      this._latlng = latlng;
-      this.story = story;
-    }
-  });
-
-  var StoryClusterMarker = ClusterMarker_.extend({
-    /**
-     * Override the original to pass the cluster object to be able to have
-     * access to the markers and stories
-     */
-    initialize: function(latLng_, cluster_, count_, styles_, padding_) {
-      this.reset({latLng:latLng_, cluster: cluster_, count: count_, styles: styles_, padding: padding_});
-    },
-
-    /**
-     * Override the original to display the marker count based on the number
-     * of stories, not the number of markers.  I'm still not sure this is
-     * a good idea.
-     */
-    reset: function(opts) {
-      if (!opts || typeof opts !== "object")
-        return;
-
-      var updated = 0;
-      if (typeof opts.latLng === "object" && opts.latLng != this.latlng_) {
-        this.latlng_ = opts.latLng;
-        updated = 1;
-      }
-      if (typeof opts.cluster === "object" && opts.cluster != this.cluster_) {
-        this.cluster_ = opts.cluster;
-        this.stories_ = _.uniq(_.map(this.cluster_.getMarkers(),
-          function(marker) {
-            return marker.marker.story;
-        }));
-        this.count_ = this.stories_.length;
-      }
-
-      var styles_updated = 0;
-      if (typeof opts.styles === "object" && opts.styles != this.styles_) {
-        this.styles_ = opts.styles;
-        updated = 1;
-        styles_updated = 1;
-      }
-
-      if (this.count_) {
-        var index = 0;
-        var dv = this.count_;
-        while (dv !== 0) {
-            dv = parseInt(dv / 10, 10);
-            index ++;
-        }
-
-        var styles = this.styles_;
-
-        if (styles.length < index) {
-            index = styles.length;
-        }
-        this.url_ = styles[index - 1].url;
-        this.height_ = styles[index - 1].height;
-        this.width_ = styles[index - 1].width;
-        this.textColor_ = styles[index - 1].opt_textColor;
-        this.anchor_ = styles[index - 1].opt_anchor;
-        this.index_ = index;
-        updated = 1;
-      }
-
-      if (typeof opts.padding === "number" && this.padding_ != opts.padding) {
-        this.padding_ = opts.padding;
-        updated = 1;
-      }
-
-      this.updated |= updated;
-    },
-
-    onClick_: function(cluster) {
-      var map = cluster.map_;
-      var popup = new L.Popup();
-      var storiesJSON = _.map(this.stories_, function(story) {
-        return story.toJSON();
-      });
-      var popupContent = StoryClusterMarker.template({
-        stories: storiesJSON
-      });
-      popup.setLatLng(cluster.latlng_);
-      popup.setContent(popupContent);
-      map.openPopup(popup);
-    }
-  });
-  StoryClusterMarker.template = Handlebars.compile($('#story-list-marker-template').html());
-  // Monkey patch leafclusterer's ClusterMarker_ to use our inherited
-  // class
-  ClusterMarker_ = StoryClusterMarker;
-
   Views.ExplorerApp = HandlebarsTemplateView.extend({
     el: $('#explorer'),
 
@@ -136,7 +40,6 @@
     events: {
       "click .select-tile-view": "selectTile",
       "click .select-list-view": "selectList",
-      "click .select-map-view": "selectMap",
       "click #show-more": "clickShowMore",
       "change #filters select": "handleChangeFilters",
       "click #filters .clear-filters": "clearAllFilters"
@@ -145,17 +48,11 @@
     initialize: function(options) {
       var that = this;
       this.selectedFilters = this.options.selectedFilters;
-      // Point around which to filter stories
-      this.near = null;
-      // Radius in miles around this.near to filter stories
-      this.distance = Explorer.SEARCH_DISTANCE;
-      // Should only stories with geographic points be shown
-      this.onlyPoints = false;
       // Flag to keep from re-fetching the same page of items when we're
       // scrolled near the bottom of the window, but the new items haven't yet
       // loaded
       this.isDuringAjax = false;
-      // Is the tile, list or map view currently active
+      // Is the tile or list view currently active
       this.activeView = null;
       // Total number of matching stories
       this.totalMatchingStories = 0;
@@ -183,11 +80,6 @@
       });
       this.storyListView = new StoryList({
         stories: this.stories
-      });
-      this.mapView = new Map({
-        stories: this.stories,
-        boundaryPoints: this.options.storyData.boundaries,
-        parentView: this
       });
 
       $(window).bind('scroll', function(ev) {
@@ -231,15 +123,13 @@
       this.$el.prepend('<div id="filter-proxy"></div>');
       this.filterView.setInitialProperties();
       this.$el.append(this.storyListView.el);
-      this.$el.append(this.mapView.el);
-      this.mapView.render();
       this.selectView(this.options.viewType);
       this.storyListView.render();
       // Distance from story list to bottom
       // Computed as: height of the document - top offset of story list container
       // - outer height of story list container
       this.options.pixelsFromListToBottom = $(document).height() - this.storyListView.$el.offset().top - this.storyListView.$el.outerHeight();
-      this.$('.select-map-view,.select-tile-view,.select-list-view').tooltipster({
+      this.$('.select-tile-view,.select-list-view').tooltipster({
         position: 'bottom'
       });
       return this;
@@ -249,31 +139,12 @@
       if (viewType == 'list') {
         this.selectList();
       }
-      else if (viewType == 'map') {
-        this.selectMap();
-      }
       else {
         this.selectTile();
       }
     },
 
     selectTile: function(e) {
-      var refetchStories = false;
-      this.activeView = 'tile';
-      if (this.hasNear()) {
-        // Proximity search was enabled
-        // Disable it
-        this.setNear(null);
-        refetchStories = true;
-      }
-      if (this.onlyPoints) {
-        this.onlyPoints = false;
-        refetchStories = true;
-      }
-      if (refetchStories) {
-        this.fetchStories();
-      }
-      this.mapView.$el.hide();
       this.storyListView.$el.show();
       this.storyListView.tile();
       $('#view-selector li')
@@ -284,22 +155,6 @@
     },
 
     selectList: function(e) {
-      var refetchStories = false;
-      this.activeView = 'list';
-      if (this.hasNear()) {
-        // Proximity search was enabled
-        // Disable it
-        this.setNear(null);
-        refetchStories = true;
-      }
-      if (this.onlyPoints) {
-        this.onlyPoints = false;
-        refetchStories = true;
-      }
-      if (refetchStories) {
-        this.fetchStories();
-      }
-      this.mapView.$el.hide();
       // The Masonry plugin sets an explicit width on the container element.
       // Remove this width so the stylesheet styles take effect.
       this.storyListView.$el.css('width', '');
@@ -308,21 +163,6 @@
       $('#view-selector li')
         .removeClass('active')
         .filter('.list-view')
-          .addClass('active');
-      return false;
-    },
-
-    selectMap: function(e) {
-      this.activeView = 'map';
-      if (!this.onlyPoints) {
-        this.onlyPoints = true;
-        this.fetchStories();
-      }
-      this.storyListView.$el.hide();
-      this.mapView.$el.show();
-      $('#view-selector li')
-        .removeClass('active')
-        .filter('.map-view')
           .addClass('active');
       return false;
     },
@@ -370,7 +210,6 @@
               var story = new Story(storyJSON);
               that.stories.push(story);
               that.storyListView.appendStory(story);
-              that.mapView.appendStory(story);
             });
             that.isDuringAjax = false;
             that.storyListView.hideLoading();
@@ -390,7 +229,7 @@
     },
 
     scrollWindow: function(e) {
-      if (this._nearbottom() && !this.isDuringAjax && this.activeView != 'map') {
+      if (this._nearbottom() && !this.isDuringAjax) {
         this.getMoreStories(this.showMoreStories);
       }
     },
@@ -411,15 +250,6 @@
           }
         }
       });
-      // Update the querystring based on the address search
-      if (this.near !== null) {
-        filterStrings.push("near=" + this.near.lat + '@' + this.near.lng + ',' + this.distance);
-      }
-      // Update the querystring based on if we only want to show stories with
-      // places
-      if (this.onlyPoints) {
-        filterStrings.push("num_points__gt=0");
-      }
       return filterStrings.length > 0 ? '?' + filterStrings.join('&') : '';
     },
 
@@ -449,19 +279,6 @@
       }
     },
 
-    // Is proximity search enabled?
-    hasNear: function() {
-      return this.near !== null;
-    },
-
-    setNear: function(point) {
-      if (point === null) {
-        // Clearing proximity search
-      }
-      this.near = point;
-      return this;
-    },
-
     /**
      * Reset the data and redraw all child views.
      *
@@ -475,8 +292,6 @@
       this.counterView.render();
       this.storyListView.reset(this.stories);
       this.storyListView.render();
-      this.mapView.reset(this.stories, data.boundaries);
-      this.mapView.render();
       this.filterView.reset({
         topics: data.topics,
         organizations: data.organizations,
@@ -489,9 +304,7 @@
     },
 
     fetchStories: function() {
-      if (this.activeView !== 'map') {
-        this.storyListView.spin();
-      }
+      this.storyListView.spin();
       $.getJSON(this.getFilterUri(), this.resetAll);
     },
 
@@ -874,329 +687,5 @@
       this.$el.masonry('destroy');
     }
 
-  });
-
-  var Map = Views.Map = HandlebarsTemplateView.extend({
-    tagName: 'div',
-
-    id: 'map-container',
-
-    mapId: 'map',
-
-    searchFieldId: 'proximity-search-address',
-
-    searchButtonId: 'do-proximity-search',
-
-    clearButtonId: 'clear-proximity-search',
-
-    events: function() {
-      var events = {};
-      events["click #" + this.searchButtonId] = "proximitySearch";
-      events["click #" + this.clearButtonId] = "clearProximitySearch";
-      return events;
-    },
-
-    options: {
-      templateSource: {
-        'marker': $("#story-marker-template").html(),
-        'search': $('#proximity-search-template').html(),
-        'map-move-popup': $('#map-move-popup-template').html()
-      }
-    },
-
-    initialize: function() {
-      this.parentView = this.options.parentView;
-      this.stories = this.options.stories;
-      this.boundaryPoints = this.options.boundaryPoints;
-      this.boundaryLayers = new L.FeatureGroup();
-      this.compileTemplates();
-      this.initialCenter = new L.LatLng(Explorer.MAP_CENTER[0],
-                                        Explorer.MAP_CENTER[1]);
-      this.initialZoom = Explorer.MAP_ZOOM_LEVEL;
-
-      // Bind our callbacks to the view object
-      _.bindAll(this, 'redrawMap', 'geocode', 'geocodeFail',
-                'checkPlaceInMapBounds', 'clearPlaceFilters', 'keepPlaceFilters',
-                '_placeMarker', '_placeStoryMarkers');
-      this.$el.append('<div id="' + this.mapId + '"></div>');
-      this.map = null;
-    },
-
-    /**
-     * Convert a 2-dimensional array of latitude/longitude pairs to
-     * an array of L.LatLng objects
-     */
-    makeLatLngs: function(featurePoints) {
-      return _.map(featurePoints, function(point) {
-        var latlng = new L.LatLng(point[1], point[0]);
-        return latlng;
-      });
-    },
-
-    /**
-     * Create a mapping library objects representing place boundaries
-     * @param {array} boundaryPoints Three dimensional array representing
-     *    multipolygons.  The top level of the array represents the
-     *    different place boundaries, the next level is each shape in the
-     *    boundary, and the smallest level is a latitude/longitude pair.
-     * @return {array} An array of L.MultiPolygon objects
-     */
-    makeBoundaries: function(boundaryPoints) {
-      var that = this;
-      var boundaries = [];
-      _.each(boundaryPoints, function(singleBoundaryPoints) {
-        var singleBoundaryLatlngs = [];
-        _.each(singleBoundaryPoints, function(shapePoints) {
-          var latlngs = that.makeLatLngs(shapePoints);
-          singleBoundaryLatlngs.push(latlngs);
-        });
-        var mp = new L.MultiPolygon(singleBoundaryLatlngs);
-        boundaries.push(mp);
-      });
-      return boundaries;
-    },
-
-    keepPlaceFilters: function(popup) {
-      this.parentView.setMessageSeen('placeNotVisible');
-      this.map.removeLayer(popup);
-    },
-
-    clearPlaceFilters: function(popup) {
-      this.parentView.clearFilter('places');
-      this.map.removeLayer(popup);
-    },
-
-    /**
-     * Check that selected places are visible on the map.
-     * This is an event handler that should be bound to the map's 'move'
-     * event.
-     */
-    checkPlaceInMapBounds: function() {
-      var that = this;
-      if (this.boundaryPoints.length) {
-        // One or more places have been selected
-        var boundaryBounds = this.boundaryLayers.getBounds();
-        var mapBounds = this.map.getBounds();
-        if (!mapBounds.intersects(boundaryBounds) &&
-            !this.parentView.messageSeen('placeNotVisible')) {
-          var popupContent = this.getTemplate('map-move-popup')();
-          var popup = new L.Popup();
-          popup.setLatLng(this.map.getCenter());
-          popup.setContent(popupContent);
-          this.map.openPopup(popup);
-          $('#keep-place-filters').click(function(e) {
-            that.keepPlaceFilters(popup);
-          });
-          $('#clear-place-filters').click(function(e) {
-            that.clearPlaceFilters(popup);
-          });
-        }
-      }
-    },
-
-    /**
-     * Return a list of points and their associated stories
-     * @param {story} story Story model instance
-     * @param {array} points An array of arrays with each inner array
-     *    representing a point. array[0] is longitude, array[1] is latitude
-     * @return {array} An array of objects with each object having a story
-     *    story attribute set to the story parameter and a point array set
-     *    to one of the elements in points
-     */
-    _makeBundle: function(story, points) {
-      return _.map(points, function(point) {
-        return {
-          story: story,
-          point: point
-        };
-      });
-    },
-
-    /**
-     * Place a marker on the map
-     * @param {object} bundle An object with a story and point attribute, as
-     *     returned by _makeBundle()
-     */
-    _placeMarker: function(bundle) {
-      var latlng = new L.LatLng(bundle.point[0], bundle.point[1]);
-      var marker = new StoryMarker(latlng, bundle.story);
-      var template = this.getTemplate('marker');
-      this.clusterer.addMarker(marker);
-      var popupContent = template(bundle.story.toJSON());
-      marker.bindPopup(popupContent);
-    },
-
-    /**
-     * Place markers on the map for each point associated with a story
-     * @param {object} story a Story model instance
-     */
-    _placeStoryMarkers: function(story) {
-      _.each(this._makeBundle(story, story.get("points")), this._placeMarker);
-    },
-
-    render: function() {
-      var that = this;
-      var searchTemplate = this.getTemplate('search');
-      if (this.map === null) {
-        // Map has not yet been initialized
-        this.$('#' + this.mapId).width(this.$el.parent().width());
-        this.$('#' + this.mapId).height(425);
-        this.map = new L.Map(this.mapId, {
-          // Setting the closePopupOnClick option to false is neccessary
-          // to make our cluster popup work.
-          closePopupOnClick: false
-        });
-        this.map.setView(this.initialCenter, this.initialZoom);
-
-        // See http://wiki.openstreetmap.org/wiki/Slippy_map_tilenames
-        var osmUrl = 'http://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png',
-            osmAttrib = 'Map data &copy; 2012 OpenStreetMap contributors',
-            osm = new L.TileLayer(osmUrl, {maxZoom: 18, attribution: osmAttrib});
-        this.map.addLayer(osm);
-        // Initialize the clusterer
-        var clustererOpts = {
-          maxZoom: 30,
-          gridSize: 30
-        };
-        this.clusterer = new LeafClusterer(this.map, null, clustererOpts);
-        this.$el.prepend(searchTemplate({
-          button_id: this.searchButtonId,
-          field_id: this.searchFieldId,
-          clear_button_id: this.clearButtonId
-        }));
-        this.map.addLayer(this.boundaryLayers);
-        this.map.on('move', this.checkPlaceInMapBounds);
-
-      }
-      else {
-        // Map has already been initialized
-        this.clusterer.clearMarkers();
-      }
-
-      this.stories.each(that._placeStoryMarkers);
-
-      // Remove existing boundaries from the map
-      this.boundaryLayers.clearLayers();
-      // Add new boundaries
-      if (this.boundaryPoints.length) {
-        var polygons = this.makeBoundaries(this.boundaryPoints);
-        _.each(polygons, function(polygon) {
-          that.boundaryLayers.addLayer(polygon);
-        });
-        // Zoom and recenter the map to the selected boundaries
-        var boundaryBounds = this.boundaryLayers.getBounds();
-        this.map.fitBounds(boundaryBounds);
-      }
-    },
-
-    reset: function(stories, boundaryPoints) {
-      this.stories = stories;
-      this.boundaryPoints = boundaryPoints;
-    },
-
-    /**
-     * Wrapper for geocoding method
-     *
-     * The heavy lifting is handled by a service-specific method
-     */
-    geocode: function(address, success, failure) {
-      this.geocodeLocal(address, success, failure);
-    },
-
-    /**
-     * Geocode an address using Nominatim
-     *
-     * Nominatim is OpenStreetMap's geocoding service.
-     * See http://http://nominatim.openstreetmap.org/
-     *
-     * This view could be extended and this method overriden to
-     * use a different Geocoding Service.
-     *
-     */
-    geocodeNominatim: function(address, success, failure) {
-      $.ajax('http://nominatim.openstreetmap.org/search/', {
-        dataType: 'jsonp',
-        data: {
-          format: 'json',
-          q: address
-        },
-        jsonp: 'json_callback',
-        success: function(data, textStatus, jqXHR) {
-          if (data.length) {
-            // Found a point for the address
-            success({
-              'lat': data[0].lat,
-              'lng': data[0].lon
-            });
-          }
-          else {
-            failure(address);
-          }
-        }
-      });
-
-    },
-
-    /**
-     * Geocode using the local geocoding proxy
-     */
-    geocodeLocal: function(address, success, failure) {
-      // TODO: Don't hardcode this URL
-      $.ajax('/api/0.1/geocode', {
-        dataType: 'json',
-        data: {
-          q: address
-        },
-        success: function(data, textStatus, jqXHR) {
-          if (data.meta.total_count > 0) {
-            // Found a point for the address
-            success({
-              'lat': data.objects[0].lat,
-              'lng': data.objects[0].lng
-            });
-          }
-          else {
-            failure(address);
-          }
-        }
-      });
-    },
-
-    /**
-     * Post-geocoding callback when geocoding succeeds
-     */
-    redrawMap: function(point) {
-      this.parentView.setMessageSeen('placeNotVisible');
-      // Recenter the map based on the geocoded point
-      var center = new L.LatLng(point.lat, point.lng);
-      this.map.setView(center, Explorer.MAP_POINT_ZOOM_LEVEL);
-      this.parentView.setNear(point);
-      this.parentView.fetchStories();
-    },
-
-    geocodeFail: function(address) {
-      // TODO: Do something more exciting when geocoding fails
-      var popupContent = "<p>Geocoding of address " + address + " failed.  Try including a city and state in your address.</p>";
-      var popup = new L.Popup();
-      popup.setLatLng(this.map.getCenter());
-      popup.setContent(popupContent);
-      this.map.openPopup(popup);
-    },
-
-    proximitySearch: function() {
-      var address = this.$('#' + this.searchFieldId).val();
-      this.geocode(address, this.redrawMap, this.geocodeFail);
-    },
-
-    clearProximitySearch: function() {
-      this.$('#' + this.searchFieldId).val('');
-      this.parentView.setNear(null).fetchStories();
-      this.map.setView(this.initialCenter, this.initialZoom);
-    },
-
-    appendStory: function(story) {
-      this.stories.push(story);
-      this._placeStoryMarkers(story);
-    }
   });
 })(_, Backbone, Handlebars, storybase);
