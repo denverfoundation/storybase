@@ -1,6 +1,6 @@
 // Explorer-specific variables
 
-@explorer-img-width: 184px;
+@explorer-img-width: 229px;
 @explorer-img-height: 132px;
 @explorer-chrome-margin-bottom: 15px;
 // After this width, show the story metadata to the right of the featured
@@ -53,7 +53,7 @@
     position: fixed;
     top: 0;
     background-color: #fff;
-    box-shadow:0 3px 6px #bbb;
+    box-shadow:0 3px 6px @black20;
     color: #fff;
   }
 
@@ -174,7 +174,7 @@
 
 #story-count {
   width: 100%;
-  margin: 0;
+  margin: 0 0 0 15px;
   float: left;
 
   @media (min-width: @screen-xs-min) {
@@ -186,9 +186,10 @@
     color: @gray;
     display: inline;
     float: left;
-    font-size: 22px;
-    font-weight: normal;
-    width: 100%;
+    font-size: 18px;
+    font-family: @roboto-condensed;
+    width: auto;
+
   }
 
   h3 {
@@ -208,6 +209,7 @@
   padding: 0;
   // HACK: Provide min-height so first story clears the story count
   min-height: 25px;
+  margin-right: 15px;
 
   text-align: right;
 
@@ -223,7 +225,7 @@
     position:relative;
     width:25px;
     height:40px;
-    margin-left: 20px;
+    margin-left: 15px;
 
     a {
       height:29px;
@@ -316,6 +318,21 @@
 
     .story-attributes {
       margin-top: 10px;
+      border-top: 1px solid @black10;
+      padding: 4px 0;
+      font-size: .875em;
+
+      .languages {
+        li {
+          &:after {
+            content: ', ';
+          }
+
+          &:last-of-type:after {
+            content: '';
+          }
+        }
+      }
     }
   }
 
@@ -325,7 +342,7 @@
 
     li.story {
       float: left;
-      width: @explorer-img-width;
+      width: @explorer-img-width + 15px;
       padding: 7px;
       margin-bottom: 11px;
       margin-right: 11px;
@@ -364,6 +381,7 @@
 
     .story-metadata {
       padding-top: 12px;
+      font-family: @roboto-condensed;
 
       @media (min-width: @explorer-list-breakpoint) {
         padding-top: 0;
@@ -425,7 +443,7 @@
 
 #story-list .byline,
 #map-container .byline {
-  font-style:italic;
+  font-style:normal;
 }
 
 // Map styles
