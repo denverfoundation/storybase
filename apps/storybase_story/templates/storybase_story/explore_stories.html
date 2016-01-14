@@ -24,9 +24,8 @@ Handlebars templates for rendering Backbone views.
 {% verbatim %}
 <script type="text/x-handlebars-template" id="explorer-template">
 <ul id="view-selector">
-    <li class="tile-view active"><a class="select-tile-view" href="#" title="{{gettext "Click here to see the stories displayed as tiles"}}"><span>{{gettext "Tile"}}<span></a></li>
-            <li class="list-view"><a class="select-list-view" href="#" title="{{gettext "Click here to see a list of stories"}}"><span>{{gettext "List"}}<span></a></li>
-                    <li class="map-view"><a class="select-map-view" href="#" title="{{gettext "Click here to view the stories on a map or search for stories near an address"}}"><span>{{gettext "Map"}}<span></a></li>
+  <li class="tile-view active"><a class="select-tile-view" href="#" title="{{gettext "Click here to see the stories displayed as tiles"}}"><span>{{gettext "Tile"}}<span></a></li>
+  <li class="list-view"><a class="select-list-view" href="#" title="{{gettext "Click here to see a list of stories"}}"><span>{{gettext "List"}}<span></a></li>
 </ul>
 </script>
 
@@ -128,33 +127,6 @@ Handlebars templates for rendering Backbone views.
 </li>
 </script>
 
-<script type="text/x-handlebars-template" id="story-marker-template">
-<div class="story">
-  {{> story}}
-</div>
-</script>
-
-<script type="text/x-handlebars-template" id="story-list-marker-template">
-<ul>
-    {{#each stories}}
-    <li>{{>story_link}}</li>
-    {{/each}}
-</ul>
-</script>
-
-<script type="text/x-handlebars-template" id="map-move-popup-template">
-<p>{{gettext "The map no longer shows the Place filter you have set above. Do you want to remove this filter so that you can see updated results on the map?"}}</p>
-<p><input id="keep-place-filters" type="button" value="{{gettext "Leave Filter Alone"}}" /> <input id="clear-place-filters" type="button" value="{{gettext "Remove the Filter"}}" /></p>
-</script>
-
-<script type="text/x-handlebars-template" id="proximity-search-template">
-<form id="proximity-search-form" onsubmit="return false;">
-    <input id="{{field_id}}" type="text" placeholder="{{gettext "Highlight stories near this address"}}" />
-    <input id="{{button_id}}" type="submit" value="{{gettext "Search"}}" />
-    <input id="{{clear_button_id}}" type="reset" value="{{gettext "Clear"}}" />
-</form>
-</script>
-
 {% endverbatim %}
 {% endblock %}
 
@@ -165,7 +137,6 @@ Handlebars templates for rendering Backbone views.
 {% endblock %}
 
 {% block base_content %}
-{% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/leaflet/leaflet.css">{% endaddtoblock %}
 {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/select2/select2.css">{% endaddtoblock %}
 {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/tooltipster-2.1.4/css/tooltipster.css">{% endaddtoblock %}
 
@@ -186,8 +157,6 @@ $ = jQuery;
 <script src="{{ STATIC_URL }}js/libs/handlebars-1.0.0.beta.6.js"></script>
 <script src="{{ STATIC_URL }}js/libs/jquery.masonry.min.js"></script>
 <script src="{{ STATIC_URL }}js/libs/select2/select2.min.js"></script>
-<script src="{{ STATIC_URL }}js/libs/leaflet/leaflet.js"></script>
-<script src="{{ STATIC_URL }}js/libs/leafclusterer.js"></script>
 <script src="{{ STATIC_URL }}js/libs/spin.min.js"></script>
 <script src="{{ STATIC_URL }}js/libs/tooltipster-2.1.4/js/jquery.tooltipster.min.js"></script>
 {% compress js %}
@@ -200,10 +169,6 @@ $ = jQuery;
 {% endcompress js %}
 <script type="text/javascript">
 $(document).ready(function() {
-  storybase.explorer.MAP_CENTER = {{ storybase_map_center }};
-  storybase.explorer.MAP_ZOOM_LEVEL = {{ storybase_map_zoom_level }};
-  storybase.explorer.MAP_POINT_ZOOM_LEVEL = {{ storybase_map_point_zoom_level }};
-  storybase.explorer.SEARCH_DISTANCE = {{ storybase_search_distance }};
   var storyData = {{ stories_json }};
   var selectedFilters = {{ selected_filters }};
   var explorer = new storybase.explorer.views.ExplorerApp({
