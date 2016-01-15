@@ -68,7 +68,7 @@
   .field {
     text-align: left;
     display: inline-block;
-    margin-right: 6px;
+    margin-right: 12px;
     margin-bottom: 6px;
 
     &.last {
@@ -78,29 +78,23 @@
     label {
       display:none;
     }
-
   }
 
   .select2-container {
-    background:url('../img/filter-link.png') no-repeat 0 0;
+    background: @light-gray;
     min-width:180px;
     width:191px;
     display:block;
-    font-size:13px;
-    color:#fbfaf2;
-    font-family: @roboto;
-    font-weight: 700;
-    text-shadow:0 -1px #605f5f;
     line-height:34px;
     height:34px;
-    padding-right:7px;
+    border-radius: 4px;
 
     .select2-choice {
       abbr {
         // little "x" to clear a filter
-        right:22px;
-        top:11px;
-        background-image:url(../img/select2.png);
+        right:25px;
+        top: 10px;
+        // background-image:url(../img/select2.png);
       }
 
       div {
@@ -109,13 +103,25 @@
         filter:none;
 
         b {
-          background:none;
+          background-image:url(../img/select2.png);
           filter:none;
+          width: 10px;
+          height: 10px;
         }
       }
 
       span {
-        margin-right:40px;
+        margin-right: 40px;
+        font-weight: 700;
+        font-size: 14px;
+        font-family: @roboto-condensed;
+
+        &:after {
+          content: url('../img/down-arrow.png');
+          position: absolute;
+          right: 8px;
+          top: -1px;
+        }
       }
     }
   }
@@ -125,25 +131,25 @@
     background:none;
     background-image:none;
     filter:none;
-    border:0px;
-    color:#fbfaf2;
     line-height:inherit;
     height:34px;
-    border-radius:0;
+    border-radius:5px;
     padding-left:11px;
   }
 
   .select2-result-label {
     font-family: @roboto;
     font-weight: 700;
+    font-size: 10px;
+    line-height: 1.5;
   }
 
   .select2-default {
-    color:#fbfaf2 !important;
+    color:@dark-gray !important;
   }
 
   .select2-drop .select2-drop-active {
-    border:none !important;
+    border:1px solid transparent !important;
   }
 
   label {
@@ -154,8 +160,6 @@
 
   a.clear-filters {
     display: block;
-    padding-top: 10px;
-    padding-right: 20px;
     text-align: right;
     color: #FE9703;
     font-family: @roboto;
