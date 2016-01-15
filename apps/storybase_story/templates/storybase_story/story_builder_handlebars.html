@@ -151,8 +151,10 @@ Handlebars.js templates for story builder Backbone application
   <h3>{{gettext "Related Stories"}}</h3>
   <p>{{gettext "List other stories relevant to your story."}}</p>
   <ul class="stories"></ul>
-  <input type="text" class="story-search" placeholder="{{gettext "Search stories or paste a story URL here."}}"></input>
-  <button type="button">{{gettext "Search"}}</button>
+  <div>
+    <input type="text" class="story-search" placeholder="{{gettext "Search stories or paste a story URL here."}}"></input>
+    <button type="button">{{gettext "Search"}}</button>
+  </div>
   <ul class="story-search-results"></ul>
 </div>
 </script>
@@ -529,25 +531,6 @@ Handlebars.js templates for story builder Backbone application
 <p>{{gettext "For topics and places, choose from the list that appears when you click in the boxes below. Topics include categories like \"Crime and Justice\" or \"Education.\" Places include neighborhoods, cities and zip codes. Add as many places or topics as you want."}}</p>
 <p>{{gettext "If you are a member of an organization or project, you can also add those. Stories can be in multiple projects or organizations."}}</p>
 </div>
-</script>
-
-<script type="text/x-handlebars-template" id="add-location-template">
-<h3>{{gettext "Mapping"}}</h3>
-<p>{{gettext "Where did your story happen? Linking your story to an address will let people find it on a map. Add as many addresses as you want."}}</p>
-<form>
-    <div id="address-search-container">
-        <input id="address" name="address" type="text" placeholder="{{gettext "Enter an address"}}"/>
-        <input id="search-address" name="search" type="button" value="{{gettext "Search"}}"/>
-    </div>
-    <div id="map"></div>
-    <div id="found-address"></div>
-    <div id="address-name-container">
-        <label for="address-name">{{gettext "Name this Address"}} ({{gettext "optional"}})</label><br />
-    <input id="address-name" name="address-name" type="text" placeholder="{{gettext "Enter a name for this address (optional)"}}"/>
-    </div>
-    <input id="do-add-location" type="submit" value="{{gettext "Add Address"}}"/>
-</form>
-<ul id="locations"></ul>
 </script>
 
 <script type="text/x-handlebars-template" id="add-location-location-item-template">
