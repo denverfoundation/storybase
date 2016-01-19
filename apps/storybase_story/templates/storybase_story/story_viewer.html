@@ -18,6 +18,22 @@
     <meta name="author" content="">
     <title>{{ story.title }}</title>
 
+    <!-- Open Graph attributes: http://ogp.me/
+      TODO: Add content declarations & test -->
+
+    <meta property="og:title" content="{{ story.title }}">
+    <meta property="og:type" content="article">
+    <meta property="og:url" content="">
+    <meta property="og:image" content="{% featured_asset_thumbnail_url story %}">
+    <meta property="og:description" content="">
+
+    <!-- Twitter Card attributes https://dev.twitter.com/cards/types/summary
+      TODO: Add content declarations & test -->
+    <meta name="twitter:card" content="summary">
+    <meta name="twitter:title" content="">
+    <meta name="twitter:description" content="">
+    <meta name="twitter:image" content="{% featured_asset_thumbnail_url story %}">
+
     <!-- Mobile viewport optimized: j.mp/bplateviewport -->
     <meta name="viewport" content="width=device-width,initial-scale=1">
 
@@ -155,15 +171,37 @@
           {# TODO: Style the links to the connected story builder as buttons #}
           <p><a href="{% url "connected_story_builder" source_slug=story.slug %}" class="external" data-new-window-name="connectedBuilder">{% trans "Click here to contribute to this story" %}</a></p>
           {% endif %}
+
+          {# Placeholder for dynamic content #}
           <div class="next-steps">
-            <h2>Next Steps</h2>
-            <div>
+            <section class="related">
+              <h4>Related Stories</h4>
+              <ul>
+                <li>
+                  <a href="">Curated Story Name 1</a>
+                  <a href=""><span>Story Author</span></a>
+                </li>
+              </ul>
+            </section>
 
-            </div>
+            <section class="contact">
+              <h4>Provide Feedback</h4>
+              <a class="" href=""><strong>Author Name</strong></a><br>
+              <a class="" href="">Organization Name</a>
+            </section>
 
-            <div>
+            <section class="sharing">
+              <h4>Share this story</h4>
+              <a href="http://www.facebook.com/share.php?u=[URL]&title=[TITLE]" target="_blank"><img src="{{ STATIC_URL }}img/icon-facebook-solid.png" alt="Share on Facebook">Facebook</a>
 
-            </div>
+              <a href="http://twitter.com/intent/tweet?status=[TITLE]+[URL]" target="_blank"><img src="{{ STATIC_URL }}img/icon-twitter-solid.png" alt="Share on Twitter">Twitter</a>
+
+              <p class="url-block">
+                <img src="{{ STATIC_URL }}img/icon-link-solid.png" alt="Share on Facebook">
+                Copy a link to this story<br>
+                <span>http://www.example.com</span>
+              </p>
+            </section>
           </div>
           {% include "storybase_story/story_viewer_section_nav.html" %}
         </section>
