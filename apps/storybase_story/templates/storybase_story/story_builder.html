@@ -21,6 +21,20 @@
 
     {% include "favicons.html" %}
 
+    <script src="https://ajax.googleapis.com/ajax/libs/webfont/1.5.18/webfont.js"></script>
+    {% compress js %}
+    <script>
+    WebFont.load({
+      google: {
+        families: [
+          'Roboto:100,300,400,700,900',
+          'Roboto Condensed:300,700'
+        ]
+      }
+    });
+    </script>
+    {% endcompress %}
+
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/select2/select2.css">{% endaddtoblock %}
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/guiders/guiders-1.2.8.css">{% endaddtoblock %}
     {% addtoblock "css" %}<link rel="stylesheet" href="{{ STATIC_URL }}js/libs/tooltipster-2.1.4/css/tooltipster.css">{% endaddtoblock %}

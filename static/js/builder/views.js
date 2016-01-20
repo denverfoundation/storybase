@@ -3847,8 +3847,8 @@
       storySearchEl: 'input.story-search',
       templateSource: {
         '__main': $('#relevant-stories-edit-template').html(),
-        'result': '<li><button type="button" class="add-story">Add</button><a href="{{url}}" target="_blank">{{title}}</a></li>',
-        'story': '<li><button type="button" class="remove-story">Remove</button><a href="{{url}}" target="_blank">{{title}}</a></li>'
+        'result': $('#relevant-story-result-template').html(),
+        'story': $('#relevant-story-template').html()
       }
     },
 
@@ -3912,7 +3912,6 @@
           }
         });
       }
-      // $storySearchEl.val('');
       return false;
     },
 
@@ -3933,7 +3932,7 @@
       this.stories.map(function(model) {
         $stories.append(this.getTemplate('story')({
           title: model.get('target_title'),
-          url: model.get('target_url'),
+          url: model.get('target_url')
         }));
       }, this);
       return this;

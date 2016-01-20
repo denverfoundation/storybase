@@ -159,6 +159,30 @@ Handlebars.js templates for story builder Backbone application
 </div>
 </script>
 
+<script type="text/x-handlebars-template" id="relevant-story-result-template">
+<div class="relevant-story-result-container">
+  <div>
+    <button type="button">{{gettext "Add"}}</button>
+  </div>
+  <div>
+    <p><a href="{{url}}" target="_blank">{{title}}</a></p>
+    <p><span class="byline">{{byline}}</span></p>
+    <p>{{#each organizations}}<span class="organization">{{this.name}}</span>{{/each}}</p>
+  </div>
+</div>
+</script>
+
+<script type="text/x-handlebars-template" id="relevant-story-template">
+<div class="relevant-story-container">
+  <div>
+    <button type="button">{{gettext "Remove"}}</button>
+  </div>
+  <div>
+    <p><a href="{{url}}" target="_blank">{{title}}</a></p>
+  </div>
+</div>
+</script>
+
 <script type="text/x-handlebars-template" id="story-info-edit-template">
 <h2>{{gettext "Story Info"}}</h2>
 <div id="summary-container">
@@ -168,23 +192,14 @@ Handlebars.js templates for story builder Backbone application
 </script>
 
 <script type="text/x-handlebars-template" id="story-call-to-action-edit-template">
-<h2>{{gettext "Call to Action"}}</h2>
 <form>
     <div class="section-layout side-by-side">
         <div class="left">
+            <h3>{{gettext "Call to Action"}}</h3>
+            <p>{{gettext "Let readers know how they can help."}}</p>
             <textarea class="call-to-action" name="call_to_action" placeholder='{{{default call_to_action_suggestion "Click to edit the call to action"}}}'>{{call_to_action}}</textarea>
         </div>
-        <div class="right">
-            <h3>{{gettext "Create a Connected Story to collect audience feedback"}}</h3>
-            <p>{{gettext "Give your readers a clear way to contribute by asking them to add a mini Photovoice story. Prompt your readers with a specific question they can answer through a photo and a caption. "}}</p>
-            <div>
-                <input class="connected" name="allow_connected" type="checkbox" {{#if allow_connected}}checked="checked" {{/if}}/>
-                <label for="allow_connected">{{gettext "Make this a Connected Story"}}</label>
-            </div>
-            <div>
-                <textarea class="connected-prompt" name="connected_prompt" placeholder="{{gettext "Type your prompt here. Users will see this when creating their connected stories."}}"{{#unless allow_connected}} style="display: none"{{/unless}}>{{connected_prompt}}</textarea>
-            </div>
-        </div>
+        <div class="right"></div>
     </div>
 </form>
 </script>
