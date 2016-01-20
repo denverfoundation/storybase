@@ -198,10 +198,11 @@
               <h4>{% trans "Share this story" %}</h4>
               {% fullurl story.get_absolute_url as story_url %}
               <a href="http://www.facebook.com/share.php?u={{ story_url|urlencode }}&title={{ story.title }}" target="_blank"><img src="{{ STATIC_URL }}img/icon-facebook-solid.png" alt="Share on Facebook">Facebook</a>
-
               <a href="http://twitter.com/intent/tweet?status={{ story.title }}+{{ story_url|urlencode }}" target="_blank"><img src="{{ STATIC_URL }}img/icon-twitter-solid.png" alt="Share on Twitter">Twitter</a>
 
+              {% if story.published %}
               <a href="{{ story.get_embed_url }}" class="storybase-embed-button">{% trans "Embed This Story" %}</a>
+              {% endif %}
 
               <p class="url-block">
                 <img src="{{ STATIC_URL }}img/icon-link-solid.png" alt="Share on Facebook">
