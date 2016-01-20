@@ -1,6 +1,5 @@
 // Padding for header/footer bars
 @viewer-bar-padding: 8px;
-
 .callout-section {
   background: @light-gray;
   border-top: 1px solid darken(@light-gray, 10%);
@@ -9,13 +8,11 @@
 
 .story-viewer {
   @footer-background-color: @blue-xxdark;
-
+  background-color: #fff;
   .caption-mixin(@font-color: @gray) {
     font-style: normal;
     color: @dark-gray;
   }
-
-  background-color: #fff;
 
   h2 {
     color: #555;
@@ -39,7 +36,6 @@
       // element
       display: none;
     }
-
     // TODO: Either remove this content from the viewer
     // (currently duplicated below) or fix overlay position
     // &:hover {
@@ -51,7 +47,6 @@
     //     left: 0;
     //   }
     // }
-
     // Popup captions look weird over YouTube videos. Hide them
     &.asset-provider-youtube:hover {
       .popup-caption {
@@ -67,7 +62,6 @@
     border: 1px solid @gray;
     font-style: italic;
     color: @dark-gray;
-
     &.asset-type-quotation {
       .pullquote;
       background: transparent;
@@ -98,29 +92,24 @@
     width: 100%;
     padding: @viewer-bar-padding;
     z-index: 9999;
-    position:relative;
-
+    position: relative;
     color: #fff;
     background-color: @blue-xxdark;
-
     .title {
       .viewer-story-title();
       margin-left: 10px;
       font-family: @roboto-condensed;
     }
-
     .byline {
       margin: 0;
       padding: 0;
       margin-left: 10px;
     }
-
     .section-title {
       font-size: 1em;
       margin: 0;
       padding: 0.25% 0;
     }
-
     // needed to override viewer dd prop
     .storybase-share-popup {
       dd {
@@ -134,7 +123,6 @@
   #toc .text {
     // Hide meta-navigation link text, only showing icons on narrow displays
     display: none;
-
     @media (min-width: @viewer-nav-breakpoint) {
       display: inline;
     }
@@ -167,10 +155,10 @@
       }
 
       &[data-el="#add-badge"] {
-          border: 1px solid white;
-          padding: 2px 8px 3px 8px;
-          line-height: 1;
-          border-radius: 14px;
+        border: 1px solid white;
+        padding: 2px 8px 3px 8px;
+        line-height: 1;
+        border-radius: 14px;
       }
     }
 
@@ -192,7 +180,6 @@
     #summary {
       display: block;
       position: relative;
-
       .title {
         width: 100%;
       }
@@ -200,7 +187,6 @@
       #summary-image,
       #summary-text {
         .border-box;
-
         @media (min-width: @viewer-nav-breakpoint) {
           width: 50%;
         }
@@ -209,9 +195,8 @@
       #summary-toc {
         ul {
           padding: 0;
-
           li {
-            list-style-type:none;
+            list-style-type: none;
           }
         }
       }
@@ -246,7 +231,6 @@
 
       #summary-wrap {
         padding: 16px 16px 48px 16px;
-
         @media (min-width: @viewer-nav-breakpoint) {
           position: relative;
           left: 50%;
@@ -270,7 +254,13 @@
         max-width: 40em;
         border-left: 1px solid @black30;
 
-        p, i, strong, span, h1, h2, h3 {
+        p,
+        i,
+        strong,
+        span,
+        h1,
+        h2,
+        h3 {
           font-size: 18px;
           font-weight: 300;
           font-family: @roboto;
@@ -281,7 +271,6 @@
       }
 
       #summary-toc {
-
         h2 {
           font-size: 18px;
           font-weight: 700;
@@ -290,7 +279,6 @@
 
         li {
           margin-bottom: 8px;
-
           a {
             font-weight: 700;
           }
@@ -344,7 +332,8 @@
       }
 
       .byline {
-          color: @gray;
+        color: @gray;
+
         a {
           color: @gray;
           text-decoration: none;
@@ -369,7 +358,6 @@
         margin: 0 10px;
         font-weight: 700;
 
-
         i {
           font-size: 75%;
           vertical-align: middle;
@@ -391,7 +379,6 @@
         background: @light-gray;
         color: @blue-xxdark;
         border: 1px solid @black10;
-
         &:hover {
           border-color: @black30;
           background: @blue-xxdark;
@@ -411,7 +398,6 @@
   }
 
   #call-to-action {
-
     .next-steps {
       background: @light-gray;
       padding: 20px 40px;
@@ -426,7 +412,6 @@
         margin-right: 20px;
         margin-bottom: 20px;
         border-bottom: 1px dotted @medium-gray;
-
         &:last-of-type {
           border-bottom: none;
         }
@@ -443,7 +428,6 @@
         }
 
         &.related {
-
           li {
             margin-bottom: 8px;
             float: left;
@@ -505,19 +489,18 @@
             font-weight: 300;
             display: inline-block;
             margin-bottom: 2px;
-
             &:hover {
               text-decoration: underline;
             }
           }
         }
 
-          &:last-of-type {
-            border-right: 0;
-          }
+        &:last-of-type {
+          border-right: 0;
         }
       }
     }
+  }
 
   .section,
   .connected-story {
@@ -555,8 +538,8 @@
       float: left;
       width: 18%;
       padding: 8px 0 0 1%;
-
-      #summary-text, .call-to-action {
+      #summary-text,
+      .call-to-action {
         padding: 0 6%;
       }
     }
@@ -568,7 +551,9 @@
   }
 
   .section {
-    h1, h2, h3 {
+    h1,
+    h2,
+    h3 {
       font-family: @roboto;
 
       &.title {
@@ -591,7 +576,6 @@
     float: none;
     margin-left: 0;
     margin-right: 0;
-
     @media (min-width: @viewer-nav-breakpoint) {
       width: 49%;
       float: left;
@@ -600,7 +584,6 @@
 
   .section-layout.side-by-side .left {
     margin-bottom: 10px;
-
     @media (min-width: @viewer-nav-breakpoint) {
       margin-bottom: 0px;
     }
@@ -670,8 +653,8 @@
     width: 50px;
 
     @media (min-width: @viewer-nav-breakpoint) {
-     width: @toc-width;
-     right: @toc-width + 20px;
+      width: @toc-width;
+      right: @toc-width + 20px;
     }
 
     &:hover {
@@ -690,7 +673,6 @@
       overflow-y: auto;
       margin-bottom: @viewer-bar-padding;
       right: 50px;
-
       @media (min-width: @viewer-nav-breakpoint) {
         width: @toc-width;
         min-width: @toc-width;
@@ -768,7 +750,6 @@
     margin-top: 8px;
   }
 
-
   #story-nav {
     position: absolute;
     color: @almost-white;
@@ -790,8 +771,8 @@
 
       @media (min-width: @viewer-nav-breakpoint) {
         display: inline-block;
-
-        &:hover, &:focus {
+        &:hover,
+        &:focus {
           color: @dark-gray;
         }
       }
@@ -813,9 +794,8 @@
         }
 
         @media (min-width: @viewer-nav-breakpoint) {
-
           &:hover {
-            background:darken(@dark-gray, 10%);
+            background: darken(@dark-gray, 10%);
           }
         }
       }
@@ -828,7 +808,7 @@
 
     .location {
       display: inline-block;
-      font-size:.875rem;
+      font-size: .875rem;
       padding: 0;
       color: @light-gray;
       font-weight: 400;
@@ -846,18 +826,17 @@
   }
 
   iframe.sandboxed-asset {
-    border:none;
+    border: none;
   }
 
   // from here down to end of .story-viewer block copied from old style.css.
   // these are probably applicable in more places than in story-viewer.
   // to be more intelligently integrated.
-
   /* Story detail */
-
   section.story,
   section.actions {
-    overflow: hidden; /* Clear containing elements */
+    overflow: hidden;
+    /* Clear containing elements */
     padding: 2% 0 4% 0;
   }
 
@@ -931,11 +910,10 @@
   }
 
   li.section {
-     list-style-type: none;
+    list-style-type: none;
   }
 
   /* Organization/Project list */
-
   .organization-list,
   .project-list {
     list-style-type: none;
@@ -969,7 +947,6 @@
     padding-bottom: 0;
   }
 
-
   dl.story-attributes dt:after {
     content: ": ";
   }
@@ -993,7 +970,6 @@
   }
 
   /* Asset content */
-
   .attribution {
     font-style: italic;
   }
@@ -1003,12 +979,9 @@
   }
 
   /* Forms */
-
   fieldset {
     padding: 5px 0;
-
   }
-
   legend {
     font-size: 1.5em;
   }
@@ -1022,7 +995,6 @@
     // Need this to clear the scroll-bar
     right: @viewer-bar-padding;
     padding: @viewer-bar-padding;
-
     text-align: right;
 
     a {
@@ -1037,7 +1009,8 @@
 }
 
 // Styles that apply to both the builder and viewer
-.story-viewer .section, .story-builder .edit-section {
+.story-viewer .section,
+.story-builder .edit-section {
   // Asset data set list
   .datasets-label {
     font-weight: bold;
@@ -1048,7 +1021,6 @@
     list-style: none;
     width: 95%;
     padding-left: 0 !important;
-
     li {
       list-style-type: none !important;
       padding-bottom: 0.25em;
@@ -1057,10 +1029,8 @@
         max-width: 95%;
         word-wrap: break-word;
       }
-
       a {
         text-decoration: none;
-
         &:hover {
           text-decoration: underline;
         }
@@ -1083,3 +1053,4 @@
   padding: 3px 20px;
   white-space: nowrap;
 }
+

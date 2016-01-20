@@ -1,34 +1,25 @@
 // Embed widget styles
-//
 // Styles for widget that allows embedding of content in external sites
-//
 // This styles markup in the template ``storybase_story/widget_base.html``
 // and templates that inherit from it.  See the documentation for
 // ``storybase_story.views.StoryWidgetView`` for more details.
-
 @import "variables.less";
 @import "mixins.less";
 @import "fonts.less";
-
 @width-break1: 1000px;
 @width-break2: 650px;
-
 @height-break1: 500px;
 @height-break2: 400px;
 @height-break3: 300px;
-
 @h1-font-size0: 24px;
 @h1-font-size1: 20px;
 @h1-font-size2: 16px;
-
 @h3-font-size0: 20px;
 @h3-font-size1: 16px;
 @h3-font-size2: 14px;
-
 @body-font-size0: (@h1-font-size0 * .8);
 @body-font-size1: (@h1-font-size1 * .8);
 @body-font-size2: (@h1-font-size2 * .8);
-
 @min-font-size0: (@h1-font-size0 * .6);
 @min-font-size1: (@h1-font-size1 * .6);
 @min-font-size2: (@h1-font-size2 * .6);
@@ -37,67 +28,69 @@
   .border-box;
   margin: 0;
   padding: 0;
-  zoom:1;
+  zoom: 1;
 }
 
-html, body, article {
-  height:100%;
-  display:block; // for IE
+html,
+body,
+article {
+  height: 100%;
+  display: block; // for IE
 }
 
 html {
-  font-size:@body-font-size0;
-  @media screen and (max-width:@width-break1) {
-    font-size:@body-font-size1;
+  font-size: @body-font-size0;
+  @media screen and (max-width: @width-break1) {
+    font-size: @body-font-size1;
   }
   @media screen and (max-width:@width-break2) {
-    font-size:@body-font-size2;
+    font-size: @body-font-size2;
   }
   .sans-serif-text;
 }
 
 h1 {
-  font-size:@h1-font-size0;
-  @media screen and (max-width:@width-break1) {
-    font-size:@h1-font-size1;
+  font-size: @h1-font-size0;
+  @media screen and (max-width: @width-break1) {
+    font-size: @h1-font-size1;
   }
   @media screen and (max-width:@width-break2) {
-    font-size:@h1-font-size2;
+    font-size: @h1-font-size2;
   }
   font-weight: bold;
 }
 
 h3 {
-  font-size:@h3-font-size0;
-  @media screen and (max-width:@width-break1) {
-    font-size:@h3-font-size1;
+  font-size: @h3-font-size0;
+  @media screen and (max-width: @width-break1) {
+    font-size: @h3-font-size1;
   }
   @media screen and (max-width:@width-break2) {
-    font-size:@h3-font-size2;
+    font-size: @h3-font-size2;
   }
   font-weight: bold;
 }
 
-ul { list-style: none; }
+ul {
+  list-style: none;
+}
 
 article {
-  border:2px solid @gray;
-  height:100%;
-  width:100%;
+  border: 2px solid @gray;
+  height: 100%;
+  width: 100%;
 }
 
 // container for story and story+list, sandwiched between header and footer
 .storybase-embed-content {
-  width:100%;
-
+  width: 100%;
   // we have constant-height header and footer.
   // without calc() or CSS3 flex box model, we make-do
-  height:100%;
-
+  height: 100%;
   padding: 50px 1em;
-  position:absolute;
-  top:0;
-  left:0;
+  position: absolute;
+  top: 0;
+  left: 0;
   overflow: hidden;
   color: @dark-gray;
 
@@ -112,7 +105,6 @@ article {
     font-style: italic;
     margin-bottom: 0.9em;
   }
-
 }
 
 .widget-404 {
@@ -124,99 +116,102 @@ article {
 }
 
 .storybase-story-featured {
-  position:relative;
+  position: relative;
+
   .featured-image {
-    display:block;
-    float:left;
-    width:20%;
-    background:url() no-repeat center center;
-    background-size:cover;
-    height:100%;
+    display: block;
+    float: left;
+    width: 20%;
+    background: url() no-repeat center center;
+    background-size: cover;
+    height: 100%;
 
     img {
-      width:100%;
-      opacity:0;
-      border:none;
+      width: 100%;
+      opacity: 0;
+      border: none;
     }
   }
 
   div.info {
     // offset margin--space for featured image
-    margin-left:20%;
+    margin-left: 20%;
     // static internal padding
-    padding-left:1em;
+    padding-left: 1em;
   }
 
   &.with-list {
-    width:50%;
-    height:100%;
-    float:left;
+    width: 50%;
+    height: 100%;
+    float: left;
 
     .featured-image {
-      float:none;
-      width:100%;
+      float: none;
+      width: 100%;
       // prevent image showing through embed-content padding in some cases
-      height:100%;
-      overflow:hidden;
+      height: 100%;
+      overflow: hidden;
     }
 
     div.info {
-      margin:0;
+      margin: 0;
       padding: 1em 0 0;
       // picture that "CSS is Awesome" mug ...
-      position:absolute;
-      bottom:0;
-      background:white;
+      position: absolute;
+      bottom: 0;
+      background: white;
 
-      @media screen and (max-height:@height-break1) {
-        font-size:@body-font-size1;
+      @media screen and (max-height: @height-break1) {
+        font-size: @body-font-size1;
       }
+
       @media screen and (max-height:@height-break2) {
-        font-size:@body-font-size2;
+        font-size: @body-font-size2;
       }
     }
   }
 }
 
 .storybase-storylist {
-  height:100%;
-  position:relative;
+  height: 100%;
+  position: relative;
 
   &.with-featured {
-    margin-left:50%;
-    padding-left:1em;
-    width:50%;
+    margin-left: 50%;
+    padding-left: 1em;
+    width: 50%;
   }
 
   ul {
-    height:100%;
+    height: 100%;
   }
 
   li {
-    position:relative;
-    overflow:hidden;
-    height:33.33333%;
-    border-bottom:1em solid white;
+    position: relative;
+    overflow: hidden;
+    height: 33.33333%;
+    border-bottom: 1em solid white;
   }
 
   .featured-image {
-    position:absolute;
-    width:40%;
-    overflow:hidden;
-    background:url() no-repeat center center;
-    background-size:cover;
+    position: absolute;
+    width: 40%;
+    overflow: hidden;
+    background: url() no-repeat center center;
+    background-size: cover;
 
     img {
-      width:100%;
-      opacity:0;
-      border:none;
+      width: 100%;
+      opacity: 0;
+      border: none;
     }
   }
-  .story-link, .byline {
-    margin-left:40%;
-    padding-left:1em;
 
-    @media screen and (max-height:@height-break2) {
+  .story-link,
+  .byline {
+    margin-left: 40%;
+    padding-left: 1em;
+    @media screen and (max-height: @height-break2) {
       font-size: @body-font-size2;
     }
   }
@@ -224,132 +219,134 @@ article {
 
 header {
   background: @orange;
-  width:100%;
-  border-bottom:2px solid @gray;
+  width: 100%;
+  border-bottom: 2px solid @gray;
 
   a {
-    text-decoration:none;
-    color:white;
+    text-decoration: none;
+    color: white;
   }
 
   h1 {
-    font-weight:bold;
+    font-weight: bold;
     font-family: @roboto;
   }
 
   // vertical centering
-  h1, .logo-container {
+  h1,
+  .logo-container {
     display: table;
-    height:100%;
+    height: 100%;
+
     a {
-      display:table-cell;
-      vertical-align:middle;
-      padding:0 .5em;
+      display: table-cell;
+      vertical-align: middle;
+      padding: 0 .5em;
     }
   }
 
   .logo-container {
-    float:right;
-    padding-right:0.5em;
+    float: right;
+    padding-right: 0.5em;
   }
 
   .logo {
-    width:140px;
-    height:20px;
-    text-indent:-30000px;
-    background:url(../img/widget-logo.png) no-repeat left 50%;
-
+    width: 140px;
+    height: 20px;
+    text-indent: -30000px;
+    background: url(../img/widget-logo.png) no-repeat left 50%;
   }
 }
 
 footer {
-  color:@light-gray;
-  background:@gray;
-  position:absolute;
-  bottom:0;
-  left:0;
-  border-top:2px solid @gray;
-  width:100%;
-  font-size:.75em;
+  color: @light-gray;
+  background: @gray;
+  position: absolute;
+  bottom: 0;
+  left: 0;
+  border-top: 2px solid @gray;
+  width: 100%;
+  font-size: .75em;
 
   a {
-    color:@light-gray;
-    text-decoration:underline;
+    color: @light-gray;
+    text-decoration: underline;
   }
 
   .related-container {
     // vertical centering
-    display:table;
-    height:100%;
+    display: table;
+    height: 100%;
+
     p {
-      display:table-cell;
-      vertical-align:middle;
-      padding:0 0.5em;
+      display: table-cell;
+      vertical-align: middle;
+      padding: 0 0.5em;
 
       &:before {
         font-family: "FontAwesome";
-        content:"\F08E";
-        width:1em;
-        height:1em;
-        margin-right:.5em;
+        content: "\F08E";
+        width: 1em;
+        height: 1em;
+        margin-right: .5em;
       }
     }
   }
 }
 
-header, footer {
-  height:35px;
-  display:block; // for IE8
+header,
+footer {
+  height: 35px;
+  display: block; // for IE8
 }
-
 
 // Relies on modernizr.
 html.no-backgroundsize {
-
   // This ruleset is legitimately tied to no-backgroundsize.
   .featured-image {
-    background-image:none !important;
+    background-image: none !important;
+
     img {
-      opacity:1;
+      opacity: 1;
     }
   }
 
   // @TODO: The remaining are IE fixes only tested in IE8!
-
   body {
     h1 {
-      font-size:@h1-font-size0 * 0.8;
-      @media screen and (max-width:@width-break1) {
-        font-size:@h1-font-size1 * 0.8;
+      font-size: @h1-font-size0 * 0.8;
+      @media screen and (max-width: @width-break1) {
+        font-size: @h1-font-size1 * 0.8;
       }
       @media screen and (max-width:@width-break2) {
-        font-size:@h1-font-size2 * 0.8;
+        font-size: @h1-font-size2 * 0.8;
       }
     }
   }
 
-
   .storybase-story-featured.with-list {
-    width:48%;
+    width: 48%;
   }
 
   // the padding + margin scheme totally fails on IE8
   .storybase-storylist.with-featured {
-    padding:0;
-    margin:0;
+    padding: 0;
+    margin: 0;
 
     .story-link {
       font-size: @body-font-size0;
-      @media screen and (max-height:@height-break2) {
+      @media screen and (max-height: @height-break2) {
         font-size: @body-font-size1;
       }
+
       @media screen and (max-width:@width-break2) {
         font-size: @body-font-size1;
       }
     }
 
     li {
-      padding-left:1em;
+      padding-left: 1em;
     }
   }
 }
+

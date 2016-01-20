@@ -1,92 +1,147 @@
 // multi-use widgets or stuff without a clear home otherwise
-
 .breadcrumbs {
-  height:38px;
-  background:url('../img/br-bg.png') repeat-x 0 0;
-  margin-bottom:35px;
+  height: 38px;
+  background: url('../img/br-bg.png') repeat-x 0 0;
+  margin-bottom: 35px;
 
   ul {
-    list-style:none;
+    list-style: none;
 
     li {
-      float:left;
-      display:inline;
-      background:url('../img/bread-sep.png') no-repeat right center;
-      padding-right:12px;
-      padding-left:7px;
-      font-size:14px;
-      color:@gray;
+      float: left;
+      display: inline;
+      background: url('../img/bread-sep.png') no-repeat right center;
+      padding-right: 12px;
+      padding-left: 7px;
+      font-size: 14px;
+      color: @gray;
       font-family: @roboto-condensed;
       font-weight: 700;
-      line-height:37px;
+      line-height: 37px;
 
       &:first-child {
-        padding-left:0;
+        padding-left: 0;
       }
 
       &.last {
-        background:none;
+        background: none;
       }
+
       a {
         color: @orange;
 
         &:hover {
-          text-decoration:underline;
+          text-decoration: underline;
         }
       }
     }
   }
 }
 
-
-
 ul.social {
-  list-style:none;
+  list-style: none;
   overflow: hidden;
 
   li {
-    float:left; display:inline; padding-right:10px;
+    float: left;
+    display: inline;
+    padding-right: 10px;
 
     a {
-      width:24px;
-      height:24px;
-      float:left;
-      display:inline;
-      background:url('../img/social.png') no-repeat 0 0;
+      width: 24px;
+      height: 24px;
+      float: left;
+      display: inline;
+      background: url('../img/social.png') no-repeat 0 0;
       font-size: 0;
       line-height: 0;
       text-indent: -4000px;
 
-      &:hover { opacity:0.7; }
+      &:hover {
+        opacity: 0.7;
+      }
     }
 
-    &.rss a  { background-position:0 0; }
-    &.twitter a { background-position:-34px 0; }
-    &.facebook a { background-position:-67px 0; }
+    &.rss a {
+      background-position: 0 0;
+    }
+
+    &.twitter a {
+      background-position: -34px 0;
+    }
+
+    &.facebook a {
+      background-position: -67px 0;
+    }
   }
 }
 
-#slideContainer .back { width:26px; height:46px; background:url('../img/slider-arrows3.png') no-repeat 0 0; display:block; font-size: 0; line-height: 0; text-indent: -4000px; position:absolute; top:74px; left:76px; z-index: 500; }
-#slideContainer .forward {  width:26px; height:46px; background:url('../img/slider-arrows3.png') no-repeat right 0; display:block; font-size: 0; line-height: 0; text-indent: -4000px; position:absolute; top:74px; right:0; z-index: 500; }
-
-p.byline {
-	font-size:0.9em;
-	color:@gray;
-	margin-bottom:0.9em;
-	overflow: hidden;
+#slideContainer .back {
+  width: 26px;
+  height: 46px;
+  background: url('../img/slider-arrows3.png') no-repeat 0 0;
+  display: block;
+  font-size: 0;
+  line-height: 0;
+  text-indent: -4000px;
+  position: absolute;
+  top: 74px;
+  left: 76px;
+  z-index: 500;
 }
 
-#main .col h4 { .line-through-header; margin-bottom:20px;  }
-#main .col h4 span { background:#fff; padding-right:10px; padding-left:10px;   }
-#main .col ul { width:335px; margin:0 auto;   }
-#main .col ul .text {   width:335px; float:none; }
+#slideContainer .forward {
+  width: 26px;
+  height: 46px;
+  background: url('../img/slider-arrows3.png') no-repeat right 0;
+  display: block;
+  font-size: 0;
+  line-height: 0;
+  text-indent: -4000px;
+  position: absolute;
+  top: 74px;
+  right: 0;
+  z-index: 500;
+}
+
+p.byline {
+  font-size: 0.9em;
+  color: @gray;
+  margin-bottom: 0.9em;
+  overflow: hidden;
+}
+
+#main .col h4 {
+  .line-through-header;
+  margin-bottom: 20px;
+}
+
+#main .col h4 span {
+  background: #fff;
+  padding-right: 10px;
+  padding-left: 10px;
+}
+
+#main .col ul {
+  width: 335px;
+  margin: 0 auto;
+}
+
+#main .col ul .text {
+  width: 335px;
+  float: none;
+}
+
 #main .col h5 {
-	font-size:18px;
-	color:@highlight-blue;
-	padding-top:10px;
+  font-size: 18px;
+  color: @highlight-blue;
+  padding-top: 10px;
 }
 
 #main .col ul .text,
-#main .col .image { padding-left:76px; padding-right:76px; display:block;   }
-
+#main .col .image {
+  padding-left: 76px;
+  padding-right: 76px;
+  display: block;
+}
 

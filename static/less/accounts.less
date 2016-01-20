@@ -1,48 +1,55 @@
-
 // based on being included inside a body.base-template block.
 // not awesome have that hidden dependency, but ...
-&.accounts.login, &.accounts.register {
-	h2 {
-		text-align:left;
-		margin-bottom:20px;
-	}
-	ul {
-		margin-bottom: 20px;
-	}
+&.accounts.login,
+&.accounts.register {
+  h2 {
+    text-align: left;
+    margin-bottom: 20px;
+  }
 
-	#main form {
-		width:50%;
-		input[type=text], input[type=password] {
-			width: 40%;
-		}
-	}
+  ul {
+    margin-bottom: 20px;
+  }
 
-	a.twitter, a.facebook {
-		&:before {
-			font-family: "FontAwesome";
-			font-size:2em;
-			margin-right:1em;
-			position:relative;
-			top:0.1em;
-		}
-		width:200px;
-		margin-bottom:1em;
-		padding-right:0.4em !important;
-	}
-	a.twitter {
-		.gradient-button(rgb(64, 146, 204));
-		&:before {
-			content:"\f099";
-			left:-0.3em;
-		}
-	}
-	a.facebook {
-		.gradient-button(rgb(59, 89, 152));
-		&:before {
-			content:"\f09a";
-			top:0.15em;
-		}
-	}
+  #main form {
+    width: 50%;
+    input[type=text],
+    input[type=password] {
+      width: 40%;
+    }
+  }
+
+  a.twitter,
+  a.facebook {
+    &:before {
+      font-family: "FontAwesome";
+      font-size: 2em;
+      margin-right: 1em;
+      position: relative;
+      top: 0.1em;
+    }
+
+    width:200px;
+    margin-bottom:1em;
+    padding-right:0.4em !important;
+  }
+
+  a.twitter {
+    .gradient-button(rgb(64, 146, 204));
+
+    &:before {
+      content: "\f099";
+      left: -0.3em;
+    }
+  }
+
+  a.facebook {
+    .gradient-button(rgb(59, 89, 152));
+    &:before {
+      content: "\f09a";
+      top: 0.15em;
+    }
+  }
 }
 
 &.account-stories .table-wrapper.responsive {
@@ -51,9 +58,11 @@
 
 table.account-stories {
   td.last-edited {
-    white-space:nowrap;
+    white-space: nowrap;
   }
+
   td.action {
-    text-align:center;
+    text-align: center;
   }
 }
+

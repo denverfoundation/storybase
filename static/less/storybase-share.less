@@ -1,19 +1,20 @@
 .storybase-share-button,
 .storybase-embed-button {
   .button-style(gray);
+
   &:before {
     font-family: "FontAwesome";
   }
 }
 
 .storybase-share-button:before {
-  content:"\f045";
-  margin-right:.5em;
+  content: "\f045";
+  margin-right: .5em;
 }
 
 .storybase-embed-button:before {
-  content:"\f121";
-  margin-right:.5em;
+  content: "\f121";
+  margin-right: .5em;
 }
 
 .storybase-share-popup,
@@ -21,35 +22,40 @@
   display: none;
   min-width: 280px;
   box-shadow: 0 2px 5px rgba(0, 0, 0, 0.4);
-  border:1px solid #aaa;
+  border: 1px solid #aaa;
   position: absolute;
-  padding:0;
+  padding: 0;
   background: white;
-  z-index:20000;
+  z-index: 20000;
 
   .share-popup,
   .embed-popup {
-    padding:10px;
+    padding: 10px;
   }
 
   dt {
-    margin-top:0.5em;
+    margin-top: 0.5em;
   }
-  input, textarea {
-    width:100%;
+
+  input,
+  textarea {
+    width: 100%;
   }
 
   header {
-    background:@light-gray;
-    padding:4px;
+    background: @light-gray;
+    padding: 4px;
+
     .styled-header;
     .close {
       .remove-icon(18px, gray);
-      float:right;
+      float: right;
     }
   }
+
   textarea[name=share-embed-code] {
-    height:100px;
-    font-size:.8em;
+    height: 100px;
+    font-size: .8em;
   }
 }
+

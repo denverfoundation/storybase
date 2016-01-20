@@ -1,10 +1,12 @@
-
 @default-margin-bottom: 1em;
 .default-margin-bottom {
-  margin-bottom:@default-margin-bottom;
+  margin-bottom: @default-margin-bottom;
 }
+
 .content-page {
-  h3 span { position:relative; }
+  h3 span {
+    position: relative;
+  }
 
   a img {
     width: 100%;
@@ -12,48 +14,55 @@
 
   /* generic content page: probably cms-driven */
   &.generic {
-    padding-bottom:34px;
-    margin-bottom:39px;
+    padding-bottom: 34px;
+    margin-bottom: 39px;
 
     /* generic text content */
     .content-block {
       .body-copy;
       .body-copy-lists;
 
-      h2, h3, h4, h5 {
-        text-align:left;
-        background:none;
-        margin-bottom:0.2em;
+      h2,
+      h3,
+      h4,
+      h5 {
+        text-align: left;
+        background: none;
+        margin-bottom: 0.2em;
       }
-      h3, h4, h5 {
-        color:@almost-black;
+
+      h3,
+      h4,
+      h5 {
+        color: @almost-black;
       }
+
       h4.first {
-        font-size:(@top-header-size * .8);
-        line-height:27px;
-        color:@dark-gray;
+        font-size: (@top-header-size * .8);
+        line-height: 27px;
+        color: @dark-gray;
         .default-margin-bottom;
       }
 
       // Help Page
-      .faq-section, .faq-question {
-        padding:1em 0;
+      .faq-section,
+      .faq-question {
+        padding: 1em 0;
       }
 
       .faq-section {
         .styled-header(left);
-        color:@gray;
+        color: @gray;
       }
 
       .faq-question {
         // Override the .icon-* style that makes this inline-block
         display: block;
-
         // Clicking the question toggles the answer, so make the cursor a pointer
         // so it appears more "clickable"
         cursor: pointer;
-        border-top:1px solid #ddd;
-        margin-bottom:0;
+        border-top: 1px solid #ddd;
+        margin-bottom: 0;
         color: @orange;
 
         &:before {
@@ -72,35 +81,44 @@
     }
 
     .page-pull {
-      margin-bottom:31px !important;
-      h1, h2, h3, h4, h5 {
-        text-align:left;
+      margin-bottom: 31px !important;
+      h1,
+      h2,
+      h3,
+      h4,
+      h5 {
+        text-align: left;
       }
+
       h4 {
-        background:none !important;
-        margin-bottom:10px !important;
+        background: none !important;
+        margin-bottom: 10px !important;
         font-family: @roboto;
+
         a {
-          color:@orange;
-        }
-      }
-      p {
-        color:#5a5a5a;
-        padding-bottom:12px;
-        a {
-          color:@highlight-blue;
-        }
-        a.read-more {
-          font-size:14px;
-          color:@orange;
-          font-family: @roboto;
-        }
-        strong {
-          font-size:14px;
-          color:#666;
+          color: @orange;
         }
       }
 
+      p {
+        color: #5a5a5a;
+        padding-bottom: 12px;
+
+        a {
+          color: @highlight-blue;
+        }
+
+        a.read-more {
+          font-size: 14px;
+          color: @orange;
+          font-family: @roboto;
+        }
+
+        strong {
+          font-size: 14px;
+          color: #666;
+        }
+      }
     }
   }
 
@@ -116,41 +134,54 @@
       }
     }
 
-    a { color:@highlight-blue; }
-    .col {
-      float:left;
-      &.left {
-        width:380px;
-        margin-right:45px;
-      }
-      &.right {
-        width:300px;
-      }
-    }
-    hr {
-      border:0;
-      height:1px;
-      padding:7px 0;
-      background:url('../img/h3-line.png') repeat-x;
-      margin-bottom:20px;
+    a {
+      color: @highlight-blue;
     }
 
-    h3, h4 {
-      background:none;
-      text-align:left;
-      font-family: @roboto;
-      font-weight:normal;
-      margin-bottom:12px;
+    .col {
+      float: left;
+
+      &.left {
+        width: 380px;
+        margin-right: 45px;
+      }
+
+      &.right {
+        width: 300px;
+      }
     }
+
+    hr {
+      border: 0;
+      height: 1px;
+      padding: 7px 0;
+      background: url('../img/h3-line.png') repeat-x;
+      margin-bottom: 20px;
+    }
+
+    h3,
     h4 {
-      font-size:18px;
-      color:#333;
-      margin-bottom:0;
+      background: none;
+      text-align: left;
+      font-family: @roboto;
+      font-weight: normal;
+      margin-bottom: 12px;
+    }
+
+    h4 {
+      font-size: 18px;
+      color: #333;
+      margin-bottom: 0;
     }
 
     .object-featured-asset {
+
     }
-    .object img { width:100%; }
+
+    .object img {
+      width: 100%;
+    }
+
     .object #launch-story-viewer {
       .button-style(hot);
       margin: 5px 0;
@@ -173,8 +204,9 @@
 
     .object + hr,
     .story-outreach {
-      clear:left;
+      clear: left;
     }
+
     .connected-stories dl {
       margin: 10px;
     }
@@ -185,7 +217,7 @@
       overflow-wrap: break-word;
 
       ul {
-        list-style:disc !important;
+        list-style: disc !important;
       }
     }
 
@@ -197,12 +229,21 @@
     }
 
     .object-metadata {
-      color:#444;
+      color: #444;
       margin: 20px 0;
+      dt,
+      dd {
+        float: left;
+      }
 
-      dt, dd { float:left; }
-      dt { clear:left; margin-right:4px }
-      dt:after { content:": " }
+      dt {
+        clear: left;
+        margin-right: 4px
+      }
+
+      dt:after {
+        content: ": "
+      }
 
       .website-url {
         // Force long URLs to wrap
@@ -211,11 +252,19 @@
         word-break: break-all;
       }
     }
-    .featured-story img { width: 100%; }
-    .story-list ul { margin-bottom: 30px; }
+
+    .featured-story img {
+      width: 100%;
+    }
+
+    .story-list ul {
+      margin-bottom: 30px;
+    }
+
     .story-list li {
       margin-bottom: 10px;
-      overflow:hidden;
+      overflow: hidden;
+
       div {
         // HACK: Force div to have layout, even when
         // image is broken, so titles are aligned.
@@ -225,8 +274,10 @@
         // image
         min-height: 1px;
       }
+
       img {
-        margin-top:8px; width: 100%;
+        margin-top: 8px;
+        width: 100%;
       }
     }
 
@@ -236,17 +287,19 @@
         margin-top: 10px;
       }
     }
-
   }
 
   &.object-list {
     .object-list {
+
       li {
         overflow: hidden;
         margin-bottom: 1em;
 
-        h2, h3, h4 {
-          text-align:left;
+        h2,
+        h3,
+        h4 {
+          text-align: left;
         }
 
         h2 {
@@ -256,12 +309,17 @@
           margin-bottom: 0.5em;
         }
 
-        img.featured-asset { max-width: 100%; }
+        img.featured-asset {
+          max-width: 100%;
+        }
       }
 
       // Override the reset that gets rid of paragraph margins
-      .description, .body {
-        p { margin-bottom: 1em; }
+      .description,
+      .body {
+        p {
+          margin-bottom: 1em;
+        }
       }
     }
   }
@@ -269,10 +327,10 @@
   // content block: mostly has a bottom border
   section.content-block {
     padding-bottom: 40px;
-    margin-bottom:20px;
-    overflow:hidden;
-
-    &.last, &.no-hr {
+    margin-bottom: 20px;
+    overflow: hidden;
+    &.last,
+    &.no-hr {
       border-bottom: none;
     }
   }
@@ -285,16 +343,15 @@
 
   a.bab {
     .button-style(hot);
-    font-size:2em;
-    padding:1.5em;
-    margin:1.5em 0;
-    display:block;
+    font-size: 2em;
+    padding: 1.5em;
+    margin: 1.5em 0;
+    display: block;
 
     &.right {
       float: right;
-      margin-left:1.5em;
+      margin-left: 1.5em;
     }
-
   }
 }
 
@@ -306,3 +363,4 @@
 }
 
 @import "activity_guides.less";
+
