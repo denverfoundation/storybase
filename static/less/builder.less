@@ -531,12 +531,14 @@ button.preview {
   //top: 28px;
   font-family:@roboto;
   font-size:16px;
+
   li {
     height: @workflow-item-height;
     line-height: @workflow-item-height;
     margin-top: @workflow-item-margin-top;
     padding:0 8px;
     list-style:none;
+
     a {
       text-transform:uppercase;
       text-decoration:none;
@@ -567,6 +569,7 @@ button.preview {
 #subnav-bar {
   background-color:@light-gray;
   width:100%;
+  border-bottom: 1px solid @black05;
 }
 
 #subnav-bar-contents {
@@ -1087,7 +1090,7 @@ button.preview {
 }
 
 .story-search {
-  width: 80%;
+  width: 75%;
 }
 
 .story-search-results {
@@ -1098,7 +1101,7 @@ button.preview {
   }
 
   button {
-    padding: 2px 8px;
+    padding: 2px 25px;
     margin-right: 6px;
   }
 }
@@ -1670,7 +1673,7 @@ table.datasets {
 
 .section-thumbnail, .spacer:hover, .spacer.hover {
   .rounded-corners(4px);
-  .box-shadow(0, 0, 5px, lighten(@medium-gray, 10%));
+  .box-shadow(0, 2px, 3px, @black10);
   cursor: pointer;
 }
 
@@ -1696,8 +1699,10 @@ table.datasets {
   }
 
   .title {
+    color: @blue-gray;
     position:relative;
     font-size: 12px;
+    font-weight: 400;
     line-height: 1.2em;
     margin-left: 0;
 
@@ -1717,6 +1722,7 @@ table.datasets {
     font-size:0;
     z-index: 1;
   }
+
   &:hover .remove {
     display: block;
   }
@@ -1953,6 +1959,12 @@ input[name=address] {
 }
 
 // CTA Page Related Stories Section
+.relevant-stories-container {
+  button {
+    padding: 8px 25px;
+  }
+}
+
 .relevant-story-result-container {
   display: flex;
   margin-bottom: 10px;
