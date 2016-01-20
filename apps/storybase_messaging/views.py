@@ -3,8 +3,9 @@ from django.core.urlresolvers import reverse
 from django.utils.translation import ugettext as _
 from django.views.generic import CreateView, DetailView
 
-from storybase_messaging.forms import SiteContactMessageForm
+from storybase_messaging.forms import SiteContactMessageForm, StoryContactMessageForm
 from storybase_messaging.models import SiteContactMessage, StoryNotification
+
 
 class SiteContactMessageCreateView(CreateView):
     """View for site-wide contact form"""
@@ -45,6 +46,11 @@ class SiteContactMessageCreateView(CreateView):
                  _("Please fill out all required information"),
                  fail_silently=False)
         return super(SiteContactMessageCreateView, self).form_invalid(form)
+
+
+class StoryContactMessageCreateView(SiteContactMessageCreateView):
+    def get_form_class(self):
+        return StoryContactMessageForm
 
 
 class StoryNotificationDetailView(DetailView):

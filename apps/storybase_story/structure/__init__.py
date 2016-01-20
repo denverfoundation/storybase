@@ -127,7 +127,7 @@ class BaseStructure(object):
         for section in self._sections_flat:
             sections.append(section.to_simple())
 
-        if include_summary and self.story.summary:
+        if include_summary:
             summary_section = {
                    'section_id': 'summary',
                    'title': _("Summary"),
@@ -140,7 +140,8 @@ class BaseStructure(object):
             sections.insert(0, summary_section)
 
         if (include_call_to_action and
-                (self.story.call_to_action or self.story.allow_connected)):
+            (self.story.call_to_action or (self.story.allow_connected or
+                                           self.story.relevant_count))):
             call_to_action_section = {
                 'section_id': 'call-to-action',
                 'title': _("How Can You Help?"),

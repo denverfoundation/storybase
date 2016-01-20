@@ -2651,14 +2651,10 @@
     },
 
     saveRelatedStories: function() {
-      if (this._saveRelatedStories) {
-        // Only save the related stories if they've never been saved before
-        if (this.model.relatedStories.length) {
-          // Only bother making the request if there is actually data to
-          // save
-          this.model.saveRelatedStories();
-        }
-        this._saveRelatedStories = false;
+      if (this.model.relatedStories.length) {
+        // Only bother making the request if there is actually data to
+        // save
+        this.model.saveRelatedStories();
       }
     },
 
@@ -3890,16 +3886,18 @@
           processData: false,
           success: _.bind(function(data, textStatus) {
             var model = new this.stories.model({
+              source: this.model.get('story_id'),
               target: data.story_id,
               target_title: data.title,
-              target_url: data.url
+              target_url: data.url,
+              relation_type: 'relevant'
             });
             this.results.reset();
             this.addStory(model);
             $storySearchEl.val('');
           }, this),
           error: function(jqXHR, textStatus) {
-            debugger;
+            // TODO: put failure message here
           }
         });
       } else {
@@ -3908,7 +3906,7 @@
           data: $.param({q: value}),
           success: _.bind(this.renderResults, this),
           error: function() {
-            debugger;
+            // TODO: put failure message here
           }
         });
       }
@@ -3924,6 +3922,7 @@
 
     addStory: function(model) {
       this.stories.add(model);
+      this.model.relatedStories.update(this.stories.toJSON());
       this.renderStories();
     },
 
@@ -3966,33 +3965,19 @@
 
     options: {
       callToActionEl: 'textarea[name="call_to_action"]',
-      connectedEl: 'input[name="allow_connected"]',
-      connectedPromptEl: 'textarea[name="connected_prompt"]',
       templateSource: $('#story-call-to-action-edit-template').html()
     },
 
     events: function() {
       var events = {};
       events['change ' + this.options.callToActionEl] = 'change';
-      events['change ' + this.options.connectedEl] = 'changeConnectedEl';
-      events['change ' + this.options.connectedPromptEl] = 'change';
       return events;
-    },
-
-    changeConnectedEl: function(evt) {
-      this.change(evt);
-      if ($(evt.target).prop('checked')) {
-        this.$(this.options.connectedPromptEl).show();
-      }
-      else {
-        this.$(this.options.connectedPromptEl).hide();
-      }
     },
 
     initialize: function() {
       PseudoSectionEditView.prototype.initialize.apply(this, arguments);
       this.relevantStoriesEditView = new RelevantStoriesEditView({
-        model: this.story,
+        model: this.options.model,
         relatedStories: this.options.relatedStories.where({relation_type: 'relevant'})
       });
     },

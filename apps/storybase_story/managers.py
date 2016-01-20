@@ -28,6 +28,10 @@ class StoryQuerySet(FeaturedQuerySet):
     Based on ideas at http://dabapps.com/blog/higher-level-query-api-django-orm/
 
     """
+    def relevant(self):
+        """Return stories that are connected stories"""
+        return self.filter(source__relation_type='relevant')
+
     def connected(self):
         """Return stories that are connected stories"""
         return self.filter(source__relation_type='connected')
@@ -71,6 +75,9 @@ class StoryManager(FeaturedManager):
     # Proxy methods to underlying querysets.
     # We could use PassThroughManager from django-model-utilities to
     # avoid this boilerplate
+    def relevant(self):
+        return self.get_query_set().relevant()
+
     def connected(self):
         return self.get_query_set().connected()
 

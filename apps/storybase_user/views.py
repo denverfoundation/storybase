@@ -166,8 +166,6 @@ class OrganizationListView(ListView):
                            .order_by('organizationtranslation__name')
 
 
-
-
 class ProjectDetailView(RelatedStoriesDetailView):
     """Display details about a Project"""
     context_object_name = "project"

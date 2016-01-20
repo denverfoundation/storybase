@@ -119,9 +119,12 @@ class StorySearchForm(SearchForm):
     single topic and/or place ID.
 
     """
-    topic = forms.ModelChoiceField(queryset=Category.objects.all(), required=False)
-    place = forms.ModelChoiceField(queryset=Place.objects.all(), required=False)
-    badge = forms.ModelChoiceField(queryset=Badge.objects.all(), required=False)
+    topic = forms.ModelChoiceField(queryset=Category.objects.all(), required=False,
+                                   widget=forms.Select(attrs={'data-placeholder': Category._meta.verbose_name}))
+    place = forms.ModelChoiceField(queryset=Place.objects.all(), required=False,
+                                   widget=forms.Select(attrs={'data-placeholder': Place._meta.verbose_name}))
+    badge = forms.ModelChoiceField(queryset=Badge.objects.all(), required=False,
+                                   widget=forms.Select(attrs={'data-placeholder': Badge._meta.verbose_name}))
 
     def search(self):
         sqs = super(StorySearchForm, self).search()
@@ -129,16 +132,20 @@ class StorySearchForm(SearchForm):
         if isinstance(sqs, EmptySearchQuerySet):
             return sqs
 
-        topic = self.cleaned_data.get('topic', None)
+        data = getattr(self, 'cleaned_data', {})
+        topic = data.get('topic', None)
         if topic is not None:
             sqs = sqs.filter(topic_ids__in=[topic.id])
 
-        place = self.cleaned_data.get('place', None)
+        place = data.get('place', None)
         if place is not None:
             sqs = sqs.filter(place_ids__in=[place.id])
 
-        badge = self.cleaned_data.get('badge', None)
+        badge = data.get('badge', None)
         if badge is not None:
             sqs = sqs.filter(badge_ids__in=[badge.id])
 
         return sqs
+
+    def no_query_found(self):
+        return self.searchqueryset.all()
