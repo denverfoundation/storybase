@@ -649,12 +649,12 @@
     color: #fff;
     background-color: @blue-gray;
     position: absolute;
-    right: 60px;
-    width: 50px;
+    right: 40px;
+    width: 160px;
 
     @media (min-width: @viewer-nav-breakpoint) {
       width: @toc-width;
-      right: @toc-width + 20px;
+      right: @toc-width + 10px;
     }
 
     &:hover {
@@ -728,7 +728,7 @@
     span {
       display: none;
 
-      @media (min-width: @viewer-nav-breakpoint) {
+      @media (min-width: @screen-sm-min) {
         display: inline-block;
       }
     }
@@ -748,6 +748,14 @@
     border: 1px solid @white20;
     border-radius: 4px;
     margin-top: 8px;
+
+    span {
+      display: none;
+
+      @media (min-width: @screen-sm-min) {
+        display: inline;
+      }
+    }
   }
 
   #story-nav {
@@ -759,10 +767,11 @@
     padding: 0;
     bottom: 10px;
     width: auto;
-    right: 140px;
+    left: 100px;
 
     @media (min-width: @viewer-nav-breakpoint) {
       right: 400px;
+      left: initial;
     }
 
     a {
