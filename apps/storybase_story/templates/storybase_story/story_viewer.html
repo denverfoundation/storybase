@@ -131,7 +131,7 @@
               <h1 class="title">{{ story.title }}</h1>
               <p class="byline">
                 {% if story.contributor_name %}
-                <a class="contributor" href="{{ story.author.get_profile.get_absolute_url }}" title="{{ story.contributor_name }}">{{ story.contributor_name }}</a>
+                <a class="contributor" href="{{ story.author.userprofile.get_absolute_url }}" title="{{ story.contributor_name }}">{{ story.contributor_name }}</a>
                 {% endif %}
                 {% if story.organizations.count %}
                 {% for organization in story.organizations.all %}{% if forloop.first %} | {% else %}, {% endif %}<a href="{{ organization.get_absolute_url }}">{{ organization.name }}</a>{% endfor %}
@@ -149,10 +149,12 @@
               <p class="topics">{% trans "Topics" %}: {% for topic in story.topics_with_links %}<a href="{{ topic.url }}">{{ topic.name }}</a>{% if not forloop.last %}, {% endif %}{% endfor %}</p>
               {% endif %}
             </div>
+            {% if story.summary %}
             <h2 class="title">{%trans "Summary" %}</h2>
             <div id="summary-text">
               {{ story.summary|safe|linebreaks }}
             </div>
+            {% endif %}
             <div id="summary-toc">
               <h2>Table of Contents</h2>
               {{ story.structure.render_toc }}
@@ -166,62 +168,50 @@
         <section id="call-to-action" class="section call-to-action" style="display:none;">
           <h2 class="title">{% trans "How Can You Help?" %}</h2>
           {{ story.call_to_action|safe }}
-          {% if story.allow_connected %}
-          <p>{{ story.connected_prompt|safe|linebreaks }}</p>
-          {# TODO: Style the links to the connected story builder as buttons #}
-          <p><a href="{% url "connected_story_builder" source_slug=story.slug %}" class="external" data-new-window-name="connectedBuilder">{% trans "Click here to contribute to this story" %}</a></p>
-          {% endif %}
-
-          {# Placeholder for dynamic content #}
           <div class="next-steps">
+            {% if story.relevant_count %}
             <section class="related">
-              <h4>Related Stories</h4>
+              <h4>{% trans "Read Related Stories" %}</h4>
               <ul>
+                {% for rs in relevant_stories %}
                 <li>
-                  <a href="">Curated Story Name 1</a>
-                  <a href=""><span>Story Author</span></a>
+                  <a href="{% fullurl rs.get_absolute_url %}">{{ rs.title }}</a>
+                  <a href="{% fullurl rs.author.userprofile.get_absolute_url %}"><span>{{ rs.author.userprofile.name }}</span></a>
                 </li>
+                {% endfor %}
               </ul>
             </section>
+            {% endif %}
 
             <section class="contact">
-              <h4>Provide Feedback</h4>
-              <a class="" href=""><strong>Author Name</strong></a><br>
-              <a class="" href="">Organization Name</a>
+              <h4>{% trans "Provide Feedback" %}</h4>
+              {% with feedback_form as form %}
+              <form action="{% url "story_contact" %}?success={{ request.path }}" method="post" {%if form.errors %}class="errors"{% endif %}>{% csrf_token %}
+                {{ form.as_p }}
+                <input type="submit" value="{% trans "Submit" %}" />
+              </form>
+              {% endwith %}
+              <p>{% trans "We'll send your message to the story's author" %}{% if story.contributor_name %}, <a class="" href="{{ story.author.userprofile.get_absolute_url }}"><strong>{{ story.contributor_name }}</strong></a>{% endif %}.</p><br>
             </section>
 
             <section class="sharing">
-              <h4>Share this story</h4>
-              <a href="http://www.facebook.com/share.php?u=[URL]&title=[TITLE]" target="_blank"><img src="{{ STATIC_URL }}img/icon-facebook-solid.png" alt="Share on Facebook">Facebook</a>
+              <h4>{% trans "Share this story" %}</h4>
+              {% fullurl story.get_absolute_url as story_url %}
+              <a href="http://www.facebook.com/share.php?u={{ story_url|urlencode }}&title={{ story.title }}" target="_blank"><img src="{{ STATIC_URL }}img/icon-facebook-solid.png" alt="Share on Facebook">Facebook</a>
 
-              <a href="http://twitter.com/intent/tweet?status=[TITLE]+[URL]" target="_blank"><img src="{{ STATIC_URL }}img/icon-twitter-solid.png" alt="Share on Twitter">Twitter</a>
+              <a href="http://twitter.com/intent/tweet?status={{ story.title }}+{{ story_url|urlencode }}" target="_blank"><img src="{{ STATIC_URL }}img/icon-twitter-solid.png" alt="Share on Twitter">Twitter</a>
+
+              <a href="{{ story.get_embed_url }}" class="storybase-embed-button">{% trans "Embed This Story" %}</a>
 
               <p class="url-block">
                 <img src="{{ STATIC_URL }}img/icon-link-solid.png" alt="Share on Facebook">
-                Copy a link to this story<br>
-                <span>http://www.example.com</span>
+                {% trans "Copy a link to this story" %}<br>
+                <span>{{ story_url }}</span>
               </p>
             </section>
           </div>
           {% include "storybase_story/story_viewer_section_nav.html" %}
         </section>
-
-        {% elif section.section_id == "connected-stories" %}
-        <section id="connected-stories" class="section connected-stories" style="display: none;">
-          <h2 class="title">{% trans "Connected Stories" %}</h2>
-          {% for cs in connected_stories %}
-          <div class="connected-story-item">
-            {% featured_asset cs 100 %}
-            <h3><a href="#connected-stories/{{ cs.story_id }}">{{ cs.title }}</a></h3>
-            <p class="byline">{% trans "By" %} {{ cs.byline|default:cs.contributor_name }}</p>
-          </div>
-          {% endfor %}
-        </section>
-        {% for cs in connected_stories %}
-        <section id="connected-story-{{ cs.story_id }}" class="connected-story" style="display:none;">
-          {% connected_story cs %}
-        </section>
-        {% endfor %}
 
         {% else %}
         <section id="{{ section.section_id }}" class="section" style="display:none;">

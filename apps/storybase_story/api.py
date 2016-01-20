@@ -58,6 +58,8 @@ class StoryResource(TranslatedModelResource):
     featured_asset_url = fields.CharField(readonly=True)
     connected_count = fields.IntegerField(attribute='connected_count',
             readonly=True)
+    relevant_count = fields.IntegerField(attribute='relevant_count',
+            readonly=True)
     # A list of lat/lon values for related Location objects as well as
     # centroids of Place tags
     points = fields.ListField(readonly=True)

@@ -26,6 +26,7 @@ from storybase_asset.api import AssetResource
 from storybase_asset.models import ASSET_TYPES
 from storybase_geo.models import Place
 from storybase_help.api import HelpResource
+from storybase_messaging.forms import StoryContactMessageForm
 from storybase_story.api import (ContainerTemplateResource,
     SectionAssetResource, SectionResource,
     StoryResource, StoryTemplateResource)
@@ -111,16 +112,23 @@ class StoryViewerView(ModelIdDetailView):
 
         if preview and self.request.user.is_authenticated():
             # Previewing the story in the viewer, include draft
-            # connected stories belonging to this user
+            # related stories belonging to this user
             context['connected_stories'] = self.object.connected_stories(published_only=False, draft_author=self.request.user)
+            context['relevant_stories'] = self.object.relevant_stories(published_only=False, draft_author=self.request.user)
 
         if 'connected_stories' not in context:
             # Viewing the story in the viewer, show only published
             # connected stories
             context['connected_stories'] = self.object.connected_stories()
 
-        context['sections_json'] = self.object.structure.sections_json(
-                connected_stories=context['connected_stories'])
+        if 'relevant_stories' not in context:
+            # Viewing the story in the viewer, show only published
+            # relevant stories
+            context['relevant_stories'] = self.object.relevant_stories()
+
+        context['sections_json'] = self.object.structure.sections_json()
+
+        context['feedback_form'] = StoryContactMessageForm()
 
         # Currently supporting two "contexts" in which the viewer lives:
         # iframe and normal

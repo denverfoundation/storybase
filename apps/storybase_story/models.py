@@ -413,9 +413,24 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
     def natural_key(self):
         return (self.story_id,)
 
+    def relevant_stories(self, published_only=True, draft_author=None):
+        """Get a queryset of connected stories"""
+        # FIXME: shouldn't have to filter after method
+        qs = self.related_stories.relevant().filter(related_to=self)
+        if published_only:
+            # By default only return published connected stories
+            qs = qs.published()
+        elif draft_author:
+            # Alternately, include draft stories by a particular
+            # author
+            qs = qs.filter(Q(status='published') | Q(status='draft', author=draft_author))
+
+        return qs
+
     def connected_stories(self, published_only=True, draft_author=None):
         """Get a queryset of connected stories"""
-        qs = self.related_stories.connected()
+        # FIXME: shouldn't have to filter after method
+        qs = self.related_stories.connected().filter(related_to=self)
         if published_only:
             # By default only return published connected stories
             qs = qs.published()
@@ -456,6 +471,13 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
         """
         return self.connected_to_stories().count() > 0
 
+    def relevant_count(self):
+        """
+        Helper for the API to get a count of relevant stories.
+        """
+        # FIXME: shouldn't have to filter after method
+        return self.related_stories.relevant().filter(related_to=self).published().count()
+
     def connected_count(self):
         """
         Helper for the API to get a count of connected stories.
@@ -465,7 +487,8 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
             # and save a call to the DB
             return 0
 
-        return self.related_stories.connected().published().count()
+        # FIXME: shouldn't have to filter after method
+        return self.related_stories.connected().filter(related_to=self).published().count()
 
     def builder_url(self):
         if self.is_connected():
@@ -830,7 +853,7 @@ class StoryRelationPermission(PermissionMixin):
 
         # TODO: Add additional logic as different relation types
         # are defined
-        if self.relation_type == 'connected' and self.target.author == user:
+        if self.relation_type in ('connected', 'relevant') and self.target.author == user:
             # Users should be able to define the parent of connected
             # stories for stories that they own
             return True
