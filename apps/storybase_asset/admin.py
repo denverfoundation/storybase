@@ -55,7 +55,7 @@ class AssetAdmin(StorybaseModelAdmin):
         # We call str(obj) instead of getting asset.title because we need
         # to auto-generate the title from the content in cases when the
         # asset doesn't have an explicitely-set title.
-        return "<a href='%s'>%s</a>" % (change_url, str(the_obj))
+        return "<a href='%s'>%s</a>" % (change_url, unicode(the_obj))
     change_link.short_description = 'Title'
     change_link.allow_tags = True
 
