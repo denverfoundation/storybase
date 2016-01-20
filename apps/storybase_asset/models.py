@@ -713,22 +713,25 @@ class FeaturedAssetsMixin(DefaultImageMixin):
             return featured_asset.render_thumbnail(format=format,
                                                    **thumbnail_options)
 
-    def featured_asset_thumbnail_url_key(self, include_host=True):
+    def featured_asset_thumbnail_url_key(self, include_host=True,
+                                         width=FEATURED_ASSET_THUMBNAIL_WIDTH,
+                                         height=FEATURED_ASSET_THUMBNAIL_HEIGHT):
         extra = "fa_url"
         if include_host:
             extra = extra + "_host"
+        extra = extra + "_%d_%d" % (width, height)
         return key_from_instance(self, extra)
 
 
     def featured_asset_thumbnail_url(self, include_host=True,
-        width=FEATURED_ASSET_THUMBNAIL_WIDTH,
-        height=FEATURED_ASSET_THUMBNAIL_HEIGHT):
+                                     width=FEATURED_ASSET_THUMBNAIL_WIDTH,
+                                     height=FEATURED_ASSET_THUMBNAIL_HEIGHT):
         """Return the URL of the featured asset's thumbnail
 
         Returns None if the asset cannot be converted to a thumbnail image.
 
         """
-        key = self.featured_asset_thumbnail_url_key(include_host)
+        key = self.featured_asset_thumbnail_url_key(include_host, width, height)
         url = cache.get(key)
         if url:
             return url
