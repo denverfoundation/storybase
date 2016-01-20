@@ -1,12 +1,10 @@
 // Explorer-specific variables
-
 @explorer-img-width: 219px;
 @explorer-img-height: 132px;
 @explorer-chrome-margin-bottom: 15px;
 // After this width, show the story metadata to the right of the featured
 // image.
 @explorer-list-breakpoint: 680px;
-
 .container_12 {
   // HACK: Make the small container slightly wider so it can fit 3 columns
   // of tiles
@@ -19,44 +17,39 @@
 }
 
 .list-view .box {
-  background:none;
-  width:100%;
-  padding-top:12px;
-  padding-bottom:9px;
-  border-top:1px dotted @gray;
-
+  background: none;
+  width: 100%;
+  padding-top: 12px;
+  padding-bottom: 9px;
+  border-top: 1px dotted @gray;
   img {
-    float:left;
-    display:inline;
-    margin-right:16px;
-    width:160px;
-    margin-top:8px;
+    float: left;
+    display: inline;
+    margin-right: 16px;
+    width: 160px;
+    margin-top: 8px;
   }
-
   .cnt {
-    border-top:0 !important;
-    margin-bottom:0 !important;
+    border-top: 0 !important;
+    margin-bottom: 0 !important;
   }
-
   min-height: 20px;
 }
 
 #filters {
-  padding-bottom:18px;
-  border-bottom:1px solid #ccc;
-  margin-bottom:22px;
-  padding-top:20px;
-  position:relative;
+  padding-bottom: 18px;
+  border-bottom: 1px solid #ccc;
+  margin-bottom: 22px;
+  padding-top: 20px;
+  position: relative;
   z-index: 1000;
-
   &.sticky {
     position: fixed;
     top: 0;
     background-color: #fff;
-    box-shadow:0 3px 6px @black20;
+    box-shadow: 0 3px 6px @black20;
     color: #fff;
   }
-
   // Horizontally center filters
   .fields-container {
     width: 100%;
@@ -64,7 +57,6 @@
     margin-left: auto;
     margin-right: auto;
   }
-
   .field {
     text-align: left;
     display: inline-block;
@@ -72,39 +64,39 @@
     margin-bottom: 6px;
 
     &.last {
-      margin-right:0px;
+      margin-right: 0px;
     }
 
     label {
-      display:none;
+      display: none;
     }
   }
 
   .select2-container {
     background: @light-gray;
-    min-width:180px;
-    width:191px;
-    display:block;
-    line-height:34px;
-    height:34px;
+    min-width: 180px;
+    width: 191px;
+    display: block;
+    line-height: 34px;
+    height: 34px;
     border-radius: 4px;
 
     .select2-choice {
       abbr {
         // little "x" to clear a filter
-        right:25px;
+        right: 25px;
         top: 10px;
         // background-image:url(../img/select2.png);
       }
 
       div {
-        background:none;
-        border:none;
-        filter:none;
+        background: none;
+        border: none;
+        filter: none;
 
         b {
-          background-image:url(../img/select2.png);
-          filter:none;
+          background-image: url(../img/select2.png);
+          filter: none;
           width: 10px;
           height: 10px;
         }
@@ -128,13 +120,13 @@
 
   .select2-container .select2-choice,
   .select2-dropdown-open .select2-choice {
-    background:none;
-    background-image:none;
-    filter:none;
-    line-height:inherit;
-    height:34px;
-    border-radius:5px;
-    padding-left:11px;
+    background: none;
+    background-image: none;
+    filter: none;
+    line-height: inherit;
+    height: 34px;
+    border-radius: 5px;
+    padding-left: 11px;
   }
 
   .select2-result-label {
@@ -145,11 +137,11 @@
   }
 
   .select2-default {
-    color:@dark-gray !important;
+    color: @dark-gray !important;
   }
 
   .select2-drop .select2-drop-active {
-    border:1px solid transparent !important;
+    border: 1px solid transparent !important;
   }
 
   label {
@@ -170,8 +162,7 @@
 }
 
 #filter-proxy {
-  display:none;
-
+  display: none;
   &.shown {
     display: block;
   }
@@ -180,7 +171,6 @@
 #story-count {
   margin: 0;
   float: left;
-
   @media (min-width: @screen-xs-min) {
     width: auto;
     margin-bottom: (@explorer-chrome-margin-bottom * 2);
@@ -207,45 +197,40 @@
 }
 
 #view-selector {
-  float:right;
-  position:relative;
-
+  float: right;
+  position: relative;
   padding: 0;
   // HACK: Provide min-height so first story clears the story count
   min-height: 25px;
   margin-right: 15px;
-
   text-align: right;
-
-  list-style:none;
+  list-style: none;
   list-style-type: none;
-
   margin-bottom: @explorer-chrome-margin-bottom;
 
   li {
-    float:left;
-    display:block;
-    padding-left:25px;
-    position:relative;
-    width:25px;
-    height:40px;
+    float: left;
+    display: block;
+    padding-left: 25px;
+    position: relative;
+    width: 25px;
+    height: 40px;
     margin-left: 15px;
 
     a {
-      height:29px;
-      position:absolute;
-      left:0;
-
-      background:url('../img/cols-icons.png') no-repeat 0 0;
-      font-size:14px;
+      height: 29px;
+      position: absolute;
+      left: 0;
+      background: url('../img/cols-icons.png') no-repeat 0 0;
+      font-size: 14px;
       color: @gray;
-      font-style:normal;
+      font-style: normal;
       font-family: @roboto;
       font-weight: 700;
 
       span {
-        position:relative;
-        top:30px;
+        position: relative;
+        top: 30px;
       }
     }
 
@@ -267,7 +252,6 @@
       a {
         background-position: -43px -29px;
       }
-
       &.active a {
         background-position: -43px 0;
       }
@@ -293,30 +277,30 @@
 }
 
 #story-list {
-  clear:both;
+  clear: both;
   padding: 0;
   list-style-type: none;
 
   li.story {
     p.cnt {
-      color:@dark-gray;
-      padding-top:6px;
-      margin-top:6px;
-      border-top:1px dotted @dark-gray;
-      margin-bottom:15px;
+      color: @dark-gray;
+      padding-top: 6px;
+      margin-top: 6px;
+      border-top: 1px dotted @dark-gray;
+      margin-bottom: 15px;
     }
 
     a {
-      position:relative;
-      display:block;
+      position: relative;
+      display: block;
 
       em.hover {
-        position:absolute;
-        top:0;
+        position: absolute;
+        top: 0;
       }
 
       &:hover em.hover {
-        background:url('../img/over.png') no-repeat center;
+        background: url('../img/over.png') no-repeat center;
         background-size: cover;
       }
     }
@@ -328,7 +312,6 @@
       font-size: .875em;
 
       .languages {
-
         p {
           line-height: 1;
         }
@@ -358,22 +341,21 @@
       margin-bottom: 11px;
       margin-right: 11px;
       overflow: hidden;
-      box-shadow: inset 0 -1px 1px rgba(0,0,0,.125), inset -1px 0 1px rgba(0,0,0,.05), inset 1px 0 1px rgba(0,0,0,.05);
+      box-shadow: inset 0 -1px 1px rgba(0, 0, 0, .125), inset -1px 0 1px rgba(0, 0, 0, .05), inset 1px 0 1px rgba(0, 0, 0, .05);
       background: @light-gray;
       border-radius: 2px;
     }
   }
-
   &.list li.story {
-    float:none;
-    width:100%;
+    float: none;
+    width: 100%;
     background: none;
     border-top: 1px dotted @gray;
     padding-bottom: 9px;
     padding-top: 12px;
     margin-bottom: 11px;
     margin-right: 14px;
-    overflow:hidden;
+    overflow: hidden;
 
     h3 {
       padding-top: 0;
@@ -385,7 +367,7 @@
       }
     }
 
-    .image-container{
+    .image-container {
       @media (min-width: @explorer-list-breakpoint) {
         float: left;
       }
@@ -394,7 +376,6 @@
     .story-metadata {
       padding-top: 12px;
       font-family: @roboto-condensed;
-
       @media (min-width: @explorer-list-breakpoint) {
         padding-top: 0;
         margin-left: 240px;
@@ -404,29 +385,28 @@
 }
 
 #map-container {
-  clear:both;
-  margin-bottom:50px;
+  clear: both;
+  margin-bottom: 50px;
 
   .leaflet-popup-content-wrapper {
-    overflow:hidden;
-    padding:0 0 25px 0;
+    overflow: hidden;
+    padding: 0 0 25px 0;
   }
 }
 
 // Styles common to the tile, list and map displays
-
 .story .story-attributes dt {
   font-weight: bold;
 }
 
 #story-list li.story h3,
 #map-container .leaflet-popup h3 {
-  padding-top:8px;
-  background:none;
-  font-size:16px;
-  color:@highlight-blue;
-  line-height:16px;
-  text-align:left;
+  padding-top: 8px;
+  background: none;
+  font-size: 16px;
+  color: @highlight-blue;
+  line-height: 16px;
+  text-align: left;
 }
 
 #story-list li.story > a:first-child,
@@ -450,12 +430,12 @@
 #story-list li.story p,
 #map-container .leaflet-popup .story p,
 #show-more {
-  color:@dark-gray;
+  color: @dark-gray;
 }
 
 #story-list .byline,
 #map-container .byline {
-  font-style:normal;
+  font-style: normal;
   font-weight: 700;
   line-height: 1.25;
   margin-top: .1em;
@@ -463,7 +443,6 @@
 }
 
 // Map styles
-
 .leaflet-popup ul {
   list-style-type: none;
   padding: 0;
@@ -491,27 +470,28 @@
     width: 78%; // this should work at 80% but does not in Firefox
   }
 
-  input[type="submit"], input[type="reset"] {
-    width:10%;
+  input[type="submit"],
+  input[type="reset"] {
+    width: 10%;
   }
 }
 
 @media only screen and (min-width: 480px) {
-// Style adjustments for viewports 480px and over go here
-//
-//  #story-list.tile .story {
-//    width: 41%;
-//  }
-//
+  // Style adjustments for viewports 480px and over go here
+  //
+  //  #story-list.tile .story {
+  //    width: 41%;
+  //  }
+  //
 }
 
 @media only screen and (min-width: 768px) {
-// Style adjustments for viewports 480px and over go here
-//
-//  #story-list.tile .story {
-//    width: 21%;
-//  }
-//
+  // Style adjustments for viewports 480px and over go here
+  //
+  //  #story-list.tile .story {
+  //    width: 21%;
+  //  }
+  //
 }
 
 #show-more {
@@ -523,12 +503,17 @@
   vertical-align: middle;
 }
 
-.load-more a { width:110px; height:34px; background:url('../img/load-more.png') no-repeat 0 0; display:block; margin:20px auto 170px;  }
+.load-more a {
+  width: 110px;
+  height: 34px;
+  background: url('../img/load-more.png') no-repeat 0 0;
+  display: block;
+  margin: 20px auto 170px;
+}
 
 #loading {
   margin: 20px auto;
   padding: 15px 30px;
-
   text-align: center;
   color: @light-gray;
   background: @black70;
@@ -538,7 +523,8 @@
   position: relative;
   z-index: 10;
 
-  .text, .spinner {
+  .text,
+  .spinner {
     display: inline-block;
     vertical-align: middle;
   }
@@ -547,7 +533,6 @@
     position: relative;
     left: -20px;
     max-width: 240px;
-
     @media (min-width: 370px) {
       max-width: 100%;
     }
@@ -563,3 +548,4 @@
     }
   }
 }
+

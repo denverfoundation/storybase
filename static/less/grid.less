@@ -4,9 +4,7 @@
 //  Based on 960 Grid System - http://960.gs/
 //
 //  Licensed under GPL and MIT.
-
 // Mixins
-
 .mk-fluid-grid-container-margin() {
   margin-left: auto;
   margin-right: auto;
@@ -82,24 +80,20 @@
 //  Increase this if your layout is wider.
 //
 //  Note: IE6 works fine without this fix.
-
 body {
   //min-width: @container-width;
   //width: 100%;
 }
 
 // Containers
-
 .container_12 {
-   width: 92%;
-
+  width: 92%;
   .mk-fluid-grid-container-margin();
   .mk-fluid-grid-container-sm();
   .mk-fluid-grid-container-md();
 }
 
 // Grid >> Global
-
 .grid_1,
 .grid_2,
 .grid_3,
@@ -113,34 +107,42 @@ body {
 .grid_11,
 .grid_12 {
   position: relative;
-
   @media (min-width: @screen-sm-min) {
-    display:inline;
+    display: inline;
     float: left;
   }
-
   .mk-fluid-grid-gutters-sm();
   .mk-fluid-grid-gutters-md();
 }
 
-.push_1, .pull_1,
-.push_2, .pull_2,
-.push_3, .pull_3,
-.push_4, .pull_4,
-.push_5, .pull_5,
-.push_6, .pull_6,
-.push_7, .pull_7,
-.push_8, .pull_8,
-.push_9, .pull_9,
-.push_10, .pull_10,
-.push_11, .pull_11,
-.push_12, .pull_12 {
-  position:relative;
+.push_1,
+.pull_1,
+.push_2,
+.pull_2,
+.push_3,
+.pull_3,
+.push_4,
+.pull_4,
+.push_5,
+.pull_5,
+.push_6,
+.pull_6,
+.push_7,
+.pull_7,
+.push_8,
+.pull_8,
+.push_9,
+.pull_9,
+.push_10,
+.pull_10,
+.push_11,
+.pull_11,
+.push_12,
+.pull_12 {
+  position: relative;
 }
 
-
 // Grid >> Children (Alpha ~ First, Omega ~ Last)
-
 .alpha {
   margin-left: 0;
 }
@@ -150,7 +152,6 @@ body {
 }
 
 // Grid >> 12 Columns
-
 .container_12 .grid_1 {
   .mk-fluid-grid-col-sm(1);
   //width:65px;
@@ -223,12 +224,7 @@ body {
   .mk-fluid-grid-col-md(12);
 }
 
-
-
-
 // Prefix Extra Space >> 12 Columns
-
-
 .container_12 .prefix_1 {
   //padding-left:85px;
   .mk-fluid-grid-prefix(1);
@@ -284,11 +280,7 @@ body {
   .mk-fluid-grid-prefix(11);
 }
 
-
-
 // Suffix Extra Space >> 12 Columns
-
-
 .container_12 .suffix_1 {
   //padding-right:85px;
   .mk-fluid-grid-suffix(1);
@@ -344,11 +336,7 @@ body {
   .mk-fluid-grid-suffix(11);
 }
 
-
-
 // Push Space >> 12 Columns
-
-
 .container_12 .push_1 {
   //left:85px;
   .mk-fluid-grid-push(1);
@@ -404,11 +392,7 @@ body {
   .mk-fluid-grid-push(11);
 }
 
-
-
 // Pull Space >> 12 Columns
-
-
 .container_12 .pull_1 {
   //left:-85px;
   .mk-fluid-grid-pull(1);
@@ -464,13 +448,8 @@ body {
   .mk-fluid-grid-pull(11);
 }
 
-
-
-
 // `Clear Floated Elements
-
 // http://sonspring.com/journal/clearing-floats
-
 .clear {
   clear: both;
   display: block;
@@ -481,7 +460,6 @@ body {
 }
 
 // http://www.yuiblog.com/blog/2010/09/27/clearfix-reloaded-overflowhidden-demystified
-
 .clearfix:before,
 .clearfix:after {
   content: '\0020';
@@ -498,7 +476,7 @@ body {
 
 //  The following zoom:1 rule is specifically for IE6 + IE7.
 //  Move to separate stylesheet if invalid CSS is a problem.
-
 .clearfix {
   zoom: 1;
 }
+

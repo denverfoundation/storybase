@@ -2,22 +2,21 @@
 // this selector is assuming that this file is being included *within* a body.base-template {} less block.
 // this is less than ideal; no pun intended.
 &.homepage {
-
   #main {
     padding-top: 20px;
   }
 
   @image-border-color: darken(@light-gray, 10%);
-
   .button.create-your-story {
-    text-align:center;
-    width:50%;
-    margin:0 auto;
-    display:block;
+    text-align: center;
+    width: 50%;
+    margin: 0 auto;
+    display: block;
 
     strong {
-      font-size:1.2em;
+      font-size: 1.2em;
     }
+
     span {
       font-size: .875em;
     }
@@ -30,6 +29,7 @@
       // to doing this, but I was unable to arrive at the correct incantation
       // to achieve this. This seems to have no negative effects and its scope
       // is limited to the homepage.
+
       a {
         z-index: inherit;
       }
@@ -41,7 +41,6 @@
         font-size: 0;
         line-height: 0;
         text-indent: -4000px;
-
         @media (min-width: @screen-sm-min) {
           background-position: top;
         }
@@ -54,16 +53,15 @@
         font-size: 0;
         line-height: 0;
         text-indent: -4000px;
-
         @media (min-width: @screen-sm-min) {
           background-position: top;
         }
       }
 
-      .next, .prev {
+      .next,
+      .prev {
         width: 25px;
         background-size: 100%;
-
         @media (min-width: @screen-sm-min) {
           width: 75px;
           background-position-y: 55px;
@@ -78,12 +76,11 @@
 
   .homepage-header {
     padding-top: 1em;
-
     h1 {
       padding-bottom: initial;
-      text-align:left;
+      text-align: left;
       margin: .25em 0 .75em 0;
-      line-height:1.2em;
+      line-height: 1.2em;
       font-size: 1.75em;
     }
   }
@@ -101,32 +98,33 @@
   }
 
   ul.explore-others-posts {
-    margin-top:2em;
+    margin-top: 2em;
 
     li {
       clear: both;
-      margin-bottom:1em;
-      overflow:hidden;
+      margin-bottom: 1em;
+      overflow: hidden;
 
       h3 {
-        text-align:left;
-        margin-top:0;
+        text-align: left;
+        margin-top: 0;
       }
 
       img {
-        width:25%;
-        height:auto;
-        display:block;
-        float:left;
-        margin-right:.5em;
+        width: 25%;
+        height: auto;
+        display: block;
+        float: left;
+        margin-right: .5em;
       }
     }
   }
 
   .supporting-foundations {
     .flexslider {
-      .flex-control-nav, .flex-direction-nav {
-        display:none !important;
+      .flex-control-nav,
+      .flex-direction-nav {
+        display: none !important;
       }
     }
 
@@ -158,7 +156,6 @@
     .image {
       width: 100%;
       margin-top: 12px;
-
       @media (min-width: @screen-sm-min) {
         display: inline;
         margin-top: 0;
@@ -182,7 +179,6 @@
 
     .image {
       text-align: center;
-
       @media (min-width: @screen-sm-min) {
         float: left;
         text-align: left;
@@ -194,7 +190,6 @@
 
       a {
         display: block;
-
         @media (min-width: @screen-sm-min) {
           display: inline;
         }
@@ -212,7 +207,6 @@
 
   #banner {
     clear: both; // clear possible floated elements in megamenu
-
     // Hide this on very narrow displays
     display: none;
 
@@ -229,52 +223,57 @@
   }
 
   .images {
-    width:100%;
-    position:relative;
-    overflow:hidden;
+    width: 100%;
+    position: relative;
+    overflow: hidden;
 
     a {
       // Hide the banner initially, it gets shown in a window load event
       // handler in functions.js.
-      display:none;
+      display: none;
       // Height and width are set dynamically relative to window width in
       // functions.js:intro_resize()
-      float:left;
-      display:inline;
-      position:relative;
-      position:relative;
+      float: left;
+      display: inline;
+      position: relative;
+      position: relative;
+
       &:hover {
-        text-decoration:none;
+        text-decoration: none;
       }
+
       img {
-        display:block;
+        display: block;
       }
+
       span.overlay {
-        background:url('../img/image-overlay.png')  0 0;
-        display:block;
-        position:absolute;
-        top:0;
-        left:0;
-        width:100%;
-        height:100%;
+        background: url('../img/image-overlay.png') 0 0;
+        display: block;
+        position: absolute;
+        top: 0;
+        left: 0;
+        width: 100%;
+        height: 100%;
       }
+
       span.title {
-        position:absolute;
-        bottom:0;
-        left:0;
-        background:url('../img/transparent.png')  0 0;
-        display:block;
-        width:100%;
-        display:none;
+        position: absolute;
+        bottom: 0;
+        left: 0;
+        background: url('../img/transparent.png') 0 0;
+        display: block;
+        width: 100%;
+        display: none;
       }
+
       span.title em {
-        font-size:12px;
-        font-style:normal;
-        color:@highlight-blue;
+        font-size: 12px;
+        font-style: normal;
+        color: @highlight-blue;
         font-family: @roboto;
         font-weight: 700;
-        padding:7px 14px 12px 14px;
-        display:block;
+        padding: 7px 14px 12px 14px;
+        display: block;
       }
     }
   }
@@ -283,7 +282,7 @@
     h3 {
       margin-top: .5em;
       line-height: 1em;
-      text-align:left;
+      text-align: left;
     }
 
     .featured-type {
@@ -292,21 +291,22 @@
     }
 
     .slides li {
-      .title, .image, .text {
+      .title,
+      .image,
+      .text {
         padding: 0 26px;
-
         @media (min-width: @screen-sm-min) {
           padding: 0 76px;
         }
       }
 
       .text {
-        margin-top:.5em;
+        margin-top: .5em;
       }
 
       .title {
         // counter the margin in the containing li :(
-        margin-top:-.5em;
+        margin-top: -.5em;
       }
 
       .image {
@@ -318,7 +318,6 @@
       padding-top:1em;
     }
   }
-
   .super-readers {
     border-top: 1px solid @light-gray;
     margin-top: 40px;
@@ -327,11 +326,11 @@
 
   .latest {
     @latest-img-width: 100px;
-
     li {
       overflow: hidden;
       padding-bottom: .5em;
     }
+
     .img-wrapper {
       display: block;
       float: left;
@@ -356,3 +355,4 @@
     }
   }
 }
+

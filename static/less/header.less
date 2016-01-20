@@ -6,7 +6,6 @@
 
   @media (min-width: @header-breakpoint) {
     padding: 0;
-
     // At wider widths, the body background image will be used
     // background: none;
   }
@@ -25,6 +24,7 @@
   //
   // Full-width users will have to download two images, but that seems pretty
   // fair.
+
   .logo {
     display: block;
     width: 32px;
@@ -43,19 +43,19 @@
   }
 
   img.header-logo {
-    position:absolute;
+    position: absolute;
     top: 18px;
-
     @media (min-width: @header-breakpoint) {
       display: none;
     }
   }
 
   .logo-text {
-    display:none;
+    display: none;
   }
 
-  ul, ol {
+  ul,
+  ol {
     margin-bottom: 0;
   }
 }
@@ -70,9 +70,9 @@
 }
 
 .header-item {
-  font-size:12px;
-  color:#909090;
-  font-family: @styled-header-family;//'MuseoSlab500Regular';
+  font-size: 12px;
+  color: #909090;
+  font-family: @styled-header-family; //'MuseoSlab500Regular';
 }
 
 #header-right {
@@ -88,39 +88,36 @@
   }
 
   ul {
-    list-style:none;
+    list-style: none;
     white-space: nowrap;
     position: absolute;
     top: 18px;
     right: 0;
     z-index: 10;
-
     li {
-      display:inline;
-      background:url('../img/sep2.png') no-repeat 0 2px;
-      padding-left:11px;
-      margin-left:5px;
+      display: inline;
+      background: url('../img/sep2.png') no-repeat 0 2px;
+      padding-left: 11px;
+      margin-left: 5px;
 
       .header-item;
-
       &:first-child {
-        margin-left:0;
-        background:none;
-        padding-left:0;
+        margin-left: 0;
+        background: none;
+        padding-left: 0;
       }
-
       // avoid wrapping in text in last child (currently where usernames are,
       // which can be of arbitrary length).
       &:last-child {
-        white-space:nowrap;
-        width:0;
-        overflow:visible;
+        white-space: nowrap;
+        width: 0;
+        overflow: visible;
       }
+
       a {
         .header-item
       }
     }
-
   }
 
   #search-placeholder {
@@ -131,7 +128,6 @@
   form#search {
     margin: 0 auto;
     width: 230px;
-
     @media (min-width: @header-breakpoint) {
       padding-top: 32px;
       margin: 0;
@@ -142,18 +138,16 @@
       display: inline;
       float: left;
       width: 150px;
-
       background: url('../img/search.png') no-repeat 0 0;
       font-size: 14px;
       color: #535353;
       font-family: @styled-header-family;
       padding: 8px 0 8px 10px;
-
       // override site-wide default form styling
       border: none;
       border-radius: 0;
       box-shadow: none;
-      font-style:normal;
+      font-style: normal;
 
       @media (min-width: 420px) {
         width: 85%;
@@ -166,7 +160,6 @@
       background: url('../img/search.png') no-repeat right 0;
       border: 0;
       cursor: pointer;
-
       // override site-wide default form styling
       border-radius: 0;
 
@@ -180,8 +173,8 @@
 #top-nav {
   // Hide this on very small displays
   display: none;
-
   @media (min-width: @header-breakpoint) {
     display: block;
   }
 }
+

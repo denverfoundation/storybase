@@ -1,58 +1,63 @@
 .sidebar {
   ul {
-    padding:0 0 0 17px;
+    padding: 0 0 0 17px;
   }
 
-	li {
-		color:#4a4a4a;
-		font-family: @roboto;
+  li {
+    color: #4a4a4a;
+    font-family: @roboto;
     font-weight: 700;
-		list-style:none;
+    list-style: none;
     margin-bottom: 5px;
 
-		a {
-			color:@highlight-blue;
-		}
-	}
+    a {
+      color: @highlight-blue;
+    }
+  }
 
-	h1, h2, h3, h4, h5 {
-		text-align:left;
-	}
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
+    text-align: left;
+  }
 
   .sibling-nav {
     border-bottom: 1px solid @light-gray;
   }
 
-	.sibling-nav li {
-		margin-bottom:8px;
-		padding-left:17px;
+  .sibling-nav li {
+    margin-bottom: 8px;
+    padding-left: 17px;
     margin-left: -17px;
     line-height: 1;
 
-		a {
-			font-size:14px;
-			line-height:18px;
-			font-family: @roboto-condensed;
+    a {
+      font-size: 14px;
+      line-height: 18px;
+      font-family: @roboto-condensed;
       font-weight: 700;
       display: block;
-		}
+    }
 
-		&.selected,
-		&.hover {
-			background:url('../img/arrow-nav.png') no-repeat left center;
+    &.selected,
+    &.hover {
+      background: url('../img/arrow-nav.png') no-repeat left center;
       background-size: auto 8px;
-		}
+    }
 
-		a:hover {
-			text-decoration:none;
-		}
-	}
+    a:hover {
+      text-decoration: none;
+    }
+  }
 
-        // The sidebar navigation in the "My Account" section as defined
-        // in the storybase_user/account_base.html template
-        #subnav {
-          // Give the site section subnavigation menu some bottom margin
-          // to give some space for the "View Public Profile" button
-          margin-bottom: 8px;
-        }
+  // The sidebar navigation in the "My Account" section as defined
+  // in the storybase_user/account_base.html template
+  #subnav {
+    // Give the site section subnavigation menu some bottom margin
+    // to give some space for the "View Public Profile" button
+    margin-bottom: 8px;
+  }
 }
+

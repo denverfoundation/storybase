@@ -1,8 +1,6 @@
 // Global variables for CSS properties
-
 // Paths
 @font-path: "../css/font-face";
-
 @roboto: 'Roboto', 'Helvetica', 'Arial', sans-serif;
 @roboto-condensed: 'Roboto Condensed', 'Helvetica', 'Arial', sans-serif;
 // Font sizes
@@ -20,15 +18,13 @@
 
 // Font families
 @styled-header-family: @roboto;
-
 @layout-padding: 10px;
 
 // Colors
 @control-color-1: #666;
 @control-color-1-transparent: rgba(102, 102, 102, 0.5);
-
 @almost-black: #3b3b3b;
-@body-copy-color:#444;
+@body-copy-color: #444;
 @dark-gray: #5a5a5a;
 @gray: #777777;
 @medium-gray: #999999;
@@ -73,7 +69,6 @@
 @warning-color: darken(saturate(spin(@error-color, 60), 25%), 45%);
 @warning-background-color: saturate(spin(@error-color, 60), 25%);
 @warning-border-color: darken(saturate(spin(@error-border-color, 60), 25%), 25%);
-
 @success-color: #468847;
 @success-background-color: #dff0d8;
 @success-border-color: darken(spin(@success-background-color, -10), 5%);
@@ -90,13 +85,14 @@
 @info-border: #BCE8F1;
 
 // Breakpoints
-
 @screen-xs-min: 480px;
 @screen-sm-min: 768px;
 @screen-md-min: 1024px;
 @screen-lg-min: 1200px;
+
 // Point at which the header becomes uncompressed
 @header-breakpoint: 680px;
+
 // Point at which the viewer nav elements become uncompressed
 @viewer-nav-breakpoint: 680px;
 @screen-xs-max: (@screen-sm-min - 1);
@@ -106,10 +102,9 @@
 @container-width: @container-md;
 @gutter-width: 20px;
 @num-columns: 12;
-
 @container-sm: ((720px + @gutter-width));
 @container-md: ((1000px + @gutter-width));
 
-
 // Viewer Components
 @toc-width: 180px;
+

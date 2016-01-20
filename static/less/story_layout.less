@@ -1,9 +1,6 @@
 // Section Layouts
 // These are used in both the story builder and story viewer
-
-
 // Mixins
-
 // Fixed-width, centered "slide"
 .section-width {
   width: 100%;
@@ -12,7 +9,6 @@
 }
 
 // Styles
-
 .section-title {
   font-size: @top-header-size;
   .section-width;
@@ -23,7 +19,8 @@
   .section-width;
 
   &.side-by-side {
-    .left, .right {
+    .left,
+    .right {
       width: 49%;
       float: left;
     }
@@ -48,7 +45,9 @@
     }
   }
 
-  img, iframe {
+  img,
+  iframe {
     max-width: 100%;
   }
 }
+

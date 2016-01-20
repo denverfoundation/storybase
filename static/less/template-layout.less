@@ -1,13 +1,10 @@
 .shell {
   // BOOKMARK
-  margin:0 auto;
-  position:relative;
-
+  margin: 0 auto;
+  position: relative;
   width: 100%;
-
   .mk-fluid-grid-container-sm();
   .mk-fluid-grid-container-md();
-
   .container_12 {
     width: 100%;
   }
@@ -16,13 +13,14 @@
 #header {
   position: relative;
   z-index: 2501;
-
   @media (min-width: @header-breakpoint) {
     min-height: 165px;
   }
 }
 
-#container { width:100%;  }
+#container {
+  width: 100%;
+}
 
 #main {
   min-height: 200px;
@@ -33,18 +31,34 @@
   }
 
   &.inner {
-    overflow-x:visible !important;
+    overflow-x: visible !important;
   }
 
-  .col { width:486px; padding-bottom:55px;  }
-  .bottom {
-    margin-bottom:209px;
+  .col {
+    width: 486px;
+    padding-bottom: 55px;
+  }
 
-    .left { width:182px; float:left; display:inline; }
-    .right { width:721px;   }
+  .bottom {
+    margin-bottom: 209px;
+
+    .left {
+      width: 182px;
+      float: left;
+      display: inline;
+    }
+
+    .right {
+      width: 721px;
+    }
   }
 }
 
-.content-page { overflow:hidden; }
+.content-page {
+  overflow: hidden;
+}
 
-.twocol .twocol-content { overflow:hidden; }
+.twocol .twocol-content {
+  overflow: hidden;
+}
+
