@@ -379,6 +379,7 @@
         background: @light-gray;
         color: @blue-xxdark;
         border: 1px solid @black10;
+
         &:hover {
           border-color: @black30;
           background: @blue-xxdark;
@@ -400,25 +401,24 @@
   #call-to-action {
     .next-steps {
       background: @light-gray;
-      padding: 20px 40px;
+      padding: 20px;
       display: flex;
       flex-wrap: wrap;
       margin: 20px 0;
       border-radius: 4px;
 
       section {
-        padding: 0 10px;
+        padding: 0 20px;
         flex: 1 0 300px;
-        margin-right: 20px;
-        margin-bottom: 20px;
         border-bottom: 1px dotted @medium-gray;
+
         &:last-of-type {
           border-bottom: none;
         }
 
         @media (min-width: @header-breakpoint) {
           border-bottom: none;
-          border-right: 1px dotted @medium-gray;
+          border-right: 1px solid @black20
         }
 
         h4 {
@@ -459,8 +459,12 @@
 
           a {
             display: inline-block;
-            width: 100%;
+            width: auto;
             margin-bottom: 8px;
+
+            &:hover {
+              color: @orange;
+            }
           }
 
           .storybase-embed-button {
@@ -505,7 +509,7 @@
               -webkit-appearance: none;
               width: 100%;
               padding: 8px;
-              border: 1px solid @medium-gray;
+              border: 1px solid @black30;
               border-radius: 4px;
             }
 
