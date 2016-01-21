@@ -463,6 +463,10 @@
             margin-bottom: 8px;
           }
 
+          .storybase-embed-button {
+            width: auto;
+          }
+
           // Icon images
           img {
             width: 18px;
@@ -489,8 +493,42 @@
             font-weight: 300;
             display: inline-block;
             margin-bottom: 2px;
+
             &:hover {
               text-decoration: underline;
+            }
+          }
+
+          form {
+
+            input, textarea {
+              -webkit-appearance: none;
+              width: 100%;
+              padding: 8px;
+              border: 1px solid @medium-gray;
+              border-radius: 4px;
+            }
+
+            textarea {
+              width: 100%;
+              resize: vertical;
+            }
+
+            label[for="id_message"] {
+              display: block;
+            }
+
+            input[type="submit"] {
+              display: block;
+              -webkit-appearance: none;
+              margin: auto;
+              padding: 5px 15px;
+              border: none;
+              width: auto;
+
+              &:hover {
+                cursor: pointer;
+              }
             }
           }
         }
