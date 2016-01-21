@@ -1,5 +1,4 @@
 // Common Styles
-
 // QUESTION: Should this be the default style?
 fieldset {
   border: none;
@@ -36,7 +35,9 @@ ul.bbf-combined-errors {
   }
 }
 
-.bbf-error, .bbf-error .bbf-help, .error label {
+.bbf-error,
+.bbf-error .bbf-help,
+.error label {
   color: @error-color;
 }
 
@@ -55,8 +56,8 @@ ul.bbf-combined-errors {
 .bbf-error {
   .notification-list-item;
   .error-item;
-  margin:0.5em 0em 1.5em;
-  display:none;
+  margin: 0.5em 0em 1.5em;
+  display: none;
 }
 
 // Select2 also uses an li for some of its elements
@@ -120,39 +121,39 @@ button.help {
 }
 
 .character-count {
-  float:right;
-  text-align:right;
-  font-size:.9em;
-  padding:2px 6px;
+  float: right;
+  text-align: right;
+  font-size: .9em;
+  padding: 2px 6px;
   .rounded-corners(4px);
-  border:1px solid transparent;
+  border: 1px solid transparent;
 
   &.over-limit {
-    color:@warning-color;
-    background:@warning-background-color;
-    border-color:@warning-border-color;
+    color: @warning-color;
+    background: @warning-background-color;
+    border-color: @warning-border-color;
+
     &:before {
-      font-family:"FontAwesome";
+      font-family: "FontAwesome";
       content: "\f071";
       display: inline;
-      padding-right:.25em;
-      color:lighten(@warning-color, 10%);
+      padding-right: .25em;
+      color: lighten(@warning-color, 10%);
     }
   }
 }
 
 .character-count.summary-title {
-  position:absolute;
-  right:0;
-  top:.5em;
+  position: absolute;
+  right: 0;
+  top: .5em;
 }
-
 
 // Rich Text Editor
 .wysihtml5-toolbar {
   position: relative;
   padding: 10px 0 0 0;
-  color:@gray;
+  color: @gray;
 
   &:first-child {
     padding-top: 0;
@@ -166,7 +167,6 @@ button.help {
       text-decoration: underline;
     }
   }
-
 }
 
 (~"[data-wysihtml5-command], [data-wysihtml5-action]") {
@@ -186,7 +186,6 @@ button.help {
     font-size: 14px !important;
     padding: 2px !important;
   }
-
   button {
     padding: 2px !important;
     float: none !important;
@@ -195,9 +194,7 @@ button.help {
 }
 
 // Header
-
 @header-z-index: 999;
-
 #header {
   display: block;
   position: fixed;
@@ -229,7 +226,6 @@ button.help {
 //  font-weight: bold;
 //  text-decoration: none;
 //}
-
 #builder #alerts {
   width: 100%;
 }
@@ -237,7 +233,6 @@ button.help {
 #builder .alert {
   padding: 1%;
   text-align: center;
-
   button.close {
     .button-reset;
     position: relative;
@@ -247,15 +242,14 @@ button.help {
   }
 }
 
-#title-bar, #workflow-bar {
+#title-bar,
+#workflow-bar {
   clear: both;
   min-width: 1024px;
 }
 
 // Title Bar
-
 @title-bar-height: 63px;
-
 #title-bar {
   // Hide this element unless a story is present
   display: none;
@@ -264,7 +258,7 @@ button.help {
   height: @title-bar-height;
 
   .title {
-  .viewer-story-title();
+    .viewer-story-title();
     width: 100%;
     margin-top: 2px;
     margin-left: 0;
@@ -276,7 +270,8 @@ button.help {
     color: #fff;
   }
 
-  .title, .byline {
+  .title,
+  .byline {
     cursor: pointer;
   }
 
@@ -314,21 +309,18 @@ button.help {
 }
 
 // Workflow bar
-
 // Common variables for items in the workflow bar
 @workflow-bar-height: 56px;
 @workflow-item-height: 34px;
 @workflow-item-margin-top: 10px;
 @workflow-item-font-size: 16px;
 @logo-height: 34px;
-
 #workflow-bar,
 #workflow-bar-contents {
   height: @workflow-bar-height;
 }
 
 #workflow-bar {
-
   background-color: @blue-xxdark;
 }
 
@@ -336,7 +328,6 @@ button.help {
   display: block;
   float: left;
   padding: 16px 0 8px 0;
-
   img {
     border-style: none;
   }
@@ -351,21 +342,20 @@ button.help {
   // Using the margin property-top on individual li
   // items fixes this.
   //margin: @workflow-item-margin-top auto;
-
   li {
-    color:@orange;
-    list-style:decimal inside none;
+    color: @orange;
+    list-style: decimal inside none;
     // for motivation for margin-top value, see note above.
     margin-top: @workflow-item-margin-top;
     padding: 0 19px 0;
     height: @workflow-item-height;
-    border-right:1px solid @almost-black;
-    font-family:@roboto-condensed;
+    border-right: 1px solid @almost-black;
+    font-family: @roboto-condensed;
     line-height: @workflow-item-height;
-    position:relative;
+    position: relative;
 
     &:first-child {
-      border-left:1px solid @almost-black;
+      border-left: 1px solid @almost-black;
     }
 
     @icon-height: 23px;
@@ -376,30 +366,44 @@ button.help {
     .workflow-icon-gray (@n) {
       background: url(../img/builder/workflow-step-icons-8d75a92a0d87c2e329539c09cb89f310ee59f28a.png) no-repeat (@icon-width / 2) (-@n * @icon-next-d);
     }
+
     .workflow-icon-white (@n) {
       background: url(../img/builder/workflow-step-icons-8d75a92a0d87c2e329539c09cb89f310ee59f28a.png) no-repeat (@icon-width / 2) ((-@n * @icon-next-d) - @icon-highlight-d);
     }
+
     .workflow-icon-orange (@n) {
       background: url(../img/builder/workflow-step-icons-8d75a92a0d87c2e329539c09cb89f310ee59f28a.png) no-repeat (@icon-width / 2) ((-@n * @icon-next-d) - (2 * @icon-highlight-d));
     }
 
     em {
-      display:none;
-      background:url(../img/builder/step-selected.png) no-repeat left top;
-      width:12px;
-      height:6px;
-      position:absolute;
-      top:46px;
-      left:48%;
-      z-index:10;
+      display: none;
+      background: url(../img/builder/step-selected.png) no-repeat left top;
+      width: 12px;
+      height: 6px;
+      position: absolute;
+      top: 46px;
+      left: 48%;
+      z-index: 10;
     }
 
     a {
       .workflow-icon-white(0);
-      &#build { .workflow-icon-white(0); }
-      &#info { .workflow-icon-white(5); }
-      &#tag { .workflow-icon-white(2); }
-      &#publish { .workflow-icon-white(4); }
+
+      &#build {
+        .workflow-icon-white(0);
+      }
+
+      &#info {
+        .workflow-icon-white(5);
+      }
+
+      &#tag {
+        .workflow-icon-white(2);
+      }
+
+      &#publish {
+        .workflow-icon-white(4);
+      }
 
       padding: 0 0 2px (@icon-width * 2);
       height: @icon-height;
@@ -412,26 +416,51 @@ button.help {
     }
 
     &.selected {
+
       em {
-        display:block;
+        display: block;
       }
 
       a {
         color: @orange;
-        &#build { .workflow-icon-orange(0); }
-        &#info { .workflow-icon-orange(5); }
-        &#tag { .workflow-icon-orange(2); }
-        &#publish { .workflow-icon-orange(4); }
+
+        &#build {
+          .workflow-icon-orange(0);
+        }
+
+        &#info {
+          .workflow-icon-orange(5);
+        }
+
+        &#tag {
+          .workflow-icon-orange(2);
+        }
+
+        &#publish {
+          .workflow-icon-orange(4);
+        }
       }
     }
 
     &.disabled {
       a {
         color: @dark-gray;
-        &#build { .workflow-icon-gray(0); }
-        &#info { .workflow-icon-gray(5); }
-        &#tag { .workflow-icon-gray(2); }
-        &#publish { .workflow-icon-gray(4); }
+
+        &#build {
+          .workflow-icon-gray(0);
+        }
+
+        &#info {
+          .workflow-icon-gray(5);
+        }
+
+        &#tag {
+          .workflow-icon-gray(2);
+        }
+
+        &#publish {
+          .workflow-icon-gray(4);
+        }
       }
     }
   }
@@ -449,7 +478,8 @@ button.help {
   overflow: hidden;
   float: left;
 
-  .next, .prev {
+  .next,
+  .prev {
     height: @workflow-item-height;
     font-size: @workflow-item-font-size;
     line-height: @workflow-item-height;
@@ -471,11 +501,15 @@ button.help {
   }
 
   .next {
-    &:before { content: "\f054"; }
+    &:before {
+      content: "\f054";
+    }
   }
 
   .prev {
-    &:before { content: "\f053"; }
+    &:before {
+      content: "\f053";
+    }
   }
 }
 
@@ -502,7 +536,6 @@ button.help {
 //  background-color: @success-background;
 //  background-border: @success-border;
 //}
-
 #save-button {
   .button-style(gray);
   // Explicitely set the font-style to normal, otherwise
@@ -512,7 +545,7 @@ button.help {
 }
 
 button.preview {
-  font-size:1.5em;
+  font-size: 1.5em;
 }
 
 #tools-toggle {
@@ -522,7 +555,6 @@ button.preview {
   margin: @workflow-item-margin-top 20px;
   position: relative;
   float: right;
-
   .bar {
     .menu-bar();
   }
@@ -532,28 +564,27 @@ button.preview {
   position: absolute !important;
   right: 0px;
   //top: 28px;
-  font-family:@roboto;
-  font-size:16px;
+  font-family: @roboto;
+  font-size: 16px;
 
   li {
     height: @workflow-item-height;
     line-height: @workflow-item-height;
     margin-top: @workflow-item-margin-top;
-    padding:0 8px;
-    list-style:none;
+    padding: 0 8px;
+    list-style: none;
 
     a {
-      text-transform:uppercase;
-      text-decoration:none;
-      color:white;
-      text-shadow:0 1px 1px rgba(0, 0, 0, .3);
+      text-transform: uppercase;
+      text-decoration: none;
+      color: white;
+      text-shadow: 0 1px 1px rgba(0, 0, 0, .3);
     }
   }
 }
 
 #tools.toggling {
   display: none;
-
   top: @workflow-bar-height;
   background-color: black;
   padding-right: 20px;
@@ -566,12 +597,11 @@ button.preview {
   }
 }
 
-
 // Subnavigation Bar
 // Currently the only thing that ever goes in this is the section list
 #subnav-bar {
-  background-color:@light-gray;
-  width:100%;
+  background-color: @light-gray;
+  width: 100%;
   border-bottom: 1px solid @black05;
 }
 
@@ -580,56 +610,73 @@ button.preview {
 }
 
 // Main Application Container
-
 #builder {
   height: 100%;
 }
 
 // Main container for builder views
-
 #app {
   height: 100%;
   width: 100%;
   float: left;
   // NOTE: The padding-top of this element gets set dynamically depending
   // on the height of #header
-
   .body-copy;
   .body-copy-lists;
   .standard-headers;
-  h1, h2, h3, h4, h5 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
     .styled-header(left);
-    margin:0.6em 0;
-    color:@dark-gray;
+    margin: 0.6em 0;
+    color: @dark-gray;
+
     a {
-      color:@dark-gray;
-      text-decoration:none;
+      color: @dark-gray;
+      text-decoration: none;
+
       &:hover {
-        color:@orange;
+        color: @orange;
       }
     }
   }
 
-  p, ol, ul, dl {
-    &+h1, &+h2, &+h3, &+h4, &+h5 {
-      margin-top:1.2em;
+  p,
+  ol,
+  ul,
+  dl {
+    &+h1,
+    &+h2,
+    &+h3,
+    &+h4,
+    &+h5 {
+      margin-top: 1.2em;
     }
   }
 
-  input[type=reset], input[type=submit], input[type=cancel],
-  button[type=reset], button[type=submit], button[type=cancel] {
-    margin-right:1em;
-    float:left;
+  input[type=reset],
+  input[type=submit],
+  input[type=cancel],
+  button[type=reset],
+  button[type=submit],
+  button[type=cancel] {
+    margin-right: 1em;
+    float: left;
   }
-  input[type=reset], input[type=cancel],
-  button[type=reset], button[type=cancel] {
+
+  input[type=reset],
+  input[type=cancel],
+  button[type=reset],
+  button[type=cancel] {
     .button-style(gray);
   }
+
   input[type=submit],
   button[type=submit] {
     .button-style(hot);
   }
-
 }
 
 // Containers need to shrink when the drawer is open
@@ -667,7 +714,7 @@ button.preview {
     padding: 8px 14px;
     color: white;
     font-family: @roboto;
-    font-size:16px;
+    font-size: 16px;
     background-color: @highlight-blue;
     border-radius: 4px 4px 0 0;
     text-align: center;
@@ -702,7 +749,6 @@ button.preview {
 }
 
 // Help Drawer
-
 #help-actions {
   text-align: right;
 }
@@ -720,51 +766,46 @@ button.preview {
 }
 
 // General builder styles
-
 @builder-input-border-width: 1px;
 @builder-input-padding: 12px;
-
 .builder,
 #story-info,
 #title-bar-contents {
-
   h1 {
     margin-left: 0;
   }
 
-  input, textarea {
+  input,
+  textarea {
     border-radius: 4px;
     .sans-serif-text;
     border: @builder-input-border-width solid #bbb;
     padding: @builder-input-padding;
-    font-size:14px;
+    font-size: 14px;
   }
 }
 
-
 // Story Template List
-
 .story-templates {
   .container_12;
   list-style: none;
-  padding-top:30px;
-
+  padding-top: 30px;
 }
 
 #app .story-templates li {
   display: block;
   float: left;
   width: 30%;
-  padding-left:120px;
-  position:relative;
-  margin-right:2%;
+  padding-left: 120px;
+  position: relative;
+  margin-right: 2%;
 
   p {
-    margin-bottom:1em !important;
+    margin-bottom: 1em !important;
   }
 
   h3 {
-    height:1em;
+    height: 1em;
   }
 
   // bit tricky here. using the anchor inside the
@@ -773,55 +814,54 @@ button.preview {
   // @todo: probably need to massage the markup to get this just
   // right.
   h3 a {
-    padding-left:120px;
-    margin-left:-120px !important;
-    margin-top:0;
-    height:80px;
-    position:absolute;
-    background:url(../img/builder/story-template-icons.png) no-repeat top left;
+    padding-left: 120px;
+    margin-left: -120px !important;
+    margin-top: 0;
+    height: 80px;
+    position: absolute;
+    background: url(../img/builder/story-template-icons.png) no-repeat top left;
   }
 
-  @icon-height:80px;
-  @icon-next-d:@icon-height;
-
-  .details, .examples {
+  @icon-height: 80px;
+  @icon-next-d: @icon-height;
+  .details,
+  .examples {
     dt {
       .styled-header(left);
-      font-weight:bold;
-      margin-top:.8em;
+      font-weight: bold;
+      margin-top: .8em;
     }
   }
 
   // content block containing template details
   .details {
-    display:none;
+    display: none;
   }
-
   // special li item showing details for a specific template.
   // transient in dom: added/removed as needed.
   &.template-details {
-    float:none;
-    clear:both;
-    width:auto;
-    background:@light-gray;
+    float: none;
+    clear: both;
+    width: auto;
+    background: @light-gray;
     .box-shadow-inset(0, 0, 4px, lighten(@gray, 20%));
 
     .details {
-      display:block;
-      position:relative;
-      padding-top:1em;
-      padding-bottom:2em;
+      display: block;
+      position: relative;
+      padding-top: 1em;
+      padding-bottom: 2em;
     }
 
     .divot {
       .inner-section-divot(4em, white);
-      position:absolute;
-      left:0;
+      position: absolute;
+      left: 0;
       top: -4px;
 
       &.odd {
         // this is a bit of a hack: not really sure why this value is right.
-        left:52%;
+        left: 52%;
       }
     }
   }
@@ -829,50 +869,51 @@ button.preview {
   // link for exposing details block
   .show-details {
     .styled-header(left);
-    text-decoration:none;
-    margin-top:1em;
-    display:block;
-    width:100%; // override font awesome's [li a] width rule.
+    text-decoration: none;
+    margin-top: 1em;
+    display: block;
+    width: 100%; // override font awesome's [li a] width rule.
 
     &:before {
-      padding-right:.5em;
+      padding-right: .5em;
     }
   }
 
   &.data-story h3 a {
     background-position: 0 0;
   }
+
   &.photovoice h3 a {
     background-position: 0 (-1 * @icon-next-d);
   }
+
   &.explainer h3 a {
     background-position: 0 (-2 * @icon-next-d);
   }
+
   &.sandbox-basic-story h3 a {
     background-position: 0 (-3 * @icon-next-d);
   }
+
   &.successes-obstacles h3 a {
     background-position: 0 (-4 * @icon-next-d);
   }
-
 }
 
 .tooltipster-content .details {
-  padding:1em;
+  padding: 1em;
   dt {
     .styled-header(left);
-    font-weight:bold;
+    font-weight: bold;
   }
 
   * + dt {
-    margin-top:.8em;
+    margin-top: .8em;
   }
 }
 
 // Story Builder View
-
 // Mixins
-
 .vertical-space {
   margin-top: 0.5%;
 }
@@ -894,100 +935,123 @@ button.preview {
 }
 
 .section-controls {
-  float:right;
+  float: right;
   margin: 1em 20px 0 0;
-
   h5 {
-    display:inline-block;
-    width:auto;
-    margin-right:.5em !important;
+    display: inline-block;
+    width: auto;
+    margin-right: .5em !important;
   }
 }
 
-
 .graphic-select-container {
-  display:inline-block;
+  display: inline-block;
 
   .widget {
-    font-size:14px;
+    font-size: 14px;
     font-weight: 700;
-    color:white;
-    padding:10px;
-    border:none;
+    color: white;
+    padding: 10px;
+    border: none;
     font-family: @roboto-condensed;
-    width:100%;
-    border-radius:4px;
-    background:@gray;
-    z-index:301;
-    position:relative;
+    width: 100%;
+    border-radius: 4px;
+    background: @gray;
+    z-index: 301;
+    position: relative;
     min-width: 130px;
 
     .arrow {
-      display:block;
-      position:absolute;
-      width:8px;
-      height:5px;
+      display: block;
+      position: absolute;
+      width: 8px;
+      height: 5px;
       background: url(../img/builder/popup-down-arrow.png) no-repeat top left;
-      right:12px;
-      top:48%;
+      right: 12px;
+      top: 48%;
     }
   }
-  .item-list {
-    padding:25px;
-    background:@light-gray;
-    border:1px solid @gray;
-    border-radius: 0 0 3px 3px;
-    width:180px;
-    overflow:hidden;
-    position:absolute;
-    z-index:300;  // *something* is covering it. sigh.
-    margin:8px 0 0 0 !important;
-    right:0;
 
+  .item-list {
+    padding: 25px;
+    background: @light-gray;
+    border: 1px solid @gray;
+    border-radius: 0 0 3px 3px;
+    width: 180px;
+    overflow: hidden;
+    position: absolute;
+    z-index: 300; // *something* is covering it. sigh.
+    margin: 8px 0 0 0 !important;
+    right: 0;
     @item-height: 83px;
     @item-next-d: @item-height * 2;
     @item-selected-d: @item-height;
 
     .item {
       list-style: none;
-      float:left;
-      margin:0 12px 16px 0;
-      opacity:.7;
-      background:url(../img/builder/layouts.png) no-repeat left top;
+      float: left;
+      margin: 0 12px 16px 0;
+      opacity: .7;
+      background: url(../img/builder/layouts.png) no-repeat left top;
       text-align: center;
       padding-top: 32px;
-      display:block;
-      width:133px;
-      height:@item-height;
+      display: block;
+      width: 133px;
+      height: @item-height;
 
-
-      &.hover, &.selected {
-        opacity:1;
-        cursor:pointer;
+      &.hover,
+      &.selected {
+        opacity: 1;
+        cursor: pointer;
       }
 
       &.last {
-        margin-right:0;
+        margin-right: 0;
+
         &+.item {
-          clear:left;
+          clear: left;
         }
       }
+
       &:last-of-type {
         // TODO: jquery.graphicselect.js is adding .bottom class
         // to the two last elements. Using a pseudo selector
         // works around that, but that script should probably be fixed
         // or removed.
-        margin-bottom:0;
+        margin-bottom: 0;
       }
 
-      &.one-up { background-position:0 0; }
-      &.side-by-side { background-position:0 (@item-next-d * -1); }
-      &.above-below { background-position:0 (@item-next-d * -2); }
-      &.three-stacked { background-position:0 (@item-next-d * -3); }
-      &.selected.one-up { background-position:0 (-@item-selected-d); }
-      &.selected.side-by-side { background-position:0 ((@item-next-d * -1) - @item-selected-d); }
-      &.selected.above-below { background-position:0 ((@item-next-d * -2) - @item-selected-d); }
-      &.selected.three-stacked { background-position:0 ((@item-next-d * -3) - @item-selected-d); }
+      &.one-up {
+        background-position: 0 0;
+      }
+
+      &.side-by-side {
+        background-position: 0 (@item-next-d * -1);
+      }
+
+      &.above-below {
+        background-position: 0 (@item-next-d * -2);
+      }
+
+      &.three-stacked {
+        background-position: 0 (@item-next-d * -3);
+      }
+
+      &.selected.one-up {
+        background-position: 0 (-@item-selected-d);
+      }
+
+      &.selected.side-by-side {
+        background-position: 0 ((@item-next-d * -1) - @item-selected-d);
+      }
+
+      &.selected.above-below {
+        background-position: 0 ((@item-next-d * -2) - @item-selected-d);
+      }
+
+      &.selected.three-stacked {
+        background-position: 0 ((@item-next-d * -3) - @item-selected-d);
+      }
     }
   }
 }
@@ -1007,8 +1071,8 @@ button.preview {
   cursor: pointer;
   padding: 10px 0;
   border-bottom: 1px solid @light-gray;
-
-  .body, .url {
+  .body,
+  .url {
     text-align: left;
   }
 
@@ -1025,7 +1089,6 @@ button.preview {
   &.ui-draggable-dragging {
     list-style: none;
     width: 200px;
-
     // Hide URL field when dragging
     .url {
       display: none;
@@ -1044,19 +1107,42 @@ button.preview {
       padding: 20px 0;
       display: block;
     }
-    &.image:before { content: "\f03e"; }
-    &.audio:before { content: "\f025"; }
-    &.video:before { content: "\f03d"; }
-    &.map:before { content: "\f041"; }
-    &.table:before { content: "\f0ce"; }
-    &.quotation:before { content: "\f0e5"; }
-    &.text:before { content: "\f039"; }
-    &.chart:before { content: "\f080"; }
+
+    &.image:before {
+      content: "\f03e";
+    }
+
+    &.audio:before {
+      content: "\f025";
+    }
+
+    &.video:before {
+      content: "\f03d";
+    }
+
+    &.map:before {
+      content: "\f041";
+    }
+
+    &.table:before {
+      content: "\f0ce";
+    }
+
+    &.quotation:before {
+      content: "\f0e5";
+    }
+
+    &.text:before {
+      content: "\f039";
+    }
+
+    &.chart:before {
+      content: "\f080";
+    }
   }
 }
 
 // Story information editor
-
 .story-title {
   .full-width;
   .vertical-space;
@@ -1072,7 +1158,6 @@ button.preview {
 }
 
 // Call to action editor
-
 .edit-call-to-action {
   .wysihtml5-sandbox {
     .vertical-space-important;
@@ -1091,27 +1176,23 @@ button.preview {
 }
 
 // Section Editor
-
 .edit-section {
   position: relative;
   margin-left: auto;
   margin-right: auto;
-
   // TODO: Pick a more consistent padding
   // fsm 8/13: edited to provide a consistent space for
   // the character counter above the summary section title
-  padding-top:2em;
-
+  padding-top: 2em;
   width: 85%;
   height: 70%;
 
   .section-title {
-    width:75%;
+    width: 75%;
     // Keep from overlapping on small screens, set reasonable max width
     max-width: 400px;
     margin-bottom: 1em;
   }
-
   // Show label for section title input on its own line, above the input
   > label {
     display: block;
@@ -1148,28 +1229,25 @@ button.preview {
     min-height: 400px;
     .rounded-corners(4px);
     box-shadow: 0 1px 3px @black20;
-
     // Get rid of margin on labels like "Edit Text"
     > h3:first-child {
       margin: 0 !important;
       font-size: @h4-size !important;
     }
-
   }
 
   &.edit .wrapper {
-    border-color:@highlight-blue;
-    box-shadow:inset 0 0 5px @highlight-blue;
-    padding:0.5em 2em 1em;
+    border-color: @highlight-blue;
+    box-shadow: inset 0 0 5px @highlight-blue;
+    padding: 0.5em 2em 1em;
   }
 }
 
 @asset-type-inactive-color: darken(@light-gray, 10%);
-
 #app .storybase-container-placeholder.select {
   .wrapper {
     padding: 2%;
-    position:relative;
+    position: relative;
     // Hide introductory text to asset containers
     // We don't want to do this for now because it gets rid of the
     // suggested asset message.
@@ -1177,19 +1255,20 @@ button.preview {
     //  text-indent:-32000px;
     //}
   }
+
   ul.asset-types {
-    padding-top:50px;
-    position:relative;
-    width:100%;
-    margin:0 auto;
-    overflow:hidden;
+    padding-top: 50px;
+    position: relative;
+    width: 100%;
+    margin: 0 auto;
+    overflow: hidden;
     min-height: 300px;
 
     &:before {
       //background:@highlight-blue;
-      background:@asset-type-inactive-color;
+      background: @asset-type-inactive-color;
       color: white;
-      font-family:"FontAwesome";
+      font-family: "FontAwesome";
       content: "";
       display: block;
       font-size: 10em;
@@ -1197,64 +1276,68 @@ button.preview {
       line-height: 1.2em;
       text-align: center;
       width: 25%;
-      left:37.5%;
-      position:absolute;
+      left: 37.5%;
+      position: absolute;
       padding-bottom: 16px;
     }
 
     &.collapsed:before {
-      background:@asset-type-inactive-color;
+      background: @asset-type-inactive-color;
     }
 
     &.collapsed li {
       //display:none;
       a {
-        color:transparent !important;
+        color: transparent !important;
         &:after {
-          background:@asset-type-inactive-color !important;
+          background: @asset-type-inactive-color !important;
         }
       }
     }
 
-    @item-y-offset:45px;
+    @item-y-offset: 45px;
     @item-height: 35px;
     @item-margin: 10px;
     @item-next-d: @item-height + @item-margin;
-    li {
-      position:absolute;
-      list-style:none !important;
 
-      &.image, &.audio, &.video, &.map,
-      &.chart, &.table, &.quotation, &.text {
+    li {
+      position: absolute;
+      list-style: none !important;
+      &.image,
+      &.audio,
+      &.video,
+      &.map,
+      &.chart,
+      &.table,
+      &.quotation,
+      &.text {
         a {
           font-weight: 700;
-          text-decoration:none;
-          text-transform:uppercase;
+          text-decoration: none;
+          text-transform: uppercase;
           font-family: @roboto;
-          color:@gray;
-          line-height:22px; // ???
-
+          color: @gray;
+          line-height: 22px; // ???
           &:after {
             .rounded-corners(3px);
-            font-family:"FontAwesome";
-            font-size:@item-height * 0.7;
-            background:@dark-gray;
+            font-family: "FontAwesome";
+            font-size: @item-height * 0.7;
+            background: @dark-gray;
             color: white;
             display: block;
             height: @item-height;
             line-height: 1.65em; // ???
             text-align: center;
             width: @item-height;
-            position:absolute;
-            top:(@item-height * -0.25);
+            position: absolute;
+            top: (@item-height * -0.25);
           }
           &:hover {
-            color:@orange;
+            color: @orange;
             &:after {
-              background:@orange;
+              background: @orange;
             }
           }
-
           &.unavailable {
             // Hide icons for unavailable asset types
             display: none;
@@ -1262,41 +1345,85 @@ button.preview {
         }
       }
 
+      &.image,
+      &.audio,
+      &.video,
+      &.map {
+        right: 75%;
+        text-align: right;
 
-      &.image, &.audio, &.video, &.map {
-        right:75%;
-        text-align:right;
         a {
           &:after {
-            right:(-1 * (@item-height + @item-margin));
+            right: (-1 * (@item-height + @item-margin));
           }
         }
       }
-      &.chart, &.table, &.quotation, &.text {
-        left:75%;
+
+      &.chart,
+      &.table,
+      &.quotation,
+      &.text {
+        left: 75%;
         a {
           &:after {
-            left:(-1 * (@item-height + @item-margin));
+            left: (-1 * (@item-height + @item-margin));
           }
         }
       }
-      &.image, &.chart { top: @item-y-offset + (0 * @item-next-d); }
-      &.audio, &.table { top: @item-y-offset + (1 * @item-next-d); }
-      &.video, &.quotation { top: @item-y-offset + (2 * @item-next-d); }
-      &.map, &.text { top: @item-y-offset + (3 * @item-next-d); }
 
-      &.image a:after { content:""; }
-      &.audio a:after { content:""; }
-      &.video a:after { content:""; }
-      &.map a:after { content:""; }
+      &.image,
+      &.chart {
+        top: @item-y-offset + (0 * @item-next-d);
+      }
 
-      &.chart a:after { content: ""; }
-      &.table a:after { content: ""; }
-      &.quotation a:after { content: ""; }
-      &.text a:after { content: ""; }
+      &.audio,
+      &.table {
+        top: @item-y-offset + (1 * @item-next-d);
+      }
+
+      &.video,
+      &.quotation {
+        top: @item-y-offset + (2 * @item-next-d);
+      }
+
+      &.map,
+      &.text {
+        top: @item-y-offset + (3 * @item-next-d);
+      }
+
+      &.image a:after {
+        content: "";
+      }
+
+      &.audio a:after {
+        content: "";
+      }
+
+      &.video a:after {
+        content: "";
+      }
+
+      &.map a:after {
+        content: "";
+      }
+
+      &.chart a:after {
+        content: "";
+      }
+
+      &.table a:after {
+        content: "";
+      }
+
+      &.quotation a:after {
+        content: "";
+      }
+
+      &.text a:after {
+        content: "";
+      }
     }
   }
-
 }
 
 .storybase-container-placeholder.display {
@@ -1305,8 +1432,7 @@ button.preview {
 }
 
 .storybase-container-placeholder#top,
-.storybase-container-placeholder#middle
-{
+.storybase-container-placeholder#middle {
   margin-bottom: 2em;
 }
 
@@ -1352,7 +1478,7 @@ button.preview {
   li {
     list-style: none !important;
     display: inline-block;
-    margin-right:5px;
+    margin-right: 5px;
 
     a {
       text-decoration: none;
@@ -1366,7 +1492,6 @@ button.preview {
 }
 
 // Asset Data Set List
-
 table.datasets {
   margin: 2% 0;
   width: 100%;
@@ -1379,7 +1504,8 @@ table.datasets {
     width: 25%;
   }
 
-  th, td {
+  th,
+  td {
     text-align: left;
   }
 
@@ -1403,17 +1529,18 @@ table.datasets {
 }
 
 #app .bbf-form {
-  overflow:hidden;
+  overflow: hidden;
 
   fieldset {
-    border:none;
-    min-width:100%;
+    border: none;
+    min-width: 100%;
   }
 
-  .bbf-field, .mutex-group {
-    list-style-type:none;
-    clear:both;
-    min-width:100%;
+  .bbf-field,
+  .mutex-group {
+    list-style-type: none;
+    clear: both;
+    min-width: 100%;
 
     label {
       float: none;
@@ -1424,29 +1551,35 @@ table.datasets {
       margin-left: 0;
       width: 100%;
 
-      input[type=text], input[type=password], textarea {
+      input[type=text],
+      input[type=password],
+      textarea {
         .box-sizing(border-box);
-        width:100%
+        width: 100%
       }
 
       input[type=file] {
-        max-width:60%;
+        max-width: 60%;
       }
 
-      .file-thumbnail, .not-set-thumbnail, .data-thumbnail {
-        float:right;
-        width:25%;
-        max-height:150px;
+      .file-thumbnail,
+      .not-set-thumbnail,
+      .data-thumbnail {
+        float: right;
+        width: 25%;
+        max-height: 150px;
         margin: 0 0 1em 1em;
-        display:block;
+        display: block;
       }
 
-      .not-set-thumbnail, .data-thumbnail {
-        width:50px;
-        height:60px;
-        border:none;
-        background:transparent no-repeat top left;
+      .not-set-thumbnail,
+      .data-thumbnail {
+        width: 50px;
+        height: 60px;
+        border: none;
+        background: transparent no-repeat top left;
       }
+
       .not-set-thumbnail {
         background-image: url(../img/unknown-file.png);
       }
@@ -1454,7 +1587,6 @@ table.datasets {
       .data-thumbnail {
         background-image: url(../img/data-file.png);
       }
-
     }
 
     // Default select2 styles cut off placeholder text
@@ -1472,10 +1604,9 @@ table.datasets {
   }
 
   .mutex-group {
-
     fieldset {
       legend {
-        display:none;
+        display: none;
       }
     }
 
@@ -1485,28 +1616,26 @@ table.datasets {
         .rounded-corners(4px);
         .box-shadow-inset(0, 0, 5px, lighten(@medium-gray, 10%));
         padding: 1em;
-        margin-bottom:1em;
+        margin-bottom: 1em;
 
         legend {
-          background:white;
-          padding:0 .5em;
+          background: white;
+          padding: 0 .5em;
         }
       }
-
     }
 
     ul.nav {
-      margin-bottom:10px;
+      margin-bottom: 10px;
     }
-
   }
 
-  ul, ol {
+  ul,
+  ol {
     margin: 0;
     padding: 0;
   }
 }
-
 
 .field-body .bbf-editor {
   margin-left: 0;
@@ -1514,29 +1643,31 @@ table.datasets {
 }
 
 #app .caption {
-  overflow:hidden;
-  padding:.5em;
+  overflow: hidden;
+  padding: .5em;
 
   form {
-    overflow:hidden;
-    textarea, button {
-      margin-bottom:1em;
+    overflow: hidden;
+
+    textarea,
+    button {
+      margin-bottom: 1em;
     }
+
     textarea {
       .box-sizing(border-box);
-      width:100%;
+      width: 100%;
     }
+
     button {
-      float:right;
-      margin:0 0 1em 1em;
+      float: right;
+      margin: 0 0 1em 1em;
     }
   }
 }
 
 // Table of contents thumbnails
-
 @section-thumbnail-height: 75px;
-
 #section-list {
   position: relative;
   overflow: hidden;
@@ -1566,18 +1697,20 @@ table.datasets {
 
 @scroll-arrow-height: 34px;
 @scroll-arrow-hover-d: @scroll-arrow-height;
-.scroll-left, .scroll-right {
-  position:absolute;
-  top:40px;
+.scroll-left,
+.scroll-right {
+  position: absolute;
+  top: 40px;
   text-indent: -32000px;
-  cursor:pointer;
-  background:url(../img/builder/section-scroll-arrows.png);
+  cursor: pointer;
+  background: url(../img/builder/section-scroll-arrows.png);
   display: block;
   float: left;
-  height:@scroll-arrow-height;
-  width:22px;
+  height: @scroll-arrow-height;
+  width: 22px;
+
   &:hover {
-    background-position:0 (-@scroll-arrow-hover-d);
+    background-position: 0 (-@scroll-arrow-hover-d);
   }
 }
 
@@ -1606,28 +1739,27 @@ table.datasets {
   list-style: none;
 
   em {
-      background: url(../img/builder/section-selected.png) no-repeat left top;
-      display:none;
-      width:20px;
-      height:12px;
-      position:absolute;
-      top:84px;
-      left:60px;
-      z-index:10;
+    background: url(../img/builder/section-selected.png) no-repeat left top;
+    display: none;
+    width: 20px;
+    height: 12px;
+    position: absolute;
+    top: 84px;
+    left: 60px;
+    z-index: 10;
   }
 
   .spacer + em {
-    left:70px;
+    left: 70px;
   }
 
   &.selected em {
-    display:block;
+    display: block;
   }
 
   &.pseudo em {
-    left:50px;
+    left: 50px;
   }
-
   // Styles for section element  while it is being dragged to reorder
   // sections
   //
@@ -1643,7 +1775,8 @@ table.datasets {
   }
 }
 
-.section-thumbnail, .spacer {
+.section-thumbnail,
+.spacer {
   position: relative;
   float: left;
   height: 75px;
@@ -1651,7 +1784,9 @@ table.datasets {
   text-align: center;
 }
 
-.section-thumbnail, .spacer:hover, .spacer.hover {
+.section-thumbnail,
+.spacer:hover,
+.spacer.hover {
   .rounded-corners(4px);
   .box-shadow(0, 2px, 3px, @black10);
   cursor: pointer;
@@ -1662,7 +1797,6 @@ table.datasets {
   border: 1px solid lighten(@medium-gray, 10%);
   background-color: @light-gray;
   color: @medium-gray;
-
   // Vertically center the title using the table-cell technique. See
   // http://coding.smashingmagazine.com/2013/08/09/absolute-horizontal-vertical-centering-css/#Table-Cell
   // and
@@ -1671,21 +1805,18 @@ table.datasets {
   // I chose this tecnique because it supports IE8 and variable-height content
   .center-container {
     position: relative;
-
     display: table;
-
     height: 100%;
     width: 100%;
   }
 
   .title {
     color: @blue-gray;
-    position:relative;
+    position: relative;
     font-size: 12px;
     font-weight: 400;
     line-height: 1.2em;
     margin-left: 0;
-
     // Required by the table-cell vertical centering technique.
     display: table-cell;
     vertical-align: middle;
@@ -1706,7 +1837,6 @@ table.datasets {
   &:hover .remove {
     display: block;
   }
-
 }
 
 .spacer {
@@ -1739,15 +1869,13 @@ table.datasets {
 
 .spacer div {
   display: block;
-  margin-top:30px;
+  margin-top: 30px;
 }
 
-
-.section-thumbnail-container.pseudo .section-thumbnail {
-}
+.section-thumbnail-container.pseudo .section-thumbnail {}
 
 .section-thumbnail-container.selected .section-thumbnail {
-  background-color:white;
+  background-color: white;
 }
 
 .section-thumbnail.new {
@@ -1770,7 +1898,6 @@ table.datasets {
     // accomodate the drawer)
     width: 95% !important;
   }
-
 }
 
 #summary-container,
@@ -1781,7 +1908,6 @@ table.datasets {
 }
 
 // Featured Asset View
-
 #featured-asset {
   position: relative;
 
@@ -1826,7 +1952,6 @@ table.datasets {
     &:hover {
       background-color: @highlight-blue;
     }
-
     img {
       display: block;
       max-width: 100%;
@@ -1843,14 +1968,12 @@ table.datasets {
 }
 
 // Legal agreement view
-
 #share-legal #permission ul {
   margin: 1em 0;
   padding: 0 0 0 40px;
 }
 
 // Select taxonomy view
-
 #share-taxonomy select {
   width: 300px;
 }
@@ -1858,7 +1981,6 @@ table.datasets {
 #taxonomy {
   width: 50%;
   float: left;
-
   // In Chrome, the initial width of the select2 widget input is
   // incorrectly set to 10px, causing the placeholder value to get cut off.
   // Work around this by setting a min-width
@@ -1879,7 +2001,6 @@ table.datasets {
 }
 
 // Tagging view
-
 #tags {
   display: none;
   width: 300px;
@@ -1955,11 +2076,9 @@ input[name=address] {
 .story-search-results {
   padding: 0;
   background: @almost-white !important;
-
   li {
     list-style: none;
   }
-
   button {
     padding: 2px 25px;
     margin-right: 6px;
@@ -1976,7 +2095,6 @@ input[name=address] {
 .relevant-story-result-container {
   display: flex;
   margin-bottom: 10px;
-
   p {
     margin-bottom: 2px !important;
   }
@@ -2010,7 +2128,6 @@ input[name=address] {
     .byline {
       font-size: .925em;
     }
-
     // Flex items within each story row
     > div {
       padding: 0 10px 0 5px;
@@ -2030,7 +2147,6 @@ input[name=address] {
 #share-publish {
   .bbf-form {
     padding-left: 0;
-
     &:last-child {
       padding-bottom: 0;
     }
@@ -2039,21 +2155,21 @@ input[name=address] {
 
 // Some CSS magic to style the ordered list numbers
 ol#publish-steps {
-  counter-reset:li;
+  counter-reset: li;
   margin-left: 0;
   padding-left: 0;
 
-  &>li {
+  & > li {
     position: relative;
-    list-style:none;
+    list-style: none;
 
     h3 {
       margin-left: 25px;
     }
 
     &:before {
-      content:counter(li)+'.';
-      counter-increment:li;
+      content: counter(li)+'.';
+      counter-increment: li;
       font-family: @styled-header-family;
       font-size: @h3-size;
       line-height: @base-line-height;
@@ -2078,57 +2194,64 @@ ol#publish-steps {
 // a mixin for guider styles
 @guider-text-color: darken(@highlight-blue, 20%);
 .guider-text {
-  font-size:@base-font-size;
-  color:@guider-text-color;
+  font-size: @base-font-size;
+  color: @guider-text-color;
 }
 
 .guider {
-  border-color:@highlight-blue;
-  background:lighten(@highlight-blue, 40%);
-  padding:20px;
+  border-color: @highlight-blue;
+  background: lighten(@highlight-blue, 40%);
+  padding: 20px;
   .box-shadow(0, 0, 8px, rgba(0, 0, 0, 0.4));
   .guider-text;
-
-  h1, h2, h3, h4, h5 {
+  h1,
+  h2,
+  h3,
+  h4,
+  h5 {
     .styled-header(left);
-    line-height:1em;
-    margin-bottom:1em;
-    color:@guider-text-color;
+    line-height: 1em;
+    margin-bottom: 1em;
+    color: @guider-text-color;
   }
 
-  ol, ul {
-    padding-left:1em;
+  ol,
+  ul {
+    padding-left: 1em;
   }
 
   .guider_content {
     p {
       .guider-text;
-      margin-bottom:1em;
+      margin-bottom: 1em;
     }
   }
 
   a.guider_button {
     .button-style(cool);
-    font-size:17px;
+    font-size: 17px;
   }
 
   .guider_content {
-    padding-top:10px;
+    padding-top: 10px;
   }
 
   .guider_arrow {
-      background:none;
-      top:-19px;
-      text-shadow:0 -1px 0 @highlight-blue;
-      font-size:54px;
-      color:lighten(@highlight-blue, 40%);
-      font-family: "FontAwesome";
+    background: none;
+    top: -19px;
+    text-shadow: 0 -1px 0 @highlight-blue;
+    font-size: 54px;
+    color: lighten(@highlight-blue, 40%);
+    font-family: "FontAwesome";
+
     &.guider_arrow_up:after {
       content: "\f0d8";
     }
+
     &.guider_arrow_right {
       right: -40px;
       text-shadow: 1px 0 @highlight-blue;
+
       &:after {
         content: "\f0da";
       }
@@ -2138,7 +2261,7 @@ ol#publish-steps {
   .x_button {
     .remove-icon(26px, @highlight-blue);
     background-image: none;
-    position:absolute;
+    position: absolute;
     top: -10px;
     right: 0px;
   }
@@ -2167,3 +2290,4 @@ ol#publish-steps {
     background-color: @highlight-blue;
   }
 }
+
