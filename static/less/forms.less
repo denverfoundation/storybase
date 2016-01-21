@@ -24,14 +24,14 @@ form {
       line-height: 1em;
     }
   }
-  @text-base-color: #555;
-  @border-color: #aaa;
+  @text-base-color: @dark-gray;
+  @border-color: @medium-gray;
   .form-text {
     font-size: 14px;
     color: @text-base-color;
   }
   .soft-edge-style {
-    .rounded-corners;
+    .rounded-corners(4px);
     .form-text;
     box-shadow: inset 0 0 3px #ccc;
     border: 1px solid @border-color;

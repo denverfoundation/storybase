@@ -185,13 +185,13 @@
 
             <section class="contact">
               <h4>{% trans "Provide Feedback" %}</h4>
+              <p>{% trans "We'll send your message to the story's author" %}{% if story.contributor_name %}, <a class="" href="{{ story.author.userprofile.get_absolute_url }}"><strong>{{ story.contributor_name }}</strong></a>{% endif %}.</p><br>
               {% with feedback_form as form %}
               <form action="{% url "story_contact" %}?success={{ request.path }}" method="post" {%if form.errors %}class="errors"{% endif %}>{% csrf_token %}
                 {{ form.as_p }}
                 <input type="submit" value="{% trans "Submit" %}" />
               </form>
               {% endwith %}
-              <p>{% trans "We'll send your message to the story's author" %}{% if story.contributor_name %}, <a class="" href="{{ story.author.userprofile.get_absolute_url }}"><strong>{{ story.contributor_name }}</strong></a>{% endif %}.</p><br>
             </section>
 
             <section class="sharing">
@@ -230,7 +230,7 @@
         {% if referrer %}
         <a class="referrer" href="{{ referrer.url }}"><i class="icon-arrow-left"></i>&nbsp;<span>{{ referrer.caption }}</span></a>
         {% endif %}
-        <a class="explorer" href="{% url 'explore_stories' %}">{% trans "Explore More Stories" %}</a>
+        <a class="explorer" href="{% url 'explore_stories' %}">{% trans "Explore<span> More Stories</span>" %}</a>
         <a class="logo" href="/" title="{{ storybase_site_name }}"><span>{{ storybase_site_name }}</span></a>
         <nav id="toc">
           {{ story.structure.render_toc }}
