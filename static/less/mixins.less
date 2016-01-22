@@ -315,6 +315,7 @@
 .styled-header(@align: center) {
   text-align: @align;
   font-family: @styled-header-family;
+  line-height: 1.4em;
   font-weight: 700;
   text-rendering: optimizeLegibility;
 }
@@ -323,20 +324,19 @@
 // This is defined in the mixin so we can easily match styles between the
 // viewer and builder
 .viewer-story-title() {
-  .styled-header(left);
   padding: 0;
   font-weight: 700;
-  font-size: 22px; //28.8px;
   line-height: 1.2em;
+  font-size: 1.8em;
   margin-top: 12px;
 }
 
 .line-through-header {
-  margin-bottom: 10px;
-  // line-through effect looks best with 1em line height
-  // line-height: 1em !important;
+  text-transform: uppercase;
+  margin-bottom: 15px;
+  letter-spacing: .06em;
+
   @media (min-width: @screen-sm-min) {
-    background: url('../img/h3-line.png') repeat-x 0 8px;
     margin-top: 20px;
     margin-bottom: 20px;
 
@@ -350,10 +350,8 @@
 
 .standard-headers(@align: center) {
   h1 {
-    font-size: ceil((@h1-size * 0.66));
     color: @dark-gray;
     .styled-header(@align);
-    .line-through-header;
 
     @media (min-width: @screen-xs-min) {
       font-size: @h1-size;
@@ -389,11 +387,7 @@
     .styled-header(@align);
   }
 
-  h1,
-  h2,
-  h3,
-  h4,
-  h5 {
+  h1, h2, h3, h4, h5 {
     // explicit property seems neccesary to properly set line height using ems.
     line-height: @base-line-height;
   }
@@ -401,11 +395,7 @@
   // if a header is following any other element, give the header
   // a little extra top-margin.
   * {
-    &+h1,
-    &+h2,
-    &+h3,
-    &+h4,
-    &+h5 {
+    &+h1, &+h2, &+h3, &+h4, &+h5 {
       margin-top: 1.2em;
     }
   }

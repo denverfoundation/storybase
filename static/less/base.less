@@ -49,26 +49,10 @@ body.base-template {
   @media (min-width: @header-breakpoint) {
     background: url('../img/body.jpg') repeat-x 0 0;
   }
-  // based on "everything" comp, text content
-  // headers are relatively diminuitive.
-  // @see content-page.less. putting this here
-  // for reference to "regular" header sizes.
-  // could probably make a variable or something...
+
   .content-block {
-    h2 {
-      font-size: (@top-header-size * .6);
-    }
-
     h3 {
-      font-size: (@top-header-size * .5);
-    }
-
-    h4 {
-      font-size: (@top-header-size * .4);
-    }
-
-    h5 {
-      font-size: (@top-header-size * .3);
+      text-transform: uppercase;
     }
   }
 
