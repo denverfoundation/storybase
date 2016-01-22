@@ -4,6 +4,11 @@
 }
 
 .content-page {
+
+  h1 {
+    .line-through-header;
+  }
+
   h3 span {
     position: relative;
   }
@@ -19,28 +24,22 @@
 
     /* generic text content */
     .content-block {
+      // HACK: set large padding values
+      // so we get a better measure
+      padding: 0 60px;
       .body-copy;
       .body-copy-lists;
 
-      h2,
-      h3,
-      h4,
-      h5 {
+      h2, h3, h4, h5 {
+        color: @dark-gray;
         text-align: left;
-        background: none;
-        margin-bottom: 0.2em;
-      }
-
-      h3,
-      h4,
-      h5 {
-        color: @almost-black;
+        margin-bottom: 0.4em;
       }
 
       h4.first {
+        color: @dark-gray;
         font-size: (@top-header-size * .8);
         line-height: 27px;
-        color: @dark-gray;
         .default-margin-bottom;
       }
 
@@ -82,11 +81,8 @@
 
     .page-pull {
       margin-bottom: 31px !important;
-      h1,
-      h2,
-      h3,
-      h4,
-      h5 {
+
+      h1, h2, h3, h4, h5 {
         text-align: left;
       }
 

@@ -291,11 +291,13 @@
         display: inline-block;
 
         h1 {
+          text-transform: initial;
+          letter-spacing: initial;
           background: none;
-          font-size: 24px;
           font-weight: 700;
           font-family: @roboto-condensed;
           margin-bottom: 4px;
+          line-height: 1;
         }
       }
 
@@ -379,6 +381,7 @@
         background: @light-gray;
         color: @blue-xxdark;
         border: 1px solid @black10;
+
         &:hover {
           border-color: @black30;
           background: @blue-xxdark;
@@ -400,25 +403,24 @@
   #call-to-action {
     .next-steps {
       background: @light-gray;
-      padding: 20px 40px;
+      padding: 20px;
       display: flex;
       flex-wrap: wrap;
       margin: 20px 0;
       border-radius: 4px;
 
       section {
-        padding: 0 10px;
+        padding: 0 20px;
         flex: 1 0 300px;
-        margin-right: 20px;
-        margin-bottom: 20px;
         border-bottom: 1px dotted @medium-gray;
+
         &:last-of-type {
           border-bottom: none;
         }
 
         @media (min-width: @header-breakpoint) {
           border-bottom: none;
-          border-right: 1px dotted @medium-gray;
+          border-right: 1px solid @black20
         }
 
         h4 {
@@ -459,8 +461,16 @@
 
           a {
             display: inline-block;
-            width: 100%;
+            width: auto;
             margin-bottom: 8px;
+
+            &:hover {
+              color: @orange;
+            }
+          }
+
+          .storybase-embed-button {
+            width: auto;
           }
 
           // Icon images
@@ -489,8 +499,42 @@
             font-weight: 300;
             display: inline-block;
             margin-bottom: 2px;
+
             &:hover {
               text-decoration: underline;
+            }
+          }
+
+          form {
+
+            input, textarea {
+              -webkit-appearance: none;
+              width: 100%;
+              padding: 8px;
+              border: 1px solid @black30;
+              border-radius: 4px;
+            }
+
+            textarea {
+              width: 100%;
+              resize: vertical;
+            }
+
+            label[for="id_message"] {
+              display: block;
+            }
+
+            input[type="submit"] {
+              display: block;
+              -webkit-appearance: none;
+              margin: auto;
+              padding: 5px 15px;
+              border: none;
+              width: auto;
+
+              &:hover {
+                cursor: pointer;
+              }
             }
           }
         }
