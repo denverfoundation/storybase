@@ -1,0 +1,39 @@
+SHELL=/bin/bash
+
+SOLR_TGZ_URL ?= http://archive.apache.org/dist/lucene/solr/4.10.3/solr-4.10.3.tgz
+PORT         ?= 8983
+IP           ?= 127.0.0.1
+
+CORENAME     ?= maincore
+
+DEFAULT_DESTDIR = $(shell dirname $(realpath $(lastword ${MAKEFILE_LIST})))/solr/
+
+DESTDIR      ?= ${DEFAULT_DESTDIR}
+
+SUBMAKEFILE   = ${DESTDIR}/Makefile
+
+export
+
+schema-xml:
+	python manage.py build_solr_schema --traceback -f ${DESTDIR}/solr/${CORENAME}/conf/schema.xml
+
+$(SUBMAKEFILE):
+	@cp -v -r ${DEFAULT_DESTDIR}/{Makefile,solr} ${DESTDIR}
+
+solr-instance: ${SUBMAKEFILE}
+	make -C ${DESTDIR} $@
+
+run-solr: solr-instance schema-xml
+	make -C ${DESTDIR} $@
+
+run-clean-solr: schema-xml
+	@test -f ${DESTDIR}/start.jar || (echo 'Run `make solr-instance` before running this' && exit 1)
+	make -C ${DESTDIR} run-solr
+
+clean:
+	make -C ${DESTDIR} $@
+
+mrproper:
+	make -C ${DESTDIR} $@
+
+.PHONY: schema-xml solr-instance clean mrproper run-solr

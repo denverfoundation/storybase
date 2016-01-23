@@ -1,0 +1,11 @@
+/*
+!/solr/
+!Makefile
+!.gitignore
+/solr/*
+!/solr/solr.xml
+!/solr/maincore
+/solr/maincore/*
+!/solr/maincore/conf
+!/solr/maincore/conf/*
+/solr/maincore/conf/_rest_managed.json

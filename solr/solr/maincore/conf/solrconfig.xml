@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<config>
+  <luceneMatchVersion>LUCENE_42</luceneMatchVersion>
+  <dataDir>${solr.data.dir:}</dataDir>
+  <directoryFactory name="DirectoryFactory" class="${solr.directoryFactory:solr.NRTCachingDirectoryFactory}"/>
+  <codecFactory class="solr.SchemaCodecFactory"/>
+  <schemaFactory class="ClassicIndexSchemaFactory"/>
+  <updateHandler class="solr.DirectUpdateHandler2">
+     <autoCommit>
+       <maxTime>15000</maxTime>
+       <openSearcher>false</openSearcher>
+     </autoCommit>
+  </updateHandler>
+  <requestHandler name="standard" class="solr.StandardRequestHandler" />
+  <requestHandler name="/update" class="solr.UpdateRequestHandler" />
+  <requestHandler name="/admin/" class="solr.admin.AdminHandlers" />
+  <!-- Legacy config for the admin interface -->
+  <admin>
+    <defaultQuery>*:*</defaultQuery>
+  </admin>
+  <lib dir="../../contrib/extraction/lib" regex=".*\.jar" />
+  <lib dir="../../dist/" regex="solr-cell-\d.*\.jar" />
+  <requestHandler name="/update/extract" class="solr.extraction.ExtractingRequestHandler" />
+</config>

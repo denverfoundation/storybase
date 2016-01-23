@@ -25,3 +25,5 @@ widget_script: $(JS_DIR)/widgets.js
 
 jquery_plugins: apps/cmsplugin_storybase/$(JS_DIR)/jquery.storybase.activityguide.js
 	$(CLOSURE_COMPILE) apps/cmsplugin_storybase/$(JS_DIR)/jquery.storybase.activityguide.js > apps/cmsplugin_storybase/$(JS_DIR)/jquery.storybase.activityguide.min.js
+
+include Makefile.solr

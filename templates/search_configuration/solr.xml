@@ -42,10 +42,7 @@
 
     <fieldType name="point" class="solr.PointType" dimension="2" subFieldSuffix="_d"/>
     <fieldType name="location" class="solr.LatLonType" subFieldSuffix="_coordinate"/>
-    {% comment %}
-    Use the SOLR-2155 add-on, which supports multi-valued fields.
-    {% endcomment %}
-    <fieldType name="geohash" class="solr2155.solr.schema.GeoHashField" length="12" />
+    <fieldType name="geohash" class="solr.GeoHashField" />
     {% comment %}
     A field type for a field that will contain spelling suggestions.
     See http://wiki.apache.org/solr/SpellCheckingAnalysis
