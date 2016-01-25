@@ -421,7 +421,7 @@ ADMIN_GROUP_NAME = 'CA Admin'
 # Set this in per-instance settings
 #DEFAULT_FROM_EMAIL = ''
 # The name of the site
-STORYBASE_SITE_NAME = "Your Storybase Site"
+STORYBASE_SITE_NAME = "Floodlight"
 STORYBASE_SITE_DESCRIPTION = _("A powerful story-building website that enables community change makers to inspire action and advance their issues through more substantive, engaging and persuasive data-driven storytelling.")
 # The tagline of the site
 STORYBASE_SITE_TAGLINE = _("Your site tagline")
