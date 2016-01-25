@@ -6,13 +6,13 @@
 
 {% block extrameta %}
 <meta name="title" content="{{ storybase_explore_title }}" />
-<meta name="description" content="{% blocktrans %}Browse and filter {{ storybase_site_name }} stories by topic, location, language, project and organization.{% endblocktrans %}">
+<meta name="description" content="{% blocktrans %}Browse and filter {{ storybase_site_name }} stories by topic, location, language, organization and badges.{% endblocktrans %}">
 
 
 <!-- Open Graph Protocol tags -->{% url "explore_stories" as explore_url %}
 <meta property="og:url" content="{% fullurl explore_url %}" />
 <meta property="og:title" content="{{ storybase_explore_title }}" />
-<meta property="og:description" content="{% blocktrans %}Browse and filter {{ storybase_site_name }} stories by topic, location, language, project and organization.{% endblocktrans %}" />
+<meta property="og:description" content="{% blocktrans %}Browse and filter {{ storybase_site_name }} stories by topic, location, language, organization and badges.{% endblocktrans %}" />
 <meta property="og:image" content="{{ storybase_site_logo }}" />
 {% endblock %}
 
@@ -69,12 +69,12 @@ Handlebars templates for rendering Backbone views.
     </div>
 
     <div class="field">
-        <label for="projects">{{gettext "Project"}}</label>
-        <select name="projects" data-placeholder="{{gettext "Project"}}" title="{{gettext "Filter stories by selecting a project"}}">
+        <label for="badges">{{gettext "Badge"}}</label>
+        <select name="badges" data-placeholder="{{gettext "Badge"}}" title="{{gettext "Filter stories by selecting a badge"}}">
             <option></option>
-            {{#projects}}
+            {{#badges}}
             <option value="{{id}}"{{#if selected}}selected{{/if}}>{{name}}</option>
-            {{/projects}}
+            {{/badges}}
         </select>
     </div>
 

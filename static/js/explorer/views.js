@@ -73,7 +73,7 @@
         topics: this.options.storyData.topics,
         organizations: this.options.storyData.organizations,
         places: this.options.storyData.places,
-        projects: this.options.storyData.projects,
+        badges: this.options.storyData.badges,
         languages: this.options.storyData.languages,
         selected: this.selectedFilters,
         stickyFilterPercentage: this.options.stickyFilterPercentage
@@ -91,7 +91,7 @@
     },
 
     getFilterNames: function() {
-      return ["topics", "places", "organizations", "projects", "languages"];
+      return ["topics", "places", "organizations", "badges", "languages"];
     },
 
     setMessageSeen: function(messageName) {
@@ -296,7 +296,7 @@
         topics: data.topics,
         organizations: data.organizations,
         places: data.places,
-        projects: data.projects,
+        badges: data.badges,
         languages: data.languages,
         selected: this.selectedFilters
       });
@@ -427,7 +427,7 @@
         topics: this.options.topics,
         organizations: this.options.organizations,
         places: this.options.places,
-        projects: this.options.projects,
+        badges: this.options.badges,
         languages: this.options.languages
       };
       if (typeof this.options.selected !== "undefined") {

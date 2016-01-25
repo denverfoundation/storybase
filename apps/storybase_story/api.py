@@ -27,6 +27,7 @@ from storybase.api import (HookedModelResource, TranslatedModelResource,
                            LoggedInAuthorization, PublishedOwnerAuthorization)
 from storybase.utils import get_language_name
 from storybase_asset.api import AssetResource
+from storybase_badge.models import Badge
 from storybase_geo.models import Place
 from storybase_help.models import Help
 from storybase_story.models import (Container, ContainerTemplate,
@@ -81,7 +82,7 @@ class StoryResource(TranslatedModelResource):
 
         # Custom meta attributes
         # Filter arguments for custom explore endpoint
-        explore_filter_fields = ['topics', 'projects', 'organizations', 'languages', 'places']
+        explore_filter_fields = ['topics', 'badges', 'organizations', 'languages', 'places']
         explore_point_field = 'points'
 
     def prepend_urls(self):
@@ -267,6 +268,10 @@ class StoryResource(TranslatedModelResource):
                 for obj in Place.objects.filter(place_id__in=items)\
                                         .order_by('name')\
                                         .values('place_id', 'name')]
+
+    def _get_facet_choices_badge_ids(self, items):
+        return [{ 'id': obj.id, 'name': obj.name }
+                for obj in Badge.objects.filter(id__in=items)]
 
     def resolve_url(self, request, **kwargs):
         self.method_check(request, allowed=['get'])
