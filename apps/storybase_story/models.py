@@ -465,12 +465,6 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
         else:
             return None
 
-    def is_connected(self):
-        """
-        Is this story a connected story?
-        """
-        return self.connected_to_stories().count() > 0
-
     def relevant_count(self):
         """
         Helper for the API to get a count of relevant stories.
@@ -491,27 +485,12 @@ class Story(WeightedModel, FeaturedAssetsMixin, TzDirtyFieldsMixin,
         return self.related_stories.connected().filter(related_to=self).published().count()
 
     def builder_url(self):
-        if self.is_connected():
-            return urlresolvers.reverse('connected_story_builder',
-                kwargs={'source_slug':self.connected_to().slug,
-                        'story_id': self.story_id})
-        else:
-            return urlresolvers.reverse('story_builder',
-                kwargs={'story_id': self.story_id})
+        return urlresolvers.reverse('story_builder',
+            kwargs={'story_id': self.story_id})
 
     def viewer_url(self):
-        if self.is_connected():
-            slug = self.connected_to().slug
-        else:
-            slug = self.slug
-
-        url = urlresolvers.reverse('story_viewer',
-            kwargs={'slug': slug})
-
-        if self.is_connected():
-            url = "%s#connected-stories/%s" % (url, self.story_id)
-
-        return url
+        return urlresolvers.reverse('story_viewer',
+            kwargs={'slug': self.slug})
 
     def get_prompt(self):
         connected_to = self.connected_to_stories()
