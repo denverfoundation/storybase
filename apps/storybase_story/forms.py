@@ -119,18 +119,12 @@ class StorySearchForm(SearchForm):
     single topic and/or place ID.
 
     """
-    topic = forms.ModelChoiceField(queryset=Category.objects.all(), required=False,
-                                   widget=forms.Select(attrs={'data-placeholder': Category._meta.verbose_name}))
-    place = forms.ModelChoiceField(queryset=Place.objects.all(), required=False,
-                                   widget=forms.Select(attrs={'data-placeholder': Place._meta.verbose_name}))
-    badge = forms.ModelChoiceField(queryset=Badge.objects.all(), required=False,
-                                   widget=forms.Select(attrs={'data-placeholder': Badge._meta.verbose_name}))
+    topic = forms.ModelChoiceField(queryset=Category.objects.all(), required=False)
+    place = forms.ModelChoiceField(queryset=Place.objects.all(), required=False)
+    badge = forms.ModelChoiceField(queryset=Badge.objects.all(), required=False)
 
     def search(self):
-        sqs = super(StorySearchForm, self).search()
-
-        if isinstance(sqs, EmptySearchQuerySet):
-            return sqs
+        sqs = super(StorySearchForm, self).search().models(Story)
 
         data = getattr(self, 'cleaned_data', {})
         topic = data.get('topic', None)

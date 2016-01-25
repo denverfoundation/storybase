@@ -13,10 +13,12 @@
 
 {% include "search_plugin.html" %}
 
-{% if query %}
-
 <div class="results-header">
-    <h1>{% if paginator.count %}{{ paginator.count }} {% trans "search results for" %}{% else %}{% trans "No search results found for"%}{% endif %} "{{ query }}"</h1>
+  {% if query %}
+  <h1>{% if paginator.count %}{{ paginator.count }} {% trans "search results for" %}{% else %}{% trans "No search results found for"%}{% endif %} "{{ query }}"</h1>
+  {% else %}
+  <h1>{% if paginator.count %}{{ paginator.count }} {% trans "search results" %}{% else %}{% trans "No search results found"%}{% endif %}</h1>
+  {% endif %}
     {% include "search/paging.html" %}
 </div>
 
@@ -64,9 +66,6 @@
     {% include "search/paging.html" %}
 </div>
 
-{% else %}
-{# Show some example queries to run, maybe query syntax, something else? #}
-{% endif %}
 {% endblock %}
 
 {% block extrajs %}
