@@ -23,14 +23,13 @@
   Handlebars.registerPartial("story", $("#story-partial-template").html());
   Handlebars.registerPartial("story_link", $("#story-link-partial-template").html());
 
-  Views.ExplorerApp = HandlebarsTemplateView.extend({
+  Views.ExplorerApp = Backbone.View.extend({
     el: $('#explorer'),
 
     options: {
       selectedFilters: {},
       bufferPx: 40,
       pixelsFromListToBottom: undefined,
-      templateSource: $('#explorer-template').html(),
       // If the filter height is less than this percentage (represented as
       // a decimal), make the filters stick to the top of the window as
       // the window is scrolled.
@@ -38,8 +37,6 @@
     },
 
     events: {
-      "click .select-tile-view": "selectTile",
-      "click .select-list-view": "selectList",
       "click #show-more": "clickShowMore",
       "change #filters select": "handleChangeFilters",
       "click #filters .clear-filters": "clearAllFilters"
@@ -63,7 +60,6 @@
           seen: false
         }
       };
-      this.compileTemplates();
       this.counterView = new StoryCount({
         count: this.stories.length,
         total: this.totalMatchingStories,
@@ -115,7 +111,6 @@
 
     render: function() {
       var context = {};
-      this.$el.html(this.template(context));
       this.counterView.render();
       this.$el.prepend(this.counterView.el);
       this.filterView.render();
@@ -123,7 +118,8 @@
       this.$el.prepend('<div id="filter-proxy"></div>');
       this.filterView.setInitialProperties();
       this.$el.append(this.storyListView.el);
-      this.selectView(this.options.viewType);
+      this.storyListView.$el.show();
+      this.storyListView.tile();
       this.storyListView.render();
       // Distance from story list to bottom
       // Computed as: height of the document - top offset of story list container
@@ -133,38 +129,6 @@
         position: 'bottom'
       });
       return this;
-    },
-
-    selectView: function(viewType) {
-      if (viewType == 'list') {
-        this.selectList();
-      }
-      else {
-        this.selectTile();
-      }
-    },
-
-    selectTile: function(e) {
-      this.storyListView.$el.show();
-      this.storyListView.tile();
-      $('#view-selector li')
-        .removeClass('active')
-        .filter('.tile-view')
-          .addClass('active');
-      return false;
-    },
-
-    selectList: function(e) {
-      // The Masonry plugin sets an explicit width on the container element.
-      // Remove this width so the stylesheet styles take effect.
-      this.storyListView.$el.css('width', '');
-      this.storyListView.$el.show();
-      this.storyListView.list();
-      $('#view-selector li')
-        .removeClass('active')
-        .filter('.list-view')
-          .addClass('active');
-      return false;
     },
 
     /**

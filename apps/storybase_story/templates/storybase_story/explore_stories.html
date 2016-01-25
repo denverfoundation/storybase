@@ -22,13 +22,6 @@ Handlebars templates for rendering Backbone views.
 {% endcomment %}
 
 {% verbatim %}
-<script type="text/x-handlebars-template" id="explorer-template">
-<ul id="view-selector">
-  <li class="tile-view active"><a class="select-tile-view" href="#" title="{{gettext "Click here to see the stories displayed as tiles"}}"><span>{{gettext "Tile"}}<span></a></li>
-  <li class="list-view"><a class="select-list-view" href="#" title="{{gettext "Click here to see a list of stories"}}"><span>{{gettext "List"}}<span></a></li>
-</ul>
-</script>
-
 <script type="text/x-handlebars-template" id="story-count-template">
   <h6 class="story-count">{{count}} {{gettext "of"}} {{total}} {{#blockgettext}}Stor{{pluralize count suffix="y,ies"}} Shown{{/blockgettext}}</h6>
   {{#if showMore }}
@@ -172,7 +165,6 @@ $(document).ready(function() {
   var storyData = {{ stories_json }};
   var selectedFilters = {{ selected_filters }};
   var explorer = new storybase.explorer.views.ExplorerApp({
-    viewType: {{view_type}},
     storyData: storyData,
     selectedFilters: selectedFilters
   });
