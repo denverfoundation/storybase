@@ -150,35 +150,32 @@ Handlebars.js templates for story builder Backbone application
 <div class="relevant-stories-container">
   <h3>{{gettext "Related Stories"}}</h3>
   <p>{{gettext "List other stories relevant to your story."}}</p>
-  <ul class="stories"></ul>
-  <div>
-    <input type="text" class="story-search" placeholder="{{gettext "Search stories or paste a story URL here."}}"></input>
-    <button type="button">{{gettext "Search"}}</button>
+  <ul class="relevant-stories selected"></ul>
+  <div class="story-search">
+    <input type="text" placeholder="{{gettext "Search stories or paste a Floodlight story URL here."}}"></input>
+    <button>{{gettext "Search"}}</button>
+    <div class="message"></div>
   </div>
-  <ul class="story-search-results"></ul>
+  <ul class="relevant-stories search-results"></ul>
 </div>
 </script>
 
-<script type="text/x-handlebars-template" id="relevant-story-result-template">
-<div class="relevant-story-result-container">
-  <div>
-    <button type="button">{{gettext "Add"}}</button>
-  </div>
-  <div>
-    <p><a href="{{url}}" target="_blank">{{title}}</a></p>
-    <p><span class="byline">{{byline}}</span></p>
-  </div>
+<script type="text/x-handlebars-template" id="relevant-stories-result-template">
+<div>
+  <button type="button">{{gettext "Add"}}</button>
+</div>
+<div>
+  <p><a href="{{url}}" target="_blank">{{title}}</a></p>
+  <p><span class="byline">{{byline}}</span></p>
 </div>
 </script>
 
 <script type="text/x-handlebars-template" id="relevant-story-template">
-<div class="relevant-story-container">
-  <div>
-    <button type="button">{{gettext "Remove"}}</button>
-  </div>
-  <div>
-    <p><a href="{{url}}" target="_blank">{{title}}</a></p>
-  </div>
+<div>
+  <button type="button">{{gettext "Remove"}}</button>
+</div>
+<div>
+  <p><a href="{{target_url}}" target="_blank">{{target_title}}</a></p>
 </div>
 </script>
 

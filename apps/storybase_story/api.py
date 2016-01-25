@@ -273,8 +273,12 @@ class StoryResource(TranslatedModelResource):
         self.is_authenticated(request)
         self.throttle_check(request)
 
+        url = request.GET.get('url', '')
+        if not url.endswith('/'):
+            url = url + trailing_slash()
+
         try:
-            match = resolve(request.GET.get('url', ''))
+            match = resolve(url)
             story = self._meta.queryset.get(**match.kwargs)
         except Exception:
             raise http.HttpNotFound()

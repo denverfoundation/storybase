@@ -149,6 +149,18 @@
   };
 
   /**
+   * Only handle event if event key is the Enter key.
+   */
+  var enterKeyEventWrapper = function(fn) {
+    return function(evt) {
+      // Only act when the enter key is the one that's pressed
+      if (evt.which == 13) {
+        fn(evt);
+      }
+    }
+  };
+
+  /**
    * Utility for checking if a view's model is new.
    *
    * The value of the function's ``this`` value should be bound
@@ -3835,16 +3847,49 @@
     })
   );
 
+  var RelevantStoriesView = Views.RelevantStoriesView = Backbone.View.extend({
+    render: function() {
+      this.$el.html(
+        _.reduce(this.collection.invoke('render'), function(html, model) {
+          return html + model.$el.html();
+        }, '')
+      );
+    }
+  });
+
+  var RelevantStoryView = Views.RelevantStoryView = HandlebarsTemplateView.extend({
+    tagName: 'li',
+
+    events: {
+      'click button': 'click'
+    },
+
+    click: function(evt) {
+      this.dispatcher.trigger(this.options.event, this.model);
+      return false;
+    },
+
+    initialize: function() {
+      this.dispatcher = this.options.dispatcher;
+      this.compileTemplates();
+    },
+
+    render: function() {
+      this.$el.html(this.getTemplate()(this.model.toJSON()));
+      return this;
+    }
+  });
+
   var RelevantStoriesEditView = Views.RelevantStoriesEditView = HandlebarsTemplateView.extend({
     className: 'relevant-stories-container',
 
     options: {
-      storyRegex: '^(?:https?://)?(www\.)?' + window.location.host + '(/.*/)(#.*)?$',
-      storySearchEl: 'input.story-search',
+      storyRegex: '^(?:https?://)?(www\.)?' + window.location.host + '(/[^#?]*)',
+      storySearchClass: '.story-search>input',
+      storySearchButtonClass: '.story-search>button',
+      storySearchMessageClass: '.story-search>.message',
       templateSource: {
-        '__main': $('#relevant-stories-edit-template').html(),
-        'result': $('#relevant-story-result-template').html(),
-        'story': $('#relevant-story-template').html()
+        '__main': $('#relevant-stories-edit-template').html()
       }
     },
 
@@ -3852,31 +3897,74 @@
       var events = {
         'click button': 'search'
       };
-      events['keyup ' + this.options.storySearchEl] = 'handleKeyUp';
+      events['keydown ' + this.options.storySearchClass] = this.handleKeyDown;
+      events['keyup ' + this.options.storySearchClass] = 'handleKeyPress';
       return events;
     },
 
-    bindModelEvents: function() {
-      this.results.on('reset', this.renderResults, this);
+    handleKeyPress: function(evt) {
+      var value = $(evt.target).val(),
+          matches;
+      if (value !== this.query) {
+        matches = value.match(this.options.storyRegex, 'i');
+        if (matches) {
+          // Change button language if value looks like a Story url.
+          this.$(this.options.storySearchButtonClass).html(gettext('Add'));
+        } else {
+          // Revert button language if value looks like a regular query.
+          this.$(this.options.storySearchButtonClass).html(gettext('Search'));
+        }
+        this.query = value;
+      }
     },
 
-    handleKeyUp: function(evt) {
-      var code = evt.which;
-
-      // Only act when the enter key is the one that's pressed
-      if (code == 13) {
-        this.search();
-      }
-      // none of these work
+    handleKeyDown: function(evt) {
+      this.search();
       evt.preventDefault();
-      evt.stopPropagation();
       return false;
     },
 
+    showLoading: function() {
+      this.$(this.options.storySearchMessageClass).empty();
+      if (_.isUndefined(this.$loadingEl)) {
+        this.$loadingEl = $('<div>').addClass('loading')
+                                    .appendTo(this.$(this.options.storySearchMessageClass));
+        if (window.Spinner) {
+          this.$loadingEl.append(new Spinner({
+            length: 8,
+            radius: 4,
+            width: 4
+          }).spin().el);
+        }
+      }
+      else {
+        this.$loadingEl.appendTo(this.$(this.options.storySearchMessageClass));
+      }
+    },
+
+    hideLoading: function() {
+      if (this.$loadingEl) {
+        this.$loadingEl.remove();
+      }
+    },
+
+    showMessage: function(message) {
+      this.$(this.options.storySearchMessageClass)
+          .empty().append('<p>' + message + '</p>');
+    },
+
+    resetSearch: function() {
+      this.$(this.options.storySearchClass).val('');
+      this.$(this.options.storySearchButtonClass).removeAttr('disabled');
+    },
+
     search: function() {
-      var $storySearchEl = this.$(this.options.storySearchEl);
+      var $storySearchEl = this.$(this.options.storySearchClass);
       var value = $storySearchEl.val();
       var matches = value.match(this.options.storyRegex, 'i');
+
+      this.$(this.options.storySearchButtonClass).attr('disabled', true);
+      this.showLoading();
 
       if (matches) {
         // treat as story url
@@ -3885,6 +3973,7 @@
           data: $.param({url: value}),
           processData: false,
           success: _.bind(function(data, textStatus) {
+            this.results.reset();
             var model = new this.stories.model({
               source: this.model.get('story_id'),
               target: data.story_id,
@@ -3892,57 +3981,140 @@
               target_url: data.url,
               relation_type: 'relevant'
             });
-            this.results.reset();
             this.addStory(model);
-            $storySearchEl.val('');
           }, this),
-          error: function(jqXHR, textStatus) {
-            // TODO: put failure message here
-          }
-        });
+          error: _.bind(function(jqXHR, textStatus) {
+            this.showMessage(gettext("Sorry, we're unable to find that story."));
+          }, this)
+        }).done(_.bind(function(data) {
+          this.hideLoading();
+        }, this));
       } else {
         // treat as a search query
         this.results.fetch({
           data: $.param({q: value}),
-          success: _.bind(this.renderResults, this),
-          error: function() {
-            // TODO: put failure message here
-          }
-        });
+          success: _.bind(function(data, textStatus) {
+            if (this.results.length) {
+              this.showMessage(gettext('Search results for "' + value + '".'));
+            } else {
+              this.showMessage(gettext('Sorry, no results found for "' + value + '".'));
+            }
+          }, this),
+          error: _.bind(function() {
+            this.showMessage(gettext("Sorry, we're unable to search stories at the moment.'"));
+          }, this)
+        }).done(_.bind(function(data) {
+          this.hideLoading();
+        }, this));
       }
       return false;
     },
 
+    bindModelEvents: function() {
+      this.results.on('reset', this.resetSearch, this);
+      this.results.on('reset', this.renderResults, this);
+      this.stories.on('add', this.renderStories, this);
+      this.stories.on('remove', this.renderStories, this);
+      this.stories.on('add', this.updateRelatedStories, this);
+      this.stories.on('remove', this.updateRelatedStories, this);
+    },
+
     initialize: function() {
       this.compileTemplates();
+
       this.stories = new StoryRelations(this.options.relatedStories);
       this.results = new StorySearchResults();
+
+      this.storiesView = new Backbone.View({collection: this.stories});
+      this.resultsView = new Backbone.View({collection: this.results});
+      this.storyViews = [];
+      this.resultViews = [];
+
+      this.query = '';
+
+      // Bind this event handler and wrap it to only be invoked
+      // when the enter key is the trigger.
+      this.handleKeyDown = enterKeyEventWrapper(_.bind(this.handleKeyDown, this));
+
       this.bindModelEvents();
+
+      this.dispatcher = this.options.dispatcher;
+      this.dispatcher.on('do:add:relatedstory', this.addStory, this);
+      this.dispatcher.on('do:remove:relatedstory', this.removeStory, this);
     },
 
     addStory: function(model) {
-      this.stories.add(model);
-      this.model.relatedStories.update(this.stories.toJSON());
-      this.renderStories();
+      if (model instanceof storybase.models.Story) {
+        // create a story relation model from a story model
+        model = new this.stories.model({
+          source: this.model.get('story_id'),
+          target: model.get('story_id'),
+          target_title: model.get('title'),
+          target_url: model.get('url'),
+          relation_type: 'relevant'
+        });
+      }
+
+      var hasStory = this.stories.any(function(m) {
+        return _.isEqual(m.attributes, model.attributes);
+      });
+
+      if (!hasStory) {
+        this.stories.add(model);
+      }
     },
 
-    renderStories: function() {
-      var $stories = this.$('.stories').html('');
-      this.stories.map(function(model) {
-        $stories.append(this.getTemplate('story')({
-          title: model.get('target_title'),
-          url: model.get('target_url')
-        }));
+    removeStory: function(model) {
+      this.stories.remove(model);
+    },
+
+    updateRelatedStories: function(story, stories) {
+      this.model.relatedStories.update(stories.toJSON());
+    },
+
+    renderStories: function(model) {
+      _.each(this.storyViews, function(view) {
+        view.remove();
+      });
+
+      this.storyViews = this.stories.map(function(model) {
+        return new RelevantStoryView({
+          model: model,
+          dispatcher: this.dispatcher,
+          event: 'do:remove:relatedstory',
+          templateSource: {
+            '__main': $('#relevant-story-template').html(),
+          }
+        });
       }, this);
-      return this;
+
+      _.each(this.storyViews, function(view) {
+        this.$('.relevant-stories.selected').append(view.render().el);
+        if (view.model === model) {
+          view.$el.addClass('added');
+        }
+      }, this);
     },
 
     renderResults: function() {
-      var $results = this.$('.story-search-results').html('');
-      this.results.map(function(model) {
-        $results.append(this.getTemplate('result')(model.toJSON()));
+      _.each(this.resultViews, function(view) {
+        view.remove();
+      });
+
+      this.resultViews = this.results.map(function(model) {
+        return new RelevantStoryView({
+          model: model,
+          dispatcher: this.dispatcher,
+          event: 'do:add:relatedstory',
+          templateSource: {
+            '__main': $('#relevant-stories-result-template').html(),
+          }
+        });
       }, this);
-      return this;
+
+      _.each(this.resultViews, function(view) {
+        this.$('.relevant-stories.search-results').append(view.render().el);
+      }, this);
     },
 
     render: function() {
@@ -3978,6 +4150,7 @@
       PseudoSectionEditView.prototype.initialize.apply(this, arguments);
       this.relevantStoriesEditView = new RelevantStoriesEditView({
         model: this.options.model,
+        dispatcher: this.options.dispatcher,
         relatedStories: this.options.relatedStories.where({relation_type: 'relevant'})
       });
     },

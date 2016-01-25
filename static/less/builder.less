@@ -2065,42 +2065,25 @@ input[name=address] {
 }
 
 // CTA Page Related Stories Section
-.story-search {
-  width: 75%;
-  height: 36px;
-  font-weight: 400;
-  margin-bottom: 20px;
-  margin-right: 8px;
-}
-
-.story-search-results {
-  padding: 0;
-  background: @almost-white !important;
-  li {
-    list-style: none;
-  }
-  button {
-    padding: 2px 25px;
-    margin-right: 6px;
-  }
-}
-
 .relevant-stories-container {
-  // section wrapper
   button {
     padding: 8px 25px;
   }
 }
 
-.relevant-story-result-container {
-  display: flex;
-  margin-bottom: 10px;
-  p {
-    margin-bottom: 2px !important;
+.story-search {
+  .message {
+    position: relative;
+  }
+
+  .loading {
+    position: absolute;
+    top: 22px;
+    left: 50%;
   }
 }
 
-.story-search-results {
+.relevant-stories {
   list-style: none;
   padding-left: 0 !important;
   box-shadow: 0 0 1px @black20;
@@ -2109,10 +2092,15 @@ input[name=address] {
     text-decoration: none;
   }
 
+  &.search-results {
+    background: @almost-white !important;
+  }
+
   // Specific to nested results divs
-  .relevant-story-result-container {
+  li {
     display: flex;
     padding: 7px;
+    margin-bottom: 10px;
     border-bottom: 1px solid @black10;
 
     a {
@@ -2122,7 +2110,8 @@ input[name=address] {
 
     p {
       font-size: 1em;
-      margon-bottom: 0 !important;
+      margin-bottom: 0 !important;
+      margin-bottom: 2px !important;
     }
 
     .byline {
