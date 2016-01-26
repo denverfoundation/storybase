@@ -4061,11 +4061,13 @@
 
       if (!hasStory) {
         this.stories.add(model);
+        this.dispatcher.trigger("do:save:story");
       }
     },
 
     removeStory: function(model) {
       this.stories.remove(model);
+      this.dispatcher.trigger("do:save:story");
     },
 
     updateRelatedStories: function(story, stories) {
