@@ -467,7 +467,7 @@ STORYBASE_DEFAULT_PROJECT_IMAGES = {
 STORYBASE_DEFAULT_STORY_IMAGES = {
     100: STATIC_URL + 'img/default-image-story-100x60.png',
     150: STATIC_URL + 'img/default-image-story-150x90.png',
-    222: STATIC_URL + 'img/default-image-story-222x132.png',
+    222: STATIC_URL + 'img/default-image-story-1000x1000.png',
     335: STATIC_URL + 'img/default-image-story-335x200.png',
 }
 STORYBASE_DEFAULT_USER_IMAGES = {
