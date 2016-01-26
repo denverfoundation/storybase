@@ -90,8 +90,7 @@ Handlebars templates for rendering Backbone views.
 </script>
 
 <script type="text/x-handlebars-template" id="story-partial-template">
-<a href="{{url}}" class="image-container">
-  <img src="{{featured_asset_url}}">
+<a href="{{url}}" class="image-container" style="background-image: url({{featured_asset_url}}); background-size: cover; background-position: center;">
   <em class="hover"></em>
 </a>
 <div class="story-metadata">
