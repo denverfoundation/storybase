@@ -2,8 +2,8 @@
 // not awesome have that hidden dependency, but ...
 &.accounts.login,
 &.accounts.register {
+
   h2 {
-    text-align: left;
     margin-bottom: 20px;
   }
 
@@ -11,27 +11,37 @@
     margin-bottom: 20px;
   }
 
+  #main {
+    text-align: center;
+  }
+
   #main form {
-    width: 50%;
+    text-align: center;
+    margin: auto;
+    width: 75%;
+
     input[type=text],
     input[type=password] {
-      width: 40%;
+      width: 55%;
+    }
+
+    input[type="submit"] {
+      margin-bottom: 20px;
     }
   }
 
   a.twitter,
   a.facebook {
+    min-width: 220px;
+    margin-bottom:1em;
+    padding-right:0.5em;
+
     &:before {
       font-family: "FontAwesome";
-      font-size: 2em;
+      font-size: 1.5em;
       margin-right: 1em;
       position: relative;
-      top: 0.1em;
     }
-
-    width:200px;
-    margin-bottom:1em;
-    padding-right:0.4em !important;
   }
 
   a.twitter {
@@ -39,7 +49,6 @@
 
     &:before {
       content: "\f099";
-      left: -0.3em;
     }
   }
 
