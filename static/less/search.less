@@ -2,20 +2,35 @@
 // Styles for search form that appear in header are in header.less
 
 body.search {
-  h1 { margin-top: 0.5em; }
+  h1 {
+    margin-top: 0.5em;
+  }
 }
 
-.results-header, .results-footer {
+.results-header,
+.results-footer {
   padding: 0.5em 0 0;
   position: relative;
+  display: block;
+  width: 100%;
 }
 
 .results-header {
-  h1, h2 {
+  min-height: 48px;
+  background: @almost-white;
+  border-radius: 4px;
+  border: 1px solid @black10;
+  max-width: 550px;
+  margin: 0 auto 20px auto;
+  padding-left: 20px;
+
+  h1,
+  h2 {
     margin: 0 !important;
-    font-size: 28.8px !important;
-    text-align: left !important;
+    font-size: 18px !important;
     background: none !important;
+    width: 100%;
+    text-align: left !important;
 
     @media (min-width: @screen-sm-min) {
       float: left;
@@ -26,23 +41,26 @@ body.search {
 .results-footer {
   // Clear the absolutely positioned child
   min-height: 25px;
+  padding-bottom: 40px;
 }
 
 #search-page-form {
-  margin: 2em 0;
-  text-align: center;
-
-  #id_q {
-    width: 60%;
-  }
+  max-width: 52em;
+  margin: 2em auto;
 }
 
 .results-paging {
   text-align: left;
 
+  input {
+    min-width: 2em;
+    text-align: center;
+  }
+
   @media (min-width: @screen-sm-min) {
     position: absolute;
-    right: 0;
+    top: 8px;
+    right: 20px;
     text-align: right;
   }
 }
@@ -53,6 +71,12 @@ body.search {
 
 .search-result, .no-search-results {
   list-style-type: none;
+}
+
+.no-search-results {
+  p {
+    text-align: center;
+  }
 }
 
 .search-result {
