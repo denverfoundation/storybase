@@ -2662,14 +2662,6 @@
       this.dispatcher.trigger("ready:story", this.model);
     },
 
-    saveRelatedStories: function() {
-      if (this.model.relatedStories.length) {
-        // Only bother making the request if there is actually data to
-        // save
-        this.model.saveRelatedStories();
-      }
-    },
-
     save: function() {
       var view = this;
       var isNew = this.model.isNew();
@@ -2677,7 +2669,7 @@
         success: function(model, response) {
           view.dispatcher.trigger('save:story', model);
           model.saveSections();
-          view.saveRelatedStories();
+          model.saveRelatedStories();
           if (isNew && view.navView) {
             // Re-render the navigation view to enable the button
             view.navView.render();
@@ -4061,17 +4053,20 @@
 
       if (!hasStory) {
         this.stories.add(model);
-        this.dispatcher.trigger("do:save:story");
       }
     },
 
     removeStory: function(model) {
       this.stories.remove(model);
-      this.dispatcher.trigger("do:save:story");
     },
 
     updateRelatedStories: function(story, stories) {
-      this.model.relatedStories.update(stories.toJSON());
+      if (!stories.length) {
+        this.model.relatedStories.reset();
+      } else {
+        this.model.relatedStories.update(stories.toJSON());
+      }
+      this.dispatcher.trigger("do:save:story");
     },
 
     renderStories: function(model) {
