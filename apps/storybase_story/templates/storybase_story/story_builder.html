@@ -1,4 +1,4 @@
-{% load i18n sekizai_tags compress %}
+{% load i18n sekizai_tags compress cms_tags %}
 <!doctype html>
 <!-- paulirish.com/2008/conditional-stylesheets-vs-css-hacks-answer-neither/ -->
 <!--[if lt IE 7]> <html class="no-js ie6 oldie" lang="en"> <![endif]-->
@@ -66,7 +66,7 @@
         <header id="header">
             <div id="workflow-bar">
                 <div id="workflow-bar-contents">
-                    <a class="logo" href="{% url "story_builder" %}" title="{{ storybase_site_name }} {% trans "Story Builder" %}">
+                    <a class="logo" href="{% page_url "home" %}" title="{{ storybase_site_name }} {% trans "Story Builder" %}">
                         <img src="{{ STATIC_URL }}/img/builder/builder-logo-new.png" alt="{% trans "Story Builder Logo" %}" />
                     </a>
                 </div>
