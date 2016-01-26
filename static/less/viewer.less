@@ -225,7 +225,14 @@
           position: fixed;
           border-right: 1px solid @light-gray;
           height: 0;
-          padding-bottom: 100vh; // Match width to preserve 1:1 aspect ratio
+          // Match width to preserve 1:1 aspect ratio
+          // Use Calc to get height of viewport and
+          // subtract header & footer values.
+          // Also have to escape the string to prevent
+          // the less compiler from doing the arithmetic
+          // include a fallback for older IE
+          padding-bottom: 100%;
+          padding-bottom: ~'calc(100vh - 146px)';
         }
       }
 
