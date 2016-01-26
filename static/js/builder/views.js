@@ -3857,6 +3857,7 @@
     },
 
     click: function(evt) {
+      this.$el.addClass('clicked');
       this.dispatcher.trigger(this.options.event, this.model);
       return false;
     },
