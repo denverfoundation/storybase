@@ -867,6 +867,9 @@ class StoryRelation(StoryRelationPermission, models.Model):
     class Meta:
         unique_together = (('source', 'target'),)
 
+    def __unicode__(self):
+        return u"\"%s\" is related to \"%s\"" % (self.target, self.source)
+
 
 class SectionPermission(PermissionMixin):
     """Permissions for the Section model"""
