@@ -206,19 +206,17 @@ class BaseStructure(object):
 
         output = []
         output.append(open_html_element(container_el, container_attrs))
-        if self.story.summary:
-            output.append("%s%s%s" % (
-                          open_html_element(item_el, item_attrs),
-                          self.summary_toc_link(),
-                          close_html_element(item_el)))
+        output.append("%s%s%s" % (
+                      open_html_element(item_el, item_attrs),
+                      self.summary_toc_link(),
+                      close_html_element(item_el)))
         for section_index, root_section in enumerate(self.story.sections.filter(root=True) \
                                                .order_by('weight'), start=1):
             output.append(self.render_toc_section(root_section, index=section_index))
-        if self.story.call_to_action:
-            output.append("%s%s%s" % (
-                          open_html_element(item_el, item_attrs),
-                          self.call_to_action_toc_link(),
-                          close_html_element(item_el)))
+        output.append("%s%s%s" % (
+                      open_html_element(item_el, item_attrs),
+                      self.call_to_action_toc_link(),
+                      close_html_element(item_el)))
         if self.story.allow_connected and self.story.connected_stories:
             output.append("<li>%s</li>" % self.connected_toc_link())
         output.append(close_html_element(container_el))
