@@ -55,9 +55,9 @@
 {% empty %}
     <li class="no-search-results">
         {% if suggestion %}
-        {% trans "Did you mean" %} <a href="?q={{ suggestion|urlencode }}">{{ suggestion }}</a>?
+        <p>{% trans "Did you mean" %} <a href="?q={{ suggestion|urlencode }}">{{ suggestion }}</a>?</p>
         {% endif %}
-        {% trans "Please consider exploring and browsing stories in the" %} <a href="{% url "explore_stories" %}" title="{% trans "Read" %} {{ storybase_site_name }}">'{% trans "Read" %}'</a> area of {{ storybase_site_name }}.
+        <p>{% trans "Please consider exploring and browsing stories in the" %} <a href="{% url "explore_stories" %}" title="{% trans "Read" %} {{ storybase_site_name }}">'{% trans "Read" %}'</a> area of {{ storybase_site_name }}.</p>
     </li>
 {% endfor %}
 </ol>
