@@ -366,7 +366,7 @@ COMPRESS_CSS_FILTERS = (
 )
 
 COMPRESS_PRECOMPILERS = (
-    ('text/less', 'node_modules/.bin/lessc --source-map-less-inline --source-map-map-inline {infile} {outfile}'),
+    ('text/less', 'node_modules/.bin/lessc {infile} {outfile}'),
 )
 
 COMPRESS_AUTOPREFIXER_BINARY = os.path.abspath(os.path.join(PROJECT_PATH, 'node_modules/.bin/postcss'))

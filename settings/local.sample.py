@@ -23,5 +23,8 @@ EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
 SENTRY_DSN = None
 
 COMPRESS_MTIME_DELAY = 0
+COMPRESS_PRECOMPILERS = (
+    ('text/less', 'node_modules/.bin/lessc --source-map-less-inline --source-map-map-inline {infile} {outfile}'),
+)
 
 TEMPLATES[0]['OPTIONS']['debug'] = DEBUG
