@@ -36,11 +36,12 @@
 
       .next {
         height: 100%;
-        background: #fff url('../img/right-arrow2.jpg') no-repeat right 50%;
+        background: #fff url('../img/right-arrow3.png') no-repeat right 50%;
         background-position: right 0;
         font-size: 0;
         line-height: 0;
         text-indent: -4000px;
+
         @media (min-width: @screen-sm-min) {
           background-position: top;
         }
@@ -48,11 +49,12 @@
 
       .prev {
         height: 100%;
-        background: #fff url('../img/left-arrow2.jpg') no-repeat 0 50%;
+        background: #fff url('../img/left-arrow3.png') no-repeat 0 50%;
         background-position: left 0;
         font-size: 0;
         line-height: 0;
         text-indent: -4000px;
+
         @media (min-width: @screen-sm-min) {
           background-position: top;
         }
@@ -62,9 +64,10 @@
       .prev {
         width: 25px;
         background-size: 100%;
+
         @media (min-width: @screen-sm-min) {
-          width: 75px;
-          background-position-y: 55px;
+          width: 37px;
+          background-position-y: 150px;
         }
       }
     }
@@ -76,12 +79,15 @@
 
   .homepage-header {
     padding-top: 1em;
+
     h1 {
       padding-bottom: initial;
       text-align: left;
       margin: .25em 0 .75em 0;
       line-height: 1.2em;
       font-size: 1.75em;
+      font-family: @roboto-condensed;
+      letter-spacing: .2px;
     }
   }
 
@@ -94,6 +100,14 @@
     .btn {
       margin: auto;
       display: block;
+    }
+  }
+
+  .homepage-header-right {
+    padding-top: 2em;
+
+    @media (min-width: @screen-sm-min) {
+      padding-top: 0;
     }
   }
 
@@ -311,7 +325,7 @@
 
       .image {
         position: relative;
-        height: 200px;
+        min-height: 200px;
         overflow: hidden;
       }
 
