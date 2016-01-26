@@ -10,7 +10,8 @@ from storybase_story.models import (Story, StoryTranslation,
     Section, SectionTranslation, SectionAsset, SectionRelation,
     StoryTemplate, StoryTemplateTranslation,
     SectionLayout, SectionLayoutTranslation,
-    Container, ContainerTemplate)
+    Container, ContainerTemplate,
+    StoryRelation)
 from storybase_story.forms import (SectionRelationAdminForm,
 		                   StoryAdminForm, InlineSectionAdminForm,
 		                   StoryTranslationAdminForm)
@@ -134,6 +135,12 @@ class SectionRelationAdmin(admin.ModelAdmin):
     list_filter = ('parent__story__storytranslation__title',)
 
 
+class StoryRelationAdmin(admin.ModelAdmin):
+    """Custom Admin for SectionRelation model"""
+    model = StoryRelation
+    list_filter = ('relation_type',)
+
+
 class StoryTemplateTranslationInline(StorybaseStackedInline):
     """Inline for translated fields of a StoryTemplate"""
     model = StoryTemplateTranslation
@@ -170,3 +177,4 @@ admin.site.register(SectionRelation, SectionRelationAdmin)
 admin.site.register(SectionLayout, SectionLayoutAdmin)
 admin.site.register(Container, StorybaseModelAdmin)
 admin.site.register(ContainerTemplate, ContainerTemplateAdmin)
+admin.site.register(StoryRelation, StoryRelationAdmin)
