@@ -11,9 +11,10 @@ body.search {
 }
 
 .results-header {
-  h1, h2 {
+  h1,
+  h2 {
     margin: 0 !important;
-    font-size: 28.8px !important;
+    font-size: 14px !important;
     text-align: left !important;
     background: none !important;
 
@@ -29,16 +30,16 @@ body.search {
 }
 
 #search-page-form {
-  margin: 2em 0;
-  text-align: center;
-
-  #id_q {
-    width: 60%;
-  }
+  max-width: 52em;
+  margin: 2em auto;
 }
 
 .results-paging {
   text-align: left;
+
+  input {
+    min-width: 2em;
+  }
 
   @media (min-width: @screen-sm-min) {
     position: absolute;
