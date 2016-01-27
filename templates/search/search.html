@@ -22,28 +22,33 @@
     {% include "search/paging.html" %}
 </div>
 
-<ol class="search-results">
+<section class="search-results">
 {% for result in page.object_list %}
-    <li class="search-result {% if result.object.story_id %} has-image{% endif %}">
+    <div class="search-result {% if result.object.story_id %} has-image{% endif %}">
         {% if result.object.story_id %}
+        <div class="featured-image-wrap">
         {% featured_asset result.object 222 %}
-        <h3><a href="{{ result.object.get_absolute_url }}">{{ result.object.title }}</a></h3>
-        <p class="type">{{ result.object|classname }}</p>
-        <div class="summary">
-            {{ result.object.summary|safe }}
         </div>
-        <dl class="metadata">
-            {% for md_type in result.object.search_result_metadata %}
-            {% if md_type.values %}
-            <dt class="{{ md_type.id }}">{{ md_type.name }}</dt>
-            <dd class="{{ md_type.id }}">
-            {% for md_item in md_type.values %}
-                {% if md_item.url %}<a href="{{ md_item.url }}" title="{{ md_item.name }}">{{ md_item.name }}</a>{% else %}{{ md_item.name }}{% endif %}{% if not forloop.last %}, {% endif %}
-            {% endfor %}
-            </dd>
-            {% endif %}
-            {% endfor %}
-        </dl>
+        <div class="results-item-content">
+            <h3><a href="{{ result.object.get_absolute_url }}">{{ result.object.title }}</a></h3>
+            <p class="type">{{ result.object|classname }}</p>
+            <div class="summary">
+                <p>{{ result.object.summary|safe }}</p>
+            </div>
+
+            <dl class="metadata">
+                {% for md_type in result.object.search_result_metadata %}
+                {% if md_type.values %}
+                <dt class="{{ md_type.id }}">{{ md_type.name }}</dt>
+                <dd class="{{ md_type.id }}">
+                {% for md_item in md_type.values %}
+                    {% if md_item.url %}<a href="{{ md_item.url }}" title="{{ md_item.name }}">{{ md_item.name }}</a>{% else %}{{ md_item.name }}{% endif %}{% if not forloop.last %}, {% endif %}
+                {% endfor %}
+                </dd>
+                {% endif %}
+                {% endfor %}
+            </dl>
+        </div>
         {% elif result.object.help_id %}
         <h3><a href="{{ result.object.get_absolute_url }}">{{ result.object.title }}</a></h3>
         <p class="type">{{ result.object|classname }}</p>
@@ -51,16 +56,16 @@
             {{ result.object.body|safe|truncatewords_html:30 }}
         </div>
         {% endif %}
-    </li>
+    </div>
 {% empty %}
-    <li class="no-search-results">
+    <div class="no-search-results">
         {% if suggestion %}
         <p>{% trans "Did you mean" %} <a href="?q={{ suggestion|urlencode }}">{{ suggestion }}</a>?</p>
         {% endif %}
         <p>{% trans "Please consider exploring and browsing stories in the" %} <a href="{% url "explore_stories" %}" title="{% trans "Read" %} {{ storybase_site_name }}">'{% trans "Read" %}'</a> area of {{ storybase_site_name }}.</p>
-    </li>
+    </div>
 {% endfor %}
-</ol>
+</section>
 
 <div class="results-footer">
     {% include "search/paging.html" %}

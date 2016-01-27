@@ -17,10 +17,7 @@ body.search {
 
 .results-header {
   min-height: 48px;
-  background: @almost-white;
-  border-radius: 4px;
-  border: 1px solid @black10;
-  max-width: 550px;
+  max-width: 52em;
   margin: 0 auto 20px auto;
   padding-left: 20px;
 
@@ -80,10 +77,14 @@ body.search {
 }
 
 .search-result {
-  display: block;
-  clear: left;
-  padding-top: 20px;
+  padding-top: 10px;
+  padding-bottom: 10px;
   overflow: hidden;
+  border-bottom: 1px solid @black10;
+
+  .featured-image-wrap {
+    width: 180px;
+  }
 
   &.has-image {
     h3, .type, .summary, .metadata {
@@ -91,7 +92,6 @@ body.search {
         // Not all images are the same widget (e.g. oEmbedded ones that have
         // a more narrow thumbnail.  Make sure the text elements are all
         // aligned, regardless of image width.
-        margin-left: 230px;
       }
     }
   }
@@ -102,13 +102,13 @@ body.search {
   }
 
   img {
-    max-width: 100%;
+    width: 100%;
+    padding-right: 20px;
 
     @media (min-width: @screen-xs-min) {
       float: left;
       // Downsize externally hosted images in the browser.  Locally hosted
       // images will be correctly resized server-side
-      max-width: 222px;
     }
   }
 
@@ -118,6 +118,8 @@ body.search {
   }
 
   .metadata {
+    font-size: 12px;
+    padding-top: 5px;
     dt {
       display: block;
       float: left;
@@ -131,6 +133,17 @@ body.search {
       clear: right;
       padding-left: 0.5em;
       overflow: hidden;
+    }
+  }
+
+  .results-item-content {
+    display: block;
+    float: left;
+  }
+
+  .summary {
+    p {
+      max-width: 32em;
     }
   }
 }
