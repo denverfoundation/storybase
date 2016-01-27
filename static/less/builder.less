@@ -2117,6 +2117,9 @@ input[name=address] {
     background: @almost-white;
 
     > li {
+      display: flex;
+      margin-bottom: 0;
+
       button {
         background-color: @dark-gray;
         transition: background .2s ease;
@@ -2125,9 +2128,6 @@ input[name=address] {
           background-color: @blue-gray;
         }
       }
-
-      display: flex;
-      align-items: baseline;
     }
   }
 
@@ -2139,8 +2139,23 @@ input[name=address] {
   li {
     display: flex;
     padding: 7px;
-    margin-bottom: 10px;
+    align-items: center;
+    min-height: 55px;
     border-bottom: 1px solid @black10;
+
+    &.clicked {
+      // Stories in the search results
+      // that have been added to the selected list
+      opacity: .25;
+
+      button {
+        background-color: @dark-gray;
+      }
+
+      a {
+        color: @dark-gray;
+      }
+    }
 
     a {
       font-family: @roboto-condensed;
@@ -2164,10 +2179,8 @@ input[name=address] {
 
   button {
     background: @orange;
-    padding: 4px 6px;
     text-transform: uppercase;
     font-size: .875em;
-    margin-top: 2px;
     min-width: 70px;
   }
 }
