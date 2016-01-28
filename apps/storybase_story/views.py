@@ -408,7 +408,7 @@ class StoryBuilderView(DetailView):
         to_be_serialized = [{'project_id': project.project_id,
                              'name': project.name}
                             for project in self.request.user.projects.all()]
-        return json.dumps(to_be_serialized);
+        return json.dumps(to_be_serialized, cls=DjangoJSONEncoder);
 
     def get_related_stories_json(self):
         """
@@ -439,7 +439,7 @@ class StoryBuilderView(DetailView):
                         'relation_type': 'connected'
                     },
                 ]
-            })
+            }, cls=DjangoJSONEncoder)
         else:
             # New non-connected story, no connected stories.
             return None
