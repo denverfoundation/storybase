@@ -106,8 +106,8 @@ class AssetResource(IframePostDetailResource):
         date_fields = ['asset_created', 'published']
 
     def get_object_class(self, bundle=None, **kwargs):
-        if bundle and bundle.obj and bundle.obj.asset_id:
-            return bundle.obj.__class__
+        # if bundle and bundle.obj and bundle.obj.asset_id:
+        #     return bundle.obj.__class__
 
         content_fields = ('body', 'image', 'url')
         num_content_fields = 0
