@@ -14,6 +14,7 @@ EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = True
 
 DEFAULT_FROM_EMAIL = 'no-reply@floodlightproject.org'
+STORYBASE_CONTACT_EMAIL = "floodlightproject@gmail.com"
 
 DATABASES = {'default': dj_database_url.config()}
 DATABASES['default']['ATOMIC_REQUESTS'] = True
