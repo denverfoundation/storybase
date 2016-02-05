@@ -27,6 +27,7 @@ from storybase.api import (HookedModelResource, TranslatedModelResource,
                            LoggedInAuthorization, PublishedOwnerAuthorization)
 from storybase.utils import get_language_name
 from storybase_asset.api import AssetResource
+from storybase_asset.models import Asset
 from storybase_badge.models import Badge
 from storybase_geo.models import Place
 from storybase_help.models import Help
@@ -834,6 +835,13 @@ class SectionAssetResource(HookedModelResource):
             msg = ("An asset has already been assigned to this section and "
                     "container")
             raise ImmediateHttpResponse(response=http.HttpBadRequest(msg))
+
+    def obj_delete(self, bundle, **kwargs):
+        section_id = kwargs.pop('section__section_id')
+        asset_id = kwargs.pop('asset__asset_id')
+        kwargs.update(section=Section.objects.get(section_id=section_id),
+                      asset=Asset.objects.get(asset_id=asset_id))
+        return super(SectionAssetResource, self).obj_delete(bundle, **kwargs)
 
     def apply_request_kwargs(self, obj_list, bundle, **kwargs):
         section_id = kwargs.get('section__section_id')

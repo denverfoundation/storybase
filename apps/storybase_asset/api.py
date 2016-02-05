@@ -264,14 +264,14 @@ class AssetResource(IframePostDetailResource):
             # file
             return self._hydrate_file(bundle, Image, 'image', 'filename')
 
-    def build_bundle(self, obj=None, data=None, request=None, objects_saved=None):
+    def build_bundle(self, obj=None, data=None, request=None, objects_saved=None, via_uri=True):
         if obj and obj.__class__ == Asset:
             # We don't have a subclass instance.  This is likely because
             # the object was retrieved through a RelatedField on another
             # resource
             obj = self._meta.queryset.get(asset_id=obj.asset_id)
 
-        return super(AssetResource, self).build_bundle(obj, data, request, objects_saved)
+        return super(AssetResource, self).build_bundle(obj, data, request, objects_saved, via_uri)
 
     def obj_create(self, bundle, **kwargs):
         # Set the asset's owner to the request's user
