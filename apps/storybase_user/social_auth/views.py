@@ -30,5 +30,5 @@ class GetExtraAccountDetailsView(FormView):
 
     def get_success_url(self):
         backend = self._get_backend()
-        success_url = reverse('socialauth_complete', kwargs={'backend': backend})
+        success_url = reverse('social:begin', kwargs={'backend': backend})
         return success_url
