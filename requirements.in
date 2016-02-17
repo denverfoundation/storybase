@@ -9,7 +9,7 @@ cmsplugin-filer
 cssselect
 dj-database-url
 django-backupdb>=0.6.0
-django-cms>=3.1
+django-cms==3.2.1
 django-compressor
 django-compressor-autoprefixer
 django-debug-toolbar
