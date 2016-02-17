@@ -556,7 +556,7 @@ class StoryResource(TranslatedModelResource):
             return http.HttpMultipleChoices("More than one resource is found at this URI.")
 
         resource = SectionAssetResource()
-        if hasattr(request, 'DELETE'):
+        if request.method == 'DELETE':
             return resource.dispatch_list(request,
                 section_id=section_id,
                 asset_id=asset_id)
