@@ -6,7 +6,7 @@ from django.conf.urls import url
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.paginator import Paginator, InvalidPage
 from django.core.urlresolvers import resolve, NoReverseMatch
-from django.db import transaction, IntegrityError
+from django.db import IntegrityError
 from django.db.models import Q
 try:
     from django.utils import timezone
@@ -556,9 +556,14 @@ class StoryResource(TranslatedModelResource):
             return http.HttpMultipleChoices("More than one resource is found at this URI.")
 
         resource = SectionAssetResource()
-        return resource.dispatch_detail(request,
-            section__section_id=section_id,
-            asset__asset_id=asset_id)
+        if hasattr(request, 'DELETE'):
+            return resource.dispatch_list(request,
+                section_id=section_id,
+                asset_id=asset_id)
+        else:
+            return resource.dispatch_detail(request,
+                section__section_id=section_id,
+                asset__asset_id=asset_id)
 
     def dispatch_template_list(self, request, **kwargs):
         template_resource = StoryTemplateResource()
@@ -753,11 +758,15 @@ class SectionAssetResource(HookedModelResource):
         queryset = SectionAsset.objects.all()
         resource_name = 'sectionassets'
         detail_allowed_methods = ['get', 'post', 'put', 'delete']
-        list_allowed_methods = ['get', 'post']
+        list_allowed_methods = ['get', 'post', 'put', 'delete']
         authentication = Authentication()
         authorization = LoggedInAuthorization()
         # Hide the underlying id
         excludes = ['id']
+        filtering = {
+            'asset_id': ALL,
+            'section_id': ALL,
+        }
 
         # Custom meta attributes
         parent_resource = StoryResource
@@ -825,8 +834,6 @@ class SectionAssetResource(HookedModelResource):
             # An asset is already assigned to this section/
             # container
 
-            # Roll back the transaction
-            transaction.rollback_unless_managed()
             logger.warn("Attempted duplicate assignment of asset %s to "
                         "section %s in container %s" %
                         (bundle.obj.asset.asset_id,

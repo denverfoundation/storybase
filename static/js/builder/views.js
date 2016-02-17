@@ -2538,7 +2538,8 @@
         dispatcher: this.dispatcher,
         help: this.help.where({slug: 'story-information'})[0],
         model: this.model,
-        defaultImageUrl: this.options.defaultImageUrl
+        defaultImageUrl: this.options.defaultImageUrl,
+        language: this.options.language,
       });
       this._editViews.push(infoEditView);
 
