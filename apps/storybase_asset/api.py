@@ -6,6 +6,7 @@ from django.core.files.uploadedfile import UploadedFile
 from tastypie import fields, http
 from tastypie.authentication import Authentication
 from tastypie.bundle import Bundle
+from tastypie.constants import ALL
 from tastypie.exceptions import BadRequest, ImmediateHttpResponse, Unauthorized
 from tastypie.utils import trailing_slash
 from tastypie.validation import Validation
@@ -100,6 +101,9 @@ class AssetResource(IframePostDetailResource):
         authorization = PublishedOwnerAuthorization()
         # Hide the underlying id
         excludes = ['id']
+        filtering = {
+            'asset_id': ALL,
+        }
 
         featured_list_allowed_methods = ['get', 'put']
         featured_detail_allowed_methods = []
