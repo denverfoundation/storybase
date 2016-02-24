@@ -8,6 +8,7 @@ at a different root than the other URL patterns.
 
 from django.conf import settings
 from django.conf.urls import patterns, url
+from django.views.generic.base import TemplateView
 
 from storybase_user.auth.forms import (EmailAuthenticationForm,
                                        CustomContextPasswordResetForm,
@@ -28,6 +29,8 @@ urlpatterns = patterns('',
     url(r'^password/reset/$', 'django.contrib.auth.views.password_reset',
         {'password_reset_form': CustomContextPasswordResetForm},
         name='password_reset'),
+    url(r'^password/reset/done/$', TemplateView.as_view(template_name='registration/password_reset_done.html'),
+        name='password_reset_done'),
     url(r'^password/reset/confirm/(?P<uidb36>[0-9A-Za-z]+)-(?P<token>.+)/$',
         'django.contrib.auth.views.password_reset_confirm',
         {'set_password_form': StrongSetPasswordForm},

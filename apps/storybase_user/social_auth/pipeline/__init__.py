@@ -5,28 +5,18 @@ import logging
 from django.core.urlresolvers import reverse
 from django.http import HttpResponseRedirect
 
-try:
-    from social_auth.exceptions import StopPipeline
-except ImportError:
-    from social_auth.backends.exceptions import StopPipeline
 
 logger = logging.getLogger('storybase')
 
 def get_data_from_user(request, *args, **kwargs):
     """Get additional account details provided by user"""
+    strategy = kwargs.get('strategy')
     details = kwargs.get('details')
     out = {}
-    email = request.session.get('new_account_email', None)
-    username = request.session.get('new_account_username', None)
+    email = strategy.session_get('new_account_email')
+    username = strategy.session_get('new_account_username')
 
-    if username:
-        out['username'] = username
-    else:
-        # Should never get here as the username unless the pipeline is
-        # not correctly configured and a pipeline step that saves the
-        # username (as returned by get_username()) is not placed before
-        # this step
-        raise StopPipeline()
+    out['username'] = username
 
     if email:
         details['email'] = email
@@ -35,19 +25,19 @@ def get_data_from_user(request, *args, **kwargs):
     # session, otherwise, the user will bypass entering the additional
     # account information if their account is deleted and they recreate
     # the account.  See issue #136
-    if 'new_account_extra_details' in request.session:
-        del request.session['new_account_extra_details']
+    if strategy.session_get('new_account_extra_details'):
+        strategy.session_pop('new_account_extra_details')
 
     return out
 
 def redirect_to_form(*args, **kwargs):
     """Redirect user to form to get additional account information"""
-    request = kwargs.get('request')
+    strategy = kwargs.get('strategy')
     # Save the username to the session so it can be passed to later
     # pipeline steps
-    request.session['new_account_username'] = kwargs.get('username')
+    strategy.session_set('new_account_username', kwargs.get('username'))
 
-    if (not request.session.get('new_account_extra_details') and
+    if (not strategy.session_get('new_account_extra_details') and
             kwargs.get('user') is None):
         redirect_url = reverse('account_extra_details')
         return HttpResponseRedirect(redirect_url)

@@ -14,6 +14,7 @@ EMAIL_HOST_PASSWORD = ''
 EMAIL_USE_TLS = True
 
 DEFAULT_FROM_EMAIL = 'no-reply@floodlightproject.org'
+STORYBASE_CONTACT_EMAIL = "floodlightproject@gmail.com"
 
 DATABASES = {'default': dj_database_url.config()}
 DATABASES['default']['ATOMIC_REQUESTS'] = True
@@ -44,3 +45,9 @@ ALLOWED_HOSTS = [
     'www.floodlightproject.org',
     'new.floodlightproject.org',
 ]
+
+SOCIAL_AUTH_TWITTER_KEY = os.environ['SOCIAL_AUTH_TWITTER_KEY']
+SOCIAL_AUTH_TWITTER_SECRET = os.environ['SOCIAL_AUTH_TWITTER_SECRET']
+
+SOCIAL_AUTH_FACEBOOK_KEY = os.environ['SOCIAL_AUTH_FACEBOOK_KEY']
+SOCIAL_AUTH_FACEBOOK_SECRET = os.environ['SOCIAL_AUTH_FACEBOOK_SECRET']

@@ -204,7 +204,7 @@
               <br>
 
               {% if story.published %}
-              <a href="{{ story.get_embed_url }}" class="storybase-embed-button">{% trans "Embed This Story" %}</a>
+              <a href="{{ story.get_embed_url }}" class="storybase-embed-button" data-options='{"header": "Embed This {{ story|classname|camelsplit|first }}"}'>{% trans "Embed This" %} {{ story|classname|camelsplit|first }}</a>
               {% endif %}
 
               <p class="url-block">
