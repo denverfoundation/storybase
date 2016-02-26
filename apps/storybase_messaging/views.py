@@ -4,7 +4,9 @@ from django.utils.translation import ugettext as _
 from django.views.generic import CreateView, DetailView
 
 from storybase_messaging.forms import SiteContactMessageForm, StoryContactMessageForm
-from storybase_messaging.models import SiteContactMessage, StoryNotification
+from storybase_messaging.models import (
+    SiteContactMessage, StoryContactMessage, StoryNotification
+)
 
 
 class SiteContactMessageCreateView(CreateView):
@@ -49,6 +51,9 @@ class SiteContactMessageCreateView(CreateView):
 
 
 class StoryContactMessageCreateView(SiteContactMessageCreateView):
+    """View for story contact form"""
+    model = StoryContactMessage
+
     def get_form_class(self):
         return StoryContactMessageForm
 

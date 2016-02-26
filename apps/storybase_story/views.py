@@ -10,6 +10,7 @@ from django.core.exceptions import ObjectDoesNotExist, PermissionDenied
 from django.core.serializers.json import DjangoJSONEncoder
 from django.core.urlresolvers import resolve, reverse, get_script_prefix, Resolver404
 from django.db.models import Q
+from django.forms.widgets import HiddenInput
 from django.http import Http404, HttpResponseRedirect
 from django.utils.decorators import method_decorator
 from django.utils.encoding import force_text
@@ -118,7 +119,10 @@ class StoryViewerView(ModelIdDetailView):
 
         context['sections_json'] = self.object.structure.sections_json()
 
-        context['feedback_form'] = StoryContactMessageForm()
+        # feedback_form = StoryContactMessageForm(initial={'story': self.object})
+        # feedback_form.fields['story'].widget = HiddenInput()
+        # context['feedback_form'] = feedback_form
+        context['feedback_form'] = StoryContactMessageForm(initial={'story': self.object})
 
         # Currently supporting two "contexts" in which the viewer lives:
         # iframe and normal

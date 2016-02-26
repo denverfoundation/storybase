@@ -85,6 +85,16 @@
 
   <body class="story-viewer">
     <div id="app">
+      {% if messages %}
+      <div>
+        <ul class="messages">
+          {% for message in messages %}
+          <li{% if message.tags %} class="{{ message.tags }}"{% endif %}>{{ message }}</li>
+          {% endfor %}
+        </ul>
+      </div>
+      {% endif %}
+
       <header id="header">
         <div class="pull-right">
           <div id="badges"></div>

@@ -55,16 +55,29 @@ class SiteContactMessage(models.Model):
         return unicode(_("Message from ") + self.email)
 
 
-@receiver(post_save, sender=SiteContactMessage)
+class StoryContactMessage(SiteContactMessage):
+    story = models.ForeignKey(Story)
+
+    def __unicode__(self):
+        return unicode(_("Story Message from ") + self.email)
+
+
 def send_message_to_admins(sender, **kwargs):
     """Send a copy of the message to admins"""
     from django.template.loader import render_to_string
 
     instance = kwargs.get('instance')
-    subject = _("New message from") + " " + instance.email
+    if hasattr(instance, 'story'):
+        subject = _("Feedback Submitted for") + " " + unicode(instance.story)
+    else:
+        subject = _("New message from") + " " + instance.email
     message = render_to_string('storybase_messaging/sitecontactmessage_email.txt',
                                { 'message': instance })
     send_admin_mail(subject, message, settings.DEFAULT_FROM_EMAIL)
+
+
+post_save.connect(send_message_to_admins, sender=SiteContactMessage)
+post_save.connect(send_message_to_admins, sender=StoryContactMessage)
 
 
 class SystemMessageTranslation(MessageTranslation):

@@ -1,4 +1,16 @@
-{% load i18n %}
+{% load i18n storybase_tags %}
+
+
+{% with story=message.story %}
+{% if story %}
+{% trans "Story" %}: {% fullurl message.story.get_absolute_url %}
+
+{% trans "Story Author" %}
+{% trans "Name" %}: {{ story.author.get_full_name }}
+{% trans "Email" %}: {{ story.author.email }}
+{% trans "Profile" %}: {% fullurl message.story.author.userprofile.get_absolute_url %}
+{% endif %}
+{% endwith %}
 
 {% trans "Name" %}: {{ message.name }}
 {% trans "Email" %}: {{ message.email }}
