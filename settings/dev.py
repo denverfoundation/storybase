@@ -14,6 +14,7 @@ EMAIL_PORT = 25
 EMAIL_USE_TLS = False
 
 DEFAULT_FROM_EMAIL = 'no-reply@floodlightproject.dev'
+STORYBASE_CONTACT_EMAIL = "floodlightproject@gmail.com"
 
 # Tell raven to report errors even when debug is True
 RAVEN_CONFIG = {
