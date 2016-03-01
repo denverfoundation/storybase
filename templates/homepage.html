@@ -29,36 +29,42 @@
 <div class="content-page container_12">
   <section class="content-block homepage-header">
     <div class="grid_6 homepage-header-left">
-      <h1 class="no-line">
-        {% placeholder header-content or %}
-          {% trans "Everyone's got a story to tell. Floodlight makes yours shine." %}
-        {% endplaceholder %}
-      </h1>
-      <p>
-        {% placeholder header-sub-content or %}
-          {% trans "Floodlight is an easy tool to create, post and share stories about community issues to inspire people to act." %}
-        {% endplaceholder %}
-      </p>
-      <p><a href="{% page_url "about" %}">{% trans "Find out more" %}&hellip;</a></p>
-      <p>
-        <a class="button create-your-story" href="{% url "story_builder" %}">
-          <strong>{% trans "Create Your Story" %}</strong><br>
-          <span>({% trans "requires a free Floodlight account" %})</span>
+      <div class="floodlight-intro">
+        <h1 class="no-line">
+          {% placeholder header-content or %}
+            {% trans "Everyone's got a story to tell. Floodlight makes yours shine." %}
+          {% endplaceholder %}
+        </h1>
+        <p>
+          {% placeholder header-sub-content or %}
+            {% trans "Floodlight is an easy tool to create, post and share stories about community issues to inspire people to act." %}
+          {% endplaceholder %}
+        <a href="{% page_url "about" %}">{% trans "Find out more" %} &rarr;</a>
+        </p>
+        <p>
+          <a class="button create-your-story" href="{% url "story_builder" %}">
+            <strong>{% trans "Create Your Story" %}</strong><br>
+          </a>
+        </p>
+      </div>
+      <section>
+        <p>
+          <b>Are you a Super Reader? Floodlight Super Readers</b> are Denver Foundation
+          donors, who have the ability to boost stories through
+          <a href="{% page_url 'badges' %}">assigning special badges</a> that call out great ideas, inspiring
+          people, and projects that they have funded.
+        </p>
+        <a href="/en/accounts/login/">
+          <button type="button" class="btn sb-btn-action">Super Readers, Read and Share Here</button>
         </a>
-      </p>
-      <h2 class="title">Explore Floodlight</h2>
-      {% placeholder search %}
-      <p>
-        <b>Are you a Super Reader? Floodlight Super Readers</b> are Denver Foundation
-        donors, who have the ability to boost stories through
-        <a href="{% page_url 'badges' %}">assigning special badges</a> that call out great ideas, inspiring
-        people, and projects that they have funded.
-      </p>
-      <a href="/en/accounts/login/">
-        <button type="button" class="btn btn-lg sb-btn-action sb-btn-action-light shadow-2">Super Readers, Read and Share Here</button>
-      </a>
+      </section>
     </div>
     <div class="grid_6 homepage-header-right">
+
+    <section class="search-wrapper">
+      <legend class="title">Explore Floodlight</legend>
+      {% placeholder search %}
+    </section>
       <h2 class="title">{% trans "Spotlight" %}</h2>
       <div class="flexslider featured-on-floodlight">
         {% featured_items %}
