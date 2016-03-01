@@ -19,10 +19,11 @@ ID or the custom menu item ID.
   <ul class="nav">
     {% for child in children|megamenuitems %}
     {% with menu_title=child.get_menu_title menu_url=child.attr.redirect_url|default:child.get_absolute_url menu_id=child.attr.reverse_id|default:child.id %}
-    {% with extra_template_name="menu/megamenu_extra_"|add:menu_id|add:".html" %}
-    <li {% if forloop.first %}class="nodd"{% elif forloop.last %}class="last"{% else %}{% endif %}>
-    <a class="top-nav {{ menu_id }}{% if child.selected %} selected{% endif %}{%if child.ancestor %} ancestor{% endif %}" href="{{ menu_url }}">{{ menu_title|upper }}{% if menu_id != "home" %}<em></em>{% endif %}</a>
-      {% if menu_id != "home" %}{% include extra_template_name %}{% endif %}
+
+    {% with extra_template=menu_id|megamenutemplate %}
+    <li class="{% if not extra_template %}nodd{% endif %}{% if forloop.last %} last"{% else %}"{% endif %}>
+    <a class="top-nav {{ menu_id }}{% if child.selected %} selected{% endif %}{%if child.ancestor %} ancestor{% endif %}" href="{{ menu_url }}">{{ menu_title|upper }}{% if extra_template %}<em></em>{% endif %}</a>
+      {% if extra_template %}{% include extra_template %}{% endif %}
     </li>
     {% endwith %}
     {% endwith %}

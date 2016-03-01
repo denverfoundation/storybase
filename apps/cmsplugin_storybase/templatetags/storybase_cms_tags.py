@@ -5,6 +5,9 @@ from cmsplugin_storybase.settings import STORYBASE_MEGAMENU_ITEMS
 
 register = template.Library()
 
+MEGAMENU_ITEMS = dict([(item, None) if not isinstance(item, (list, tuple))
+                       else item for item in STORYBASE_MEGAMENU_ITEMS])
+
 def _filter_menu_items(children, allowed_ids=None):
     filtered = []
     for child in children:
@@ -24,6 +27,9 @@ register.filter("filtermenuitems", filter_menu_items)
 
 def megamenu_items(value):
     """Filter a list of menu items to only those shown in the megamenu"""
-    return _filter_menu_items(value, STORYBASE_MEGAMENU_ITEMS)
+    return _filter_menu_items(value, MEGAMENU_ITEMS)
 register.filter("megamenuitems", megamenu_items)
 
+def megamenu_template(value):
+    return MEGAMENU_ITEMS[value]
+register.filter("megamenutemplate", megamenu_template)

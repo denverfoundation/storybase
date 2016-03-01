@@ -60,6 +60,9 @@ STORYBASE_MEGAMENU_ITEMS = getattr(
 """
 CMS Page Reverse IDs or menu entry menu IDs of items that should appear in
 the megamenu at the top of most pages
+
+Each item can be a string, or a length=2 tuple of
+('id', 'path/to/megamenu_template_to_use.html').
 """
 
 
