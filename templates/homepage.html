@@ -39,7 +39,7 @@
           {% placeholder header-sub-content or %}
             {% trans "Floodlight is an easy tool to create, post and share stories about community issues to inspire people to act." %}
           {% endplaceholder %}
-        <a href="{% page_url "about" %}">{% trans "Find out more" %} &rarr;</a>
+          <a href="{% page_url "about" %}">{% trans "Find out more" %} &rarr;</a>
         </p>
         <p>
           <a class="button create-your-story" href="{% url "story_builder" %}">
@@ -47,9 +47,10 @@
           </a>
         </p>
       </div>
-      <section>
+      <section class="super-readers">
         <p>
-          <b>Are you a Super Reader? Floodlight Super Readers</b> are Denver Foundation
+          <h3>Are you a Super Reader?</h3><br>
+          Floodlight Super Readers are Denver Foundation
           donors, who have the ability to boost stories through
           <a href="{% page_url 'badges' %}">assigning special badges</a> that call out great ideas, inspiring
           people, and projects that they have funded.
@@ -65,7 +66,7 @@
       <legend class="title">Explore Floodlight</legend>
       {% placeholder search %}
     </section>
-      <h2 class="title">{% trans "Spotlight" %}</h2>
+      <h2 class="title">{% trans "SPOTLIGHT" %}</h2>
       <div class="flexslider featured-on-floodlight">
         {% featured_items %}
       </div>
