@@ -6,7 +6,7 @@ from django.conf.urls import url
 from django.core.exceptions import ObjectDoesNotExist, MultipleObjectsReturned
 from django.core.paginator import Paginator, InvalidPage
 from django.core.urlresolvers import resolve, NoReverseMatch
-from django.db import transaction, IntegrityError
+from django.db import IntegrityError
 from django.db.models import Q
 try:
     from django.utils import timezone
@@ -758,6 +758,9 @@ class SectionAssetResource(HookedModelResource):
         authorization = LoggedInAuthorization()
         # Hide the underlying id
         excludes = ['id']
+        filtering = {
+            'asset': ALL_WITH_RELATIONS,
+        }
 
         # Custom meta attributes
         parent_resource = StoryResource
@@ -825,8 +828,6 @@ class SectionAssetResource(HookedModelResource):
             # An asset is already assigned to this section/
             # container
 
-            # Roll back the transaction
-            transaction.rollback_unless_managed()
             logger.warn("Attempted duplicate assignment of asset %s to "
                         "section %s in container %s" %
                         (bundle.obj.asset.asset_id,
@@ -835,13 +836,6 @@ class SectionAssetResource(HookedModelResource):
             msg = ("An asset has already been assigned to this section and "
                     "container")
             raise ImmediateHttpResponse(response=http.HttpBadRequest(msg))
-
-    def obj_delete(self, bundle, **kwargs):
-        section_id = kwargs.pop('section__section_id')
-        asset_id = kwargs.pop('asset__asset_id')
-        kwargs.update(section=Section.objects.get(section_id=section_id),
-                      asset=Asset.objects.get(asset_id=asset_id))
-        return super(SectionAssetResource, self).obj_delete(bundle, **kwargs)
 
     def apply_request_kwargs(self, obj_list, bundle, **kwargs):
         section_id = kwargs.get('section__section_id')
