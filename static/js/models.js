@@ -440,6 +440,7 @@
         this.sections = new Sections();
         this.unusedAssets = new Assets();
         this.assets = new Assets();
+        this.setFeaturedAssets(new FeaturedAssets());
         this.setCollectionUrls();
         this.on("change", this.setCollectionUrls, this);
         this.sections.on("add", this.resetSectionWeights, this);
@@ -1256,7 +1257,7 @@
     })
   );
 
-  Collections.FeaturedAssets = SaveableCollection.extend(
+  var FeaturedAssets = Collections.FeaturedAssets = SaveableCollection.extend(
     _.extend({}, TastypieCollectionMixin, {
       model: Asset,
 
