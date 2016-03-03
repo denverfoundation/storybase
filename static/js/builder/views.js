@@ -5924,6 +5924,7 @@
 
       unbindBusEvents: function() {
         this.dispatcher.off('close:drawer', this.revertHelp, this);
+        this.dispatcher.off('save:story', this.saveModel, this);
       },
 
       /**
@@ -6186,6 +6187,16 @@
        *     is successfully saved.
        */
       saveModel: function(attributes, options) {
+        if (this.story.isNew()) {
+          // Story is unsaved. Save it and continue saving
+          // the model after the section has been saved.
+          this.section.once('change', function() {
+            this.saveModel(attributes, options);
+          }, this);
+          this.dispatcher.trigger('do:save:story');
+          return;
+        }
+
         options = options || {};
         _.defaults(options, {
           changeState: true,
