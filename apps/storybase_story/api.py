@@ -17,14 +17,14 @@ from haystack.query import SearchQuerySet
 from haystack.utils.geo import D, Point
 
 from tastypie import fields, http
-from tastypie.authentication import Authentication
 from tastypie.bundle import Bundle
 from tastypie.constants import ALL, ALL_WITH_RELATIONS
 from tastypie.exceptions import BadRequest, ImmediateHttpResponse, Unauthorized
 from tastypie.utils import dict_strip_unicode_keys, trailing_slash
 
 from storybase.api import (HookedModelResource, TranslatedModelResource,
-                           LoggedInAuthorization, PublishedOwnerAuthorization)
+                           LoggedInAuthorization, PublishedOwnerAuthorization,
+                           LoggedInAuthentication)
 from storybase.utils import get_language_name
 from storybase_asset.api import AssetResource
 from storybase_asset.models import Asset
@@ -73,7 +73,7 @@ class StoryResource(TranslatedModelResource):
         queryset = Story.objects.all()
         resource_name = 'stories'
         allowed_methods = ['get', 'post', 'patch', 'put']
-        authentication = Authentication()
+        authentication = LoggedInAuthentication()
         authorization = StoryAuthorization()
         # Hide the underlying id
         excludes = ['id']
@@ -622,7 +622,7 @@ class SectionResource(TranslatedModelResource):
         resource_name = 'sections'
         list_allowed_methods = ['get', 'post']
         detail_allowed_methods = ['get', 'patch', 'put', 'delete']
-        authentication = Authentication()
+        authentication = LoggedInAuthentication()
         authorization = LoggedInAuthorization()
         # Hide the underlying id
         excludes = ['id']
@@ -754,7 +754,7 @@ class SectionAssetResource(HookedModelResource):
         resource_name = 'sectionassets'
         detail_allowed_methods = ['get', 'post', 'put', 'delete']
         list_allowed_methods = ['get', 'post']
-        authentication = Authentication()
+        authentication = LoggedInAuthentication()
         authorization = LoggedInAuthorization()
         # Hide the underlying id
         excludes = ['id']
@@ -864,7 +864,7 @@ class StoryTemplateResource(TranslatedModelResource):
         allowed_methods = ['get']
         # Hide the underlying id
         excludes = ['id']
-        authentication = Authentication()
+        authentication = LoggedInAuthentication()
         authorization = LoggedInAuthorization()
 
         # Custom meta attributes
@@ -936,7 +936,7 @@ class PutListSubResource(HookedModelResource):
     """Base resource class for replacing a Story's related models from a list of ids"""
     class Meta:
         list_allowed_methods = ['put']
-        authentication = Authentication()
+        authentication = LoggedInAuthentication()
         authorization = LoggedInAuthorization()
 
         # Custom meta attributes
@@ -1049,7 +1049,7 @@ class StoryRelationResource(HookedModelResource):
         queryset = StoryRelation.objects.all()
         resource_name = 'related'
         list_allowed_methods = ['get', 'post', 'put']
-        authentication = Authentication()
+        authentication = LoggedInAuthentication()
         authorization = LoggedInAuthorization()
         # Hide the underlying id
         excludes = ['id']
@@ -1156,7 +1156,7 @@ class ContainerTemplateResource(HookedModelResource):
         queryset = ContainerTemplate.objects.all()
         resource_name = 'containertemplates'
         list_allowed_methods = ['get']
-        authentication = Authentication()
+        authentication = LoggedInAuthentication()
         authorization = LoggedInAuthorization()
         # Hide the underlying id
         excludes = ['id']
