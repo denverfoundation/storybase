@@ -759,7 +759,8 @@ class SectionAssetResource(HookedModelResource):
         # Hide the underlying id
         excludes = ['id']
         filtering = {
-            'asset': ALL,
+            'asset': ALL_WITH_RELATIONS,
+            'section': ALL_WITH_RELATIONS,
         }
 
         # Custom meta attributes
@@ -836,15 +837,6 @@ class SectionAssetResource(HookedModelResource):
             msg = ("An asset has already been assigned to this section and "
                     "container")
             raise ImmediateHttpResponse(response=http.HttpBadRequest(msg))
-
-    def obj_delete(self, bundle, **kwargs):
-        section_id = kwargs.pop('section__section_id')
-        asset_id = kwargs.pop('asset__asset_id')
-        kwargs.update({
-            'section': Section.objects.get(section_id=section_id),
-            'asset': Asset.objects.get(asset_id=asset_id),
-        })
-        return super(SectionAssetResource, self).obj_delete(bundle, **kwargs)
 
     def apply_request_kwargs(self, obj_list, bundle, **kwargs):
         section_id = kwargs.get('section__section_id')
