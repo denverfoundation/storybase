@@ -760,6 +760,7 @@ class SectionAssetResource(HookedModelResource):
         excludes = ['id']
         filtering = {
             'asset': ALL_WITH_RELATIONS,
+            'section': ALL_WITH_RELATIONS,
         }
 
         # Custom meta attributes
