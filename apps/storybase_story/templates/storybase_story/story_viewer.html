@@ -278,7 +278,13 @@
       <header>
         <h3>Remove badge</h3>
       </header>
+      {% if user.is_staff %}
       <div id="remove-badge-body" class="popup-body"></div>
+      {% else %}
+      <div class="popup-body">
+        <p>{% blocktrans %}If you feel you badged a story accidentally, please <a href="mailto:{{ contact_email }}">contact the Floodlight administrator</a> to request it being removed{% endblocktrans %}</p>
+      </div>
+      {% endif %}
     </div>
 
     <div class="popup" id="show-badge">

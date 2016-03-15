@@ -119,6 +119,8 @@ class StoryViewerView(ModelIdDetailView):
 
         context['sections_json'] = self.object.structure.sections_json()
 
+        context['contact_email'] = settings.STORYBASE_CONTACT_EMAIL
+
         # feedback_form = StoryContactMessageForm(initial={'story': self.object})
         # feedback_form.fields['story'].widget = HiddenInput()
         # context['feedback_form'] = feedback_form
