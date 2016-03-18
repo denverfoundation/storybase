@@ -12,6 +12,11 @@ class CategoryAdminForm(CategoryBaseAdminForm):
         # TODO: explicitly list fields
         fields = '__all__'
 
+    def clean(self):
+        # Skip a level when calling super because our name and slug fields are
+        # on the related translation model
+        super(CategoryBaseAdminForm, self).clean()
+
 
 class CategoryTranslationAdminForm(forms.ModelForm):
     class Meta:
