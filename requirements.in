@@ -1,7 +1,4 @@
 -e git+https://github.com/elpaso/django-dag@74165d7298202818a6b9cb099a322213b2079740#egg=django-dag
-# django-categories erroneously states dependence on django-mptt<0.7, causing problems with Django 1.8
-# https://github.com/callowayproject/django-categories/issues/94
--e git+https://github.com/fusionbox/django-categories.git@e8ac3c644cc3fba01a08285224b3b30464f3651b#egg=django_categories
 -e git+https://github.com/macropin/django-uuidfield.git@9bd27e96ede8cf770df60808f2c772c48ec73e74#egg=django-uuidfield
 beautifulsoup
 bleach
@@ -9,6 +6,7 @@ cmsplugin-filer
 cssselect
 dj-database-url
 django-backupdb>=0.6.0
+django-categories==1.4
 django-cms==3.2.1
 django-compressor
 django-compressor-autoprefixer
