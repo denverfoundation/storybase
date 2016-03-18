@@ -54,11 +54,14 @@ class Command(BaseCommand):
 
         for (old, new) in data:
 
-            new_topic = storybase_taxonomy.models.CategoryTranslation.\
-                objects.filter(name=new)[0].category
+            try:
+                new_topic = storybase_taxonomy.models.CategoryTranslation.\
+                    objects.filter(name=new)[0].category
 
-            old_topic = storybase_taxonomy.models.CategoryTranslation.\
-                objects.filter(name=old)[0].category
+                old_topic = storybase_taxonomy.models.CategoryTranslation.\
+                    objects.filter(name=old)[0].category
+            except IndexError as e:
+                continue
 
             stories = storybase_story.models.Story.objects.filter(topics__categorytranslation__name=old_topic.name)
             print('Found {} stories with {}.'.format(len(stories), old_topic))
