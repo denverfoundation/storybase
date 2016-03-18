@@ -23,17 +23,17 @@ class CategoryTranslationAdminForm(forms.ModelForm):
         super(CategoryTranslationAdminForm, self).clean()
 
         # Validate slug is valid in that level
-	# Moved this logic from categories.base.CategoryBaseAdminForm.clean()
-	# to the translation model's form (because that's where the slug
-	# lives)
-	related_model_name = self._meta.model.__name__.lower()
-	category = self.cleaned_data.get('category')
+        # Moved this logic from categories.base.CategoryBaseAdminForm.clean()
+        # to the translation model's form (because that's where the slug
+        # lives)
+        related_model_name = self._meta.model.__name__.lower()
+        category = self.cleaned_data.get('category')
         kwargs = {}
         if category.parent is None:
             kwargs['parent__isnull'] = True
         else:
             kwargs['parent__pk'] = int(category.parent.id)
-	slug_field = '%s__slug' % related_model_name
+        slug_field = '%s__slug' % related_model_name
         this_level_slugs = [c[slug_field] for c in
 			    category.__class__.objects.filter(**kwargs).values(
 				    'id', slug_field)
