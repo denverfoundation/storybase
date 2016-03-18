@@ -133,7 +133,7 @@ class StorySearchForm(SearchForm):
 
         place = data.get('place', None)
         if place is not None:
-            sqs = sqs.filter(place_ids__in=[place.id])
+            sqs = sqs.filter(place_ids__in=[place.place_id])
 
         badge = data.get('badge', None)
         if badge is not None:
