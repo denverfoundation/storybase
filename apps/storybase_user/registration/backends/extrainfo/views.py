@@ -28,8 +28,6 @@ class ExtraInfoActivationView(ActivationView):
 
     def activate(self, *args, **kwargs):
         activated_user = super(ExtraInfoActivationView, self).activate(*args, **kwargs)
-        import pdb
-        pdb.set_trace()
 
         if activated_user:
             messages.success(
