@@ -627,6 +627,7 @@ class SectionResource(TranslatedModelResource):
         # Hide the underlying id
         excludes = ['id']
         filtering = {
+            'section_id': ('exact',),
             'story': ALL_WITH_RELATIONS,
         }
 
