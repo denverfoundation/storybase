@@ -42,8 +42,12 @@ FILER_STORAGES['public']['main']['OPTIONS']['location'] = os.path.abspath(os.pat
 FILER_STORAGES['public']['thumbnails']['OPTIONS']['location'] = os.path.abspath(os.path.join(MEDIA_ROOT, 'filer_thumbnails'))
 
 ALLOWED_HOSTS = [
+    'www.floodlightproject.com',
     'www.floodlightproject.org',
-    'new.floodlightproject.org',
+    'www.floodlightcolorado.com',
+    'www.floodlightcolorado.org',
+    'www.floodlightdenver.com',
+    'www.floodlightdenver.org',
 ]
 
 SOCIAL_AUTH_TWITTER_KEY = os.getenv('SOCIAL_AUTH_TWITTER_KEY')
