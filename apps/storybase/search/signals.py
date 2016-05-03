@@ -102,8 +102,8 @@ class RealtimeSignalProcessor(HaystackRealtimeSignalProcessor):
 
         # XXX: ZM Additional Hack http://stackoverflow.com/questions/17520812/how-to-resolve-circular-import-involving-haystack
 
-        MyHtmlAssetTranslation = get_model('storybase_story', 'HtmlAssetTranslation')
-        MyLocation = get_model('storybase_story', 'Location')
+        MyHtmlAssetTranslation = get_model('storybase_asset', 'HtmlAssetTranslation')
+        MyLocation = get_model('storybase_geo', 'Location')
         MySectionAsset = get_model('storybase_story', 'SectionAsset')
         MySectionTranslation = get_model('storybase_story', 'SectionTranslation')
         MyStory = get_model('storybase_story', 'Story')

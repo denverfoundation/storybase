@@ -86,9 +86,6 @@ class StoryIndex(indexes.SearchIndex, indexes.Indexable):
         if instance.is_template == True:
             return True
 
-        if instance.is_connected() == True:
-            return True
-
         return False
 
     def update_object(self, instance, using=None, **kwargs):

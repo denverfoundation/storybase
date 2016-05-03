@@ -409,9 +409,7 @@ HAYSTACK_CONNECTIONS = {
 
 HAYSTACK_SEARCH_RESULTS_PER_PAGE = 10
 
-# This often breaks the system because of a circular import - this may be required
-#
-# HAYSTACK_SIGNAL_PROCESSOR = 'storybase.search.signals.RealtimeSignalProcessor'
+HAYSTACK_SIGNAL_PROCESSOR = 'storybase.search.signals.RealtimeSignalProcessor'
 
 UUID_PATTERN = r'[0-9a-f]{8}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{4}-[0-9a-f]{12}'
 

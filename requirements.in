@@ -1,5 +1,7 @@
 -e git+https://github.com/elpaso/django-dag@74165d7298202818a6b9cb099a322213b2079740#egg=django-dag
 -e git+https://github.com/macropin/django-uuidfield.git@9bd27e96ede8cf770df60808f2c772c48ec73e74#egg=django-uuidfield
+# https://github.com/django-haystack/django-haystack/issues/1212
+-e git+https://github.com/django-haystack/django-haystack@f27e4695eecc84538217bcc2691cbb220074cc47#egg=django-haystack
 beautifulsoup
 bleach
 cmsplugin-filer
@@ -14,7 +16,6 @@ django-debug-toolbar
 django-dotenv
 django-email-bandit
 django-extensions
-django-haystack
 django-localflavor
 django-model-utils
 django-passwords

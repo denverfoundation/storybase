@@ -5,6 +5,7 @@
 #    pip-compile requirements.in
 #
 -e git+https://github.com/elpaso/django-dag@74165d7298202818a6b9cb099a322213b2079740#egg=django-dag
+-e git+https://github.com/django-haystack/django-haystack@f27e4695eecc84538217bcc2691cbb220074cc47#egg=django-haystack
 -e git+https://github.com/macropin/django-uuidfield.git@9bd27e96ede8cf770df60808f2c772c48ec73e74#egg=django-uuidfield
 beautifulsoup==3.2.1
 bleach==1.4.2
@@ -25,10 +26,9 @@ django-email-bandit==1.1
 django-extensions==1.6.5
 django-filer==1.2.0       # via cmsplugin-filer
 django-formtools==1.0     # via django-cms
-django-haystack==2.4.1
 django-localflavor==1.2
 django-model-utils==2.5
-django-mptt==0.8.3        # via django-categories, django-filer
+django-mptt==0.8.4        # via django-categories, django-filer
 django-passwords==0.3.10
 django-polymorphic==0.8.1  # via django-filer
 django-registration-redux==1.4
