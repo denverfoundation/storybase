@@ -103,3 +103,13 @@ def toggle_featured(modeladmin, request, queryset):
         setattr(obj, featured_field_name, not featured)
         obj.save()
 toggle_featured.short_description = "Toggle the featured on homepage status"
+
+
+def make_published(modeladmin, request, queryset):
+    queryset.update(status='published')
+make_published.short_description = "Change status to published"
+
+
+def make_draft(modeladmin, request, queryset):
+    queryset.update(status='draft')
+make_draft.short_description = "Change status to draft"

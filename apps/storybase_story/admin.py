@@ -4,7 +4,7 @@ from django.contrib import admin
 #from django.contrib.admin import SimpleListFilter
 
 from storybase.admin import (StorybaseModelAdmin, StorybaseStackedInline,
-    obj_title, toggle_featured)
+    obj_title, toggle_featured, make_published, make_draft)
 from storybase_asset.models import Asset
 from storybase_story.models import (Story, StoryTranslation,
     Section, SectionTranslation, SectionAsset, SectionRelation,
@@ -43,7 +43,7 @@ class StoryAdmin(StorybaseModelAdmin):
                          'places', 'projects', 'organizations', 'topics']
     inlines = [SectionInline, StoryTranslationInline]
     prefix_inline_classes = ['StoryTranslationInline']
-    actions = [toggle_featured]
+    actions = [toggle_featured, make_published, make_draft]
 
     def get_object(self, request, object_id, from_field=None):
         """
