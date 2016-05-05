@@ -1,4 +1,6 @@
 from django.shortcuts import render_to_response
+from django.template import RequestContext
+
 from haystack.views import SearchView
 
 class StorybaseSearchView(SearchView):
@@ -26,4 +28,4 @@ class StorybaseSearchView(SearchView):
             context['suggestion'] = self.form.get_suggestion()
 
         context.update(self.extra_context())
-        return render_to_response(self.template, context, context_instance=self.context_class(self.request))
+        return render_to_response(self.template, context, context_instance=RequestContext(self.request))
