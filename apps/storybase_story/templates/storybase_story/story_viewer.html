@@ -176,8 +176,11 @@
 
         {% elif section.section_id == "call-to-action" %}
         <section id="call-to-action" class="section call-to-action" style="display:none;">
+
+        <div class="call-to-action-summary">
           <h2 class="title">{% trans "How Can You Help?" %}</h2>
           {{ story.call_to_action|safe }}
+        </div>
           <div class="next-steps">
             {% if story.relevant_count %}
             <section class="related">
