@@ -2257,7 +2257,7 @@
             top: -50
           },
           title: gettext("Edit your title and author information here."),
-          description: gettext("Clicking on the title or author information here lets you set your story's title or your name and affiliation. Press Enter to save your changes.  You can edit the title or byline at any point during the story building process."),
+          description: gettext("Clicking on the title or author information here lets you set your story's title or your name and affiliation. Press Enter to save your changes. You can edit the title or byline at any point during the story building process, but please <em>enter both before building your story so that the story saves properly</em>."),
           next: 'section-list-guider'
         }, defaultOpts));
         guiders.createGuider(_.defaults({
