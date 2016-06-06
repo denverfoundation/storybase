@@ -87,19 +87,17 @@ class StoryViewerView(ModelIdDetailView):
         context = super(StoryViewerView, self).get_context_data(**kwargs)
         preview = self.kwargs.get('preview', False)
         referrer = self.request.META.get('HTTP_REFERER', None)
-        if referrer:
-            try:
-                match = resolve(getattr(urlparse.urlparse(referrer), 'path'))
-                if match.url_name is 'explore_stories':
-                    context['referrer'] = {'caption': _(u"Back to Explorer Results"),
-                                           'url': referrer}
-                elif match.url_name is 'haystack_search':
-                    context['referrer'] = {'caption': _(u"Back to Search Results"),
-                                           'url': referrer}
-            except Resolver404:
-                pass
-            except AttributeError:
-                pass
+        try:
+            match = resolve(getattr(urlparse.urlparse(referrer), 'path'))
+            if match.url_name is 'explore_stories':
+                context['referrer'] = {'caption': _(u"Back to Explorer Results"),
+                                       'url': referrer}
+            elif match.url_name is 'haystack_search':
+                context['referrer'] = {'caption': _(u"Back to Search Results"),
+                                       'url': referrer}
+        except (AttributeError, Resolver404):
+            context['referrer'] = {'caption': _(u"Read More Stories"),
+                                   'url': reverse('explore_stories')}
 
         if preview and self.request.user.is_authenticated():
             # Previewing the story in the viewer, include draft

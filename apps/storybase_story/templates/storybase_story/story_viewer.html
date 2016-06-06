@@ -243,10 +243,7 @@
       </div>
 
       <footer id="footer">
-        {% if referrer %}
-        <a class="referrer" href="{{ referrer.url }}"><i class="icon-arrow-left"></i>&nbsp;<span>{{ referrer.caption }}</span></a>
-        {% endif %}
-        <a class="explorer" href="{% url 'explore_stories' %}">{% trans "Explore<span> More Stories</span>" %}</a>
+        <a class="explorer" href="{{ referrer.url }}">{{ referrer.caption }}</a>
         <a class="logo" href="/" title="{{ storybase_site_name }}"><span>{{ storybase_site_name }}</span></a>
         <nav id="toc">
           {{ story.structure.render_toc }}
