@@ -14,12 +14,17 @@ from storybase_user.auth.forms import (EmailAuthenticationForm,
                                        CustomContextPasswordResetForm,
                                        StrongSetPasswordForm)
 from storybase_user.views import (AccountSummaryView, AccountStoriesView,
-                                 AccountNotificationsView, password_change)
+                                 AccountNotificationsView)
 from storybase_user.social_auth.views import GetExtraAccountDetailsView
 
 urlpatterns = patterns('',
     url(r'^$', AccountSummaryView.as_view(), name='account_summary'),
-    url(r'^password/$', password_change, name='account_password'),
+    url(r'^password/$', 'django.contrib.auth.views.password_change',
+        {'template_name': 'storybase_user/password_change_form.html'},
+        name='account_password'),
+    url(r'^password/change/done/$', 'django.contrib.auth.views.password_change_done',
+        {'template_name': 'storybase_user/password_change_done.html'},
+        name='password_change_done'),
     url(r'^stories/$', AccountStoriesView.as_view(), name='account_stories'),
     url(r'^notifications/$', AccountNotificationsView.as_view(), name='account_notifications'),
     url(r'^extradetails/$', GetExtraAccountDetailsView.as_view(), name='account_extra_details'),

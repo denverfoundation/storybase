@@ -299,35 +299,3 @@ class CreateProjectView(CreateStoryAggregatorView):
     model = Project
     form_class = ProjectModelForm
     template_name = 'storybase_user/create_project.html'
-
-
-@csrf_protect
-@login_required
-def password_change(request,
-                    template_name='storybase_user/password_change_form.html',
-                    post_change_redirect=None,
-                    password_change_form=PasswordChangeForm,
-                    current_app=None, extra_context=None):
-    """
-    Modified version of the default Django password change view
-
-    This version defaults to this app's custom template, redirects back to the
-    same view, and flashes a success message.
-
-    """
-    if post_change_redirect is None:
-        post_change_redirect = reverse('storybase_user.views.password_change')
-    if request.method == "POST":
-        form = password_change_form(user=request.user, data=request.POST)
-        if form.is_valid():
-            messages.success(request, _("Password changed"))
-            form.save()
-            return HttpResponseRedirect(post_change_redirect)
-    else:
-        form = password_change_form(user=request.user)
-    context = {
-        'form': form,
-    }
-    context.update(extra_context or {})
-    return render_to_response(template_name, context,
-                              context_instance=RequestContext(request, current_app=current_app))
