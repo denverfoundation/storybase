@@ -7130,15 +7130,11 @@
 
     initialize: function(options) {
       PublishViewBase.prototype.initialize.apply(this, arguments);
-      this._rendered = false;
       this.$el.hide();
     },
 
     render: function() {
-      if (!this._rendered) {
-        this.$el.html(this.template());
-        this._rendered = true;
-      }
+      this.$el.html(this.template());
       if (this.storyPublished()) {
         this.$el.hide();
       }
