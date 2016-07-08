@@ -1,3 +1,5 @@
+{% load i18n cms_tags %}
+
 {% comment %}
 Handlebars.js templates for story builder Backbone application
 {% endcomment %}
@@ -510,16 +512,27 @@ Handlebars.js templates for story builder Backbone application
 <script type="text/x-handlebars-template" id="share-legal-template">
 <p>{{gettext "You are ready to share your story with the world! Before you publish, did you remember to"}} &hellip;</p>
 <ul>
-    <li>{{gettext "Review our <a href='/learn/storytelling-checklist/' target='_blank'>storytelling checklist</a> to be sure you’re telling the best Floodlight story possible?"}}</li>
+    <li>{% endverbatim %}
+      {% page_url 'storytelling_checklist' as storytelling_checklist %}
+      {% blocktrans %}Review our <a href="{{ storytelling_checklist }}" target="_blank">storytelling checklist</a> to be sure you’re telling the best Floodlight story possible?{% endblocktrans %}
+    {% verbatim %}</li>
     <li>{{gettext "Obtain the proper release forms for photos or videos of children in your story? You can download a sample release form as a <a href='https://docs.google.com/document/d/1wmLKCuDhK2rdgGnvQIJAG7X37yzpNlh7J6v0hGogVTg/edit' target=\"_blank\">Google doc</a> or <a href='/media/filer/2012/11/07/sample_photo_release.docx'>Word doc</a>."}}</li>
     <li>{{gettext "Properly cite or credit any content you didn’t create yourself?"}}</li>
 </ul>
-<p>{{gettext "See our <a href='/about/how-it-works/' target='_blank'>disclaimer page</a> along with our Floodlight <a href='/about/vision/' target='_blank'>community values</a> and <a href='/about/vision/' target='_blank'>terms of use</a>. For information about using photos or videos of people in your Floodlight stories, visit our <a href='/learn/' target='_blank'>resources</a> page."}}</p>
+<p>{% endverbatim %}
+  {% page_url 'how_it_works' as how_it_works %}
+  {% page_url 'vision' as vision %}
+  {% page_url 'learn' as learn %}
+  {% blocktrans %}See our <a href="{{ how_it_works }}" target="_blank">disclaimer page</a> along with our Floodlight <a href="{{ vision }}" target='_blank'>community values</a> and <a href="{{ vision }}" target="_blank">terms of use</a>. For information about using photos or videos of people in your Floodlight stories, visit our <a href="{{ learn }}" target="_blank">resources</a> page.{% endblocktrans %}
+  {% verbatim %}</p>
 </script>
 
 <script type="text/x-handlebars-template" id="share-license-template">
 <h3>{{title}}</h3>
-<p>{{gettext "All Floodlight stories will be published with a <a href=\"http://creativecommons.org/\" title=\"Creative Commons\" target=\"_blank\">Creative Commons</a> license. Find out more about <a href=\"/policies/#community-values\">why we decided to use Creative Commons</a> and <a href=\"/policies/#using-creative-commons\">how to choose a license</a>."}}</p>
+<p>{% endverbatim %}
+  {% page_url 'policies' as policies %}
+  {% blocktrans %}All Floodlight stories will be published with a <a href="http://creativecommons.org/" title="Creative Commons" target="_blank">Creative Commons</a> license. Find out more about <a href="{{ policies }}#community-values">why we decided to use Creative Commons</a> and <a href="{{ policies }}#using-creative-commons">how to choose a license</a>.{% endblocktrans %}
+  {% verbatim %}</p>
 <div id="cc-license"></div>
 </script>
 
