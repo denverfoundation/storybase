@@ -56,7 +56,7 @@ This will appear in the menus and on the page itself
 
 STORYBASE_MEGAMENU_ITEMS = getattr(
     settings, 'STORYBASE_MEGAMENU_ITEMS',
-    ['home', 'story-builder-landing', 'explore', 'skills', 'news', 'about'])
+    ['home', 'story-builder-landing', 'explore', 'learn', 'news', 'about'])
 """
 CMS Page Reverse IDs or menu entry menu IDs of items that should appear in
 the megamenu at the top of most pages
