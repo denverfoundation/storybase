@@ -10,7 +10,8 @@ from storybase_badge.models import Badge
 
 from cmsplugin_storybase.models import (
     ActivityPlugin as ActivityPluginModel, StoryPlugin as StoryPluginModel,
-    HelpPlugin as HelpPluginModel, PartnerPlugin as PartnerPluginModel
+    HelpPlugin as HelpPluginModel, PartnerPlugin as PartnerPluginModel,
+    BadgePlugin as BadgePluginModel
 )
 
 
@@ -53,14 +54,10 @@ class HelpPlugin(CMSPluginBase):
         return context
 
 
-class BadgesPlugin(CMSPluginBase):
-    model = CMSPlugin
-    name = _("StoryBase Badges")
-    render_template = "badges_plugin.html"
-
-    def render(self, context, instance, placeholder):
-        context['badges'] = Badge.objects.all()
-        return context
+class BadgePlugin(CMSPluginBase):
+    model = BadgePluginModel
+    name = _("StoryBase Badge")
+    render_template = "badge_plugin.html"
 
 
 class SearchPlugin(CMSPluginBase):
@@ -97,7 +94,7 @@ plugin_pool.register_plugin(ActivityPlugin)
 plugin_pool.register_plugin(ContactFormPlugin)
 plugin_pool.register_plugin(StoryPlugin)
 plugin_pool.register_plugin(HelpPlugin)
-plugin_pool.register_plugin(BadgesPlugin)
+plugin_pool.register_plugin(BadgePlugin)
 plugin_pool.register_plugin(SearchPlugin)
 plugin_pool.register_plugin(PartnersPlugin)
 plugin_pool.register_plugin(PartnerPlugin)
