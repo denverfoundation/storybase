@@ -8,7 +8,7 @@ DEBUG = True
 
 # Hijack all emails and send them to the BANDIT_EMAIL address
 EMAIL_BACKEND = 'bandit.backends.smtp.HijackSMTPBackend'
-BANDIT_EMAIL = 'plee@fusionbox.com'
+BANDIT_EMAIL = 'bandit@fusionbox.com'
 EMAIL_HOST = 'ASPMX.L.GOOGLE.COM'
 EMAIL_PORT = 25
 EMAIL_USE_TLS = False

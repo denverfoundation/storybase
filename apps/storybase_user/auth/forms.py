@@ -84,12 +84,12 @@ class CustomContextPasswordResetForm(PasswordResetForm):
              subject_template_name='registration/password_reset_subject.txt',
              email_template_name='registration/password_reset_email.html',
              use_https=False, token_generator=default_token_generator,
-             from_email=None, request=None):
+             from_email=None, request=None, html_email_template_name=None):
         """
         Generates a one-use only link for resetting password and sends to the user
         """
         from storybase_user.auth.utils import send_password_reset_email
-        for user in self.users_cache:
+        for user in self.get_users(self.cleaned_data['email']):
             send_password_reset_email(user,
                 domain_override=domain_override,
                 subject_template_name=subject_template_name,
