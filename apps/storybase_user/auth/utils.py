@@ -21,7 +21,7 @@ def send_password_reset_email(user, domain_override=None,
 
     """
     import logging
-    from django.utils.http import int_to_base36
+    from django.utils.http import urlsafe_base64_encode
 
     logger = logging.getLogger('storybase_user.admin')
 
@@ -35,7 +35,7 @@ def send_password_reset_email(user, domain_override=None,
         'email': user.email,
         'domain': domain,
         'site_name': site_name,
-        'uid': int_to_base36(user.id),
+        'uid': urlsafe_base64_encode(str(user.id)),
         'user': user,
         'token': token_generator.make_token(user),
         'protocol': use_https and 'https' or 'http',
