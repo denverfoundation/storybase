@@ -59,13 +59,14 @@
           <button type="button" class="btn sb-btn-action">Super Readers, Read and Share Here</button>
         </a>
       </section>
+
+      <section class="search-wrapper">
+        <legend class="title">Explore Floodlight</legend>
+        {% placeholder search %}
+      </section>
     </div>
     <div class="grid_6 homepage-header-right">
 
-    <section class="search-wrapper">
-      <legend class="title">Explore Floodlight</legend>
-      {% placeholder search %}
-    </section>
       <h2 class="title">{% trans "SPOTLIGHT" %}</h2>
       <div class="flexslider featured-on-floodlight">
         {% featured_items %}

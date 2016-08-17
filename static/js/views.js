@@ -112,31 +112,6 @@
   };
 
   /**
-   *
-   */
-  var sizeImgAsset = function(options) {
-    options = $.extend(defaultAssetStructure, options);
-    var $img = $(options.assetSelector);
-    var $container = $img.parent(options.containerSelector);
-    var setSizes = function() {
-      var nativeWidth = $img.data('native-width');
-      if ($container.width() < nativeWidth) {
-        $container.width('auto');
-      }
-      else {
-        $container.width(nativeWidth);
-      }
-      if (options.callback) {
-        options.callback.apply(this);
-      }
-    };
-    setDataNativeImgSize({
-      selector: $img,
-      callback: setSizes
-    });
-  };
-
-  /**
    * Size passed iframe element based on its contents. Size its container
    * and caption to match. Iframe must be loaded.
    *
@@ -169,8 +144,7 @@
   /**
    * Size an asset. Assumes a structure of asset element in a container
    * with a sibling caption element. Iframes are sized to fit content.
-   * Imgs are sized to fill container unless filling would require upsampling.
-   * Container and caption are sized to fit asset. Asset must be loaded.
+   * Container and caption are sized to fit asset (except images). Asset must be loaded.
    *
    * @param {hash} options @see {@link defaultAssetStructure}.
    * }
@@ -182,9 +156,6 @@
       switch ($asset.prop('tagName').toLowerCase()) {
       case 'iframe':
         sizeIframeAsset(options);
-        break;
-      case 'img':
-        sizeImgAsset(options);
         break;
       }
     }
