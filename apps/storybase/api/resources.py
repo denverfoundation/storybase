@@ -488,6 +488,8 @@ class TranslatedModelResource(HookedModelResource):
         """
         Associate the translation object with its parent and save
         """
+        self.post_bundle_obj_hydrate(bundle)
+
         object_class = self._meta.object_class
         fk_field_name = object_class.get_translation_fk_field_name()
         setattr(bundle.translation_obj, fk_field_name, bundle.obj)
