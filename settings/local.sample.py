@@ -16,6 +16,8 @@ DEBUG_TOOLBAR_PATCH_SETTINGS = False
 # implemented in storybase.models.translation.TranslatedModel
 MIDDLEWARE_CLASSES.append('debug_toolbar.middleware.DebugToolbarMiddleware',)
 
+MIDDLEWARE_CLASSES.append('fusionbox.middleware.GenericTemplateFinderMiddleware')
+
 ALLOWED_HOSTS = ['*']
 
 EMAIL_BACKEND = 'django.core.mail.backends.console.EmailBackend'
