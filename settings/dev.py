@@ -13,7 +13,7 @@ EMAIL_HOST = 'ASPMX.L.GOOGLE.COM'
 EMAIL_PORT = 25
 EMAIL_USE_TLS = False
 
-# MIDDLEWARE_CLASSES.append('fusionbox.middleware.GenericTemplateFinderMiddleware')
+MIDDLEWARE_CLASSES.append('fusionbox.middleware.GenericTemplateFinderMiddleware')
 
 
 DEFAULT_FROM_EMAIL = 'no-reply@floodlightproject.dev'
