@@ -2,6 +2,9 @@
 -e git+https://github.com/macropin/django-uuidfield.git@9bd27e96ede8cf770df60808f2c772c48ec73e74#egg=django-uuidfield
 # https://github.com/django-haystack/django-haystack/issues/1212
 -e git+https://github.com/django-haystack/django-haystack@f27e4695eecc84538217bcc2691cbb220074cc47#egg=django-haystack
+# https://github.com/divio/django-cms/issues/5447
+-e git+https://github.com/fusionbox/django-cms@a2742d1a8dbc82ace37ce78ed9fe6bb84e514736#egg=django-cms
+-e git://github.com/fusionbox/django-fusionbox.git#egg=django_fusionbox
 beautifulsoup
 bleach
 cmsplugin-filer==1.0.1
@@ -9,7 +12,6 @@ cssselect
 dj-database-url
 django-backupdb>=0.6.0
 django-categories==1.4
-django-cms>=3.2,<3.3
 django-compressor
 django-compressor-autoprefixer
 django-debug-toolbar

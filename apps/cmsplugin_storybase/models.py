@@ -276,10 +276,3 @@ class HelpPlugin(CMSPlugin):
 
     def __unicode__(self):
         return self.help.title
-
-
-class BadgePlugin(CMSPlugin):
-    badge = models.ForeignKey('storybase_badge.Badge', related_name='badges')
-
-    def __unicode__(self):
-        return self.badge.name

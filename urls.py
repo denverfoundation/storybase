@@ -98,10 +98,12 @@ urlpatterns += patterns('',
 )
 
 if settings.DEBUG:
+    from fusionbox.middleware import generic_template_finder_view
     urlpatterns += patterns('',
         url(r'^media/(?P<path>.*)$', 'django.views.static.serve',
             {'document_root': settings.MEDIA_ROOT, 'show_indexes': True}),
         url(r'', include('django.contrib.staticfiles.urls')),
+        url(r'^cut-ups/', generic_template_finder_view),
     )
     if 'debug_toolbar' in settings.INSTALLED_APPS:
        try:
