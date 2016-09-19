@@ -169,6 +169,7 @@ MIDDLEWARE_CLASSES = [
     'cms.middleware.toolbar.ToolbarMiddleware',
 
     'storybase.middleware.ExtractContentMiddleware',
+    'storybase.middleware.MaintenanceModeMiddleware',
 ]
 
 # This prevents clickjacking <http://en.wikipedia.org/wiki/Clickjacking>
