@@ -8,6 +8,21 @@ from django.shortcuts import render_to_response
 from django.utils import translation
 from django.utils.cache import patch_vary_headers
 
+
+class MaintenanceModeMiddleware(object):
+    """
+    Middleware class to respond to all requests with a maintenance landing page
+    """
+    def process_request(self, request):
+        try:
+            match = resolve(request.path)
+            if match.app_name is 'admin':
+                return None
+        except Exception as e:
+            pass
+        return render_to_response('maintenance.html')
+
+
 class ExtractContentMiddleware(object):
     """
     Middleware class to return extracted HTML content from a response

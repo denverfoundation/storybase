@@ -4,6 +4,7 @@
 -e git+https://github.com/django-haystack/django-haystack@f27e4695eecc84538217bcc2691cbb220074cc47#egg=django-haystack
 # https://github.com/divio/django-cms/issues/5447
 -e git+https://github.com/fusionbox/django-cms@a2742d1a8dbc82ace37ce78ed9fe6bb84e514736#egg=django-cms
+-e git://github.com/fusionbox/django-fusionbox.git#egg=django_fusionbox
 beautifulsoup
 bleach
 cmsplugin-filer==1.0.1
