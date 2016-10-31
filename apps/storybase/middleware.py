@@ -13,7 +13,13 @@ class MaintenanceModeMiddleware(object):
     """
     Middleware class to respond to all requests with a maintenance landing page
     """
-    def process_response(self, request, response):
+    def process_request(self, request, response):
+        try:
+            match = resolve(request.path)
+            if match.app_name is 'admin':
+                return None
+        except Exception as e:
+            pass
         return render_to_response('maintenance.html')
 
 
