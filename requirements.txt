@@ -41,7 +41,7 @@ django-tastypie==0.13.3
 django-threadedcomments==1.0.1
 django-tinymce==2.4.0
 django-treebeard==4.0.1
-django==1.8.14
+django==1.8.17
 djangocms-admin-style==1.2.3
 djangocms-text-ckeditor==2.9.5
 easy-thumbnails==2.3      # via cmsplugin-filer, django-filer
